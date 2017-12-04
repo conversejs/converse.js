@@ -129,7 +129,7 @@
                 },
             });
 
-            _converse.RosterFilterView = Backbone.View.extend({
+            _converse.RosterFilterView = Backbone.VDOMView.extend({
                 tagName: 'span',
                 events: {
                     "keydown .roster-filter": "liveFilter",
@@ -145,9 +145,10 @@
                     this.model.on('change:filter_text', this.renderClearButton, this);
                 },
 
-                render () {
-                    this.el.innerHTML = tpl_roster_filter(
+                renderHTML () {
+                    return tpl_roster_filter(
                         _.extend(this.model.toJSON(), {
+                            visible: this.shouldBeVisible(),
                             placeholder: __('Filter'),
                             label_contacts: LABEL_CONTACTS,
                             label_groups: LABEL_GROUPS,
@@ -161,8 +162,10 @@
                             label_xa: __('Extended Away'),
                             label_offline: __('Offline')
                         }));
+                },
+
+                afterRender () {
                     this.renderClearButton();
-                    return this.$el;
                 },
 
                 renderClearButton () {
@@ -230,34 +233,43 @@
                     return false;
                 },
 
+                shouldBeVisible () {
+                    return _converse.roster.length >= 7 || this.isActive();
+                },
+
+                showOrHide () {
+                    if (this.shouldBeVisible) {
+                        this.show();
+                    } else {
+                        this.hide();
+                    }
+                },
+
                 show () {
-                    if (this.$el.is(':visible')) { return this; }
-                    this.$el.show();
+                    if (utils.isVisible(this.el)) { return this; }
+                    this.el.classList.add('fade-in');
+                    this.el.classList.remove('hidden');
                     return this;
                 },
 
                 hide () {
-                    if (!this.$el.is(':visible')) { return this; }
-                    if (this.el.querySelector('.roster-filter').value.length > 0) {
-                        // Don't hide if user is currently filtering.
-                        return;
-                    }
+                    if (!utils.isVisible(this.el)) { return this; }
                     this.model.save({
                         'filter_text': '',
                         'chat_state': ''
                     });
-                    this.$el.hide();
+                    this.el.classList.add('hidden');
                     return this;
                 },
 
                 clearFilter (ev) {
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
-                        $(ev.target).removeClass('x onX').val('');
+                        ev.target.classList.remove('x');
+                        ev.target.classList.remove('onX');
+                        ev.target.value = '';
                     }
-                    this.model.save({
-                        'filter_text': ''
-                    });
+                    this.model.save({'filter_text': ''});
                 }
             });
 
@@ -279,7 +291,9 @@
 
                 render () {
                     this.renderRoster();
-                    this.$el.html(this.filter_view.render());
+                    this.el.innerHTML = "";
+                    this.el.appendChild(this.filter_view.render().el);
+
                     if (!_converse.allow_contact_requests) {
                         // XXX: if we ever support live editing of config then
                         // we'll need to be able to remove this class on the fly.
@@ -327,14 +341,10 @@
                 }, _converse.animate ? 100 : 0),
 
                 showHideFilter () {
-                    if (!this.$el.is(':visible')) {
+                    if (!utils.isVisible(this.el)) {
                         return;
                     }
-                    if (_converse.roster.length >= 10) {
-                        this.filter_view.show();
-                    } else if (!this.filter_view.isActive()) {
-                        this.filter_view.hide();
-                    }
+                    this.filter_view.showOrHide();
                     return this;
                 },
 

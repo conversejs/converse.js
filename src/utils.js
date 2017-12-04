@@ -13,7 +13,6 @@
         "es6-promise",
         "jquery.browser",
         "lodash.noconflict",
-        "moment_with_locales",
         "strophe",
     ], factory);
 }(this, function (
@@ -21,7 +20,6 @@
         Promise,
         jQBrowser,
         _,
-        moment,
         Strophe
     ) {
     "use strict";
@@ -268,10 +266,19 @@
         }
     };
 
+    u.isValidJID = function (jid) {
+        return _.filter(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+    };
+
     u.isSameBareJID = function (jid1, jid2) {
         return Strophe.getBareJidFromJid(jid1).toLowerCase() ===
                 Strophe.getBareJidFromJid(jid2).toLowerCase();
     };
+
+    u.getMostRecentMessage = function (model) {
+        const messages = model.messages.filter('message');
+        return messages[messages.length-1];
+    }
 
     u.isNewMessage = function (message) {
         /* Given a stanza, determine whether it's a new
@@ -509,13 +516,17 @@
         return model.collection && model.collection.browserStorage;
     };
 
-    u.getWrappedPromise = function () {
+    u.getResolveablePromise = function () {
+        /* Returns a promise object on which `resolve` or `reject` can be
+         * called.
+         */
         const wrapper = {};
-        wrapper.promise = new Promise((resolve, reject) => {
+        const promise = new Promise((resolve, reject) => {
             wrapper.resolve = resolve;
             wrapper.reject = reject;
         })
-        return wrapper;
+        _.assign(promise, wrapper);
+        return promise;
     };
 
     u.safeSave = function (model, attributes) {
@@ -525,5 +536,11 @@
             model.set(attributes);
         }
     }
+
+    u.isVisible = function (el) {
+        // XXX: Taken from jQuery's "visible" implementation
+        return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
+    };
+
     return u;
 }));

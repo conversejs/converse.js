@@ -3,11 +3,35 @@
 ## 3.3.0 (Unreleased)
 
 ### Bugfixes
+- #800 Could not register successfully in ejabberd 17.01
+- #949 Don't flash the roster contacts filter (i.e. hide by default)
 - Don't require `auto_login` to be `true` when using the API to log in.
+- Moment locale wasn't being set to the value passed via the `i18n` option.
+- In the chat heading, two avatars sometimes get rendered.
+- Refetch the roster from the server after reconnection.
+  From the perspective of the XMPP server, this is an entirely new login,
+  and therefore as per [RFC-6121](https://tools.ietf.org/html/rfc6121#section-2.1.6)
+  the roster SHOULD be queried, making the client an "interested resource".
+  Otherwise connected contacts might not get your presence updates.
+- The way the archive ID of a MAM message is specified, has changed.
+  See https://xmpp.org/extensions/xep-0313.html#archives_id
 
 ### New Features
-- #828 Add routing for the `#converse-login` and `#converse-register` URL
+- #314 Add support for opening chat rooms with a URL fragment such as `#converse/room?jid=room@domain`
+  and private chats with a URL fragment such as `#converse/chat?jid=user@domain`
+- #828 Add routing for the `#converse/login` and `#converse/register` URL
   fragments, which will render the registration and login forms respectively.
+- New configuration setting [view_mode](https://conversejs.org/docs/html/configurations.html#view-mode)
+  This removes the need for separate `inverse.js` and `converse-mobile.js`
+  builds. Instead the `converse.js` build is now used with `view_mode` set to
+  `fullscreen` and `mobile` respectively.
+- Fetch VCard when starting a chat with someone not in the user's roster.
+
+### API changes
+- New API method `_converse.disco.supports` to check whether a certain
+  service discovery feature is supported by an entity.
+- New API method `_converse.api.vcard.get` which fetches the VCard for a
+  particular JID.
 
 ### UX/UI changes
 - Use CSS3 fade transitions to render various elements.
@@ -16,6 +40,8 @@
 - Don't hang indefinitely and provide nicer error messages when a connection
   can't be established.
 - Consolidate error and validation reporting on the registration form.
+- Don't close the emojis panel after inserting an emoji.
+- Focus the message textarea when the emojis panel is opened or closed.
 
 ### Technical changes
 - Converse.js now includes a [Virtual DOM](https://github.com/Matt-Esch/virtual-dom)
@@ -25,6 +51,7 @@
   smaller filesize but means that the translations you want to provide need to
   be available. See the [locales_url](https://conversejs.org/docs/html/configurations.html#locales-url)
   configuration setting for more info.
+- The translation machinery has now been moved to a separate module in `src/i18n.js`.
 
 ## 3.2.1 (2017-08-29)
 

@@ -269,7 +269,7 @@
                 },
 
                 fetchBookmarks () {
-                    const deferred = utils.getWrappedPromise();
+                    const deferred = utils.getResolveablePromise();
                     if (this.browserStorage.records.length > 0) {
                         this.fetch({
                             'success': _.bind(this.onCachedBookmarksFetched, this, deferred),
@@ -284,7 +284,7 @@
                     } else {
                         deferred.resolve();
                     }
-                    return deferred.promise;
+                    return deferred;
                 },
 
                 onCachedBookmarksFetched (deferred) {
@@ -381,8 +381,8 @@
 
                 onBookmarksReceivedError (deferred, iq) {
                     window.sessionStorage.setItem(this.fetched_flag, true);
-                    _converse.log('Error while fetching bookmarks', Strophe.LogLevel.ERROR);
-                    _converse.log(iq, Strophe.LogLevel.DEBUG);
+                    _converse.log('Error while fetching bookmarks', Strophe.LogLevel.WARN);
+                    _converse.log(iq.outerHTML, Strophe.LogLevel.DEBUG);
                     if (!_.isNil(deferred)) {
                         return deferred.reject();
                     }

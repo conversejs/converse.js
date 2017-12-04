@@ -1504,7 +1504,7 @@ body {
   #converse-embedded-chat .chat-head .avatar,
   #conversejs .chat-head .avatar {
     margin-right: 0.5em;
-    border-radius: 50%;
+    border-radius: 25%;
     float: left; }
   #converse-embedded-chat .chat-head.chat-head-chatbox,
   #conversejs .chat-head.chat-head-chatbox {
@@ -1921,8 +1921,6 @@ body {
     line-height: 22px; }
   #conversejs .chat-head.chat-head-chatbox .close-chatbox-button {
     display: none; }
-  #conversejs .chat-head .avatar {
-    border-radius: 25%; }
 #conversejs .chatbox {
   height: 100%;
   margin: 0;
@@ -2358,6 +2356,8 @@ body {
   #conversejs #controlbox .xmpp-status-menu {
     text-align: left;
     box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4); }
+    #conversejs #controlbox .xmpp-status-menu.collapsed {
+      box-shadow: none; }
     #conversejs #controlbox .xmpp-status-menu li {
       padding: 2px; }
       #conversejs #controlbox .xmpp-status-menu li a {

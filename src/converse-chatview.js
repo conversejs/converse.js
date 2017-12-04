@@ -14,13 +14,13 @@
             "emojione",
             "xss",
             "tpl!chatbox",
+            "tpl!chatbox_head",
             "tpl!new_day",
             "tpl!action",
             "tpl!emojis",
             "tpl!message",
             "tpl!help_message",
             "tpl!toolbar",
-            "tpl!avatar",
             "tpl!spinner"
     ], factory);
 }(this, function (
@@ -30,13 +30,13 @@
             emojione,
             xss,
             tpl_chatbox,
+            tpl_chatbox_head,
             tpl_new_day,
             tpl_action,
             tpl_emojis,
             tpl_message,
             tpl_help_message,
             tpl_toolbar,
-            tpl_avatar,
             tpl_spinner
     ) {
     "use strict";
@@ -218,9 +218,36 @@
                 }
             });
 
+            _converse.ChatBoxHeading = Backbone.View.extend({
+
+                initialize () {
+                    this.model.on('change:image', this.render, this);
+                    this.model.on('change:status', this.onStatusMessageChanged, this);
+                    this.model.on('change:fullname', this.render, this);
+                },
+
+                render () {
+                    this.el.innerHTML = tpl_chatbox_head(
+                        _.extend(this.model.toJSON(), {
+                            'avatar_width': _converse.chatview_avatar_width,
+                            'avatar_height': _converse.chatview_avatar_height,
+                            'info_close': __('Close this chat box'),
+                        })
+                    );
+                    return this;
+                },
+
+                onStatusMessageChanged (item) {
+                    this.render();
+                    _converse.emit('contactStatusMessageChanged', {
+                        'contact': item.attributes,
+                        'message': item.get('status')
+                    });
+                }
+            });
+
             _converse.ChatBoxView = Backbone.View.extend({
                 length: 200,
-                tagName: 'div',
                 className: 'chatbox hidden',
                 is_chatroom: false,  // Leaky abstraction from MUC
 
@@ -237,43 +264,47 @@
 
                 initialize () {
                     this.markScrolled = _.debounce(this.markScrolled, 100);
-
                     this.createEmojiPicker();
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
-                    this.model.on('destroy', this.hide, this);
+                    this.model.on('destroy', this.remove, this);
                     // TODO check for changed fullname as well
                     this.model.on('change:chat_state', this.sendChatState, this);
                     this.model.on('change:chat_status', this.onChatStatusChanged, this);
-                    this.model.on('change:image', this.renderAvatar, this);
-                    this.model.on('change:status', this.onStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
-                    this.render().fetchMessages();
+
+                    this.render().renderToolbar().insertHeading().fetchMessages();
+                    utils.refreshWebkit();
+                    _converse.emit('chatBoxOpened', this);
                     _converse.emit('chatBoxInitialized', this);
                 },
 
                 render () {
-                    this.$el.attr('id', this.model.get('box_id'))
-                        .html(tpl_chatbox(
-                                _.extend(this.model.toJSON(), {
-                                        show_toolbar: _converse.show_toolbar,
-                                        show_textarea: true,
-                                        show_send_button: _converse.show_send_button,
-                                        title: this.model.get('fullname'),
-                                        unread_msgs: __('You have unread messages'),
-                                        info_close: __('Close this chat box'),
-                                        label_personal_message: __('Personal message'),
-                                        label_send: __('Send')
-                                    }
-                                )
-                            )
-                        );
-                    this.$content = this.$el.find('.chat-content');
-                    this.renderToolbar().renderAvatar();
-                    _converse.emit('chatBoxOpened', this);
-                    utils.refreshWebkit();
-                    return this.showStatusMessage();
+                    this.el.setAttribute('id', this.model.get('box_id'));
+                    this.el.innerHTML = tpl_chatbox(
+                        _.extend(this.model.toJSON(), {
+                                label_personal_message: __('Personal message'),
+                                label_send: __('Send'),
+                                show_send_button: _converse.show_send_button,
+                                show_textarea: true,
+                                show_toolbar: _converse.show_toolbar,
+                                unread_msgs: __('You have unread messages')
+                            }
+                        ));
+                    this.content = this.el.querySelector('.chat-content');
+                    this.$content = $(this.content);
+                    return this;
+                },
+
+                insertHeading () {
+                    this.heading = new _converse.ChatBoxHeading({'model': this.model});
+                    this.heading.render();
+                    this.heading.chatview = this;
+
+                    const flyout = this.el.querySelector('.flyout');
+                    flyout.insertBefore(this.heading.el, flyout.querySelector('.chat-body'));
+                    return this;
                 },
 
                 createEmojiPicker () {
@@ -328,20 +359,26 @@
                     if (!permanent) {
                         $el.addClass('chat-event');
                     }
-                    this.$content.append($el);
+                    this.content.insertAdjacentElement('beforeend', $el[0]);
                     this.scrollDown();
                 },
 
-                addSpinner () {
+                addSpinner (append=false) {
                     if (_.isNull(this.el.querySelector('.spinner'))) {
-                        this.$content.prepend(tpl_spinner);
+                        if (append) {
+                            this.content.insertAdjacentHTML('beforeend', tpl_spinner());
+                            this.scrollDown();
+                        } else {
+                            this.content.insertAdjacentHTML('afterbegin', tpl_spinner());
+                        }
                     }
                 },
 
                 clearSpinner () {
-                    if (this.$content.children(':first').is('span.spinner')) {
-                        this.$content.children(':first').remove();
-                    }
+                    _.each(
+                        this.content.querySelectorAll('span.spinner'),
+                        (el) => el.parentNode.removeChild(el)
+                    );
                 },
 
                 insertDayIndicator (date, prepend) {
@@ -491,8 +528,8 @@
                     if (text.length > 8000) {
                         text = text.substring(0, 10) + '...';
                         this.showStatusNotification(
-                            __("A very large message has been received."+
-                               "This might be due to an attack meant to degrade the chat performance."+
+                            __("A very large message has been received. "+
+                               "This might be due to an attack meant to degrade the chat performance. "+
                                "Output has been shortened."),
                             true, true);
                     }
@@ -767,7 +804,6 @@
 
                 insertEmoji (ev) {
                     ev.stopPropagation();
-                    this.toggleEmojiMenu();
                     const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
                     this.insertIntoTextArea(target.getAttribute('data-emoji'));
                 },
@@ -785,12 +821,11 @@
                         document.querySelectorAll('.toolbar-menu'),
                         [this.emoji_picker_view.el]
                     );
-                    utils.slideInAllElements(elements).then(
-                        _.partial(
-                            utils.slideToggleElement,
-                            this.emoji_picker_view.el
-                        )
-                    );
+                    utils.slideInAllElements(elements)
+                        .then(_.partial(
+                                utils.slideToggleElement,
+                                this.emoji_picker_view.el))
+                        .then(this.focus.bind(this));
                 },
 
                 toggleCall (ev) {
@@ -818,24 +853,11 @@
                     }
                 },
 
-                onStatusChanged (item) {
-                    this.showStatusMessage();
-                    _converse.emit('contactStatusMessageChanged', {
-                        'contact': item.attributes,
-                        'message': item.get('status')
-                    });
-                },
-
-                showStatusMessage (msg) {
-                    msg = msg || this.model.get('status');
-                    if (_.isString(msg)) {
-                        this.$el.find('p.user-custom-message').text(msg).attr('title', msg);
-                    }
-                    return this;
-                },
-
                 close (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    if (Backbone.history.getFragment() === "converse/chat?jid="+this.model.get('jid')) {
+                        _converse.router.navigate('');
+                    }
                     if (_converse.connection.connected) {
                         // Immediately sending the chat state, because the
                         // model is going to be destroyed afterwards.
@@ -878,39 +900,8 @@
                     return this;
                 },
 
-                renderAvatar () {
-                    if (!this.model.get('image')) {
-                        return;
-                    }
-                    const width = _converse.chatview_avatar_width;
-                    const height = _converse.chatview_avatar_height;
-                    const img_src = `data:${this.model.get('image_type')};base64,${this.model.get('image')}`,
-                        canvas = $(tpl_avatar({
-                            'width': width,
-                            'height': height
-                        })).get(0);
-
-                    if (!(canvas.getContext && canvas.getContext('2d'))) {
-                        return this;
-                    }
-                    const ctx = canvas.getContext('2d');
-                    const img = new Image();   // Create new Image object
-                    img.onload = function () {
-                        const ratio = img.width/img.height;
-                        if (ratio < 1) {
-                            ctx.drawImage(img, 0,0, width, height*(1/ratio));
-                        } else {
-                            ctx.drawImage(img, 0,0, width, height*ratio);
-                        }
-
-                    };
-                    img.src = img_src;
-                    this.$el.find('.chat-title').before(canvas);
-                    return this;
-                },
-
                 focus () {
-                    this.$el.find('.chat-textarea').focus();
+                    this.el.querySelector('.chat-textarea').focus();
                     _converse.emit('chatBoxFocused', this);
                     return this;
                 },

@@ -11,7 +11,27 @@
     if (typeof window.Promise === 'undefined') {
         waitUntilPromise.setPromiseImplementation(Promise);
     }
-    utils.waitUntil = waitUntilPromise['default'];
+    utils.waitUntil = waitUntilPromise.default;
+
+    utils.waitUntilFeatureSupportConfirmed = function (_converse, feature_name) {
+        var IQ_disco, stanza;
+        return utils.waitUntil(function () {
+            IQ_disco = _.filter(_converse.connection.IQ_stanzas, function (iq) {
+                return iq.nodeTree.querySelector('query[xmlns="http://jabber.org/protocol/disco#info"]');
+            }).pop();
+            return !_.isUndefined(IQ_disco);
+        }, 300).then(function () {
+            var info_IQ_id = IQ_disco.nodeTree.getAttribute('id');
+            stanza = $iq({
+                'type': 'result',
+                'from': 'localhost',
+                'to': 'dummy@localhost/resource',
+                'id': info_IQ_id
+            }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
+                .c('feature', {'var': feature_name});
+            _converse.connection._dataRecv(utils.createRequest(stanza));
+        });
+    }
 
     utils.createRequest = function (iq) {
         iq = typeof iq.tree == "function" ? iq.tree() : iq;

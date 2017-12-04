@@ -7,13 +7,15 @@
 /*global Backbone, define, window, document, JSON */
 
 /* converse-singleton
-/* ******************
+ * ******************
  *
- * A non-core plugin which ensures that only one chat, private or group, is
+ * A plugin which ensures that only one chat (private or groupchat) is
  * visible at any one time. All other ongoing chats are hidden and kept in the
  * background.
  *
- * This plugin makes sense in mobile or fullscreen chat environments.
+ * This plugin makes sense in mobile or fullscreen chat environments (as
+ * configured by the `view_mode` setting).
+ *
  */
 (function (root, factory) {
     define(
@@ -36,6 +38,10 @@
         //
         // NB: These plugins need to have already been loaded via require.js.
         optional_dependencies: ['converse-muc', 'converse-controlbox', 'converse-rosterview'],
+
+        enabled (_converse) {
+            return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
+        },
 
         overrides: {
             // overrides mentioned here will be picked up by converse.js's
@@ -67,7 +73,7 @@
                     return result;
                 }
             },
- 
+
             ChatBoxViews: {
                 showChat (attrs, force) {
                     /* We only have one chat visible at any one

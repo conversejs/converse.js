@@ -20912,6 +20912,7127 @@ if (!String.prototype.trim) {
 ;
 define("polyfill", function(){});
 
+/*
+jed.js
+v0.5.0beta
+
+https://github.com/SlexAxton/Jed
+-----------
+A gettext compatible i18n library for modern JavaScript Applications
+
+by Alex Sexton - AlexSexton [at] gmail - @SlexAxton
+WTFPL license for use
+Dojo CLA for contributions
+
+Jed offers the entire applicable GNU gettext spec'd set of
+functions, but also offers some nicer wrappers around them.
+The api for gettext was written for a language with no function
+overloading, so Jed allows a little more of that.
+
+Many thanks to Joshua I. Miller - unrtst@cpan.org - who wrote
+gettext.js back in 2008. I was able to vet a lot of my ideas
+against his. I also made sure Jed passed against his tests
+in order to offer easy upgrades -- jsgettext.berlios.de
+*/
+(function (root, undef) {
+
+  // Set up some underscore-style functions, if you already have
+  // underscore, feel free to delete this section, and use it
+  // directly, however, the amount of functions used doesn't
+  // warrant having underscore as a full dependency.
+  // Underscore 1.3.0 was used to port and is licensed
+  // under the MIT License by Jeremy Ashkenas.
+  var ArrayProto    = Array.prototype,
+      ObjProto      = Object.prototype,
+      slice         = ArrayProto.slice,
+      hasOwnProp    = ObjProto.hasOwnProperty,
+      nativeForEach = ArrayProto.forEach,
+      breaker       = {};
+
+  // We're not using the OOP style _ so we don't need the
+  // extra level of indirection. This still means that you
+  // sub out for real `_` though.
+  var _ = {
+    forEach : function( obj, iterator, context ) {
+      var i, l, key;
+      if ( obj === null ) {
+        return;
+      }
+
+      if ( nativeForEach && obj.forEach === nativeForEach ) {
+        obj.forEach( iterator, context );
+      }
+      else if ( obj.length === +obj.length ) {
+        for ( i = 0, l = obj.length; i < l; i++ ) {
+          if ( i in obj && iterator.call( context, obj[i], i, obj ) === breaker ) {
+            return;
+          }
+        }
+      }
+      else {
+        for ( key in obj) {
+          if ( hasOwnProp.call( obj, key ) ) {
+            if ( iterator.call (context, obj[key], key, obj ) === breaker ) {
+              return;
+            }
+          }
+        }
+      }
+    },
+    extend : function( obj ) {
+      this.forEach( slice.call( arguments, 1 ), function ( source ) {
+        for ( var prop in source ) {
+          obj[prop] = source[prop];
+        }
+      });
+      return obj;
+    }
+  };
+  // END Miniature underscore impl
+
+  // Jed is a constructor function
+  var Jed = function ( options ) {
+    // Some minimal defaults
+    this.defaults = {
+      "locale_data" : {
+        "messages" : {
+          "" : {
+            "domain"       : "messages",
+            "lang"         : "en",
+            "plural_forms" : "nplurals=2; plural=(n != 1);"
+          }
+          // There are no default keys, though
+        }
+      },
+      // The default domain if one is missing
+      "domain" : "messages"
+    };
+
+    // Mix in the sent options with the default options
+    this.options = _.extend( {}, this.defaults, options );
+    this.textdomain( this.options.domain );
+
+    if ( options.domain && ! this.options.locale_data[ this.options.domain ] ) {
+      throw new Error('Text domain set to non-existent domain: `' + options.domain + '`');
+    }
+  };
+
+  // The gettext spec sets this character as the default
+  // delimiter for context lookups.
+  // e.g.: context\u0004key
+  // If your translation company uses something different,
+  // just change this at any time and it will use that instead.
+  Jed.context_delimiter = String.fromCharCode( 4 );
+
+  function getPluralFormFunc ( plural_form_string ) {
+    return Jed.PF.compile( plural_form_string || "nplurals=2; plural=(n != 1);");
+  }
+
+  function Chain( key, i18n ){
+    this._key = key;
+    this._i18n = i18n;
+  }
+
+  // Create a chainable api for adding args prettily
+  _.extend( Chain.prototype, {
+    onDomain : function ( domain ) {
+      this._domain = domain;
+      return this;
+    },
+    withContext : function ( context ) {
+      this._context = context;
+      return this;
+    },
+    ifPlural : function ( num, pkey ) {
+      this._val = num;
+      this._pkey = pkey;
+      return this;
+    },
+    fetch : function ( sArr ) {
+      if ( {}.toString.call( sArr ) != '[object Array]' ) {
+        sArr = [].slice.call(arguments);
+      }
+      return ( sArr && sArr.length ? Jed.sprintf : function(x){ return x; } )(
+        this._i18n.dcnpgettext(this._domain, this._context, this._key, this._pkey, this._val),
+        sArr
+      );
+    }
+  });
+
+  // Add functions to the Jed prototype.
+  // These will be the functions on the object that's returned
+  // from creating a `new Jed()`
+  // These seem redundant, but they gzip pretty well.
+  _.extend( Jed.prototype, {
+    // The sexier api start point
+    translate : function ( key ) {
+      return new Chain( key, this );
+    },
+
+    textdomain : function ( domain ) {
+      if ( ! domain ) {
+        return this._textdomain;
+      }
+      this._textdomain = domain;
+    },
+
+    gettext : function ( key ) {
+      return this.dcnpgettext.call( this, undef, undef, key );
+    },
+
+    dgettext : function ( domain, key ) {
+     return this.dcnpgettext.call( this, domain, undef, key );
+    },
+
+    dcgettext : function ( domain , key /*, category */ ) {
+      // Ignores the category anyways
+      return this.dcnpgettext.call( this, domain, undef, key );
+    },
+
+    ngettext : function ( skey, pkey, val ) {
+      return this.dcnpgettext.call( this, undef, undef, skey, pkey, val );
+    },
+
+    dngettext : function ( domain, skey, pkey, val ) {
+      return this.dcnpgettext.call( this, domain, undef, skey, pkey, val );
+    },
+
+    dcngettext : function ( domain, skey, pkey, val/*, category */) {
+      return this.dcnpgettext.call( this, domain, undef, skey, pkey, val );
+    },
+
+    pgettext : function ( context, key ) {
+      return this.dcnpgettext.call( this, undef, context, key );
+    },
+
+    dpgettext : function ( domain, context, key ) {
+      return this.dcnpgettext.call( this, domain, context, key );
+    },
+
+    dcpgettext : function ( domain, context, key/*, category */) {
+      return this.dcnpgettext.call( this, domain, context, key );
+    },
+
+    npgettext : function ( context, skey, pkey, val ) {
+      return this.dcnpgettext.call( this, undef, context, skey, pkey, val );
+    },
+
+    dnpgettext : function ( domain, context, skey, pkey, val ) {
+      return this.dcnpgettext.call( this, domain, context, skey, pkey, val );
+    },
+
+    // The most fully qualified gettext function. It has every option.
+    // Since it has every option, we can use it from every other method.
+    // This is the bread and butter.
+    // Technically there should be one more argument in this function for 'Category',
+    // but since we never use it, we might as well not waste the bytes to define it.
+    dcnpgettext : function ( domain, context, singular_key, plural_key, val ) {
+      // Set some defaults
+
+      plural_key = plural_key || singular_key;
+
+      // Use the global domain default if one
+      // isn't explicitly passed in
+      domain = domain || this._textdomain;
+
+      // Default the value to the singular case
+      val = typeof val == 'undefined' ? 1 : val;
+
+      var fallback;
+
+      // Handle special cases
+
+      // No options found
+      if ( ! this.options ) {
+        // There's likely something wrong, but we'll return the correct key for english
+        // We do this by instantiating a brand new Jed instance with the default set
+        // for everything that could be broken.
+        fallback = new Jed();
+        return fallback.dcnpgettext.call( fallback, undefined, undefined, singular_key, plural_key, val );
+      }
+
+      // No translation data provided
+      if ( ! this.options.locale_data ) {
+        throw new Error('No locale data provided.');
+      }
+
+      if ( ! this.options.locale_data[ domain ] ) {
+        throw new Error('Domain `' + domain + '` was not found.');
+      }
+
+      if ( ! this.options.locale_data[ domain ][ "" ] ) {
+        throw new Error('No locale meta information provided.');
+      }
+
+      // Make sure we have a truthy key. Otherwise we might start looking
+      // into the empty string key, which is the options for the locale
+      // data.
+      if ( ! singular_key ) {
+        throw new Error('No translation key found.');
+      }
+
+      // Handle invalid numbers, but try casting strings for good measure
+      if ( typeof val != 'number' ) {
+        val = parseInt( val, 10 );
+
+        if ( isNaN( val ) ) {
+          throw new Error('The number that was passed in is not a number.');
+        }
+      }
+
+      var key  = context ? context + Jed.context_delimiter + singular_key : singular_key,
+          locale_data = this.options.locale_data,
+          dict = locale_data[ domain ],
+          pluralForms = dict[""].plural_forms || (locale_data.messages || this.defaults.locale_data.messages)[""].plural_forms,
+          val_idx = getPluralFormFunc(pluralForms)(val) + 1,
+          val_list,
+          res;
+
+      // Throw an error if a domain isn't found
+      if ( ! dict ) {
+        throw new Error('No domain named `' + domain + '` could be found.');
+      }
+
+      val_list = dict[ key ];
+
+      // If there is no match, then revert back to
+      // english style singular/plural with the keys passed in.
+      if ( ! val_list || val_idx >= val_list.length ) {
+        if (this.options.missing_key_callback) {
+          this.options.missing_key_callback(key);
+        }
+        res = [ null, singular_key, plural_key ];
+        return res[ getPluralFormFunc(pluralForms)( val ) + 1 ];
+      }
+
+      res = val_list[ val_idx ];
+
+      // This includes empty strings on purpose
+      if ( ! res  ) {
+        res = [ null, singular_key, plural_key ];
+        return res[ getPluralFormFunc(pluralForms)( val ) + 1 ];
+      }
+      return res;
+    }
+  });
+
+
+  // We add in sprintf capabilities for post translation value interolation
+  // This is not internally used, so you can remove it if you have this
+  // available somewhere else, or want to use a different system.
+
+  // We _slightly_ modify the normal sprintf behavior to more gracefully handle
+  // undefined values.
+
+  /**
+   sprintf() for JavaScript 0.7-beta1
+   http://www.diveintojavascript.com/projects/javascript-sprintf
+
+   Copyright (c) Alexandru Marasteanu <alexaholic [at) gmail (dot] com>
+   All rights reserved.
+
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions are met:
+       * Redistributions of source code must retain the above copyright
+         notice, this list of conditions and the following disclaimer.
+       * Redistributions in binary form must reproduce the above copyright
+         notice, this list of conditions and the following disclaimer in the
+         documentation and/or other materials provided with the distribution.
+       * Neither the name of sprintf() for JavaScript nor the
+         names of its contributors may be used to endorse or promote products
+         derived from this software without specific prior written permission.
+
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+   DISCLAIMED. IN NO EVENT SHALL Alexandru Marasteanu BE LIABLE FOR ANY
+   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+  var sprintf = (function() {
+    function get_type(variable) {
+      return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase();
+    }
+    function str_repeat(input, multiplier) {
+      for (var output = []; multiplier > 0; output[--multiplier] = input) {/* do nothing */}
+      return output.join('');
+    }
+
+    var str_format = function() {
+      if (!str_format.cache.hasOwnProperty(arguments[0])) {
+        str_format.cache[arguments[0]] = str_format.parse(arguments[0]);
+      }
+      return str_format.format.call(null, str_format.cache[arguments[0]], arguments);
+    };
+
+    str_format.format = function(parse_tree, argv) {
+      var cursor = 1, tree_length = parse_tree.length, node_type = '', arg, output = [], i, k, match, pad, pad_character, pad_length;
+      for (i = 0; i < tree_length; i++) {
+        node_type = get_type(parse_tree[i]);
+        if (node_type === 'string') {
+          output.push(parse_tree[i]);
+        }
+        else if (node_type === 'array') {
+          match = parse_tree[i]; // convenience purposes only
+          if (match[2]) { // keyword argument
+            arg = argv[cursor];
+            for (k = 0; k < match[2].length; k++) {
+              if (!arg.hasOwnProperty(match[2][k])) {
+                throw(sprintf('[sprintf] property "%s" does not exist', match[2][k]));
+              }
+              arg = arg[match[2][k]];
+            }
+          }
+          else if (match[1]) { // positional argument (explicit)
+            arg = argv[match[1]];
+          }
+          else { // positional argument (implicit)
+            arg = argv[cursor++];
+          }
+
+          if (/[^s]/.test(match[8]) && (get_type(arg) != 'number')) {
+            throw(sprintf('[sprintf] expecting number but found %s', get_type(arg)));
+          }
+
+          // Jed EDIT
+          if ( typeof arg == 'undefined' || arg === null ) {
+            arg = '';
+          }
+          // Jed EDIT
+
+          switch (match[8]) {
+            case 'b': arg = arg.toString(2); break;
+            case 'c': arg = String.fromCharCode(arg); break;
+            case 'd': arg = parseInt(arg, 10); break;
+            case 'e': arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential(); break;
+            case 'f': arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg); break;
+            case 'o': arg = arg.toString(8); break;
+            case 's': arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg); break;
+            case 'u': arg = Math.abs(arg); break;
+            case 'x': arg = arg.toString(16); break;
+            case 'X': arg = arg.toString(16).toUpperCase(); break;
+          }
+          arg = (/[def]/.test(match[8]) && match[3] && arg >= 0 ? '+'+ arg : arg);
+          pad_character = match[4] ? match[4] == '0' ? '0' : match[4].charAt(1) : ' ';
+          pad_length = match[6] - String(arg).length;
+          pad = match[6] ? str_repeat(pad_character, pad_length) : '';
+          output.push(match[5] ? arg + pad : pad + arg);
+        }
+      }
+      return output.join('');
+    };
+
+    str_format.cache = {};
+
+    str_format.parse = function(fmt) {
+      var _fmt = fmt, match = [], parse_tree = [], arg_names = 0;
+      while (_fmt) {
+        if ((match = /^[^\x25]+/.exec(_fmt)) !== null) {
+          parse_tree.push(match[0]);
+        }
+        else if ((match = /^\x25{2}/.exec(_fmt)) !== null) {
+          parse_tree.push('%');
+        }
+        else if ((match = /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(_fmt)) !== null) {
+          if (match[2]) {
+            arg_names |= 1;
+            var field_list = [], replacement_field = match[2], field_match = [];
+            if ((field_match = /^([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
+              field_list.push(field_match[1]);
+              while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
+                if ((field_match = /^\.([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
+                  field_list.push(field_match[1]);
+                }
+                else if ((field_match = /^\[(\d+)\]/.exec(replacement_field)) !== null) {
+                  field_list.push(field_match[1]);
+                }
+                else {
+                  throw('[sprintf] huh?');
+                }
+              }
+            }
+            else {
+              throw('[sprintf] huh?');
+            }
+            match[2] = field_list;
+          }
+          else {
+            arg_names |= 2;
+          }
+          if (arg_names === 3) {
+            throw('[sprintf] mixing positional and named placeholders is not (yet) supported');
+          }
+          parse_tree.push(match);
+        }
+        else {
+          throw('[sprintf] huh?');
+        }
+        _fmt = _fmt.substring(match[0].length);
+      }
+      return parse_tree;
+    };
+
+    return str_format;
+  })();
+
+  var vsprintf = function(fmt, argv) {
+    argv.unshift(fmt);
+    return sprintf.apply(null, argv);
+  };
+
+  Jed.parse_plural = function ( plural_forms, n ) {
+    plural_forms = plural_forms.replace(/n/g, n);
+    return Jed.parse_expression(plural_forms);
+  };
+
+  Jed.sprintf = function ( fmt, args ) {
+    if ( {}.toString.call( args ) == '[object Array]' ) {
+      return vsprintf( fmt, [].slice.call(args) );
+    }
+    return sprintf.apply(this, [].slice.call(arguments) );
+  };
+
+  Jed.prototype.sprintf = function () {
+    return Jed.sprintf.apply(this, arguments);
+  };
+  // END sprintf Implementation
+
+  // Start the Plural forms section
+  // This is a full plural form expression parser. It is used to avoid
+  // running 'eval' or 'new Function' directly against the plural
+  // forms.
+  //
+  // This can be important if you get translations done through a 3rd
+  // party vendor. I encourage you to use this instead, however, I
+  // also will provide a 'precompiler' that you can use at build time
+  // to output valid/safe function representations of the plural form
+  // expressions. This means you can build this code out for the most
+  // part.
+  Jed.PF = {};
+
+  Jed.PF.parse = function ( p ) {
+    var plural_str = Jed.PF.extractPluralExpr( p );
+    return Jed.PF.parser.parse.call(Jed.PF.parser, plural_str);
+  };
+
+  Jed.PF.compile = function ( p ) {
+    // Handle trues and falses as 0 and 1
+    function imply( val ) {
+      return (val === true ? 1 : val ? val : 0);
+    }
+
+    var ast = Jed.PF.parse( p );
+    return function ( n ) {
+      return imply( Jed.PF.interpreter( ast )( n ) );
+    };
+  };
+
+  Jed.PF.interpreter = function ( ast ) {
+    return function ( n ) {
+      var res;
+      switch ( ast.type ) {
+        case 'GROUP':
+          return Jed.PF.interpreter( ast.expr )( n );
+        case 'TERNARY':
+          if ( Jed.PF.interpreter( ast.expr )( n ) ) {
+            return Jed.PF.interpreter( ast.truthy )( n );
+          }
+          return Jed.PF.interpreter( ast.falsey )( n );
+        case 'OR':
+          return Jed.PF.interpreter( ast.left )( n ) || Jed.PF.interpreter( ast.right )( n );
+        case 'AND':
+          return Jed.PF.interpreter( ast.left )( n ) && Jed.PF.interpreter( ast.right )( n );
+        case 'LT':
+          return Jed.PF.interpreter( ast.left )( n ) < Jed.PF.interpreter( ast.right )( n );
+        case 'GT':
+          return Jed.PF.interpreter( ast.left )( n ) > Jed.PF.interpreter( ast.right )( n );
+        case 'LTE':
+          return Jed.PF.interpreter( ast.left )( n ) <= Jed.PF.interpreter( ast.right )( n );
+        case 'GTE':
+          return Jed.PF.interpreter( ast.left )( n ) >= Jed.PF.interpreter( ast.right )( n );
+        case 'EQ':
+          return Jed.PF.interpreter( ast.left )( n ) == Jed.PF.interpreter( ast.right )( n );
+        case 'NEQ':
+          return Jed.PF.interpreter( ast.left )( n ) != Jed.PF.interpreter( ast.right )( n );
+        case 'MOD':
+          return Jed.PF.interpreter( ast.left )( n ) % Jed.PF.interpreter( ast.right )( n );
+        case 'VAR':
+          return n;
+        case 'NUM':
+          return ast.val;
+        default:
+          throw new Error("Invalid Token found.");
+      }
+    };
+  };
+
+  Jed.PF.extractPluralExpr = function ( p ) {
+    // trim first
+    p = p.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+
+    if (! /;\s*$/.test(p)) {
+      p = p.concat(';');
+    }
+
+    var nplurals_re = /nplurals\=(\d+);/,
+        plural_re = /plural\=(.*);/,
+        nplurals_matches = p.match( nplurals_re ),
+        res = {},
+        plural_matches;
+
+    // Find the nplurals number
+    if ( nplurals_matches.length > 1 ) {
+      res.nplurals = nplurals_matches[1];
+    }
+    else {
+      throw new Error('nplurals not found in plural_forms string: ' + p );
+    }
+
+    // remove that data to get to the formula
+    p = p.replace( nplurals_re, "" );
+    plural_matches = p.match( plural_re );
+
+    if (!( plural_matches && plural_matches.length > 1 ) ) {
+      throw new Error('`plural` expression not found: ' + p);
+    }
+    return plural_matches[ 1 ];
+  };
+
+  /* Jison generated parser */
+  Jed.PF.parser = (function(){
+
+var parser = {trace: function trace() { },
+yy: {},
+symbols_: {"error":2,"expressions":3,"e":4,"EOF":5,"?":6,":":7,"||":8,"&&":9,"<":10,"<=":11,">":12,">=":13,"!=":14,"==":15,"%":16,"(":17,")":18,"n":19,"NUMBER":20,"$accept":0,"$end":1},
+terminals_: {2:"error",5:"EOF",6:"?",7:":",8:"||",9:"&&",10:"<",11:"<=",12:">",13:">=",14:"!=",15:"==",16:"%",17:"(",18:")",19:"n",20:"NUMBER"},
+productions_: [0,[3,2],[4,5],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4,1],[4,1]],
+performAction: function anonymous(yytext,yyleng,yylineno,yy,yystate,$$,_$) {
+
+var $0 = $$.length - 1;
+switch (yystate) {
+case 1: return { type : 'GROUP', expr: $$[$0-1] }; 
+break;
+case 2:this.$ = { type: 'TERNARY', expr: $$[$0-4], truthy : $$[$0-2], falsey: $$[$0] }; 
+break;
+case 3:this.$ = { type: "OR", left: $$[$0-2], right: $$[$0] };
+break;
+case 4:this.$ = { type: "AND", left: $$[$0-2], right: $$[$0] };
+break;
+case 5:this.$ = { type: 'LT', left: $$[$0-2], right: $$[$0] }; 
+break;
+case 6:this.$ = { type: 'LTE', left: $$[$0-2], right: $$[$0] };
+break;
+case 7:this.$ = { type: 'GT', left: $$[$0-2], right: $$[$0] };
+break;
+case 8:this.$ = { type: 'GTE', left: $$[$0-2], right: $$[$0] };
+break;
+case 9:this.$ = { type: 'NEQ', left: $$[$0-2], right: $$[$0] };
+break;
+case 10:this.$ = { type: 'EQ', left: $$[$0-2], right: $$[$0] };
+break;
+case 11:this.$ = { type: 'MOD', left: $$[$0-2], right: $$[$0] };
+break;
+case 12:this.$ = { type: 'GROUP', expr: $$[$0-1] }; 
+break;
+case 13:this.$ = { type: 'VAR' }; 
+break;
+case 14:this.$ = { type: 'NUM', val: Number(yytext) }; 
+break;
+}
+},
+table: [{3:1,4:2,17:[1,3],19:[1,4],20:[1,5]},{1:[3]},{5:[1,6],6:[1,7],8:[1,8],9:[1,9],10:[1,10],11:[1,11],12:[1,12],13:[1,13],14:[1,14],15:[1,15],16:[1,16]},{4:17,17:[1,3],19:[1,4],20:[1,5]},{5:[2,13],6:[2,13],7:[2,13],8:[2,13],9:[2,13],10:[2,13],11:[2,13],12:[2,13],13:[2,13],14:[2,13],15:[2,13],16:[2,13],18:[2,13]},{5:[2,14],6:[2,14],7:[2,14],8:[2,14],9:[2,14],10:[2,14],11:[2,14],12:[2,14],13:[2,14],14:[2,14],15:[2,14],16:[2,14],18:[2,14]},{1:[2,1]},{4:18,17:[1,3],19:[1,4],20:[1,5]},{4:19,17:[1,3],19:[1,4],20:[1,5]},{4:20,17:[1,3],19:[1,4],20:[1,5]},{4:21,17:[1,3],19:[1,4],20:[1,5]},{4:22,17:[1,3],19:[1,4],20:[1,5]},{4:23,17:[1,3],19:[1,4],20:[1,5]},{4:24,17:[1,3],19:[1,4],20:[1,5]},{4:25,17:[1,3],19:[1,4],20:[1,5]},{4:26,17:[1,3],19:[1,4],20:[1,5]},{4:27,17:[1,3],19:[1,4],20:[1,5]},{6:[1,7],8:[1,8],9:[1,9],10:[1,10],11:[1,11],12:[1,12],13:[1,13],14:[1,14],15:[1,15],16:[1,16],18:[1,28]},{6:[1,7],7:[1,29],8:[1,8],9:[1,9],10:[1,10],11:[1,11],12:[1,12],13:[1,13],14:[1,14],15:[1,15],16:[1,16]},{5:[2,3],6:[2,3],7:[2,3],8:[2,3],9:[1,9],10:[1,10],11:[1,11],12:[1,12],13:[1,13],14:[1,14],15:[1,15],16:[1,16],18:[2,3]},{5:[2,4],6:[2,4],7:[2,4],8:[2,4],9:[2,4],10:[1,10],11:[1,11],12:[1,12],13:[1,13],14:[1,14],15:[1,15],16:[1,16],18:[2,4]},{5:[2,5],6:[2,5],7:[2,5],8:[2,5],9:[2,5],10:[2,5],11:[2,5],12:[2,5],13:[2,5],14:[2,5],15:[2,5],16:[1,16],18:[2,5]},{5:[2,6],6:[2,6],7:[2,6],8:[2,6],9:[2,6],10:[2,6],11:[2,6],12:[2,6],13:[2,6],14:[2,6],15:[2,6],16:[1,16],18:[2,6]},{5:[2,7],6:[2,7],7:[2,7],8:[2,7],9:[2,7],10:[2,7],11:[2,7],12:[2,7],13:[2,7],14:[2,7],15:[2,7],16:[1,16],18:[2,7]},{5:[2,8],6:[2,8],7:[2,8],8:[2,8],9:[2,8],10:[2,8],11:[2,8],12:[2,8],13:[2,8],14:[2,8],15:[2,8],16:[1,16],18:[2,8]},{5:[2,9],6:[2,9],7:[2,9],8:[2,9],9:[2,9],10:[2,9],11:[2,9],12:[2,9],13:[2,9],14:[2,9],15:[2,9],16:[1,16],18:[2,9]},{5:[2,10],6:[2,10],7:[2,10],8:[2,10],9:[2,10],10:[2,10],11:[2,10],12:[2,10],13:[2,10],14:[2,10],15:[2,10],16:[1,16],18:[2,10]},{5:[2,11],6:[2,11],7:[2,11],8:[2,11],9:[2,11],10:[2,11],11:[2,11],12:[2,11],13:[2,11],14:[2,11],15:[2,11],16:[2,11],18:[2,11]},{5:[2,12],6:[2,12],7:[2,12],8:[2,12],9:[2,12],10:[2,12],11:[2,12],12:[2,12],13:[2,12],14:[2,12],15:[2,12],16:[2,12],18:[2,12]},{4:30,17:[1,3],19:[1,4],20:[1,5]},{5:[2,2],6:[1,7],7:[2,2],8:[1,8],9:[1,9],10:[1,10],11:[1,11],12:[1,12],13:[1,13],14:[1,14],15:[1,15],16:[1,16],18:[2,2]}],
+defaultActions: {6:[2,1]},
+parseError: function parseError(str, hash) {
+    throw new Error(str);
+},
+parse: function parse(input) {
+    var self = this,
+        stack = [0],
+        vstack = [null], // semantic value stack
+        lstack = [], // location stack
+        table = this.table,
+        yytext = '',
+        yylineno = 0,
+        yyleng = 0,
+        recovering = 0,
+        TERROR = 2,
+        EOF = 1;
+
+    //this.reductionCount = this.shiftCount = 0;
+
+    this.lexer.setInput(input);
+    this.lexer.yy = this.yy;
+    this.yy.lexer = this.lexer;
+    if (typeof this.lexer.yylloc == 'undefined')
+        this.lexer.yylloc = {};
+    var yyloc = this.lexer.yylloc;
+    lstack.push(yyloc);
+
+    if (typeof this.yy.parseError === 'function')
+        this.parseError = this.yy.parseError;
+
+    function popStack (n) {
+        stack.length = stack.length - 2*n;
+        vstack.length = vstack.length - n;
+        lstack.length = lstack.length - n;
+    }
+
+    function lex() {
+        var token;
+        token = self.lexer.lex() || 1; // $end = 1
+        // if token isn't its numeric value, convert
+        if (typeof token !== 'number') {
+            token = self.symbols_[token] || token;
+        }
+        return token;
+    }
+
+    var symbol, preErrorSymbol, state, action, a, r, yyval={},p,len,newState, expected;
+    while (true) {
+        // retreive state number from top of stack
+        state = stack[stack.length-1];
+
+        // use default actions if available
+        if (this.defaultActions[state]) {
+            action = this.defaultActions[state];
+        } else {
+            if (symbol == null)
+                symbol = lex();
+            // read action for current state and first input
+            action = table[state] && table[state][symbol];
+        }
+
+        // handle parse error
+        _handle_error:
+        if (typeof action === 'undefined' || !action.length || !action[0]) {
+
+            if (!recovering) {
+                // Report error
+                expected = [];
+                for (p in table[state]) if (this.terminals_[p] && p > 2) {
+                    expected.push("'"+this.terminals_[p]+"'");
+                }
+                var errStr = '';
+                if (this.lexer.showPosition) {
+                    errStr = 'Parse error on line '+(yylineno+1)+":\n"+this.lexer.showPosition()+"\nExpecting "+expected.join(', ') + ", got '" + this.terminals_[symbol]+ "'";
+                } else {
+                    errStr = 'Parse error on line '+(yylineno+1)+": Unexpected " +
+                                  (symbol == 1 /*EOF*/ ? "end of input" :
+                                              ("'"+(this.terminals_[symbol] || symbol)+"'"));
+                }
+                this.parseError(errStr,
+                    {text: this.lexer.match, token: this.terminals_[symbol] || symbol, line: this.lexer.yylineno, loc: yyloc, expected: expected});
+            }
+
+            // just recovered from another error
+            if (recovering == 3) {
+                if (symbol == EOF) {
+                    throw new Error(errStr || 'Parsing halted.');
+                }
+
+                // discard current lookahead and grab another
+                yyleng = this.lexer.yyleng;
+                yytext = this.lexer.yytext;
+                yylineno = this.lexer.yylineno;
+                yyloc = this.lexer.yylloc;
+                symbol = lex();
+            }
+
+            // try to recover from error
+            while (1) {
+                // check for error recovery rule in this state
+                if ((TERROR.toString()) in table[state]) {
+                    break;
+                }
+                if (state == 0) {
+                    throw new Error(errStr || 'Parsing halted.');
+                }
+                popStack(1);
+                state = stack[stack.length-1];
+            }
+
+            preErrorSymbol = symbol; // save the lookahead token
+            symbol = TERROR;         // insert generic error symbol as new lookahead
+            state = stack[stack.length-1];
+            action = table[state] && table[state][TERROR];
+            recovering = 3; // allow 3 real symbols to be shifted before reporting a new error
+        }
+
+        // this shouldn't happen, unless resolve defaults are off
+        if (action[0] instanceof Array && action.length > 1) {
+            throw new Error('Parse Error: multiple actions possible at state: '+state+', token: '+symbol);
+        }
+
+        switch (action[0]) {
+
+            case 1: // shift
+                //this.shiftCount++;
+
+                stack.push(symbol);
+                vstack.push(this.lexer.yytext);
+                lstack.push(this.lexer.yylloc);
+                stack.push(action[1]); // push state
+                symbol = null;
+                if (!preErrorSymbol) { // normal execution/no error
+                    yyleng = this.lexer.yyleng;
+                    yytext = this.lexer.yytext;
+                    yylineno = this.lexer.yylineno;
+                    yyloc = this.lexer.yylloc;
+                    if (recovering > 0)
+                        recovering--;
+                } else { // error just occurred, resume old lookahead f/ before error
+                    symbol = preErrorSymbol;
+                    preErrorSymbol = null;
+                }
+                break;
+
+            case 2: // reduce
+                //this.reductionCount++;
+
+                len = this.productions_[action[1]][1];
+
+                // perform semantic action
+                yyval.$ = vstack[vstack.length-len]; // default to $$ = $1
+                // default location, uses first token for firsts, last for lasts
+                yyval._$ = {
+                    first_line: lstack[lstack.length-(len||1)].first_line,
+                    last_line: lstack[lstack.length-1].last_line,
+                    first_column: lstack[lstack.length-(len||1)].first_column,
+                    last_column: lstack[lstack.length-1].last_column
+                };
+                r = this.performAction.call(yyval, yytext, yyleng, yylineno, this.yy, action[1], vstack, lstack);
+
+                if (typeof r !== 'undefined') {
+                    return r;
+                }
+
+                // pop off stack
+                if (len) {
+                    stack = stack.slice(0,-1*len*2);
+                    vstack = vstack.slice(0, -1*len);
+                    lstack = lstack.slice(0, -1*len);
+                }
+
+                stack.push(this.productions_[action[1]][0]);    // push nonterminal (reduce)
+                vstack.push(yyval.$);
+                lstack.push(yyval._$);
+                // goto new state = table[STATE][NONTERMINAL]
+                newState = table[stack[stack.length-2]][stack[stack.length-1]];
+                stack.push(newState);
+                break;
+
+            case 3: // accept
+                return true;
+        }
+
+    }
+
+    return true;
+}};/* Jison generated lexer */
+var lexer = (function(){
+
+var lexer = ({EOF:1,
+parseError:function parseError(str, hash) {
+        if (this.yy.parseError) {
+            this.yy.parseError(str, hash);
+        } else {
+            throw new Error(str);
+        }
+    },
+setInput:function (input) {
+        this._input = input;
+        this._more = this._less = this.done = false;
+        this.yylineno = this.yyleng = 0;
+        this.yytext = this.matched = this.match = '';
+        this.conditionStack = ['INITIAL'];
+        this.yylloc = {first_line:1,first_column:0,last_line:1,last_column:0};
+        return this;
+    },
+input:function () {
+        var ch = this._input[0];
+        this.yytext+=ch;
+        this.yyleng++;
+        this.match+=ch;
+        this.matched+=ch;
+        var lines = ch.match(/\n/);
+        if (lines) this.yylineno++;
+        this._input = this._input.slice(1);
+        return ch;
+    },
+unput:function (ch) {
+        this._input = ch + this._input;
+        return this;
+    },
+more:function () {
+        this._more = true;
+        return this;
+    },
+pastInput:function () {
+        var past = this.matched.substr(0, this.matched.length - this.match.length);
+        return (past.length > 20 ? '...':'') + past.substr(-20).replace(/\n/g, "");
+    },
+upcomingInput:function () {
+        var next = this.match;
+        if (next.length < 20) {
+            next += this._input.substr(0, 20-next.length);
+        }
+        return (next.substr(0,20)+(next.length > 20 ? '...':'')).replace(/\n/g, "");
+    },
+showPosition:function () {
+        var pre = this.pastInput();
+        var c = new Array(pre.length + 1).join("-");
+        return pre + this.upcomingInput() + "\n" + c+"^";
+    },
+next:function () {
+        if (this.done) {
+            return this.EOF;
+        }
+        if (!this._input) this.done = true;
+
+        var token,
+            match,
+            col,
+            lines;
+        if (!this._more) {
+            this.yytext = '';
+            this.match = '';
+        }
+        var rules = this._currentRules();
+        for (var i=0;i < rules.length; i++) {
+            match = this._input.match(this.rules[rules[i]]);
+            if (match) {
+                lines = match[0].match(/\n.*/g);
+                if (lines) this.yylineno += lines.length;
+                this.yylloc = {first_line: this.yylloc.last_line,
+                               last_line: this.yylineno+1,
+                               first_column: this.yylloc.last_column,
+                               last_column: lines ? lines[lines.length-1].length-1 : this.yylloc.last_column + match[0].length}
+                this.yytext += match[0];
+                this.match += match[0];
+                this.matches = match;
+                this.yyleng = this.yytext.length;
+                this._more = false;
+                this._input = this._input.slice(match[0].length);
+                this.matched += match[0];
+                token = this.performAction.call(this, this.yy, this, rules[i],this.conditionStack[this.conditionStack.length-1]);
+                if (token) return token;
+                else return;
+            }
+        }
+        if (this._input === "") {
+            return this.EOF;
+        } else {
+            this.parseError('Lexical error on line '+(this.yylineno+1)+'. Unrecognized text.\n'+this.showPosition(), 
+                    {text: "", token: null, line: this.yylineno});
+        }
+    },
+lex:function lex() {
+        var r = this.next();
+        if (typeof r !== 'undefined') {
+            return r;
+        } else {
+            return this.lex();
+        }
+    },
+begin:function begin(condition) {
+        this.conditionStack.push(condition);
+    },
+popState:function popState() {
+        return this.conditionStack.pop();
+    },
+_currentRules:function _currentRules() {
+        return this.conditions[this.conditionStack[this.conditionStack.length-1]].rules;
+    },
+topState:function () {
+        return this.conditionStack[this.conditionStack.length-2];
+    },
+pushState:function begin(condition) {
+        this.begin(condition);
+    }});
+lexer.performAction = function anonymous(yy,yy_,$avoiding_name_collisions,YY_START) {
+
+var YYSTATE=YY_START;
+switch($avoiding_name_collisions) {
+case 0:/* skip whitespace */
+break;
+case 1:return 20
+break;
+case 2:return 19
+break;
+case 3:return 8
+break;
+case 4:return 9
+break;
+case 5:return 6
+break;
+case 6:return 7
+break;
+case 7:return 11
+break;
+case 8:return 13
+break;
+case 9:return 10
+break;
+case 10:return 12
+break;
+case 11:return 14
+break;
+case 12:return 15
+break;
+case 13:return 16
+break;
+case 14:return 17
+break;
+case 15:return 18
+break;
+case 16:return 5
+break;
+case 17:return 'INVALID'
+break;
+}
+};
+lexer.rules = [/^\s+/,/^[0-9]+(\.[0-9]+)?\b/,/^n\b/,/^\|\|/,/^&&/,/^\?/,/^:/,/^<=/,/^>=/,/^</,/^>/,/^!=/,/^==/,/^%/,/^\(/,/^\)/,/^$/,/^./];
+lexer.conditions = {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],"inclusive":true}};return lexer;})()
+parser.lexer = lexer;
+return parser;
+})();
+// End parser
+
+  // Handle node, amd, and global systems
+  if (typeof exports !== 'undefined') {
+    if (typeof module !== 'undefined' && module.exports) {
+      exports = module.exports = Jed;
+    }
+    exports.Jed = Jed;
+  }
+  else {
+    if (typeof define === 'function' && define.amd) {
+      define('jed', [],function() {
+        return Jed;
+      });
+    }
+    // Leak a global regardless of module system
+    root['Jed'] = Jed;
+  }
+
+})(this);
+
+//! moment.js
+//! version : 2.18.1
+//! authors : Tim Wood, Iskren Chernev, Moment.js contributors
+//! license : MIT
+//! momentjs.com
+
+;(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define('moment/moment',factory) :
+    global.moment = factory()
+}(this, (function () { 'use strict';
+
+var hookCallback;
+
+function hooks () {
+    return hookCallback.apply(null, arguments);
+}
+
+// This is done to register the method called with moment()
+// without creating circular dependencies.
+function setHookCallback (callback) {
+    hookCallback = callback;
+}
+
+function isArray(input) {
+    return input instanceof Array || Object.prototype.toString.call(input) === '[object Array]';
+}
+
+function isObject(input) {
+    // IE8 will treat undefined and null as object if it wasn't for
+    // input != null
+    return input != null && Object.prototype.toString.call(input) === '[object Object]';
+}
+
+function isObjectEmpty(obj) {
+    var k;
+    for (k in obj) {
+        // even if its not own property I'd still call it non-empty
+        return false;
+    }
+    return true;
+}
+
+function isUndefined(input) {
+    return input === void 0;
+}
+
+function isNumber(input) {
+    return typeof input === 'number' || Object.prototype.toString.call(input) === '[object Number]';
+}
+
+function isDate(input) {
+    return input instanceof Date || Object.prototype.toString.call(input) === '[object Date]';
+}
+
+function map(arr, fn) {
+    var res = [], i;
+    for (i = 0; i < arr.length; ++i) {
+        res.push(fn(arr[i], i));
+    }
+    return res;
+}
+
+function hasOwnProp(a, b) {
+    return Object.prototype.hasOwnProperty.call(a, b);
+}
+
+function extend(a, b) {
+    for (var i in b) {
+        if (hasOwnProp(b, i)) {
+            a[i] = b[i];
+        }
+    }
+
+    if (hasOwnProp(b, 'toString')) {
+        a.toString = b.toString;
+    }
+
+    if (hasOwnProp(b, 'valueOf')) {
+        a.valueOf = b.valueOf;
+    }
+
+    return a;
+}
+
+function createUTC (input, format, locale, strict) {
+    return createLocalOrUTC(input, format, locale, strict, true).utc();
+}
+
+function defaultParsingFlags() {
+    // We need to deep clone this object.
+    return {
+        empty           : false,
+        unusedTokens    : [],
+        unusedInput     : [],
+        overflow        : -2,
+        charsLeftOver   : 0,
+        nullInput       : false,
+        invalidMonth    : null,
+        invalidFormat   : false,
+        userInvalidated : false,
+        iso             : false,
+        parsedDateParts : [],
+        meridiem        : null,
+        rfc2822         : false,
+        weekdayMismatch : false
+    };
+}
+
+function getParsingFlags(m) {
+    if (m._pf == null) {
+        m._pf = defaultParsingFlags();
+    }
+    return m._pf;
+}
+
+var some;
+if (Array.prototype.some) {
+    some = Array.prototype.some;
+} else {
+    some = function (fun) {
+        var t = Object(this);
+        var len = t.length >>> 0;
+
+        for (var i = 0; i < len; i++) {
+            if (i in t && fun.call(this, t[i], i, t)) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+}
+
+var some$1 = some;
+
+function isValid(m) {
+    if (m._isValid == null) {
+        var flags = getParsingFlags(m);
+        var parsedParts = some$1.call(flags.parsedDateParts, function (i) {
+            return i != null;
+        });
+        var isNowValid = !isNaN(m._d.getTime()) &&
+            flags.overflow < 0 &&
+            !flags.empty &&
+            !flags.invalidMonth &&
+            !flags.invalidWeekday &&
+            !flags.nullInput &&
+            !flags.invalidFormat &&
+            !flags.userInvalidated &&
+            (!flags.meridiem || (flags.meridiem && parsedParts));
+
+        if (m._strict) {
+            isNowValid = isNowValid &&
+                flags.charsLeftOver === 0 &&
+                flags.unusedTokens.length === 0 &&
+                flags.bigHour === undefined;
+        }
+
+        if (Object.isFrozen == null || !Object.isFrozen(m)) {
+            m._isValid = isNowValid;
+        }
+        else {
+            return isNowValid;
+        }
+    }
+    return m._isValid;
+}
+
+function createInvalid (flags) {
+    var m = createUTC(NaN);
+    if (flags != null) {
+        extend(getParsingFlags(m), flags);
+    }
+    else {
+        getParsingFlags(m).userInvalidated = true;
+    }
+
+    return m;
+}
+
+// Plugins that add properties should also add the key here (null value),
+// so we can properly clone ourselves.
+var momentProperties = hooks.momentProperties = [];
+
+function copyConfig(to, from) {
+    var i, prop, val;
+
+    if (!isUndefined(from._isAMomentObject)) {
+        to._isAMomentObject = from._isAMomentObject;
+    }
+    if (!isUndefined(from._i)) {
+        to._i = from._i;
+    }
+    if (!isUndefined(from._f)) {
+        to._f = from._f;
+    }
+    if (!isUndefined(from._l)) {
+        to._l = from._l;
+    }
+    if (!isUndefined(from._strict)) {
+        to._strict = from._strict;
+    }
+    if (!isUndefined(from._tzm)) {
+        to._tzm = from._tzm;
+    }
+    if (!isUndefined(from._isUTC)) {
+        to._isUTC = from._isUTC;
+    }
+    if (!isUndefined(from._offset)) {
+        to._offset = from._offset;
+    }
+    if (!isUndefined(from._pf)) {
+        to._pf = getParsingFlags(from);
+    }
+    if (!isUndefined(from._locale)) {
+        to._locale = from._locale;
+    }
+
+    if (momentProperties.length > 0) {
+        for (i = 0; i < momentProperties.length; i++) {
+            prop = momentProperties[i];
+            val = from[prop];
+            if (!isUndefined(val)) {
+                to[prop] = val;
+            }
+        }
+    }
+
+    return to;
+}
+
+var updateInProgress = false;
+
+// Moment prototype object
+function Moment(config) {
+    copyConfig(this, config);
+    this._d = new Date(config._d != null ? config._d.getTime() : NaN);
+    if (!this.isValid()) {
+        this._d = new Date(NaN);
+    }
+    // Prevent infinite loop in case updateOffset creates new moment
+    // objects.
+    if (updateInProgress === false) {
+        updateInProgress = true;
+        hooks.updateOffset(this);
+        updateInProgress = false;
+    }
+}
+
+function isMoment (obj) {
+    return obj instanceof Moment || (obj != null && obj._isAMomentObject != null);
+}
+
+function absFloor (number) {
+    if (number < 0) {
+        // -0 -> 0
+        return Math.ceil(number) || 0;
+    } else {
+        return Math.floor(number);
+    }
+}
+
+function toInt(argumentForCoercion) {
+    var coercedNumber = +argumentForCoercion,
+        value = 0;
+
+    if (coercedNumber !== 0 && isFinite(coercedNumber)) {
+        value = absFloor(coercedNumber);
+    }
+
+    return value;
+}
+
+// compare two arrays, return the number of differences
+function compareArrays(array1, array2, dontConvert) {
+    var len = Math.min(array1.length, array2.length),
+        lengthDiff = Math.abs(array1.length - array2.length),
+        diffs = 0,
+        i;
+    for (i = 0; i < len; i++) {
+        if ((dontConvert && array1[i] !== array2[i]) ||
+            (!dontConvert && toInt(array1[i]) !== toInt(array2[i]))) {
+            diffs++;
+        }
+    }
+    return diffs + lengthDiff;
+}
+
+function warn(msg) {
+    if (hooks.suppressDeprecationWarnings === false &&
+            (typeof console !==  'undefined') && console.warn) {
+        console.warn('Deprecation warning: ' + msg);
+    }
+}
+
+function deprecate(msg, fn) {
+    var firstTime = true;
+
+    return extend(function () {
+        if (hooks.deprecationHandler != null) {
+            hooks.deprecationHandler(null, msg);
+        }
+        if (firstTime) {
+            var args = [];
+            var arg;
+            for (var i = 0; i < arguments.length; i++) {
+                arg = '';
+                if (typeof arguments[i] === 'object') {
+                    arg += '\n[' + i + '] ';
+                    for (var key in arguments[0]) {
+                        arg += key + ': ' + arguments[0][key] + ', ';
+                    }
+                    arg = arg.slice(0, -2); // Remove trailing comma and space
+                } else {
+                    arg = arguments[i];
+                }
+                args.push(arg);
+            }
+            warn(msg + '\nArguments: ' + Array.prototype.slice.call(args).join('') + '\n' + (new Error()).stack);
+            firstTime = false;
+        }
+        return fn.apply(this, arguments);
+    }, fn);
+}
+
+var deprecations = {};
+
+function deprecateSimple(name, msg) {
+    if (hooks.deprecationHandler != null) {
+        hooks.deprecationHandler(name, msg);
+    }
+    if (!deprecations[name]) {
+        warn(msg);
+        deprecations[name] = true;
+    }
+}
+
+hooks.suppressDeprecationWarnings = false;
+hooks.deprecationHandler = null;
+
+function isFunction(input) {
+    return input instanceof Function || Object.prototype.toString.call(input) === '[object Function]';
+}
+
+function set (config) {
+    var prop, i;
+    for (i in config) {
+        prop = config[i];
+        if (isFunction(prop)) {
+            this[i] = prop;
+        } else {
+            this['_' + i] = prop;
+        }
+    }
+    this._config = config;
+    // Lenient ordinal parsing accepts just a number in addition to
+    // number + (possibly) stuff coming from _dayOfMonthOrdinalParse.
+    // TODO: Remove "ordinalParse" fallback in next major release.
+    this._dayOfMonthOrdinalParseLenient = new RegExp(
+        (this._dayOfMonthOrdinalParse.source || this._ordinalParse.source) +
+            '|' + (/\d{1,2}/).source);
+}
+
+function mergeConfigs(parentConfig, childConfig) {
+    var res = extend({}, parentConfig), prop;
+    for (prop in childConfig) {
+        if (hasOwnProp(childConfig, prop)) {
+            if (isObject(parentConfig[prop]) && isObject(childConfig[prop])) {
+                res[prop] = {};
+                extend(res[prop], parentConfig[prop]);
+                extend(res[prop], childConfig[prop]);
+            } else if (childConfig[prop] != null) {
+                res[prop] = childConfig[prop];
+            } else {
+                delete res[prop];
+            }
+        }
+    }
+    for (prop in parentConfig) {
+        if (hasOwnProp(parentConfig, prop) &&
+                !hasOwnProp(childConfig, prop) &&
+                isObject(parentConfig[prop])) {
+            // make sure changes to properties don't modify parent config
+            res[prop] = extend({}, res[prop]);
+        }
+    }
+    return res;
+}
+
+function Locale(config) {
+    if (config != null) {
+        this.set(config);
+    }
+}
+
+var keys;
+
+if (Object.keys) {
+    keys = Object.keys;
+} else {
+    keys = function (obj) {
+        var i, res = [];
+        for (i in obj) {
+            if (hasOwnProp(obj, i)) {
+                res.push(i);
+            }
+        }
+        return res;
+    };
+}
+
+var keys$1 = keys;
+
+var defaultCalendar = {
+    sameDay : '[Today at] LT',
+    nextDay : '[Tomorrow at] LT',
+    nextWeek : 'dddd [at] LT',
+    lastDay : '[Yesterday at] LT',
+    lastWeek : '[Last] dddd [at] LT',
+    sameElse : 'L'
+};
+
+function calendar (key, mom, now) {
+    var output = this._calendar[key] || this._calendar['sameElse'];
+    return isFunction(output) ? output.call(mom, now) : output;
+}
+
+var defaultLongDateFormat = {
+    LTS  : 'h:mm:ss A',
+    LT   : 'h:mm A',
+    L    : 'MM/DD/YYYY',
+    LL   : 'MMMM D, YYYY',
+    LLL  : 'MMMM D, YYYY h:mm A',
+    LLLL : 'dddd, MMMM D, YYYY h:mm A'
+};
+
+function longDateFormat (key) {
+    var format = this._longDateFormat[key],
+        formatUpper = this._longDateFormat[key.toUpperCase()];
+
+    if (format || !formatUpper) {
+        return format;
+    }
+
+    this._longDateFormat[key] = formatUpper.replace(/MMMM|MM|DD|dddd/g, function (val) {
+        return val.slice(1);
+    });
+
+    return this._longDateFormat[key];
+}
+
+var defaultInvalidDate = 'Invalid date';
+
+function invalidDate () {
+    return this._invalidDate;
+}
+
+var defaultOrdinal = '%d';
+var defaultDayOfMonthOrdinalParse = /\d{1,2}/;
+
+function ordinal (number) {
+    return this._ordinal.replace('%d', number);
+}
+
+var defaultRelativeTime = {
+    future : 'in %s',
+    past   : '%s ago',
+    s  : 'a few seconds',
+    ss : '%d seconds',
+    m  : 'a minute',
+    mm : '%d minutes',
+    h  : 'an hour',
+    hh : '%d hours',
+    d  : 'a day',
+    dd : '%d days',
+    M  : 'a month',
+    MM : '%d months',
+    y  : 'a year',
+    yy : '%d years'
+};
+
+function relativeTime (number, withoutSuffix, string, isFuture) {
+    var output = this._relativeTime[string];
+    return (isFunction(output)) ?
+        output(number, withoutSuffix, string, isFuture) :
+        output.replace(/%d/i, number);
+}
+
+function pastFuture (diff, output) {
+    var format = this._relativeTime[diff > 0 ? 'future' : 'past'];
+    return isFunction(format) ? format(output) : format.replace(/%s/i, output);
+}
+
+var aliases = {};
+
+function addUnitAlias (unit, shorthand) {
+    var lowerCase = unit.toLowerCase();
+    aliases[lowerCase] = aliases[lowerCase + 's'] = aliases[shorthand] = unit;
+}
+
+function normalizeUnits(units) {
+    return typeof units === 'string' ? aliases[units] || aliases[units.toLowerCase()] : undefined;
+}
+
+function normalizeObjectUnits(inputObject) {
+    var normalizedInput = {},
+        normalizedProp,
+        prop;
+
+    for (prop in inputObject) {
+        if (hasOwnProp(inputObject, prop)) {
+            normalizedProp = normalizeUnits(prop);
+            if (normalizedProp) {
+                normalizedInput[normalizedProp] = inputObject[prop];
+            }
+        }
+    }
+
+    return normalizedInput;
+}
+
+var priorities = {};
+
+function addUnitPriority(unit, priority) {
+    priorities[unit] = priority;
+}
+
+function getPrioritizedUnits(unitsObj) {
+    var units = [];
+    for (var u in unitsObj) {
+        units.push({unit: u, priority: priorities[u]});
+    }
+    units.sort(function (a, b) {
+        return a.priority - b.priority;
+    });
+    return units;
+}
+
+function makeGetSet (unit, keepTime) {
+    return function (value) {
+        if (value != null) {
+            set$1(this, unit, value);
+            hooks.updateOffset(this, keepTime);
+            return this;
+        } else {
+            return get(this, unit);
+        }
+    };
+}
+
+function get (mom, unit) {
+    return mom.isValid() ?
+        mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]() : NaN;
+}
+
+function set$1 (mom, unit, value) {
+    if (mom.isValid()) {
+        mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
+    }
+}
+
+// MOMENTS
+
+function stringGet (units) {
+    units = normalizeUnits(units);
+    if (isFunction(this[units])) {
+        return this[units]();
+    }
+    return this;
+}
+
+
+function stringSet (units, value) {
+    if (typeof units === 'object') {
+        units = normalizeObjectUnits(units);
+        var prioritized = getPrioritizedUnits(units);
+        for (var i = 0; i < prioritized.length; i++) {
+            this[prioritized[i].unit](units[prioritized[i].unit]);
+        }
+    } else {
+        units = normalizeUnits(units);
+        if (isFunction(this[units])) {
+            return this[units](value);
+        }
+    }
+    return this;
+}
+
+function zeroFill(number, targetLength, forceSign) {
+    var absNumber = '' + Math.abs(number),
+        zerosToFill = targetLength - absNumber.length,
+        sign = number >= 0;
+    return (sign ? (forceSign ? '+' : '') : '-') +
+        Math.pow(10, Math.max(0, zerosToFill)).toString().substr(1) + absNumber;
+}
+
+var formattingTokens = /(\[[^\[]*\])|(\\)?([Hh]mm(ss)?|Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|Qo?|YYYYYY|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|kk?|mm?|ss?|S{1,9}|x|X|zz?|ZZ?|.)/g;
+
+var localFormattingTokens = /(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g;
+
+var formatFunctions = {};
+
+var formatTokenFunctions = {};
+
+// token:    'M'
+// padded:   ['MM', 2]
+// ordinal:  'Mo'
+// callback: function () { this.month() + 1 }
+function addFormatToken (token, padded, ordinal, callback) {
+    var func = callback;
+    if (typeof callback === 'string') {
+        func = function () {
+            return this[callback]();
+        };
+    }
+    if (token) {
+        formatTokenFunctions[token] = func;
+    }
+    if (padded) {
+        formatTokenFunctions[padded[0]] = function () {
+            return zeroFill(func.apply(this, arguments), padded[1], padded[2]);
+        };
+    }
+    if (ordinal) {
+        formatTokenFunctions[ordinal] = function () {
+            return this.localeData().ordinal(func.apply(this, arguments), token);
+        };
+    }
+}
+
+function removeFormattingTokens(input) {
+    if (input.match(/\[[\s\S]/)) {
+        return input.replace(/^\[|\]$/g, '');
+    }
+    return input.replace(/\\/g, '');
+}
+
+function makeFormatFunction(format) {
+    var array = format.match(formattingTokens), i, length;
+
+    for (i = 0, length = array.length; i < length; i++) {
+        if (formatTokenFunctions[array[i]]) {
+            array[i] = formatTokenFunctions[array[i]];
+        } else {
+            array[i] = removeFormattingTokens(array[i]);
+        }
+    }
+
+    return function (mom) {
+        var output = '', i;
+        for (i = 0; i < length; i++) {
+            output += isFunction(array[i]) ? array[i].call(mom, format) : array[i];
+        }
+        return output;
+    };
+}
+
+// format date using native date object
+function formatMoment(m, format) {
+    if (!m.isValid()) {
+        return m.localeData().invalidDate();
+    }
+
+    format = expandFormat(format, m.localeData());
+    formatFunctions[format] = formatFunctions[format] || makeFormatFunction(format);
+
+    return formatFunctions[format](m);
+}
+
+function expandFormat(format, locale) {
+    var i = 5;
+
+    function replaceLongDateFormatTokens(input) {
+        return locale.longDateFormat(input) || input;
+    }
+
+    localFormattingTokens.lastIndex = 0;
+    while (i >= 0 && localFormattingTokens.test(format)) {
+        format = format.replace(localFormattingTokens, replaceLongDateFormatTokens);
+        localFormattingTokens.lastIndex = 0;
+        i -= 1;
+    }
+
+    return format;
+}
+
+var match1         = /\d/;            //       0 - 9
+var match2         = /\d\d/;          //      00 - 99
+var match3         = /\d{3}/;         //     000 - 999
+var match4         = /\d{4}/;         //    0000 - 9999
+var match6         = /[+-]?\d{6}/;    // -999999 - 999999
+var match1to2      = /\d\d?/;         //       0 - 99
+var match3to4      = /\d\d\d\d?/;     //     999 - 9999
+var match5to6      = /\d\d\d\d\d\d?/; //   99999 - 999999
+var match1to3      = /\d{1,3}/;       //       0 - 999
+var match1to4      = /\d{1,4}/;       //       0 - 9999
+var match1to6      = /[+-]?\d{1,6}/;  // -999999 - 999999
+
+var matchUnsigned  = /\d+/;           //       0 - inf
+var matchSigned    = /[+-]?\d+/;      //    -inf - inf
+
+var matchOffset    = /Z|[+-]\d\d:?\d\d/gi; // +00:00 -00:00 +0000 -0000 or Z
+var matchShortOffset = /Z|[+-]\d\d(?::?\d\d)?/gi; // +00 -00 +00:00 -00:00 +0000 -0000 or Z
+
+var matchTimestamp = /[+-]?\d+(\.\d{1,3})?/; // 123456789 123456789.123
+
+// any word (or two) characters or numbers including two/three word month in arabic.
+// includes scottish gaelic two word and hyphenated months
+var matchWord = /[0-9]*['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+|[\u0600-\u06FF\/]+(\s*?[\u0600-\u06FF]+){1,2}/i;
+
+
+var regexes = {};
+
+function addRegexToken (token, regex, strictRegex) {
+    regexes[token] = isFunction(regex) ? regex : function (isStrict, localeData) {
+        return (isStrict && strictRegex) ? strictRegex : regex;
+    };
+}
+
+function getParseRegexForToken (token, config) {
+    if (!hasOwnProp(regexes, token)) {
+        return new RegExp(unescapeFormat(token));
+    }
+
+    return regexes[token](config._strict, config._locale);
+}
+
+// Code from http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
+function unescapeFormat(s) {
+    return regexEscape(s.replace('\\', '').replace(/\\(\[)|\\(\])|\[([^\]\[]*)\]|\\(.)/g, function (matched, p1, p2, p3, p4) {
+        return p1 || p2 || p3 || p4;
+    }));
+}
+
+function regexEscape(s) {
+    return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+
+var tokens = {};
+
+function addParseToken (token, callback) {
+    var i, func = callback;
+    if (typeof token === 'string') {
+        token = [token];
+    }
+    if (isNumber(callback)) {
+        func = function (input, array) {
+            array[callback] = toInt(input);
+        };
+    }
+    for (i = 0; i < token.length; i++) {
+        tokens[token[i]] = func;
+    }
+}
+
+function addWeekParseToken (token, callback) {
+    addParseToken(token, function (input, array, config, token) {
+        config._w = config._w || {};
+        callback(input, config._w, config, token);
+    });
+}
+
+function addTimeToArrayFromToken(token, input, config) {
+    if (input != null && hasOwnProp(tokens, token)) {
+        tokens[token](input, config._a, config, token);
+    }
+}
+
+var YEAR = 0;
+var MONTH = 1;
+var DATE = 2;
+var HOUR = 3;
+var MINUTE = 4;
+var SECOND = 5;
+var MILLISECOND = 6;
+var WEEK = 7;
+var WEEKDAY = 8;
+
+var indexOf;
+
+if (Array.prototype.indexOf) {
+    indexOf = Array.prototype.indexOf;
+} else {
+    indexOf = function (o) {
+        // I know
+        var i;
+        for (i = 0; i < this.length; ++i) {
+            if (this[i] === o) {
+                return i;
+            }
+        }
+        return -1;
+    };
+}
+
+var indexOf$1 = indexOf;
+
+function daysInMonth(year, month) {
+    return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+}
+
+// FORMATTING
+
+addFormatToken('M', ['MM', 2], 'Mo', function () {
+    return this.month() + 1;
+});
+
+addFormatToken('MMM', 0, 0, function (format) {
+    return this.localeData().monthsShort(this, format);
+});
+
+addFormatToken('MMMM', 0, 0, function (format) {
+    return this.localeData().months(this, format);
+});
+
+// ALIASES
+
+addUnitAlias('month', 'M');
+
+// PRIORITY
+
+addUnitPriority('month', 8);
+
+// PARSING
+
+addRegexToken('M',    match1to2);
+addRegexToken('MM',   match1to2, match2);
+addRegexToken('MMM',  function (isStrict, locale) {
+    return locale.monthsShortRegex(isStrict);
+});
+addRegexToken('MMMM', function (isStrict, locale) {
+    return locale.monthsRegex(isStrict);
+});
+
+addParseToken(['M', 'MM'], function (input, array) {
+    array[MONTH] = toInt(input) - 1;
+});
+
+addParseToken(['MMM', 'MMMM'], function (input, array, config, token) {
+    var month = config._locale.monthsParse(input, token, config._strict);
+    // if we didn't find a month name, mark the date as invalid.
+    if (month != null) {
+        array[MONTH] = month;
+    } else {
+        getParsingFlags(config).invalidMonth = input;
+    }
+});
+
+// LOCALES
+
+var MONTHS_IN_FORMAT = /D[oD]?(\[[^\[\]]*\]|\s)+MMMM?/;
+var defaultLocaleMonths = 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_');
+function localeMonths (m, format) {
+    if (!m) {
+        return isArray(this._months) ? this._months :
+            this._months['standalone'];
+    }
+    return isArray(this._months) ? this._months[m.month()] :
+        this._months[(this._months.isFormat || MONTHS_IN_FORMAT).test(format) ? 'format' : 'standalone'][m.month()];
+}
+
+var defaultLocaleMonthsShort = 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_');
+function localeMonthsShort (m, format) {
+    if (!m) {
+        return isArray(this._monthsShort) ? this._monthsShort :
+            this._monthsShort['standalone'];
+    }
+    return isArray(this._monthsShort) ? this._monthsShort[m.month()] :
+        this._monthsShort[MONTHS_IN_FORMAT.test(format) ? 'format' : 'standalone'][m.month()];
+}
+
+function handleStrictParse(monthName, format, strict) {
+    var i, ii, mom, llc = monthName.toLocaleLowerCase();
+    if (!this._monthsParse) {
+        // this is not used
+        this._monthsParse = [];
+        this._longMonthsParse = [];
+        this._shortMonthsParse = [];
+        for (i = 0; i < 12; ++i) {
+            mom = createUTC([2000, i]);
+            this._shortMonthsParse[i] = this.monthsShort(mom, '').toLocaleLowerCase();
+            this._longMonthsParse[i] = this.months(mom, '').toLocaleLowerCase();
+        }
+    }
+
+    if (strict) {
+        if (format === 'MMM') {
+            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            return ii !== -1 ? ii : null;
+        } else {
+            ii = indexOf$1.call(this._longMonthsParse, llc);
+            return ii !== -1 ? ii : null;
+        }
+    } else {
+        if (format === 'MMM') {
+            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            if (ii !== -1) {
+                return ii;
+            }
+            ii = indexOf$1.call(this._longMonthsParse, llc);
+            return ii !== -1 ? ii : null;
+        } else {
+            ii = indexOf$1.call(this._longMonthsParse, llc);
+            if (ii !== -1) {
+                return ii;
+            }
+            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            return ii !== -1 ? ii : null;
+        }
+    }
+}
+
+function localeMonthsParse (monthName, format, strict) {
+    var i, mom, regex;
+
+    if (this._monthsParseExact) {
+        return handleStrictParse.call(this, monthName, format, strict);
+    }
+
+    if (!this._monthsParse) {
+        this._monthsParse = [];
+        this._longMonthsParse = [];
+        this._shortMonthsParse = [];
+    }
+
+    // TODO: add sorting
+    // Sorting makes sure if one month (or abbr) is a prefix of another
+    // see sorting in computeMonthsParse
+    for (i = 0; i < 12; i++) {
+        // make the regex if we don't have it already
+        mom = createUTC([2000, i]);
+        if (strict && !this._longMonthsParse[i]) {
+            this._longMonthsParse[i] = new RegExp('^' + this.months(mom, '').replace('.', '') + '$', 'i');
+            this._shortMonthsParse[i] = new RegExp('^' + this.monthsShort(mom, '').replace('.', '') + '$', 'i');
+        }
+        if (!strict && !this._monthsParse[i]) {
+            regex = '^' + this.months(mom, '') + '|^' + this.monthsShort(mom, '');
+            this._monthsParse[i] = new RegExp(regex.replace('.', ''), 'i');
+        }
+        // test the regex
+        if (strict && format === 'MMMM' && this._longMonthsParse[i].test(monthName)) {
+            return i;
+        } else if (strict && format === 'MMM' && this._shortMonthsParse[i].test(monthName)) {
+            return i;
+        } else if (!strict && this._monthsParse[i].test(monthName)) {
+            return i;
+        }
+    }
+}
+
+// MOMENTS
+
+function setMonth (mom, value) {
+    var dayOfMonth;
+
+    if (!mom.isValid()) {
+        // No op
+        return mom;
+    }
+
+    if (typeof value === 'string') {
+        if (/^\d+$/.test(value)) {
+            value = toInt(value);
+        } else {
+            value = mom.localeData().monthsParse(value);
+            // TODO: Another silent failure?
+            if (!isNumber(value)) {
+                return mom;
+            }
+        }
+    }
+
+    dayOfMonth = Math.min(mom.date(), daysInMonth(mom.year(), value));
+    mom._d['set' + (mom._isUTC ? 'UTC' : '') + 'Month'](value, dayOfMonth);
+    return mom;
+}
+
+function getSetMonth (value) {
+    if (value != null) {
+        setMonth(this, value);
+        hooks.updateOffset(this, true);
+        return this;
+    } else {
+        return get(this, 'Month');
+    }
+}
+
+function getDaysInMonth () {
+    return daysInMonth(this.year(), this.month());
+}
+
+var defaultMonthsShortRegex = matchWord;
+function monthsShortRegex (isStrict) {
+    if (this._monthsParseExact) {
+        if (!hasOwnProp(this, '_monthsRegex')) {
+            computeMonthsParse.call(this);
+        }
+        if (isStrict) {
+            return this._monthsShortStrictRegex;
+        } else {
+            return this._monthsShortRegex;
+        }
+    } else {
+        if (!hasOwnProp(this, '_monthsShortRegex')) {
+            this._monthsShortRegex = defaultMonthsShortRegex;
+        }
+        return this._monthsShortStrictRegex && isStrict ?
+            this._monthsShortStrictRegex : this._monthsShortRegex;
+    }
+}
+
+var defaultMonthsRegex = matchWord;
+function monthsRegex (isStrict) {
+    if (this._monthsParseExact) {
+        if (!hasOwnProp(this, '_monthsRegex')) {
+            computeMonthsParse.call(this);
+        }
+        if (isStrict) {
+            return this._monthsStrictRegex;
+        } else {
+            return this._monthsRegex;
+        }
+    } else {
+        if (!hasOwnProp(this, '_monthsRegex')) {
+            this._monthsRegex = defaultMonthsRegex;
+        }
+        return this._monthsStrictRegex && isStrict ?
+            this._monthsStrictRegex : this._monthsRegex;
+    }
+}
+
+function computeMonthsParse () {
+    function cmpLenRev(a, b) {
+        return b.length - a.length;
+    }
+
+    var shortPieces = [], longPieces = [], mixedPieces = [],
+        i, mom;
+    for (i = 0; i < 12; i++) {
+        // make the regex if we don't have it already
+        mom = createUTC([2000, i]);
+        shortPieces.push(this.monthsShort(mom, ''));
+        longPieces.push(this.months(mom, ''));
+        mixedPieces.push(this.months(mom, ''));
+        mixedPieces.push(this.monthsShort(mom, ''));
+    }
+    // Sorting makes sure if one month (or abbr) is a prefix of another it
+    // will match the longer piece.
+    shortPieces.sort(cmpLenRev);
+    longPieces.sort(cmpLenRev);
+    mixedPieces.sort(cmpLenRev);
+    for (i = 0; i < 12; i++) {
+        shortPieces[i] = regexEscape(shortPieces[i]);
+        longPieces[i] = regexEscape(longPieces[i]);
+    }
+    for (i = 0; i < 24; i++) {
+        mixedPieces[i] = regexEscape(mixedPieces[i]);
+    }
+
+    this._monthsRegex = new RegExp('^(' + mixedPieces.join('|') + ')', 'i');
+    this._monthsShortRegex = this._monthsRegex;
+    this._monthsStrictRegex = new RegExp('^(' + longPieces.join('|') + ')', 'i');
+    this._monthsShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')', 'i');
+}
+
+// FORMATTING
+
+addFormatToken('Y', 0, 0, function () {
+    var y = this.year();
+    return y <= 9999 ? '' + y : '+' + y;
+});
+
+addFormatToken(0, ['YY', 2], 0, function () {
+    return this.year() % 100;
+});
+
+addFormatToken(0, ['YYYY',   4],       0, 'year');
+addFormatToken(0, ['YYYYY',  5],       0, 'year');
+addFormatToken(0, ['YYYYYY', 6, true], 0, 'year');
+
+// ALIASES
+
+addUnitAlias('year', 'y');
+
+// PRIORITIES
+
+addUnitPriority('year', 1);
+
+// PARSING
+
+addRegexToken('Y',      matchSigned);
+addRegexToken('YY',     match1to2, match2);
+addRegexToken('YYYY',   match1to4, match4);
+addRegexToken('YYYYY',  match1to6, match6);
+addRegexToken('YYYYYY', match1to6, match6);
+
+addParseToken(['YYYYY', 'YYYYYY'], YEAR);
+addParseToken('YYYY', function (input, array) {
+    array[YEAR] = input.length === 2 ? hooks.parseTwoDigitYear(input) : toInt(input);
+});
+addParseToken('YY', function (input, array) {
+    array[YEAR] = hooks.parseTwoDigitYear(input);
+});
+addParseToken('Y', function (input, array) {
+    array[YEAR] = parseInt(input, 10);
+});
+
+// HELPERS
+
+function daysInYear(year) {
+    return isLeapYear(year) ? 366 : 365;
+}
+
+function isLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+// HOOKS
+
+hooks.parseTwoDigitYear = function (input) {
+    return toInt(input) + (toInt(input) > 68 ? 1900 : 2000);
+};
+
+// MOMENTS
+
+var getSetYear = makeGetSet('FullYear', true);
+
+function getIsLeapYear () {
+    return isLeapYear(this.year());
+}
+
+function createDate (y, m, d, h, M, s, ms) {
+    // can't just apply() to create a date:
+    // https://stackoverflow.com/q/181348
+    var date = new Date(y, m, d, h, M, s, ms);
+
+    // the date constructor remaps years 0-99 to 1900-1999
+    if (y < 100 && y >= 0 && isFinite(date.getFullYear())) {
+        date.setFullYear(y);
+    }
+    return date;
+}
+
+function createUTCDate (y) {
+    var date = new Date(Date.UTC.apply(null, arguments));
+
+    // the Date.UTC function remaps years 0-99 to 1900-1999
+    if (y < 100 && y >= 0 && isFinite(date.getUTCFullYear())) {
+        date.setUTCFullYear(y);
+    }
+    return date;
+}
+
+// start-of-first-week - start-of-year
+function firstWeekOffset(year, dow, doy) {
+    var // first-week day -- which january is always in the first week (4 for iso, 1 for other)
+        fwd = 7 + dow - doy,
+        // first-week day local weekday -- which local weekday is fwd
+        fwdlw = (7 + createUTCDate(year, 0, fwd).getUTCDay() - dow) % 7;
+
+    return -fwdlw + fwd - 1;
+}
+
+// https://en.wikipedia.org/wiki/ISO_week_date#Calculating_a_date_given_the_year.2C_week_number_and_weekday
+function dayOfYearFromWeeks(year, week, weekday, dow, doy) {
+    var localWeekday = (7 + weekday - dow) % 7,
+        weekOffset = firstWeekOffset(year, dow, doy),
+        dayOfYear = 1 + 7 * (week - 1) + localWeekday + weekOffset,
+        resYear, resDayOfYear;
+
+    if (dayOfYear <= 0) {
+        resYear = year - 1;
+        resDayOfYear = daysInYear(resYear) + dayOfYear;
+    } else if (dayOfYear > daysInYear(year)) {
+        resYear = year + 1;
+        resDayOfYear = dayOfYear - daysInYear(year);
+    } else {
+        resYear = year;
+        resDayOfYear = dayOfYear;
+    }
+
+    return {
+        year: resYear,
+        dayOfYear: resDayOfYear
+    };
+}
+
+function weekOfYear(mom, dow, doy) {
+    var weekOffset = firstWeekOffset(mom.year(), dow, doy),
+        week = Math.floor((mom.dayOfYear() - weekOffset - 1) / 7) + 1,
+        resWeek, resYear;
+
+    if (week < 1) {
+        resYear = mom.year() - 1;
+        resWeek = week + weeksInYear(resYear, dow, doy);
+    } else if (week > weeksInYear(mom.year(), dow, doy)) {
+        resWeek = week - weeksInYear(mom.year(), dow, doy);
+        resYear = mom.year() + 1;
+    } else {
+        resYear = mom.year();
+        resWeek = week;
+    }
+
+    return {
+        week: resWeek,
+        year: resYear
+    };
+}
+
+function weeksInYear(year, dow, doy) {
+    var weekOffset = firstWeekOffset(year, dow, doy),
+        weekOffsetNext = firstWeekOffset(year + 1, dow, doy);
+    return (daysInYear(year) - weekOffset + weekOffsetNext) / 7;
+}
+
+// FORMATTING
+
+addFormatToken('w', ['ww', 2], 'wo', 'week');
+addFormatToken('W', ['WW', 2], 'Wo', 'isoWeek');
+
+// ALIASES
+
+addUnitAlias('week', 'w');
+addUnitAlias('isoWeek', 'W');
+
+// PRIORITIES
+
+addUnitPriority('week', 5);
+addUnitPriority('isoWeek', 5);
+
+// PARSING
+
+addRegexToken('w',  match1to2);
+addRegexToken('ww', match1to2, match2);
+addRegexToken('W',  match1to2);
+addRegexToken('WW', match1to2, match2);
+
+addWeekParseToken(['w', 'ww', 'W', 'WW'], function (input, week, config, token) {
+    week[token.substr(0, 1)] = toInt(input);
+});
+
+// HELPERS
+
+// LOCALES
+
+function localeWeek (mom) {
+    return weekOfYear(mom, this._week.dow, this._week.doy).week;
+}
+
+var defaultLocaleWeek = {
+    dow : 0, // Sunday is the first day of the week.
+    doy : 6  // The week that contains Jan 1st is the first week of the year.
+};
+
+function localeFirstDayOfWeek () {
+    return this._week.dow;
+}
+
+function localeFirstDayOfYear () {
+    return this._week.doy;
+}
+
+// MOMENTS
+
+function getSetWeek (input) {
+    var week = this.localeData().week(this);
+    return input == null ? week : this.add((input - week) * 7, 'd');
+}
+
+function getSetISOWeek (input) {
+    var week = weekOfYear(this, 1, 4).week;
+    return input == null ? week : this.add((input - week) * 7, 'd');
+}
+
+// FORMATTING
+
+addFormatToken('d', 0, 'do', 'day');
+
+addFormatToken('dd', 0, 0, function (format) {
+    return this.localeData().weekdaysMin(this, format);
+});
+
+addFormatToken('ddd', 0, 0, function (format) {
+    return this.localeData().weekdaysShort(this, format);
+});
+
+addFormatToken('dddd', 0, 0, function (format) {
+    return this.localeData().weekdays(this, format);
+});
+
+addFormatToken('e', 0, 0, 'weekday');
+addFormatToken('E', 0, 0, 'isoWeekday');
+
+// ALIASES
+
+addUnitAlias('day', 'd');
+addUnitAlias('weekday', 'e');
+addUnitAlias('isoWeekday', 'E');
+
+// PRIORITY
+addUnitPriority('day', 11);
+addUnitPriority('weekday', 11);
+addUnitPriority('isoWeekday', 11);
+
+// PARSING
+
+addRegexToken('d',    match1to2);
+addRegexToken('e',    match1to2);
+addRegexToken('E',    match1to2);
+addRegexToken('dd',   function (isStrict, locale) {
+    return locale.weekdaysMinRegex(isStrict);
+});
+addRegexToken('ddd',   function (isStrict, locale) {
+    return locale.weekdaysShortRegex(isStrict);
+});
+addRegexToken('dddd',   function (isStrict, locale) {
+    return locale.weekdaysRegex(isStrict);
+});
+
+addWeekParseToken(['dd', 'ddd', 'dddd'], function (input, week, config, token) {
+    var weekday = config._locale.weekdaysParse(input, token, config._strict);
+    // if we didn't get a weekday name, mark the date as invalid
+    if (weekday != null) {
+        week.d = weekday;
+    } else {
+        getParsingFlags(config).invalidWeekday = input;
+    }
+});
+
+addWeekParseToken(['d', 'e', 'E'], function (input, week, config, token) {
+    week[token] = toInt(input);
+});
+
+// HELPERS
+
+function parseWeekday(input, locale) {
+    if (typeof input !== 'string') {
+        return input;
+    }
+
+    if (!isNaN(input)) {
+        return parseInt(input, 10);
+    }
+
+    input = locale.weekdaysParse(input);
+    if (typeof input === 'number') {
+        return input;
+    }
+
+    return null;
+}
+
+function parseIsoWeekday(input, locale) {
+    if (typeof input === 'string') {
+        return locale.weekdaysParse(input) % 7 || 7;
+    }
+    return isNaN(input) ? null : input;
+}
+
+// LOCALES
+
+var defaultLocaleWeekdays = 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_');
+function localeWeekdays (m, format) {
+    if (!m) {
+        return isArray(this._weekdays) ? this._weekdays :
+            this._weekdays['standalone'];
+    }
+    return isArray(this._weekdays) ? this._weekdays[m.day()] :
+        this._weekdays[this._weekdays.isFormat.test(format) ? 'format' : 'standalone'][m.day()];
+}
+
+var defaultLocaleWeekdaysShort = 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_');
+function localeWeekdaysShort (m) {
+    return (m) ? this._weekdaysShort[m.day()] : this._weekdaysShort;
+}
+
+var defaultLocaleWeekdaysMin = 'Su_Mo_Tu_We_Th_Fr_Sa'.split('_');
+function localeWeekdaysMin (m) {
+    return (m) ? this._weekdaysMin[m.day()] : this._weekdaysMin;
+}
+
+function handleStrictParse$1(weekdayName, format, strict) {
+    var i, ii, mom, llc = weekdayName.toLocaleLowerCase();
+    if (!this._weekdaysParse) {
+        this._weekdaysParse = [];
+        this._shortWeekdaysParse = [];
+        this._minWeekdaysParse = [];
+
+        for (i = 0; i < 7; ++i) {
+            mom = createUTC([2000, 1]).day(i);
+            this._minWeekdaysParse[i] = this.weekdaysMin(mom, '').toLocaleLowerCase();
+            this._shortWeekdaysParse[i] = this.weekdaysShort(mom, '').toLocaleLowerCase();
+            this._weekdaysParse[i] = this.weekdays(mom, '').toLocaleLowerCase();
+        }
+    }
+
+    if (strict) {
+        if (format === 'dddd') {
+            ii = indexOf$1.call(this._weekdaysParse, llc);
+            return ii !== -1 ? ii : null;
+        } else if (format === 'ddd') {
+            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            return ii !== -1 ? ii : null;
+        } else {
+            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            return ii !== -1 ? ii : null;
+        }
+    } else {
+        if (format === 'dddd') {
+            ii = indexOf$1.call(this._weekdaysParse, llc);
+            if (ii !== -1) {
+                return ii;
+            }
+            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            if (ii !== -1) {
+                return ii;
+            }
+            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            return ii !== -1 ? ii : null;
+        } else if (format === 'ddd') {
+            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            if (ii !== -1) {
+                return ii;
+            }
+            ii = indexOf$1.call(this._weekdaysParse, llc);
+            if (ii !== -1) {
+                return ii;
+            }
+            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            return ii !== -1 ? ii : null;
+        } else {
+            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            if (ii !== -1) {
+                return ii;
+            }
+            ii = indexOf$1.call(this._weekdaysParse, llc);
+            if (ii !== -1) {
+                return ii;
+            }
+            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            return ii !== -1 ? ii : null;
+        }
+    }
+}
+
+function localeWeekdaysParse (weekdayName, format, strict) {
+    var i, mom, regex;
+
+    if (this._weekdaysParseExact) {
+        return handleStrictParse$1.call(this, weekdayName, format, strict);
+    }
+
+    if (!this._weekdaysParse) {
+        this._weekdaysParse = [];
+        this._minWeekdaysParse = [];
+        this._shortWeekdaysParse = [];
+        this._fullWeekdaysParse = [];
+    }
+
+    for (i = 0; i < 7; i++) {
+        // make the regex if we don't have it already
+
+        mom = createUTC([2000, 1]).day(i);
+        if (strict && !this._fullWeekdaysParse[i]) {
+            this._fullWeekdaysParse[i] = new RegExp('^' + this.weekdays(mom, '').replace('.', '\.?') + '$', 'i');
+            this._shortWeekdaysParse[i] = new RegExp('^' + this.weekdaysShort(mom, '').replace('.', '\.?') + '$', 'i');
+            this._minWeekdaysParse[i] = new RegExp('^' + this.weekdaysMin(mom, '').replace('.', '\.?') + '$', 'i');
+        }
+        if (!this._weekdaysParse[i]) {
+            regex = '^' + this.weekdays(mom, '') + '|^' + this.weekdaysShort(mom, '') + '|^' + this.weekdaysMin(mom, '');
+            this._weekdaysParse[i] = new RegExp(regex.replace('.', ''), 'i');
+        }
+        // test the regex
+        if (strict && format === 'dddd' && this._fullWeekdaysParse[i].test(weekdayName)) {
+            return i;
+        } else if (strict && format === 'ddd' && this._shortWeekdaysParse[i].test(weekdayName)) {
+            return i;
+        } else if (strict && format === 'dd' && this._minWeekdaysParse[i].test(weekdayName)) {
+            return i;
+        } else if (!strict && this._weekdaysParse[i].test(weekdayName)) {
+            return i;
+        }
+    }
+}
+
+// MOMENTS
+
+function getSetDayOfWeek (input) {
+    if (!this.isValid()) {
+        return input != null ? this : NaN;
+    }
+    var day = this._isUTC ? this._d.getUTCDay() : this._d.getDay();
+    if (input != null) {
+        input = parseWeekday(input, this.localeData());
+        return this.add(input - day, 'd');
+    } else {
+        return day;
+    }
+}
+
+function getSetLocaleDayOfWeek (input) {
+    if (!this.isValid()) {
+        return input != null ? this : NaN;
+    }
+    var weekday = (this.day() + 7 - this.localeData()._week.dow) % 7;
+    return input == null ? weekday : this.add(input - weekday, 'd');
+}
+
+function getSetISODayOfWeek (input) {
+    if (!this.isValid()) {
+        return input != null ? this : NaN;
+    }
+
+    // behaves the same as moment#day except
+    // as a getter, returns 7 instead of 0 (1-7 range instead of 0-6)
+    // as a setter, sunday should belong to the previous week.
+
+    if (input != null) {
+        var weekday = parseIsoWeekday(input, this.localeData());
+        return this.day(this.day() % 7 ? weekday : weekday - 7);
+    } else {
+        return this.day() || 7;
+    }
+}
+
+var defaultWeekdaysRegex = matchWord;
+function weekdaysRegex (isStrict) {
+    if (this._weekdaysParseExact) {
+        if (!hasOwnProp(this, '_weekdaysRegex')) {
+            computeWeekdaysParse.call(this);
+        }
+        if (isStrict) {
+            return this._weekdaysStrictRegex;
+        } else {
+            return this._weekdaysRegex;
+        }
+    } else {
+        if (!hasOwnProp(this, '_weekdaysRegex')) {
+            this._weekdaysRegex = defaultWeekdaysRegex;
+        }
+        return this._weekdaysStrictRegex && isStrict ?
+            this._weekdaysStrictRegex : this._weekdaysRegex;
+    }
+}
+
+var defaultWeekdaysShortRegex = matchWord;
+function weekdaysShortRegex (isStrict) {
+    if (this._weekdaysParseExact) {
+        if (!hasOwnProp(this, '_weekdaysRegex')) {
+            computeWeekdaysParse.call(this);
+        }
+        if (isStrict) {
+            return this._weekdaysShortStrictRegex;
+        } else {
+            return this._weekdaysShortRegex;
+        }
+    } else {
+        if (!hasOwnProp(this, '_weekdaysShortRegex')) {
+            this._weekdaysShortRegex = defaultWeekdaysShortRegex;
+        }
+        return this._weekdaysShortStrictRegex && isStrict ?
+            this._weekdaysShortStrictRegex : this._weekdaysShortRegex;
+    }
+}
+
+var defaultWeekdaysMinRegex = matchWord;
+function weekdaysMinRegex (isStrict) {
+    if (this._weekdaysParseExact) {
+        if (!hasOwnProp(this, '_weekdaysRegex')) {
+            computeWeekdaysParse.call(this);
+        }
+        if (isStrict) {
+            return this._weekdaysMinStrictRegex;
+        } else {
+            return this._weekdaysMinRegex;
+        }
+    } else {
+        if (!hasOwnProp(this, '_weekdaysMinRegex')) {
+            this._weekdaysMinRegex = defaultWeekdaysMinRegex;
+        }
+        return this._weekdaysMinStrictRegex && isStrict ?
+            this._weekdaysMinStrictRegex : this._weekdaysMinRegex;
+    }
+}
+
+
+function computeWeekdaysParse () {
+    function cmpLenRev(a, b) {
+        return b.length - a.length;
+    }
+
+    var minPieces = [], shortPieces = [], longPieces = [], mixedPieces = [],
+        i, mom, minp, shortp, longp;
+    for (i = 0; i < 7; i++) {
+        // make the regex if we don't have it already
+        mom = createUTC([2000, 1]).day(i);
+        minp = this.weekdaysMin(mom, '');
+        shortp = this.weekdaysShort(mom, '');
+        longp = this.weekdays(mom, '');
+        minPieces.push(minp);
+        shortPieces.push(shortp);
+        longPieces.push(longp);
+        mixedPieces.push(minp);
+        mixedPieces.push(shortp);
+        mixedPieces.push(longp);
+    }
+    // Sorting makes sure if one weekday (or abbr) is a prefix of another it
+    // will match the longer piece.
+    minPieces.sort(cmpLenRev);
+    shortPieces.sort(cmpLenRev);
+    longPieces.sort(cmpLenRev);
+    mixedPieces.sort(cmpLenRev);
+    for (i = 0; i < 7; i++) {
+        shortPieces[i] = regexEscape(shortPieces[i]);
+        longPieces[i] = regexEscape(longPieces[i]);
+        mixedPieces[i] = regexEscape(mixedPieces[i]);
+    }
+
+    this._weekdaysRegex = new RegExp('^(' + mixedPieces.join('|') + ')', 'i');
+    this._weekdaysShortRegex = this._weekdaysRegex;
+    this._weekdaysMinRegex = this._weekdaysRegex;
+
+    this._weekdaysStrictRegex = new RegExp('^(' + longPieces.join('|') + ')', 'i');
+    this._weekdaysShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')', 'i');
+    this._weekdaysMinStrictRegex = new RegExp('^(' + minPieces.join('|') + ')', 'i');
+}
+
+// FORMATTING
+
+function hFormat() {
+    return this.hours() % 12 || 12;
+}
+
+function kFormat() {
+    return this.hours() || 24;
+}
+
+addFormatToken('H', ['HH', 2], 0, 'hour');
+addFormatToken('h', ['hh', 2], 0, hFormat);
+addFormatToken('k', ['kk', 2], 0, kFormat);
+
+addFormatToken('hmm', 0, 0, function () {
+    return '' + hFormat.apply(this) + zeroFill(this.minutes(), 2);
+});
+
+addFormatToken('hmmss', 0, 0, function () {
+    return '' + hFormat.apply(this) + zeroFill(this.minutes(), 2) +
+        zeroFill(this.seconds(), 2);
+});
+
+addFormatToken('Hmm', 0, 0, function () {
+    return '' + this.hours() + zeroFill(this.minutes(), 2);
+});
+
+addFormatToken('Hmmss', 0, 0, function () {
+    return '' + this.hours() + zeroFill(this.minutes(), 2) +
+        zeroFill(this.seconds(), 2);
+});
+
+function meridiem (token, lowercase) {
+    addFormatToken(token, 0, 0, function () {
+        return this.localeData().meridiem(this.hours(), this.minutes(), lowercase);
+    });
+}
+
+meridiem('a', true);
+meridiem('A', false);
+
+// ALIASES
+
+addUnitAlias('hour', 'h');
+
+// PRIORITY
+addUnitPriority('hour', 13);
+
+// PARSING
+
+function matchMeridiem (isStrict, locale) {
+    return locale._meridiemParse;
+}
+
+addRegexToken('a',  matchMeridiem);
+addRegexToken('A',  matchMeridiem);
+addRegexToken('H',  match1to2);
+addRegexToken('h',  match1to2);
+addRegexToken('k',  match1to2);
+addRegexToken('HH', match1to2, match2);
+addRegexToken('hh', match1to2, match2);
+addRegexToken('kk', match1to2, match2);
+
+addRegexToken('hmm', match3to4);
+addRegexToken('hmmss', match5to6);
+addRegexToken('Hmm', match3to4);
+addRegexToken('Hmmss', match5to6);
+
+addParseToken(['H', 'HH'], HOUR);
+addParseToken(['k', 'kk'], function (input, array, config) {
+    var kInput = toInt(input);
+    array[HOUR] = kInput === 24 ? 0 : kInput;
+});
+addParseToken(['a', 'A'], function (input, array, config) {
+    config._isPm = config._locale.isPM(input);
+    config._meridiem = input;
+});
+addParseToken(['h', 'hh'], function (input, array, config) {
+    array[HOUR] = toInt(input);
+    getParsingFlags(config).bigHour = true;
+});
+addParseToken('hmm', function (input, array, config) {
+    var pos = input.length - 2;
+    array[HOUR] = toInt(input.substr(0, pos));
+    array[MINUTE] = toInt(input.substr(pos));
+    getParsingFlags(config).bigHour = true;
+});
+addParseToken('hmmss', function (input, array, config) {
+    var pos1 = input.length - 4;
+    var pos2 = input.length - 2;
+    array[HOUR] = toInt(input.substr(0, pos1));
+    array[MINUTE] = toInt(input.substr(pos1, 2));
+    array[SECOND] = toInt(input.substr(pos2));
+    getParsingFlags(config).bigHour = true;
+});
+addParseToken('Hmm', function (input, array, config) {
+    var pos = input.length - 2;
+    array[HOUR] = toInt(input.substr(0, pos));
+    array[MINUTE] = toInt(input.substr(pos));
+});
+addParseToken('Hmmss', function (input, array, config) {
+    var pos1 = input.length - 4;
+    var pos2 = input.length - 2;
+    array[HOUR] = toInt(input.substr(0, pos1));
+    array[MINUTE] = toInt(input.substr(pos1, 2));
+    array[SECOND] = toInt(input.substr(pos2));
+});
+
+// LOCALES
+
+function localeIsPM (input) {
+    // IE8 Quirks Mode & IE7 Standards Mode do not allow accessing strings like arrays
+    // Using charAt should be more compatible.
+    return ((input + '').toLowerCase().charAt(0) === 'p');
+}
+
+var defaultLocaleMeridiemParse = /[ap]\.?m?\.?/i;
+function localeMeridiem (hours, minutes, isLower) {
+    if (hours > 11) {
+        return isLower ? 'pm' : 'PM';
+    } else {
+        return isLower ? 'am' : 'AM';
+    }
+}
+
+
+// MOMENTS
+
+// Setting the hour should keep the time, because the user explicitly
+// specified which hour he wants. So trying to maintain the same hour (in
+// a new timezone) makes sense. Adding/subtracting hours does not follow
+// this rule.
+var getSetHour = makeGetSet('Hours', true);
+
+// months
+// week
+// weekdays
+// meridiem
+var baseConfig = {
+    calendar: defaultCalendar,
+    longDateFormat: defaultLongDateFormat,
+    invalidDate: defaultInvalidDate,
+    ordinal: defaultOrdinal,
+    dayOfMonthOrdinalParse: defaultDayOfMonthOrdinalParse,
+    relativeTime: defaultRelativeTime,
+
+    months: defaultLocaleMonths,
+    monthsShort: defaultLocaleMonthsShort,
+
+    week: defaultLocaleWeek,
+
+    weekdays: defaultLocaleWeekdays,
+    weekdaysMin: defaultLocaleWeekdaysMin,
+    weekdaysShort: defaultLocaleWeekdaysShort,
+
+    meridiemParse: defaultLocaleMeridiemParse
+};
+
+// internal storage for locale config files
+var locales = {};
+var localeFamilies = {};
+var globalLocale;
+
+function normalizeLocale(key) {
+    return key ? key.toLowerCase().replace('_', '-') : key;
+}
+
+// pick the locale from the array
+// try ['en-au', 'en-gb'] as 'en-au', 'en-gb', 'en', as in move through the list trying each
+// substring from most specific to least, but move to the next array item if it's a more specific variant than the current root
+function chooseLocale(names) {
+    var i = 0, j, next, locale, split;
+
+    while (i < names.length) {
+        split = normalizeLocale(names[i]).split('-');
+        j = split.length;
+        next = normalizeLocale(names[i + 1]);
+        next = next ? next.split('-') : null;
+        while (j > 0) {
+            locale = loadLocale(split.slice(0, j).join('-'));
+            if (locale) {
+                return locale;
+            }
+            if (next && next.length >= j && compareArrays(split, next, true) >= j - 1) {
+                //the next array item is better than a shallower substring of this one
+                break;
+            }
+            j--;
+        }
+        i++;
+    }
+    return null;
+}
+
+function loadLocale(name) {
+    var oldLocale = null;
+    // TODO: Find a better way to register and load all the locales in Node
+    if (!locales[name] && (typeof module !== 'undefined') &&
+            module && module.exports) {
+        try {
+            oldLocale = globalLocale._abbr;
+            require('./locale/' + name);
+            // because defineLocale currently also sets the global locale, we
+            // want to undo that for lazy loaded locales
+            getSetGlobalLocale(oldLocale);
+        } catch (e) { }
+    }
+    return locales[name];
+}
+
+// This function will load locale and then set the global locale.  If
+// no arguments are passed in, it will simply return the current global
+// locale key.
+function getSetGlobalLocale (key, values) {
+    var data;
+    if (key) {
+        if (isUndefined(values)) {
+            data = getLocale(key);
+        }
+        else {
+            data = defineLocale(key, values);
+        }
+
+        if (data) {
+            // moment.duration._locale = moment._locale = data;
+            globalLocale = data;
+        }
+    }
+
+    return globalLocale._abbr;
+}
+
+function defineLocale (name, config) {
+    if (config !== null) {
+        var parentConfig = baseConfig;
+        config.abbr = name;
+        if (locales[name] != null) {
+            deprecateSimple('defineLocaleOverride',
+                    'use moment.updateLocale(localeName, config) to change ' +
+                    'an existing locale. moment.defineLocale(localeName, ' +
+                    'config) should only be used for creating a new locale ' +
+                    'See http://momentjs.com/guides/#/warnings/define-locale/ for more info.');
+            parentConfig = locales[name]._config;
+        } else if (config.parentLocale != null) {
+            if (locales[config.parentLocale] != null) {
+                parentConfig = locales[config.parentLocale]._config;
+            } else {
+                if (!localeFamilies[config.parentLocale]) {
+                    localeFamilies[config.parentLocale] = [];
+                }
+                localeFamilies[config.parentLocale].push({
+                    name: name,
+                    config: config
+                });
+                return null;
+            }
+        }
+        locales[name] = new Locale(mergeConfigs(parentConfig, config));
+
+        if (localeFamilies[name]) {
+            localeFamilies[name].forEach(function (x) {
+                defineLocale(x.name, x.config);
+            });
+        }
+
+        // backwards compat for now: also set the locale
+        // make sure we set the locale AFTER all child locales have been
+        // created, so we won't end up with the child locale set.
+        getSetGlobalLocale(name);
+
+
+        return locales[name];
+    } else {
+        // useful for testing
+        delete locales[name];
+        return null;
+    }
+}
+
+function updateLocale(name, config) {
+    if (config != null) {
+        var locale, parentConfig = baseConfig;
+        // MERGE
+        if (locales[name] != null) {
+            parentConfig = locales[name]._config;
+        }
+        config = mergeConfigs(parentConfig, config);
+        locale = new Locale(config);
+        locale.parentLocale = locales[name];
+        locales[name] = locale;
+
+        // backwards compat for now: also set the locale
+        getSetGlobalLocale(name);
+    } else {
+        // pass null for config to unupdate, useful for tests
+        if (locales[name] != null) {
+            if (locales[name].parentLocale != null) {
+                locales[name] = locales[name].parentLocale;
+            } else if (locales[name] != null) {
+                delete locales[name];
+            }
+        }
+    }
+    return locales[name];
+}
+
+// returns locale data
+function getLocale (key) {
+    var locale;
+
+    if (key && key._locale && key._locale._abbr) {
+        key = key._locale._abbr;
+    }
+
+    if (!key) {
+        return globalLocale;
+    }
+
+    if (!isArray(key)) {
+        //short-circuit everything else
+        locale = loadLocale(key);
+        if (locale) {
+            return locale;
+        }
+        key = [key];
+    }
+
+    return chooseLocale(key);
+}
+
+function listLocales() {
+    return keys$1(locales);
+}
+
+function checkOverflow (m) {
+    var overflow;
+    var a = m._a;
+
+    if (a && getParsingFlags(m).overflow === -2) {
+        overflow =
+            a[MONTH]       < 0 || a[MONTH]       > 11  ? MONTH :
+            a[DATE]        < 1 || a[DATE]        > daysInMonth(a[YEAR], a[MONTH]) ? DATE :
+            a[HOUR]        < 0 || a[HOUR]        > 24 || (a[HOUR] === 24 && (a[MINUTE] !== 0 || a[SECOND] !== 0 || a[MILLISECOND] !== 0)) ? HOUR :
+            a[MINUTE]      < 0 || a[MINUTE]      > 59  ? MINUTE :
+            a[SECOND]      < 0 || a[SECOND]      > 59  ? SECOND :
+            a[MILLISECOND] < 0 || a[MILLISECOND] > 999 ? MILLISECOND :
+            -1;
+
+        if (getParsingFlags(m)._overflowDayOfYear && (overflow < YEAR || overflow > DATE)) {
+            overflow = DATE;
+        }
+        if (getParsingFlags(m)._overflowWeeks && overflow === -1) {
+            overflow = WEEK;
+        }
+        if (getParsingFlags(m)._overflowWeekday && overflow === -1) {
+            overflow = WEEKDAY;
+        }
+
+        getParsingFlags(m).overflow = overflow;
+    }
+
+    return m;
+}
+
+// iso 8601 regex
+// 0000-00-00 0000-W00 or 0000-W00-0 + T + 00 or 00:00 or 00:00:00 or 00:00:00.000 + +00:00 or +0000 or +00)
+var extendedIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})-(?:\d\d-\d\d|W\d\d-\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?::\d\d(?::\d\d(?:[.,]\d+)?)?)?)([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?$/;
+var basicIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})(?:\d\d\d\d|W\d\d\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?:\d\d(?:\d\d(?:[.,]\d+)?)?)?)([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?$/;
+
+var tzRegex = /Z|[+-]\d\d(?::?\d\d)?/;
+
+var isoDates = [
+    ['YYYYYY-MM-DD', /[+-]\d{6}-\d\d-\d\d/],
+    ['YYYY-MM-DD', /\d{4}-\d\d-\d\d/],
+    ['GGGG-[W]WW-E', /\d{4}-W\d\d-\d/],
+    ['GGGG-[W]WW', /\d{4}-W\d\d/, false],
+    ['YYYY-DDD', /\d{4}-\d{3}/],
+    ['YYYY-MM', /\d{4}-\d\d/, false],
+    ['YYYYYYMMDD', /[+-]\d{10}/],
+    ['YYYYMMDD', /\d{8}/],
+    // YYYYMM is NOT allowed by the standard
+    ['GGGG[W]WWE', /\d{4}W\d{3}/],
+    ['GGGG[W]WW', /\d{4}W\d{2}/, false],
+    ['YYYYDDD', /\d{7}/]
+];
+
+// iso time formats and regexes
+var isoTimes = [
+    ['HH:mm:ss.SSSS', /\d\d:\d\d:\d\d\.\d+/],
+    ['HH:mm:ss,SSSS', /\d\d:\d\d:\d\d,\d+/],
+    ['HH:mm:ss', /\d\d:\d\d:\d\d/],
+    ['HH:mm', /\d\d:\d\d/],
+    ['HHmmss.SSSS', /\d\d\d\d\d\d\.\d+/],
+    ['HHmmss,SSSS', /\d\d\d\d\d\d,\d+/],
+    ['HHmmss', /\d\d\d\d\d\d/],
+    ['HHmm', /\d\d\d\d/],
+    ['HH', /\d\d/]
+];
+
+var aspNetJsonRegex = /^\/?Date\((\-?\d+)/i;
+
+// date from iso format
+function configFromISO(config) {
+    var i, l,
+        string = config._i,
+        match = extendedIsoRegex.exec(string) || basicIsoRegex.exec(string),
+        allowTime, dateFormat, timeFormat, tzFormat;
+
+    if (match) {
+        getParsingFlags(config).iso = true;
+
+        for (i = 0, l = isoDates.length; i < l; i++) {
+            if (isoDates[i][1].exec(match[1])) {
+                dateFormat = isoDates[i][0];
+                allowTime = isoDates[i][2] !== false;
+                break;
+            }
+        }
+        if (dateFormat == null) {
+            config._isValid = false;
+            return;
+        }
+        if (match[3]) {
+            for (i = 0, l = isoTimes.length; i < l; i++) {
+                if (isoTimes[i][1].exec(match[3])) {
+                    // match[2] should be 'T' or space
+                    timeFormat = (match[2] || ' ') + isoTimes[i][0];
+                    break;
+                }
+            }
+            if (timeFormat == null) {
+                config._isValid = false;
+                return;
+            }
+        }
+        if (!allowTime && timeFormat != null) {
+            config._isValid = false;
+            return;
+        }
+        if (match[4]) {
+            if (tzRegex.exec(match[4])) {
+                tzFormat = 'Z';
+            } else {
+                config._isValid = false;
+                return;
+            }
+        }
+        config._f = dateFormat + (timeFormat || '') + (tzFormat || '');
+        configFromStringAndFormat(config);
+    } else {
+        config._isValid = false;
+    }
+}
+
+// RFC 2822 regex: For details see https://tools.ietf.org/html/rfc2822#section-3.3
+var basicRfcRegex = /^((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d?\d\s(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(?:\d\d)?\d\d\s)(\d\d:\d\d)(\:\d\d)?(\s(?:UT|GMT|[ECMP][SD]T|[A-IK-Za-ik-z]|[+-]\d{4}))$/;
+
+// date and time from ref 2822 format
+function configFromRFC2822(config) {
+    var string, match, dayFormat,
+        dateFormat, timeFormat, tzFormat;
+    var timezones = {
+        ' GMT': ' +0000',
+        ' EDT': ' -0400',
+        ' EST': ' -0500',
+        ' CDT': ' -0500',
+        ' CST': ' -0600',
+        ' MDT': ' -0600',
+        ' MST': ' -0700',
+        ' PDT': ' -0700',
+        ' PST': ' -0800'
+    };
+    var military = 'YXWVUTSRQPONZABCDEFGHIKLM';
+    var timezone, timezoneIndex;
+
+    string = config._i
+        .replace(/\([^\)]*\)|[\n\t]/g, ' ') // Remove comments and folding whitespace
+        .replace(/(\s\s+)/g, ' ') // Replace multiple-spaces with a single space
+        .replace(/^\s|\s$/g, ''); // Remove leading and trailing spaces
+    match = basicRfcRegex.exec(string);
+
+    if (match) {
+        dayFormat = match[1] ? 'ddd' + ((match[1].length === 5) ? ', ' : ' ') : '';
+        dateFormat = 'D MMM ' + ((match[2].length > 10) ? 'YYYY ' : 'YY ');
+        timeFormat = 'HH:mm' + (match[4] ? ':ss' : '');
+
+        // TODO: Replace the vanilla JS Date object with an indepentent day-of-week check.
+        if (match[1]) { // day of week given
+            var momentDate = new Date(match[2]);
+            var momentDay = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][momentDate.getDay()];
+
+            if (match[1].substr(0,3) !== momentDay) {
+                getParsingFlags(config).weekdayMismatch = true;
+                config._isValid = false;
+                return;
+            }
+        }
+
+        switch (match[5].length) {
+            case 2: // military
+                if (timezoneIndex === 0) {
+                    timezone = ' +0000';
+                } else {
+                    timezoneIndex = military.indexOf(match[5][1].toUpperCase()) - 12;
+                    timezone = ((timezoneIndex < 0) ? ' -' : ' +') +
+                        (('' + timezoneIndex).replace(/^-?/, '0')).match(/..$/)[0] + '00';
+                }
+                break;
+            case 4: // Zone
+                timezone = timezones[match[5]];
+                break;
+            default: // UT or +/-9999
+                timezone = timezones[' GMT'];
+        }
+        match[5] = timezone;
+        config._i = match.splice(1).join('');
+        tzFormat = ' ZZ';
+        config._f = dayFormat + dateFormat + timeFormat + tzFormat;
+        configFromStringAndFormat(config);
+        getParsingFlags(config).rfc2822 = true;
+    } else {
+        config._isValid = false;
+    }
+}
+
+// date from iso format or fallback
+function configFromString(config) {
+    var matched = aspNetJsonRegex.exec(config._i);
+
+    if (matched !== null) {
+        config._d = new Date(+matched[1]);
+        return;
+    }
+
+    configFromISO(config);
+    if (config._isValid === false) {
+        delete config._isValid;
+    } else {
+        return;
+    }
+
+    configFromRFC2822(config);
+    if (config._isValid === false) {
+        delete config._isValid;
+    } else {
+        return;
+    }
+
+    // Final attempt, use Input Fallback
+    hooks.createFromInputFallback(config);
+}
+
+hooks.createFromInputFallback = deprecate(
+    'value provided is not in a recognized RFC2822 or ISO format. moment construction falls back to js Date(), ' +
+    'which is not reliable across all browsers and versions. Non RFC2822/ISO date formats are ' +
+    'discouraged and will be removed in an upcoming major release. Please refer to ' +
+    'http://momentjs.com/guides/#/warnings/js-date/ for more info.',
+    function (config) {
+        config._d = new Date(config._i + (config._useUTC ? ' UTC' : ''));
+    }
+);
+
+// Pick the first defined of two or three arguments.
+function defaults(a, b, c) {
+    if (a != null) {
+        return a;
+    }
+    if (b != null) {
+        return b;
+    }
+    return c;
+}
+
+function currentDateArray(config) {
+    // hooks is actually the exported moment object
+    var nowValue = new Date(hooks.now());
+    if (config._useUTC) {
+        return [nowValue.getUTCFullYear(), nowValue.getUTCMonth(), nowValue.getUTCDate()];
+    }
+    return [nowValue.getFullYear(), nowValue.getMonth(), nowValue.getDate()];
+}
+
+// convert an array to a date.
+// the array should mirror the parameters below
+// note: all values past the year are optional and will default to the lowest possible value.
+// [year, month, day , hour, minute, second, millisecond]
+function configFromArray (config) {
+    var i, date, input = [], currentDate, yearToUse;
+
+    if (config._d) {
+        return;
+    }
+
+    currentDate = currentDateArray(config);
+
+    //compute day of the year from weeks and weekdays
+    if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
+        dayOfYearFromWeekInfo(config);
+    }
+
+    //if the day of the year is set, figure out what it is
+    if (config._dayOfYear != null) {
+        yearToUse = defaults(config._a[YEAR], currentDate[YEAR]);
+
+        if (config._dayOfYear > daysInYear(yearToUse) || config._dayOfYear === 0) {
+            getParsingFlags(config)._overflowDayOfYear = true;
+        }
+
+        date = createUTCDate(yearToUse, 0, config._dayOfYear);
+        config._a[MONTH] = date.getUTCMonth();
+        config._a[DATE] = date.getUTCDate();
+    }
+
+    // Default to current date.
+    // * if no year, month, day of month are given, default to today
+    // * if day of month is given, default month and year
+    // * if month is given, default only year
+    // * if year is given, don't default anything
+    for (i = 0; i < 3 && config._a[i] == null; ++i) {
+        config._a[i] = input[i] = currentDate[i];
+    }
+
+    // Zero out whatever was not defaulted, including time
+    for (; i < 7; i++) {
+        config._a[i] = input[i] = (config._a[i] == null) ? (i === 2 ? 1 : 0) : config._a[i];
+    }
+
+    // Check for 24:00:00.000
+    if (config._a[HOUR] === 24 &&
+            config._a[MINUTE] === 0 &&
+            config._a[SECOND] === 0 &&
+            config._a[MILLISECOND] === 0) {
+        config._nextDay = true;
+        config._a[HOUR] = 0;
+    }
+
+    config._d = (config._useUTC ? createUTCDate : createDate).apply(null, input);
+    // Apply timezone offset from input. The actual utcOffset can be changed
+    // with parseZone.
+    if (config._tzm != null) {
+        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
+    }
+
+    if (config._nextDay) {
+        config._a[HOUR] = 24;
+    }
+}
+
+function dayOfYearFromWeekInfo(config) {
+    var w, weekYear, week, weekday, dow, doy, temp, weekdayOverflow;
+
+    w = config._w;
+    if (w.GG != null || w.W != null || w.E != null) {
+        dow = 1;
+        doy = 4;
+
+        // TODO: We need to take the current isoWeekYear, but that depends on
+        // how we interpret now (local, utc, fixed offset). So create
+        // a now version of current config (take local/utc/offset flags, and
+        // create now).
+        weekYear = defaults(w.GG, config._a[YEAR], weekOfYear(createLocal(), 1, 4).year);
+        week = defaults(w.W, 1);
+        weekday = defaults(w.E, 1);
+        if (weekday < 1 || weekday > 7) {
+            weekdayOverflow = true;
+        }
+    } else {
+        dow = config._locale._week.dow;
+        doy = config._locale._week.doy;
+
+        var curWeek = weekOfYear(createLocal(), dow, doy);
+
+        weekYear = defaults(w.gg, config._a[YEAR], curWeek.year);
+
+        // Default to current week.
+        week = defaults(w.w, curWeek.week);
+
+        if (w.d != null) {
+            // weekday -- low day numbers are considered next week
+            weekday = w.d;
+            if (weekday < 0 || weekday > 6) {
+                weekdayOverflow = true;
+            }
+        } else if (w.e != null) {
+            // local weekday -- counting starts from begining of week
+            weekday = w.e + dow;
+            if (w.e < 0 || w.e > 6) {
+                weekdayOverflow = true;
+            }
+        } else {
+            // default to begining of week
+            weekday = dow;
+        }
+    }
+    if (week < 1 || week > weeksInYear(weekYear, dow, doy)) {
+        getParsingFlags(config)._overflowWeeks = true;
+    } else if (weekdayOverflow != null) {
+        getParsingFlags(config)._overflowWeekday = true;
+    } else {
+        temp = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy);
+        config._a[YEAR] = temp.year;
+        config._dayOfYear = temp.dayOfYear;
+    }
+}
+
+// constant that refers to the ISO standard
+hooks.ISO_8601 = function () {};
+
+// constant that refers to the RFC 2822 form
+hooks.RFC_2822 = function () {};
+
+// date from string and format string
+function configFromStringAndFormat(config) {
+    // TODO: Move this to another part of the creation flow to prevent circular deps
+    if (config._f === hooks.ISO_8601) {
+        configFromISO(config);
+        return;
+    }
+    if (config._f === hooks.RFC_2822) {
+        configFromRFC2822(config);
+        return;
+    }
+    config._a = [];
+    getParsingFlags(config).empty = true;
+
+    // This array is used to make a Date, either with `new Date` or `Date.UTC`
+    var string = '' + config._i,
+        i, parsedInput, tokens, token, skipped,
+        stringLength = string.length,
+        totalParsedInputLength = 0;
+
+    tokens = expandFormat(config._f, config._locale).match(formattingTokens) || [];
+
+    for (i = 0; i < tokens.length; i++) {
+        token = tokens[i];
+        parsedInput = (string.match(getParseRegexForToken(token, config)) || [])[0];
+        // console.log('token', token, 'parsedInput', parsedInput,
+        //         'regex', getParseRegexForToken(token, config));
+        if (parsedInput) {
+            skipped = string.substr(0, string.indexOf(parsedInput));
+            if (skipped.length > 0) {
+                getParsingFlags(config).unusedInput.push(skipped);
+            }
+            string = string.slice(string.indexOf(parsedInput) + parsedInput.length);
+            totalParsedInputLength += parsedInput.length;
+        }
+        // don't parse if it's not a known token
+        if (formatTokenFunctions[token]) {
+            if (parsedInput) {
+                getParsingFlags(config).empty = false;
+            }
+            else {
+                getParsingFlags(config).unusedTokens.push(token);
+            }
+            addTimeToArrayFromToken(token, parsedInput, config);
+        }
+        else if (config._strict && !parsedInput) {
+            getParsingFlags(config).unusedTokens.push(token);
+        }
+    }
+
+    // add remaining unparsed input length to the string
+    getParsingFlags(config).charsLeftOver = stringLength - totalParsedInputLength;
+    if (string.length > 0) {
+        getParsingFlags(config).unusedInput.push(string);
+    }
+
+    // clear _12h flag if hour is <= 12
+    if (config._a[HOUR] <= 12 &&
+        getParsingFlags(config).bigHour === true &&
+        config._a[HOUR] > 0) {
+        getParsingFlags(config).bigHour = undefined;
+    }
+
+    getParsingFlags(config).parsedDateParts = config._a.slice(0);
+    getParsingFlags(config).meridiem = config._meridiem;
+    // handle meridiem
+    config._a[HOUR] = meridiemFixWrap(config._locale, config._a[HOUR], config._meridiem);
+
+    configFromArray(config);
+    checkOverflow(config);
+}
+
+
+function meridiemFixWrap (locale, hour, meridiem) {
+    var isPm;
+
+    if (meridiem == null) {
+        // nothing to do
+        return hour;
+    }
+    if (locale.meridiemHour != null) {
+        return locale.meridiemHour(hour, meridiem);
+    } else if (locale.isPM != null) {
+        // Fallback
+        isPm = locale.isPM(meridiem);
+        if (isPm && hour < 12) {
+            hour += 12;
+        }
+        if (!isPm && hour === 12) {
+            hour = 0;
+        }
+        return hour;
+    } else {
+        // this is not supposed to happen
+        return hour;
+    }
+}
+
+// date from string and array of format strings
+function configFromStringAndArray(config) {
+    var tempConfig,
+        bestMoment,
+
+        scoreToBeat,
+        i,
+        currentScore;
+
+    if (config._f.length === 0) {
+        getParsingFlags(config).invalidFormat = true;
+        config._d = new Date(NaN);
+        return;
+    }
+
+    for (i = 0; i < config._f.length; i++) {
+        currentScore = 0;
+        tempConfig = copyConfig({}, config);
+        if (config._useUTC != null) {
+            tempConfig._useUTC = config._useUTC;
+        }
+        tempConfig._f = config._f[i];
+        configFromStringAndFormat(tempConfig);
+
+        if (!isValid(tempConfig)) {
+            continue;
+        }
+
+        // if there is any input that was not parsed add a penalty for that format
+        currentScore += getParsingFlags(tempConfig).charsLeftOver;
+
+        //or tokens
+        currentScore += getParsingFlags(tempConfig).unusedTokens.length * 10;
+
+        getParsingFlags(tempConfig).score = currentScore;
+
+        if (scoreToBeat == null || currentScore < scoreToBeat) {
+            scoreToBeat = currentScore;
+            bestMoment = tempConfig;
+        }
+    }
+
+    extend(config, bestMoment || tempConfig);
+}
+
+function configFromObject(config) {
+    if (config._d) {
+        return;
+    }
+
+    var i = normalizeObjectUnits(config._i);
+    config._a = map([i.year, i.month, i.day || i.date, i.hour, i.minute, i.second, i.millisecond], function (obj) {
+        return obj && parseInt(obj, 10);
+    });
+
+    configFromArray(config);
+}
+
+function createFromConfig (config) {
+    var res = new Moment(checkOverflow(prepareConfig(config)));
+    if (res._nextDay) {
+        // Adding is smart enough around DST
+        res.add(1, 'd');
+        res._nextDay = undefined;
+    }
+
+    return res;
+}
+
+function prepareConfig (config) {
+    var input = config._i,
+        format = config._f;
+
+    config._locale = config._locale || getLocale(config._l);
+
+    if (input === null || (format === undefined && input === '')) {
+        return createInvalid({nullInput: true});
+    }
+
+    if (typeof input === 'string') {
+        config._i = input = config._locale.preparse(input);
+    }
+
+    if (isMoment(input)) {
+        return new Moment(checkOverflow(input));
+    } else if (isDate(input)) {
+        config._d = input;
+    } else if (isArray(format)) {
+        configFromStringAndArray(config);
+    } else if (format) {
+        configFromStringAndFormat(config);
+    }  else {
+        configFromInput(config);
+    }
+
+    if (!isValid(config)) {
+        config._d = null;
+    }
+
+    return config;
+}
+
+function configFromInput(config) {
+    var input = config._i;
+    if (isUndefined(input)) {
+        config._d = new Date(hooks.now());
+    } else if (isDate(input)) {
+        config._d = new Date(input.valueOf());
+    } else if (typeof input === 'string') {
+        configFromString(config);
+    } else if (isArray(input)) {
+        config._a = map(input.slice(0), function (obj) {
+            return parseInt(obj, 10);
+        });
+        configFromArray(config);
+    } else if (isObject(input)) {
+        configFromObject(config);
+    } else if (isNumber(input)) {
+        // from milliseconds
+        config._d = new Date(input);
+    } else {
+        hooks.createFromInputFallback(config);
+    }
+}
+
+function createLocalOrUTC (input, format, locale, strict, isUTC) {
+    var c = {};
+
+    if (locale === true || locale === false) {
+        strict = locale;
+        locale = undefined;
+    }
+
+    if ((isObject(input) && isObjectEmpty(input)) ||
+            (isArray(input) && input.length === 0)) {
+        input = undefined;
+    }
+    // object construction must be done this way.
+    // https://github.com/moment/moment/issues/1423
+    c._isAMomentObject = true;
+    c._useUTC = c._isUTC = isUTC;
+    c._l = locale;
+    c._i = input;
+    c._f = format;
+    c._strict = strict;
+
+    return createFromConfig(c);
+}
+
+function createLocal (input, format, locale, strict) {
+    return createLocalOrUTC(input, format, locale, strict, false);
+}
+
+var prototypeMin = deprecate(
+    'moment().min is deprecated, use moment.max instead. http://momentjs.com/guides/#/warnings/min-max/',
+    function () {
+        var other = createLocal.apply(null, arguments);
+        if (this.isValid() && other.isValid()) {
+            return other < this ? this : other;
+        } else {
+            return createInvalid();
+        }
+    }
+);
+
+var prototypeMax = deprecate(
+    'moment().max is deprecated, use moment.min instead. http://momentjs.com/guides/#/warnings/min-max/',
+    function () {
+        var other = createLocal.apply(null, arguments);
+        if (this.isValid() && other.isValid()) {
+            return other > this ? this : other;
+        } else {
+            return createInvalid();
+        }
+    }
+);
+
+// Pick a moment m from moments so that m[fn](other) is true for all
+// other. This relies on the function fn to be transitive.
+//
+// moments should either be an array of moment objects or an array, whose
+// first element is an array of moment objects.
+function pickBy(fn, moments) {
+    var res, i;
+    if (moments.length === 1 && isArray(moments[0])) {
+        moments = moments[0];
+    }
+    if (!moments.length) {
+        return createLocal();
+    }
+    res = moments[0];
+    for (i = 1; i < moments.length; ++i) {
+        if (!moments[i].isValid() || moments[i][fn](res)) {
+            res = moments[i];
+        }
+    }
+    return res;
+}
+
+// TODO: Use [].sort instead?
+function min () {
+    var args = [].slice.call(arguments, 0);
+
+    return pickBy('isBefore', args);
+}
+
+function max () {
+    var args = [].slice.call(arguments, 0);
+
+    return pickBy('isAfter', args);
+}
+
+var now = function () {
+    return Date.now ? Date.now() : +(new Date());
+};
+
+var ordering = ['year', 'quarter', 'month', 'week', 'day', 'hour', 'minute', 'second', 'millisecond'];
+
+function isDurationValid(m) {
+    for (var key in m) {
+        if (!(ordering.indexOf(key) !== -1 && (m[key] == null || !isNaN(m[key])))) {
+            return false;
+        }
+    }
+
+    var unitHasDecimal = false;
+    for (var i = 0; i < ordering.length; ++i) {
+        if (m[ordering[i]]) {
+            if (unitHasDecimal) {
+                return false; // only allow non-integers for smallest unit
+            }
+            if (parseFloat(m[ordering[i]]) !== toInt(m[ordering[i]])) {
+                unitHasDecimal = true;
+            }
+        }
+    }
+
+    return true;
+}
+
+function isValid$1() {
+    return this._isValid;
+}
+
+function createInvalid$1() {
+    return createDuration(NaN);
+}
+
+function Duration (duration) {
+    var normalizedInput = normalizeObjectUnits(duration),
+        years = normalizedInput.year || 0,
+        quarters = normalizedInput.quarter || 0,
+        months = normalizedInput.month || 0,
+        weeks = normalizedInput.week || 0,
+        days = normalizedInput.day || 0,
+        hours = normalizedInput.hour || 0,
+        minutes = normalizedInput.minute || 0,
+        seconds = normalizedInput.second || 0,
+        milliseconds = normalizedInput.millisecond || 0;
+
+    this._isValid = isDurationValid(normalizedInput);
+
+    // representation for dateAddRemove
+    this._milliseconds = +milliseconds +
+        seconds * 1e3 + // 1000
+        minutes * 6e4 + // 1000 * 60
+        hours * 1000 * 60 * 60; //using 1000 * 60 * 60 instead of 36e5 to avoid floating point rounding errors https://github.com/moment/moment/issues/2978
+    // Because of dateAddRemove treats 24 hours as different from a
+    // day when working around DST, we need to store them separately
+    this._days = +days +
+        weeks * 7;
+    // It is impossible translate months into days without knowing
+    // which months you are are talking about, so we have to store
+    // it separately.
+    this._months = +months +
+        quarters * 3 +
+        years * 12;
+
+    this._data = {};
+
+    this._locale = getLocale();
+
+    this._bubble();
+}
+
+function isDuration (obj) {
+    return obj instanceof Duration;
+}
+
+function absRound (number) {
+    if (number < 0) {
+        return Math.round(-1 * number) * -1;
+    } else {
+        return Math.round(number);
+    }
+}
+
+// FORMATTING
+
+function offset (token, separator) {
+    addFormatToken(token, 0, 0, function () {
+        var offset = this.utcOffset();
+        var sign = '+';
+        if (offset < 0) {
+            offset = -offset;
+            sign = '-';
+        }
+        return sign + zeroFill(~~(offset / 60), 2) + separator + zeroFill(~~(offset) % 60, 2);
+    });
+}
+
+offset('Z', ':');
+offset('ZZ', '');
+
+// PARSING
+
+addRegexToken('Z',  matchShortOffset);
+addRegexToken('ZZ', matchShortOffset);
+addParseToken(['Z', 'ZZ'], function (input, array, config) {
+    config._useUTC = true;
+    config._tzm = offsetFromString(matchShortOffset, input);
+});
+
+// HELPERS
+
+// timezone chunker
+// '+10:00' > ['10',  '00']
+// '-1530'  > ['-15', '30']
+var chunkOffset = /([\+\-]|\d\d)/gi;
+
+function offsetFromString(matcher, string) {
+    var matches = (string || '').match(matcher);
+
+    if (matches === null) {
+        return null;
+    }
+
+    var chunk   = matches[matches.length - 1] || [];
+    var parts   = (chunk + '').match(chunkOffset) || ['-', 0, 0];
+    var minutes = +(parts[1] * 60) + toInt(parts[2]);
+
+    return minutes === 0 ?
+      0 :
+      parts[0] === '+' ? minutes : -minutes;
+}
+
+// Return a moment from input, that is local/utc/zone equivalent to model.
+function cloneWithOffset(input, model) {
+    var res, diff;
+    if (model._isUTC) {
+        res = model.clone();
+        diff = (isMoment(input) || isDate(input) ? input.valueOf() : createLocal(input).valueOf()) - res.valueOf();
+        // Use low-level api, because this fn is low-level api.
+        res._d.setTime(res._d.valueOf() + diff);
+        hooks.updateOffset(res, false);
+        return res;
+    } else {
+        return createLocal(input).local();
+    }
+}
+
+function getDateOffset (m) {
+    // On Firefox.24 Date#getTimezoneOffset returns a floating point.
+    // https://github.com/moment/moment/pull/1871
+    return -Math.round(m._d.getTimezoneOffset() / 15) * 15;
+}
+
+// HOOKS
+
+// This function will be called whenever a moment is mutated.
+// It is intended to keep the offset in sync with the timezone.
+hooks.updateOffset = function () {};
+
+// MOMENTS
+
+// keepLocalTime = true means only change the timezone, without
+// affecting the local hour. So 5:31:26 +0300 --[utcOffset(2, true)]-->
+// 5:31:26 +0200 It is possible that 5:31:26 doesn't exist with offset
+// +0200, so we adjust the time as needed, to be valid.
+//
+// Keeping the time actually adds/subtracts (one hour)
+// from the actual represented time. That is why we call updateOffset
+// a second time. In case it wants us to change the offset again
+// _changeInProgress == true case, then we have to adjust, because
+// there is no such time in the given timezone.
+function getSetOffset (input, keepLocalTime, keepMinutes) {
+    var offset = this._offset || 0,
+        localAdjust;
+    if (!this.isValid()) {
+        return input != null ? this : NaN;
+    }
+    if (input != null) {
+        if (typeof input === 'string') {
+            input = offsetFromString(matchShortOffset, input);
+            if (input === null) {
+                return this;
+            }
+        } else if (Math.abs(input) < 16 && !keepMinutes) {
+            input = input * 60;
+        }
+        if (!this._isUTC && keepLocalTime) {
+            localAdjust = getDateOffset(this);
+        }
+        this._offset = input;
+        this._isUTC = true;
+        if (localAdjust != null) {
+            this.add(localAdjust, 'm');
+        }
+        if (offset !== input) {
+            if (!keepLocalTime || this._changeInProgress) {
+                addSubtract(this, createDuration(input - offset, 'm'), 1, false);
+            } else if (!this._changeInProgress) {
+                this._changeInProgress = true;
+                hooks.updateOffset(this, true);
+                this._changeInProgress = null;
+            }
+        }
+        return this;
+    } else {
+        return this._isUTC ? offset : getDateOffset(this);
+    }
+}
+
+function getSetZone (input, keepLocalTime) {
+    if (input != null) {
+        if (typeof input !== 'string') {
+            input = -input;
+        }
+
+        this.utcOffset(input, keepLocalTime);
+
+        return this;
+    } else {
+        return -this.utcOffset();
+    }
+}
+
+function setOffsetToUTC (keepLocalTime) {
+    return this.utcOffset(0, keepLocalTime);
+}
+
+function setOffsetToLocal (keepLocalTime) {
+    if (this._isUTC) {
+        this.utcOffset(0, keepLocalTime);
+        this._isUTC = false;
+
+        if (keepLocalTime) {
+            this.subtract(getDateOffset(this), 'm');
+        }
+    }
+    return this;
+}
+
+function setOffsetToParsedOffset () {
+    if (this._tzm != null) {
+        this.utcOffset(this._tzm, false, true);
+    } else if (typeof this._i === 'string') {
+        var tZone = offsetFromString(matchOffset, this._i);
+        if (tZone != null) {
+            this.utcOffset(tZone);
+        }
+        else {
+            this.utcOffset(0, true);
+        }
+    }
+    return this;
+}
+
+function hasAlignedHourOffset (input) {
+    if (!this.isValid()) {
+        return false;
+    }
+    input = input ? createLocal(input).utcOffset() : 0;
+
+    return (this.utcOffset() - input) % 60 === 0;
+}
+
+function isDaylightSavingTime () {
+    return (
+        this.utcOffset() > this.clone().month(0).utcOffset() ||
+        this.utcOffset() > this.clone().month(5).utcOffset()
+    );
+}
+
+function isDaylightSavingTimeShifted () {
+    if (!isUndefined(this._isDSTShifted)) {
+        return this._isDSTShifted;
+    }
+
+    var c = {};
+
+    copyConfig(c, this);
+    c = prepareConfig(c);
+
+    if (c._a) {
+        var other = c._isUTC ? createUTC(c._a) : createLocal(c._a);
+        this._isDSTShifted = this.isValid() &&
+            compareArrays(c._a, other.toArray()) > 0;
+    } else {
+        this._isDSTShifted = false;
+    }
+
+    return this._isDSTShifted;
+}
+
+function isLocal () {
+    return this.isValid() ? !this._isUTC : false;
+}
+
+function isUtcOffset () {
+    return this.isValid() ? this._isUTC : false;
+}
+
+function isUtc () {
+    return this.isValid() ? this._isUTC && this._offset === 0 : false;
+}
+
+// ASP.NET json date format regex
+var aspNetRegex = /^(\-)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)(\.\d*)?)?$/;
+
+// from http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
+// somewhat more in line with 4.4.3.2 2004 spec, but allows decimal anywhere
+// and further modified to allow for strings containing both week and day
+var isoRegex = /^(-)?P(?:(-?[0-9,.]*)Y)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)W)?(?:(-?[0-9,.]*)D)?(?:T(?:(-?[0-9,.]*)H)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)S)?)?$/;
+
+function createDuration (input, key) {
+    var duration = input,
+        // matching against regexp is expensive, do it on demand
+        match = null,
+        sign,
+        ret,
+        diffRes;
+
+    if (isDuration(input)) {
+        duration = {
+            ms : input._milliseconds,
+            d  : input._days,
+            M  : input._months
+        };
+    } else if (isNumber(input)) {
+        duration = {};
+        if (key) {
+            duration[key] = input;
+        } else {
+            duration.milliseconds = input;
+        }
+    } else if (!!(match = aspNetRegex.exec(input))) {
+        sign = (match[1] === '-') ? -1 : 1;
+        duration = {
+            y  : 0,
+            d  : toInt(match[DATE])                         * sign,
+            h  : toInt(match[HOUR])                         * sign,
+            m  : toInt(match[MINUTE])                       * sign,
+            s  : toInt(match[SECOND])                       * sign,
+            ms : toInt(absRound(match[MILLISECOND] * 1000)) * sign // the millisecond decimal point is included in the match
+        };
+    } else if (!!(match = isoRegex.exec(input))) {
+        sign = (match[1] === '-') ? -1 : 1;
+        duration = {
+            y : parseIso(match[2], sign),
+            M : parseIso(match[3], sign),
+            w : parseIso(match[4], sign),
+            d : parseIso(match[5], sign),
+            h : parseIso(match[6], sign),
+            m : parseIso(match[7], sign),
+            s : parseIso(match[8], sign)
+        };
+    } else if (duration == null) {// checks for null or undefined
+        duration = {};
+    } else if (typeof duration === 'object' && ('from' in duration || 'to' in duration)) {
+        diffRes = momentsDifference(createLocal(duration.from), createLocal(duration.to));
+
+        duration = {};
+        duration.ms = diffRes.milliseconds;
+        duration.M = diffRes.months;
+    }
+
+    ret = new Duration(duration);
+
+    if (isDuration(input) && hasOwnProp(input, '_locale')) {
+        ret._locale = input._locale;
+    }
+
+    return ret;
+}
+
+createDuration.fn = Duration.prototype;
+createDuration.invalid = createInvalid$1;
+
+function parseIso (inp, sign) {
+    // We'd normally use ~~inp for this, but unfortunately it also
+    // converts floats to ints.
+    // inp may be undefined, so careful calling replace on it.
+    var res = inp && parseFloat(inp.replace(',', '.'));
+    // apply sign while we're at it
+    return (isNaN(res) ? 0 : res) * sign;
+}
+
+function positiveMomentsDifference(base, other) {
+    var res = {milliseconds: 0, months: 0};
+
+    res.months = other.month() - base.month() +
+        (other.year() - base.year()) * 12;
+    if (base.clone().add(res.months, 'M').isAfter(other)) {
+        --res.months;
+    }
+
+    res.milliseconds = +other - +(base.clone().add(res.months, 'M'));
+
+    return res;
+}
+
+function momentsDifference(base, other) {
+    var res;
+    if (!(base.isValid() && other.isValid())) {
+        return {milliseconds: 0, months: 0};
+    }
+
+    other = cloneWithOffset(other, base);
+    if (base.isBefore(other)) {
+        res = positiveMomentsDifference(base, other);
+    } else {
+        res = positiveMomentsDifference(other, base);
+        res.milliseconds = -res.milliseconds;
+        res.months = -res.months;
+    }
+
+    return res;
+}
+
+// TODO: remove 'name' arg after deprecation is removed
+function createAdder(direction, name) {
+    return function (val, period) {
+        var dur, tmp;
+        //invert the arguments, but complain about it
+        if (period !== null && !isNaN(+period)) {
+            deprecateSimple(name, 'moment().' + name  + '(period, number) is deprecated. Please use moment().' + name + '(number, period). ' +
+            'See http://momentjs.com/guides/#/warnings/add-inverted-param/ for more info.');
+            tmp = val; val = period; period = tmp;
+        }
+
+        val = typeof val === 'string' ? +val : val;
+        dur = createDuration(val, period);
+        addSubtract(this, dur, direction);
+        return this;
+    };
+}
+
+function addSubtract (mom, duration, isAdding, updateOffset) {
+    var milliseconds = duration._milliseconds,
+        days = absRound(duration._days),
+        months = absRound(duration._months);
+
+    if (!mom.isValid()) {
+        // No op
+        return;
+    }
+
+    updateOffset = updateOffset == null ? true : updateOffset;
+
+    if (milliseconds) {
+        mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding);
+    }
+    if (days) {
+        set$1(mom, 'Date', get(mom, 'Date') + days * isAdding);
+    }
+    if (months) {
+        setMonth(mom, get(mom, 'Month') + months * isAdding);
+    }
+    if (updateOffset) {
+        hooks.updateOffset(mom, days || months);
+    }
+}
+
+var add      = createAdder(1, 'add');
+var subtract = createAdder(-1, 'subtract');
+
+function getCalendarFormat(myMoment, now) {
+    var diff = myMoment.diff(now, 'days', true);
+    return diff < -6 ? 'sameElse' :
+            diff < -1 ? 'lastWeek' :
+            diff < 0 ? 'lastDay' :
+            diff < 1 ? 'sameDay' :
+            diff < 2 ? 'nextDay' :
+            diff < 7 ? 'nextWeek' : 'sameElse';
+}
+
+function calendar$1 (time, formats) {
+    // We want to compare the start of today, vs this.
+    // Getting start-of-today depends on whether we're local/utc/offset or not.
+    var now = time || createLocal(),
+        sod = cloneWithOffset(now, this).startOf('day'),
+        format = hooks.calendarFormat(this, sod) || 'sameElse';
+
+    var output = formats && (isFunction(formats[format]) ? formats[format].call(this, now) : formats[format]);
+
+    return this.format(output || this.localeData().calendar(format, this, createLocal(now)));
+}
+
+function clone () {
+    return new Moment(this);
+}
+
+function isAfter (input, units) {
+    var localInput = isMoment(input) ? input : createLocal(input);
+    if (!(this.isValid() && localInput.isValid())) {
+        return false;
+    }
+    units = normalizeUnits(!isUndefined(units) ? units : 'millisecond');
+    if (units === 'millisecond') {
+        return this.valueOf() > localInput.valueOf();
+    } else {
+        return localInput.valueOf() < this.clone().startOf(units).valueOf();
+    }
+}
+
+function isBefore (input, units) {
+    var localInput = isMoment(input) ? input : createLocal(input);
+    if (!(this.isValid() && localInput.isValid())) {
+        return false;
+    }
+    units = normalizeUnits(!isUndefined(units) ? units : 'millisecond');
+    if (units === 'millisecond') {
+        return this.valueOf() < localInput.valueOf();
+    } else {
+        return this.clone().endOf(units).valueOf() < localInput.valueOf();
+    }
+}
+
+function isBetween (from, to, units, inclusivity) {
+    inclusivity = inclusivity || '()';
+    return (inclusivity[0] === '(' ? this.isAfter(from, units) : !this.isBefore(from, units)) &&
+        (inclusivity[1] === ')' ? this.isBefore(to, units) : !this.isAfter(to, units));
+}
+
+function isSame (input, units) {
+    var localInput = isMoment(input) ? input : createLocal(input),
+        inputMs;
+    if (!(this.isValid() && localInput.isValid())) {
+        return false;
+    }
+    units = normalizeUnits(units || 'millisecond');
+    if (units === 'millisecond') {
+        return this.valueOf() === localInput.valueOf();
+    } else {
+        inputMs = localInput.valueOf();
+        return this.clone().startOf(units).valueOf() <= inputMs && inputMs <= this.clone().endOf(units).valueOf();
+    }
+}
+
+function isSameOrAfter (input, units) {
+    return this.isSame(input, units) || this.isAfter(input,units);
+}
+
+function isSameOrBefore (input, units) {
+    return this.isSame(input, units) || this.isBefore(input,units);
+}
+
+function diff (input, units, asFloat) {
+    var that,
+        zoneDelta,
+        delta, output;
+
+    if (!this.isValid()) {
+        return NaN;
+    }
+
+    that = cloneWithOffset(input, this);
+
+    if (!that.isValid()) {
+        return NaN;
+    }
+
+    zoneDelta = (that.utcOffset() - this.utcOffset()) * 6e4;
+
+    units = normalizeUnits(units);
+
+    if (units === 'year' || units === 'month' || units === 'quarter') {
+        output = monthDiff(this, that);
+        if (units === 'quarter') {
+            output = output / 3;
+        } else if (units === 'year') {
+            output = output / 12;
+        }
+    } else {
+        delta = this - that;
+        output = units === 'second' ? delta / 1e3 : // 1000
+            units === 'minute' ? delta / 6e4 : // 1000 * 60
+            units === 'hour' ? delta / 36e5 : // 1000 * 60 * 60
+            units === 'day' ? (delta - zoneDelta) / 864e5 : // 1000 * 60 * 60 * 24, negate dst
+            units === 'week' ? (delta - zoneDelta) / 6048e5 : // 1000 * 60 * 60 * 24 * 7, negate dst
+            delta;
+    }
+    return asFloat ? output : absFloor(output);
+}
+
+function monthDiff (a, b) {
+    // difference in months
+    var wholeMonthDiff = ((b.year() - a.year()) * 12) + (b.month() - a.month()),
+        // b is in (anchor - 1 month, anchor + 1 month)
+        anchor = a.clone().add(wholeMonthDiff, 'months'),
+        anchor2, adjust;
+
+    if (b - anchor < 0) {
+        anchor2 = a.clone().add(wholeMonthDiff - 1, 'months');
+        // linear across the month
+        adjust = (b - anchor) / (anchor - anchor2);
+    } else {
+        anchor2 = a.clone().add(wholeMonthDiff + 1, 'months');
+        // linear across the month
+        adjust = (b - anchor) / (anchor2 - anchor);
+    }
+
+    //check for negative zero, return zero if negative zero
+    return -(wholeMonthDiff + adjust) || 0;
+}
+
+hooks.defaultFormat = 'YYYY-MM-DDTHH:mm:ssZ';
+hooks.defaultFormatUtc = 'YYYY-MM-DDTHH:mm:ss[Z]';
+
+function toString () {
+    return this.clone().locale('en').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ');
+}
+
+function toISOString() {
+    if (!this.isValid()) {
+        return null;
+    }
+    var m = this.clone().utc();
+    if (m.year() < 0 || m.year() > 9999) {
+        return formatMoment(m, 'YYYYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
+    }
+    if (isFunction(Date.prototype.toISOString)) {
+        // native implementation is ~50x faster, use it when we can
+        return this.toDate().toISOString();
+    }
+    return formatMoment(m, 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
+}
+
+/**
+ * Return a human readable representation of a moment that can
+ * also be evaluated to get a new moment which is the same
+ *
+ * @link https://nodejs.org/dist/latest/docs/api/util.html#util_custom_inspect_function_on_objects
+ */
+function inspect () {
+    if (!this.isValid()) {
+        return 'moment.invalid(/* ' + this._i + ' */)';
+    }
+    var func = 'moment';
+    var zone = '';
+    if (!this.isLocal()) {
+        func = this.utcOffset() === 0 ? 'moment.utc' : 'moment.parseZone';
+        zone = 'Z';
+    }
+    var prefix = '[' + func + '("]';
+    var year = (0 <= this.year() && this.year() <= 9999) ? 'YYYY' : 'YYYYYY';
+    var datetime = '-MM-DD[T]HH:mm:ss.SSS';
+    var suffix = zone + '[")]';
+
+    return this.format(prefix + year + datetime + suffix);
+}
+
+function format (inputString) {
+    if (!inputString) {
+        inputString = this.isUtc() ? hooks.defaultFormatUtc : hooks.defaultFormat;
+    }
+    var output = formatMoment(this, inputString);
+    return this.localeData().postformat(output);
+}
+
+function from (time, withoutSuffix) {
+    if (this.isValid() &&
+            ((isMoment(time) && time.isValid()) ||
+             createLocal(time).isValid())) {
+        return createDuration({to: this, from: time}).locale(this.locale()).humanize(!withoutSuffix);
+    } else {
+        return this.localeData().invalidDate();
+    }
+}
+
+function fromNow (withoutSuffix) {
+    return this.from(createLocal(), withoutSuffix);
+}
+
+function to (time, withoutSuffix) {
+    if (this.isValid() &&
+            ((isMoment(time) && time.isValid()) ||
+             createLocal(time).isValid())) {
+        return createDuration({from: this, to: time}).locale(this.locale()).humanize(!withoutSuffix);
+    } else {
+        return this.localeData().invalidDate();
+    }
+}
+
+function toNow (withoutSuffix) {
+    return this.to(createLocal(), withoutSuffix);
+}
+
+// If passed a locale key, it will set the locale for this
+// instance.  Otherwise, it will return the locale configuration
+// variables for this instance.
+function locale (key) {
+    var newLocaleData;
+
+    if (key === undefined) {
+        return this._locale._abbr;
+    } else {
+        newLocaleData = getLocale(key);
+        if (newLocaleData != null) {
+            this._locale = newLocaleData;
+        }
+        return this;
+    }
+}
+
+var lang = deprecate(
+    'moment().lang() is deprecated. Instead, use moment().localeData() to get the language configuration. Use moment().locale() to change languages.',
+    function (key) {
+        if (key === undefined) {
+            return this.localeData();
+        } else {
+            return this.locale(key);
+        }
+    }
+);
+
+function localeData () {
+    return this._locale;
+}
+
+function startOf (units) {
+    units = normalizeUnits(units);
+    // the following switch intentionally omits break keywords
+    // to utilize falling through the cases.
+    switch (units) {
+        case 'year':
+            this.month(0);
+            /* falls through */
+        case 'quarter':
+        case 'month':
+            this.date(1);
+            /* falls through */
+        case 'week':
+        case 'isoWeek':
+        case 'day':
+        case 'date':
+            this.hours(0);
+            /* falls through */
+        case 'hour':
+            this.minutes(0);
+            /* falls through */
+        case 'minute':
+            this.seconds(0);
+            /* falls through */
+        case 'second':
+            this.milliseconds(0);
+    }
+
+    // weeks are a special case
+    if (units === 'week') {
+        this.weekday(0);
+    }
+    if (units === 'isoWeek') {
+        this.isoWeekday(1);
+    }
+
+    // quarters are also special
+    if (units === 'quarter') {
+        this.month(Math.floor(this.month() / 3) * 3);
+    }
+
+    return this;
+}
+
+function endOf (units) {
+    units = normalizeUnits(units);
+    if (units === undefined || units === 'millisecond') {
+        return this;
+    }
+
+    // 'date' is an alias for 'day', so it should be considered as such.
+    if (units === 'date') {
+        units = 'day';
+    }
+
+    return this.startOf(units).add(1, (units === 'isoWeek' ? 'week' : units)).subtract(1, 'ms');
+}
+
+function valueOf () {
+    return this._d.valueOf() - ((this._offset || 0) * 60000);
+}
+
+function unix () {
+    return Math.floor(this.valueOf() / 1000);
+}
+
+function toDate () {
+    return new Date(this.valueOf());
+}
+
+function toArray () {
+    var m = this;
+    return [m.year(), m.month(), m.date(), m.hour(), m.minute(), m.second(), m.millisecond()];
+}
+
+function toObject () {
+    var m = this;
+    return {
+        years: m.year(),
+        months: m.month(),
+        date: m.date(),
+        hours: m.hours(),
+        minutes: m.minutes(),
+        seconds: m.seconds(),
+        milliseconds: m.milliseconds()
+    };
+}
+
+function toJSON () {
+    // new Date(NaN).toJSON() === null
+    return this.isValid() ? this.toISOString() : null;
+}
+
+function isValid$2 () {
+    return isValid(this);
+}
+
+function parsingFlags () {
+    return extend({}, getParsingFlags(this));
+}
+
+function invalidAt () {
+    return getParsingFlags(this).overflow;
+}
+
+function creationData() {
+    return {
+        input: this._i,
+        format: this._f,
+        locale: this._locale,
+        isUTC: this._isUTC,
+        strict: this._strict
+    };
+}
+
+// FORMATTING
+
+addFormatToken(0, ['gg', 2], 0, function () {
+    return this.weekYear() % 100;
+});
+
+addFormatToken(0, ['GG', 2], 0, function () {
+    return this.isoWeekYear() % 100;
+});
+
+function addWeekYearFormatToken (token, getter) {
+    addFormatToken(0, [token, token.length], 0, getter);
+}
+
+addWeekYearFormatToken('gggg',     'weekYear');
+addWeekYearFormatToken('ggggg',    'weekYear');
+addWeekYearFormatToken('GGGG',  'isoWeekYear');
+addWeekYearFormatToken('GGGGG', 'isoWeekYear');
+
+// ALIASES
+
+addUnitAlias('weekYear', 'gg');
+addUnitAlias('isoWeekYear', 'GG');
+
+// PRIORITY
+
+addUnitPriority('weekYear', 1);
+addUnitPriority('isoWeekYear', 1);
+
+
+// PARSING
+
+addRegexToken('G',      matchSigned);
+addRegexToken('g',      matchSigned);
+addRegexToken('GG',     match1to2, match2);
+addRegexToken('gg',     match1to2, match2);
+addRegexToken('GGGG',   match1to4, match4);
+addRegexToken('gggg',   match1to4, match4);
+addRegexToken('GGGGG',  match1to6, match6);
+addRegexToken('ggggg',  match1to6, match6);
+
+addWeekParseToken(['gggg', 'ggggg', 'GGGG', 'GGGGG'], function (input, week, config, token) {
+    week[token.substr(0, 2)] = toInt(input);
+});
+
+addWeekParseToken(['gg', 'GG'], function (input, week, config, token) {
+    week[token] = hooks.parseTwoDigitYear(input);
+});
+
+// MOMENTS
+
+function getSetWeekYear (input) {
+    return getSetWeekYearHelper.call(this,
+            input,
+            this.week(),
+            this.weekday(),
+            this.localeData()._week.dow,
+            this.localeData()._week.doy);
+}
+
+function getSetISOWeekYear (input) {
+    return getSetWeekYearHelper.call(this,
+            input, this.isoWeek(), this.isoWeekday(), 1, 4);
+}
+
+function getISOWeeksInYear () {
+    return weeksInYear(this.year(), 1, 4);
+}
+
+function getWeeksInYear () {
+    var weekInfo = this.localeData()._week;
+    return weeksInYear(this.year(), weekInfo.dow, weekInfo.doy);
+}
+
+function getSetWeekYearHelper(input, week, weekday, dow, doy) {
+    var weeksTarget;
+    if (input == null) {
+        return weekOfYear(this, dow, doy).year;
+    } else {
+        weeksTarget = weeksInYear(input, dow, doy);
+        if (week > weeksTarget) {
+            week = weeksTarget;
+        }
+        return setWeekAll.call(this, input, week, weekday, dow, doy);
+    }
+}
+
+function setWeekAll(weekYear, week, weekday, dow, doy) {
+    var dayOfYearData = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy),
+        date = createUTCDate(dayOfYearData.year, 0, dayOfYearData.dayOfYear);
+
+    this.year(date.getUTCFullYear());
+    this.month(date.getUTCMonth());
+    this.date(date.getUTCDate());
+    return this;
+}
+
+// FORMATTING
+
+addFormatToken('Q', 0, 'Qo', 'quarter');
+
+// ALIASES
+
+addUnitAlias('quarter', 'Q');
+
+// PRIORITY
+
+addUnitPriority('quarter', 7);
+
+// PARSING
+
+addRegexToken('Q', match1);
+addParseToken('Q', function (input, array) {
+    array[MONTH] = (toInt(input) - 1) * 3;
+});
+
+// MOMENTS
+
+function getSetQuarter (input) {
+    return input == null ? Math.ceil((this.month() + 1) / 3) : this.month((input - 1) * 3 + this.month() % 3);
+}
+
+// FORMATTING
+
+addFormatToken('D', ['DD', 2], 'Do', 'date');
+
+// ALIASES
+
+addUnitAlias('date', 'D');
+
+// PRIOROITY
+addUnitPriority('date', 9);
+
+// PARSING
+
+addRegexToken('D',  match1to2);
+addRegexToken('DD', match1to2, match2);
+addRegexToken('Do', function (isStrict, locale) {
+    // TODO: Remove "ordinalParse" fallback in next major release.
+    return isStrict ?
+      (locale._dayOfMonthOrdinalParse || locale._ordinalParse) :
+      locale._dayOfMonthOrdinalParseLenient;
+});
+
+addParseToken(['D', 'DD'], DATE);
+addParseToken('Do', function (input, array) {
+    array[DATE] = toInt(input.match(match1to2)[0], 10);
+});
+
+// MOMENTS
+
+var getSetDayOfMonth = makeGetSet('Date', true);
+
+// FORMATTING
+
+addFormatToken('DDD', ['DDDD', 3], 'DDDo', 'dayOfYear');
+
+// ALIASES
+
+addUnitAlias('dayOfYear', 'DDD');
+
+// PRIORITY
+addUnitPriority('dayOfYear', 4);
+
+// PARSING
+
+addRegexToken('DDD',  match1to3);
+addRegexToken('DDDD', match3);
+addParseToken(['DDD', 'DDDD'], function (input, array, config) {
+    config._dayOfYear = toInt(input);
+});
+
+// HELPERS
+
+// MOMENTS
+
+function getSetDayOfYear (input) {
+    var dayOfYear = Math.round((this.clone().startOf('day') - this.clone().startOf('year')) / 864e5) + 1;
+    return input == null ? dayOfYear : this.add((input - dayOfYear), 'd');
+}
+
+// FORMATTING
+
+addFormatToken('m', ['mm', 2], 0, 'minute');
+
+// ALIASES
+
+addUnitAlias('minute', 'm');
+
+// PRIORITY
+
+addUnitPriority('minute', 14);
+
+// PARSING
+
+addRegexToken('m',  match1to2);
+addRegexToken('mm', match1to2, match2);
+addParseToken(['m', 'mm'], MINUTE);
+
+// MOMENTS
+
+var getSetMinute = makeGetSet('Minutes', false);
+
+// FORMATTING
+
+addFormatToken('s', ['ss', 2], 0, 'second');
+
+// ALIASES
+
+addUnitAlias('second', 's');
+
+// PRIORITY
+
+addUnitPriority('second', 15);
+
+// PARSING
+
+addRegexToken('s',  match1to2);
+addRegexToken('ss', match1to2, match2);
+addParseToken(['s', 'ss'], SECOND);
+
+// MOMENTS
+
+var getSetSecond = makeGetSet('Seconds', false);
+
+// FORMATTING
+
+addFormatToken('S', 0, 0, function () {
+    return ~~(this.millisecond() / 100);
+});
+
+addFormatToken(0, ['SS', 2], 0, function () {
+    return ~~(this.millisecond() / 10);
+});
+
+addFormatToken(0, ['SSS', 3], 0, 'millisecond');
+addFormatToken(0, ['SSSS', 4], 0, function () {
+    return this.millisecond() * 10;
+});
+addFormatToken(0, ['SSSSS', 5], 0, function () {
+    return this.millisecond() * 100;
+});
+addFormatToken(0, ['SSSSSS', 6], 0, function () {
+    return this.millisecond() * 1000;
+});
+addFormatToken(0, ['SSSSSSS', 7], 0, function () {
+    return this.millisecond() * 10000;
+});
+addFormatToken(0, ['SSSSSSSS', 8], 0, function () {
+    return this.millisecond() * 100000;
+});
+addFormatToken(0, ['SSSSSSSSS', 9], 0, function () {
+    return this.millisecond() * 1000000;
+});
+
+
+// ALIASES
+
+addUnitAlias('millisecond', 'ms');
+
+// PRIORITY
+
+addUnitPriority('millisecond', 16);
+
+// PARSING
+
+addRegexToken('S',    match1to3, match1);
+addRegexToken('SS',   match1to3, match2);
+addRegexToken('SSS',  match1to3, match3);
+
+var token;
+for (token = 'SSSS'; token.length <= 9; token += 'S') {
+    addRegexToken(token, matchUnsigned);
+}
+
+function parseMs(input, array) {
+    array[MILLISECOND] = toInt(('0.' + input) * 1000);
+}
+
+for (token = 'S'; token.length <= 9; token += 'S') {
+    addParseToken(token, parseMs);
+}
+// MOMENTS
+
+var getSetMillisecond = makeGetSet('Milliseconds', false);
+
+// FORMATTING
+
+addFormatToken('z',  0, 0, 'zoneAbbr');
+addFormatToken('zz', 0, 0, 'zoneName');
+
+// MOMENTS
+
+function getZoneAbbr () {
+    return this._isUTC ? 'UTC' : '';
+}
+
+function getZoneName () {
+    return this._isUTC ? 'Coordinated Universal Time' : '';
+}
+
+var proto = Moment.prototype;
+
+proto.add               = add;
+proto.calendar          = calendar$1;
+proto.clone             = clone;
+proto.diff              = diff;
+proto.endOf             = endOf;
+proto.format            = format;
+proto.from              = from;
+proto.fromNow           = fromNow;
+proto.to                = to;
+proto.toNow             = toNow;
+proto.get               = stringGet;
+proto.invalidAt         = invalidAt;
+proto.isAfter           = isAfter;
+proto.isBefore          = isBefore;
+proto.isBetween         = isBetween;
+proto.isSame            = isSame;
+proto.isSameOrAfter     = isSameOrAfter;
+proto.isSameOrBefore    = isSameOrBefore;
+proto.isValid           = isValid$2;
+proto.lang              = lang;
+proto.locale            = locale;
+proto.localeData        = localeData;
+proto.max               = prototypeMax;
+proto.min               = prototypeMin;
+proto.parsingFlags      = parsingFlags;
+proto.set               = stringSet;
+proto.startOf           = startOf;
+proto.subtract          = subtract;
+proto.toArray           = toArray;
+proto.toObject          = toObject;
+proto.toDate            = toDate;
+proto.toISOString       = toISOString;
+proto.inspect           = inspect;
+proto.toJSON            = toJSON;
+proto.toString          = toString;
+proto.unix              = unix;
+proto.valueOf           = valueOf;
+proto.creationData      = creationData;
+
+// Year
+proto.year       = getSetYear;
+proto.isLeapYear = getIsLeapYear;
+
+// Week Year
+proto.weekYear    = getSetWeekYear;
+proto.isoWeekYear = getSetISOWeekYear;
+
+// Quarter
+proto.quarter = proto.quarters = getSetQuarter;
+
+// Month
+proto.month       = getSetMonth;
+proto.daysInMonth = getDaysInMonth;
+
+// Week
+proto.week           = proto.weeks        = getSetWeek;
+proto.isoWeek        = proto.isoWeeks     = getSetISOWeek;
+proto.weeksInYear    = getWeeksInYear;
+proto.isoWeeksInYear = getISOWeeksInYear;
+
+// Day
+proto.date       = getSetDayOfMonth;
+proto.day        = proto.days             = getSetDayOfWeek;
+proto.weekday    = getSetLocaleDayOfWeek;
+proto.isoWeekday = getSetISODayOfWeek;
+proto.dayOfYear  = getSetDayOfYear;
+
+// Hour
+proto.hour = proto.hours = getSetHour;
+
+// Minute
+proto.minute = proto.minutes = getSetMinute;
+
+// Second
+proto.second = proto.seconds = getSetSecond;
+
+// Millisecond
+proto.millisecond = proto.milliseconds = getSetMillisecond;
+
+// Offset
+proto.utcOffset            = getSetOffset;
+proto.utc                  = setOffsetToUTC;
+proto.local                = setOffsetToLocal;
+proto.parseZone            = setOffsetToParsedOffset;
+proto.hasAlignedHourOffset = hasAlignedHourOffset;
+proto.isDST                = isDaylightSavingTime;
+proto.isLocal              = isLocal;
+proto.isUtcOffset          = isUtcOffset;
+proto.isUtc                = isUtc;
+proto.isUTC                = isUtc;
+
+// Timezone
+proto.zoneAbbr = getZoneAbbr;
+proto.zoneName = getZoneName;
+
+// Deprecations
+proto.dates  = deprecate('dates accessor is deprecated. Use date instead.', getSetDayOfMonth);
+proto.months = deprecate('months accessor is deprecated. Use month instead', getSetMonth);
+proto.years  = deprecate('years accessor is deprecated. Use year instead', getSetYear);
+proto.zone   = deprecate('moment().zone is deprecated, use moment().utcOffset instead. http://momentjs.com/guides/#/warnings/zone/', getSetZone);
+proto.isDSTShifted = deprecate('isDSTShifted is deprecated. See http://momentjs.com/guides/#/warnings/dst-shifted/ for more information', isDaylightSavingTimeShifted);
+
+function createUnix (input) {
+    return createLocal(input * 1000);
+}
+
+function createInZone () {
+    return createLocal.apply(null, arguments).parseZone();
+}
+
+function preParsePostFormat (string) {
+    return string;
+}
+
+var proto$1 = Locale.prototype;
+
+proto$1.calendar        = calendar;
+proto$1.longDateFormat  = longDateFormat;
+proto$1.invalidDate     = invalidDate;
+proto$1.ordinal         = ordinal;
+proto$1.preparse        = preParsePostFormat;
+proto$1.postformat      = preParsePostFormat;
+proto$1.relativeTime    = relativeTime;
+proto$1.pastFuture      = pastFuture;
+proto$1.set             = set;
+
+// Month
+proto$1.months            =        localeMonths;
+proto$1.monthsShort       =        localeMonthsShort;
+proto$1.monthsParse       =        localeMonthsParse;
+proto$1.monthsRegex       = monthsRegex;
+proto$1.monthsShortRegex  = monthsShortRegex;
+
+// Week
+proto$1.week = localeWeek;
+proto$1.firstDayOfYear = localeFirstDayOfYear;
+proto$1.firstDayOfWeek = localeFirstDayOfWeek;
+
+// Day of Week
+proto$1.weekdays       =        localeWeekdays;
+proto$1.weekdaysMin    =        localeWeekdaysMin;
+proto$1.weekdaysShort  =        localeWeekdaysShort;
+proto$1.weekdaysParse  =        localeWeekdaysParse;
+
+proto$1.weekdaysRegex       =        weekdaysRegex;
+proto$1.weekdaysShortRegex  =        weekdaysShortRegex;
+proto$1.weekdaysMinRegex    =        weekdaysMinRegex;
+
+// Hours
+proto$1.isPM = localeIsPM;
+proto$1.meridiem = localeMeridiem;
+
+function get$1 (format, index, field, setter) {
+    var locale = getLocale();
+    var utc = createUTC().set(setter, index);
+    return locale[field](utc, format);
+}
+
+function listMonthsImpl (format, index, field) {
+    if (isNumber(format)) {
+        index = format;
+        format = undefined;
+    }
+
+    format = format || '';
+
+    if (index != null) {
+        return get$1(format, index, field, 'month');
+    }
+
+    var i;
+    var out = [];
+    for (i = 0; i < 12; i++) {
+        out[i] = get$1(format, i, field, 'month');
+    }
+    return out;
+}
+
+// ()
+// (5)
+// (fmt, 5)
+// (fmt)
+// (true)
+// (true, 5)
+// (true, fmt, 5)
+// (true, fmt)
+function listWeekdaysImpl (localeSorted, format, index, field) {
+    if (typeof localeSorted === 'boolean') {
+        if (isNumber(format)) {
+            index = format;
+            format = undefined;
+        }
+
+        format = format || '';
+    } else {
+        format = localeSorted;
+        index = format;
+        localeSorted = false;
+
+        if (isNumber(format)) {
+            index = format;
+            format = undefined;
+        }
+
+        format = format || '';
+    }
+
+    var locale = getLocale(),
+        shift = localeSorted ? locale._week.dow : 0;
+
+    if (index != null) {
+        return get$1(format, (index + shift) % 7, field, 'day');
+    }
+
+    var i;
+    var out = [];
+    for (i = 0; i < 7; i++) {
+        out[i] = get$1(format, (i + shift) % 7, field, 'day');
+    }
+    return out;
+}
+
+function listMonths (format, index) {
+    return listMonthsImpl(format, index, 'months');
+}
+
+function listMonthsShort (format, index) {
+    return listMonthsImpl(format, index, 'monthsShort');
+}
+
+function listWeekdays (localeSorted, format, index) {
+    return listWeekdaysImpl(localeSorted, format, index, 'weekdays');
+}
+
+function listWeekdaysShort (localeSorted, format, index) {
+    return listWeekdaysImpl(localeSorted, format, index, 'weekdaysShort');
+}
+
+function listWeekdaysMin (localeSorted, format, index) {
+    return listWeekdaysImpl(localeSorted, format, index, 'weekdaysMin');
+}
+
+getSetGlobalLocale('en', {
+    dayOfMonthOrdinalParse: /\d{1,2}(th|st|nd|rd)/,
+    ordinal : function (number) {
+        var b = number % 10,
+            output = (toInt(number % 100 / 10) === 1) ? 'th' :
+            (b === 1) ? 'st' :
+            (b === 2) ? 'nd' :
+            (b === 3) ? 'rd' : 'th';
+        return number + output;
+    }
+});
+
+// Side effect imports
+hooks.lang = deprecate('moment.lang is deprecated. Use moment.locale instead.', getSetGlobalLocale);
+hooks.langData = deprecate('moment.langData is deprecated. Use moment.localeData instead.', getLocale);
+
+var mathAbs = Math.abs;
+
+function abs () {
+    var data           = this._data;
+
+    this._milliseconds = mathAbs(this._milliseconds);
+    this._days         = mathAbs(this._days);
+    this._months       = mathAbs(this._months);
+
+    data.milliseconds  = mathAbs(data.milliseconds);
+    data.seconds       = mathAbs(data.seconds);
+    data.minutes       = mathAbs(data.minutes);
+    data.hours         = mathAbs(data.hours);
+    data.months        = mathAbs(data.months);
+    data.years         = mathAbs(data.years);
+
+    return this;
+}
+
+function addSubtract$1 (duration, input, value, direction) {
+    var other = createDuration(input, value);
+
+    duration._milliseconds += direction * other._milliseconds;
+    duration._days         += direction * other._days;
+    duration._months       += direction * other._months;
+
+    return duration._bubble();
+}
+
+// supports only 2.0-style add(1, 's') or add(duration)
+function add$1 (input, value) {
+    return addSubtract$1(this, input, value, 1);
+}
+
+// supports only 2.0-style subtract(1, 's') or subtract(duration)
+function subtract$1 (input, value) {
+    return addSubtract$1(this, input, value, -1);
+}
+
+function absCeil (number) {
+    if (number < 0) {
+        return Math.floor(number);
+    } else {
+        return Math.ceil(number);
+    }
+}
+
+function bubble () {
+    var milliseconds = this._milliseconds;
+    var days         = this._days;
+    var months       = this._months;
+    var data         = this._data;
+    var seconds, minutes, hours, years, monthsFromDays;
+
+    // if we have a mix of positive and negative values, bubble down first
+    // check: https://github.com/moment/moment/issues/2166
+    if (!((milliseconds >= 0 && days >= 0 && months >= 0) ||
+            (milliseconds <= 0 && days <= 0 && months <= 0))) {
+        milliseconds += absCeil(monthsToDays(months) + days) * 864e5;
+        days = 0;
+        months = 0;
+    }
+
+    // The following code bubbles up values, see the tests for
+    // examples of what that means.
+    data.milliseconds = milliseconds % 1000;
+
+    seconds           = absFloor(milliseconds / 1000);
+    data.seconds      = seconds % 60;
+
+    minutes           = absFloor(seconds / 60);
+    data.minutes      = minutes % 60;
+
+    hours             = absFloor(minutes / 60);
+    data.hours        = hours % 24;
+
+    days += absFloor(hours / 24);
+
+    // convert days to months
+    monthsFromDays = absFloor(daysToMonths(days));
+    months += monthsFromDays;
+    days -= absCeil(monthsToDays(monthsFromDays));
+
+    // 12 months -> 1 year
+    years = absFloor(months / 12);
+    months %= 12;
+
+    data.days   = days;
+    data.months = months;
+    data.years  = years;
+
+    return this;
+}
+
+function daysToMonths (days) {
+    // 400 years have 146097 days (taking into account leap year rules)
+    // 400 years have 12 months === 4800
+    return days * 4800 / 146097;
+}
+
+function monthsToDays (months) {
+    // the reverse of daysToMonths
+    return months * 146097 / 4800;
+}
+
+function as (units) {
+    if (!this.isValid()) {
+        return NaN;
+    }
+    var days;
+    var months;
+    var milliseconds = this._milliseconds;
+
+    units = normalizeUnits(units);
+
+    if (units === 'month' || units === 'year') {
+        days   = this._days   + milliseconds / 864e5;
+        months = this._months + daysToMonths(days);
+        return units === 'month' ? months : months / 12;
+    } else {
+        // handle milliseconds separately because of floating point math errors (issue #1867)
+        days = this._days + Math.round(monthsToDays(this._months));
+        switch (units) {
+            case 'week'   : return days / 7     + milliseconds / 6048e5;
+            case 'day'    : return days         + milliseconds / 864e5;
+            case 'hour'   : return days * 24    + milliseconds / 36e5;
+            case 'minute' : return days * 1440  + milliseconds / 6e4;
+            case 'second' : return days * 86400 + milliseconds / 1000;
+            // Math.floor prevents floating point math errors here
+            case 'millisecond': return Math.floor(days * 864e5) + milliseconds;
+            default: throw new Error('Unknown unit ' + units);
+        }
+    }
+}
+
+// TODO: Use this.as('ms')?
+function valueOf$1 () {
+    if (!this.isValid()) {
+        return NaN;
+    }
+    return (
+        this._milliseconds +
+        this._days * 864e5 +
+        (this._months % 12) * 2592e6 +
+        toInt(this._months / 12) * 31536e6
+    );
+}
+
+function makeAs (alias) {
+    return function () {
+        return this.as(alias);
+    };
+}
+
+var asMilliseconds = makeAs('ms');
+var asSeconds      = makeAs('s');
+var asMinutes      = makeAs('m');
+var asHours        = makeAs('h');
+var asDays         = makeAs('d');
+var asWeeks        = makeAs('w');
+var asMonths       = makeAs('M');
+var asYears        = makeAs('y');
+
+function get$2 (units) {
+    units = normalizeUnits(units);
+    return this.isValid() ? this[units + 's']() : NaN;
+}
+
+function makeGetter(name) {
+    return function () {
+        return this.isValid() ? this._data[name] : NaN;
+    };
+}
+
+var milliseconds = makeGetter('milliseconds');
+var seconds      = makeGetter('seconds');
+var minutes      = makeGetter('minutes');
+var hours        = makeGetter('hours');
+var days         = makeGetter('days');
+var months       = makeGetter('months');
+var years        = makeGetter('years');
+
+function weeks () {
+    return absFloor(this.days() / 7);
+}
+
+var round = Math.round;
+var thresholds = {
+    ss: 44,         // a few seconds to seconds
+    s : 45,         // seconds to minute
+    m : 45,         // minutes to hour
+    h : 22,         // hours to day
+    d : 26,         // days to month
+    M : 11          // months to year
+};
+
+// helper function for moment.fn.from, moment.fn.fromNow, and moment.duration.fn.humanize
+function substituteTimeAgo(string, number, withoutSuffix, isFuture, locale) {
+    return locale.relativeTime(number || 1, !!withoutSuffix, string, isFuture);
+}
+
+function relativeTime$1 (posNegDuration, withoutSuffix, locale) {
+    var duration = createDuration(posNegDuration).abs();
+    var seconds  = round(duration.as('s'));
+    var minutes  = round(duration.as('m'));
+    var hours    = round(duration.as('h'));
+    var days     = round(duration.as('d'));
+    var months   = round(duration.as('M'));
+    var years    = round(duration.as('y'));
+
+    var a = seconds <= thresholds.ss && ['s', seconds]  ||
+            seconds < thresholds.s   && ['ss', seconds] ||
+            minutes <= 1             && ['m']           ||
+            minutes < thresholds.m   && ['mm', minutes] ||
+            hours   <= 1             && ['h']           ||
+            hours   < thresholds.h   && ['hh', hours]   ||
+            days    <= 1             && ['d']           ||
+            days    < thresholds.d   && ['dd', days]    ||
+            months  <= 1             && ['M']           ||
+            months  < thresholds.M   && ['MM', months]  ||
+            years   <= 1             && ['y']           || ['yy', years];
+
+    a[2] = withoutSuffix;
+    a[3] = +posNegDuration > 0;
+    a[4] = locale;
+    return substituteTimeAgo.apply(null, a);
+}
+
+// This function allows you to set the rounding function for relative time strings
+function getSetRelativeTimeRounding (roundingFunction) {
+    if (roundingFunction === undefined) {
+        return round;
+    }
+    if (typeof(roundingFunction) === 'function') {
+        round = roundingFunction;
+        return true;
+    }
+    return false;
+}
+
+// This function allows you to set a threshold for relative time strings
+function getSetRelativeTimeThreshold (threshold, limit) {
+    if (thresholds[threshold] === undefined) {
+        return false;
+    }
+    if (limit === undefined) {
+        return thresholds[threshold];
+    }
+    thresholds[threshold] = limit;
+    if (threshold === 's') {
+        thresholds.ss = limit - 1;
+    }
+    return true;
+}
+
+function humanize (withSuffix) {
+    if (!this.isValid()) {
+        return this.localeData().invalidDate();
+    }
+
+    var locale = this.localeData();
+    var output = relativeTime$1(this, !withSuffix, locale);
+
+    if (withSuffix) {
+        output = locale.pastFuture(+this, output);
+    }
+
+    return locale.postformat(output);
+}
+
+var abs$1 = Math.abs;
+
+function toISOString$1() {
+    // for ISO strings we do not use the normal bubbling rules:
+    //  * milliseconds bubble up until they become hours
+    //  * days do not bubble at all
+    //  * months bubble up until they become years
+    // This is because there is no context-free conversion between hours and days
+    // (think of clock changes)
+    // and also not between days and months (28-31 days per month)
+    if (!this.isValid()) {
+        return this.localeData().invalidDate();
+    }
+
+    var seconds = abs$1(this._milliseconds) / 1000;
+    var days         = abs$1(this._days);
+    var months       = abs$1(this._months);
+    var minutes, hours, years;
+
+    // 3600 seconds -> 60 minutes -> 1 hour
+    minutes           = absFloor(seconds / 60);
+    hours             = absFloor(minutes / 60);
+    seconds %= 60;
+    minutes %= 60;
+
+    // 12 months -> 1 year
+    years  = absFloor(months / 12);
+    months %= 12;
+
+
+    // inspired by https://github.com/dordille/moment-isoduration/blob/master/moment.isoduration.js
+    var Y = years;
+    var M = months;
+    var D = days;
+    var h = hours;
+    var m = minutes;
+    var s = seconds;
+    var total = this.asSeconds();
+
+    if (!total) {
+        // this is the same as C#'s (Noda) and python (isodate)...
+        // but not other JS (goog.date)
+        return 'P0D';
+    }
+
+    return (total < 0 ? '-' : '') +
+        'P' +
+        (Y ? Y + 'Y' : '') +
+        (M ? M + 'M' : '') +
+        (D ? D + 'D' : '') +
+        ((h || m || s) ? 'T' : '') +
+        (h ? h + 'H' : '') +
+        (m ? m + 'M' : '') +
+        (s ? s + 'S' : '');
+}
+
+var proto$2 = Duration.prototype;
+
+proto$2.isValid        = isValid$1;
+proto$2.abs            = abs;
+proto$2.add            = add$1;
+proto$2.subtract       = subtract$1;
+proto$2.as             = as;
+proto$2.asMilliseconds = asMilliseconds;
+proto$2.asSeconds      = asSeconds;
+proto$2.asMinutes      = asMinutes;
+proto$2.asHours        = asHours;
+proto$2.asDays         = asDays;
+proto$2.asWeeks        = asWeeks;
+proto$2.asMonths       = asMonths;
+proto$2.asYears        = asYears;
+proto$2.valueOf        = valueOf$1;
+proto$2._bubble        = bubble;
+proto$2.get            = get$2;
+proto$2.milliseconds   = milliseconds;
+proto$2.seconds        = seconds;
+proto$2.minutes        = minutes;
+proto$2.hours          = hours;
+proto$2.days           = days;
+proto$2.weeks          = weeks;
+proto$2.months         = months;
+proto$2.years          = years;
+proto$2.humanize       = humanize;
+proto$2.toISOString    = toISOString$1;
+proto$2.toString       = toISOString$1;
+proto$2.toJSON         = toISOString$1;
+proto$2.locale         = locale;
+proto$2.localeData     = localeData;
+
+// Deprecations
+proto$2.toIsoString = deprecate('toIsoString() is deprecated. Please use toISOString() instead (notice the capitals)', toISOString$1);
+proto$2.lang = lang;
+
+// Side effect imports
+
+// FORMATTING
+
+addFormatToken('X', 0, 0, 'unix');
+addFormatToken('x', 0, 0, 'valueOf');
+
+// PARSING
+
+addRegexToken('x', matchSigned);
+addRegexToken('X', matchTimestamp);
+addParseToken('X', function (input, array, config) {
+    config._d = new Date(parseFloat(input, 10) * 1000);
+});
+addParseToken('x', function (input, array, config) {
+    config._d = new Date(toInt(input));
+});
+
+// Side effect imports
+
+
+hooks.version = '2.18.1';
+
+setHookCallback(createLocal);
+
+hooks.fn                    = proto;
+hooks.min                   = min;
+hooks.max                   = max;
+hooks.now                   = now;
+hooks.utc                   = createUTC;
+hooks.unix                  = createUnix;
+hooks.months                = listMonths;
+hooks.isDate                = isDate;
+hooks.locale                = getSetGlobalLocale;
+hooks.invalid               = createInvalid;
+hooks.duration              = createDuration;
+hooks.isMoment              = isMoment;
+hooks.weekdays              = listWeekdays;
+hooks.parseZone             = createInZone;
+hooks.localeData            = getLocale;
+hooks.isDuration            = isDuration;
+hooks.monthsShort           = listMonthsShort;
+hooks.weekdaysMin           = listWeekdaysMin;
+hooks.defineLocale          = defineLocale;
+hooks.updateLocale          = updateLocale;
+hooks.locales               = listLocales;
+hooks.weekdaysShort         = listWeekdaysShort;
+hooks.normalizeUnits        = normalizeUnits;
+hooks.relativeTimeRounding = getSetRelativeTimeRounding;
+hooks.relativeTimeThreshold = getSetRelativeTimeThreshold;
+hooks.calendarFormat        = getCalendarFormat;
+hooks.prototype             = proto;
+
+return hooks;
+
+})));
+
+define('moment', ['moment/moment'], function (main) { return main; });
+
+//! moment.js locale configuration
+//! locale : Afrikaans [af]
+//! author : Werner Mollentze : https://github.com/wernerm
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/af',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var af = moment.defineLocale('af', {
+    months : 'Januarie_Februarie_Maart_April_Mei_Junie_Julie_Augustus_September_Oktober_November_Desember'.split('_'),
+    monthsShort : 'Jan_Feb_Mrt_Apr_Mei_Jun_Jul_Aug_Sep_Okt_Nov_Des'.split('_'),
+    weekdays : 'Sondag_Maandag_Dinsdag_Woensdag_Donderdag_Vrydag_Saterdag'.split('_'),
+    weekdaysShort : 'Son_Maa_Din_Woe_Don_Vry_Sat'.split('_'),
+    weekdaysMin : 'So_Ma_Di_Wo_Do_Vr_Sa'.split('_'),
+    meridiemParse: /vm|nm/i,
+    isPM : function (input) {
+        return /^nm$/i.test(input);
+    },
+    meridiem : function (hours, minutes, isLower) {
+        if (hours < 12) {
+            return isLower ? 'vm' : 'VM';
+        } else {
+            return isLower ? 'nm' : 'NM';
+        }
+    },
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd, D MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay : '[Vandag om] LT',
+        nextDay : '[Môre om] LT',
+        nextWeek : 'dddd [om] LT',
+        lastDay : '[Gister om] LT',
+        lastWeek : '[Laas] dddd [om] LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'oor %s',
+        past : '%s gelede',
+        s : '\'n paar sekondes',
+        m : '\'n minuut',
+        mm : '%d minute',
+        h : '\'n uur',
+        hh : '%d ure',
+        d : '\'n dag',
+        dd : '%d dae',
+        M : '\'n maand',
+        MM : '%d maande',
+        y : '\'n jaar',
+        yy : '%d jaar'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}(ste|de)/,
+    ordinal : function (number) {
+        return number + ((number === 1 || number === 8 || number >= 20) ? 'ste' : 'de'); // Thanks to Joris Röling : https://github.com/jjupiter
+    },
+    week : {
+        dow : 1, // Maandag is die eerste dag van die week.
+        doy : 4  // Die week wat die 4de Januarie bevat is die eerste week van die jaar.
+    }
+});
+
+return af;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Catalan [ca]
+//! author : Juan G. Hurtado : https://github.com/juanghurtado
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/ca',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var ca = moment.defineLocale('ca', {
+    months : {
+        standalone: 'gener_febrer_març_abril_maig_juny_juliol_agost_setembre_octubre_novembre_desembre'.split('_'),
+        format: 'de gener_de febrer_de març_d\'abril_de maig_de juny_de juliol_d\'agost_de setembre_d\'octubre_de novembre_de desembre'.split('_'),
+        isFormat: /D[oD]?(\s)+MMMM/
+    },
+    monthsShort : 'gen._febr._març_abr._maig_juny_jul._ag._set._oct._nov._des.'.split('_'),
+    monthsParseExact : true,
+    weekdays : 'diumenge_dilluns_dimarts_dimecres_dijous_divendres_dissabte'.split('_'),
+    weekdaysShort : 'dg._dl._dt._dc._dj._dv._ds.'.split('_'),
+    weekdaysMin : 'Dg_Dl_Dt_Dc_Dj_Dv_Ds'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'H:mm',
+        LTS : 'H:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : '[el] D MMMM [de] YYYY',
+        ll : 'D MMM YYYY',
+        LLL : '[el] D MMMM [de] YYYY [a les] H:mm',
+        lll : 'D MMM YYYY, H:mm',
+        LLLL : '[el] dddd D MMMM [de] YYYY [a les] H:mm',
+        llll : 'ddd D MMM YYYY, H:mm'
+    },
+    calendar : {
+        sameDay : function () {
+            return '[avui a ' + ((this.hours() !== 1) ? 'les' : 'la') + '] LT';
+        },
+        nextDay : function () {
+            return '[demà a ' + ((this.hours() !== 1) ? 'les' : 'la') + '] LT';
+        },
+        nextWeek : function () {
+            return 'dddd [a ' + ((this.hours() !== 1) ? 'les' : 'la') + '] LT';
+        },
+        lastDay : function () {
+            return '[ahir a ' + ((this.hours() !== 1) ? 'les' : 'la') + '] LT';
+        },
+        lastWeek : function () {
+            return '[el] dddd [passat a ' + ((this.hours() !== 1) ? 'les' : 'la') + '] LT';
+        },
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'd\'aquí %s',
+        past : 'fa %s',
+        s : 'uns segons',
+        m : 'un minut',
+        mm : '%d minuts',
+        h : 'una hora',
+        hh : '%d hores',
+        d : 'un dia',
+        dd : '%d dies',
+        M : 'un mes',
+        MM : '%d mesos',
+        y : 'un any',
+        yy : '%d anys'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}(r|n|t|è|a)/,
+    ordinal : function (number, period) {
+        var output = (number === 1) ? 'r' :
+            (number === 2) ? 'n' :
+            (number === 3) ? 'r' :
+            (number === 4) ? 't' : 'è';
+        if (period === 'w' || period === 'W') {
+            output = 'a';
+        }
+        return number + output;
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return ca;
+
+})));
+
+//! moment.js locale configuration
+//! locale : German [de]
+//! author : lluchs : https://github.com/lluchs
+//! author: Menelion Elensúle: https://github.com/Oire
+//! author : Mikolaj Dadela : https://github.com/mik01aj
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/de',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+function processRelativeTime(number, withoutSuffix, key, isFuture) {
+    var format = {
+        'm': ['eine Minute', 'einer Minute'],
+        'h': ['eine Stunde', 'einer Stunde'],
+        'd': ['ein Tag', 'einem Tag'],
+        'dd': [number + ' Tage', number + ' Tagen'],
+        'M': ['ein Monat', 'einem Monat'],
+        'MM': [number + ' Monate', number + ' Monaten'],
+        'y': ['ein Jahr', 'einem Jahr'],
+        'yy': [number + ' Jahre', number + ' Jahren']
+    };
+    return withoutSuffix ? format[key][0] : format[key][1];
+}
+
+var de = moment.defineLocale('de', {
+    months : 'Januar_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
+    monthsShort : 'Jan._Febr._Mrz._Apr._Mai_Jun._Jul._Aug._Sept._Okt._Nov._Dez.'.split('_'),
+    monthsParseExact : true,
+    weekdays : 'Sonntag_Montag_Dienstag_Mittwoch_Donnerstag_Freitag_Samstag'.split('_'),
+    weekdaysShort : 'So._Mo._Di._Mi._Do._Fr._Sa.'.split('_'),
+    weekdaysMin : 'So_Mo_Di_Mi_Do_Fr_Sa'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT: 'HH:mm',
+        LTS: 'HH:mm:ss',
+        L : 'DD.MM.YYYY',
+        LL : 'D. MMMM YYYY',
+        LLL : 'D. MMMM YYYY HH:mm',
+        LLLL : 'dddd, D. MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay: '[heute um] LT [Uhr]',
+        sameElse: 'L',
+        nextDay: '[morgen um] LT [Uhr]',
+        nextWeek: 'dddd [um] LT [Uhr]',
+        lastDay: '[gestern um] LT [Uhr]',
+        lastWeek: '[letzten] dddd [um] LT [Uhr]'
+    },
+    relativeTime : {
+        future : 'in %s',
+        past : 'vor %s',
+        s : 'ein paar Sekunden',
+        m : processRelativeTime,
+        mm : '%d Minuten',
+        h : processRelativeTime,
+        hh : '%d Stunden',
+        d : processRelativeTime,
+        dd : processRelativeTime,
+        M : processRelativeTime,
+        MM : processRelativeTime,
+        y : processRelativeTime,
+        yy : processRelativeTime
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}\./,
+    ordinal : '%d.',
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return de;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Spanish [es]
+//! author : Julio Napurí : https://github.com/julionc
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/es',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var monthsShortDot = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_');
+var monthsShort = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
+
+var es = moment.defineLocale('es', {
+    months : 'enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre'.split('_'),
+    monthsShort : function (m, format) {
+        if (!m) {
+            return monthsShortDot;
+        } else if (/-MMM-/.test(format)) {
+            return monthsShort[m.month()];
+        } else {
+            return monthsShortDot[m.month()];
+        }
+    },
+    monthsParseExact : true,
+    weekdays : 'domingo_lunes_martes_miércoles_jueves_viernes_sábado'.split('_'),
+    weekdaysShort : 'dom._lun._mar._mié._jue._vie._sáb.'.split('_'),
+    weekdaysMin : 'do_lu_ma_mi_ju_vi_sá'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'H:mm',
+        LTS : 'H:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D [de] MMMM [de] YYYY',
+        LLL : 'D [de] MMMM [de] YYYY H:mm',
+        LLLL : 'dddd, D [de] MMMM [de] YYYY H:mm'
+    },
+    calendar : {
+        sameDay : function () {
+            return '[hoy a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        nextDay : function () {
+            return '[mañana a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        nextWeek : function () {
+            return 'dddd [a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        lastDay : function () {
+            return '[ayer a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        lastWeek : function () {
+            return '[el] dddd [pasado a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'en %s',
+        past : 'hace %s',
+        s : 'unos segundos',
+        m : 'un minuto',
+        mm : '%d minutos',
+        h : 'una hora',
+        hh : '%d horas',
+        d : 'un día',
+        dd : '%d días',
+        M : 'un mes',
+        MM : '%d meses',
+        y : 'un año',
+        yy : '%d años'
+    },
+    dayOfMonthOrdinalParse : /\d{1,2}º/,
+    ordinal : '%dº',
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return es;
+
+})));
+
+//! moment.js locale configuration
+//! locale : French [fr]
+//! author : John Fischer : https://github.com/jfroffice
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/fr',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var fr = moment.defineLocale('fr', {
+    months : 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
+    monthsShort : 'janv._févr._mars_avr._mai_juin_juil._août_sept._oct._nov._déc.'.split('_'),
+    monthsParseExact : true,
+    weekdays : 'dimanche_lundi_mardi_mercredi_jeudi_vendredi_samedi'.split('_'),
+    weekdaysShort : 'dim._lun._mar._mer._jeu._ven._sam.'.split('_'),
+    weekdaysMin : 'Di_Lu_Ma_Me_Je_Ve_Sa'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd D MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay : '[Aujourd’hui à] LT',
+        nextDay : '[Demain à] LT',
+        nextWeek : 'dddd [à] LT',
+        lastDay : '[Hier à] LT',
+        lastWeek : 'dddd [dernier à] LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'dans %s',
+        past : 'il y a %s',
+        s : 'quelques secondes',
+        m : 'une minute',
+        mm : '%d minutes',
+        h : 'une heure',
+        hh : '%d heures',
+        d : 'un jour',
+        dd : '%d jours',
+        M : 'un mois',
+        MM : '%d mois',
+        y : 'un an',
+        yy : '%d ans'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}(er|)/,
+    ordinal : function (number, period) {
+        switch (period) {
+            // TODO: Return 'e' when day of month > 1. Move this case inside
+            // block for masculine words below.
+            // See https://github.com/moment/moment/issues/3375
+            case 'D':
+                return number + (number === 1 ? 'er' : '');
+
+            // Words with masculine grammatical gender: mois, trimestre, jour
+            default:
+            case 'M':
+            case 'Q':
+            case 'DDD':
+            case 'd':
+                return number + (number === 1 ? 'er' : 'e');
+
+            // Words with feminine grammatical gender: semaine
+            case 'w':
+            case 'W':
+                return number + (number === 1 ? 're' : 'e');
+        }
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return fr;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Hebrew [he]
+//! author : Tomer Cohen : https://github.com/tomer
+//! author : Moshe Simantov : https://github.com/DevelopmentIL
+//! author : Tal Ater : https://github.com/TalAter
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/he',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var he = moment.defineLocale('he', {
+    months : 'ינואר_פברואר_מרץ_אפריל_מאי_יוני_יולי_אוגוסט_ספטמבר_אוקטובר_נובמבר_דצמבר'.split('_'),
+    monthsShort : 'ינו׳_פבר׳_מרץ_אפר׳_מאי_יוני_יולי_אוג׳_ספט׳_אוק׳_נוב׳_דצמ׳'.split('_'),
+    weekdays : 'ראשון_שני_שלישי_רביעי_חמישי_שישי_שבת'.split('_'),
+    weekdaysShort : 'א׳_ב׳_ג׳_ד׳_ה׳_ו׳_ש׳'.split('_'),
+    weekdaysMin : 'א_ב_ג_ד_ה_ו_ש'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D [ב]MMMM YYYY',
+        LLL : 'D [ב]MMMM YYYY HH:mm',
+        LLLL : 'dddd, D [ב]MMMM YYYY HH:mm',
+        l : 'D/M/YYYY',
+        ll : 'D MMM YYYY',
+        lll : 'D MMM YYYY HH:mm',
+        llll : 'ddd, D MMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay : '[היום ב־]LT',
+        nextDay : '[מחר ב־]LT',
+        nextWeek : 'dddd [בשעה] LT',
+        lastDay : '[אתמול ב־]LT',
+        lastWeek : '[ביום] dddd [האחרון בשעה] LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'בעוד %s',
+        past : 'לפני %s',
+        s : 'מספר שניות',
+        m : 'דקה',
+        mm : '%d דקות',
+        h : 'שעה',
+        hh : function (number) {
+            if (number === 2) {
+                return 'שעתיים';
+            }
+            return number + ' שעות';
+        },
+        d : 'יום',
+        dd : function (number) {
+            if (number === 2) {
+                return 'יומיים';
+            }
+            return number + ' ימים';
+        },
+        M : 'חודש',
+        MM : function (number) {
+            if (number === 2) {
+                return 'חודשיים';
+            }
+            return number + ' חודשים';
+        },
+        y : 'שנה',
+        yy : function (number) {
+            if (number === 2) {
+                return 'שנתיים';
+            } else if (number % 10 === 0 && number !== 10) {
+                return number + ' שנה';
+            }
+            return number + ' שנים';
+        }
+    },
+    meridiemParse: /אחה"צ|לפנה"צ|אחרי הצהריים|לפני הצהריים|לפנות בוקר|בבוקר|בערב/i,
+    isPM : function (input) {
+        return /^(אחה"צ|אחרי הצהריים|בערב)$/.test(input);
+    },
+    meridiem : function (hour, minute, isLower) {
+        if (hour < 5) {
+            return 'לפנות בוקר';
+        } else if (hour < 10) {
+            return 'בבוקר';
+        } else if (hour < 12) {
+            return isLower ? 'לפנה"צ' : 'לפני הצהריים';
+        } else if (hour < 18) {
+            return isLower ? 'אחה"צ' : 'אחרי הצהריים';
+        } else {
+            return 'בערב';
+        }
+    }
+});
+
+return he;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Hungarian [hu]
+//! author : Adam Brunner : https://github.com/adambrunner
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/hu',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var weekEndings = 'vasárnap hétfőn kedden szerdán csütörtökön pénteken szombaton'.split(' ');
+function translate(number, withoutSuffix, key, isFuture) {
+    var num = number,
+        suffix;
+    switch (key) {
+        case 's':
+            return (isFuture || withoutSuffix) ? 'néhány másodperc' : 'néhány másodperce';
+        case 'm':
+            return 'egy' + (isFuture || withoutSuffix ? ' perc' : ' perce');
+        case 'mm':
+            return num + (isFuture || withoutSuffix ? ' perc' : ' perce');
+        case 'h':
+            return 'egy' + (isFuture || withoutSuffix ? ' óra' : ' órája');
+        case 'hh':
+            return num + (isFuture || withoutSuffix ? ' óra' : ' órája');
+        case 'd':
+            return 'egy' + (isFuture || withoutSuffix ? ' nap' : ' napja');
+        case 'dd':
+            return num + (isFuture || withoutSuffix ? ' nap' : ' napja');
+        case 'M':
+            return 'egy' + (isFuture || withoutSuffix ? ' hónap' : ' hónapja');
+        case 'MM':
+            return num + (isFuture || withoutSuffix ? ' hónap' : ' hónapja');
+        case 'y':
+            return 'egy' + (isFuture || withoutSuffix ? ' év' : ' éve');
+        case 'yy':
+            return num + (isFuture || withoutSuffix ? ' év' : ' éve');
+    }
+    return '';
+}
+function week(isFuture) {
+    return (isFuture ? '' : '[múlt] ') + '[' + weekEndings[this.day()] + '] LT[-kor]';
+}
+
+var hu = moment.defineLocale('hu', {
+    months : 'január_február_március_április_május_június_július_augusztus_szeptember_október_november_december'.split('_'),
+    monthsShort : 'jan_feb_márc_ápr_máj_jún_júl_aug_szept_okt_nov_dec'.split('_'),
+    weekdays : 'vasárnap_hétfő_kedd_szerda_csütörtök_péntek_szombat'.split('_'),
+    weekdaysShort : 'vas_hét_kedd_sze_csüt_pén_szo'.split('_'),
+    weekdaysMin : 'v_h_k_sze_cs_p_szo'.split('_'),
+    longDateFormat : {
+        LT : 'H:mm',
+        LTS : 'H:mm:ss',
+        L : 'YYYY.MM.DD.',
+        LL : 'YYYY. MMMM D.',
+        LLL : 'YYYY. MMMM D. H:mm',
+        LLLL : 'YYYY. MMMM D., dddd H:mm'
+    },
+    meridiemParse: /de|du/i,
+    isPM: function (input) {
+        return input.charAt(1).toLowerCase() === 'u';
+    },
+    meridiem : function (hours, minutes, isLower) {
+        if (hours < 12) {
+            return isLower === true ? 'de' : 'DE';
+        } else {
+            return isLower === true ? 'du' : 'DU';
+        }
+    },
+    calendar : {
+        sameDay : '[ma] LT[-kor]',
+        nextDay : '[holnap] LT[-kor]',
+        nextWeek : function () {
+            return week.call(this, true);
+        },
+        lastDay : '[tegnap] LT[-kor]',
+        lastWeek : function () {
+            return week.call(this, false);
+        },
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : '%s múlva',
+        past : '%s',
+        s : translate,
+        m : translate,
+        mm : translate,
+        h : translate,
+        hh : translate,
+        d : translate,
+        dd : translate,
+        M : translate,
+        MM : translate,
+        y : translate,
+        yy : translate
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}\./,
+    ordinal : '%d.',
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return hu;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Indonesian [id]
+//! author : Mohammad Satrio Utomo : https://github.com/tyok
+//! reference: http://id.wikisource.org/wiki/Pedoman_Umum_Ejaan_Bahasa_Indonesia_yang_Disempurnakan
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/id',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var id = moment.defineLocale('id', {
+    months : 'Januari_Februari_Maret_April_Mei_Juni_Juli_Agustus_September_Oktober_November_Desember'.split('_'),
+    monthsShort : 'Jan_Feb_Mar_Apr_Mei_Jun_Jul_Ags_Sep_Okt_Nov_Des'.split('_'),
+    weekdays : 'Minggu_Senin_Selasa_Rabu_Kamis_Jumat_Sabtu'.split('_'),
+    weekdaysShort : 'Min_Sen_Sel_Rab_Kam_Jum_Sab'.split('_'),
+    weekdaysMin : 'Mg_Sn_Sl_Rb_Km_Jm_Sb'.split('_'),
+    longDateFormat : {
+        LT : 'HH.mm',
+        LTS : 'HH.mm.ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY [pukul] HH.mm',
+        LLLL : 'dddd, D MMMM YYYY [pukul] HH.mm'
+    },
+    meridiemParse: /pagi|siang|sore|malam/,
+    meridiemHour : function (hour, meridiem) {
+        if (hour === 12) {
+            hour = 0;
+        }
+        if (meridiem === 'pagi') {
+            return hour;
+        } else if (meridiem === 'siang') {
+            return hour >= 11 ? hour : hour + 12;
+        } else if (meridiem === 'sore' || meridiem === 'malam') {
+            return hour + 12;
+        }
+    },
+    meridiem : function (hours, minutes, isLower) {
+        if (hours < 11) {
+            return 'pagi';
+        } else if (hours < 15) {
+            return 'siang';
+        } else if (hours < 19) {
+            return 'sore';
+        } else {
+            return 'malam';
+        }
+    },
+    calendar : {
+        sameDay : '[Hari ini pukul] LT',
+        nextDay : '[Besok pukul] LT',
+        nextWeek : 'dddd [pukul] LT',
+        lastDay : '[Kemarin pukul] LT',
+        lastWeek : 'dddd [lalu pukul] LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'dalam %s',
+        past : '%s yang lalu',
+        s : 'beberapa detik',
+        m : 'semenit',
+        mm : '%d menit',
+        h : 'sejam',
+        hh : '%d jam',
+        d : 'sehari',
+        dd : '%d hari',
+        M : 'sebulan',
+        MM : '%d bulan',
+        y : 'setahun',
+        yy : '%d tahun'
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 7  // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return id;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Italian [it]
+//! author : Lorenzo : https://github.com/aliem
+//! author: Mattia Larentis: https://github.com/nostalgiaz
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/it',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var it = moment.defineLocale('it', {
+    months : 'gennaio_febbraio_marzo_aprile_maggio_giugno_luglio_agosto_settembre_ottobre_novembre_dicembre'.split('_'),
+    monthsShort : 'gen_feb_mar_apr_mag_giu_lug_ago_set_ott_nov_dic'.split('_'),
+    weekdays : 'domenica_lunedì_martedì_mercoledì_giovedì_venerdì_sabato'.split('_'),
+    weekdaysShort : 'dom_lun_mar_mer_gio_ven_sab'.split('_'),
+    weekdaysMin : 'do_lu_ma_me_gi_ve_sa'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd, D MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay: '[Oggi alle] LT',
+        nextDay: '[Domani alle] LT',
+        nextWeek: 'dddd [alle] LT',
+        lastDay: '[Ieri alle] LT',
+        lastWeek: function () {
+            switch (this.day()) {
+                case 0:
+                    return '[la scorsa] dddd [alle] LT';
+                default:
+                    return '[lo scorso] dddd [alle] LT';
+            }
+        },
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : function (s) {
+            return ((/^[0-9].+$/).test(s) ? 'tra' : 'in') + ' ' + s;
+        },
+        past : '%s fa',
+        s : 'alcuni secondi',
+        m : 'un minuto',
+        mm : '%d minuti',
+        h : 'un\'ora',
+        hh : '%d ore',
+        d : 'un giorno',
+        dd : '%d giorni',
+        M : 'un mese',
+        MM : '%d mesi',
+        y : 'un anno',
+        yy : '%d anni'
+    },
+    dayOfMonthOrdinalParse : /\d{1,2}º/,
+    ordinal: '%dº',
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return it;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Japanese [ja]
+//! author : LI Long : https://github.com/baryon
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/ja',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var ja = moment.defineLocale('ja', {
+    months : '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
+    monthsShort : '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
+    weekdays : '日曜日_月曜日_火曜日_水曜日_木曜日_金曜日_土曜日'.split('_'),
+    weekdaysShort : '日_月_火_水_木_金_土'.split('_'),
+    weekdaysMin : '日_月_火_水_木_金_土'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'YYYY/MM/DD',
+        LL : 'YYYY年M月D日',
+        LLL : 'YYYY年M月D日 HH:mm',
+        LLLL : 'YYYY年M月D日 HH:mm dddd',
+        l : 'YYYY/MM/DD',
+        ll : 'YYYY年M月D日',
+        lll : 'YYYY年M月D日 HH:mm',
+        llll : 'YYYY年M月D日 HH:mm dddd'
+    },
+    meridiemParse: /午前|午後/i,
+    isPM : function (input) {
+        return input === '午後';
+    },
+    meridiem : function (hour, minute, isLower) {
+        if (hour < 12) {
+            return '午前';
+        } else {
+            return '午後';
+        }
+    },
+    calendar : {
+        sameDay : '[今日] LT',
+        nextDay : '[明日] LT',
+        nextWeek : '[来週]dddd LT',
+        lastDay : '[昨日] LT',
+        lastWeek : '[前週]dddd LT',
+        sameElse : 'L'
+    },
+    dayOfMonthOrdinalParse : /\d{1,2}日/,
+    ordinal : function (number, period) {
+        switch (period) {
+            case 'd':
+            case 'D':
+            case 'DDD':
+                return number + '日';
+            default:
+                return number;
+        }
+    },
+    relativeTime : {
+        future : '%s後',
+        past : '%s前',
+        s : '数秒',
+        m : '1分',
+        mm : '%d分',
+        h : '1時間',
+        hh : '%d時間',
+        d : '1日',
+        dd : '%d日',
+        M : '1ヶ月',
+        MM : '%dヶ月',
+        y : '1年',
+        yy : '%d年'
+    }
+});
+
+return ja;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Norwegian Bokmål [nb]
+//! authors : Espen Hovlandsdal : https://github.com/rexxars
+//!           Sigurd Gartmann : https://github.com/sigurdga
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/nb',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var nb = moment.defineLocale('nb', {
+    months : 'januar_februar_mars_april_mai_juni_juli_august_september_oktober_november_desember'.split('_'),
+    monthsShort : 'jan._feb._mars_april_mai_juni_juli_aug._sep._okt._nov._des.'.split('_'),
+    monthsParseExact : true,
+    weekdays : 'søndag_mandag_tirsdag_onsdag_torsdag_fredag_lørdag'.split('_'),
+    weekdaysShort : 'sø._ma._ti._on._to._fr._lø.'.split('_'),
+    weekdaysMin : 'sø_ma_ti_on_to_fr_lø'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD.MM.YYYY',
+        LL : 'D. MMMM YYYY',
+        LLL : 'D. MMMM YYYY [kl.] HH:mm',
+        LLLL : 'dddd D. MMMM YYYY [kl.] HH:mm'
+    },
+    calendar : {
+        sameDay: '[i dag kl.] LT',
+        nextDay: '[i morgen kl.] LT',
+        nextWeek: 'dddd [kl.] LT',
+        lastDay: '[i går kl.] LT',
+        lastWeek: '[forrige] dddd [kl.] LT',
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : 'om %s',
+        past : '%s siden',
+        s : 'noen sekunder',
+        m : 'ett minutt',
+        mm : '%d minutter',
+        h : 'en time',
+        hh : '%d timer',
+        d : 'en dag',
+        dd : '%d dager',
+        M : 'en måned',
+        MM : '%d måneder',
+        y : 'ett år',
+        yy : '%d år'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}\./,
+    ordinal : '%d.',
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return nb;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Dutch [nl]
+//! author : Joris Röling : https://github.com/jorisroling
+//! author : Jacob Middag : https://github.com/middagj
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/nl',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var monthsShortWithDots = 'jan._feb._mrt._apr._mei_jun._jul._aug._sep._okt._nov._dec.'.split('_');
+var monthsShortWithoutDots = 'jan_feb_mrt_apr_mei_jun_jul_aug_sep_okt_nov_dec'.split('_');
+
+var monthsParse = [/^jan/i, /^feb/i, /^maart|mrt.?$/i, /^apr/i, /^mei$/i, /^jun[i.]?$/i, /^jul[i.]?$/i, /^aug/i, /^sep/i, /^okt/i, /^nov/i, /^dec/i];
+var monthsRegex = /^(januari|februari|maart|april|mei|april|ju[nl]i|augustus|september|oktober|november|december|jan\.?|feb\.?|mrt\.?|apr\.?|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i;
+
+var nl = moment.defineLocale('nl', {
+    months : 'januari_februari_maart_april_mei_juni_juli_augustus_september_oktober_november_december'.split('_'),
+    monthsShort : function (m, format) {
+        if (!m) {
+            return monthsShortWithDots;
+        } else if (/-MMM-/.test(format)) {
+            return monthsShortWithoutDots[m.month()];
+        } else {
+            return monthsShortWithDots[m.month()];
+        }
+    },
+
+    monthsRegex: monthsRegex,
+    monthsShortRegex: monthsRegex,
+    monthsStrictRegex: /^(januari|februari|maart|mei|ju[nl]i|april|augustus|september|oktober|november|december)/i,
+    monthsShortStrictRegex: /^(jan\.?|feb\.?|mrt\.?|apr\.?|mei|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i,
+
+    monthsParse : monthsParse,
+    longMonthsParse : monthsParse,
+    shortMonthsParse : monthsParse,
+
+    weekdays : 'zondag_maandag_dinsdag_woensdag_donderdag_vrijdag_zaterdag'.split('_'),
+    weekdaysShort : 'zo._ma._di._wo._do._vr._za.'.split('_'),
+    weekdaysMin : 'Zo_Ma_Di_Wo_Do_Vr_Za'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD-MM-YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd D MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay: '[vandaag om] LT',
+        nextDay: '[morgen om] LT',
+        nextWeek: 'dddd [om] LT',
+        lastDay: '[gisteren om] LT',
+        lastWeek: '[afgelopen] dddd [om] LT',
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : 'over %s',
+        past : '%s geleden',
+        s : 'een paar seconden',
+        m : 'één minuut',
+        mm : '%d minuten',
+        h : 'één uur',
+        hh : '%d uur',
+        d : 'één dag',
+        dd : '%d dagen',
+        M : 'één maand',
+        MM : '%d maanden',
+        y : 'één jaar',
+        yy : '%d jaar'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}(ste|de)/,
+    ordinal : function (number) {
+        return number + ((number === 1 || number === 8 || number >= 20) ? 'ste' : 'de');
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return nl;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Polish [pl]
+//! author : Rafal Hirsz : https://github.com/evoL
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/pl',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var monthsNominative = 'styczeń_luty_marzec_kwiecień_maj_czerwiec_lipiec_sierpień_wrzesień_październik_listopad_grudzień'.split('_');
+var monthsSubjective = 'stycznia_lutego_marca_kwietnia_maja_czerwca_lipca_sierpnia_września_października_listopada_grudnia'.split('_');
+function plural(n) {
+    return (n % 10 < 5) && (n % 10 > 1) && ((~~(n / 10) % 10) !== 1);
+}
+function translate(number, withoutSuffix, key) {
+    var result = number + ' ';
+    switch (key) {
+        case 'm':
+            return withoutSuffix ? 'minuta' : 'minutę';
+        case 'mm':
+            return result + (plural(number) ? 'minuty' : 'minut');
+        case 'h':
+            return withoutSuffix  ? 'godzina'  : 'godzinę';
+        case 'hh':
+            return result + (plural(number) ? 'godziny' : 'godzin');
+        case 'MM':
+            return result + (plural(number) ? 'miesiące' : 'miesięcy');
+        case 'yy':
+            return result + (plural(number) ? 'lata' : 'lat');
+    }
+}
+
+var pl = moment.defineLocale('pl', {
+    months : function (momentToFormat, format) {
+        if (!momentToFormat) {
+            return monthsNominative;
+        } else if (format === '') {
+            // Hack: if format empty we know this is used to generate
+            // RegExp by moment. Give then back both valid forms of months
+            // in RegExp ready format.
+            return '(' + monthsSubjective[momentToFormat.month()] + '|' + monthsNominative[momentToFormat.month()] + ')';
+        } else if (/D MMMM/.test(format)) {
+            return monthsSubjective[momentToFormat.month()];
+        } else {
+            return monthsNominative[momentToFormat.month()];
+        }
+    },
+    monthsShort : 'sty_lut_mar_kwi_maj_cze_lip_sie_wrz_paź_lis_gru'.split('_'),
+    weekdays : 'niedziela_poniedziałek_wtorek_środa_czwartek_piątek_sobota'.split('_'),
+    weekdaysShort : 'ndz_pon_wt_śr_czw_pt_sob'.split('_'),
+    weekdaysMin : 'Nd_Pn_Wt_Śr_Cz_Pt_So'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD.MM.YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd, D MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay: '[Dziś o] LT',
+        nextDay: '[Jutro o] LT',
+        nextWeek: '[W] dddd [o] LT',
+        lastDay: '[Wczoraj o] LT',
+        lastWeek: function () {
+            switch (this.day()) {
+                case 0:
+                    return '[W zeszłą niedzielę o] LT';
+                case 3:
+                    return '[W zeszłą środę o] LT';
+                case 6:
+                    return '[W zeszłą sobotę o] LT';
+                default:
+                    return '[W zeszły] dddd [o] LT';
+            }
+        },
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : 'za %s',
+        past : '%s temu',
+        s : 'kilka sekund',
+        m : translate,
+        mm : translate,
+        h : translate,
+        hh : translate,
+        d : '1 dzień',
+        dd : '%d dni',
+        M : 'miesiąc',
+        MM : translate,
+        y : 'rok',
+        yy : translate
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}\./,
+    ordinal : '%d.',
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return pl;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Portuguese (Brazil) [pt-br]
+//! author : Caio Ribeiro Pereira : https://github.com/caio-ribeiro-pereira
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/pt-br',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var ptBr = moment.defineLocale('pt-br', {
+    months : 'Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro'.split('_'),
+    monthsShort : 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_'),
+    weekdays : 'Domingo_Segunda-feira_Terça-feira_Quarta-feira_Quinta-feira_Sexta-feira_Sábado'.split('_'),
+    weekdaysShort : 'Dom_Seg_Ter_Qua_Qui_Sex_Sáb'.split('_'),
+    weekdaysMin : 'Do_2ª_3ª_4ª_5ª_6ª_Sá'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D [de] MMMM [de] YYYY',
+        LLL : 'D [de] MMMM [de] YYYY [às] HH:mm',
+        LLLL : 'dddd, D [de] MMMM [de] YYYY [às] HH:mm'
+    },
+    calendar : {
+        sameDay: '[Hoje às] LT',
+        nextDay: '[Amanhã às] LT',
+        nextWeek: 'dddd [às] LT',
+        lastDay: '[Ontem às] LT',
+        lastWeek: function () {
+            return (this.day() === 0 || this.day() === 6) ?
+                '[Último] dddd [às] LT' : // Saturday + Sunday
+                '[Última] dddd [às] LT'; // Monday - Friday
+        },
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : 'em %s',
+        past : '%s atrás',
+        s : 'poucos segundos',
+        m : 'um minuto',
+        mm : '%d minutos',
+        h : 'uma hora',
+        hh : '%d horas',
+        d : 'um dia',
+        dd : '%d dias',
+        M : 'um mês',
+        MM : '%d meses',
+        y : 'um ano',
+        yy : '%d anos'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}º/,
+    ordinal : '%dº'
+});
+
+return ptBr;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Russian [ru]
+//! author : Viktorminator : https://github.com/Viktorminator
+//! Author : Menelion Elensúle : https://github.com/Oire
+//! author : Коренберг Марк : https://github.com/socketpair
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/ru',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+function plural(word, num) {
+    var forms = word.split('_');
+    return num % 10 === 1 && num % 100 !== 11 ? forms[0] : (num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2]);
+}
+function relativeTimeWithPlural(number, withoutSuffix, key) {
+    var format = {
+        'mm': withoutSuffix ? 'минута_минуты_минут' : 'минуту_минуты_минут',
+        'hh': 'час_часа_часов',
+        'dd': 'день_дня_дней',
+        'MM': 'месяц_месяца_месяцев',
+        'yy': 'год_года_лет'
+    };
+    if (key === 'm') {
+        return withoutSuffix ? 'минута' : 'минуту';
+    }
+    else {
+        return number + ' ' + plural(format[key], +number);
+    }
+}
+var monthsParse = [/^янв/i, /^фев/i, /^мар/i, /^апр/i, /^ма[йя]/i, /^июн/i, /^июл/i, /^авг/i, /^сен/i, /^окт/i, /^ноя/i, /^дек/i];
+
+// http://new.gramota.ru/spravka/rules/139-prop : § 103
+// Сокращения месяцев: http://new.gramota.ru/spravka/buro/search-answer?s=242637
+// CLDR data:          http://www.unicode.org/cldr/charts/28/summary/ru.html#1753
+var ru = moment.defineLocale('ru', {
+    months : {
+        format: 'января_февраля_марта_апреля_мая_июня_июля_августа_сентября_октября_ноября_декабря'.split('_'),
+        standalone: 'январь_февраль_март_апрель_май_июнь_июль_август_сентябрь_октябрь_ноябрь_декабрь'.split('_')
+    },
+    monthsShort : {
+        // по CLDR именно "июл." и "июн.", но какой смысл менять букву на точку ?
+        format: 'янв._февр._мар._апр._мая_июня_июля_авг._сент._окт._нояб._дек.'.split('_'),
+        standalone: 'янв._февр._март_апр._май_июнь_июль_авг._сент._окт._нояб._дек.'.split('_')
+    },
+    weekdays : {
+        standalone: 'воскресенье_понедельник_вторник_среда_четверг_пятница_суббота'.split('_'),
+        format: 'воскресенье_понедельник_вторник_среду_четверг_пятницу_субботу'.split('_'),
+        isFormat: /\[ ?[Вв] ?(?:прошлую|следующую|эту)? ?\] ?dddd/
+    },
+    weekdaysShort : 'вс_пн_вт_ср_чт_пт_сб'.split('_'),
+    weekdaysMin : 'вс_пн_вт_ср_чт_пт_сб'.split('_'),
+    monthsParse : monthsParse,
+    longMonthsParse : monthsParse,
+    shortMonthsParse : monthsParse,
+
+    // полные названия с падежами, по три буквы, для некоторых, по 4 буквы, сокращения с точкой и без точки
+    monthsRegex: /^(январ[ья]|янв\.?|феврал[ья]|февр?\.?|марта?|мар\.?|апрел[ья]|апр\.?|ма[йя]|июн[ья]|июн\.?|июл[ья]|июл\.?|августа?|авг\.?|сентябр[ья]|сент?\.?|октябр[ья]|окт\.?|ноябр[ья]|нояб?\.?|декабр[ья]|дек\.?)/i,
+
+    // копия предыдущего
+    monthsShortRegex: /^(январ[ья]|янв\.?|феврал[ья]|февр?\.?|марта?|мар\.?|апрел[ья]|апр\.?|ма[йя]|июн[ья]|июн\.?|июл[ья]|июл\.?|августа?|авг\.?|сентябр[ья]|сент?\.?|октябр[ья]|окт\.?|ноябр[ья]|нояб?\.?|декабр[ья]|дек\.?)/i,
+
+    // полные названия с падежами
+    monthsStrictRegex: /^(январ[яь]|феврал[яь]|марта?|апрел[яь]|ма[яй]|июн[яь]|июл[яь]|августа?|сентябр[яь]|октябр[яь]|ноябр[яь]|декабр[яь])/i,
+
+    // Выражение, которое соотвествует только сокращённым формам
+    monthsShortStrictRegex: /^(янв\.|февр?\.|мар[т.]|апр\.|ма[яй]|июн[ья.]|июл[ья.]|авг\.|сент?\.|окт\.|нояб?\.|дек\.)/i,
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD.MM.YYYY',
+        LL : 'D MMMM YYYY г.',
+        LLL : 'D MMMM YYYY г., HH:mm',
+        LLLL : 'dddd, D MMMM YYYY г., HH:mm'
+    },
+    calendar : {
+        sameDay: '[Сегодня в] LT',
+        nextDay: '[Завтра в] LT',
+        lastDay: '[Вчера в] LT',
+        nextWeek: function (now) {
+            if (now.week() !== this.week()) {
+                switch (this.day()) {
+                    case 0:
+                        return '[В следующее] dddd [в] LT';
+                    case 1:
+                    case 2:
+                    case 4:
+                        return '[В следующий] dddd [в] LT';
+                    case 3:
+                    case 5:
+                    case 6:
+                        return '[В следующую] dddd [в] LT';
+                }
+            } else {
+                if (this.day() === 2) {
+                    return '[Во] dddd [в] LT';
+                } else {
+                    return '[В] dddd [в] LT';
+                }
+            }
+        },
+        lastWeek: function (now) {
+            if (now.week() !== this.week()) {
+                switch (this.day()) {
+                    case 0:
+                        return '[В прошлое] dddd [в] LT';
+                    case 1:
+                    case 2:
+                    case 4:
+                        return '[В прошлый] dddd [в] LT';
+                    case 3:
+                    case 5:
+                    case 6:
+                        return '[В прошлую] dddd [в] LT';
+                }
+            } else {
+                if (this.day() === 2) {
+                    return '[Во] dddd [в] LT';
+                } else {
+                    return '[В] dddd [в] LT';
+                }
+            }
+        },
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : 'через %s',
+        past : '%s назад',
+        s : 'несколько секунд',
+        m : relativeTimeWithPlural,
+        mm : relativeTimeWithPlural,
+        h : 'час',
+        hh : relativeTimeWithPlural,
+        d : 'день',
+        dd : relativeTimeWithPlural,
+        M : 'месяц',
+        MM : relativeTimeWithPlural,
+        y : 'год',
+        yy : relativeTimeWithPlural
+    },
+    meridiemParse: /ночи|утра|дня|вечера/i,
+    isPM : function (input) {
+        return /^(дня|вечера)$/.test(input);
+    },
+    meridiem : function (hour, minute, isLower) {
+        if (hour < 4) {
+            return 'ночи';
+        } else if (hour < 12) {
+            return 'утра';
+        } else if (hour < 17) {
+            return 'дня';
+        } else {
+            return 'вечера';
+        }
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}-(й|го|я)/,
+    ordinal: function (number, period) {
+        switch (period) {
+            case 'M':
+            case 'd':
+            case 'DDD':
+                return number + '-й';
+            case 'D':
+                return number + '-го';
+            case 'w':
+            case 'W':
+                return number + '-я';
+            default:
+                return number;
+        }
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 7  // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return ru;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Ukrainian [uk]
+//! author : zemlanin : https://github.com/zemlanin
+//! Author : Menelion Elensúle : https://github.com/Oire
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/uk',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+function plural(word, num) {
+    var forms = word.split('_');
+    return num % 10 === 1 && num % 100 !== 11 ? forms[0] : (num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2]);
+}
+function relativeTimeWithPlural(number, withoutSuffix, key) {
+    var format = {
+        'mm': withoutSuffix ? 'хвилина_хвилини_хвилин' : 'хвилину_хвилини_хвилин',
+        'hh': withoutSuffix ? 'година_години_годин' : 'годину_години_годин',
+        'dd': 'день_дні_днів',
+        'MM': 'місяць_місяці_місяців',
+        'yy': 'рік_роки_років'
+    };
+    if (key === 'm') {
+        return withoutSuffix ? 'хвилина' : 'хвилину';
+    }
+    else if (key === 'h') {
+        return withoutSuffix ? 'година' : 'годину';
+    }
+    else {
+        return number + ' ' + plural(format[key], +number);
+    }
+}
+function weekdaysCaseReplace(m, format) {
+    var weekdays = {
+        'nominative': 'неділя_понеділок_вівторок_середа_четвер_п’ятниця_субота'.split('_'),
+        'accusative': 'неділю_понеділок_вівторок_середу_четвер_п’ятницю_суботу'.split('_'),
+        'genitive': 'неділі_понеділка_вівторка_середи_четверга_п’ятниці_суботи'.split('_')
+    };
+
+    if (!m) {
+        return weekdays['nominative'];
+    }
+
+    var nounCase = (/(\[[ВвУу]\]) ?dddd/).test(format) ?
+        'accusative' :
+        ((/\[?(?:минулої|наступної)? ?\] ?dddd/).test(format) ?
+            'genitive' :
+            'nominative');
+    return weekdays[nounCase][m.day()];
+}
+function processHoursFunction(str) {
+    return function () {
+        return str + 'о' + (this.hours() === 11 ? 'б' : '') + '] LT';
+    };
+}
+
+var uk = moment.defineLocale('uk', {
+    months : {
+        'format': 'січня_лютого_березня_квітня_травня_червня_липня_серпня_вересня_жовтня_листопада_грудня'.split('_'),
+        'standalone': 'січень_лютий_березень_квітень_травень_червень_липень_серпень_вересень_жовтень_листопад_грудень'.split('_')
+    },
+    monthsShort : 'січ_лют_бер_квіт_трав_черв_лип_серп_вер_жовт_лист_груд'.split('_'),
+    weekdays : weekdaysCaseReplace,
+    weekdaysShort : 'нд_пн_вт_ср_чт_пт_сб'.split('_'),
+    weekdaysMin : 'нд_пн_вт_ср_чт_пт_сб'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD.MM.YYYY',
+        LL : 'D MMMM YYYY р.',
+        LLL : 'D MMMM YYYY р., HH:mm',
+        LLLL : 'dddd, D MMMM YYYY р., HH:mm'
+    },
+    calendar : {
+        sameDay: processHoursFunction('[Сьогодні '),
+        nextDay: processHoursFunction('[Завтра '),
+        lastDay: processHoursFunction('[Вчора '),
+        nextWeek: processHoursFunction('[У] dddd ['),
+        lastWeek: function () {
+            switch (this.day()) {
+                case 0:
+                case 3:
+                case 5:
+                case 6:
+                    return processHoursFunction('[Минулої] dddd [').call(this);
+                case 1:
+                case 2:
+                case 4:
+                    return processHoursFunction('[Минулого] dddd [').call(this);
+            }
+        },
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : 'за %s',
+        past : '%s тому',
+        s : 'декілька секунд',
+        m : relativeTimeWithPlural,
+        mm : relativeTimeWithPlural,
+        h : 'годину',
+        hh : relativeTimeWithPlural,
+        d : 'день',
+        dd : relativeTimeWithPlural,
+        M : 'місяць',
+        MM : relativeTimeWithPlural,
+        y : 'рік',
+        yy : relativeTimeWithPlural
+    },
+    // M. E.: those two are virtually unused but a user might want to implement them for his/her website for some reason
+    meridiemParse: /ночі|ранку|дня|вечора/,
+    isPM: function (input) {
+        return /^(дня|вечора)$/.test(input);
+    },
+    meridiem : function (hour, minute, isLower) {
+        if (hour < 4) {
+            return 'ночі';
+        } else if (hour < 12) {
+            return 'ранку';
+        } else if (hour < 17) {
+            return 'дня';
+        } else {
+            return 'вечора';
+        }
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}-(й|го)/,
+    ordinal: function (number, period) {
+        switch (period) {
+            case 'M':
+            case 'd':
+            case 'DDD':
+            case 'w':
+            case 'W':
+                return number + '-й';
+            case 'D':
+                return number + '-го';
+            default:
+                return number;
+        }
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 7  // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return uk;
+
+})));
+
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// This is the internationalization module.
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global define */
+
+(function (root, factory) {
+    define('i18n',["es6-promise", "jed", "lodash.noconflict", "moment", 'moment/locale/af', 'moment/locale/ca', 'moment/locale/de', 'moment/locale/es', 'moment/locale/fr', 'moment/locale/he', 'moment/locale/hu', 'moment/locale/id', 'moment/locale/it', 'moment/locale/ja', 'moment/locale/nb', 'moment/locale/nl', 'moment/locale/pl', 'moment/locale/pt-br', 'moment/locale/ru', 'moment/locale/uk'], factory);
+})(undefined, function (Promise, Jed, _, moment) {
+    'use strict';
+
+    function detectLocale(library_check) {
+        /* Determine which locale is supported by the user's system as well
+         * as by the relevant library (e.g. converse.js or moment.js).
+         *
+         * Parameters:
+         *      (Function) library_check - Returns a boolean indicating whether
+         *                                 the locale is supported.
+         */
+        var locale, i;
+        if (window.navigator.userLanguage) {
+            locale = isLocaleAvailable(window.navigator.userLanguage, library_check);
+        }
+        if (window.navigator.languages && !locale) {
+            for (i = 0; i < window.navigator.languages.length && !locale; i++) {
+                locale = isLocaleAvailable(window.navigator.languages[i], library_check);
+            }
+        }
+        if (window.navigator.browserLanguage && !locale) {
+            locale = isLocaleAvailable(window.navigator.browserLanguage, library_check);
+        }
+        if (window.navigator.language && !locale) {
+            locale = isLocaleAvailable(window.navigator.language, library_check);
+        }
+        if (window.navigator.systemLanguage && !locale) {
+            locale = isLocaleAvailable(window.navigator.systemLanguage, library_check);
+        }
+        return locale || 'en';
+    }
+
+    function isMomentLocale(locale) {
+        return _.isString(locale) && moment.locale() === moment.locale(locale);
+    }
+
+    function isConverseLocale(locale, supported_locales) {
+        return _.isString(locale) && _.includes(supported_locales, locale);
+    }
+
+    function getLocale(preferred_locale, isSupportedByLibrary) {
+        if (_.isString(preferred_locale)) {
+            if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
+                return preferred_locale;
+            }
+        }
+        return detectLocale(isSupportedByLibrary) || 'en';
+    }
+
+    function isLocaleAvailable(locale, available) {
+        /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
+         *
+         * Parameters:
+         *      (String) locale - The locale to check for
+         *      (Function) available - returns a boolean indicating whether the locale is supported
+         */
+        if (available(locale)) {
+            return locale;
+        } else {
+            var sublocale = locale.split("-")[0];
+            if (sublocale !== locale && available(sublocale)) {
+                return sublocale;
+            }
+        }
+    }
+
+    var jed_instance = void 0;
+
+    return {
+        setLocales: function setLocales(preferred_locale, _converse) {
+            _converse.locale = getLocale(preferred_locale, _.partial(isConverseLocale, _, _converse.locales));
+            moment.locale(getLocale(preferred_locale, isMomentLocale));
+        },
+        translate: function translate(str) {
+            if (_.isNil(jed_instance)) {
+                return Jed.sprintf.apply(Jed, arguments);
+            }
+            var t = jed_instance.translate(str);
+            if (arguments.length > 1) {
+                return t.fetch.apply(t, [].slice.call(arguments, 1));
+            } else {
+                return t.fetch();
+            }
+        },
+        fetchTranslations: function fetchTranslations(locale, supported_locales, locale_url) {
+            /* Fetch the translations for the given local at the given URL.
+             *
+             * Parameters:
+             *  (String) locale:            The given i18n locale
+             *  (Array) supported_locales:  List of locales supported
+             *  (String) locale_url:        The URL from which the translations
+             *                              should be fetched.
+             */
+            return new Promise(function (resolve, reject) {
+                if (!isConverseLocale(locale, supported_locales) || locale === 'en') {
+                    return resolve();
+                }
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', locale_url, true);
+                xhr.setRequestHeader('Accept', "application/json, text/javascript");
+                xhr.onload = function () {
+                    if (xhr.status >= 200 && xhr.status < 400) {
+                        jed_instance = new Jed(window.JSON.parse(xhr.responseText));
+                        resolve();
+                    } else {
+                        xhr.onerror();
+                    }
+                };
+                xhr.onerror = function () {
+                    reject(xhr.statusText);
+                };
+                xhr.send();
+            });
+        }
+    };
+});
+//# sourceMappingURL=i18n.js.map;
 /*!
  * jQuery JavaScript Library v2.2.3
  * http://jquery.com/
@@ -30954,7453 +38075,6 @@ define('jquery.noconflict',['jquery'], function (jq) {
   return window.jQBrowser;
 }));
 
-/*
-jed.js
-v0.5.0beta
-
-https://github.com/SlexAxton/Jed
------------
-A gettext compatible i18n library for modern JavaScript Applications
-
-by Alex Sexton - AlexSexton [at] gmail - @SlexAxton
-WTFPL license for use
-Dojo CLA for contributions
-
-Jed offers the entire applicable GNU gettext spec'd set of
-functions, but also offers some nicer wrappers around them.
-The api for gettext was written for a language with no function
-overloading, so Jed allows a little more of that.
-
-Many thanks to Joshua I. Miller - unrtst@cpan.org - who wrote
-gettext.js back in 2008. I was able to vet a lot of my ideas
-against his. I also made sure Jed passed against his tests
-in order to offer easy upgrades -- jsgettext.berlios.de
-*/
-(function (root, undef) {
-
-  // Set up some underscore-style functions, if you already have
-  // underscore, feel free to delete this section, and use it
-  // directly, however, the amount of functions used doesn't
-  // warrant having underscore as a full dependency.
-  // Underscore 1.3.0 was used to port and is licensed
-  // under the MIT License by Jeremy Ashkenas.
-  var ArrayProto    = Array.prototype,
-      ObjProto      = Object.prototype,
-      slice         = ArrayProto.slice,
-      hasOwnProp    = ObjProto.hasOwnProperty,
-      nativeForEach = ArrayProto.forEach,
-      breaker       = {};
-
-  // We're not using the OOP style _ so we don't need the
-  // extra level of indirection. This still means that you
-  // sub out for real `_` though.
-  var _ = {
-    forEach : function( obj, iterator, context ) {
-      var i, l, key;
-      if ( obj === null ) {
-        return;
-      }
-
-      if ( nativeForEach && obj.forEach === nativeForEach ) {
-        obj.forEach( iterator, context );
-      }
-      else if ( obj.length === +obj.length ) {
-        for ( i = 0, l = obj.length; i < l; i++ ) {
-          if ( i in obj && iterator.call( context, obj[i], i, obj ) === breaker ) {
-            return;
-          }
-        }
-      }
-      else {
-        for ( key in obj) {
-          if ( hasOwnProp.call( obj, key ) ) {
-            if ( iterator.call (context, obj[key], key, obj ) === breaker ) {
-              return;
-            }
-          }
-        }
-      }
-    },
-    extend : function( obj ) {
-      this.forEach( slice.call( arguments, 1 ), function ( source ) {
-        for ( var prop in source ) {
-          obj[prop] = source[prop];
-        }
-      });
-      return obj;
-    }
-  };
-  // END Miniature underscore impl
-
-  // Jed is a constructor function
-  var Jed = function ( options ) {
-    // Some minimal defaults
-    this.defaults = {
-      "locale_data" : {
-        "messages" : {
-          "" : {
-            "domain"       : "messages",
-            "lang"         : "en",
-            "plural_forms" : "nplurals=2; plural=(n != 1);"
-          }
-          // There are no default keys, though
-        }
-      },
-      // The default domain if one is missing
-      "domain" : "messages"
-    };
-
-    // Mix in the sent options with the default options
-    this.options = _.extend( {}, this.defaults, options );
-    this.textdomain( this.options.domain );
-
-    if ( options.domain && ! this.options.locale_data[ this.options.domain ] ) {
-      throw new Error('Text domain set to non-existent domain: `' + options.domain + '`');
-    }
-  };
-
-  // The gettext spec sets this character as the default
-  // delimiter for context lookups.
-  // e.g.: context\u0004key
-  // If your translation company uses something different,
-  // just change this at any time and it will use that instead.
-  Jed.context_delimiter = String.fromCharCode( 4 );
-
-  function getPluralFormFunc ( plural_form_string ) {
-    return Jed.PF.compile( plural_form_string || "nplurals=2; plural=(n != 1);");
-  }
-
-  function Chain( key, i18n ){
-    this._key = key;
-    this._i18n = i18n;
-  }
-
-  // Create a chainable api for adding args prettily
-  _.extend( Chain.prototype, {
-    onDomain : function ( domain ) {
-      this._domain = domain;
-      return this;
-    },
-    withContext : function ( context ) {
-      this._context = context;
-      return this;
-    },
-    ifPlural : function ( num, pkey ) {
-      this._val = num;
-      this._pkey = pkey;
-      return this;
-    },
-    fetch : function ( sArr ) {
-      if ( {}.toString.call( sArr ) != '[object Array]' ) {
-        sArr = [].slice.call(arguments);
-      }
-      return ( sArr && sArr.length ? Jed.sprintf : function(x){ return x; } )(
-        this._i18n.dcnpgettext(this._domain, this._context, this._key, this._pkey, this._val),
-        sArr
-      );
-    }
-  });
-
-  // Add functions to the Jed prototype.
-  // These will be the functions on the object that's returned
-  // from creating a `new Jed()`
-  // These seem redundant, but they gzip pretty well.
-  _.extend( Jed.prototype, {
-    // The sexier api start point
-    translate : function ( key ) {
-      return new Chain( key, this );
-    },
-
-    textdomain : function ( domain ) {
-      if ( ! domain ) {
-        return this._textdomain;
-      }
-      this._textdomain = domain;
-    },
-
-    gettext : function ( key ) {
-      return this.dcnpgettext.call( this, undef, undef, key );
-    },
-
-    dgettext : function ( domain, key ) {
-     return this.dcnpgettext.call( this, domain, undef, key );
-    },
-
-    dcgettext : function ( domain , key /*, category */ ) {
-      // Ignores the category anyways
-      return this.dcnpgettext.call( this, domain, undef, key );
-    },
-
-    ngettext : function ( skey, pkey, val ) {
-      return this.dcnpgettext.call( this, undef, undef, skey, pkey, val );
-    },
-
-    dngettext : function ( domain, skey, pkey, val ) {
-      return this.dcnpgettext.call( this, domain, undef, skey, pkey, val );
-    },
-
-    dcngettext : function ( domain, skey, pkey, val/*, category */) {
-      return this.dcnpgettext.call( this, domain, undef, skey, pkey, val );
-    },
-
-    pgettext : function ( context, key ) {
-      return this.dcnpgettext.call( this, undef, context, key );
-    },
-
-    dpgettext : function ( domain, context, key ) {
-      return this.dcnpgettext.call( this, domain, context, key );
-    },
-
-    dcpgettext : function ( domain, context, key/*, category */) {
-      return this.dcnpgettext.call( this, domain, context, key );
-    },
-
-    npgettext : function ( context, skey, pkey, val ) {
-      return this.dcnpgettext.call( this, undef, context, skey, pkey, val );
-    },
-
-    dnpgettext : function ( domain, context, skey, pkey, val ) {
-      return this.dcnpgettext.call( this, domain, context, skey, pkey, val );
-    },
-
-    // The most fully qualified gettext function. It has every option.
-    // Since it has every option, we can use it from every other method.
-    // This is the bread and butter.
-    // Technically there should be one more argument in this function for 'Category',
-    // but since we never use it, we might as well not waste the bytes to define it.
-    dcnpgettext : function ( domain, context, singular_key, plural_key, val ) {
-      // Set some defaults
-
-      plural_key = plural_key || singular_key;
-
-      // Use the global domain default if one
-      // isn't explicitly passed in
-      domain = domain || this._textdomain;
-
-      // Default the value to the singular case
-      val = typeof val == 'undefined' ? 1 : val;
-
-      var fallback;
-
-      // Handle special cases
-
-      // No options found
-      if ( ! this.options ) {
-        // There's likely something wrong, but we'll return the correct key for english
-        // We do this by instantiating a brand new Jed instance with the default set
-        // for everything that could be broken.
-        fallback = new Jed();
-        return fallback.dcnpgettext.call( fallback, undefined, undefined, singular_key, plural_key, val );
-      }
-
-      // No translation data provided
-      if ( ! this.options.locale_data ) {
-        throw new Error('No locale data provided.');
-      }
-
-      if ( ! this.options.locale_data[ domain ] ) {
-        throw new Error('Domain `' + domain + '` was not found.');
-      }
-
-      if ( ! this.options.locale_data[ domain ][ "" ] ) {
-        throw new Error('No locale meta information provided.');
-      }
-
-      // Make sure we have a truthy key. Otherwise we might start looking
-      // into the empty string key, which is the options for the locale
-      // data.
-      if ( ! singular_key ) {
-        throw new Error('No translation key found.');
-      }
-
-      // Handle invalid numbers, but try casting strings for good measure
-      if ( typeof val != 'number' ) {
-        val = parseInt( val, 10 );
-
-        if ( isNaN( val ) ) {
-          throw new Error('The number that was passed in is not a number.');
-        }
-      }
-
-      var key  = context ? context + Jed.context_delimiter + singular_key : singular_key,
-          locale_data = this.options.locale_data,
-          dict = locale_data[ domain ],
-          pluralForms = dict[""].plural_forms || (locale_data.messages || this.defaults.locale_data.messages)[""].plural_forms,
-          val_idx = getPluralFormFunc(pluralForms)(val) + 1,
-          val_list,
-          res;
-
-      // Throw an error if a domain isn't found
-      if ( ! dict ) {
-        throw new Error('No domain named `' + domain + '` could be found.');
-      }
-
-      val_list = dict[ key ];
-
-      // If there is no match, then revert back to
-      // english style singular/plural with the keys passed in.
-      if ( ! val_list || val_idx >= val_list.length ) {
-        if (this.options.missing_key_callback) {
-          this.options.missing_key_callback(key);
-        }
-        res = [ null, singular_key, plural_key ];
-        return res[ getPluralFormFunc(pluralForms)( val ) + 1 ];
-      }
-
-      res = val_list[ val_idx ];
-
-      // This includes empty strings on purpose
-      if ( ! res  ) {
-        res = [ null, singular_key, plural_key ];
-        return res[ getPluralFormFunc(pluralForms)( val ) + 1 ];
-      }
-      return res;
-    }
-  });
-
-
-  // We add in sprintf capabilities for post translation value interolation
-  // This is not internally used, so you can remove it if you have this
-  // available somewhere else, or want to use a different system.
-
-  // We _slightly_ modify the normal sprintf behavior to more gracefully handle
-  // undefined values.
-
-  /**
-   sprintf() for JavaScript 0.7-beta1
-   http://www.diveintojavascript.com/projects/javascript-sprintf
-
-   Copyright (c) Alexandru Marasteanu <alexaholic [at) gmail (dot] com>
-   All rights reserved.
-
-   Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions are met:
-       * Redistributions of source code must retain the above copyright
-         notice, this list of conditions and the following disclaimer.
-       * Redistributions in binary form must reproduce the above copyright
-         notice, this list of conditions and the following disclaimer in the
-         documentation and/or other materials provided with the distribution.
-       * Neither the name of sprintf() for JavaScript nor the
-         names of its contributors may be used to endorse or promote products
-         derived from this software without specific prior written permission.
-
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-   DISCLAIMED. IN NO EVENT SHALL Alexandru Marasteanu BE LIABLE FOR ANY
-   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  */
-  var sprintf = (function() {
-    function get_type(variable) {
-      return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase();
-    }
-    function str_repeat(input, multiplier) {
-      for (var output = []; multiplier > 0; output[--multiplier] = input) {/* do nothing */}
-      return output.join('');
-    }
-
-    var str_format = function() {
-      if (!str_format.cache.hasOwnProperty(arguments[0])) {
-        str_format.cache[arguments[0]] = str_format.parse(arguments[0]);
-      }
-      return str_format.format.call(null, str_format.cache[arguments[0]], arguments);
-    };
-
-    str_format.format = function(parse_tree, argv) {
-      var cursor = 1, tree_length = parse_tree.length, node_type = '', arg, output = [], i, k, match, pad, pad_character, pad_length;
-      for (i = 0; i < tree_length; i++) {
-        node_type = get_type(parse_tree[i]);
-        if (node_type === 'string') {
-          output.push(parse_tree[i]);
-        }
-        else if (node_type === 'array') {
-          match = parse_tree[i]; // convenience purposes only
-          if (match[2]) { // keyword argument
-            arg = argv[cursor];
-            for (k = 0; k < match[2].length; k++) {
-              if (!arg.hasOwnProperty(match[2][k])) {
-                throw(sprintf('[sprintf] property "%s" does not exist', match[2][k]));
-              }
-              arg = arg[match[2][k]];
-            }
-          }
-          else if (match[1]) { // positional argument (explicit)
-            arg = argv[match[1]];
-          }
-          else { // positional argument (implicit)
-            arg = argv[cursor++];
-          }
-
-          if (/[^s]/.test(match[8]) && (get_type(arg) != 'number')) {
-            throw(sprintf('[sprintf] expecting number but found %s', get_type(arg)));
-          }
-
-          // Jed EDIT
-          if ( typeof arg == 'undefined' || arg === null ) {
-            arg = '';
-          }
-          // Jed EDIT
-
-          switch (match[8]) {
-            case 'b': arg = arg.toString(2); break;
-            case 'c': arg = String.fromCharCode(arg); break;
-            case 'd': arg = parseInt(arg, 10); break;
-            case 'e': arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential(); break;
-            case 'f': arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg); break;
-            case 'o': arg = arg.toString(8); break;
-            case 's': arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg); break;
-            case 'u': arg = Math.abs(arg); break;
-            case 'x': arg = arg.toString(16); break;
-            case 'X': arg = arg.toString(16).toUpperCase(); break;
-          }
-          arg = (/[def]/.test(match[8]) && match[3] && arg >= 0 ? '+'+ arg : arg);
-          pad_character = match[4] ? match[4] == '0' ? '0' : match[4].charAt(1) : ' ';
-          pad_length = match[6] - String(arg).length;
-          pad = match[6] ? str_repeat(pad_character, pad_length) : '';
-          output.push(match[5] ? arg + pad : pad + arg);
-        }
-      }
-      return output.join('');
-    };
-
-    str_format.cache = {};
-
-    str_format.parse = function(fmt) {
-      var _fmt = fmt, match = [], parse_tree = [], arg_names = 0;
-      while (_fmt) {
-        if ((match = /^[^\x25]+/.exec(_fmt)) !== null) {
-          parse_tree.push(match[0]);
-        }
-        else if ((match = /^\x25{2}/.exec(_fmt)) !== null) {
-          parse_tree.push('%');
-        }
-        else if ((match = /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(_fmt)) !== null) {
-          if (match[2]) {
-            arg_names |= 1;
-            var field_list = [], replacement_field = match[2], field_match = [];
-            if ((field_match = /^([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
-              field_list.push(field_match[1]);
-              while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
-                if ((field_match = /^\.([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
-                  field_list.push(field_match[1]);
-                }
-                else if ((field_match = /^\[(\d+)\]/.exec(replacement_field)) !== null) {
-                  field_list.push(field_match[1]);
-                }
-                else {
-                  throw('[sprintf] huh?');
-                }
-              }
-            }
-            else {
-              throw('[sprintf] huh?');
-            }
-            match[2] = field_list;
-          }
-          else {
-            arg_names |= 2;
-          }
-          if (arg_names === 3) {
-            throw('[sprintf] mixing positional and named placeholders is not (yet) supported');
-          }
-          parse_tree.push(match);
-        }
-        else {
-          throw('[sprintf] huh?');
-        }
-        _fmt = _fmt.substring(match[0].length);
-      }
-      return parse_tree;
-    };
-
-    return str_format;
-  })();
-
-  var vsprintf = function(fmt, argv) {
-    argv.unshift(fmt);
-    return sprintf.apply(null, argv);
-  };
-
-  Jed.parse_plural = function ( plural_forms, n ) {
-    plural_forms = plural_forms.replace(/n/g, n);
-    return Jed.parse_expression(plural_forms);
-  };
-
-  Jed.sprintf = function ( fmt, args ) {
-    if ( {}.toString.call( args ) == '[object Array]' ) {
-      return vsprintf( fmt, [].slice.call(args) );
-    }
-    return sprintf.apply(this, [].slice.call(arguments) );
-  };
-
-  Jed.prototype.sprintf = function () {
-    return Jed.sprintf.apply(this, arguments);
-  };
-  // END sprintf Implementation
-
-  // Start the Plural forms section
-  // This is a full plural form expression parser. It is used to avoid
-  // running 'eval' or 'new Function' directly against the plural
-  // forms.
-  //
-  // This can be important if you get translations done through a 3rd
-  // party vendor. I encourage you to use this instead, however, I
-  // also will provide a 'precompiler' that you can use at build time
-  // to output valid/safe function representations of the plural form
-  // expressions. This means you can build this code out for the most
-  // part.
-  Jed.PF = {};
-
-  Jed.PF.parse = function ( p ) {
-    var plural_str = Jed.PF.extractPluralExpr( p );
-    return Jed.PF.parser.parse.call(Jed.PF.parser, plural_str);
-  };
-
-  Jed.PF.compile = function ( p ) {
-    // Handle trues and falses as 0 and 1
-    function imply( val ) {
-      return (val === true ? 1 : val ? val : 0);
-    }
-
-    var ast = Jed.PF.parse( p );
-    return function ( n ) {
-      return imply( Jed.PF.interpreter( ast )( n ) );
-    };
-  };
-
-  Jed.PF.interpreter = function ( ast ) {
-    return function ( n ) {
-      var res;
-      switch ( ast.type ) {
-        case 'GROUP':
-          return Jed.PF.interpreter( ast.expr )( n );
-        case 'TERNARY':
-          if ( Jed.PF.interpreter( ast.expr )( n ) ) {
-            return Jed.PF.interpreter( ast.truthy )( n );
-          }
-          return Jed.PF.interpreter( ast.falsey )( n );
-        case 'OR':
-          return Jed.PF.interpreter( ast.left )( n ) || Jed.PF.interpreter( ast.right )( n );
-        case 'AND':
-          return Jed.PF.interpreter( ast.left )( n ) && Jed.PF.interpreter( ast.right )( n );
-        case 'LT':
-          return Jed.PF.interpreter( ast.left )( n ) < Jed.PF.interpreter( ast.right )( n );
-        case 'GT':
-          return Jed.PF.interpreter( ast.left )( n ) > Jed.PF.interpreter( ast.right )( n );
-        case 'LTE':
-          return Jed.PF.interpreter( ast.left )( n ) <= Jed.PF.interpreter( ast.right )( n );
-        case 'GTE':
-          return Jed.PF.interpreter( ast.left )( n ) >= Jed.PF.interpreter( ast.right )( n );
-        case 'EQ':
-          return Jed.PF.interpreter( ast.left )( n ) == Jed.PF.interpreter( ast.right )( n );
-        case 'NEQ':
-          return Jed.PF.interpreter( ast.left )( n ) != Jed.PF.interpreter( ast.right )( n );
-        case 'MOD':
-          return Jed.PF.interpreter( ast.left )( n ) % Jed.PF.interpreter( ast.right )( n );
-        case 'VAR':
-          return n;
-        case 'NUM':
-          return ast.val;
-        default:
-          throw new Error("Invalid Token found.");
-      }
-    };
-  };
-
-  Jed.PF.extractPluralExpr = function ( p ) {
-    // trim first
-    p = p.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-
-    if (! /;\s*$/.test(p)) {
-      p = p.concat(';');
-    }
-
-    var nplurals_re = /nplurals\=(\d+);/,
-        plural_re = /plural\=(.*);/,
-        nplurals_matches = p.match( nplurals_re ),
-        res = {},
-        plural_matches;
-
-    // Find the nplurals number
-    if ( nplurals_matches.length > 1 ) {
-      res.nplurals = nplurals_matches[1];
-    }
-    else {
-      throw new Error('nplurals not found in plural_forms string: ' + p );
-    }
-
-    // remove that data to get to the formula
-    p = p.replace( nplurals_re, "" );
-    plural_matches = p.match( plural_re );
-
-    if (!( plural_matches && plural_matches.length > 1 ) ) {
-      throw new Error('`plural` expression not found: ' + p);
-    }
-    return plural_matches[ 1 ];
-  };
-
-  /* Jison generated parser */
-  Jed.PF.parser = (function(){
-
-var parser = {trace: function trace() { },
-yy: {},
-symbols_: {"error":2,"expressions":3,"e":4,"EOF":5,"?":6,":":7,"||":8,"&&":9,"<":10,"<=":11,">":12,">=":13,"!=":14,"==":15,"%":16,"(":17,")":18,"n":19,"NUMBER":20,"$accept":0,"$end":1},
-terminals_: {2:"error",5:"EOF",6:"?",7:":",8:"||",9:"&&",10:"<",11:"<=",12:">",13:">=",14:"!=",15:"==",16:"%",17:"(",18:")",19:"n",20:"NUMBER"},
-productions_: [0,[3,2],[4,5],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4,1],[4,1]],
-performAction: function anonymous(yytext,yyleng,yylineno,yy,yystate,$$,_$) {
-
-var $0 = $$.length - 1;
-switch (yystate) {
-case 1: return { type : 'GROUP', expr: $$[$0-1] }; 
-break;
-case 2:this.$ = { type: 'TERNARY', expr: $$[$0-4], truthy : $$[$0-2], falsey: $$[$0] }; 
-break;
-case 3:this.$ = { type: "OR", left: $$[$0-2], right: $$[$0] };
-break;
-case 4:this.$ = { type: "AND", left: $$[$0-2], right: $$[$0] };
-break;
-case 5:this.$ = { type: 'LT', left: $$[$0-2], right: $$[$0] }; 
-break;
-case 6:this.$ = { type: 'LTE', left: $$[$0-2], right: $$[$0] };
-break;
-case 7:this.$ = { type: 'GT', left: $$[$0-2], right: $$[$0] };
-break;
-case 8:this.$ = { type: 'GTE', left: $$[$0-2], right: $$[$0] };
-break;
-case 9:this.$ = { type: 'NEQ', left: $$[$0-2], right: $$[$0] };
-break;
-case 10:this.$ = { type: 'EQ', left: $$[$0-2], right: $$[$0] };
-break;
-case 11:this.$ = { type: 'MOD', left: $$[$0-2], right: $$[$0] };
-break;
-case 12:this.$ = { type: 'GROUP', expr: $$[$0-1] }; 
-break;
-case 13:this.$ = { type: 'VAR' }; 
-break;
-case 14:this.$ = { type: 'NUM', val: Number(yytext) }; 
-break;
-}
-},
-table: [{3:1,4:2,17:[1,3],19:[1,4],20:[1,5]},{1:[3]},{5:[1,6],6:[1,7],8:[1,8],9:[1,9],10:[1,10],11:[1,11],12:[1,12],13:[1,13],14:[1,14],15:[1,15],16:[1,16]},{4:17,17:[1,3],19:[1,4],20:[1,5]},{5:[2,13],6:[2,13],7:[2,13],8:[2,13],9:[2,13],10:[2,13],11:[2,13],12:[2,13],13:[2,13],14:[2,13],15:[2,13],16:[2,13],18:[2,13]},{5:[2,14],6:[2,14],7:[2,14],8:[2,14],9:[2,14],10:[2,14],11:[2,14],12:[2,14],13:[2,14],14:[2,14],15:[2,14],16:[2,14],18:[2,14]},{1:[2,1]},{4:18,17:[1,3],19:[1,4],20:[1,5]},{4:19,17:[1,3],19:[1,4],20:[1,5]},{4:20,17:[1,3],19:[1,4],20:[1,5]},{4:21,17:[1,3],19:[1,4],20:[1,5]},{4:22,17:[1,3],19:[1,4],20:[1,5]},{4:23,17:[1,3],19:[1,4],20:[1,5]},{4:24,17:[1,3],19:[1,4],20:[1,5]},{4:25,17:[1,3],19:[1,4],20:[1,5]},{4:26,17:[1,3],19:[1,4],20:[1,5]},{4:27,17:[1,3],19:[1,4],20:[1,5]},{6:[1,7],8:[1,8],9:[1,9],10:[1,10],11:[1,11],12:[1,12],13:[1,13],14:[1,14],15:[1,15],16:[1,16],18:[1,28]},{6:[1,7],7:[1,29],8:[1,8],9:[1,9],10:[1,10],11:[1,11],12:[1,12],13:[1,13],14:[1,14],15:[1,15],16:[1,16]},{5:[2,3],6:[2,3],7:[2,3],8:[2,3],9:[1,9],10:[1,10],11:[1,11],12:[1,12],13:[1,13],14:[1,14],15:[1,15],16:[1,16],18:[2,3]},{5:[2,4],6:[2,4],7:[2,4],8:[2,4],9:[2,4],10:[1,10],11:[1,11],12:[1,12],13:[1,13],14:[1,14],15:[1,15],16:[1,16],18:[2,4]},{5:[2,5],6:[2,5],7:[2,5],8:[2,5],9:[2,5],10:[2,5],11:[2,5],12:[2,5],13:[2,5],14:[2,5],15:[2,5],16:[1,16],18:[2,5]},{5:[2,6],6:[2,6],7:[2,6],8:[2,6],9:[2,6],10:[2,6],11:[2,6],12:[2,6],13:[2,6],14:[2,6],15:[2,6],16:[1,16],18:[2,6]},{5:[2,7],6:[2,7],7:[2,7],8:[2,7],9:[2,7],10:[2,7],11:[2,7],12:[2,7],13:[2,7],14:[2,7],15:[2,7],16:[1,16],18:[2,7]},{5:[2,8],6:[2,8],7:[2,8],8:[2,8],9:[2,8],10:[2,8],11:[2,8],12:[2,8],13:[2,8],14:[2,8],15:[2,8],16:[1,16],18:[2,8]},{5:[2,9],6:[2,9],7:[2,9],8:[2,9],9:[2,9],10:[2,9],11:[2,9],12:[2,9],13:[2,9],14:[2,9],15:[2,9],16:[1,16],18:[2,9]},{5:[2,10],6:[2,10],7:[2,10],8:[2,10],9:[2,10],10:[2,10],11:[2,10],12:[2,10],13:[2,10],14:[2,10],15:[2,10],16:[1,16],18:[2,10]},{5:[2,11],6:[2,11],7:[2,11],8:[2,11],9:[2,11],10:[2,11],11:[2,11],12:[2,11],13:[2,11],14:[2,11],15:[2,11],16:[2,11],18:[2,11]},{5:[2,12],6:[2,12],7:[2,12],8:[2,12],9:[2,12],10:[2,12],11:[2,12],12:[2,12],13:[2,12],14:[2,12],15:[2,12],16:[2,12],18:[2,12]},{4:30,17:[1,3],19:[1,4],20:[1,5]},{5:[2,2],6:[1,7],7:[2,2],8:[1,8],9:[1,9],10:[1,10],11:[1,11],12:[1,12],13:[1,13],14:[1,14],15:[1,15],16:[1,16],18:[2,2]}],
-defaultActions: {6:[2,1]},
-parseError: function parseError(str, hash) {
-    throw new Error(str);
-},
-parse: function parse(input) {
-    var self = this,
-        stack = [0],
-        vstack = [null], // semantic value stack
-        lstack = [], // location stack
-        table = this.table,
-        yytext = '',
-        yylineno = 0,
-        yyleng = 0,
-        recovering = 0,
-        TERROR = 2,
-        EOF = 1;
-
-    //this.reductionCount = this.shiftCount = 0;
-
-    this.lexer.setInput(input);
-    this.lexer.yy = this.yy;
-    this.yy.lexer = this.lexer;
-    if (typeof this.lexer.yylloc == 'undefined')
-        this.lexer.yylloc = {};
-    var yyloc = this.lexer.yylloc;
-    lstack.push(yyloc);
-
-    if (typeof this.yy.parseError === 'function')
-        this.parseError = this.yy.parseError;
-
-    function popStack (n) {
-        stack.length = stack.length - 2*n;
-        vstack.length = vstack.length - n;
-        lstack.length = lstack.length - n;
-    }
-
-    function lex() {
-        var token;
-        token = self.lexer.lex() || 1; // $end = 1
-        // if token isn't its numeric value, convert
-        if (typeof token !== 'number') {
-            token = self.symbols_[token] || token;
-        }
-        return token;
-    }
-
-    var symbol, preErrorSymbol, state, action, a, r, yyval={},p,len,newState, expected;
-    while (true) {
-        // retreive state number from top of stack
-        state = stack[stack.length-1];
-
-        // use default actions if available
-        if (this.defaultActions[state]) {
-            action = this.defaultActions[state];
-        } else {
-            if (symbol == null)
-                symbol = lex();
-            // read action for current state and first input
-            action = table[state] && table[state][symbol];
-        }
-
-        // handle parse error
-        _handle_error:
-        if (typeof action === 'undefined' || !action.length || !action[0]) {
-
-            if (!recovering) {
-                // Report error
-                expected = [];
-                for (p in table[state]) if (this.terminals_[p] && p > 2) {
-                    expected.push("'"+this.terminals_[p]+"'");
-                }
-                var errStr = '';
-                if (this.lexer.showPosition) {
-                    errStr = 'Parse error on line '+(yylineno+1)+":\n"+this.lexer.showPosition()+"\nExpecting "+expected.join(', ') + ", got '" + this.terminals_[symbol]+ "'";
-                } else {
-                    errStr = 'Parse error on line '+(yylineno+1)+": Unexpected " +
-                                  (symbol == 1 /*EOF*/ ? "end of input" :
-                                              ("'"+(this.terminals_[symbol] || symbol)+"'"));
-                }
-                this.parseError(errStr,
-                    {text: this.lexer.match, token: this.terminals_[symbol] || symbol, line: this.lexer.yylineno, loc: yyloc, expected: expected});
-            }
-
-            // just recovered from another error
-            if (recovering == 3) {
-                if (symbol == EOF) {
-                    throw new Error(errStr || 'Parsing halted.');
-                }
-
-                // discard current lookahead and grab another
-                yyleng = this.lexer.yyleng;
-                yytext = this.lexer.yytext;
-                yylineno = this.lexer.yylineno;
-                yyloc = this.lexer.yylloc;
-                symbol = lex();
-            }
-
-            // try to recover from error
-            while (1) {
-                // check for error recovery rule in this state
-                if ((TERROR.toString()) in table[state]) {
-                    break;
-                }
-                if (state == 0) {
-                    throw new Error(errStr || 'Parsing halted.');
-                }
-                popStack(1);
-                state = stack[stack.length-1];
-            }
-
-            preErrorSymbol = symbol; // save the lookahead token
-            symbol = TERROR;         // insert generic error symbol as new lookahead
-            state = stack[stack.length-1];
-            action = table[state] && table[state][TERROR];
-            recovering = 3; // allow 3 real symbols to be shifted before reporting a new error
-        }
-
-        // this shouldn't happen, unless resolve defaults are off
-        if (action[0] instanceof Array && action.length > 1) {
-            throw new Error('Parse Error: multiple actions possible at state: '+state+', token: '+symbol);
-        }
-
-        switch (action[0]) {
-
-            case 1: // shift
-                //this.shiftCount++;
-
-                stack.push(symbol);
-                vstack.push(this.lexer.yytext);
-                lstack.push(this.lexer.yylloc);
-                stack.push(action[1]); // push state
-                symbol = null;
-                if (!preErrorSymbol) { // normal execution/no error
-                    yyleng = this.lexer.yyleng;
-                    yytext = this.lexer.yytext;
-                    yylineno = this.lexer.yylineno;
-                    yyloc = this.lexer.yylloc;
-                    if (recovering > 0)
-                        recovering--;
-                } else { // error just occurred, resume old lookahead f/ before error
-                    symbol = preErrorSymbol;
-                    preErrorSymbol = null;
-                }
-                break;
-
-            case 2: // reduce
-                //this.reductionCount++;
-
-                len = this.productions_[action[1]][1];
-
-                // perform semantic action
-                yyval.$ = vstack[vstack.length-len]; // default to $$ = $1
-                // default location, uses first token for firsts, last for lasts
-                yyval._$ = {
-                    first_line: lstack[lstack.length-(len||1)].first_line,
-                    last_line: lstack[lstack.length-1].last_line,
-                    first_column: lstack[lstack.length-(len||1)].first_column,
-                    last_column: lstack[lstack.length-1].last_column
-                };
-                r = this.performAction.call(yyval, yytext, yyleng, yylineno, this.yy, action[1], vstack, lstack);
-
-                if (typeof r !== 'undefined') {
-                    return r;
-                }
-
-                // pop off stack
-                if (len) {
-                    stack = stack.slice(0,-1*len*2);
-                    vstack = vstack.slice(0, -1*len);
-                    lstack = lstack.slice(0, -1*len);
-                }
-
-                stack.push(this.productions_[action[1]][0]);    // push nonterminal (reduce)
-                vstack.push(yyval.$);
-                lstack.push(yyval._$);
-                // goto new state = table[STATE][NONTERMINAL]
-                newState = table[stack[stack.length-2]][stack[stack.length-1]];
-                stack.push(newState);
-                break;
-
-            case 3: // accept
-                return true;
-        }
-
-    }
-
-    return true;
-}};/* Jison generated lexer */
-var lexer = (function(){
-
-var lexer = ({EOF:1,
-parseError:function parseError(str, hash) {
-        if (this.yy.parseError) {
-            this.yy.parseError(str, hash);
-        } else {
-            throw new Error(str);
-        }
-    },
-setInput:function (input) {
-        this._input = input;
-        this._more = this._less = this.done = false;
-        this.yylineno = this.yyleng = 0;
-        this.yytext = this.matched = this.match = '';
-        this.conditionStack = ['INITIAL'];
-        this.yylloc = {first_line:1,first_column:0,last_line:1,last_column:0};
-        return this;
-    },
-input:function () {
-        var ch = this._input[0];
-        this.yytext+=ch;
-        this.yyleng++;
-        this.match+=ch;
-        this.matched+=ch;
-        var lines = ch.match(/\n/);
-        if (lines) this.yylineno++;
-        this._input = this._input.slice(1);
-        return ch;
-    },
-unput:function (ch) {
-        this._input = ch + this._input;
-        return this;
-    },
-more:function () {
-        this._more = true;
-        return this;
-    },
-pastInput:function () {
-        var past = this.matched.substr(0, this.matched.length - this.match.length);
-        return (past.length > 20 ? '...':'') + past.substr(-20).replace(/\n/g, "");
-    },
-upcomingInput:function () {
-        var next = this.match;
-        if (next.length < 20) {
-            next += this._input.substr(0, 20-next.length);
-        }
-        return (next.substr(0,20)+(next.length > 20 ? '...':'')).replace(/\n/g, "");
-    },
-showPosition:function () {
-        var pre = this.pastInput();
-        var c = new Array(pre.length + 1).join("-");
-        return pre + this.upcomingInput() + "\n" + c+"^";
-    },
-next:function () {
-        if (this.done) {
-            return this.EOF;
-        }
-        if (!this._input) this.done = true;
-
-        var token,
-            match,
-            col,
-            lines;
-        if (!this._more) {
-            this.yytext = '';
-            this.match = '';
-        }
-        var rules = this._currentRules();
-        for (var i=0;i < rules.length; i++) {
-            match = this._input.match(this.rules[rules[i]]);
-            if (match) {
-                lines = match[0].match(/\n.*/g);
-                if (lines) this.yylineno += lines.length;
-                this.yylloc = {first_line: this.yylloc.last_line,
-                               last_line: this.yylineno+1,
-                               first_column: this.yylloc.last_column,
-                               last_column: lines ? lines[lines.length-1].length-1 : this.yylloc.last_column + match[0].length}
-                this.yytext += match[0];
-                this.match += match[0];
-                this.matches = match;
-                this.yyleng = this.yytext.length;
-                this._more = false;
-                this._input = this._input.slice(match[0].length);
-                this.matched += match[0];
-                token = this.performAction.call(this, this.yy, this, rules[i],this.conditionStack[this.conditionStack.length-1]);
-                if (token) return token;
-                else return;
-            }
-        }
-        if (this._input === "") {
-            return this.EOF;
-        } else {
-            this.parseError('Lexical error on line '+(this.yylineno+1)+'. Unrecognized text.\n'+this.showPosition(), 
-                    {text: "", token: null, line: this.yylineno});
-        }
-    },
-lex:function lex() {
-        var r = this.next();
-        if (typeof r !== 'undefined') {
-            return r;
-        } else {
-            return this.lex();
-        }
-    },
-begin:function begin(condition) {
-        this.conditionStack.push(condition);
-    },
-popState:function popState() {
-        return this.conditionStack.pop();
-    },
-_currentRules:function _currentRules() {
-        return this.conditions[this.conditionStack[this.conditionStack.length-1]].rules;
-    },
-topState:function () {
-        return this.conditionStack[this.conditionStack.length-2];
-    },
-pushState:function begin(condition) {
-        this.begin(condition);
-    }});
-lexer.performAction = function anonymous(yy,yy_,$avoiding_name_collisions,YY_START) {
-
-var YYSTATE=YY_START;
-switch($avoiding_name_collisions) {
-case 0:/* skip whitespace */
-break;
-case 1:return 20
-break;
-case 2:return 19
-break;
-case 3:return 8
-break;
-case 4:return 9
-break;
-case 5:return 6
-break;
-case 6:return 7
-break;
-case 7:return 11
-break;
-case 8:return 13
-break;
-case 9:return 10
-break;
-case 10:return 12
-break;
-case 11:return 14
-break;
-case 12:return 15
-break;
-case 13:return 16
-break;
-case 14:return 17
-break;
-case 15:return 18
-break;
-case 16:return 5
-break;
-case 17:return 'INVALID'
-break;
-}
-};
-lexer.rules = [/^\s+/,/^[0-9]+(\.[0-9]+)?\b/,/^n\b/,/^\|\|/,/^&&/,/^\?/,/^:/,/^<=/,/^>=/,/^</,/^>/,/^!=/,/^==/,/^%/,/^\(/,/^\)/,/^$/,/^./];
-lexer.conditions = {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],"inclusive":true}};return lexer;})()
-parser.lexer = lexer;
-return parser;
-})();
-// End parser
-
-  // Handle node, amd, and global systems
-  if (typeof exports !== 'undefined') {
-    if (typeof module !== 'undefined' && module.exports) {
-      exports = module.exports = Jed;
-    }
-    exports.Jed = Jed;
-  }
-  else {
-    if (typeof define === 'function' && define.amd) {
-      define('jed', [],function() {
-        return Jed;
-      });
-    }
-    // Leak a global regardless of module system
-    root['Jed'] = Jed;
-  }
-
-})(this);
-
-/**
- * @license text 2.0.15 Copyright jQuery Foundation and other contributors.
- * Released under MIT license, http://github.com/requirejs/text/LICENSE
- */
-/*jslint regexp: true */
-/*global require, XMLHttpRequest, ActiveXObject,
-  define, window, process, Packages,
-  java, location, Components, FileUtils */
-
-define('text',['module'], function (module) {
-    'use strict';
-
-    var text, fs, Cc, Ci, xpcIsWindows,
-        progIds = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'],
-        xmlRegExp = /^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im,
-        bodyRegExp = /<body[^>]*>\s*([\s\S]+)\s*<\/body>/im,
-        hasLocation = typeof location !== 'undefined' && location.href,
-        defaultProtocol = hasLocation && location.protocol && location.protocol.replace(/\:/, ''),
-        defaultHostName = hasLocation && location.hostname,
-        defaultPort = hasLocation && (location.port || undefined),
-        buildMap = {},
-        masterConfig = (module.config && module.config()) || {};
-
-    function useDefault(value, defaultValue) {
-        return value === undefined || value === '' ? defaultValue : value;
-    }
-
-    //Allow for default ports for http and https.
-    function isSamePort(protocol1, port1, protocol2, port2) {
-        if (port1 === port2) {
-            return true;
-        } else if (protocol1 === protocol2) {
-            if (protocol1 === 'http') {
-                return useDefault(port1, '80') === useDefault(port2, '80');
-            } else if (protocol1 === 'https') {
-                return useDefault(port1, '443') === useDefault(port2, '443');
-            }
-        }
-        return false;
-    }
-
-    text = {
-        version: '2.0.15',
-
-        strip: function (content) {
-            //Strips <?xml ...?> declarations so that external SVG and XML
-            //documents can be added to a document without worry. Also, if the string
-            //is an HTML document, only the part inside the body tag is returned.
-            if (content) {
-                content = content.replace(xmlRegExp, "");
-                var matches = content.match(bodyRegExp);
-                if (matches) {
-                    content = matches[1];
-                }
-            } else {
-                content = "";
-            }
-            return content;
-        },
-
-        jsEscape: function (content) {
-            return content.replace(/(['\\])/g, '\\$1')
-                .replace(/[\f]/g, "\\f")
-                .replace(/[\b]/g, "\\b")
-                .replace(/[\n]/g, "\\n")
-                .replace(/[\t]/g, "\\t")
-                .replace(/[\r]/g, "\\r")
-                .replace(/[\u2028]/g, "\\u2028")
-                .replace(/[\u2029]/g, "\\u2029");
-        },
-
-        createXhr: masterConfig.createXhr || function () {
-            //Would love to dump the ActiveX crap in here. Need IE 6 to die first.
-            var xhr, i, progId;
-            if (typeof XMLHttpRequest !== "undefined") {
-                return new XMLHttpRequest();
-            } else if (typeof ActiveXObject !== "undefined") {
-                for (i = 0; i < 3; i += 1) {
-                    progId = progIds[i];
-                    try {
-                        xhr = new ActiveXObject(progId);
-                    } catch (e) {}
-
-                    if (xhr) {
-                        progIds = [progId];  // so faster next time
-                        break;
-                    }
-                }
-            }
-
-            return xhr;
-        },
-
-        /**
-         * Parses a resource name into its component parts. Resource names
-         * look like: module/name.ext!strip, where the !strip part is
-         * optional.
-         * @param {String} name the resource name
-         * @returns {Object} with properties "moduleName", "ext" and "strip"
-         * where strip is a boolean.
-         */
-        parseName: function (name) {
-            var modName, ext, temp,
-                strip = false,
-                index = name.lastIndexOf("."),
-                isRelative = name.indexOf('./') === 0 ||
-                             name.indexOf('../') === 0;
-
-            if (index !== -1 && (!isRelative || index > 1)) {
-                modName = name.substring(0, index);
-                ext = name.substring(index + 1);
-            } else {
-                modName = name;
-            }
-
-            temp = ext || modName;
-            index = temp.indexOf("!");
-            if (index !== -1) {
-                //Pull off the strip arg.
-                strip = temp.substring(index + 1) === "strip";
-                temp = temp.substring(0, index);
-                if (ext) {
-                    ext = temp;
-                } else {
-                    modName = temp;
-                }
-            }
-
-            return {
-                moduleName: modName,
-                ext: ext,
-                strip: strip
-            };
-        },
-
-        xdRegExp: /^((\w+)\:)?\/\/([^\/\\]+)/,
-
-        /**
-         * Is an URL on another domain. Only works for browser use, returns
-         * false in non-browser environments. Only used to know if an
-         * optimized .js version of a text resource should be loaded
-         * instead.
-         * @param {String} url
-         * @returns Boolean
-         */
-        useXhr: function (url, protocol, hostname, port) {
-            var uProtocol, uHostName, uPort,
-                match = text.xdRegExp.exec(url);
-            if (!match) {
-                return true;
-            }
-            uProtocol = match[2];
-            uHostName = match[3];
-
-            uHostName = uHostName.split(':');
-            uPort = uHostName[1];
-            uHostName = uHostName[0];
-
-            return (!uProtocol || uProtocol === protocol) &&
-                   (!uHostName || uHostName.toLowerCase() === hostname.toLowerCase()) &&
-                   ((!uPort && !uHostName) || isSamePort(uProtocol, uPort, protocol, port));
-        },
-
-        finishLoad: function (name, strip, content, onLoad) {
-            content = strip ? text.strip(content) : content;
-            if (masterConfig.isBuild) {
-                buildMap[name] = content;
-            }
-            onLoad(content);
-        },
-
-        load: function (name, req, onLoad, config) {
-            //Name has format: some.module.filext!strip
-            //The strip part is optional.
-            //if strip is present, then that means only get the string contents
-            //inside a body tag in an HTML string. For XML/SVG content it means
-            //removing the <?xml ...?> declarations so the content can be inserted
-            //into the current doc without problems.
-
-            // Do not bother with the work if a build and text will
-            // not be inlined.
-            if (config && config.isBuild && !config.inlineText) {
-                onLoad();
-                return;
-            }
-
-            masterConfig.isBuild = config && config.isBuild;
-
-            var parsed = text.parseName(name),
-                nonStripName = parsed.moduleName +
-                    (parsed.ext ? '.' + parsed.ext : ''),
-                url = req.toUrl(nonStripName),
-                useXhr = (masterConfig.useXhr) ||
-                         text.useXhr;
-
-            // Do not load if it is an empty: url
-            if (url.indexOf('empty:') === 0) {
-                onLoad();
-                return;
-            }
-
-            //Load the text. Use XHR if possible and in a browser.
-            if (!hasLocation || useXhr(url, defaultProtocol, defaultHostName, defaultPort)) {
-                text.get(url, function (content) {
-                    text.finishLoad(name, parsed.strip, content, onLoad);
-                }, function (err) {
-                    if (onLoad.error) {
-                        onLoad.error(err);
-                    }
-                });
-            } else {
-                //Need to fetch the resource across domains. Assume
-                //the resource has been optimized into a JS module. Fetch
-                //by the module name + extension, but do not include the
-                //!strip part to avoid file system issues.
-                req([nonStripName], function (content) {
-                    text.finishLoad(parsed.moduleName + '.' + parsed.ext,
-                                    parsed.strip, content, onLoad);
-                });
-            }
-        },
-
-        write: function (pluginName, moduleName, write, config) {
-            if (buildMap.hasOwnProperty(moduleName)) {
-                var content = text.jsEscape(buildMap[moduleName]);
-                write.asModule(pluginName + "!" + moduleName,
-                               "define(function () { return '" +
-                                   content +
-                               "';});\n");
-            }
-        },
-
-        writeFile: function (pluginName, moduleName, req, write, config) {
-            var parsed = text.parseName(moduleName),
-                extPart = parsed.ext ? '.' + parsed.ext : '',
-                nonStripName = parsed.moduleName + extPart,
-                //Use a '.js' file name so that it indicates it is a
-                //script that can be loaded across domains.
-                fileName = req.toUrl(parsed.moduleName + extPart) + '.js';
-
-            //Leverage own load() method to load plugin value, but only
-            //write out values that do not have the strip argument,
-            //to avoid any potential issues with ! in file names.
-            text.load(nonStripName, req, function (value) {
-                //Use own write() method to construct full module value.
-                //But need to create shell that translates writeFile's
-                //write() to the right interface.
-                var textWrite = function (contents) {
-                    return write(fileName, contents);
-                };
-                textWrite.asModule = function (moduleName, contents) {
-                    return write.asModule(moduleName, fileName, contents);
-                };
-
-                text.write(pluginName, nonStripName, textWrite, config);
-            }, config);
-        }
-    };
-
-    if (masterConfig.env === 'node' || (!masterConfig.env &&
-            typeof process !== "undefined" &&
-            process.versions &&
-            !!process.versions.node &&
-            !process.versions['node-webkit'] &&
-            !process.versions['atom-shell'])) {
-        //Using special require.nodeRequire, something added by r.js.
-        fs = require.nodeRequire('fs');
-
-        text.get = function (url, callback, errback) {
-            try {
-                var file = fs.readFileSync(url, 'utf8');
-                //Remove BOM (Byte Mark Order) from utf8 files if it is there.
-                if (file[0] === '\uFEFF') {
-                    file = file.substring(1);
-                }
-                callback(file);
-            } catch (e) {
-                if (errback) {
-                    errback(e);
-                }
-            }
-        };
-    } else if (masterConfig.env === 'xhr' || (!masterConfig.env &&
-            text.createXhr())) {
-        text.get = function (url, callback, errback, headers) {
-            var xhr = text.createXhr(), header;
-            xhr.open('GET', url, true);
-
-            //Allow plugins direct access to xhr headers
-            if (headers) {
-                for (header in headers) {
-                    if (headers.hasOwnProperty(header)) {
-                        xhr.setRequestHeader(header.toLowerCase(), headers[header]);
-                    }
-                }
-            }
-
-            //Allow overrides specified in config
-            if (masterConfig.onXhr) {
-                masterConfig.onXhr(xhr, url);
-            }
-
-            xhr.onreadystatechange = function (evt) {
-                var status, err;
-                //Do not explicitly handle errors, those should be
-                //visible via console output in the browser.
-                if (xhr.readyState === 4) {
-                    status = xhr.status || 0;
-                    if (status > 399 && status < 600) {
-                        //An http 4xx or 5xx error. Signal an error.
-                        err = new Error(url + ' HTTP status: ' + status);
-                        err.xhr = xhr;
-                        if (errback) {
-                            errback(err);
-                        }
-                    } else {
-                        callback(xhr.responseText);
-                    }
-
-                    if (masterConfig.onXhrComplete) {
-                        masterConfig.onXhrComplete(xhr, url);
-                    }
-                }
-            };
-            xhr.send(null);
-        };
-    } else if (masterConfig.env === 'rhino' || (!masterConfig.env &&
-            typeof Packages !== 'undefined' && typeof java !== 'undefined')) {
-        //Why Java, why is this so awkward?
-        text.get = function (url, callback) {
-            var stringBuffer, line,
-                encoding = "utf-8",
-                file = new java.io.File(url),
-                lineSeparator = java.lang.System.getProperty("line.separator"),
-                input = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(file), encoding)),
-                content = '';
-            try {
-                stringBuffer = new java.lang.StringBuffer();
-                line = input.readLine();
-
-                // Byte Order Mark (BOM) - The Unicode Standard, version 3.0, page 324
-                // http://www.unicode.org/faq/utf_bom.html
-
-                // Note that when we use utf-8, the BOM should appear as "EF BB BF", but it doesn't due to this bug in the JDK:
-                // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4508058
-                if (line && line.length() && line.charAt(0) === 0xfeff) {
-                    // Eat the BOM, since we've already found the encoding on this file,
-                    // and we plan to concatenating this buffer with others; the BOM should
-                    // only appear at the top of a file.
-                    line = line.substring(1);
-                }
-
-                if (line !== null) {
-                    stringBuffer.append(line);
-                }
-
-                while ((line = input.readLine()) !== null) {
-                    stringBuffer.append(lineSeparator);
-                    stringBuffer.append(line);
-                }
-                //Make sure we return a JavaScript string and not a Java string.
-                content = String(stringBuffer.toString()); //String
-            } finally {
-                input.close();
-            }
-            callback(content);
-        };
-    } else if (masterConfig.env === 'xpconnect' || (!masterConfig.env &&
-            typeof Components !== 'undefined' && Components.classes &&
-            Components.interfaces)) {
-        //Avert your gaze!
-        Cc = Components.classes;
-        Ci = Components.interfaces;
-        Components.utils['import']('resource://gre/modules/FileUtils.jsm');
-        xpcIsWindows = ('@mozilla.org/windows-registry-key;1' in Cc);
-
-        text.get = function (url, callback) {
-            var inStream, convertStream, fileObj,
-                readData = {};
-
-            if (xpcIsWindows) {
-                url = url.replace(/\//g, '\\');
-            }
-
-            fileObj = new FileUtils.File(url);
-
-            //XPCOM, you so crazy
-            try {
-                inStream = Cc['@mozilla.org/network/file-input-stream;1']
-                           .createInstance(Ci.nsIFileInputStream);
-                inStream.init(fileObj, 1, 0, false);
-
-                convertStream = Cc['@mozilla.org/intl/converter-input-stream;1']
-                                .createInstance(Ci.nsIConverterInputStream);
-                convertStream.init(inStream, "utf-8", inStream.available(),
-                Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
-
-                convertStream.readString(inStream.available(), readData);
-                convertStream.close();
-                inStream.close();
-                callback(readData.value);
-            } catch (e) {
-                throw new Error((fileObj && fileObj.path || '') + ': ' + e);
-            }
-        };
-    }
-    return text;
-});
-
-
-define('text!af',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=n != 1;",\n            "lang": "af"\n         },\n         "Bookmark this room": [\n            null,\n            "Boekmerk hierdie kletskamer"\n         ],\n         "The name for this bookmark:": [\n            null,\n            "Die naam vir hierdie boekmerk:"\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            "Moet hierdie kletskamer outomaties betree word tydens aanmelding?"\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            "Wat sal u bynaam vir hierdie kletskamer wees?"\n         ],\n         "Save": [\n            null,\n            "Stoor"\n         ],\n         "Cancel": [\n            null,\n            "Kanseleer"\n         ],\n         "Are you sure you want to remove the bookmark \\"%1$s\\"?": [\n            null,\n            "Is u seker u wil die boekmerk \\"%1$s\\" verwyder?"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            "Jammer, \'n fout het voorgekom tydens storing van u boekmerk."\n         ],\n         "Click to toggle the bookmarks list": [\n            null,\n            "Klik om die boekmerklys te skakel"\n         ],\n         "Remove this bookmark": [\n            null,\n            "Verwyder hierdie boekmerk"\n         ],\n         "Show more information on this room": [\n            null,\n            "Wys meer inligting aangaande hierdie kletskamer"\n         ],\n         "Click to open this room": [\n            null,\n            "Klik om hierdie kletskamer te open"\n         ],\n         "You have unread messages": [\n            null,\n            "U het ongelese boodskappe"\n         ],\n         "Close this chat box": [\n            null,\n            "Sluit hierdie kletskas"\n         ],\n         "Personal message": [\n            null,\n            "Persoonlike boodskap"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "ek"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            "\'n Baie groot boodskap is ontvang. Dit mag dalk \'n aanval wees om werkverrigting te ontwrig. Die boodskap word dus slegs in verkorte weergawe vertoon."\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "tik tans"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            "het opgehou tik"\n         ],\n         "has gone away": [\n            null,\n            "het weggegaan"\n         ],\n         "Show this menu": [\n            null,\n            "Vertoon hierdie keuselys"\n         ],\n         "Write in the third person": [\n            null,\n            "Skryf in die derde persoon"\n         ],\n         "Remove messages": [\n            null,\n            "Verwyder boodskappe"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Is u seker u wil die boodskappe in hierdie kletskas uitvee?"\n         ],\n         "has gone offline": [\n            null,\n            "is nou aflyn"\n         ],\n         "is busy": [\n            null,\n            "is besig"\n         ],\n         "Clear all messages": [\n            null,\n            "Vee alle boodskappe uit"\n         ],\n         "Insert a smiley": [\n            null,\n            "Voeg \'n emotikon by"\n         ],\n         "Start a call": [\n            null,\n            "Begin \'n oproep"\n         ],\n         "Contacts": [\n            null,\n            "Kontakte"\n         ],\n         "XMPP Username:": [\n            null,\n            "XMPP Gebruikersnaam:"\n         ],\n         "Password:": [\n            null,\n            "Wagwoord:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Klik hier om anoniem aan te meld"\n         ],\n         "Log In": [\n            null,\n            "Meld aan"\n         ],\n         "Username": [\n            null,\n            "Gebruikersnaam"\n         ],\n         "user@server": [\n            null,\n            "gebruiker@bediener"\n         ],\n         "password": [\n            null,\n            "wagwoord"\n         ],\n         "Sign in": [\n            null,\n            "Teken in"\n         ],\n         "I am %1$s": [\n            null,\n            "Ek is %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Klik hier om jou eie statusboodskap te skryf"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Klik om jou klets-status te verander"\n         ],\n         "Custom status": [\n            null,\n            "Doelgemaakte status"\n         ],\n         "online": [\n            null,\n            "aangemeld"\n         ],\n         "busy": [\n            null,\n            "besig"\n         ],\n         "away for long": [\n            null,\n            "vir lank afwesig"\n         ],\n         "away": [\n            null,\n            "afwesig"\n         ],\n         "offline": [\n            null,\n            "afgemeld"\n         ],\n         "Online": [\n            null,\n            "Aangemeld"\n         ],\n         "Busy": [\n            null,\n            "Besig"\n         ],\n         "Away": [\n            null,\n            "Afwesig"\n         ],\n         "Offline": [\n            null,\n            "Afgemeld"\n         ],\n         "Log out": [\n            null,\n            "Meld af"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Klik om nuwe kletskontakte by te voeg"\n         ],\n         "Add a contact": [\n            null,\n            "Voeg \'n kontak by"\n         ],\n         "Contact name": [\n            null,\n            "Kontaknaam"\n         ],\n         "Search": [\n            null,\n            "Soek"\n         ],\n         "e.g. user@example.org": [\n            null,\n            "bv. gebruiker@voorbeeld.org"\n         ],\n         "Add": [\n            null,\n            "Voeg by"\n         ],\n         "No users found": [\n            null,\n            "Geen gebruikers gevind"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Hierdie klient laat nie beskikbaarheidsinskrywings toe nie"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Klik om hierdie kontakte te verskuil"\n         ],\n         "Close this box": [\n            null,\n            "Maak hierdie kletskas toe"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Minimeer hierdie kletskas"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Klik om hierdie klets te herstel"\n         ],\n         "Minimized": [\n            null,\n            "Geminimaliseer"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Hierdie vertrek is nie anoniem nie"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Hierdie vertrek wys nou onbeskikbare lede"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Hierdie vertrek wys nie onbeskikbare lede nie"\n         ],\n         "The room configuration has changed": [\n            null,\n            "Die kamer instellings het verander"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Kamer log is nou aangeskakel"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Kamer log is nou afgeskakel"\n         ],\n         "This room is now no longer anonymous": [\n            null,\n            "Hiedie kamer is nie meer anoniem nie"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Hierdie kamer is nou gedeeltelik anoniem"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Hierdie kamer is nou ten volle anoniem"\n         ],\n         "A new room has been created": [\n            null,\n            "\'n Nuwe kamer is geskep"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Jy is uit die kamer verban"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Jy is uit die kamer geskop"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Jy is vanuit die kamer verwyder a.g.v \'n verandering van affiliasie"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Jy is vanuit die kamer verwyder omdat die kamer nou slegs tot lede beperk word en jy nie \'n lid is nie"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Jy is van hierdie kamer verwyder aangesien die MUC (Multi-user chat) diens nou afgeskakel word."\n         ],\n         "%1$s has been banned": [\n            null,\n            "%1$s is verban"\n         ],\n         "%1$s\'s nickname has changed": [\n            null,\n            "%1$s se bynaam het verander"\n         ],\n         "%1$s has been kicked out": [\n            null,\n            "%1$s is uitgeskop"\n         ],\n         "%1$s has been removed because of an affiliation change": [\n            null,\n            "%1$s is verwyder a.g.v \'n verandering van affiliasie"\n         ],\n         "%1$s has been removed for not being a member": [\n            null,\n            "%1$s is nie \'n lid nie, en dus verwyder"\n         ],\n         "Your nickname has been automatically set to: %1$s": [\n            null,\n            "U bynaam is outomaties gestel na: %1$s"\n         ],\n         "Your nickname has been changed to: %1$s": [\n            null,\n            "U bynaam is verander na: %1$s"\n         ],\n         "Message": [\n            null,\n            "Boodskap"\n         ],\n         "Close and leave this room": [\n            null,\n            "Sluit en verlaat hierdie kletskamer"\n         ],\n         "Configure this room": [\n            null,\n            "Konfigureer hierdie kletskamer"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Verskuil die lys van deelnemers"\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Is u seker dat u die boodskappe in hierdie kamer wil verwyder?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Fout: kon nie die opdrag uitvoer nie"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Verander die gebruiker se affiliasie na admin"\n         ],\n         "Ban user from room": [\n            null,\n            "Verban gebruiker uit hierdie kletskamer"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Verander gebruiker se rol na lid"\n         ],\n         "Kick user from room": [\n            null,\n            "Skop gebruiker uit hierdie kletskamer"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Skryf in die derde persoon"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Verleen lidmaatskap aan \'n gebruiker"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Verwyder gebruiker se vermoë om boodskappe te plaas"\n         ],\n         "Change your nickname": [\n            null,\n            "Verander u bynaam"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Verleen moderator rol aan gebruiker"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Verleen eienaarskap van hierdie kamer"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Herroep gebruiker se lidmaatskap"\n         ],\n         "Set room subject": [\n            null,\n            "Stel onderwerp vir kletskamer"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            "Verskaf kamer onderwerp (alias vir /subject)"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Laat stilgemaakte gebruiker toe om weer boodskappe te plaas"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            "Die bynaam wat u gekies het is gereserveer of tans in gebruik, kies asb. \'n ander een."\n         ],\n         "Please choose your nickname": [\n            null,\n            "Kies asb. u bynaam"\n         ],\n         "Nickname": [\n            null,\n            "Bynaam"\n         ],\n         "Enter room": [\n            null,\n            "Betree kletskamer"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Hiedie kletskamer benodig \'n wagwoord"\n         ],\n         "Password: ": [\n            null,\n            "Wagwoord: "\n         ],\n         "Submit": [\n            null,\n            "Dien in"\n         ],\n         "This action was done by %1$s.": [\n            null,\n            "Hierdie aksie is uitgevoer deur: %1$s."\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            "Die gegewe rede is: \\"%1$s\\"."\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            " het die kamer verlaat.\\""\n         ],\n         " has left the room": [\n            null,\n            " het die kletskamer verlaat"\n         ],\n         " has joined the room. \\"": [\n            null,\n            " het die kamer binnegekom.\\""\n         ],\n         " has joined the room.": [\n            null,\n            " het die kamer bygetree."\n         ],\n         "You are not on the member list of this room.": [\n            null,\n            "Jy is nie op die ledelys van hierdie kamer nie."\n         ],\n         "You have been banned from this room.": [\n            null,\n            "Jy is uit die kamer verban."\n         ],\n         "No nickname was specified.": [\n            null,\n            "Geen bynaam verskaf nie."\n         ],\n         "You are not allowed to create new rooms.": [\n            null,\n            "Jy word nie toegelaat om nog kletskamers te skep nie."\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies.": [\n            null,\n            "Jou bynaam voldoen nie aan die kamer se beleid nie."\n         ],\n         "This room does not (yet) exist.": [\n            null,\n            "Hierdie kamer bestaan tans (nog) nie."\n         ],\n         "This room has reached its maximum number of occupants.": [\n            null,\n            "Hierdie kletskamer het sy maksimum aantal deelnemers bereik."\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Onderwerp deur %1$s bygewerk na: %2$s"\n         ],\n         "This user is a moderator.": [\n            null,\n            "Hierdie gebruiker is \'n moderator."\n         ],\n         "This user can send messages in this room.": [\n            null,\n            "Hierdie gebruiker kan boodskappe na die kamer stuur."\n         ],\n         "This user can NOT send messages in this room.": [\n            null,\n            "Hierdie gebruiker kan NIE boodskappe na die kamer stuur nie."\n         ],\n         "Occupants": [\n            null,\n            "Deelnemers"\n         ],\n         "Invite": [\n            null,\n            "Nooi uit"\n         ],\n         "Features": [\n            null,\n            "Eienskappe"\n         ],\n         "Hidden": [\n            null,\n            "Verskuil"\n         ],\n         "Message archiving": [\n            null,\n            "Boodskap-argivering"\n         ],\n         "Members only": [\n            null,\n            "Slegs lede"\n         ],\n         "Moderated": [\n            null,\n            "Gemodereer"\n         ],\n         "Non-anonymous": [\n            null,\n            "Nie-anoniem"\n         ],\n         "Open": [\n            null,\n            "Oop kletskamer"\n         ],\n         "Password protected": [\n            null,\n            "Wagwoord"\n         ],\n         "Persistent": [\n            null,\n            "Blywend"\n         ],\n         "Public": [\n            null,\n            "Publiek"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Deels anoniem"\n         ],\n         "Temporary": [\n            null,\n            "Tydelike kamer"\n         ],\n         "Unmoderated": [\n            null,\n            "Ongemodereer"\n         ],\n         "Unsecured": [\n            null,\n            "Onversekerd"\n         ],\n         "This room is not publicly searchable": [\n            null,\n            "Hierdie kletskamer is nie publiek opspoorbaar nie"\n         ],\n         "Messages are archived on the server": [\n            null,\n            "Boodskappe word op die bediener gestoor"\n         ],\n         "This room is restricted to members only": [\n            null,\n            "Hierdie kletskamer is slegs tot lede beperk"\n         ],\n         "This room is being moderated": [\n            null,\n            "Hierdie kletskamer word gemodereer"\n         ],\n         "Anyone can join this room": [\n            null,\n            "Enige iemand kan hierdie kletskamer binnekom"\n         ],\n         "This room requires a password before entry": [\n            null,\n            "Hierdie kletskamer benodig \'n wagwoord"\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            "Hierdie kletskamer bestaan voort selfs al is dit leeg"\n         ],\n         "This room is publicly searchable": [\n            null,\n            "Hierdie kletskamer is publiek opspoorbaar"\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            "Hierdie kletskamer sal verdwyn sodra die laaste persoon dit verlaat"\n         ],\n         "This room is not being moderated": [\n            null,\n            "Hierdie kletskamer word nie gemodereer nie"\n         ],\n         "This room does not require a password upon entry": [\n            null,\n            "Hiedie kletskamer benodig nie \'n wagwoord nie"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "U is op die punt om %1$s na die kletskamer \\"%2$s\\" uit te nooi. "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "U mag na keuse \'n boodskap insluit, om bv. die rede vir die uitnodiging te staaf."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Kamer naam"\n         ],\n         "Server": [\n            null,\n            "Bediener"\n         ],\n         "Join Room": [\n            null,\n            "Betree kletskamer"\n         ],\n         "Show rooms": [\n            null,\n            "Wys kletskamers"\n         ],\n         "Rooms": [\n            null,\n            "Kletskamers"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Geen kletskamers op %1$s"\n         ],\n         "Description:": [\n            null,\n            "Beskrywing:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Deelnemers:"\n         ],\n         "Features:": [\n            null,\n            "Eienskappe:"\n         ],\n         "Requires authentication": [\n            null,\n            "Benodig magtiging"\n         ],\n         "Requires an invitation": [\n            null,\n            "Benodig \'n uitnodiging"\n         ],\n         "Open room": [\n            null,\n            "Oop kletskamer"\n         ],\n         "Permanent room": [\n            null,\n            "Permanente kamer"\n         ],\n         "Temporary room": [\n            null,\n            "Tydelike kamer"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s het u uitgenooi om die kletskamer %2$s te besoek"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s het u uitgenooi om die kletskamer %2$s te besoek, en het die volgende rede verskaf: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            "Kennisgewing van %1$s"\n         ],\n         "%1$s says": [\n            null,\n            "%1$s sê"\n         ],\n         "has come online": [\n            null,\n            "het aanlyn gekom"\n         ],\n         "wants to be your contact": [\n            null,\n            "wil jou kontak wees"\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Herstel versleutelde sessie"\n         ],\n         "Generating private key.": [\n            null,\n            "Genereer private sleutel."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "U webblaaier mag tydelik onreageerbaar word."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Identiteitbevestigingsversoek van  %1$s\\n\\nU gespreksmaat probeer om u identiteit te bevestig, deur die volgende vraag te vra \\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Kon nie hierdie gebruiker se identitied bevestig nie."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Sleutels word met gespreksmaat uitgeruil."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "U boodskappe is nie meer versleutel nie"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "U boodskappe is nou versleutel maar u gespreksmaat se identiteit is nog onseker."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "U gespreksmaat se identiteit is bevestig."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "U gespreksmaat het versleuteling gestaak, u behoort nou dieselfde te doen."\n         ],\n         "Your message could not be sent": [\n            null,\n            "U boodskap kon nie gestuur word nie"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Ons het \'n onversleutelde boodskap ontvang"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Ons het \'n onleesbare versleutelde boodskap ontvang"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Hier is die vingerafdrukke, bevestig hulle met %1$s, buite hierdie kletskanaal \\n\\nU vingerafdruk, %2$s: %3$s\\n\\nVingerafdruk vir %1$s: %4$s\\n\\nIndien u die vingerafdrukke bevestig het, klik OK, andersinds klik Kanselleer."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Daar sal van u verwag word om \'n sekuriteitsvraag te stel, en dan ook die antwoord tot daardie vraag te verskaf.\\n\\nU gespreksmaat sal dan daardie vraag gestel word, en indien hulle presies dieselfde antwoord (lw. hoofletters tel) verskaf, sal hul identiteit bevestig wees."\n         ],\n         "What is your security question?": [\n            null,\n            "Wat is u sekuriteitsvraag?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Wat is die antwoord tot die sekuriteitsvraag?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Ongeldige verifikasiemetode verskaf"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "U boodskappe is nie versleutel nie. Klik hier om OTR versleuteling te aktiveer."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "U boodskappe is versleutel, maar u gespreksmaat se identiteit is not onseker."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "U boodskappe is versleutel en u gespreksmaat se identiteit bevestig."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "U gespreksmaat het die private sessie gestaak. U behoort dieselfde te doen"\n         ],\n         "End encrypted conversation": [\n            null,\n            "Beëindig versleutelde gesprek"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Verfris versleutelde gesprek"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Begin versleutelde gesprek"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Bevestig met vingerafdrukke"\n         ],\n         "Verify with SMP": [\n            null,\n            "Bevestig met SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Wat is hierdie?"\n         ],\n         "unencrypted": [\n            null,\n            "nie-privaat"\n         ],\n         "unverified": [\n            null,\n            "onbevestig"\n         ],\n         "verified": [\n            null,\n            "privaat"\n         ],\n         "finished": [\n            null,\n            "afgesluit"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            " bv. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "U XMPP-verskaffer se domein naam:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Haal die registrasie form"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Wenk: A lys van publieke XMPP-verskaffers is beskikbaar"\n         ],\n         "here": [\n            null,\n            "hier"\n         ],\n         "Register": [\n            null,\n            "Registreer"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "Jammer, die gekose verskaffer ondersteun nie in-band registrasie nie.Probeer weer met \'n ander verskaffer."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "Vra tans die XMPP-bediener vir \'n registrasie vorm"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Iets het fout geloop tydens koppeling met \\"%1$s\\". Is u seker dat dit bestaan?"\n         ],\n         "Now logging you in": [\n            null,\n            "U word nou aangemeld"\n         ],\n         "Registered successfully": [\n            null,\n            "Suksesvol geregistreer"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "Die verskaffer het u registrasieversoek verwerp. Kontrolleer asb. jou gegewe waardes vir korrektheid."\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Hierdie persoon is besig"\n         ],\n         "This contact is online": [\n            null,\n            "Hierdie persoon is aanlyn"\n         ],\n         "This contact is offline": [\n            null,\n            "Hierdie persoon is aflyn"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Hierdie persoon is onbeskikbaar"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Hierdie persoon is vir lank afwesig"\n         ],\n         "This contact is away": [\n            null,\n            "Hierdie persoon is afwesig"\n         ],\n         "Groups": [\n            null,\n            "Groepe"\n         ],\n         "My contacts": [\n            null,\n            "My kontakte"\n         ],\n         "Pending contacts": [\n            null,\n            "Hangende kontakte"\n         ],\n         "Contact requests": [\n            null,\n            "Kontak versoeke"\n         ],\n         "Ungrouped": [\n            null,\n            "Ongegroepeer"\n         ],\n         "Filter": [\n            null,\n            "Filtreer"\n         ],\n         "State": [\n            null,\n            "Kletsstand"\n         ],\n         "Any": [\n            null,\n            "Enige"\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            "Geselserig"\n         ],\n         "Extended Away": [\n            null,\n            "Weg vir langer"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Klik om met hierdie kontak te klets"\n         ],\n         "Name": [\n            null,\n            "Naam"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Is u seker u wil hierdie gespreksmaat verwyder?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Is u seker dat u hierdie persoon se versoek wil afkeur?"\n         ]\n      }\n   }\n}';});
-
-
-define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n != 1);",\n            "lang": "ca"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Desa"\n         ],\n         "Cancel": [\n            null,\n            "Cancel·la"\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "Mostra més informació d\'aquesta sala"\n         ],\n         "Click to open this room": [\n            null,\n            "Feu clic per obrir aquesta sala"\n         ],\n         "Close this chat box": [\n            null,\n            "Tanca aquest quadre del xat"\n         ],\n         "Personal message": [\n            null,\n            "Missatge personal"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "jo"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "està escrivint"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            "ha deixat d\'escriure"\n         ],\n         "has gone away": [\n            null,\n            "ha marxat"\n         ],\n         "Show this menu": [\n            null,\n            "Mostra aquest menú"\n         ],\n         "Write in the third person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Remove messages": [\n            null,\n            "Elimina els missatges"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquest quadre del xat?"\n         ],\n         "has gone offline": [\n            null,\n            "s\'ha desconnectat"\n         ],\n         "is busy": [\n            null,\n            "està ocupat"\n         ],\n         "Clear all messages": [\n            null,\n            "Esborra tots els missatges"\n         ],\n         "Insert a smiley": [\n            null,\n            "Insereix una cara somrient"\n         ],\n         "Start a call": [\n            null,\n            "Inicia una trucada"\n         ],\n         "Contacts": [\n            null,\n            "Contactes"\n         ],\n         "XMPP Username:": [\n            null,\n            "Nom d\'usuari XMPP:"\n         ],\n         "Password:": [\n            null,\n            "Contrasenya:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Feu clic aquí per iniciar la sessió de manera anònima"\n         ],\n         "Log In": [\n            null,\n            "Inicia la sessió"\n         ],\n         "user@server": [\n            null,\n            "usuari@servidor"\n         ],\n         "password": [\n            null,\n            "contrasenya"\n         ],\n         "Sign in": [\n            null,\n            "Inicia la sessió"\n         ],\n         "I am %1$s": [\n            null,\n            "Estic %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Feu clic aquí per escriure un missatge d\'estat personalitzat"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Feu clic per canviar l\'estat del xat"\n         ],\n         "Custom status": [\n            null,\n            "Estat personalitzat"\n         ],\n         "online": [\n            null,\n            "en línia"\n         ],\n         "busy": [\n            null,\n            "ocupat"\n         ],\n         "away for long": [\n            null,\n            "absent durant una estona"\n         ],\n         "away": [\n            null,\n            "absent"\n         ],\n         "offline": [\n            null,\n            "desconnectat"\n         ],\n         "Online": [\n            null,\n            "En línia"\n         ],\n         "Busy": [\n            null,\n            "Ocupat"\n         ],\n         "Away": [\n            null,\n            "Absent"\n         ],\n         "Offline": [\n            null,\n            "Desconnectat"\n         ],\n         "Log out": [\n            null,\n            "Tanca la sessió"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Feu clic per afegir contactes nous al xat"\n         ],\n         "Add a contact": [\n            null,\n            "Afegeix un contacte"\n         ],\n         "Contact name": [\n            null,\n            "Nom del contacte"\n         ],\n         "Search": [\n            null,\n            "Cerca"\n         ],\n         "Add": [\n            null,\n            "Afegeix"\n         ],\n         "No users found": [\n            null,\n            "No s\'ha trobat cap usuari"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Aquest client no admet les subscripcions de presència"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Feu clic per amagar aquests contactes"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Minimitza aquest quadre del xat"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Feu clic per restaurar aquest xat"\n         ],\n         "Minimized": [\n            null,\n            "Minimitzat"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Aquesta sala no és anònima"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Aquesta sala ara mostra membres no disponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Aquesta sala no mostra membres no disponibles"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "El registre de la sala està habilitat"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "El registre de la sala està deshabilitat"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Aquesta sala ara és parcialment anònima"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Aquesta sala ara és totalment anònima"\n         ],\n         "A new room has been created": [\n            null,\n            "S\'ha creat una sala nova"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Se us ha eliminat d\'aquesta sala a causa d\'un canvi d\'afiliació"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè ara només permet membres i no en sou membre"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè s\'està tancant el servei MUC (xat multiusuari)."\n         ],\n         "Message": [\n            null,\n            "Missatge"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Amaga la llista d\'ocupants"\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquesta sala?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Error: no s\'ha pogut executar l\'ordre"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Canvia l\'afiliació de l\'usuari a administrador"\n         ],\n         "Ban user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Canvia el rol de l\'usuari a ocupant"\n         ],\n         "Kick user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Atorga una afiliació a un usuari"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Elimina la capacitat de l\'usuari de publicar missatges"\n         ],\n         "Change your nickname": [\n            null,\n            "Canvieu el vostre àlies"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Atorga el rol de moderador a l\'usuari"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Atorga la propietat d\'aquesta sala"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Revoca l\'afiliació de l\'usuari"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Permet que un usuari silenciat publiqui missatges"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Àlies"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Aquesta sala de xat requereix una contrasenya"\n         ],\n         "Password: ": [\n            null,\n            "Contrasenya:"\n         ],\n         "Submit": [\n            null,\n            "Envia"\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Tema definit per %1$s en: %2$s"\n         ],\n         "Occupants": [\n            null,\n            "Ocupants"\n         ],\n         "Hidden": [\n            null,\n            "Amagat"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "Moderada"\n         ],\n         "Non-anonymous": [\n            null,\n            "No és anònima"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "Pública"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semianònima"\n         ],\n         "Unmoderated": [\n            null,\n            "No moderada"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Esteu a punt de convidar %1$s a la sala de xat \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Teniu l\'opció d\'incloure un missatge per explicar el motiu de la invitació."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Nom de la sala"\n         ],\n         "Server": [\n            null,\n            "Servidor"\n         ],\n         "Join Room": [\n            null,\n            "Uneix-me a la sala"\n         ],\n         "Show rooms": [\n            null,\n            "Mostra les sales"\n         ],\n         "Rooms": [\n            null,\n            "Sales"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "No hi ha cap sala a %1$s"\n         ],\n         "Description:": [\n            null,\n            "Descripció:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Ocupants:"\n         ],\n         "Features:": [\n            null,\n            "Característiques:"\n         ],\n         "Requires authentication": [\n            null,\n            "Cal autenticar-se"\n         ],\n         "Requires an invitation": [\n            null,\n            "Cal tenir una invitació"\n         ],\n         "Open room": [\n            null,\n            "Obre la sala"\n         ],\n         "Permanent room": [\n            null,\n            "Sala permanent"\n         ],\n         "Temporary room": [\n            null,\n            "Sala temporal"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat (%2$s) i ha deixat el següent motiu: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "S\'està tornant a establir la sessió xifrada"\n         ],\n         "Generating private key.": [\n            null,\n            "S\'està generant la clau privada"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "És possible que el navegador no respongui."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Sol·licitud d\'autenticació de %1$s\\n\\nEl contacte del xat està intentant verificar la vostra identitat mitjançant la pregunta següent.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "No s\'ha pogut verificar la identitat d\'aquest usuari."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "S\'està intercanviant la clau privada amb el contacte."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Els vostres missatges ja no estan xifrats"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Ara, els vostres missatges estan xifrats, però no s\'ha verificat la identitat del contacte."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "S\'ha verificat la identitat del contacte."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "El contacte ha conclòs el xifratge; cal que feu el mateix."\n         ],\n         "Your message could not be sent": [\n            null,\n            "No s\'ha pogut enviar el missatge"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Hem rebut un missatge sense xifrar"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Hem rebut un missatge xifrat il·legible"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Aquí es mostren les empremtes. Confirmeu-les amb %1$s fora d\'aquest xat.\\n\\nEmpremta de l\'usuari %2$s: %3$s\\n\\nEmpremta de %1$s: %4$s\\n\\nSi heu confirmat que les empremtes coincideixen, feu clic a D\'acord; en cas contrari, feu clic a Cancel·la."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Se us demanarà que indiqueu una pregunta de seguretat i la resposta corresponent.\\n\\nEs farà la mateixa pregunta al vostre contacte i, si escriu exactament la mateixa resposta (es distingeix majúscules de minúscules), se\'n verificarà la identitat."\n         ],\n         "What is your security question?": [\n            null,\n            "Quina és la vostra pregunta de seguretat?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Quina és la resposta a la pregunta de seguretat?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "S\'ha indicat un esquema d\'autenticació no vàlid"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Els vostres missatges no estan xifrats. Feu clic aquí per habilitar el xifratge OTR."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Els vostres missatges estan xifrats, però no s\'ha verificat el contacte."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Els vostres missatges estan xifrats i s\'ha verificat el contacte."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "El vostre contacte ha tancat la seva sessió privada; cal que feu el mateix."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Finalitza la conversa xifrada"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualitza la conversa xifrada"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Comença la conversa xifrada"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verifica amb empremtes"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verifica amb SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Què és això?"\n         ],\n         "unencrypted": [\n            null,\n            "sense xifrar"\n         ],\n         "unverified": [\n            null,\n            "sense verificar"\n         ],\n         "verified": [\n            null,\n            "verificat"\n         ],\n         "finished": [\n            null,\n            "acabat"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            "p. ex. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Nom de domini del vostre proveïdor XMPP:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Obtingues un formulari de registre"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Consell: hi ha disponible una llista de proveïdors XMPP públics"\n         ],\n         "here": [\n            null,\n            "aquí"\n         ],\n         "Register": [\n            null,\n            "Registre"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "El proveïdor indicat no admet el registre del compte. Proveu-ho amb un altre proveïdor."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "S\'està sol·licitant un formulari de registre del servidor XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Ha passat alguna cosa mentre s\'establia la connexió amb \\"%1$s\\". Segur que existeix?"\n         ],\n         "Now logging you in": [\n            null,\n            "S\'està iniciant la vostra sessió"\n         ],\n         "Registered successfully": [\n            null,\n            "Registre correcte"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "El proveïdor ha rebutjat l\'intent de registre. Comproveu que els valors que heu introduït siguin correctes."\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Aquest contacte està ocupat"\n         ],\n         "This contact is online": [\n            null,\n            "Aquest contacte està en línia"\n         ],\n         "This contact is offline": [\n            null,\n            "Aquest contacte està desconnectat"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Aquest contacte no està disponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Aquest contacte està absent durant un període prolongat"\n         ],\n         "This contact is away": [\n            null,\n            "Aquest contacte està absent"\n         ],\n         "Groups": [\n            null,\n            "Grups"\n         ],\n         "My contacts": [\n            null,\n            "Els meus contactes"\n         ],\n         "Pending contacts": [\n            null,\n            "Contactes pendents"\n         ],\n         "Contact requests": [\n            null,\n            "Sol·licituds de contacte"\n         ],\n         "Ungrouped": [\n            null,\n            "Sense agrupar"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Feu clic per conversar amb aquest contacte"\n         ],\n         "Name": [\n            null,\n            "Nom"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Segur que voleu eliminar aquest contacte?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Segur que voleu rebutjar aquesta sol·licitud de contacte?"\n         ]\n      }\n   }\n}';});
-
-
-define('text!de',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=n != 1;",\n            "lang": "de"\n         },\n         "Bookmark this room": [\n            null,\n            "Raum als Lesezeichen setzen"\n         ],\n         "The name for this bookmark:": [\n            null,\n            "Der Name für das Lesezeichen:"\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            "Beim Anmelden diesem Raum automatisch betreten?"\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            "Wie soll dein Nickname in diesem Raum sein?"\n         ],\n         "Save": [\n            null,\n            "Speichern"\n         ],\n         "Cancel": [\n            null,\n            "Abbrechen"\n         ],\n         "Are you sure you want to remove the bookmark \\"%1$s\\"?": [\n            null,\n            "Wollen Sie dieses Lesezeichen \\"%1$s\\" wirklich entfernen?"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            "Entschuldigung! Beim Versuch das Lesezeichens zu speichern schlug etwas fehl."\n         ],\n         "Click to toggle the bookmarks list": [\n            null,\n            "Liste der Lesezeichen umschalten"\n         ],\n         "Bookmarks": [\n            null,\n            "Lesezeichen"\n         ],\n         "Leave this room": [\n            null,\n            "Diesen Raum verlassen"\n         ],\n         "Remove this bookmark": [\n            null,\n            "Dieses Lesezeichen entfernen"\n         ],\n         "Unbookmark this room": [\n            null,\n            "Lesezeichen dieses Raums entfernen"\n         ],\n         "Show more information on this room": [\n            null,\n            "Mehr Information über diesen Raum zeigen"\n         ],\n         "Click to open this room": [\n            null,\n            "Hier klicken um diesen Raum zu öffnen"\n         ],\n         "You have unread messages": [\n            null,\n            "Sie haben ungelesene Nachrichten"\n         ],\n         "Close this chat box": [\n            null,\n            "Das Chat-Fenster schließen"\n         ],\n         "Personal message": [\n            null,\n            "Persönliche Nachricht"\n         ],\n         "Send": [\n            null,\n            "Senden"\n         ],\n         "me": [\n            null,\n            "Ich"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            "Eine sehr lange Nachricht wurde empfangen. Dies könnte ein Angriff mit dem Ziel sein die Chat-Performanz zu reduzieren. Die Ausgabe wurde gekürzt."\n         ],\n         "Typing from another device": [\n            null,\n            "Schreibt von einem anderen Gerät"\n         ],\n         "is typing": [\n            null,\n            "tippt"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            "Schreibt nicht mehr auf dem anderen Gerät"\n         ],\n         "has stopped typing": [\n            null,\n            "tippt nicht mehr"\n         ],\n         "has gone away": [\n            null,\n            "ist jetzt abwesend"\n         ],\n         "Show this menu": [\n            null,\n            "Dieses Menü anzeigen"\n         ],\n         "Write in the third person": [\n            null,\n            "In der dritten Person schreiben"\n         ],\n         "Remove messages": [\n            null,\n            "Nachrichten entfernen"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Sind Sie sicher, dass Sie alle Nachrichten dieses Chats löschen möchten?"\n         ],\n         "has gone offline": [\n            null,\n            "ist offline gegangen"\n         ],\n         "is busy": [\n            null,\n            "ist beschäftigt"\n         ],\n         "Clear all messages": [\n            null,\n            "Alle Nachrichten löschen"\n         ],\n         "Insert a smiley": [\n            null,\n            "Smiley einfügen"\n         ],\n         "Start a call": [\n            null,\n            "Beginne ein Gespräch"\n         ],\n         "Contacts": [\n            null,\n            "Kontakte"\n         ],\n         "XMPP Username:": [\n            null,\n            "XMPP Benutzername:"\n         ],\n         "Password:": [\n            null,\n            "Passwort:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Hier klicken um anonym anzumelden"\n         ],\n         "Log In": [\n            null,\n            "Anmelden"\n         ],\n         "Username": [\n            null,\n            "Benutzername"\n         ],\n         "user@server": [\n            null,\n            "Benutzer@Server"\n         ],\n         "password": [\n            null,\n            "passwort"\n         ],\n         "Sign in": [\n            null,\n            "Anmelden"\n         ],\n         "I am %1$s": [\n            null,\n            "Ich bin %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Hier klicken um Statusnachricht zu ändern"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Hier klicken um Status zu ändern"\n         ],\n         "Custom status": [\n            null,\n            "Statusnachricht"\n         ],\n         "online": [\n            null,\n            "online"\n         ],\n         "busy": [\n            null,\n            "beschäftigt"\n         ],\n         "away for long": [\n            null,\n            "länger abwesend"\n         ],\n         "away": [\n            null,\n            "abwesend"\n         ],\n         "offline": [\n            null,\n            "abgemeldet"\n         ],\n         "Online": [\n            null,\n            "Online"\n         ],\n         "Busy": [\n            null,\n            "Beschäftigt"\n         ],\n         "Away": [\n            null,\n            "Abwesend"\n         ],\n         "Offline": [\n            null,\n            "Abgemeldet"\n         ],\n         "Log out": [\n            null,\n            "Abmelden"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Hier klicken um neuen Kontakt hinzuzufügen"\n         ],\n         "Add a contact": [\n            null,\n            "Kontakt hinzufügen"\n         ],\n         "Contact name": [\n            null,\n            "Name des Kontakts"\n         ],\n         "Search": [\n            null,\n            "Suche"\n         ],\n         "e.g. user@example.org": [\n            null,\n            "z.B. benutzer@example.org"\n         ],\n         "Add": [\n            null,\n            "Hinzufügen"\n         ],\n         "No users found": [\n            null,\n            "Keine Benutzer gefunden"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Dieser Kontakt erlaubt die Abonnieren des Status nicht"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Hier klicken um diese Kontakte zu verstecken"\n         ],\n         "Close this box": [\n            null,\n            "Schließen"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Minimiere dieses Gesprächsfenster"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Hier klicken um diesen Chat wiederherzustellen"\n         ],\n         "Minimized": [\n            null,\n            "Minimiert"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Dieser Raum ist nicht anonym"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Dieser Raum zeigt jetzt nicht verfügbare Mitglieder an"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Dieser Raum zeigt jetzt nicht verfügbare Mitglieder nicht an"\n         ],\n         "The room configuration has changed": [\n            null,\n            "Die Raumkonfiguration hat sich geändert"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Nachrichten in diesem Raum werden ab jetzt protokolliert"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Nachrichten in diesem Raum werden nicht mehr protokolliert"\n         ],\n         "This room is now no longer anonymous": [\n            null,\n            "Dieses Zimmer ist jetzt nicht anonym"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Dieser Raum ist jetzt teils anonym"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Dieser Raum ist jetzt anonym"\n         ],\n         "A new room has been created": [\n            null,\n            "Ein neuer Raum wurde erstellt"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Sie sind aus diesem Raum verbannt worden"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Sie wurden aus diesem Raum hinausgeworfen"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Sie wurden wegen einer Zugehörigkeitsänderung entfernt"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Du wurdest aus dem Raum entfernt, da der Raum jetzt nur noch Mitglieder erlaubt und du kein Mitglied bist"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Sie wurden aus diesem Raum entfernt, da der MUC (Multi-User Chat) Dienst gerade heruntergefahren wird."\n         ],\n         "%1$s has been banned": [\n            null,\n            "%1$s ist verbannt worden"\n         ],\n         "%1$s\'s nickname has changed": [\n            null,\n            "%1$s\'s Spitzname hat sich geändert"\n         ],\n         "%1$s has been kicked out": [\n            null,\n            "%1$s wurde hinausgeworfen"\n         ],\n         "%1$s has been removed because of an affiliation change": [\n            null,\n            "%1$s wurde wegen einer Zugehörigkeitsänderung entfernt"\n         ],\n         "%1$s has been removed for not being a member": [\n            null,\n            "%1$s ist kein Mitglied und wurde daher entfernt"\n         ],\n         "Your nickname has been automatically set to: %1$s": [\n            null,\n            "Ihr Spitzname wurde automatisiert geändert zu: %1$s"\n         ],\n         "Your nickname has been changed to: %1$s": [\n            null,\n            "Ihr Spitzname wurde geändert zu: %1$s"\n         ],\n         "Message": [\n            null,\n            "Nachricht"\n         ],\n         "Close and leave this room": [\n            null,\n            "Schließe und verlasse diesen Raum"\n         ],\n         "Configure this room": [\n            null,\n            "Einstellungsänderungen an diesem Raum vornehmen"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Teilnehmerliste ausblenden"\n         ],\n         "${command}": [\n            null,\n            "${command}"\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Sind Sie sicher, dass Sie alle Nachrichten in diesem Raum löschen möchten?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Fehler: Konnte den Befehl nicht ausführen"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Ändere die Zugehörigkeit des Benutzers zu Administrator"\n         ],\n         "Ban user from room": [\n            null,\n            "Verbanne einen Benutzer aus dem Raum"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Benutzerrolle zu Teilnehmer ändern"\n         ],\n         "Kick user from room": [\n            null,\n            "Werfe Benutzer aus dem Raum"\n         ],\n         "Write in 3rd person": [\n            null,\n            "In der dritten Person schreiben"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Gewähre einem Benutzer Mitgliedschaft"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Entferne die Möglichkeit des Benutzers Nachrichten zu senden"\n         ],\n         "Change your nickname": [\n            null,\n            "Spitznamen ändern"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Gebe Benutzer Moderatorrechte"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Besitzrechte an diesem Raum vergeben"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Widerrufe die Mitgliedschaft des Benutzers"\n         ],\n         "Set room subject": [\n            null,\n            "Chatraum Thema festlegen"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            "Setze Raumthema (alias für /subject)"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Erlaube stummgeschaltetem Benutzer Nachrichten zu senden"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            "Der gewählte Spitzname ist reserviert oder derzeit in Gebrauch. Bitte wähle einen Anderen."\n         ],\n         "Please choose your nickname": [\n            null,\n            "Wähle deinen Spitznamen"\n         ],\n         "Nickname": [\n            null,\n            "Spitzname"\n         ],\n         "Enter room": [\n            null,\n            "Betrete Raum"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Dieser Raum erfordert ein Passwort"\n         ],\n         "Password: ": [\n            null,\n            "Passwort: "\n         ],\n         "Submit": [\n            null,\n            "Abschicken"\n         ],\n         "This action was done by %1$s.": [\n            null,\n            "Diese Aktion wurde ausgeführt durch %1$s."\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            "Die angegebene Begründung lautet: \\"%1$s\\"."\n         ],\n         "${notification.reason}": [\n            null,\n            "${notification.reason}"\n         ],\n         " has left the room. \\"": [\n            null,\n            " hat den Raum verlassen. \\""\n         ],\n         " has left the room": [\n            null,\n            " hat den Raum verlassen"\n         ],\n         " has joined the room. \\"": [\n            null,\n            " hat den Raum betreten. \\""\n         ],\n         " has joined the room.": [\n            null,\n            " ist dem Raum beigetreten."\n         ],\n         "You are not on the member list of this room.": [\n            null,\n            "Sie sind nicht auf der Mitgliederliste dieses Raums."\n         ],\n         "You have been banned from this room.": [\n            null,\n            "Sie sind aus diesem Raum verbannt worden."\n         ],\n         "No nickname was specified.": [\n            null,\n            "Kein Spitzname festgelegt."\n         ],\n         "You are not allowed to create new rooms.": [\n            null,\n            "Es ist Ihnen nicht erlaubt neue Räume anzulegen."\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies.": [\n            null,\n            "Ungültiger Spitzname."\n         ],\n         "This room does not (yet) exist.": [\n            null,\n            "Dieser Raum existiert (noch) nicht."\n         ],\n         "This room has reached its maximum number of occupants.": [\n            null,\n            "Maximale Anzahl an Mitgliedern für diesen Raum erreicht"\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "%1$s hat das Thema zu \\"%2$s\\" geändert"\n         ],\n         "This user is a moderator.": [\n            null,\n            "Dieser Benutzer ist ein Moderator."\n         ],\n         "This user can send messages in this room.": [\n            null,\n            "Dieser Benutzer kann Nachrichten in diesem Raum verschicken."\n         ],\n         "This user can NOT send messages in this room.": [\n            null,\n            "Dieser Benutzer kann keine Nachrichten in diesem Raum verschicken."\n         ],\n         "Occupants": [\n            null,\n            "Teilnehmer/Innen"\n         ],\n         "Invite": [\n            null,\n            "Einladen"\n         ],\n         "Features": [\n            null,\n            "Funktionen"\n         ],\n         "Hidden": [\n            null,\n            "Versteckt"\n         ],\n         "Message archiving": [\n            null,\n            "Nachrichten Archivierung"\n         ],\n         "Members only": [\n            null,\n            "Nur Mitglieder"\n         ],\n         "Moderated": [\n            null,\n            "Moderiert"\n         ],\n         "Non-anonymous": [\n            null,\n            "Nicht anonym"\n         ],\n         "Open": [\n            null,\n            "Offen"\n         ],\n         "Password protected": [\n            null,\n            "Passwort geschützt"\n         ],\n         "Persistent": [\n            null,\n            "Dauerhaft"\n         ],\n         "Public": [\n            null,\n            "Öffentlich"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Teils anonym"\n         ],\n         "Temporary": [\n            null,\n            "Vorübergehend"\n         ],\n         "Unmoderated": [\n            null,\n            "Unmoderiert"\n         ],\n         "Unsecured": [\n            null,\n            "Ungeschützt"\n         ],\n         "This room is not publicly searchable": [\n            null,\n            "Dieser Raum ist nicht suchbar"\n         ],\n         "Messages are archived on the server": [\n            null,\n            "Nachrichten werden auf dem Server archiviert"\n         ],\n         "This room is restricted to members only": [\n            null,\n            "Dieser Raum ist nur für Mitglieder zugänglich"\n         ],\n         "This room is being moderated": [\n            null,\n            "Dieser Raum ist moderiert"\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            "Jeder in dem Raum kann deine XMPP/ Jabber ID sehen"\n         ],\n         "Anyone can join this room": [\n            null,\n            "Jeder kann diesen Raum betreten"\n         ],\n         "This room requires a password before entry": [\n            null,\n            "Dieser Raum erfordert ein Passwort"\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            "Dieser Raum bleibt auch wenn Niemand in ihm ist bestehen"\n         ],\n         "This room is publicly searchable": [\n            null,\n            "Dieser Raum ist per Suche auffindbar"\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            "Nur Moderatoren können deine XMPP/ Jabber ID sehen"\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            "Dieser Raum verschwindet sobald diesen die letzte Person verlassen hat"\n         ],\n         "This room is not being moderated": [\n            null,\n            "Dieser Raum ist unmoderiert"\n         ],\n         "This room does not require a password upon entry": [\n            null,\n            "Dieser Raum erfordert kein Passwort"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Du bist gerade dabei %1$s in den Raum \\"%2$s\\" einzuladen. "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Du kannst optional eine Nachricht mit den Gründen der Einladung mitsenden."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            "Bitte geben Sie eine gültige XMPP/ Jabber ID an"\n         ],\n         "Room name": [\n            null,\n            "Raumname"\n         ],\n         "Server": [\n            null,\n            "Server"\n         ],\n         "Join Room": [\n            null,\n            "Raum betreten"\n         ],\n         "Show rooms": [\n            null,\n            "Räume anzeigen"\n         ],\n         "Rooms": [\n            null,\n            "Räume"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Keine Räume auf %1$s"\n         ],\n         "Description:": [\n            null,\n            "Beschreibung:"\n         ],\n         "Room Address (JID):": [\n            null,\n            "XMPP/ Jabber ID (JID) dieses Raumes:"\n         ],\n         "Occupants:": [\n            null,\n            "Teilnehmer:"\n         ],\n         "Features:": [\n            null,\n            "Funktionen:"\n         ],\n         "Requires authentication": [\n            null,\n            "Authentifizierung erforderlich"\n         ],\n         "Requires an invitation": [\n            null,\n            "Einladung erforderlich"\n         ],\n         "Open room": [\n            null,\n            "Offener Raum"\n         ],\n         "Permanent room": [\n            null,\n            "Dauerhafter Raum"\n         ],\n         "Temporary room": [\n            null,\n            "Vorübergehender Raum"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s hat Sie in den Raum \\"%2$s\\" eingeladen"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s hat Sie in den Raum \\"%2$s\\" eingeladen. Begründung: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            "Benachrichtigung von %1$s"\n         ],\n         "%1$s says": [\n            null,\n            "%1$s sagt"\n         ],\n         "has come online": [\n            null,\n            "kam online"\n         ],\n         "wants to be your contact": [\n            null,\n            "will dein Kontakt sein"\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Verschlüsselte Sitzung wiederherstellen"\n         ],\n         "Generating private key.": [\n            null,\n            "Generiere privaten Schlüssel."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Ihr Browser könnte langsam reagieren."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Authentifizierungsanfrage von %1$s\\n\\nIhr Kontakt möchte durch die folgende Frage Ihre Identität verifizieren:\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Die Identität des Benutzers konnte nicht verifiziert werden."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Tausche private Schlüssel mit Kontakt aus."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Deine Nachrichten sind nicht mehr verschlüsselt"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Deine Nachrichten sind ab jetzt verschlüsselt, aber die Identität des Kontaktes wurde noch nicht bestätigt."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "Die Identität des Kontakts wurde bestätigt."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "Dein Kontakt hat die Verschlüsselung deaktiviert, du solltest das gleiche tun."\n         ],\n         "Your message could not be sent": [\n            null,\n            "Ihre Nachricht konnte nicht gesendet werden"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Wir haben eine unverschlüsselte Nachricht empfangen"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Wir haben eine unlesbare Nachricht empfangen"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Hier sind die Fingerabdrücke, bitte bestätige diese mit %1$s, außerhalb von diesem Chat\\n\\nFingerabdruck für dich, %2$s: %3$s\\n\\nFingerabdruck für %1$s: %4$s\\n\\nWenn du überprüft hast, dass die Fingerabdrücke zusammenpassen, drücke OK, andernfalls Abbrechen."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Sie werden im folgenden nach einer Sicherheitsfrage und dann nach dessen Antwort gefragt.\\n\\nIhr Kontakt wird dann die Sicherheitsfrage lesen und die Antwort korrekt beantworten müssen (Groß- und Kleinschreibung beachten!) um die Identitäten zu überprüfen."\n         ],\n         "What is your security question?": [\n            null,\n            "Wie lautet Ihre Sicherheitsfrage?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Wie lautet die Antwort Ihrer Sicherheitsfrage?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Ungültiges Authentifizierungsmuster wurde zur Verfügung gestellt"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Ihre Nachricht ist unverschlüsselt. Klicken Sie hier um OTR Verschlüsselung zu aktivieren."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Ihre Nachrichten werden verschlüsselt aber Ihr Kontakt wurde noch nicht verifiziert/ bestätigt."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Ihre Nachrichten werden verschlüsselt und Ihr Kontakt wurde bestätigt."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "Ihr Kontakt hat die private Sitzung geschlossen. Sie sollten das gleiche tun."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Beende die verschlüsselte Unterhaltung"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Verschlüsselte Unterhaltung aktualisieren"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Beginn einer verschlüsselten Unterhaltung"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Überprüfung mit Fingerabdruck"\n         ],\n         "Verify with SMP": [\n            null,\n            "Überprüfung mit SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Was ist das?"\n         ],\n         "unencrypted": [\n            null,\n            "unverschlüsselt"\n         ],\n         "unverified": [\n            null,\n            "nicht verifiziert"\n         ],\n         "verified": [\n            null,\n            "verifiziert"\n         ],\n         "finished": [\n            null,\n            "erledigt"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            " z. B. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Ihr XMPP/ Jabber Provider Domain Name:"\n         ],\n         "Fetch registration form": [\n            null,\n            ""\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Tipp: Eine Liste öffentlicher Provider ist verfügbar"\n         ],\n         "here": [\n            null,\n            "hier"\n         ],\n         "Register": [\n            null,\n            "Registrierung"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "Entschuldigung: Dieser Provider erlaubt keine direkte Benutzer- Registrierung. Versuchen Sie einen anderen Provider oder erstellen Sie einen Zugang beim Provider direkt."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            ""\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Etwas schlägt fehl beim Versuch eine Verbindung mit \\"%1$s\\" her zu stellen. Sicher das \\"%1$s\\" existiert?"\n         ],\n         "Now logging you in": [\n            null,\n            "Sie werden angemeldet"\n         ],\n         "Registered successfully": [\n            null,\n            "Registrierung erfolgreich"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "Der Provider hat die Registrierung abgelehnt. Bitte überprüfen Sie Ihre Angaben auf Richtigkeit."\n         ],\n         "Retry": [\n            null,\n            "Wiederholen"\n         ],\n         "Click to toggle the rooms list": [\n            null,\n            "Umschalten der Raum listen"\n         ],\n         "Open Rooms": [\n            null,\n            "Offene Räume"\n         ],\n         "Are you sure you want to leave the room \\"%1$s\\"?": [\n            null,\n            "Wollen Sie diesen Raum \\"%1$s\\" wirklich verlassen?"\n         ],\n         "This contact is busy": [\n            null,\n            "Dieser Kontakt ist beschäftigt"\n         ],\n         "This contact is online": [\n            null,\n            "Dieser Kontakt ist online"\n         ],\n         "This contact is offline": [\n            null,\n            "Dieser Kontakt ist offline"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Dieser Kontakt ist nicht verfügbar"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Dieser Kontakt ist für längere Zeit abwesend"\n         ],\n         "This contact is away": [\n            null,\n            "Dieser Kontakt ist abwesend"\n         ],\n         "Groups": [\n            null,\n            "Gruppen"\n         ],\n         "My contacts": [\n            null,\n            "Meine Kontakte"\n         ],\n         "Pending contacts": [\n            null,\n            "Unbestätigte Kontakte"\n         ],\n         "Contact requests": [\n            null,\n            "Kontaktanfragen"\n         ],\n         "Ungrouped": [\n            null,\n            "Ungruppiert"\n         ],\n         "Filter": [\n            null,\n            "Filter"\n         ],\n         "State": [\n            null,\n            "Staat"\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            "Ungelesen"\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            "Länger nicht anwesend"\n         ],\n         "Click to remove %1$s as a contact": [\n            null,\n            "Hier klicken um %1$s zu entfernen"\n         ],\n         "Click to accept the contact request from %1$s": [\n            null,\n            "Hier klicken um die Kontaktanfrage von %1$s zu akzeptieren"\n         ],\n         "Click to decline the contact request from %1$s": [\n            null,\n            "Hier klicken um die Kontaktanfrage von %1$s abzulehnen"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Hier klicken um mit diesem Kontakt zu chatten"\n         ],\n         "Name": [\n            null,\n            "Name"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Wollen Sie diesen Kontakt wirklich entfernen?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Wollen Sie diese Kontaktanfrage wirklich ablehnen?"\n         ]\n      }\n   }\n}';});
-
-
-define('text!es',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n != 1);",\n            "lang": "es"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Guardar"\n         ],\n         "Cancel": [\n            null,\n            "Cancelar"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            ""\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "Mostrar más información en esta sala"\n         ],\n         "Click to open this room": [\n            null,\n            "Haga click para abrir esta sala"\n         ],\n         "Personal message": [\n            null,\n            "Mensaje personal"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "yo"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            ""\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            ""\n         ],\n         "Show this menu": [\n            null,\n            "Mostrar este menú"\n         ],\n         "Write in the third person": [\n            null,\n            "Escribir en tercera persona"\n         ],\n         "Remove messages": [\n            null,\n            "Eliminar mensajes"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "¿Está seguro de querer limpiar los mensajes de esta conversación?"\n         ],\n         "Insert a smiley": [\n            null,\n            ""\n         ],\n         "Start a call": [\n            null,\n            ""\n         ],\n         "Contacts": [\n            null,\n            "Contactos"\n         ],\n         "Password:": [\n            null,\n            "Contraseña:"\n         ],\n         "Log In": [\n            null,\n            "Iniciar sesión"\n         ],\n         "user@server": [\n            null,\n            ""\n         ],\n         "Sign in": [\n            null,\n            "Registrar"\n         ],\n         "I am %1$s": [\n            null,\n            "Estoy %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Haga click para escribir un mensaje de estatus personalizado"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Haga click para cambiar su estatus de chat"\n         ],\n         "Custom status": [\n            null,\n            "Personalizar estatus"\n         ],\n         "online": [\n            null,\n            "en línea"\n         ],\n         "busy": [\n            null,\n            "ocupado"\n         ],\n         "away for long": [\n            null,\n            "ausente por mucho tiempo"\n         ],\n         "away": [\n            null,\n            "ausente"\n         ],\n         "Online": [\n            null,\n            "En línea"\n         ],\n         "Busy": [\n            null,\n            "Ocupado"\n         ],\n         "Away": [\n            null,\n            "Ausente"\n         ],\n         "Offline": [\n            null,\n            "Desconectado"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Haga click para agregar nuevos contactos al chat"\n         ],\n         "Add a contact": [\n            null,\n            "Agregar un contacto"\n         ],\n         "Contact name": [\n            null,\n            "Nombre de contacto"\n         ],\n         "Search": [\n            null,\n            "Búsqueda"\n         ],\n         "e.g. user@example.org": [\n            null,\n            ""\n         ],\n         "Add": [\n            null,\n            "Agregar"\n         ],\n         "No users found": [\n            null,\n            "Sin usuarios encontrados"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            ""\n         ],\n         "Minimize this chat box": [\n            null,\n            ""\n         ],\n         "Click to restore this chat": [\n            null,\n            "Haga click para eliminar este contacto"\n         ],\n         "Minimized": [\n            null,\n            "Minimizado"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Esta sala no es para usuarios anónimos"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Esta sala ahora muestra los miembros no disponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Esta sala no muestra los miembros no disponibles"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "El registro de la sala ahora está habilitado"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "El registro de la sala ahora está deshabilitado"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Esta sala ahora es semi-anónima"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Esta sala ahora es completamente anónima"\n         ],\n         "A new room has been created": [\n            null,\n            "Una nueva sala ha sido creada"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Usted ha sido bloqueado de esta sala"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Usted ha sido expulsado de esta sala"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Usted ha sido eliminado de esta sala debido a un cambio de afiliación"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Usted ha sido eliminado de esta sala debido a que la sala cambio su configuración a solo-miembros y usted no es un miembro"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Usted ha sido eliminado de esta sala debido a que el servicio MUC (Multi-user chat) está deshabilitado."\n         ],\n         "Message": [\n            null,\n            "Mensaje"\n         ],\n         "Hide the list of occupants": [\n            null,\n            ""\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "¿Está seguro de querer limpiar los mensajes de esta sala?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            ""\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            ""\n         ],\n         "Change user role to occupant": [\n            null,\n            ""\n         ],\n         "Grant membership to a user": [\n            null,\n            ""\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            ""\n         ],\n         "Change your nickname": [\n            null,\n            ""\n         ],\n         "Grant moderator role to user": [\n            null,\n            ""\n         ],\n         "Revoke user\'s membership": [\n            null,\n            ""\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            ""\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Please choose your nickname": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Apodo"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Esta sala de chat requiere una contraseña."\n         ],\n         "Password: ": [\n            null,\n            "Contraseña: "\n         ],\n         "Submit": [\n            null,\n            "Enviar"\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            ""\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Tema fijado por %1$s a: %2$s"\n         ],\n         "Occupants": [\n            null,\n            "Ocupantes"\n         ],\n         "Invite": [\n            null,\n            ""\n         ],\n         "Hidden": [\n            null,\n            "Oculto"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "Moderado"\n         ],\n         "Non-anonymous": [\n            null,\n            "No anónimo"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "Pública"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semi anónimo"\n         ],\n         "Unmoderated": [\n            null,\n            "Sin moderar"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            ""\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            ""\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Nombre de sala"\n         ],\n         "Server": [\n            null,\n            "Servidor"\n         ],\n         "Show rooms": [\n            null,\n            "Mostrar salas"\n         ],\n         "Rooms": [\n            null,\n            "Salas"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Sin salas en %1$s"\n         ],\n         "Description:": [\n            null,\n            "Descripción"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Ocupantes:"\n         ],\n         "Features:": [\n            null,\n            "Características:"\n         ],\n         "Requires authentication": [\n            null,\n            "Autenticación requerida"\n         ],\n         "Requires an invitation": [\n            null,\n            "Requiere una invitación"\n         ],\n         "Open room": [\n            null,\n            "Abrir sala"\n         ],\n         "Permanent room": [\n            null,\n            "Sala permanente"\n         ],\n         "Temporary room": [\n            null,\n            "Sala temporal"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            ""\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            ""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Re-estableciendo sesión cifrada"\n         ],\n         "Generating private key.": [\n            null,\n            "Generando llave privada"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Su navegador podría dejar de responder por un momento"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "No se pudo verificar la identidad de este usuario"\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Sus mensajes han dejado de cifrarse"\n         ],\n         "Your message could not be sent": [\n            null,\n            "Su mensaje no se pudo enviar"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Se recibío un mensaje sin cifrar"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Se recibío un mensaje cifrado corrupto"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Por favor confirme los identificadores de %1$s fuera de este chat.\\n\\nSu identificador es, %2$s: %3$s\\n\\nEl identificador de %1$s es: %4$s\\n\\nDespués de confirmar los identificadores haga click en OK, cancele si no concuerdan."\n         ],\n         "What is your security question?": [\n            null,\n            "Introduzca su pregunta de seguridad"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Introduzca la respuesta a su pregunta de seguridad"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Esquema de autenticación inválido"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Sus mensajes no están cifrados. Haga click aquí para habilitar el cifrado OTR"\n         ],\n         "End encrypted conversation": [\n            null,\n            "Finalizar sesión cifrada"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualizar sesión cifrada"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Iniciar sesión cifrada"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verificar con identificadores"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verificar con SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "¿Qué es esto?"\n         ],\n         "unencrypted": [\n            null,\n            "texto plano"\n         ],\n         "unverified": [\n            null,\n            "sin verificar"\n         ],\n         "verified": [\n            null,\n            "verificado"\n         ],\n         "finished": [\n            null,\n            "finalizado"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            ""\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            ""\n         ],\n         "Fetch registration form": [\n            null,\n            ""\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            ""\n         ],\n         "here": [\n            null,\n            ""\n         ],\n         "Register": [\n            null,\n            ""\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            ""\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            ""\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            ""\n         ],\n         "Now logging you in": [\n            null,\n            ""\n         ],\n         "Registered successfully": [\n            null,\n            ""\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            ""\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Este contacto está ocupado"\n         ],\n         "This contact is online": [\n            null,\n            "Este contacto está en línea"\n         ],\n         "This contact is offline": [\n            null,\n            "Este contacto está desconectado"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Este contacto no está disponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Este contacto está ausente por un largo periodo de tiempo"\n         ],\n         "This contact is away": [\n            null,\n            "Este contacto está ausente"\n         ],\n         "Groups": [\n            null,\n            ""\n         ],\n         "My contacts": [\n            null,\n            "Mis contactos"\n         ],\n         "Pending contacts": [\n            null,\n            "Contactos pendientes"\n         ],\n         "Contact requests": [\n            null,\n            "Solicitudes de contacto"\n         ],\n         "Ungrouped": [\n            null,\n            ""\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Haga click para conversar con este contacto"\n         ],\n         "Name": [\n            null,\n            ""\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "¿Esta seguro de querer eliminar este contacto?"\n         ]\n      }\n   }\n}';});
-
-
-define('text!fr',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=n > 1;",\n            "lang": "fr"\n         },\n         "Bookmark this room": [\n            null,\n            "Marquer ce salon"\n         ],\n         "The name for this bookmark:": [\n            null,\n            "Nom de ce marque-page :"\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            "Voulez-vous rejoindre automatiquement ce salon au lancement ?"\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            "Quel alias devrait être utilisé pour ce salon ?"\n         ],\n         "Save": [\n            null,\n            "Enregistrer"\n         ],\n         "Cancel": [\n            null,\n            "Annuler"\n         ],\n         "Are you sure you want to remove the bookmark \\"%1$s\\"?": [\n            null,\n            "Voulez-vous vraiment retirer le marque-page « %1$s » ?"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            "Désolé, quelque chose s’est mal passé pendant la sauvegarde de ce marque-page."\n         ],\n         "Click to toggle the bookmarks list": [\n            null,\n            "Cliquer pour ouvrir la liste des salons"\n         ],\n         "Bookmarks": [\n            null,\n            "Marques-page"\n         ],\n         "Leave this room": [\n            null,\n            "Quitter ce salon"\n         ],\n         "Remove this bookmark": [\n            null,\n            "Retirer ce marque-page"\n         ],\n         "Unbookmark this room": [\n            null,\n            "Retirer ce salon"\n         ],\n         "Show more information on this room": [\n            null,\n            "Afficher davantage d’informations sur ce salon"\n         ],\n         "Click to open this room": [\n            null,\n            "Cliquer pour ouvrir ce salon"\n         ],\n         "You have unread messages": [\n            null,\n            "Vous avez de nouveaux messages"\n         ],\n         "Close this chat box": [\n            null,\n            "Fermer cette fenêtre de discussion"\n         ],\n         "Personal message": [\n            null,\n            "Message personnel"\n         ],\n         "Send": [\n            null,\n            "Envoyer"\n         ],\n         "me": [\n            null,\n            "moi"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            "Un message très long a été reçu. Cela pourrait être lié à une attaque visant à dégrader la performance de la conversation. La sortie a été tronquée."\n         ],\n         "Typing from another device": [\n            null,\n            "Saisie depuis un autre appareil"\n         ],\n         "is typing": [\n            null,\n            "écrit"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            "Fin de saisie depuis l’autre appareil"\n         ],\n         "has stopped typing": [\n            null,\n            "a arrêté d’écrire"\n         ],\n         "has gone away": [\n            null,\n            "est parti"\n         ],\n         "Show this menu": [\n            null,\n            "Afficher ce menu"\n         ],\n         "Write in the third person": [\n            null,\n            "Écrire à la troisième personne"\n         ],\n         "Remove messages": [\n            null,\n            "Effacer les messages"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Voulez-vous vraiment supprimer les messages de cette conversation ?"\n         ],\n         "has gone offline": [\n            null,\n            "s’est déconnecté"\n         ],\n         "is busy": [\n            null,\n            "est occupé"\n         ],\n         "Clear all messages": [\n            null,\n            "Supprimer tous les messages"\n         ],\n         "Insert a smiley": [\n            null,\n            "Insérer une émoticône"\n         ],\n         "Start a call": [\n            null,\n            "Démarrer un appel"\n         ],\n         "Contacts": [\n            null,\n            "Contacts"\n         ],\n         "XMPP Username:": [\n            null,\n            "Nom d’utilisateur XMPP :"\n         ],\n         "Password:": [\n            null,\n            "Mot de passe :"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Cliquez ici pour se connecter anonymement"\n         ],\n         "Log In": [\n            null,\n            "Se connecter"\n         ],\n         "Username": [\n            null,\n            "Nom"\n         ],\n         "user@server": [\n            null,\n            "utilisateur@serveur"\n         ],\n         "password": [\n            null,\n            "Mot de passe"\n         ],\n         "Sign in": [\n            null,\n            "S’inscrire"\n         ],\n         "I am %1$s": [\n            null,\n            "Je suis %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Cliquez ici pour indiquer votre statut personnel"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Cliquez pour changer votre statut"\n         ],\n         "Custom status": [\n            null,\n            "Statut personnel"\n         ],\n         "online": [\n            null,\n            "en ligne"\n         ],\n         "busy": [\n            null,\n            "occupé"\n         ],\n         "away for long": [\n            null,\n            "absent pour une longue durée"\n         ],\n         "away": [\n            null,\n            "absent"\n         ],\n         "offline": [\n            null,\n            "Déconnecté"\n         ],\n         "Online": [\n            null,\n            "En ligne"\n         ],\n         "Busy": [\n            null,\n            "Occupé"\n         ],\n         "Away": [\n            null,\n            "Absent"\n         ],\n         "Offline": [\n            null,\n            "Déconnecté"\n         ],\n         "Log out": [\n            null,\n            "Se déconnecter"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Cliquez pour ajouter de nouveaux contacts"\n         ],\n         "Add a contact": [\n            null,\n            "Ajouter un contact"\n         ],\n         "Contact name": [\n            null,\n            "Nom du contact"\n         ],\n         "Search": [\n            null,\n            "Rechercher"\n         ],\n         "e.g. user@example.org": [\n            null,\n            "e.g. utilisateur@exemple.org"\n         ],\n         "Add": [\n            null,\n            "Ajouter"\n         ],\n         "No users found": [\n            null,\n            "Aucun utilisateur trouvé"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Ce client ne permet pas les mises à jour de disponibilité"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Cliquez pour cacher ces contacts"\n         ],\n         "Close this box": [\n            null,\n            "Fermer cette fenêtre"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Réduire cette fenêtre de discussion"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Cliquez pour afficher cette discussion"\n         ],\n         "Minimized": [\n            null,\n            "Réduit(s)"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Ce salon n’est pas anonyme"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Ce salon affiche maintenant les membres indisponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Ce salon n’affiche pas les membres indisponibles"\n         ],\n         "The room configuration has changed": [\n            null,\n            "Les paramètres de ce salon ont été modifiés"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Le logging du salon est activé"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Le logging du salon est désactivé"\n         ],\n         "This room is now no longer anonymous": [\n            null,\n            "Ce salon n’est plus anonyme"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Ce salon est maintenant semi-anonyme"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Ce salon est maintenant entièrement anonyme"\n         ],\n         "A new room has been created": [\n            null,\n            "Un nouveau salon a été créé"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Vous avez été banni de ce salon"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Vous avez été expulsé de ce salon"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Vous avez été retiré de ce salon du fait d’un changement d’affiliation"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Vous avez été retiré de ce salon parce que ce salon est devenu réservé aux membres et vous n’êtes pas membre"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Vous avez été retiré de ce salon parce que le service de chat multi-utilisateur a été désactivé."\n         ],\n         "%1$s has been banned": [\n            null,\n            "%1$s a été banni"\n         ],\n         "%1$s\'s nickname has changed": [\n            null,\n            "L’alias de %1$s a changé"\n         ],\n         "%1$s has been kicked out": [\n            null,\n            "%1$s a été expulsé"\n         ],\n         "%1$s has been removed because of an affiliation change": [\n            null,\n            "%1$s a été supprimé à cause d’un changement d’affiliation"\n         ],\n         "%1$s has been removed for not being a member": [\n            null,\n            "%1$s a été supprimé car il n’est pas membre"\n         ],\n         "Your nickname has been automatically set to: %1$s": [\n            null,\n            "Votre alias a été automatiquement déterminé en : %1$s"\n         ],\n         "Your nickname has been changed to: %1$s": [\n            null,\n            "Votre alias a été modifié en : %1$s"\n         ],\n         "Message": [\n            null,\n            "Message"\n         ],\n         "Close and leave this room": [\n            null,\n            "Fermer et quitter ce salon"\n         ],\n         "Configure this room": [\n            null,\n            "Configurer ce salon"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Cacher la liste des participants"\n         ],\n         "${command}": [\n            null,\n            "${command}"\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Voulez-vous vraiment supprimer les messages de ce salon ?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Erreur : la commande ne peut pas être exécutée"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Changer le rôle  de l’utilisateur en administrateur"\n         ],\n         "Ban user from room": [\n            null,\n            "Bannir l’utilisateur du salon"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Changer le rôle de l’utilisateur en participant"\n         ],\n         "Kick user from room": [\n            null,\n            "Expulser l’utilisateur du salon"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Écrire à la troisième personne"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Autoriser l’utilisateur à être membre"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Retirer le droit d’envoyer des messages"\n         ],\n         "Change your nickname": [\n            null,\n            "Changer votre alias"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Changer le rôle de l’utilisateur en modérateur"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Accorder la propriété à ce salon"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Révoquer l’utilisateur des membres"\n         ],\n         "Set room subject": [\n            null,\n            "Indiquer le sujet du salon"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            "Définir le sujet de la salle (alias pour /subject)"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Autoriser les utilisateurs muets à poster des messages"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            "L’alias choisi est réservé ou actuellment utilisé, veuillez en choisir un différent."\n         ],\n         "Please choose your nickname": [\n            null,\n            "Veuillez choisir votre alias"\n         ],\n         "Nickname": [\n            null,\n            "Alias"\n         ],\n         "Enter room": [\n            null,\n            "Entrer dans le salon"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Ce salon nécessite un mot de passe"\n         ],\n         "Password: ": [\n            null,\n            "Mot de passe : "\n         ],\n         "Submit": [\n            null,\n            "Soumettre"\n         ],\n         "This action was done by %1$s.": [\n            null,\n            "L’action a été réalisée par %1$s."\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            "La raison indiquée est : « %1$s »."\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            " a quitté le salon. \\""\n         ],\n         " has left the room": [\n            null,\n            " a quitté le salon"\n         ],\n         " has joined the room. \\"": [\n            null,\n            " a rejoint le salon. \\""\n         ],\n         " has joined the room.": [\n            null,\n            " a rejoint le salon."\n         ],\n         "You are not on the member list of this room.": [\n            null,\n            "Vous n’êtes pas dans la liste des membres de ce salon."\n         ],\n         "You have been banned from this room.": [\n            null,\n            "Vous avez été banni de ce salon."\n         ],\n         "No nickname was specified.": [\n            null,\n            "Aucun alias n’a été indiqué."\n         ],\n         "You are not allowed to create new rooms.": [\n            null,\n            "Vous n’êtes pas autorisé à créer des salons."\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies.": [\n            null,\n            "Votre alias n’est pas conforme à la politique de ce salon."\n         ],\n         "This room does not (yet) exist.": [\n            null,\n            "Ce salon n’existe pas (pour l’instant)."\n         ],\n         "This room has reached its maximum number of occupants.": [\n            null,\n            "Ce salon a atteint sa limite maximale d’occupants."\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Le sujet « %2$s » a été défini par %1$s"\n         ],\n         "This user is a moderator.": [\n            null,\n            "Cet utilisateur est un modérateur."\n         ],\n         "This user can send messages in this room.": [\n            null,\n            "Cet utilisateur peut envoyer des messages dans ce salon."\n         ],\n         "This user can NOT send messages in this room.": [\n            null,\n            "Cet utilisateur ne peut PAS envoyer de messages dans ce salon."\n         ],\n         "Occupants": [\n            null,\n            "Participants :"\n         ],\n         "Invite": [\n            null,\n            "Inviter"\n         ],\n         "Features": [\n            null,\n            "Caractéristiques"\n         ],\n         "Hidden": [\n            null,\n            "Masqué"\n         ],\n         "Message archiving": [\n            null,\n            "Archivage du message"\n         ],\n         "Members only": [\n            null,\n            "Membres uniquement"\n         ],\n         "Moderated": [\n            null,\n            "Modéré"\n         ],\n         "Non-anonymous": [\n            null,\n            "Non-anonyme"\n         ],\n         "Open": [\n            null,\n            "Ouvrir"\n         ],\n         "Password protected": [\n            null,\n            "Protégé par mot de passe"\n         ],\n         "Persistent": [\n            null,\n            "Persistant"\n         ],\n         "Public": [\n            null,\n            "Public"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semi-anonyme"\n         ],\n         "Temporary": [\n            null,\n            "Temporaire"\n         ],\n         "Unmoderated": [\n            null,\n            "Non modéré"\n         ],\n         "Unsecured": [\n            null,\n            "Non sécurisé"\n         ],\n         "This room is not publicly searchable": [\n            null,\n            "Ce salon ne peut pas être recherché publiquement"\n         ],\n         "Messages are archived on the server": [\n            null,\n            "Les messages sont archivés sur le serveur"\n         ],\n         "This room is restricted to members only": [\n            null,\n            "Ce salon est restreint aux membres uniquement"\n         ],\n         "This room is being moderated": [\n            null,\n            "Ce salon est modéré"\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            "Tous les autres occupants de ce salon peuvent voir votre nom d’utilisateur XMPP"\n         ],\n         "Anyone can join this room": [\n            null,\n            "N’importe qui peut rejoindre ce salon"\n         ],\n         "This room requires a password before entry": [\n            null,\n            "Ce salon nécessite un mot de passe pour y accéder"\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            "Ce salon persiste même s\'il est inoccupé"\n         ],\n         "This room is publicly searchable": [\n            null,\n            "Ce salon peut être recherché publiquement"\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            "Seuls les modérateurs peuvent voir votre identifiant XMPP"\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            "Ce salon disparaîtra au départ de la dernière personne"\n         ],\n         "This room is not being moderated": [\n            null,\n            "Ce salon n’est pas modéré"\n         ],\n         "This room does not require a password upon entry": [\n            null,\n            "Ce salon nécessite un mot de passe pour y accéder"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Vous vous apprêtez à inviter %1$s dans le salon \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Vous pouvez facultativement ajouter un message, expliquant la raison de cette invitation."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            "Veuillez saisir un identifiant utilisateur XMPP valide"\n         ],\n         "Room name": [\n            null,\n            "Nom du salon"\n         ],\n         "Server": [\n            null,\n            "Serveur"\n         ],\n         "Join Room": [\n            null,\n            "Rejoindre"\n         ],\n         "Show rooms": [\n            null,\n            "Afficher les salons"\n         ],\n         "Rooms": [\n            null,\n            "Salons"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Aucun salon dans %1$s"\n         ],\n         "Description:": [\n            null,\n            "Description :"\n         ],\n         "Room Address (JID):": [\n            null,\n            "Adresse du salon (JID) :"\n         ],\n         "Occupants:": [\n            null,\n            "Participants :"\n         ],\n         "Features:": [\n            null,\n            "Caractéristiques :"\n         ],\n         "Requires authentication": [\n            null,\n            "Nécessite une authentification"\n         ],\n         "Requires an invitation": [\n            null,\n            "Nécessite une invitation"\n         ],\n         "Open room": [\n            null,\n            "Ouvrir un salon"\n         ],\n         "Permanent room": [\n            null,\n            "Salon permanent"\n         ],\n         "Temporary room": [\n            null,\n            "Salon temporaire"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s vous invite à rejoindre le salon : %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s vous invite à rejoindre le salon : %2$s, avec le message suivant:\\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            "Notification depuis %1$s"\n         ],\n         "%1$s says": [\n            null,\n            "%1$s dit"\n         ],\n         "has come online": [\n            null,\n            "s’est déconnecté"\n         ],\n         "wants to be your contact": [\n            null,\n            "veut être votre contact"\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Rétablissement d’une session chiffrée"\n         ],\n         "Generating private key.": [\n            null,\n            "Génération de la clé privée."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Votre navigateur pourrait ne plus répondre."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Demande d’authentification de %1$s\\n\\nVotre contact tente de vérifier votre identité, en vous posant la question ci-dessous.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "L’identité de cet utilisateur ne peut pas être vérifiée."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Échange de la clef privée avec le contact."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Vos messages ne sont plus chiffrés"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Vos messages sont maintenant chiffrés mais l’identité de votre contact n’a pas encore été vérifiée."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "L’identité de votre contact a été vérifiée."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "Votre contact a arrêté le chiffrement de son côté, vous devriez le faire aussi."\n         ],\n         "Your message could not be sent": [\n            null,\n            "Votre message ne peut pas être envoyé"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Un message non chiffré a été reçu"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Un message chiffré illisible a été reçu"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Voici les empreintes de sécurité, veuillez les confirmer avec %1$s, en dehors de ce chat.\\n\\nEmpreinte pour vous, %2$s : %3$s\\n\\nEmpreinte pour %1$s : %4$s\\n\\nSi vous avez confirmé que les empreintes correspondent, cliquez OK, sinon cliquez Annuler."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Vous allez être invité à fournir une question de sécurité et une réponse à cette question.\\n\\nVotre contact devra répondre à la même question et s’il fournit la même réponse (sensible à la casse), son identité sera vérifiée."\n         ],\n         "What is your security question?": [\n            null,\n            "Quelle est votre question de sécurité ?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Quelle est la réponse à la question de sécurité ?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Schéma d’authentification fourni non valide"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Vos messages ne sont pas chiffrés. Cliquez ici pour activer le chiffrement OTR."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Vos messages sont chiffrés, mais votre contact n’a pas été vérifié."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Vos messages sont chiffrés et votre contact est vérifié."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "Votre contact a fermé la session privée de son côté, vous devriez le faire aussi"\n         ],\n         "End encrypted conversation": [\n            null,\n            "Terminer la conversation chiffrée"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualiser la conversation chiffrée"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Démarrer une conversation chiffrée"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Vérifier par empreintes de sécurité"\n         ],\n         "Verify with SMP": [\n            null,\n            "Vérifier par Question/Réponse"\n         ],\n         "What\'s this?": [\n            null,\n            "Qu’est-ce que c’est ?"\n         ],\n         "unencrypted": [\n            null,\n            "chiffré"\n         ],\n         "unverified": [\n            null,\n            "non vérifié"\n         ],\n         "verified": [\n            null,\n            "vérifié"\n         ],\n         "finished": [\n            null,\n            "terminé"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            " e.g. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Votre domaine XMPP :"\n         ],\n         "Fetch registration form": [\n            null,\n            "Récupération du formulaire d’enregistrement"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Astuce : une liste publique de fournisseurs XMPP est disponible"\n         ],\n         "here": [\n            null,\n            "ici"\n         ],\n         "Register": [\n            null,\n            "S’enregistrer"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "Désolé, le fournisseur indiqué ne supporte pas l’enregistrement de compte en ligne. Merci d’essayer avec un autre fournisseur."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "Demande du formulaire enregistrement au serveur XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Quelque chose a échoué lors de l’établissement de la connexion avec \\"%1$s\\". Existe-t-il vraiment ?"\n         ],\n         "Now logging you in": [\n            null,\n            "En cours de connexion"\n         ],\n         "Registered successfully": [\n            null,\n            "Enregistré avec succès"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "Le fournisseur a rejeté votre demande d’enregistrement."\n         ],\n         "Retry": [\n            null,\n            "Réessayer"\n         ],\n         "Click to toggle the rooms list": [\n            null,\n            "Cliquer pour ouvrir la liste des salons"\n         ],\n         "Open Rooms": [\n            null,\n            "Ouvrir les salons"\n         ],\n         "Are you sure you want to leave the room \\"%1$s\\"?": [\n            null,\n            "Voulez-vous vraiment supprimer le marque-page « %1$s » ?"\n         ],\n         "This contact is busy": [\n            null,\n            "Ce contact est occupé"\n         ],\n         "This contact is online": [\n            null,\n            "Ce contact est connecté"\n         ],\n         "This contact is offline": [\n            null,\n            "Ce contact est déconnecté"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Ce contact est indisponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Ce contact est absent"\n         ],\n         "This contact is away": [\n            null,\n            "Ce contact est absent"\n         ],\n         "Groups": [\n            null,\n            "Groupes"\n         ],\n         "My contacts": [\n            null,\n            "Mes contacts"\n         ],\n         "Pending contacts": [\n            null,\n            "Contacts en attente"\n         ],\n         "Contact requests": [\n            null,\n            "Demandes de contacts"\n         ],\n         "Ungrouped": [\n            null,\n            "Sans groupe"\n         ],\n         "Filter": [\n            null,\n            "Filtrer"\n         ],\n         "State": [\n            null,\n            "Status"\n         ],\n         "Any": [\n            null,\n            "Aucun"\n         ],\n         "Unread": [\n            null,\n            "Non lu"\n         ],\n         "Chatty": [\n            null,\n            "Bavard"\n         ],\n         "Extended Away": [\n            null,\n            "Absence longue durée"\n         ],\n         "Click to remove %1$s as a contact": [\n            null,\n            "Cliquez pour retirer le contact « %1$s »"\n         ],\n         "Click to accept the contact request from %1$s": [\n            null,\n            "Cliquez pour accepter la demande de « %1$s »"\n         ],\n         "Click to decline the contact request from %1$s": [\n            null,\n            "Cliquez pour décliner la demande de contact de « %1$s »"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Cliquez pour discuter avec ce contact"\n         ],\n         "Name": [\n            null,\n            "Nom"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Voulez-vous vraiment retirer ce contact ?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Voulez-vous vraiment décliner cette demande de contact ?"\n         ]\n      }\n   }\n}';});
-
-
-define('text!he',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n != 1);",\n            "lang": "he"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "שמור"\n         ],\n         "Cancel": [\n            null,\n            "ביטול"\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "הצג עוד מידע אודות חדר זה"\n         ],\n         "Click to open this room": [\n            null,\n            "לחץ כדי לפתוח את חדר זה"\n         ],\n         "Personal message": [\n            null,\n            "הודעה אישית"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "אני"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "מקליד(ה) כעת"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            "חדל(ה) להקליד"\n         ],\n         "has gone away": [\n            null,\n            "נעדר(ת)"\n         ],\n         "Show this menu": [\n            null,\n            "הצג את תפריט זה"\n         ],\n         "Write in the third person": [\n            null,\n            "כתוב בגוף השלישי"\n         ],\n         "Remove messages": [\n            null,\n            "הסר הודעות"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "האם אתה בטוח כי ברצונך לטהר את ההודעות מתוך תיבת שיחה זה?"\n         ],\n         "has gone offline": [\n            null,\n            "כבר לא מקוון"\n         ],\n         "is busy": [\n            null,\n            "עסוק(ה) כעת"\n         ],\n         "Clear all messages": [\n            null,\n            "טהר את כל ההודעות"\n         ],\n         "Insert a smiley": [\n            null,\n            "הכנס סמיילי"\n         ],\n         "Start a call": [\n            null,\n            "התחל שיחה"\n         ],\n         "Contacts": [\n            null,\n            "אנשי קשר"\n         ],\n         "XMPP Username:": [\n            null,\n            "שם משתמש XMPP:"\n         ],\n         "Password:": [\n            null,\n            "סיסמה:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "לחץ כאן כדי להתחבר באופן אנונימי"\n         ],\n         "Log In": [\n            null,\n            "כניסה"\n         ],\n         "user@server": [\n            null,\n            ""\n         ],\n         "password": [\n            null,\n            "סיסמה"\n         ],\n         "Sign in": [\n            null,\n            "התחברות"\n         ],\n         "I am %1$s": [\n            null,\n            "מצבי כעת הינו %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "לחץ כאן כדי לכתוב הודעת מצב מותאמת"\n         ],\n         "Click to change your chat status": [\n            null,\n            "לחץ כדי לשנות את הודעת השיחה שלך"\n         ],\n         "Custom status": [\n            null,\n            "מצב מותאם"\n         ],\n         "online": [\n            null,\n            "מקוון"\n         ],\n         "busy": [\n            null,\n            "עסוק"\n         ],\n         "away for long": [\n            null,\n            "נעדר לזמן מה"\n         ],\n         "away": [\n            null,\n            "נעדר"\n         ],\n         "offline": [\n            null,\n            "לא מקוון"\n         ],\n         "Online": [\n            null,\n            "מקוון"\n         ],\n         "Busy": [\n            null,\n            "עסוק"\n         ],\n         "Away": [\n            null,\n            "נעדר"\n         ],\n         "Offline": [\n            null,\n            "לא מקוון"\n         ],\n         "Log out": [\n            null,\n            "התנתקות"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "לחץ כדי להוסיף אנשי קשר שיחה חדשים"\n         ],\n         "Add a contact": [\n            null,\n            "הוסף איש קשר"\n         ],\n         "Contact name": [\n            null,\n            "שם איש קשר"\n         ],\n         "Search": [\n            null,\n            "חיפוש"\n         ],\n         "Add": [\n            null,\n            "הוסף"\n         ],\n         "No users found": [\n            null,\n            "לא נמצאו משתמשים"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "לקוח זה לא מתיר הרשמות נוכחות"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "לחץ כדי להסתיר את אנשי קשר אלה"\n         ],\n         "Minimize this chat box": [\n            null,\n            ""\n         ],\n         "Click to restore this chat": [\n            null,\n            "לחץ כדי לשחזר את שיחה זו"\n         ],\n         "Minimized": [\n            null,\n            "ממוזער"\n         ],\n         "This room is not anonymous": [\n            null,\n            "חדר זה אינו אנונימי"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "חדר זה כעת מציג חברים לא זמינים"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "חדר זה לא מציג חברים לא זמינים"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "יומן חדר הינו מופעל כעת"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "יומן חדר הינו מנוטרל כעת"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "חדר זה הינו אנונימי-למחצה כעת"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "חדר זה הינו אנונימי-לחלוטין כעת"\n         ],\n         "A new room has been created": [\n            null,\n            "חדר חדש נוצר"\n         ],\n         "You have been banned from this room": [\n            null,\n            "נאסרת מתוך חדר זה"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "נבעטת מתוך חדר זה"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "הוסרת מתוך חדר זה משום שינוי שיוך"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "הוסרת מתוך חדר זה משום שהחדר שונה לחברים-בלבד ואינך במעמד של חבר"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "הוסרת מתוך חדר זה משום ששירות שמ״מ (שיחה מרובת משתמשים) זה כעת מצוי בהליכי סגירה."\n         ],\n         "Message": [\n            null,\n            "הודעה"\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "האם אתה בטוח כי ברצונך לטהר את ההודעות מתוך חדר זה?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "שגיאה: לא היתה אפשרות לבצע פקודה"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "שנה סינוף משתמש למנהל"\n         ],\n         "Ban user from room": [\n            null,\n            "אסור משתמש מתוך חדר"\n         ],\n         "Kick user from room": [\n            null,\n            "בעט משתמש מתוך חדר"\n         ],\n         "Write in 3rd person": [\n            null,\n            "כתוב בגוף שלישי"\n         ],\n         "Grant membership to a user": [\n            null,\n            "הענק חברות למשתמש"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "הסר יכולת משתמש לפרסם הודעות"\n         ],\n         "Change your nickname": [\n            null,\n            "שנה את השם כינוי שלך"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "הענק תפקיד אחראי למשתמש"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "הענק בעלות על חדר זה"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "שלול חברות משתמש"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "התר למשתמש מושתק לפרסם הודעות"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "שם כינוי"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "חדר שיחה זה מצריך סיסמה"\n         ],\n         "Password: ": [\n            null,\n            "סיסמה: "\n         ],\n         "Submit": [\n            null,\n            "שלח"\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "נושא חדר זה נקבע על ידי %1$s אל: %2$s"\n         ],\n         "Occupants": [\n            null,\n            "נוכחים"\n         ],\n         "Invite": [\n            null,\n            "הזמנה"\n         ],\n         "Hidden": [\n            null,\n            "נסתר"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "מבוקר"\n         ],\n         "Non-anonymous": [\n            null,\n            "לא-אנונימי"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "פומבי"\n         ],\n         "Semi-anonymous": [\n            null,\n            "אנונימי-למחצה"\n         ],\n         "Unmoderated": [\n            null,\n            "לא מבוקר"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "אתה עומד להזמין את %1$s לחדר שיחה \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "באפשרותך להכליל הודעה, אשר  מסבירה את הסיבה להזמנה."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "שם חדר"\n         ],\n         "Server": [\n            null,\n            "שרת"\n         ],\n         "Join Room": [\n            null,\n            "הצטרף לחדר"\n         ],\n         "Show rooms": [\n            null,\n            "הצג חדרים"\n         ],\n         "Rooms": [\n            null,\n            "חדרים"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "אין חדרים על %1$s"\n         ],\n         "Description:": [\n            null,\n            "תיאור:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "נוכחים:"\n         ],\n         "Features:": [\n            null,\n            "תכונות:"\n         ],\n         "Requires authentication": [\n            null,\n            "מצריך אישור"\n         ],\n         "Requires an invitation": [\n            null,\n            "מצריך הזמנה"\n         ],\n         "Open room": [\n            null,\n            "חדר פתוח"\n         ],\n         "Permanent room": [\n            null,\n            "חדר צמיתה"\n         ],\n         "Temporary room": [\n            null,\n            "חדר זמני"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s הזמינך להצטרף לחדר שיחה: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s הזמינך להצטרף לחדר שיחה: %2$s, והשאיר את הסיבה הבאה: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "בסס מחדש ישיבה מוצפנת"\n         ],\n         "Generating private key.": [\n            null,\n            "כעת מפיק מפתח פרטי."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "הדפדפן שלך עשוי שלא להגיב."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "בקשת אימות מאת %1$s\\n\\nהאיש קשר שלך מנסה לאמת את הזהות שלך, בעזרת שאילת השאלה שלהלן.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "לא היתה אפשרות לאמת את זהות משתמש זה."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "מחליף מפתח פרטי עם איש קשר."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "ההודעות שלך אינן מוצפנות עוד"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "ההודעות שלך מוצפנות כעת אך זהות האיש קשר שלך טרם אומתה."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "זהות האיש קשר שלך אומתה."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "האיש קשר סיים הצפנה בקצה שלהם, עליך לעשות זאת גם כן."\n         ],\n         "Your message could not be sent": [\n            null,\n            "ההודעה שלך לא היתה יכולה להישלח"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "אנחנו קיבלנו הודעה לא מוצפנת"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "אנחנו קיבלנו הודעה מוצפנת לא קריאה"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "הרי טביעות האצבע, אנא אמת אותן עם %1$s, מחוץ לשיחה זו.\\n\\nטביעת אצבע עבורך, %2$s: %3$s\\n\\nטביעת אצבע עבור %1$s: %4$s\\n\\nהיה ואימתת כי טביעות האצבע תואמות, לחץ אישור (OK), אחרת לחץ ביטול (Cancel)."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "אתה תתבקש לספק שאלת אבטחה ולאחריה תשובה לשאלה הזו.\\n\\nהאיש קשר יתבקש עובר זאת לאותה שאלת אבטחה ואם אלו יקלידו את אותה התשובה במדויק (case sensitive), זהותם תאומת."\n         ],\n         "What is your security question?": [\n            null,\n            "מהי שאלת האבטחה שלך?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "מהי התשובה לשאלת האבטחה?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "סופקה סכימת אימות שגויה"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "ההודעות שלך אינן מוצפנות. לחץ כאן כדי לאפשר OTR."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "ההודעות שלך מוצפנות כעת, אך האיש קשר שלך טרם אומת."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "ההודעות שלך מוצפנות כעת והאיש קשר שלך אומת."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "האיש קשר סגר את קצה ישיבה פרטית שלהם, עליך לעשות זאת גם כן"\n         ],\n         "End encrypted conversation": [\n            null,\n            "סיים ישיבה מוצפנת"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "רענן ישיבה מוצפנת"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "התחל ישיבה מוצפנת"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "אמת בעזרת טביעות אצבע"\n         ],\n         "Verify with SMP": [\n            null,\n            "אמת בעזרת SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "מה זה?"\n         ],\n         "unencrypted": [\n            null,\n            "לא מוצפנת"\n         ],\n         "unverified": [\n            null,\n            "לא מאומתת"\n         ],\n         "verified": [\n            null,\n            "מאומתת"\n         ],\n         "finished": [\n            null,\n            "מוגמרת"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            " למשל conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "שם מתחם של ספק XMPP שלך:"\n         ],\n         "Fetch registration form": [\n            null,\n            "משוך טופס הרשמה"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "טיפ: רשימה פומבית של ספקי XMPP הינה זמינה"\n         ],\n         "here": [\n            null,\n            "כאן"\n         ],\n         "Register": [\n            null,\n            "הירשם"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "מצטערים, הספק שניתן לא תומך ברישום חשבונות in band. אנא נסה עם ספק אחר."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "כעת מבקש טופס הרשמה מתוך שרת XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "משהו השתבש במהלך ביסוס חיבור עם \\"%1$s\\". האם אתה בטוח כי זה קיים?"\n         ],\n         "Now logging you in": [\n            null,\n            "כעת מחבר אותך פנימה"\n         ],\n         "Registered successfully": [\n            null,\n            "נרשם בהצלחה"\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "איש קשר זה עסוק"\n         ],\n         "This contact is online": [\n            null,\n            "איש קשר זה מקוון"\n         ],\n         "This contact is offline": [\n            null,\n            "איש קשר זה אינו מקוון"\n         ],\n         "This contact is unavailable": [\n            null,\n            "איש קשר זה לא זמין"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "איש קשר זה נעדר למשך זמן ממושך"\n         ],\n         "This contact is away": [\n            null,\n            "איש קשר זה הינו נעדר"\n         ],\n         "Groups": [\n            null,\n            "קבוצות"\n         ],\n         "My contacts": [\n            null,\n            "האנשי קשר שלי"\n         ],\n         "Pending contacts": [\n            null,\n            "אנשי קשר ממתינים"\n         ],\n         "Contact requests": [\n            null,\n            "בקשות איש קשר"\n         ],\n         "Ungrouped": [\n            null,\n            "ללא קבוצה"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "לחץ כדי לשוחח עם איש קשר זה"\n         ],\n         "Name": [\n            null,\n            "שם"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "האם אתה בטוח כי ברצונך להסיר את איש קשר זה?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "האם אתה בטוח כי ברצונך לסרב את בקשת איש קשר זה?"\n         ]\n      }\n   }\n}';});
-
-
-define('text!hu',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "lang": "hu"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Ment"\n         ],\n         "Cancel": [\n            null,\n            "Mégsem"\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "További információk a csevegőszobáról"\n         ],\n         "Click to open this room": [\n            null,\n            "Belépés a csevegőszobába"\n         ],\n         "Close this chat box": [\n            null,\n            "A csevegés bezárása"\n         ],\n         "Personal message": [\n            null,\n            "Személyes üzenet"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "Én"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "gépel..."\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            "már nem gépel"\n         ],\n         "has gone away": [\n            null,\n            "távol van"\n         ],\n         "Show this menu": [\n            null,\n            "Mutasd a menüt"\n         ],\n         "Write in the third person": [\n            null,\n            "Írjon egyes szám harmadik személyben"\n         ],\n         "Remove messages": [\n            null,\n            "Üzenetek törlése"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Törölni szeretné az eddigi üzeneteket?"\n         ],\n         "has gone offline": [\n            null,\n            "kijelentkezett"\n         ],\n         "is busy": [\n            null,\n            "elfoglalt"\n         ],\n         "Clear all messages": [\n            null,\n            "Üzenetek törlése"\n         ],\n         "Insert a smiley": [\n            null,\n            "Hangulatjel beszúrása"\n         ],\n         "Start a call": [\n            null,\n            "Hívás indítása"\n         ],\n         "Contacts": [\n            null,\n            "Kapcsolatok"\n         ],\n         "XMPP Username:": [\n            null,\n            "XMPP/Jabber azonosító:"\n         ],\n         "Password:": [\n            null,\n            "Jelszó:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Kattintson ide a névtelen bejelentkezéshez"\n         ],\n         "Log In": [\n            null,\n            "Belépés"\n         ],\n         "user@server": [\n            null,\n            "felhasznalo@szerver"\n         ],\n         "password": [\n            null,\n            "jelszó"\n         ],\n         "Sign in": [\n            null,\n            "Belépés"\n         ],\n         "I am %1$s": [\n            null,\n            "%1$s vagyok"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Egyedi státusz üzenet írása"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Saját státusz beállítása"\n         ],\n         "Custom status": [\n            null,\n            "Egyedi státusz"\n         ],\n         "online": [\n            null,\n            "elérhető"\n         ],\n         "busy": [\n            null,\n            "elfoglalt"\n         ],\n         "away for long": [\n            null,\n            "hosszú ideje távol"\n         ],\n         "away": [\n            null,\n            "távol"\n         ],\n         "offline": [\n            null,\n            "nem elérhető"\n         ],\n         "Online": [\n            null,\n            "Elérhető"\n         ],\n         "Busy": [\n            null,\n            "Foglalt"\n         ],\n         "Away": [\n            null,\n            "Távol"\n         ],\n         "Offline": [\n            null,\n            "Nem elérhető"\n         ],\n         "Log out": [\n            null,\n            "Kilépés"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Új csevegőpartner hozzáadása"\n         ],\n         "Add a contact": [\n            null,\n            "Új partner felvétele"\n         ],\n         "Contact name": [\n            null,\n            "Partner neve"\n         ],\n         "Search": [\n            null,\n            "Keresés"\n         ],\n         "Add": [\n            null,\n            "Hozzáad"\n         ],\n         "No users found": [\n            null,\n            "Nincs felhasználó"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Ez a kliens nem engedélyezi a jelenlét követését"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "A csevegő partnerek elrejtése"\n         ],\n         "Minimize this chat box": [\n            null,\n            "A csevegés minimalizálása"\n         ],\n         "Click to restore this chat": [\n            null,\n            "A csevegés visszaállítása"\n         ],\n         "Minimized": [\n            null,\n            "Minimalizálva"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Ez a szoba NEM névtelen"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Ez a szoba mutatja az elérhetetlen tagokat"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Ez a szoba nem mutatja az elérhetetlen tagokat"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "A szobába a belépés lehetséges"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "A szobába a belépés szünetel"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Ez a szoba most félig névtelen"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Ez a szoba most teljesen névtelen"\n         ],\n         "A new room has been created": [\n            null,\n            "Létrejött egy új csevegőszoba"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Ki lettél tíltva ebből a szobából"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Ki lettél dobva ebből a szobából"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Taglista módosítás miatt kiléptettünk a csevegőszobából"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Kiléptettünk a csevegőszobából, mert mostantól csak a taglistán szereplők lehetnek jelen"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Kiléptettünk a csevegőszobából, mert a MUC (Multi-User Chat) szolgáltatás leállításra került."\n         ],\n         "Message": [\n            null,\n            "Üzenet"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "A résztvevők listájának elrejtése"\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Törölni szeretné az üzeneteket ebből a szobából?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Hiba: A parancs nem értelmezett"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "A felhasználó adminisztrátorrá tétele"\n         ],\n         "Ban user from room": [\n            null,\n            "Felhasználó kitíltása a csevegőszobából"\n         ],\n         "Change user role to occupant": [\n            null,\n            "A felhasználó taggá tétele"\n         ],\n         "Kick user from room": [\n            null,\n            "Felhasználó kiléptetése a csevegőszobából"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Írjon egyes szám harmadik személyben"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Tagság megadása a felhasználónak"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "A felhasználó nem küldhet üzeneteket"\n         ],\n         "Change your nickname": [\n            null,\n            "Becenév módosítása"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Moderátori jog adása a felhasználónak"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "A szoba tulajdonjogának megadása"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Tagság megvonása a felhasználótól"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Elnémított felhasználók is küldhetnek üzeneteket"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Becenév"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "A csevegőszobába belépéshez jelszó szükséges"\n         ],\n         "Password: ": [\n            null,\n            "Jelszó: "\n         ],\n         "Submit": [\n            null,\n            "Küldés"\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "A következő témát állította be %1$s: %2$s"\n         ],\n         "Occupants": [\n            null,\n            "Jelenlevők"\n         ],\n         "Invite": [\n            null,\n            "Meghívás"\n         ],\n         "Hidden": [\n            null,\n            "Rejtett"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "Moderált"\n         ],\n         "Non-anonymous": [\n            null,\n            "NEM névtelen"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "Nyílvános"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Félig névtelen"\n         ],\n         "Unmoderated": [\n            null,\n            "Moderálatlan"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "%1$s meghívott a(z) \\"%2$s\\" csevegőszobába. "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Megadhat egy üzenet a meghívás okaként."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Szoba neve"\n         ],\n         "Server": [\n            null,\n            "Szerver"\n         ],\n         "Join Room": [\n            null,\n            "Csatlakozás"\n         ],\n         "Show rooms": [\n            null,\n            "Létező szobák"\n         ],\n         "Rooms": [\n            null,\n            "Szobák"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Nincs csevegőszoba a(z) %1$s szerveren"\n         ],\n         "Description:": [\n            null,\n            "Leírás:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Jelenlevők:"\n         ],\n         "Features:": [\n            null,\n            "Tulajdonságok:"\n         ],\n         "Requires authentication": [\n            null,\n            "Azonosítás szükséges"\n         ],\n         "Requires an invitation": [\n            null,\n            "Meghívás szükséges"\n         ],\n         "Open room": [\n            null,\n            "Nyitott szoba"\n         ],\n         "Permanent room": [\n            null,\n            "Állandó szoba"\n         ],\n         "Temporary room": [\n            null,\n            "Ideiglenes szoba"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s meghívott a(z) %2$s csevegőszobába"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s meghívott a(z) %2$s csevegőszobába. Indok: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Titkosított kapcsolat újraépítése"\n         ],\n         "Generating private key.": [\n            null,\n            "Privát kulcs generálása"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Előfordulhat, hogy a böngésző futása megáll."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Azonosítási kérés érkezett: %1$s\\n\\nA csevegő partnere hitelesítést kér a következő kérdés megválaszolásával:\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "A felhasználó ellenőrzése sikertelen."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Privát kulcs cseréje..."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Az üzenetek mostantól már nem titkosítottak"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Az üzenetek titikosítva vannak, de a csevegőpartnerét még nem hitelesítette."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "A csevegőpartnere hitelesítve lett."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "A csevegőpartnere kikapcsolta a titkosítást, így Önnek is ezt kellene tennie."\n         ],\n         "Your message could not be sent": [\n            null,\n            "Az üzenet elküldése nem sikerült"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Titkosítatlan üzenet érkezett"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Visszafejthetetlen titkosított üzenet érkezett"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Ujjlenyomatok megerősítése.\\n\\nAz Ön ujjlenyomata,  %2$s: %3$s\\n\\nA csevegőpartnere ujjlenyomata, %1$s: %4$s\\n\\nAmennyiben az ujjlenyomatok biztosan egyeznek, klikkeljen az OK, ellenkező esetben a Mégse gombra."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Elsőként egy biztonsági kérdést kell majd feltennie és megválaszolnia.\\n\\nMajd a csevegőpartnerének is megjelenik ez a kérdés. Végül ha a válaszok azonosak lesznek (kis- nagybetű érzékeny), a partner hitelesítetté válik."\n         ],\n         "What is your security question?": [\n            null,\n            "Mi legyen a biztonsági kérdés?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Mi a válasz a biztonsági kérdésre?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Érvénytelen hitelesítési séma."\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Az üzenetek titkosítatlanok. OTR titkosítás aktiválása."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Az üzenetek titikosítottak, de a csevegőpartnere még nem hitelesített."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Az üzenetek titikosítottak és a csevegőpartnere hitelesített."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "A csevegőpartnere lezárta a magán beszélgetést"\n         ],\n         "End encrypted conversation": [\n            null,\n            "Titkosított kapcsolat vége"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "A titkosított kapcsolat frissítése"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Titkosított beszélgetés indítása"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Ellenőrzés újjlenyomattal"\n         ],\n         "Verify with SMP": [\n            null,\n            "Ellenőrzés SMP-vel"\n         ],\n         "What\'s this?": [\n            null,\n            "Mi ez?"\n         ],\n         "unencrypted": [\n            null,\n            "titkosítatlan"\n         ],\n         "unverified": [\n            null,\n            "nem hitelesített"\n         ],\n         "verified": [\n            null,\n            "hitelesített"\n         ],\n         "finished": [\n            null,\n            "befejezett"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            "pl. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Az XMPP szolgáltató domain neve:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Regisztrációs űrlap"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Tipp: A nyílvános XMPP szolgáltatókról egy lista elérhető"\n         ],\n         "here": [\n            null,\n            "itt"\n         ],\n         "Register": [\n            null,\n            "Regisztráció"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "A megadott szolgáltató nem támogatja a csevegőn keresztüli regisztrációt. Próbáljon meg egy másikat."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "Regisztrációs űrlap lekérése az XMPP szervertől"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Hiba történt a(z) \\"%1$s\\" kapcsolódásakor. Biztos benne, hogy ez létező kiszolgáló?"\n         ],\n         "Now logging you in": [\n            null,\n            "Belépés..."\n         ],\n         "Registered successfully": [\n            null,\n            "Sikeres regisztráció"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "A szolgáltató visszautasította a regisztrációs kérelmet. Kérem ellenőrízze a bevitt adatok pontosságát."\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Elfoglalt"\n         ],\n         "This contact is online": [\n            null,\n            "Elérhető"\n         ],\n         "This contact is offline": [\n            null,\n            "Nincs bejelentkezve"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Elérhetetlen"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Hosszabb ideje távol"\n         ],\n         "This contact is away": [\n            null,\n            "Távol"\n         ],\n         "Groups": [\n            null,\n            "Csoportok"\n         ],\n         "My contacts": [\n            null,\n            "Kapcsolataim"\n         ],\n         "Pending contacts": [\n            null,\n            "Függőben levő kapcsolatok"\n         ],\n         "Contact requests": [\n            null,\n            "Kapcsolatnak jelölés"\n         ],\n         "Ungrouped": [\n            null,\n            "Nincs csoportosítva"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Csevegés indítása ezzel a partnerünkkel"\n         ],\n         "Name": [\n            null,\n            "Név"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Valóban törölni szeretné a csevegőpartnerét?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Valóban elutasítja ezt a partnerkérelmet?"\n         ]\n      }\n   }\n}';});
-
-
-define('text!id',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "lang": "id"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Simpan"\n         ],\n         "Cancel": [\n            null,\n            "Batal"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            ""\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "Tampilkan informasi ruangan ini"\n         ],\n         "Click to open this room": [\n            null,\n            "Klik untuk membuka ruangan ini"\n         ],\n         "Personal message": [\n            null,\n            "Pesan pribadi"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "saya"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            ""\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            ""\n         ],\n         "Show this menu": [\n            null,\n            "Tampilkan menu ini"\n         ],\n         "Write in the third person": [\n            null,\n            "Tulis ini menggunakan bahasa pihak ketiga"\n         ],\n         "Remove messages": [\n            null,\n            "Hapus pesan"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            ""\n         ],\n         "Insert a smiley": [\n            null,\n            ""\n         ],\n         "Start a call": [\n            null,\n            ""\n         ],\n         "Contacts": [\n            null,\n            "Teman"\n         ],\n         "Password:": [\n            null,\n            "Kata sandi:"\n         ],\n         "Log In": [\n            null,\n            "Masuk"\n         ],\n         "user@server": [\n            null,\n            ""\n         ],\n         "Sign in": [\n            null,\n            "Masuk"\n         ],\n         "I am %1$s": [\n            null,\n            "Saya %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Klik untuk menulis status kustom"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Klik untuk mengganti status"\n         ],\n         "Custom status": [\n            null,\n            "Status kustom"\n         ],\n         "online": [\n            null,\n            "terhubung"\n         ],\n         "busy": [\n            null,\n            "sibuk"\n         ],\n         "away for long": [\n            null,\n            "lama tak di tempat"\n         ],\n         "away": [\n            null,\n            "tak di tempat"\n         ],\n         "Online": [\n            null,\n            "Terhubung"\n         ],\n         "Busy": [\n            null,\n            "Sibuk"\n         ],\n         "Away": [\n            null,\n            "Pergi"\n         ],\n         "Offline": [\n            null,\n            "Tak Terhubung"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Klik untuk menambahkan teman baru"\n         ],\n         "Add a contact": [\n            null,\n            "Tambah teman"\n         ],\n         "Contact name": [\n            null,\n            "Nama teman"\n         ],\n         "Search": [\n            null,\n            "Cari"\n         ],\n         "e.g. user@example.org": [\n            null,\n            ""\n         ],\n         "Add": [\n            null,\n            "Tambah"\n         ],\n         "No users found": [\n            null,\n            "Pengguna tak ditemukan"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            ""\n         ],\n         "Minimize this chat box": [\n            null,\n            ""\n         ],\n         "Minimized": [\n            null,\n            ""\n         ],\n         "This room is not anonymous": [\n            null,\n            "Ruangan ini tidak anonim"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Ruangan ini menampilkan anggota yang tak tersedia"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Ruangan ini tidak menampilkan anggota yang tak tersedia"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Pencatatan di ruangan ini sekarang dinyalakan"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Pencatatan di ruangan ini sekarang dimatikan"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Ruangan ini sekarang semi-anonim"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Ruangan ini sekarang anonim"\n         ],\n         "A new room has been created": [\n            null,\n            "Ruangan baru telah dibuat"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Anda telah dicekal dari ruangan ini"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Anda telah ditendang dari ruangan ini"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Anda telah dihapus dari ruangan ini karena perubahan afiliasi"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Anda telah dihapus dari ruangan ini karena ruangan ini hanya terbuka untuk anggota dan anda bukan anggota"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Anda telah dihapus dari ruangan ini karena layanan MUC (Multi-user chat) telah dimatikan."\n         ],\n         "Message": [\n            null,\n            "Pesan"\n         ],\n         "Hide the list of occupants": [\n            null,\n            ""\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Error: could not execute the command": [\n            null,\n            ""\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            ""\n         ],\n         "Change user role to occupant": [\n            null,\n            ""\n         ],\n         "Grant membership to a user": [\n            null,\n            ""\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            ""\n         ],\n         "Change your nickname": [\n            null,\n            ""\n         ],\n         "Grant moderator role to user": [\n            null,\n            ""\n         ],\n         "Revoke user\'s membership": [\n            null,\n            ""\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            ""\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Please choose your nickname": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Nama panggilan"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Ruangan ini membutuhkan kata sandi"\n         ],\n         "Password: ": [\n            null,\n            "Kata sandi: "\n         ],\n         "Submit": [\n            null,\n            "Kirim"\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            ""\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Topik diganti oleh %1$s menjadi: %2$s"\n         ],\n         "Invite": [\n            null,\n            ""\n         ],\n         "Hidden": [\n            null,\n            "Tersembunyi"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "Dimoderasi"\n         ],\n         "Non-anonymous": [\n            null,\n            "Tidak anonim"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "Umum"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semi-anonim"\n         ],\n         "Unmoderated": [\n            null,\n            "Tak dimoderasi"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            ""\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            ""\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Nama ruangan"\n         ],\n         "Server": [\n            null,\n            "Server"\n         ],\n         "Show rooms": [\n            null,\n            "Perlihatkan ruangan"\n         ],\n         "Rooms": [\n            null,\n            "Ruangan"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Tak ada ruangan di %1$s"\n         ],\n         "Description:": [\n            null,\n            "Keterangan:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Penghuni:"\n         ],\n         "Features:": [\n            null,\n            "Fitur:"\n         ],\n         "Requires authentication": [\n            null,\n            "Membutuhkan otentikasi"\n         ],\n         "Requires an invitation": [\n            null,\n            "Membutuhkan undangan"\n         ],\n         "Open room": [\n            null,\n            "Ruangan terbuka"\n         ],\n         "Permanent room": [\n            null,\n            "Ruangan permanen"\n         ],\n         "Temporary room": [\n            null,\n            "Ruangan sementara"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            ""\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            ""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Menyambung kembali sesi terenkripsi"\n         ],\n         "Generating private key.": [\n            null,\n            ""\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            ""\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Tak dapat melakukan verifikasi identitas pengguna ini."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            ""\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Pesan anda tidak lagi terenkripsi"\n         ],\n         "Your message could not be sent": [\n            null,\n            "Pesan anda tak dapat dikirim"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Kami menerima pesan terenkripsi"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Kami menerima pesan terenkripsi yang gagal dibaca"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Ini adalah sidik jari anda, konfirmasikan bersama mereka dengan %1$s, di luar percakapan ini.\\n\\nSidik jari untuk anda, %2$s: %3$s\\n\\nSidik jari untuk %1$s: %4$s\\n\\nJika anda bisa mengkonfirmasi sidik jadi cocok, klik Lanjutkan, jika tidak klik Batal."\n         ],\n         "What is your security question?": [\n            null,\n            "Apakah pertanyaan keamanan anda?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Apa jawaban dari pertanyaan keamanan tersebut?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Skema otentikasi salah"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Pesan anda tak terenkripsi. Klik di sini untuk menyalakan enkripsi OTR."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Sudahi percakapan terenkripsi"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Setel ulang percakapan terenkripsi"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Mulai sesi terenkripsi"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verifikasi menggunakan sidik jari"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verifikasi menggunakan SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Apakah ini?"\n         ],\n         "unencrypted": [\n            null,\n            "tak dienkripsi"\n         ],\n         "unverified": [\n            null,\n            "tak diverifikasi"\n         ],\n         "verified": [\n            null,\n            "diverifikasi"\n         ],\n         "finished": [\n            null,\n            "selesai"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            ""\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            ""\n         ],\n         "Fetch registration form": [\n            null,\n            ""\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            ""\n         ],\n         "here": [\n            null,\n            ""\n         ],\n         "Register": [\n            null,\n            ""\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            ""\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            ""\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            ""\n         ],\n         "Now logging you in": [\n            null,\n            ""\n         ],\n         "Registered successfully": [\n            null,\n            ""\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            ""\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Teman ini sedang sibuk"\n         ],\n         "This contact is online": [\n            null,\n            "Teman ini terhubung"\n         ],\n         "This contact is offline": [\n            null,\n            "Teman ini tidak terhubung"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Teman ini tidak tersedia"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Teman ini tidak di tempat untuk waktu yang lama"\n         ],\n         "This contact is away": [\n            null,\n            "Teman ini tidak di tempat"\n         ],\n         "Groups": [\n            null,\n            ""\n         ],\n         "My contacts": [\n            null,\n            "Teman saya"\n         ],\n         "Pending contacts": [\n            null,\n            "Teman yang menunggu"\n         ],\n         "Contact requests": [\n            null,\n            "Permintaan pertemanan"\n         ],\n         "Ungrouped": [\n            null,\n            ""\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Klik untuk mulai perbinjangan dengan teman ini"\n         ],\n         "Name": [\n            null,\n            ""\n         ]\n      }\n   }\n}';});
-
-
-define('text!it',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=n != 1;",\n            "lang": "it"\n         },\n         "Bookmark this room": [\n            null,\n            "Salva questa stanza"\n         ],\n         "The name for this bookmark:": [\n            null,\n            "Nome per questo bookmark:"\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            "Vuoi collegarti automaticamente a questa stanza quando fai il login?"\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            "Qual è il nickname per questa stanza?"\n         ],\n         "Save": [\n            null,\n            "Salva"\n         ],\n         "Cancel": [\n            null,\n            "Annulla"\n         ],\n         "Are you sure you want to remove the bookmark \\"%1$s\\"?": [\n            null,\n            "Sei sicuro di voler rimuovere il segnalibro \\"%1$s\\"?"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            "Si è verificato un errore nel salvataggio del bookmark."\n         ],\n         "Click to toggle the bookmarks list": [\n            null,\n            "Clicca per aprire/chiudere la lista bookmarks"\n         ],\n         "Remove this bookmark": [\n            null,\n            "Rimuovi questo bookmark"\n         ],\n         "Show more information on this room": [\n            null,\n            "Mostra più informazioni su questa stanza"\n         ],\n         "Click to open this room": [\n            null,\n            "Clicca per aprire questa stanza"\n         ],\n         "You have unread messages": [\n            null,\n            "Hai messaggi non letti"\n         ],\n         "Close this chat box": [\n            null,\n            "Chiudi questa chat"\n         ],\n         "Personal message": [\n            null,\n            "Messaggio personale"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "me"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            "Un grande messaggio è stato ricevuto. Questo potrebbe essere dovuto ad un attacco destinato a degradare le performance della chat. L\'output è stato accorciato."\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "sta scrivendo"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            "ha smesso di scrivere"\n         ],\n         "has gone away": [\n            null,\n            "si è allontanato"\n         ],\n         "Show this menu": [\n            null,\n            "Mostra questo menu"\n         ],\n         "Write in the third person": [\n            null,\n            "Scrivi in terza persona"\n         ],\n         "Remove messages": [\n            null,\n            "Rimuovi messaggi"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Sei sicuro di volere pulire i messaggi da questo chat box?"\n         ],\n         "has gone offline": [\n            null,\n            "è andato offline"\n         ],\n         "is busy": [\n            null,\n            "è occupato"\n         ],\n         "Clear all messages": [\n            null,\n            "Pulisci tutti i messaggi"\n         ],\n         "Insert a smiley": [\n            null,\n            "Inserisci uno smiley"\n         ],\n         "Start a call": [\n            null,\n            "Inizia una chiamata"\n         ],\n         "Contacts": [\n            null,\n            "Contatti"\n         ],\n         "XMPP Username:": [\n            null,\n            "XMPP Username:"\n         ],\n         "Password:": [\n            null,\n            "Password:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Clicca per entrare anonimo"\n         ],\n         "Log In": [\n            null,\n            "Entra"\n         ],\n         "Username": [\n            null,\n            "Username"\n         ],\n         "user@server": [\n            null,\n            "user@server"\n         ],\n         "password": [\n            null,\n            "Password"\n         ],\n         "Sign in": [\n            null,\n            "Accesso"\n         ],\n         "I am %1$s": [\n            null,\n            "Sono %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Clicca qui per scrivere un messaggio di stato personalizzato"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Clicca per cambiare il tuo stato"\n         ],\n         "Custom status": [\n            null,\n            "Stato personalizzato"\n         ],\n         "online": [\n            null,\n            "in linea"\n         ],\n         "busy": [\n            null,\n            "occupato"\n         ],\n         "away for long": [\n            null,\n            "assente da molto"\n         ],\n         "away": [\n            null,\n            "assente"\n         ],\n         "offline": [\n            null,\n            "offline"\n         ],\n         "Online": [\n            null,\n            "In linea"\n         ],\n         "Busy": [\n            null,\n            "Occupato"\n         ],\n         "Away": [\n            null,\n            "Assente"\n         ],\n         "Offline": [\n            null,\n            "Non in linea"\n         ],\n         "Log out": [\n            null,\n            "Logo out"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Clicca per aggiungere nuovi contatti alla chat"\n         ],\n         "Add a contact": [\n            null,\n            "Aggiungi contatti"\n         ],\n         "Contact name": [\n            null,\n            "Nome del contatto"\n         ],\n         "Search": [\n            null,\n            "Cerca"\n         ],\n         "e.g. user@example.org": [\n            null,\n            "es. user@example.org"\n         ],\n         "Add": [\n            null,\n            "Aggiungi"\n         ],\n         "No users found": [\n            null,\n            "Nessun utente trovato"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Questo client non consente sottoscrizioni di presenza"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Clicca per nascondere questi contatti"\n         ],\n         "Close this box": [\n            null,\n            "Chiudi questo box"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Riduci questo chat box"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Clicca per ripristinare questa chat"\n         ],\n         "Minimized": [\n            null,\n            "Ridotto"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Questa stanza non è anonima"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Questa stanza mostra i membri non disponibili al momento"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Questa stanza non mostra i membri non disponibili"\n         ],\n         "The room configuration has changed": [\n            null,\n            "La configurazione della stanza è cambiata"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "La registrazione è abilitata nella stanza"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "La registrazione è disabilitata nella stanza"\n         ],\n         "This room is now no longer anonymous": [\n            null,\n            "Questa stanza è non-anonima"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Questa stanza è semi-anonima"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Questa stanza è completamente-anonima"\n         ],\n         "A new room has been created": [\n            null,\n            "Una nuova stanza è stata creata"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Sei stato bandito da questa stanza"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Sei stato espulso da questa stanza"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Sei stato rimosso da questa stanza a causa di un cambio di affiliazione"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Sei stato rimosso da questa stanza poiché ora la stanza accetta solo membri"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Sei stato rimosso da questa stanza poiché il servizio MUC (Chat multi utente) è in fase di spegnimento."\n         ],\n         "%1$s has been banned": [\n            null,\n            "%1$s è stato bannato"\n         ],\n         "%1$s\'s nickname has changed": [\n            null,\n            "%1$s nickname è cambiato"\n         ],\n         "%1$s has been kicked out": [\n            null,\n            "%1$s è stato espulso"\n         ],\n         "%1$s has been removed because of an affiliation change": [\n            null,\n            "%1$s è stato rimosso a causa di un cambio di affiliazione"\n         ],\n         "%1$s has been removed for not being a member": [\n            null,\n            "%1$s è stato rimosso in quanto non membro"\n         ],\n         "Your nickname has been automatically set to: %1$s": [\n            null,\n            "Il tuo nickname è stato cambiato automaticamente in: %1$s"\n         ],\n         "Your nickname has been changed to: %1$s": [\n            null,\n            "Il tuo nickname è stato cambiato: %1$s"\n         ],\n         "Message": [\n            null,\n            "Messaggio"\n         ],\n         "Close and leave this room": [\n            null,\n            "Chiudi e lascia questa stanza"\n         ],\n         "Configure this room": [\n            null,\n            "Configura questa stanza"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Nascondi la lista degli occupanti"\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Sei sicuro di voler pulire i messaggi da questa stanza?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Errore: impossibile eseguire il comando"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            ""\n         ],\n         "Ban user from room": [\n            null,\n            "Bandisci utente dalla stanza"\n         ],\n         "Change user role to occupant": [\n            null,\n            ""\n         ],\n         "Kick user from room": [\n            null,\n            "Espelli utente dalla stanza"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Scrivi in terza persona"\n         ],\n         "Grant membership to a user": [\n            null,\n            ""\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Rimuovi la possibilità di inviare messaggi all\'utente"\n         ],\n         "Change your nickname": [\n            null,\n            "Cambia il tuo nickname"\n         ],\n         "Grant moderator role to user": [\n            null,\n            ""\n         ],\n         "Grant ownership of this room": [\n            null,\n            ""\n         ],\n         "Revoke user\'s membership": [\n            null,\n            ""\n         ],\n         "Set room subject": [\n            null,\n            "Cambia oggetto della stanza"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            "Imposta oggetto della stanza (alias per /subject)"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Abilita l\'utente mutato ad inviare nuovamente messaggi"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            "Il nickname scelto è riservato o attualmente in uso, indicane uno diverso."\n         ],\n         "Please choose your nickname": [\n            null,\n            "Scegli il tuo nickname"\n         ],\n         "Nickname": [\n            null,\n            "Soprannome"\n         ],\n         "Enter room": [\n            null,\n            "Entra nella stanza"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Questa stanza richiede una password"\n         ],\n         "Password: ": [\n            null,\n            "Password: "\n         ],\n         "Submit": [\n            null,\n            "Invia"\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            " ha lasciato la stanza. \\""\n         ],\n         " has left the room": [\n            null,\n            " ha lasciato la stanza"\n         ],\n         " has joined the room. \\"": [\n            null,\n            " è entrato nella stanza. \\""\n         ],\n         " has joined the room.": [\n            null,\n            " è entrato nella stanza."\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Topic impostato da %1$s a: %2$s"\n         ],\n         "This user is a moderator.": [\n            null,\n            "Questo utente è un moderatore."\n         ],\n         "This user can send messages in this room.": [\n            null,\n            "Questo utente può inviare messaggi in questa stanza."\n         ],\n         "This user can NOT send messages in this room.": [\n            null,\n            "Questo utente NON può inviare messaggi in questa stanza."\n         ],\n         "Occupants": [\n            null,\n            "Occupanti"\n         ],\n         "Invite": [\n            null,\n            "Invita"\n         ],\n         "Features": [\n            null,\n            "Impostazioni"\n         ],\n         "Hidden": [\n            null,\n            "Nascosta"\n         ],\n         "Message archiving": [\n            null,\n            "Archivio Messaggi"\n         ],\n         "Members only": [\n            null,\n            "Solo membri"\n         ],\n         "Moderated": [\n            null,\n            "Moderata"\n         ],\n         "Non-anonymous": [\n            null,\n            "Non-anonima"\n         ],\n         "Open": [\n            null,\n            "Aperta"\n         ],\n         "Password protected": [\n            null,\n            "Con Password"\n         ],\n         "Persistent": [\n            null,\n            "Persistente"\n         ],\n         "Public": [\n            null,\n            "Pubblica"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semi-anonima"\n         ],\n         "Temporary": [\n            null,\n            "Temporanea"\n         ],\n         "Unmoderated": [\n            null,\n            "Non moderata"\n         ],\n         "Unsecured": [\n            null,\n            "Non Sicura"\n         ],\n         "Messages are archived on the server": [\n            null,\n            "Messaggi sono archiviati sul server"\n         ],\n         "This room is restricted to members only": [\n            null,\n            "Questa stanza è ristretta ai soli membri"\n         ],\n         "This room is being moderated": [\n            null,\n            "Questa stanza è moderata"\n         ],\n         "Anyone can join this room": [\n            null,\n            "Chiunque può collegarsi a questa stanza"\n         ],\n         "This room requires a password before entry": [\n            null,\n            "Questa stanza richiede una password"\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "This room is not being moderated": [\n            null,\n            "Questa stanza non è moderata"\n         ],\n         "This room does not require a password upon entry": [\n            null,\n            "Questa stanza non richiede una password"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Stai per invitare %1$s nella stanza \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Puoi includere un messaggio per spiegare le ragioni dell\'invito."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Nome stanza"\n         ],\n         "Server": [\n            null,\n            "Server"\n         ],\n         "Join Room": [\n            null,\n            "Entra nella Stanza"\n         ],\n         "Show rooms": [\n            null,\n            "Mostra stanze"\n         ],\n         "Rooms": [\n            null,\n            "Stanze"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Nessuna stanza su %1$s"\n         ],\n         "Description:": [\n            null,\n            "Descrizione:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Utenti presenti:"\n         ],\n         "Features:": [\n            null,\n            "Funzionalità:"\n         ],\n         "Requires authentication": [\n            null,\n            "Richiede autenticazione"\n         ],\n         "Requires an invitation": [\n            null,\n            "Richiede un invito"\n         ],\n         "Open room": [\n            null,\n            "Stanza aperta"\n         ],\n         "Permanent room": [\n            null,\n            "Stanza permanente"\n         ],\n         "Temporary room": [\n            null,\n            "Stanza temporanea"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s ti ha invitato a partecipare a una chat room: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s ti ha invitato a partecipare a una chat room: %2$s, e ha lasciato il seguente motivo: “%3$s”"\n         ],\n         "Notification from %1$s": [\n            null,\n            "Notifica da %1$s"\n         ],\n         "%1$s says": [\n            null,\n            "%1$s dice"\n         ],\n         "has come online": [\n            null,\n            "è online"\n         ],\n         "wants to be your contact": [\n            null,\n            "vuole essere un tuo contatto"\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Ristabilisci sessione criptata"\n         ],\n         "Generating private key.": [\n            null,\n            "Generazione chiave private in corso."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Il tuo browser potrebbe bloccarsi."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            ""\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Non posso verificare l\'identità dell\'utente."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Scambio la chiave privata col contatto."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "I tuoi messaggi non sono più criptati"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "I tuoi messaggi sono ora criptati ma l\'identità del tuo contatto non è verificata."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "L\'identità del contatto è verificata."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            ""\n         ],\n         "Your message could not be sent": [\n            null,\n            "Il tuo messaggio non può essere spedito"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Abbiamo ricevuto un messaggio non criptato"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Abbiamo ricevuto un messaggio criptato non leggibile"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            ""\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            ""\n         ],\n         "What is your security question?": [\n            null,\n            "Qual è la tua domanda di sicurezza?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Qual è la risposta alla domanda di sicurezza?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Schema di autenticazione non valido"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "I tuoi messaggi non sono criptati. Clicca qui per attivare OTR encryption."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "I tuoi messaggi sono criptati ma il tuo contatto non è verificato."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Il tuoi messaggi sono criptati e il tuo contatto verificato."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            ""\n         ],\n         "End encrypted conversation": [\n            null,\n            "Fine della conversazione criptata"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Aggiorna conversazione criptata"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Inizio conversazione criptata"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verifica con fingerprints"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verifica con SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Che cos\'è?"\n         ],\n         "unencrypted": [\n            null,\n            "non criptato"\n         ],\n         "unverified": [\n            null,\n            "non verificato"\n         ],\n         "verified": [\n            null,\n            "verificato"\n         ],\n         "finished": [\n            null,\n            "finito"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            " es. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Nome del dominio del provider XMPP:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Modulo di registrazione"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Suggerimento: È disponibile un elenco di provider XMPP pubblici"\n         ],\n         "here": [\n            null,\n            "qui"\n         ],\n         "Register": [\n            null,\n            "Registra"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "Siamo spiacenti, il provider specificato non supporta la registrazione di account. Si prega di provare con un altro provider."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "Sto richiedendo un modulo di registrazione al server XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Qualcosa è andato storto durante la connessione con “%1$s”. Sei sicuro che esiste?"\n         ],\n         "Now logging you in": [\n            null,\n            ""\n         ],\n         "Registered successfully": [\n            null,\n            "Registrazione riuscita"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "Il provider ha respinto il tentativo di registrazione. Controlla i dati inseriti."\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Questo contatto è occupato"\n         ],\n         "This contact is online": [\n            null,\n            "Questo contatto è online"\n         ],\n         "This contact is offline": [\n            null,\n            "Questo contatto è offline"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Questo contatto non è disponibile"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Il contatto è away da un lungo periodo"\n         ],\n         "This contact is away": [\n            null,\n            "Questo contatto è away"\n         ],\n         "Groups": [\n            null,\n            "Gruppi"\n         ],\n         "My contacts": [\n            null,\n            "I miei contatti"\n         ],\n         "Pending contacts": [\n            null,\n            "Contatti in attesa"\n         ],\n         "Contact requests": [\n            null,\n            "Richieste dei contatti"\n         ],\n         "Ungrouped": [\n            null,\n            "Senza Gruppo"\n         ],\n         "Filter": [\n            null,\n            "Filtri"\n         ],\n         "State": [\n            null,\n            "Stato"\n         ],\n         "Any": [\n            null,\n            "Ogni"\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            "Chatty"\n         ],\n         "Extended Away": [\n            null,\n            "Away estesa"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Clicca per parlare con questo contatto"\n         ],\n         "Name": [\n            null,\n            "Nome"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Sei sicuro di voler rimuovere questo contatto?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Sei sicuro dirifiutare questa richiesta di contatto?"\n         ]\n      }\n   }\n}';});
-
-
-define('text!ja',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=1; plural=0;",\n            "lang": "JA"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "保存"\n         ],\n         "Cancel": [\n            null,\n            "キャンセル"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            ""\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "この談話室についての詳細を見る"\n         ],\n         "Click to open this room": [\n            null,\n            "クリックしてこの談話室を開く"\n         ],\n         "Personal message": [\n            null,\n            "私信"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "私"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            ""\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            ""\n         ],\n         "Show this menu": [\n            null,\n            "このメニューを表示"\n         ],\n         "Write in the third person": [\n            null,\n            "第三者に書く"\n         ],\n         "Remove messages": [\n            null,\n            "メッセージを削除"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            ""\n         ],\n         "Insert a smiley": [\n            null,\n            ""\n         ],\n         "Start a call": [\n            null,\n            ""\n         ],\n         "Contacts": [\n            null,\n            "相手先"\n         ],\n         "Password:": [\n            null,\n            "パスワード:"\n         ],\n         "Log In": [\n            null,\n            "ログイン"\n         ],\n         "user@server": [\n            null,\n            ""\n         ],\n         "Sign in": [\n            null,\n            "サインイン"\n         ],\n         "I am %1$s": [\n            null,\n            "私はいま %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "状況メッセージを入力するには、ここをクリック"\n         ],\n         "Click to change your chat status": [\n            null,\n            "クリックして、在席状況を変更"\n         ],\n         "Custom status": [\n            null,\n            "独自の在席状況"\n         ],\n         "online": [\n            null,\n            "在席"\n         ],\n         "busy": [\n            null,\n            "取り込み中"\n         ],\n         "away for long": [\n            null,\n            "不在"\n         ],\n         "away": [\n            null,\n            "離席中"\n         ],\n         "Online": [\n            null,\n            "オンライン"\n         ],\n         "Busy": [\n            null,\n            "取り込み中"\n         ],\n         "Away": [\n            null,\n            "離席中"\n         ],\n         "Offline": [\n            null,\n            "オフライン"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "クリックして新しいチャットの相手先を追加"\n         ],\n         "Add a contact": [\n            null,\n            "相手先を追加"\n         ],\n         "Contact name": [\n            null,\n            "名前"\n         ],\n         "Search": [\n            null,\n            "検索"\n         ],\n         "e.g. user@example.org": [\n            null,\n            ""\n         ],\n         "Add": [\n            null,\n            "追加"\n         ],\n         "No users found": [\n            null,\n            "ユーザーが見つかりません"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            ""\n         ],\n         "Minimize this chat box": [\n            null,\n            ""\n         ],\n         "Minimized": [\n            null,\n            ""\n         ],\n         "This room is not anonymous": [\n            null,\n            "この談話室は非匿名です"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "この談話室はメンバー以外にも見えます"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "この談話室はメンバー以外には見えません"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "談話室の記録を取りはじめます"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "談話室の記録を止めます"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "この談話室はただいま半匿名です"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "この談話室はただいま匿名です"\n         ],\n         "A new room has been created": [\n            null,\n            "新しい談話室が作成されました"\n         ],\n         "You have been banned from this room": [\n            null,\n            "この談話室から締め出されました"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "この談話室から蹴り出されました"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "分掌の変更のため、この談話室から削除されました"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "談話室がメンバー制に変更されました。メンバーではないため、この談話室から削除されました"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "MUC(グループチャット)のサービスが停止したため、この談話室から削除されました。"\n         ],\n         "Message": [\n            null,\n            "メッセージ"\n         ],\n         "Hide the list of occupants": [\n            null,\n            ""\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Error: could not execute the command": [\n            null,\n            ""\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            ""\n         ],\n         "Change user role to occupant": [\n            null,\n            ""\n         ],\n         "Grant membership to a user": [\n            null,\n            ""\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            ""\n         ],\n         "Change your nickname": [\n            null,\n            ""\n         ],\n         "Grant moderator role to user": [\n            null,\n            ""\n         ],\n         "Revoke user\'s membership": [\n            null,\n            ""\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            ""\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Please choose your nickname": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "ニックネーム"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "この談話室にはパスワードが必要です"\n         ],\n         "Password: ": [\n            null,\n            "パスワード:"\n         ],\n         "Submit": [\n            null,\n            "送信"\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            ""\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "%1$s が話題を設定しました: %2$s"\n         ],\n         "Invite": [\n            null,\n            ""\n         ],\n         "Hidden": [\n            null,\n            "非表示"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "発言制限"\n         ],\n         "Non-anonymous": [\n            null,\n            "非匿名"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "公開談話室"\n         ],\n         "Semi-anonymous": [\n            null,\n            "半匿名"\n         ],\n         "Unmoderated": [\n            null,\n            "発言制限なし"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            ""\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            ""\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "談話室の名前"\n         ],\n         "Server": [\n            null,\n            "サーバー"\n         ],\n         "Show rooms": [\n            null,\n            "談話室一覧を見る"\n         ],\n         "Rooms": [\n            null,\n            "談話室"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "%1$s に談話室はありません"\n         ],\n         "Description:": [\n            null,\n            "説明: "\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "入室者:"\n         ],\n         "Features:": [\n            null,\n            "特徴:"\n         ],\n         "Requires authentication": [\n            null,\n            "認証の要求"\n         ],\n         "Requires an invitation": [\n            null,\n            "招待の要求"\n         ],\n         "Open room": [\n            null,\n            "開放談話室"\n         ],\n         "Permanent room": [\n            null,\n            "常設談話室"\n         ],\n         "Temporary room": [\n            null,\n            "臨時談話室"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            ""\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            ""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "暗号化セッションの再接続"\n         ],\n         "Generating private key.": [\n            null,\n            ""\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            ""\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "このユーザーの本人性を検証できませんでした。"\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            ""\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "メッセージはもう暗号化されません"\n         ],\n         "Your message could not be sent": [\n            null,\n            "メッセージを送信できませんでした"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "暗号化されていないメッセージを受信しました"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "読めない暗号化メッセージを受信しました"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "これは鍵指紋です。チャット以外の方法でこれらを %1$s と確認してください。\\n\\nあなた %2$s の鍵指紋: %3$s\\n\\n%1$s の鍵指紋: %4$s\\n\\n確認して、鍵指紋が正しければ「OK」を、正しくなければ「キャンセル」をクリックしてください。"\n         ],\n         "What is your security question?": [\n            null,\n            "秘密の質問はなんですか?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "秘密の質問の答はなんですか?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "認証の方式が正しくありません"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "メッセージは暗号化されません。OTR 暗号化を有効にするにはここをクリックしてください。"\n         ],\n         "End encrypted conversation": [\n            null,\n            "暗号化された会話を終了"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "暗号化された会話をリフレッシュ"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "暗号化された会話を開始"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "鍵指紋で検証"\n         ],\n         "Verify with SMP": [\n            null,\n            "SMP で検証"\n         ],\n         "What\'s this?": [\n            null,\n            "これは何ですか?"\n         ],\n         "unencrypted": [\n            null,\n            "暗号化されていません"\n         ],\n         "unverified": [\n            null,\n            "検証されていません"\n         ],\n         "verified": [\n            null,\n            "検証されました"\n         ],\n         "finished": [\n            null,\n            "完了"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            ""\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            ""\n         ],\n         "Fetch registration form": [\n            null,\n            ""\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            ""\n         ],\n         "here": [\n            null,\n            ""\n         ],\n         "Register": [\n            null,\n            ""\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            ""\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            ""\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            ""\n         ],\n         "Now logging you in": [\n            null,\n            ""\n         ],\n         "Registered successfully": [\n            null,\n            ""\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            ""\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "この相手先は取り込み中です"\n         ],\n         "This contact is online": [\n            null,\n            "この相手先は在席しています"\n         ],\n         "This contact is offline": [\n            null,\n            "この相手先はオフラインです"\n         ],\n         "This contact is unavailable": [\n            null,\n            "この相手先は不通です"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "この相手先は不在です"\n         ],\n         "This contact is away": [\n            null,\n            "この相手先は離席中です"\n         ],\n         "Groups": [\n            null,\n            ""\n         ],\n         "My contacts": [\n            null,\n            "相手先一覧"\n         ],\n         "Pending contacts": [\n            null,\n            "保留中の相手先"\n         ],\n         "Contact requests": [\n            null,\n            "会話に呼び出し"\n         ],\n         "Ungrouped": [\n            null,\n            ""\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "クリックしてこの相手先とチャット"\n         ],\n         "Name": [\n            null,\n            ""\n         ]\n      }\n   }\n}';});
-
-
-define('text!nb',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n != 1);",\n            "lang": "nb"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Lagre"\n         ],\n         "Cancel": [\n            null,\n            "Avbryt"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            ""\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "Vis mer informasjon om dette rommet"\n         ],\n         "Click to open this room": [\n            null,\n            "Klikk for å åpne dette rommet"\n         ],\n         "Personal message": [\n            null,\n            "Personlig melding"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "meg"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "skriver"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            "har stoppet å skrive"\n         ],\n         "Show this menu": [\n            null,\n            "Viser denne menyen"\n         ],\n         "Write in the third person": [\n            null,\n            "Skriv i tredjeperson"\n         ],\n         "Remove messages": [\n            null,\n            "Fjern meldinger"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Er du sikker på at du vil fjerne meldingene fra denne meldingsboksen?"\n         ],\n         "Clear all messages": [\n            null,\n            "Fjern alle meldinger"\n         ],\n         "Insert a smiley": [\n            null,\n            ""\n         ],\n         "Start a call": [\n            null,\n            "Start en samtale"\n         ],\n         "Contacts": [\n            null,\n            "Kontakter"\n         ],\n         "XMPP Username:": [\n            null,\n            "XMPP Brukernavn:"\n         ],\n         "Password:": [\n            null,\n            "Passord:"\n         ],\n         "Log In": [\n            null,\n            "Logg inn"\n         ],\n         "user@server": [\n            null,\n            ""\n         ],\n         "Sign in": [\n            null,\n            "Innlogging"\n         ],\n         "I am %1$s": [\n            null,\n            "Jeg er %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Klikk her for å skrive en personlig statusmelding"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Klikk for å endre din meldingsstatus"\n         ],\n         "Custom status": [\n            null,\n            "Personlig status"\n         ],\n         "online": [\n            null,\n            "pålogget"\n         ],\n         "busy": [\n            null,\n            "opptatt"\n         ],\n         "away for long": [\n            null,\n            "borte lenge"\n         ],\n         "away": [\n            null,\n            "borte"\n         ],\n         "Online": [\n            null,\n            "Pålogget"\n         ],\n         "Busy": [\n            null,\n            "Opptatt"\n         ],\n         "Away": [\n            null,\n            "Borte"\n         ],\n         "Offline": [\n            null,\n            "Avlogget"\n         ],\n         "Log out": [\n            null,\n            "Logg Av"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Klikk for å legge til nye meldingskontakter"\n         ],\n         "Add a contact": [\n            null,\n            "Legg til en Kontakt"\n         ],\n         "Contact name": [\n            null,\n            "Kontaktnavn"\n         ],\n         "Search": [\n            null,\n            "Søk"\n         ],\n         "e.g. user@example.org": [\n            null,\n            ""\n         ],\n         "Add": [\n            null,\n            "Legg Til"\n         ],\n         "No users found": [\n            null,\n            "Ingen brukere funnet"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            ""\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Klikk for å skjule disse kontaktene"\n         ],\n         "Minimize this chat box": [\n            null,\n            ""\n         ],\n         "Click to restore this chat": [\n            null,\n            "Klikk for å gjenopprette denne samtalen"\n         ],\n         "Minimized": [\n            null,\n            "Minimert"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Dette rommet er ikke anonymt"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Dette rommet viser nå utilgjengelige medlemmer"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Dette rommet viser ikke utilgjengelige medlemmer"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Romlogging er nå aktivert"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Romlogging er nå deaktivert"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Dette rommet er nå semi-anonymt"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Dette rommet er nå totalt anonymt"\n         ],\n         "A new room has been created": [\n            null,\n            "Et nytt rom har blitt opprettet"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Du har blitt utestengt fra dette rommet"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Du ble kastet ut av dette rommet"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Du har blitt fjernet fra dette rommet på grunn av en holdningsendring"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Du har blitt fjernet fra dette rommet fordi rommet nå kun tillater medlemmer, noe du ikke er."\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Du har blitt fjernet fra dette rommet fordi MBC (Multi-Bruker-Chat)-tjenesten er stengt ned."\n         ],\n         "Message": [\n            null,\n            "Melding"\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Er du sikker på at du vil fjerne meldingene fra dette rommet?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Feil: kunne ikke utføre kommandoen"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            ""\n         ],\n         "Ban user from room": [\n            null,\n            "Utesteng bruker fra rommet"\n         ],\n         "Kick user from room": [\n            null,\n            "Kast ut bruker fra rommet"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Skriv i tredjeperson"\n         ],\n         "Grant membership to a user": [\n            null,\n            ""\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Fjern brukerens muligheter til å skrive meldinger"\n         ],\n         "Change your nickname": [\n            null,\n            "Endre ditt kallenavn"\n         ],\n         "Grant moderator role to user": [\n            null,\n            ""\n         ],\n         "Revoke user\'s membership": [\n            null,\n            ""\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Tillat stumme brukere å skrive meldinger"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Kallenavn"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Dette rommet krever et passord"\n         ],\n         "Password: ": [\n            null,\n            "Passord:"\n         ],\n         "Submit": [\n            null,\n            "Send"\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Emnet ble endret den %1$s til: %2$s"\n         ],\n         "Occupants": [\n            null,\n            "Brukere her:"\n         ],\n         "Invite": [\n            null,\n            "Invitér"\n         ],\n         "Hidden": [\n            null,\n            "Skjult"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "Moderert"\n         ],\n         "Non-anonymous": [\n            null,\n            "Ikke-Anonym"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "Alle"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semi-anonymt"\n         ],\n         "Unmoderated": [\n            null,\n            "Umoderert"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Du er i ferd med å invitere %1$s til samtalerommet \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Du kan eventuelt inkludere en melding og forklare årsaken til invitasjonen."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Romnavn"\n         ],\n         "Server": [\n            null,\n            "Server"\n         ],\n         "Show rooms": [\n            null,\n            "Vis Rom"\n         ],\n         "Rooms": [\n            null,\n            "Rom"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Ingen rom på %1$s"\n         ],\n         "Description:": [\n            null,\n            "Beskrivelse:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Brukere her:"\n         ],\n         "Features:": [\n            null,\n            "Egenskaper:"\n         ],\n         "Requires authentication": [\n            null,\n            "Krever Godkjenning"\n         ],\n         "Requires an invitation": [\n            null,\n            "Krever en invitasjon"\n         ],\n         "Open room": [\n            null,\n            "Åpent Rom"\n         ],\n         "Permanent room": [\n            null,\n            "Permanent Rom"\n         ],\n         "Temporary room": [\n            null,\n            "Midlertidig Rom"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s har invitert deg til å bli med i chatterommet: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s har invitert deg til å bli med i chatterommet: %2$s, og forlot selv av følgende grunn:  \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Gjenopptar kryptert økt"\n         ],\n         "Generating private key.": [\n            null,\n            "Genererer privat nøkkel"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Din nettleser kan bli uresponsiv"\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Godkjenningsforespørsel fra %1$s\\n\\nDin nettpratkontakt forsøker å bekrefte din identitet, ved å spørre deg spørsmålet under.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Kunne ikke bekrefte denne brukerens identitet"\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Bytter private nøkler med kontakt"\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Dine meldinger er ikke kryptert lenger."\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Dine meldinger er nå krypterte, men identiteten til din kontakt har ikke blitt verifisert."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "Din kontakts identitet har blitt verifisert."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "Din kontakt har avsluttet kryptering i sin ende, dette burde du også gjøre."\n         ],\n         "Your message could not be sent": [\n            null,\n            "Beskjeden din kunne ikke sendes"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Vi mottok en ukryptert beskjed"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Vi mottok en uleselig melding"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nOm du har bekreftet at avtrykkene matcher, klikk OK. I motsatt fall, trykk Avbryt."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Du vil bli spurt etter å tilby et sikkerhetsspørsmål og siden svare på dette.\\n\\nDin kontakt vil så bli spurt om det samme spørsmålet, og om de svarer det nøyaktig samme svaret (det er forskjell på små og store bokstaver), vil identiteten verifiseres."\n         ],\n         "What is your security question?": [\n            null,\n            "Hva er ditt Sikkerhetsspørsmål?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Hva er svaret på ditt Sikkerhetsspørsmål?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Du har vedlagt en ugyldig godkjenningsplan."\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Dine meldinger er ikke krypterte. Klikk her for å aktivere OTR-kryptering."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Dine meldinger er krypterte, men din kontakt har ikke blitt verifisert."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Dine meldinger er krypterte og din kontakt er verifisert."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "Din kontakt har avsluttet økten i sin ende, dette burde du også gjøre."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Avslutt kryptert økt"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Last inn kryptert samtale på nytt"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Start en kryptert samtale"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verifiser med Avtrykk"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verifiser med SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Hva er dette?"\n         ],\n         "unencrypted": [\n            null,\n            "ukryptertß"\n         ],\n         "unverified": [\n            null,\n            "uverifisert"\n         ],\n         "verified": [\n            null,\n            "verifisert"\n         ],\n         "finished": [\n            null,\n            "ferdig"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            ""\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Din XMPP-tilbyders domenenavn:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Hent registreringsskjema"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Tips: En liste med offentlige XMPP-tilbydere er tilgjengelig"\n         ],\n         "here": [\n            null,\n            "her"\n         ],\n         "Register": [\n            null,\n            "Registrér deg"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "Beklager, den valgte tilbyderen støtter ikke in band kontoregistrering. Vennligst prøv igjen med en annen tilbyder. "\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "Spør etter registreringsskjema fra XMPP-tjeneren"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Noe gikk galt under etablering av forbindelse med \\"%1$s\\". Er du sikker på at denne eksisterer?"\n         ],\n         "Now logging you in": [\n            null,\n            "Logger deg inn"\n         ],\n         "Registered successfully": [\n            null,\n            "Registrering var vellykket"\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Denne kontakten er opptatt"\n         ],\n         "This contact is online": [\n            null,\n            "Kontakten er pålogget"\n         ],\n         "This contact is offline": [\n            null,\n            "Kontakten er avlogget"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Kontakten er utilgjengelig"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Kontakten er borte for en lengre periode"\n         ],\n         "This contact is away": [\n            null,\n            "Kontakten er borte"\n         ],\n         "Groups": [\n            null,\n            "Grupper"\n         ],\n         "My contacts": [\n            null,\n            "Mine Kontakter"\n         ],\n         "Pending contacts": [\n            null,\n            "Kontakter som venter på godkjenning"\n         ],\n         "Contact requests": [\n            null,\n            "Kontaktforespørsler"\n         ],\n         "Ungrouped": [\n            null,\n            "Ugrupperte"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Klikk for å chatte med denne kontakten"\n         ],\n         "Name": [\n            null,\n            ""\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Er du sikker på at du vil fjerne denne kontakten?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Er du sikker på at du vil avslå denne kontaktforespørselen?"\n         ]\n      }\n   }\n}';});
-
-
-define('text!nl',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=n != 1;",\n            "lang": "nl"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Opslaan"\n         ],\n         "Cancel": [\n            null,\n            "Annuleren"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            ""\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "Toon meer informatie over deze room"\n         ],\n         "Click to open this room": [\n            null,\n            "Klik om room te openen"\n         ],\n         "Personal message": [\n            null,\n            "Persoonlijk bericht"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "ikzelf"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "Show this menu": [\n            null,\n            "Toon dit menu"\n         ],\n         "Write in the third person": [\n            null,\n            "Schrijf in de 3de persoon"\n         ],\n         "Remove messages": [\n            null,\n            "Verwijder bericht"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            ""\n         ],\n         "Insert a smiley": [\n            null,\n            ""\n         ],\n         "Start a call": [\n            null,\n            ""\n         ],\n         "Contacts": [\n            null,\n            "Contacten"\n         ],\n         "Password:": [\n            null,\n            "Wachtwoord:"\n         ],\n         "Log In": [\n            null,\n            "Aanmelden"\n         ],\n         "user@server": [\n            null,\n            ""\n         ],\n         "Sign in": [\n            null,\n            "Aanmelden"\n         ],\n         "I am %1$s": [\n            null,\n            "Ik ben %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Klik hier om custom status bericht te maken"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Klik hier om status te wijzigen"\n         ],\n         "Custom status": [\n            null,\n            ""\n         ],\n         "online": [\n            null,\n            "online"\n         ],\n         "busy": [\n            null,\n            "bezet"\n         ],\n         "away for long": [\n            null,\n            "afwezig lange tijd"\n         ],\n         "away": [\n            null,\n            "afwezig"\n         ],\n         "Online": [\n            null,\n            "Online"\n         ],\n         "Busy": [\n            null,\n            "Bezet"\n         ],\n         "Away": [\n            null,\n            "Afwezig"\n         ],\n         "Offline": [\n            null,\n            ""\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Klik om nieuwe contacten toe te voegen"\n         ],\n         "Add a contact": [\n            null,\n            "Voeg contact toe"\n         ],\n         "Contact name": [\n            null,\n            "Contact naam"\n         ],\n         "Search": [\n            null,\n            "Zoeken"\n         ],\n         "e.g. user@example.org": [\n            null,\n            ""\n         ],\n         "Add": [\n            null,\n            "Toevoegen"\n         ],\n         "No users found": [\n            null,\n            "Geen gebruikers gevonden"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            ""\n         ],\n         "Minimize this chat box": [\n            null,\n            ""\n         ],\n         "Minimized": [\n            null,\n            ""\n         ],\n         "This room is not anonymous": [\n            null,\n            "Deze room is niet annoniem"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            ""\n         ],\n         "This room does not show unavailable members": [\n            null,\n            ""\n         ],\n         "The room configuration has changed": [\n            null,\n            ""\n         ],\n         "Room logging is now enabled": [\n            null,\n            ""\n         ],\n         "Room logging is now disabled": [\n            null,\n            ""\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Deze room is nu semie annoniem"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Deze room is nu volledig annoniem"\n         ],\n         "A new room has been created": [\n            null,\n            "Een nieuwe room is gemaakt"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Je bent verbannen uit deze room"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Je bent uit de room gegooid"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            ""\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            ""\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            ""\n         ],\n         "%1$s has been removed because of an affiliation change": [\n            null,\n            ""\n         ],\n         "%1$s has been removed for not being a member": [\n            null,\n            ""\n         ],\n         "Message": [\n            null,\n            "Bericht"\n         ],\n         "Hide the list of occupants": [\n            null,\n            ""\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Error: could not execute the command": [\n            null,\n            ""\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            ""\n         ],\n         "Change user role to occupant": [\n            null,\n            ""\n         ],\n         "Grant membership to a user": [\n            null,\n            ""\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            ""\n         ],\n         "Change your nickname": [\n            null,\n            ""\n         ],\n         "Grant moderator role to user": [\n            null,\n            ""\n         ],\n         "Revoke user\'s membership": [\n            null,\n            ""\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            ""\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Please choose your nickname": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Bijnaam"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Chatroom heeft een wachtwoord"\n         ],\n         "Password: ": [\n            null,\n            "Wachtwoord: "\n         ],\n         "Submit": [\n            null,\n            "Indienen"\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            ""\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            ""\n         ],\n         "Invite": [\n            null,\n            ""\n         ],\n         "Hidden": [\n            null,\n            "Verborgen"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "Gemodereerd"\n         ],\n         "Non-anonymous": [\n            null,\n            "Niet annoniem"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "Publiek"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semi annoniem"\n         ],\n         "Unmoderated": [\n            null,\n            "Niet gemodereerd"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            ""\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            ""\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Room naam"\n         ],\n         "Server": [\n            null,\n            "Server"\n         ],\n         "Show rooms": [\n            null,\n            "Toon rooms"\n         ],\n         "Rooms": [\n            null,\n            "Rooms"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Geen room op %1$s"\n         ],\n         "Description:": [\n            null,\n            "Beschrijving"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Deelnemers:"\n         ],\n         "Features:": [\n            null,\n            "Functies:"\n         ],\n         "Requires authentication": [\n            null,\n            "Verificatie vereist"\n         ],\n         "Requires an invitation": [\n            null,\n            "Veriest een uitnodiging"\n         ],\n         "Open room": [\n            null,\n            "Open room"\n         ],\n         "Permanent room": [\n            null,\n            "Blijvend room"\n         ],\n         "Temporary room": [\n            null,\n            "Tijdelijke room"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            ""\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            ""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Bezig versleutelde sessie te herstellen"\n         ],\n         "Generating private key.": [\n            null,\n            ""\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            ""\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            ""\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Niet kon de identiteit van deze gebruiker niet identificeren."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            ""\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Je berichten zijn niet meer encrypted"\n         ],\n         "Your message could not be sent": [\n            null,\n            "Je bericht kon niet worden verzonden"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "We ontvingen een unencrypted bericht "\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "We ontvangen een onleesbaar unencrypted bericht"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            ""\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            ""\n         ],\n         "What is your security question?": [\n            null,\n            "Wat is jou sericury vraag?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Wat is het antwoord op de security vraag?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            ""\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Jou bericht is niet encrypted. KLik hier om ORC encrytion aan te zetten."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Beeindig encrypted gesprek"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Ververs encrypted gesprek"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Start encrypted gesprek"\n         ],\n         "Verify with fingerprints": [\n            null,\n            ""\n         ],\n         "Verify with SMP": [\n            null,\n            ""\n         ],\n         "What\'s this?": [\n            null,\n            "Wat is dit?"\n         ],\n         "unencrypted": [\n            null,\n            "ongecodeerde"\n         ],\n         "unverified": [\n            null,\n            "niet geverifieerd"\n         ],\n         "verified": [\n            null,\n            "geverifieerd"\n         ],\n         "finished": [\n            null,\n            "klaar"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            ""\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            ""\n         ],\n         "Fetch registration form": [\n            null,\n            ""\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            ""\n         ],\n         "here": [\n            null,\n            ""\n         ],\n         "Register": [\n            null,\n            ""\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            ""\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            ""\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            ""\n         ],\n         "Now logging you in": [\n            null,\n            ""\n         ],\n         "Registered successfully": [\n            null,\n            ""\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            ""\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Contact is bezet"\n         ],\n         "This contact is online": [\n            null,\n            "Contact is online"\n         ],\n         "This contact is offline": [\n            null,\n            "Contact is offline"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Contact is niet beschikbaar"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Contact is afwezig voor lange periode"\n         ],\n         "This contact is away": [\n            null,\n            "Conact is afwezig"\n         ],\n         "Groups": [\n            null,\n            ""\n         ],\n         "My contacts": [\n            null,\n            "Mijn contacts"\n         ],\n         "Pending contacts": [\n            null,\n            "Conacten in afwachting van"\n         ],\n         "Contact requests": [\n            null,\n            "Contact uitnodiging"\n         ],\n         "Ungrouped": [\n            null,\n            ""\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Klik om te chatten met contact"\n         ],\n         "Name": [\n            null,\n            ""\n         ]\n      }\n   }\n}';});
-
-
-define('text!pl',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",\n            "lang": "pl"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Zachowaj"\n         ],\n         "Cancel": [\n            null,\n            "Anuluj"\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "Pokaż więcej informacji o pokoju"\n         ],\n         "Click to open this room": [\n            null,\n            "Kliknij aby wejść do pokoju"\n         ],\n         "You have unread messages": [\n            null,\n            "Masz nieprzeczytane wiadomości"\n         ],\n         "Close this chat box": [\n            null,\n            "Zamknij okno rozmowy"\n         ],\n         "Personal message": [\n            null,\n            "Wiadomość osobista"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "ja"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "pisze"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            "przestał pisać"\n         ],\n         "has gone away": [\n            null,\n            "uciekł"\n         ],\n         "Show this menu": [\n            null,\n            "Pokaż menu"\n         ],\n         "Write in the third person": [\n            null,\n            "Pisz w trzeciej osobie"\n         ],\n         "Remove messages": [\n            null,\n            "Usuń wiadomości"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Potwierdź czy rzeczywiście chcesz wyczyścić wiadomości z okienka rozmowy?"\n         ],\n         "has gone offline": [\n            null,\n            "wyłączył się"\n         ],\n         "is busy": [\n            null,\n            "zajęty"\n         ],\n         "Clear all messages": [\n            null,\n            "Wyczyść wszystkie wiadomości"\n         ],\n         "Insert a smiley": [\n            null,\n            "Wstaw uśmieszek"\n         ],\n         "Start a call": [\n            null,\n            "Zadzwoń"\n         ],\n         "Contacts": [\n            null,\n            "Kontakty"\n         ],\n         "XMPP Username:": [\n            null,\n            "Nazwa użytkownika XMPP:"\n         ],\n         "Password:": [\n            null,\n            "Hasło:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Kliknij tutaj aby zalogować się anonimowo"\n         ],\n         "Log In": [\n            null,\n            "Zaloguj się"\n         ],\n         "Username": [\n            null,\n            "Nazwa użytkownika"\n         ],\n         "user@server": [\n            null,\n            "użytkownik@serwer"\n         ],\n         "password": [\n            null,\n            "hasło"\n         ],\n         "Sign in": [\n            null,\n            "Zaloguj się"\n         ],\n         "I am %1$s": [\n            null,\n            "Jestem %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Kliknij aby wpisać nowy status"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Kliknij aby zmienić status rozmowy"\n         ],\n         "Custom status": [\n            null,\n            "Własny status"\n         ],\n         "online": [\n            null,\n            "dostępny"\n         ],\n         "busy": [\n            null,\n            "zajęty"\n         ],\n         "away for long": [\n            null,\n            "dłużej nieobecny"\n         ],\n         "away": [\n            null,\n            "nieobecny"\n         ],\n         "offline": [\n            null,\n            "rozłączony"\n         ],\n         "Online": [\n            null,\n            "Dostępny"\n         ],\n         "Busy": [\n            null,\n            "Zajęty"\n         ],\n         "Away": [\n            null,\n            "Nieobecny"\n         ],\n         "Offline": [\n            null,\n            "Rozłączony"\n         ],\n         "Log out": [\n            null,\n            "Wyloguj się"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Kliknij aby dodać nowe kontakty"\n         ],\n         "Add a contact": [\n            null,\n            "Dodaj kontakt"\n         ],\n         "Contact name": [\n            null,\n            "Nazwa kontaktu"\n         ],\n         "Search": [\n            null,\n            "Szukaj"\n         ],\n         "e.g. user@example.org": [\n            null,\n            "np. użytkownik@przykładowa-domena.pl"\n         ],\n         "Add": [\n            null,\n            "Dodaj"\n         ],\n         "No users found": [\n            null,\n            "Nie znaleziono użytkowników"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Klient nie umożliwia subskrybcji obecności"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Kliknij aby schować te kontakty"\n         ],\n         "Close this box": [\n            null,\n            "Zamknij okno"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Zminimalizuj okno czatu"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Kliknij aby powrócić do rozmowy"\n         ],\n         "Minimized": [\n            null,\n            "Zminimalizowany"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Pokój nie jest anonimowy"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Pokój pokazuje niedostępnych rozmówców"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Ten pokój nie wyświetla niedostępnych członków"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Zostało włączone zapisywanie rozmów w pokoju"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Zostało wyłączone zapisywanie rozmów w pokoju"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Pokój stał się półanonimowy"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Pokój jest teraz w pełni anonimowy"\n         ],\n         "A new room has been created": [\n            null,\n            "Został utworzony nowy pokój"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Jesteś niemile widziany w tym pokoju"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Zostałeś wykopany z pokoju"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Zostałeś usunięty z pokoju ze względu na zmianę przynależności"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Zostałeś usunięty z pokoju ze względu na to, że pokój zmienił się na wymagający członkowstwa, a ty nie jesteś członkiem"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Zostałeś usunięty z pokoju ze względu na to, że serwis MUC(Multi-user chat) został wyłączony."\n         ],\n         "Message": [\n            null,\n            "Wiadomość"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Ukryj listę rozmówców"\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Potwierdź czy rzeczywiście chcesz wyczyścić wiadomości z tego pokoju?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Błąd: nie potrafię uruchomić polecenia"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Przyznaj prawa administratora"\n         ],\n         "Ban user from room": [\n            null,\n            "Zablokuj dostępu do pokoju"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Zmień prawa dostępu na zwykłego uczestnika"\n         ],\n         "Kick user from room": [\n            null,\n            "Wykop z pokoju"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Pisz w trzeciej osobie"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Przyznaj członkowstwo "\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Zablokuj człowiekowi możliwość rozmowy"\n         ],\n         "Change your nickname": [\n            null,\n            "Zmień ksywkę"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Przyznaj prawa moderatora"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Uczyń właścicielem pokoju"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Usuń z listy członków"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Pozwól uciszonemu człowiekowi na rozmowę"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            "Ksywka jaką wybrałeś jest zarezerwowana albo w użyciu, wybierz proszę inną."\n         ],\n         "Please choose your nickname": [\n            null,\n            "Wybierz proszę ksywkę"\n         ],\n         "Nickname": [\n            null,\n            "Ksywka"\n         ],\n         "Enter room": [\n            null,\n            "Wejdź do pokoju"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Pokój rozmów wymaga podania hasła"\n         ],\n         "Password: ": [\n            null,\n            "Hasło:"\n         ],\n         "Submit": [\n            null,\n            "Wyślij"\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Temat ustawiony przez %1$s na: %2$s"\n         ],\n         "This user is a moderator.": [\n            null,\n            "Ten człowiek jest moderatorem"\n         ],\n         "This user can send messages in this room.": [\n            null,\n            "Ten człowiek może rozmawiać w niejszym pokoju"\n         ],\n         "This user can NOT send messages in this room.": [\n            null,\n            "Ten człowiek NIE może rozmawiać w niniejszym pokoju"\n         ],\n         "Occupants": [\n            null,\n            "Uczestników"\n         ],\n         "Invite": [\n            null,\n            "Zaproś"\n         ],\n         "Hidden": [\n            null,\n            "Ukryty"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "Moderowany"\n         ],\n         "Non-anonymous": [\n            null,\n            "Nieanonimowy"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "Publiczny"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Półanonimowy"\n         ],\n         "Unmoderated": [\n            null,\n            "Niemoderowany"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Zamierzasz zaprosić %1$s do pokoju rozmów \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Masz opcjonalną możliwość dołączenia wiadomości, która wyjaśni przyczynę zaproszenia."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Nazwa pokoju"\n         ],\n         "Server": [\n            null,\n            "Serwer"\n         ],\n         "Join Room": [\n            null,\n            "Wejdź do pokoju"\n         ],\n         "Show rooms": [\n            null,\n            "Pokaż pokoje"\n         ],\n         "Rooms": [\n            null,\n            "Pokoje"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Brak jest pokojów na %1$s"\n         ],\n         "Description:": [\n            null,\n            "Opis:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Uczestnicy:"\n         ],\n         "Features:": [\n            null,\n            "Możliwości:"\n         ],\n         "Requires authentication": [\n            null,\n            "Wymaga autoryzacji"\n         ],\n         "Requires an invitation": [\n            null,\n            "Wymaga zaproszenia"\n         ],\n         "Open room": [\n            null,\n            "Otwarty pokój"\n         ],\n         "Permanent room": [\n            null,\n            "Stały pokój"\n         ],\n         "Temporary room": [\n            null,\n            "Pokój tymczasowy"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s zaprosił(a) cię do wejścia do pokoju rozmów %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s zaprosił cię do pokoju: %2$s, podając następujący powód: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            "Powiadomienie od %1$s"\n         ],\n         "%1$s says": [\n            null,\n            "%1$s powiedział"\n         ],\n         "has come online": [\n            null,\n            "połączył się"\n         ],\n         "wants to be your contact": [\n            null,\n            "chce być twoim kontaktem"\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Przywacam sesję szyfrowaną"\n         ],\n         "Generating private key.": [\n            null,\n            "Generuję klucz prywatny."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Twoja przeglądarka może nieco zwolnić."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Prośba o autoryzację od %1$s\\n\\nKontakt próbuje zweryfikować twoją tożsamość, zadając ci pytanie poniżej.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Nie jestem w stanie zweryfikować tożsamości kontaktu."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Wymieniam klucze szyfrujące z kontaktem."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Twoje wiadomości nie są już szyfrowane"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Wiadomości są teraz szyfrowane, ale tożsamość kontaktu nie została zweryfikowana."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "Tożsamość kontaktu została zweryfikowana"\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "Kontakt zakończył sesję szyfrowaną, powinieneś zrobić to samo."\n         ],\n         "Your message could not be sent": [\n            null,\n            "Twoja wiadomość nie została wysłana"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Otrzymaliśmy niezaszyfrowaną wiadomość"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Otrzymaliśmy nieczytelną zaszyfrowaną wiadomość"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Oto odciski palców, potwiedź je proszę z %1$s używając innego sposobuwymiany informacji niż ta rozmowa.\\n\\nOdcisk palca dla ciebie, %2$s: %3$s\\n\\nOdcisk palca dla %1$s: %4$s\\n\\nJeśli odciski palców zostały potwierdzone, kliknij OK, w inny wypadku kliknij Anuluj."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Poprosimy cię o podanie pytania sprawdzającego i odpowiedzi na nie.\\n\\nTwój kontakt zostanie poproszony później o odpowiedź na to samo pytanie i jeśli udzieli tej samej odpowiedzi (ważna jest wielkość liter), tożsamość zostanie zweryfikowana."\n         ],\n         "What is your security question?": [\n            null,\n            "Jakie jest pytanie bezpieczeństwa?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Jaka jest odpowiedź na pytanie bezpieczeństwa?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Niewłaściwy schemat autoryzacji"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Twoje wiadomości nie są szyfrowane. Kliknij, aby uruchomić szyfrowanie OTR"\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Wiadomości są szyfrowane, ale tożsamość kontaktu nie została zweryfikowana."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Wiadomości są szyfrowane i tożsamość kontaktu została zweryfikowana."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "Kontakt zakończył prywatną rozmowę i ty zrób to samo"\n         ],\n         "End encrypted conversation": [\n            null,\n            "Zakończ szyfrowaną rozmowę"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Odśwież szyfrowaną rozmowę"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Rozpocznij szyfrowaną rozmowę"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Zweryfikuj za pomocą odcisków palców"\n         ],\n         "Verify with SMP": [\n            null,\n            "Zweryfikuj za pomocą SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Co to jest?"\n         ],\n         "unencrypted": [\n            null,\n            "nieszyfrowane"\n         ],\n         "unverified": [\n            null,\n            "niezweryfikowane"\n         ],\n         "verified": [\n            null,\n            "zweryfikowane"\n         ],\n         "finished": [\n            null,\n            "zakończone"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            "np. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Domena twojego dostawcy XMPP:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Pobierz formularz rejestracyjny"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Wskazówka: dostępna jest lista publicznych dostawców XMPP"\n         ],\n         "here": [\n            null,\n            "tutaj"\n         ],\n         "Register": [\n            null,\n            "Zarejestruj się"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "Przepraszamy, ale podany dostawca nie obsługuje rejestracji. Spróbuj wskazać innego dostawcę."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "Pobieranie formularza rejestracyjnego z serwera XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Coś nie zadziałało przy próbie połączenia z \\"%1$s\\". Jesteś pewien że istnieje?"\n         ],\n         "Now logging you in": [\n            null,\n            "Jesteś logowany"\n         ],\n         "Registered successfully": [\n            null,\n            "Szczęśliwie zarejestrowany"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "Dostawca odrzucił twoją próbę rejestracji. Sprawdź proszę poprawność danych które zostały wprowadzone."\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Kontakt jest zajęty"\n         ],\n         "This contact is online": [\n            null,\n            "Kontakt jest połączony"\n         ],\n         "This contact is offline": [\n            null,\n            "Kontakt jest niepołączony"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Kontakt jest niedostępny"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Kontakt jest nieobecny przez dłuższą chwilę"\n         ],\n         "This contact is away": [\n            null,\n            "Kontakt jest nieobecny"\n         ],\n         "Groups": [\n            null,\n            "Grupy"\n         ],\n         "My contacts": [\n            null,\n            "Moje kontakty"\n         ],\n         "Pending contacts": [\n            null,\n            "Kontakty oczekujące"\n         ],\n         "Contact requests": [\n            null,\n            "Zaproszenia do kontaktu"\n         ],\n         "Ungrouped": [\n            null,\n            "Niezgrupowane"\n         ],\n         "Filter": [\n            null,\n            "Filtr"\n         ],\n         "State": [\n            null,\n            "Stan"\n         ],\n         "Any": [\n            null,\n            "Dowolny"\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            "Gotowy do rozmowy"\n         ],\n         "Extended Away": [\n            null,\n            "Dłuższa nieobecność"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Kliknij aby porozmawiać z kontaktem"\n         ],\n         "Name": [\n            null,\n            "Nazwa"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Czy potwierdzasz zamiar usnunięcia tego kontaktu?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Czy potwierdzasz odrzucenie chęci nawiązania kontaktu?"\n         ]\n      }\n   }\n}';});
-
-
-define('text!pt_BR',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n > 1);",\n            "lang": "pt_BR"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Salvar"\n         ],\n         "Cancel": [\n            null,\n            "Cancelar"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            ""\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "Mostrar mais informações nessa sala"\n         ],\n         "Click to open this room": [\n            null,\n            "CLique para abrir a sala"\n         ],\n         "Personal message": [\n            null,\n            "Mensagem pessoal"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "eu"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "Show this menu": [\n            null,\n            "Mostrar o menu"\n         ],\n         "Write in the third person": [\n            null,\n            "Escrever em terceira pessoa"\n         ],\n         "Remove messages": [\n            null,\n            "Remover mensagens"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Tem certeza que deseja limpar as mensagens dessa caixa?"\n         ],\n         "Insert a smiley": [\n            null,\n            ""\n         ],\n         "Start a call": [\n            null,\n            ""\n         ],\n         "Contacts": [\n            null,\n            "Contatos"\n         ],\n         "Password:": [\n            null,\n            "Senha:"\n         ],\n         "Log In": [\n            null,\n            "Entrar"\n         ],\n         "user@server": [\n            null,\n            ""\n         ],\n         "Sign in": [\n            null,\n            "Conectar-se"\n         ],\n         "I am %1$s": [\n            null,\n            "Estou %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Clique aqui para customizar a mensagem de status"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Clique para mudar seu status no chat"\n         ],\n         "Custom status": [\n            null,\n            "Status customizado"\n         ],\n         "online": [\n            null,\n            "online"\n         ],\n         "busy": [\n            null,\n            "ocupado"\n         ],\n         "away for long": [\n            null,\n            "ausente a bastante tempo"\n         ],\n         "away": [\n            null,\n            "ausente"\n         ],\n         "Online": [\n            null,\n            "Online"\n         ],\n         "Busy": [\n            null,\n            "Ocupado"\n         ],\n         "Away": [\n            null,\n            "Ausente"\n         ],\n         "Offline": [\n            null,\n            "Offline"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Clique para adicionar novos contatos ao chat"\n         ],\n         "Add a contact": [\n            null,\n            "Adicionar contato"\n         ],\n         "Contact name": [\n            null,\n            "Nome do contato"\n         ],\n         "Search": [\n            null,\n            "Procurar"\n         ],\n         "e.g. user@example.org": [\n            null,\n            ""\n         ],\n         "Add": [\n            null,\n            "Adicionar"\n         ],\n         "No users found": [\n            null,\n            "Não foram encontrados usuários"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            ""\n         ],\n         "Minimize this chat box": [\n            null,\n            ""\n         ],\n         "Minimized": [\n            null,\n            "Minimizado"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Essa sala não é anônima"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Agora esta sala mostra membros indisponíveis"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Essa sala não mostra membros indisponíveis"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "O log da sala está ativado"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "O log da sala está desativado"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Essa sala agora é semi anônima"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Essa sala agora é totalmente anônima"\n         ],\n         "A new room has been created": [\n            null,\n            "Uma nova sala foi criada"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Você foi banido dessa sala"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Você foi expulso dessa sala"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Você foi removido da sala devido a uma mudança de associação"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Você foi removido da sala porque ela foi mudada para somente membrose você não é um membro"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Você foi removido da sala devido a MUC (Multi-user chat)o serviço está sendo desligado"\n         ],\n         "Message": [\n            null,\n            "Mensagem"\n         ],\n         "Hide the list of occupants": [\n            null,\n            ""\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Error: could not execute the command": [\n            null,\n            ""\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            ""\n         ],\n         "Change user role to occupant": [\n            null,\n            ""\n         ],\n         "Grant membership to a user": [\n            null,\n            ""\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            ""\n         ],\n         "Change your nickname": [\n            null,\n            ""\n         ],\n         "Grant moderator role to user": [\n            null,\n            ""\n         ],\n         "Revoke user\'s membership": [\n            null,\n            ""\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            ""\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Please choose your nickname": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Apelido"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Esse chat precisa de senha"\n         ],\n         "Password: ": [\n            null,\n            "Senha: "\n         ],\n         "Submit": [\n            null,\n            "Enviar"\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            ""\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Topico definido por %1$s para: %2$s"\n         ],\n         "Invite": [\n            null,\n            ""\n         ],\n         "Hidden": [\n            null,\n            "Escondido"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "Moderado"\n         ],\n         "Non-anonymous": [\n            null,\n            "Não anônimo"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "Público"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semi anônimo"\n         ],\n         "Unmoderated": [\n            null,\n            "Sem moderação"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            ""\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            ""\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Nome da sala"\n         ],\n         "Server": [\n            null,\n            "Server"\n         ],\n         "Show rooms": [\n            null,\n            "Mostar salas"\n         ],\n         "Rooms": [\n            null,\n            "Salas"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Sem salas em %1$s"\n         ],\n         "Description:": [\n            null,\n            "Descrição:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Ocupantes:"\n         ],\n         "Features:": [\n            null,\n            "Recursos:"\n         ],\n         "Requires authentication": [\n            null,\n            "Requer autenticação"\n         ],\n         "Requires an invitation": [\n            null,\n            "Requer um convite"\n         ],\n         "Open room": [\n            null,\n            "Sala aberta"\n         ],\n         "Permanent room": [\n            null,\n            "Sala permanente"\n         ],\n         "Temporary room": [\n            null,\n            "Sala temporária"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            ""\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            ""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Reestabelecendo sessão criptografada"\n         ],\n         "Generating private key.": [\n            null,\n            "Gerando chave-privada."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Seu navegador pode parar de responder."\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Não foi possível verificar a identidade deste usuário."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Suas mensagens não estão mais criptografadas"\n         ],\n         "Your message could not be sent": [\n            null,\n            "Sua mensagem não pode ser enviada"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Recebemos uma mensagem não-criptografada"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Recebemos uma mensagem não-criptografada ilegível"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Aqui estão as assinaturas digitais, por favor confirme elas com %1$s, fora deste chat.\\n\\nAssinatura para você, %2$s: %3$s\\n\\nAssinatura para %1$s: %4$s\\n\\nSe você tiver confirmado que as assinaturas conferem, clique OK, caso contrário, clique Cancelar."\n         ],\n         "What is your security question?": [\n            null,\n            "Qual é a sua pergunta de segurança?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Qual é a resposta para a pergunta de segurança?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Schema de autenticação fornecido é inválido"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Suas mensagens não estão criptografadas. Clique aqui para habilitar criptografia OTR."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Finalizar conversa criptografada"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Atualizar conversa criptografada"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Iniciar conversa criptografada"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verificar com assinatura digital"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verificar com SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "O que é isso?"\n         ],\n         "unencrypted": [\n            null,\n            "não-criptografado"\n         ],\n         "unverified": [\n            null,\n            "não-verificado"\n         ],\n         "verified": [\n            null,\n            "verificado"\n         ],\n         "finished": [\n            null,\n            "finalizado"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            ""\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            ""\n         ],\n         "Fetch registration form": [\n            null,\n            ""\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            ""\n         ],\n         "here": [\n            null,\n            ""\n         ],\n         "Register": [\n            null,\n            ""\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            ""\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            ""\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            ""\n         ],\n         "Now logging you in": [\n            null,\n            ""\n         ],\n         "Registered successfully": [\n            null,\n            ""\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            ""\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Este contato está ocupado"\n         ],\n         "This contact is online": [\n            null,\n            "Este contato está online"\n         ],\n         "This contact is offline": [\n            null,\n            "Este contato está offline"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Este contato está indisponível"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Este contato está ausente por um longo período"\n         ],\n         "This contact is away": [\n            null,\n            "Este contato está ausente"\n         ],\n         "Groups": [\n            null,\n            ""\n         ],\n         "My contacts": [\n            null,\n            "Meus contatos"\n         ],\n         "Pending contacts": [\n            null,\n            "Contados pendentes"\n         ],\n         "Contact requests": [\n            null,\n            "Solicitação de contatos"\n         ],\n         "Ungrouped": [\n            null,\n            ""\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Clique para conversar com o contato"\n         ],\n         "Name": [\n            null,\n            ""\n         ]\n      }\n   }\n}';});
-
-
-define('text!ru',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "lang": "ru"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Сохранить"\n         ],\n         "Cancel": [\n            null,\n            "Отменить"\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "Показать больше информации об этом чате"\n         ],\n         "Click to open this room": [\n            null,\n            "Зайти в чат"\n         ],\n         "Close this chat box": [\n            null,\n            "Закрыть это окно чата"\n         ],\n         "Personal message": [\n            null,\n            "Ваше сообщение"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "Я"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "набирает текст"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            "перестал набирать"\n         ],\n         "has gone away": [\n            null,\n            "отошёл"\n         ],\n         "Show this menu": [\n            null,\n            "Показать это меню"\n         ],\n         "Write in the third person": [\n            null,\n            "Вписать третьего человека"\n         ],\n         "Remove messages": [\n            null,\n            "Удалить сообщения"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Вы уверены, что хотите очистить сообщения из окна чата?"\n         ],\n         "has gone offline": [\n            null,\n            "вышел из сети"\n         ],\n         "is busy": [\n            null,\n            "занят"\n         ],\n         "Clear all messages": [\n            null,\n            "Очистить все сообщения"\n         ],\n         "Insert a smiley": [\n            null,\n            "Вставить смайлик"\n         ],\n         "Start a call": [\n            null,\n            "Инициировать звонок"\n         ],\n         "Contacts": [\n            null,\n            "Контакты"\n         ],\n         "XMPP Username:": [\n            null,\n            "XMPP Username:"\n         ],\n         "Password:": [\n            null,\n            "Пароль:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Нажмите здесь, чтобы войти анонимно"\n         ],\n         "Log In": [\n            null,\n            "Войти"\n         ],\n         "user@server": [\n            null,\n            "user@server"\n         ],\n         "password": [\n            null,\n            "пароль"\n         ],\n         "Sign in": [\n            null,\n            "Вход"\n         ],\n         "I am %1$s": [\n            null,\n            "Я %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Редактировать произвольный статус"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Изменить ваш статус"\n         ],\n         "Custom status": [\n            null,\n            "Произвольный статус"\n         ],\n         "online": [\n            null,\n            "на связи"\n         ],\n         "busy": [\n            null,\n            "занят"\n         ],\n         "away for long": [\n            null,\n            "отошёл надолго"\n         ],\n         "away": [\n            null,\n            "отошёл"\n         ],\n         "Online": [\n            null,\n            "В сети"\n         ],\n         "Busy": [\n            null,\n            "Занят"\n         ],\n         "Away": [\n            null,\n            "Отошёл"\n         ],\n         "Offline": [\n            null,\n            "Не в сети"\n         ],\n         "Log out": [\n            null,\n            "Выйти"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Добавить новый чат"\n         ],\n         "Add a contact": [\n            null,\n            "Добавть контакт"\n         ],\n         "Contact name": [\n            null,\n            "Имя контакта"\n         ],\n         "Search": [\n            null,\n            "Поиск"\n         ],\n         "Add": [\n            null,\n            "Добавить"\n         ],\n         "No users found": [\n            null,\n            "Пользователи не найдены"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Программа не поддерживает уведомления о статусе"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Кликните, чтобы спрятать эти контакты"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Свернуть окно чата"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Кликните, чтобы развернуть чат"\n         ],\n         "Minimized": [\n            null,\n            "Свёрнуто"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Этот чат не анонимный"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Этот чат показывает недоступных собеседников"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Этот чат не показывает недоступных собеседников"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Протокол чата включен"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Протокол чата выключен"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Этот чат частично анонимный"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Этот чат стал полностью анонимный"\n         ],\n         "A new room has been created": [\n            null,\n            "Появился новый чат"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Вам запрещено подключатся к этому чату"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Вас выкинули из чата"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Вас удалили из-за изменения прав"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Вы отключены от чата, потому что он теперь только для участников"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Вы отключены от этого чата, потому что службы чатов отключилась."\n         ],\n         "Message": [\n            null,\n            "Сообщение"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Спрятать список участников"\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Вы уверены, что хотите очистить сообщения из этого чата?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Ошибка: невозможно выполнить команду"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Дать права администратора"\n         ],\n         "Ban user from room": [\n            null,\n            "Забанить пользователя в этом чате."\n         ],\n         "Change user role to occupant": [\n            null,\n            "Изменить роль пользователя на \\"участник\\""\n         ],\n         "Kick user from room": [\n            null,\n            "Удалить пользователя из чата."\n         ],\n         "Grant membership to a user": [\n            null,\n            "Сделать пользователя участником"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Запретить отправку сообщений"\n         ],\n         "Change your nickname": [\n            null,\n            "Изменить свой псевдоним"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Предоставить права модератора пользователю"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Предоставить права владельца на этот чат"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Отозвать членство пользователя"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Разрешить заглушенным пользователям отправлять сообщения"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Псевдоним"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Для доступа в чат необходим пароль."\n         ],\n         "Password: ": [\n            null,\n            "Пароль: "\n         ],\n         "Submit": [\n            null,\n            "Отправить"\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Тема %2$s устатновлена %1$s"\n         ],\n         "Occupants": [\n            null,\n            "Участники:"\n         ],\n         "Invite": [\n            null,\n            "Пригласить"\n         ],\n         "Hidden": [\n            null,\n            "Скрыто"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "Модерируемая"\n         ],\n         "Non-anonymous": [\n            null,\n            "Не анонимная"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "Публичный"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Частично анонимный"\n         ],\n         "Unmoderated": [\n            null,\n            "Немодерируемый"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Вы собираетесь пригласить %1$s в чат \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Вы можете дополнительно вставить сообщение, объясняющее причину приглашения."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Имя чата"\n         ],\n         "Server": [\n            null,\n            "Сервер"\n         ],\n         "Join Room": [\n            null,\n            "Присоединться к чату"\n         ],\n         "Show rooms": [\n            null,\n            "Показать чаты"\n         ],\n         "Rooms": [\n            null,\n            "Чаты"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Нет чатов %1$s"\n         ],\n         "Description:": [\n            null,\n            "Описание:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Участники:"\n         ],\n         "Features:": [\n            null,\n            "Свойства:"\n         ],\n         "Requires authentication": [\n            null,\n            "Требуется авторизация"\n         ],\n         "Requires an invitation": [\n            null,\n            "Требуется приглашение"\n         ],\n         "Open room": [\n            null,\n            "Открыть чат"\n         ],\n         "Permanent room": [\n            null,\n            "Постоянный чат"\n         ],\n         "Temporary room": [\n            null,\n            "Временный чат"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s пригласил вас в чат: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s пригласил вас в чат: %2$s, по следующей причине: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Восстанавливается зашифрованная сессия"\n         ],\n         "Generating private key.": [\n            null,\n            "Генерируется секретный ключ"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Ваш браузер может зависнуть."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Аутентификационный запрос %1$s\\n\\nВаш контакт из чата пытается проверить вашу подлинность, задав вам следующий котрольный вопрос.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Не удалось проверить подлинность этого пользователя."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Обмен секретным ключом с контактом."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Ваши сообщения больше не шифруются"\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "Ваш контакт закончил шифрование у себя, вы должны сделать тоже самое."\n         ],\n         "Your message could not be sent": [\n            null,\n            "Ваше сообщение не отправлено"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Вы получили незашифрованное сообщение"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Вы получили нечитаемое зашифрованное сообщение"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Вот отпечатки, пожалуйста подтвердите их с помощью %1$s вне этого чата.\\n\\nОтпечатки для Вас, %2$s: %3$s\\n\\nОтпечаток для %1$s: %4$s\\n\\nЕсли вы удостоверились, что отпечатки совпадают, нажмите OK; если нет нажмите Отмена"\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Вам будет предложено создать контрольный вопрос и ответ на этот вопрос.\\n\\nВашему контакту будет задан этот вопрос, и если ответы совпадут (с учётом регистра), его подлинность будет подтверждена."\n         ],\n         "What is your security question?": [\n            null,\n            "Введите секретный вопрос"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Ответ на секретный вопрос"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Некоррекная схема аутентификации"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Ваши сообщения не шифруются. Нажмите здесь, чтобы настроить шифрование."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "Ваш контакт закрыл свою часть приватной сессии, вы должны сделать тоже самое."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Закончить шифрованную беседу"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Обновить шифрованную беседу"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Начать шифрованный разговор"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Проверить при помощи отпечатков"\n         ],\n         "Verify with SMP": [\n            null,\n            "Проверить при помощи SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Что это?"\n         ],\n         "unencrypted": [\n            null,\n            "не зашифровано"\n         ],\n         "unverified": [\n            null,\n            "не проверено"\n         ],\n         "verified": [\n            null,\n            "проверено"\n         ],\n         "finished": [\n            null,\n            "закончено"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            "например, conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            ""\n         ],\n         "Fetch registration form": [\n            null,\n            "Получить форму регистрации"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Совет. Список публичных XMPP провайдеров доступен"\n         ],\n         "here": [\n            null,\n            "здесь"\n         ],\n         "Register": [\n            null,\n            "Регистрация"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "К сожалению, провайдер не поддерживает регистрацию аккаунта через клиентское приложение. Пожалуйста попробуйте выбрать другого провайдера."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "Запрашивается регистрационная форма с XMPP сервера"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Что-то пошло не так при установке связи с \\"%1$s\\". Вы уверены, что такой адрес существует?"\n         ],\n         "Now logging you in": [\n            null,\n            "Осуществляется вход"\n         ],\n         "Registered successfully": [\n            null,\n            "Зарегистрирован успешно"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "Провайдер отклонил вашу попытку зарегистрироваться. Пожалуйста, проверьте, правильно ли введены значения."\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Занят"\n         ],\n         "This contact is online": [\n            null,\n            "В сети"\n         ],\n         "This contact is offline": [\n            null,\n            "Не в сети"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Недоступен"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Надолго отошёл"\n         ],\n         "This contact is away": [\n            null,\n            "Отошёл"\n         ],\n         "Groups": [\n            null,\n            "Группы"\n         ],\n         "My contacts": [\n            null,\n            "Контакты"\n         ],\n         "Pending contacts": [\n            null,\n            "Собеседники, ожидающие авторизации"\n         ],\n         "Contact requests": [\n            null,\n            "Запросы на авторизацию"\n         ],\n         "Ungrouped": [\n            null,\n            "Несгруппированные"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Кликните, чтобы начать общение"\n         ],\n         "Name": [\n            null,\n            "Имя"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Вы уверены, что хотите удалить этот контакт?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Вы уверены, что хотите отклонить запрос от этого контакта?"\n         ]\n      }\n   }\n}';});
-
-
-define('text!uk',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",\n            "lang": "uk"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Зберегти"\n         ],\n         "Cancel": [\n            null,\n            "Відміна"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            ""\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "Показати більше інформації про цю кімату"\n         ],\n         "Click to open this room": [\n            null,\n            "Клацніть, щоб увійти в цю кімнату"\n         ],\n         "Personal message": [\n            null,\n            "Персональна вісточка"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "я"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "друкує"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            "припинив друкувати"\n         ],\n         "has gone away": [\n            null,\n            "пішов геть"\n         ],\n         "Show this menu": [\n            null,\n            "Показати це меню"\n         ],\n         "Write in the third person": [\n            null,\n            "Писати від третьої особи"\n         ],\n         "Remove messages": [\n            null,\n            "Видалити повідомлення"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Ви впевнені, що хочете очистити повідомлення з цього вікна чату?"\n         ],\n         "has gone offline": [\n            null,\n            "тепер поза мережею"\n         ],\n         "is busy": [\n            null,\n            "зайнятий"\n         ],\n         "Clear all messages": [\n            null,\n            "Очистити всі повідомлення"\n         ],\n         "Insert a smiley": [\n            null,\n            ""\n         ],\n         "Start a call": [\n            null,\n            "Почати виклик"\n         ],\n         "Contacts": [\n            null,\n            "Контакти"\n         ],\n         "XMPP Username:": [\n            null,\n            "XMPP адреса:"\n         ],\n         "Password:": [\n            null,\n            "Пароль:"\n         ],\n         "Log In": [\n            null,\n            "Ввійти"\n         ],\n         "user@server": [\n            null,\n            ""\n         ],\n         "Sign in": [\n            null,\n            "Вступити"\n         ],\n         "I am %1$s": [\n            null,\n            "Я %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Клацніть тут, щоб створити власний статус"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Клацніть, щоб змінити статус в чаті"\n         ],\n         "Custom status": [\n            null,\n            "Власний статус"\n         ],\n         "online": [\n            null,\n            "на зв\'язку"\n         ],\n         "busy": [\n            null,\n            "зайнятий"\n         ],\n         "away for long": [\n            null,\n            "давно відсутній"\n         ],\n         "away": [\n            null,\n            "відсутній"\n         ],\n         "Online": [\n            null,\n            "На зв\'язку"\n         ],\n         "Busy": [\n            null,\n            "Зайнятий"\n         ],\n         "Away": [\n            null,\n            "Далеко"\n         ],\n         "Offline": [\n            null,\n            "Поза мережею"\n         ],\n         "Log out": [\n            null,\n            "Вийти"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Клацніть, щоб додати нові контакти до чату"\n         ],\n         "Add a contact": [\n            null,\n            "Додати контакт"\n         ],\n         "Contact name": [\n            null,\n            "Назва контакту"\n         ],\n         "Search": [\n            null,\n            "Пошук"\n         ],\n         "e.g. user@example.org": [\n            null,\n            ""\n         ],\n         "Add": [\n            null,\n            "Додати"\n         ],\n         "No users found": [\n            null,\n            "Жодного користувача не знайдено"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            ""\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Клацніть, щоб приховати ці контакти"\n         ],\n         "Minimize this chat box": [\n            null,\n            ""\n         ],\n         "Click to restore this chat": [\n            null,\n            "Клацніть, щоб відновити цей чат"\n         ],\n         "Minimized": [\n            null,\n            "Мінімізовано"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Ця кімната не є анонімною"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Ця кімната вже показує недоступних учасників"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Ця кімната не показує недоступних учасників"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Журналювання кімнати тепер ввімкнено"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Журналювання кімнати тепер вимкнено"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Ця кімната тепер напів-анонімна"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Ця кімната тепер повністю анонімна"\n         ],\n         "A new room has been created": [\n            null,\n            "Створено нову кімнату"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Вам заблокували доступ до цієї кімнати"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Вас викинули з цієї кімнати"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Вас видалено з кімнати у зв\'язку зі змінами власності кімнати"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Вас видалено з цієї кімнати, оскільки вона тепер вимагає членства, а Ви ним не є її членом"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Вас видалено з цієї кімнати, тому що MUC (Чат-сервіс) припиняє роботу."\n         ],\n         "Message": [\n            null,\n            "Повідомлення"\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Ви впевнені, що хочете очистити повідомлення з цієї кімнати?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Помилка: Не можу виконати команду"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Призначити користувача адміністратором"\n         ],\n         "Ban user from room": [\n            null,\n            "Заблокувати і викинути з кімнати"\n         ],\n         "Kick user from room": [\n            null,\n            "Викинути з кімнати"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Писати в 3-й особі"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Надати членство користувачу"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Забрати можливість слати повідомлення"\n         ],\n         "Change your nickname": [\n            null,\n            "Змінити Ваше прізвисько"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Надати права модератора"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Передати у власність цю кімнату"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Забрати членство в користувача"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Дозволити безголосому користувачу слати повідомлення"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Прізвисько"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Ця кімната вимагає пароль"\n         ],\n         "Password: ": [\n            null,\n            "Пароль:"\n         ],\n         "Submit": [\n            null,\n            "Надіслати"\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Тема встановлена %1$s: %2$s"\n         ],\n         "Occupants": [\n            null,\n            "Учасники"\n         ],\n         "Invite": [\n            null,\n            "Запросіть"\n         ],\n         "Hidden": [\n            null,\n            "Прихована"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "Модерована"\n         ],\n         "Non-anonymous": [\n            null,\n            "Не-анонімні"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "Публічна"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Напів-анонімна"\n         ],\n         "Unmoderated": [\n            null,\n            "Немодерована"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Ви запрошуєте %1$s до чату \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Ви можете опціонально додати повідомлення, щоб пояснити причину запрошення."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Назва кімнати"\n         ],\n         "Server": [\n            null,\n            "Сервер"\n         ],\n         "Join Room": [\n            null,\n            "Приєднатися до кімнати"\n         ],\n         "Show rooms": [\n            null,\n            "Показати кімнати"\n         ],\n         "Rooms": [\n            null,\n            "Кімнати"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Жодної кімнати на %1$s"\n         ],\n         "Description:": [\n            null,\n            "Опис:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Присутні:"\n         ],\n         "Features:": [\n            null,\n            "Особливості:"\n         ],\n         "Requires authentication": [\n            null,\n            "Вимагає автентикації"\n         ],\n         "Requires an invitation": [\n            null,\n            "Вимагає запрошення"\n         ],\n         "Open room": [\n            null,\n            "Увійти в кімнату"\n         ],\n         "Permanent room": [\n            null,\n            "Постійна кімната"\n         ],\n         "Temporary room": [\n            null,\n            "Тимчасова кімната"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s запрошує вас приєднатись до чату: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s запрошує Вас приєднатись до чату: %2$s, аргументує ось як: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Перевстановлюю криптований сеанс"\n         ],\n         "Generating private key.": [\n            null,\n            "Генерація приватного ключа."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Ваш браузер може підвиснути."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Запит автентикації від %1$s\\n\\nВаш контакт в чаті намагається встановити Вашу особу і просить відповісти на питання нижче.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Не можу перевірити автентичність цього користувача."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Обмін приватним ключем з контактом."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Ваші повідомлення більше не криптуються"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Ваші повідомлення вже криптуються, але особа Вашого контакту не перевірена."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "Особу Вашого контакту перевірено."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "Ваш контакт припинив криптування зі свого боку, Вам слід зробити те саме."\n         ],\n         "Your message could not be sent": [\n            null,\n            "Ваше повідомлення не може бути надіслане"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Ми отримали некриптоване повідомлення"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Ми отримали нечитабельне криптоване повідомлення"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Ось відбитки, будь-ласка, підтвердіть їх з %1$s, за межами цього чату.\\n\\nВідбиток для Вас, %2$s: %3$s\\n\\nВідбиток для %1$s: %4$s\\n\\nЯкщо Ви підтверджуєте відповідність відбитка, клацніть Гаразд, інакше клацніть Відміна."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Вас запитають таємне питання і відповідь на нього.\\n\\nПотім Вашого контакта запитають те саме питання, і якщо вони введуть ту саму відповідь (враховуючи регістр), їх особи будуть перевірені."\n         ],\n         "What is your security question?": [\n            null,\n            "Яке Ваше таємне питання?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Яка відповідь на таємне питання?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Надана некоректна схема автентикації"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Ваші повідомлення не криптуються. Клацніть тут, щоб увімкнути OTR-криптування."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Ваші повідомлення криптуються, але Ваш контакт не був перевірений."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Ваші повідомлення криптуються і Ваш контакт перевірено."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "Ваш контакт закрив зі свого боку приватну сесію, Вам слід зробити те ж саме"\n         ],\n         "End encrypted conversation": [\n            null,\n            "Завершити криптовану розмову"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Оновити криптовану розмову"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Почати криптовану розмову"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Перевірити за відбитками"\n         ],\n         "Verify with SMP": [\n            null,\n            "Перевірити за SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Що це?"\n         ],\n         "unencrypted": [\n            null,\n            "некриптовано"\n         ],\n         "unverified": [\n            null,\n            "неперевірено"\n         ],\n         "verified": [\n            null,\n            "перевірено"\n         ],\n         "finished": [\n            null,\n            "завершено"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            " напр. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Домен Вашого провайдера XMPP:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Отримати форму реєстрації"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Порада: доступний перелік публічних XMPP-провайдерів"\n         ],\n         "here": [\n            null,\n            "тут"\n         ],\n         "Register": [\n            null,\n            "Реєстрація"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "Вибачте, вказаний провайдер не підтримує реєстрації онлайн. Спробуйте іншого провайдера."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "Запитую форму реєстрації з XMPP сервера"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Щось пішло не так при встановленні зв\'язку з \\"%1$s\\". Ви впевнені, що такий існує?"\n         ],\n         "Now logging you in": [\n            null,\n            "Входимо"\n         ],\n         "Registered successfully": [\n            null,\n            "Успішно зареєстровано"\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Цей контакт зайнятий"\n         ],\n         "This contact is online": [\n            null,\n            "Цей контакт на зв\'язку"\n         ],\n         "This contact is offline": [\n            null,\n            "Цей контакт поза мережею"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Цей контакт недоступний"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Цей контакт відсутній тривалий час"\n         ],\n         "This contact is away": [\n            null,\n            "Цей контакт відсутній"\n         ],\n         "Groups": [\n            null,\n            "Групи"\n         ],\n         "My contacts": [\n            null,\n            "Мої контакти"\n         ],\n         "Pending contacts": [\n            null,\n            "Контакти в очікуванні"\n         ],\n         "Contact requests": [\n            null,\n            "Запити контакту"\n         ],\n         "Ungrouped": [\n            null,\n            "Негруповані"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Клацніть, щоб почати розмову з цим контактом"\n         ],\n         "Name": [\n            null,\n            ""\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Ви впевнені, що хочете видалити цей контакт?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Ви впевнені, що хочете відхилити цей запит контакту?"\n         ]\n      }\n   }\n}';});
-
-
-define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "lang": "zh"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "保存"\n         ],\n         "Cancel": [\n            null,\n            "取消"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            ""\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "显示次聊天室的更多信息"\n         ],\n         "Click to open this room": [\n            null,\n            "打开聊天室"\n         ],\n         "Personal message": [\n            null,\n            "私信"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "我"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            ""\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            ""\n         ],\n         "Show this menu": [\n            null,\n            "显示此项菜单"\n         ],\n         "Write in the third person": [\n            null,\n            "以第三者身份写"\n         ],\n         "Remove messages": [\n            null,\n            "移除消息"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "你确定清除此次的聊天记录吗？"\n         ],\n         "Insert a smiley": [\n            null,\n            ""\n         ],\n         "Start a call": [\n            null,\n            ""\n         ],\n         "Contacts": [\n            null,\n            "联系人"\n         ],\n         "Password:": [\n            null,\n            "密码:"\n         ],\n         "Log In": [\n            null,\n            "登录"\n         ],\n         "user@server": [\n            null,\n            ""\n         ],\n         "Sign in": [\n            null,\n            "登录"\n         ],\n         "I am %1$s": [\n            null,\n            "我现在%1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "点击这里，填写状态信息"\n         ],\n         "Click to change your chat status": [\n            null,\n            "点击这里改变聊天状态"\n         ],\n         "Custom status": [\n            null,\n            "DIY状态"\n         ],\n         "online": [\n            null,\n            "在线"\n         ],\n         "busy": [\n            null,\n            "忙碌"\n         ],\n         "away for long": [\n            null,\n            "长时间离开"\n         ],\n         "away": [\n            null,\n            "离开"\n         ],\n         "Online": [\n            null,\n            "在线"\n         ],\n         "Busy": [\n            null,\n            "忙碌中"\n         ],\n         "Away": [\n            null,\n            "离开"\n         ],\n         "Offline": [\n            null,\n            "离线"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "点击添加新联系人"\n         ],\n         "Add a contact": [\n            null,\n            "添加联系人"\n         ],\n         "Contact name": [\n            null,\n            "联系人名称"\n         ],\n         "Search": [\n            null,\n            "搜索"\n         ],\n         "e.g. user@example.org": [\n            null,\n            ""\n         ],\n         "Add": [\n            null,\n            "添加"\n         ],\n         "No users found": [\n            null,\n            "未找到用户"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            ""\n         ],\n         "Minimize this chat box": [\n            null,\n            ""\n         ],\n         "Minimized": [\n            null,\n            "最小化的"\n         ],\n         "This room is not anonymous": [\n            null,\n            "此为非匿名聊天室"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "此聊天室显示不可用用户"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "此聊天室不显示不可用用户"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "聊天室聊天记录已启用"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "聊天室聊天记录已禁用"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "此聊天室半匿名"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "此聊天室完全匿名"\n         ],\n         "A new room has been created": [\n            null,\n            "新聊天室已创建"\n         ],\n         "You have been banned from this room": [\n            null,\n            "您已被此聊天室禁止入内"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "您已被踢出次房间"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "由于关系变化，您已被移除此房间"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "您已被移除此房间因为此房间更改为只允许成员加入，而您非成员"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "由于服务不可用，您已被移除此房间。"\n         ],\n         "Message": [\n            null,\n            "信息"\n         ],\n         "Hide the list of occupants": [\n            null,\n            ""\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Error: could not execute the command": [\n            null,\n            ""\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            ""\n         ],\n         "Change user role to occupant": [\n            null,\n            ""\n         ],\n         "Grant membership to a user": [\n            null,\n            ""\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            ""\n         ],\n         "Change your nickname": [\n            null,\n            ""\n         ],\n         "Grant moderator role to user": [\n            null,\n            ""\n         ],\n         "Revoke user\'s membership": [\n            null,\n            ""\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            ""\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Please choose your nickname": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "昵称"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "此聊天室需要密码"\n         ],\n         "Password: ": [\n            null,\n            "密码:"\n         ],\n         "Submit": [\n            null,\n            "发送"\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            ""\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "%1$s 设置话题为: %2$s"\n         ],\n         "Invite": [\n            null,\n            ""\n         ],\n         "Hidden": [\n            null,\n            "隐藏的"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "发言受限"\n         ],\n         "Non-anonymous": [\n            null,\n            "非匿名"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "公开的"\n         ],\n         "Semi-anonymous": [\n            null,\n            "半匿名"\n         ],\n         "Unmoderated": [\n            null,\n            "无发言限制"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            ""\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            ""\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "聊天室名称"\n         ],\n         "Server": [\n            null,\n            "服务器"\n         ],\n         "Show rooms": [\n            null,\n            "显示所有聊天室"\n         ],\n         "Rooms": [\n            null,\n            "聊天室"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "%1$s 上没有聊天室"\n         ],\n         "Description:": [\n            null,\n            "描述: "\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "成员:"\n         ],\n         "Features:": [\n            null,\n            "特性:"\n         ],\n         "Requires authentication": [\n            null,\n            "需要验证"\n         ],\n         "Requires an invitation": [\n            null,\n            "需要被邀请"\n         ],\n         "Open room": [\n            null,\n            "打开聊天室"\n         ],\n         "Permanent room": [\n            null,\n            "永久聊天室"\n         ],\n         "Temporary room": [\n            null,\n            "临时聊天室"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            ""\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            ""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "重新建立加密会话"\n         ],\n         "Generating private key.": [\n            null,\n            "正在生成私钥"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "您的浏览器可能会暂时无响应"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "无法验证对方信息。"\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "您的消息将不再被加密"\n         ],\n         "Your message could not be sent": [\n            null,\n            "您的消息无法送出"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "我们收到了一条未加密的信息"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "我们收到一条无法读取的信息"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "这里是指纹。请与 %1$s 确认。\\n\\n您的 %2$s 指纹: %3$s\\n\\n%1$s 的指纹: %4$s\\n\\n如果确认符合，请点击OK，否则点击取消"\n         ],\n         "What is your security question?": [\n            null,\n            "您的安全问题是?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "此安全问题的答案是?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "非法的认证方式"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "您的消息未加密。点击这里来启用OTR加密"\n         ],\n         "End encrypted conversation": [\n            null,\n            "结束加密的会话"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "刷新加密的会话"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "开始加密的会话"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "验证指纹"\n         ],\n         "Verify with SMP": [\n            null,\n            "验证SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "这是什么?"\n         ],\n         "unencrypted": [\n            null,\n            "未加密"\n         ],\n         "unverified": [\n            null,\n            "未验证"\n         ],\n         "verified": [\n            null,\n            "已验证"\n         ],\n         "finished": [\n            null,\n            "结束了"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            ""\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            ""\n         ],\n         "Fetch registration form": [\n            null,\n            ""\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            ""\n         ],\n         "here": [\n            null,\n            ""\n         ],\n         "Register": [\n            null,\n            ""\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            ""\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            ""\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            ""\n         ],\n         "Now logging you in": [\n            null,\n            ""\n         ],\n         "Registered successfully": [\n            null,\n            ""\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            ""\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "对方忙碌中"\n         ],\n         "This contact is online": [\n            null,\n            "对方在线中"\n         ],\n         "This contact is offline": [\n            null,\n            "对方已下线"\n         ],\n         "This contact is unavailable": [\n            null,\n            "对方免打扰"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "对方暂时离开"\n         ],\n         "This contact is away": [\n            null,\n            "对方离开"\n         ],\n         "Groups": [\n            null,\n            ""\n         ],\n         "My contacts": [\n            null,\n            "我的好友列表"\n         ],\n         "Pending contacts": [\n            null,\n            "保留中的联系人"\n         ],\n         "Contact requests": [\n            null,\n            "来自好友的请求"\n         ],\n         "Ungrouped": [\n            null,\n            ""\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "点击与对方交谈"\n         ],\n         "Name": [\n            null,\n            ""\n         ]\n      }\n   }\n}';});
-
-/*
- * This file specifies the language dependencies.
- *
- * Translations take up a lot of space and you are therefore advised to remove
- * from here any languages that you don't need.
- *
- * See also src/moment_locales.js
- */
-/*global define */
-(function (root, factory) {
-    define('locales',['jed',
-        'text!af',
-        'text!ca',
-        'text!de',
-        'text!es',
-        'text!fr',
-        'text!he',
-        'text!hu',
-        'text!id',
-        'text!it',
-        'text!ja',
-        'text!nb',
-        'text!nl',
-        'text!pl',
-        'text!pt_BR',
-        'text!ru',
-        'text!uk',
-        'text!zh'
-        ], function ($, Jed) {
-            root.locales = {
-                'en':     {},
-                'af':     arguments[1],
-                'ca':     arguments[2],
-                'de':     arguments[3],
-                'es':     arguments[4],
-                'fr':     arguments[5],
-                'he':     arguments[6],
-                'hu':     arguments[7],
-                'id':     arguments[8],
-                'it':     arguments[9],
-                'ja':     arguments[10],
-                'nb':     arguments[11],
-                'nl':     arguments[12],
-                'pl':     arguments[13],
-                'pt-br':  arguments[14],
-                'ru':     arguments[15],
-                'uk':     arguments[16],
-                'zh':     arguments[17]
-            };
-            return root.locales;
-        });
-})(this);
-
-//! moment.js
-//! version : 2.18.1
-//! authors : Tim Wood, Iskren Chernev, Moment.js contributors
-//! license : MIT
-//! momentjs.com
-
-;(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define('moment/moment',factory) :
-    global.moment = factory()
-}(this, (function () { 'use strict';
-
-var hookCallback;
-
-function hooks () {
-    return hookCallback.apply(null, arguments);
-}
-
-// This is done to register the method called with moment()
-// without creating circular dependencies.
-function setHookCallback (callback) {
-    hookCallback = callback;
-}
-
-function isArray(input) {
-    return input instanceof Array || Object.prototype.toString.call(input) === '[object Array]';
-}
-
-function isObject(input) {
-    // IE8 will treat undefined and null as object if it wasn't for
-    // input != null
-    return input != null && Object.prototype.toString.call(input) === '[object Object]';
-}
-
-function isObjectEmpty(obj) {
-    var k;
-    for (k in obj) {
-        // even if its not own property I'd still call it non-empty
-        return false;
-    }
-    return true;
-}
-
-function isUndefined(input) {
-    return input === void 0;
-}
-
-function isNumber(input) {
-    return typeof input === 'number' || Object.prototype.toString.call(input) === '[object Number]';
-}
-
-function isDate(input) {
-    return input instanceof Date || Object.prototype.toString.call(input) === '[object Date]';
-}
-
-function map(arr, fn) {
-    var res = [], i;
-    for (i = 0; i < arr.length; ++i) {
-        res.push(fn(arr[i], i));
-    }
-    return res;
-}
-
-function hasOwnProp(a, b) {
-    return Object.prototype.hasOwnProperty.call(a, b);
-}
-
-function extend(a, b) {
-    for (var i in b) {
-        if (hasOwnProp(b, i)) {
-            a[i] = b[i];
-        }
-    }
-
-    if (hasOwnProp(b, 'toString')) {
-        a.toString = b.toString;
-    }
-
-    if (hasOwnProp(b, 'valueOf')) {
-        a.valueOf = b.valueOf;
-    }
-
-    return a;
-}
-
-function createUTC (input, format, locale, strict) {
-    return createLocalOrUTC(input, format, locale, strict, true).utc();
-}
-
-function defaultParsingFlags() {
-    // We need to deep clone this object.
-    return {
-        empty           : false,
-        unusedTokens    : [],
-        unusedInput     : [],
-        overflow        : -2,
-        charsLeftOver   : 0,
-        nullInput       : false,
-        invalidMonth    : null,
-        invalidFormat   : false,
-        userInvalidated : false,
-        iso             : false,
-        parsedDateParts : [],
-        meridiem        : null,
-        rfc2822         : false,
-        weekdayMismatch : false
-    };
-}
-
-function getParsingFlags(m) {
-    if (m._pf == null) {
-        m._pf = defaultParsingFlags();
-    }
-    return m._pf;
-}
-
-var some;
-if (Array.prototype.some) {
-    some = Array.prototype.some;
-} else {
-    some = function (fun) {
-        var t = Object(this);
-        var len = t.length >>> 0;
-
-        for (var i = 0; i < len; i++) {
-            if (i in t && fun.call(this, t[i], i, t)) {
-                return true;
-            }
-        }
-
-        return false;
-    };
-}
-
-var some$1 = some;
-
-function isValid(m) {
-    if (m._isValid == null) {
-        var flags = getParsingFlags(m);
-        var parsedParts = some$1.call(flags.parsedDateParts, function (i) {
-            return i != null;
-        });
-        var isNowValid = !isNaN(m._d.getTime()) &&
-            flags.overflow < 0 &&
-            !flags.empty &&
-            !flags.invalidMonth &&
-            !flags.invalidWeekday &&
-            !flags.nullInput &&
-            !flags.invalidFormat &&
-            !flags.userInvalidated &&
-            (!flags.meridiem || (flags.meridiem && parsedParts));
-
-        if (m._strict) {
-            isNowValid = isNowValid &&
-                flags.charsLeftOver === 0 &&
-                flags.unusedTokens.length === 0 &&
-                flags.bigHour === undefined;
-        }
-
-        if (Object.isFrozen == null || !Object.isFrozen(m)) {
-            m._isValid = isNowValid;
-        }
-        else {
-            return isNowValid;
-        }
-    }
-    return m._isValid;
-}
-
-function createInvalid (flags) {
-    var m = createUTC(NaN);
-    if (flags != null) {
-        extend(getParsingFlags(m), flags);
-    }
-    else {
-        getParsingFlags(m).userInvalidated = true;
-    }
-
-    return m;
-}
-
-// Plugins that add properties should also add the key here (null value),
-// so we can properly clone ourselves.
-var momentProperties = hooks.momentProperties = [];
-
-function copyConfig(to, from) {
-    var i, prop, val;
-
-    if (!isUndefined(from._isAMomentObject)) {
-        to._isAMomentObject = from._isAMomentObject;
-    }
-    if (!isUndefined(from._i)) {
-        to._i = from._i;
-    }
-    if (!isUndefined(from._f)) {
-        to._f = from._f;
-    }
-    if (!isUndefined(from._l)) {
-        to._l = from._l;
-    }
-    if (!isUndefined(from._strict)) {
-        to._strict = from._strict;
-    }
-    if (!isUndefined(from._tzm)) {
-        to._tzm = from._tzm;
-    }
-    if (!isUndefined(from._isUTC)) {
-        to._isUTC = from._isUTC;
-    }
-    if (!isUndefined(from._offset)) {
-        to._offset = from._offset;
-    }
-    if (!isUndefined(from._pf)) {
-        to._pf = getParsingFlags(from);
-    }
-    if (!isUndefined(from._locale)) {
-        to._locale = from._locale;
-    }
-
-    if (momentProperties.length > 0) {
-        for (i = 0; i < momentProperties.length; i++) {
-            prop = momentProperties[i];
-            val = from[prop];
-            if (!isUndefined(val)) {
-                to[prop] = val;
-            }
-        }
-    }
-
-    return to;
-}
-
-var updateInProgress = false;
-
-// Moment prototype object
-function Moment(config) {
-    copyConfig(this, config);
-    this._d = new Date(config._d != null ? config._d.getTime() : NaN);
-    if (!this.isValid()) {
-        this._d = new Date(NaN);
-    }
-    // Prevent infinite loop in case updateOffset creates new moment
-    // objects.
-    if (updateInProgress === false) {
-        updateInProgress = true;
-        hooks.updateOffset(this);
-        updateInProgress = false;
-    }
-}
-
-function isMoment (obj) {
-    return obj instanceof Moment || (obj != null && obj._isAMomentObject != null);
-}
-
-function absFloor (number) {
-    if (number < 0) {
-        // -0 -> 0
-        return Math.ceil(number) || 0;
-    } else {
-        return Math.floor(number);
-    }
-}
-
-function toInt(argumentForCoercion) {
-    var coercedNumber = +argumentForCoercion,
-        value = 0;
-
-    if (coercedNumber !== 0 && isFinite(coercedNumber)) {
-        value = absFloor(coercedNumber);
-    }
-
-    return value;
-}
-
-// compare two arrays, return the number of differences
-function compareArrays(array1, array2, dontConvert) {
-    var len = Math.min(array1.length, array2.length),
-        lengthDiff = Math.abs(array1.length - array2.length),
-        diffs = 0,
-        i;
-    for (i = 0; i < len; i++) {
-        if ((dontConvert && array1[i] !== array2[i]) ||
-            (!dontConvert && toInt(array1[i]) !== toInt(array2[i]))) {
-            diffs++;
-        }
-    }
-    return diffs + lengthDiff;
-}
-
-function warn(msg) {
-    if (hooks.suppressDeprecationWarnings === false &&
-            (typeof console !==  'undefined') && console.warn) {
-        console.warn('Deprecation warning: ' + msg);
-    }
-}
-
-function deprecate(msg, fn) {
-    var firstTime = true;
-
-    return extend(function () {
-        if (hooks.deprecationHandler != null) {
-            hooks.deprecationHandler(null, msg);
-        }
-        if (firstTime) {
-            var args = [];
-            var arg;
-            for (var i = 0; i < arguments.length; i++) {
-                arg = '';
-                if (typeof arguments[i] === 'object') {
-                    arg += '\n[' + i + '] ';
-                    for (var key in arguments[0]) {
-                        arg += key + ': ' + arguments[0][key] + ', ';
-                    }
-                    arg = arg.slice(0, -2); // Remove trailing comma and space
-                } else {
-                    arg = arguments[i];
-                }
-                args.push(arg);
-            }
-            warn(msg + '\nArguments: ' + Array.prototype.slice.call(args).join('') + '\n' + (new Error()).stack);
-            firstTime = false;
-        }
-        return fn.apply(this, arguments);
-    }, fn);
-}
-
-var deprecations = {};
-
-function deprecateSimple(name, msg) {
-    if (hooks.deprecationHandler != null) {
-        hooks.deprecationHandler(name, msg);
-    }
-    if (!deprecations[name]) {
-        warn(msg);
-        deprecations[name] = true;
-    }
-}
-
-hooks.suppressDeprecationWarnings = false;
-hooks.deprecationHandler = null;
-
-function isFunction(input) {
-    return input instanceof Function || Object.prototype.toString.call(input) === '[object Function]';
-}
-
-function set (config) {
-    var prop, i;
-    for (i in config) {
-        prop = config[i];
-        if (isFunction(prop)) {
-            this[i] = prop;
-        } else {
-            this['_' + i] = prop;
-        }
-    }
-    this._config = config;
-    // Lenient ordinal parsing accepts just a number in addition to
-    // number + (possibly) stuff coming from _dayOfMonthOrdinalParse.
-    // TODO: Remove "ordinalParse" fallback in next major release.
-    this._dayOfMonthOrdinalParseLenient = new RegExp(
-        (this._dayOfMonthOrdinalParse.source || this._ordinalParse.source) +
-            '|' + (/\d{1,2}/).source);
-}
-
-function mergeConfigs(parentConfig, childConfig) {
-    var res = extend({}, parentConfig), prop;
-    for (prop in childConfig) {
-        if (hasOwnProp(childConfig, prop)) {
-            if (isObject(parentConfig[prop]) && isObject(childConfig[prop])) {
-                res[prop] = {};
-                extend(res[prop], parentConfig[prop]);
-                extend(res[prop], childConfig[prop]);
-            } else if (childConfig[prop] != null) {
-                res[prop] = childConfig[prop];
-            } else {
-                delete res[prop];
-            }
-        }
-    }
-    for (prop in parentConfig) {
-        if (hasOwnProp(parentConfig, prop) &&
-                !hasOwnProp(childConfig, prop) &&
-                isObject(parentConfig[prop])) {
-            // make sure changes to properties don't modify parent config
-            res[prop] = extend({}, res[prop]);
-        }
-    }
-    return res;
-}
-
-function Locale(config) {
-    if (config != null) {
-        this.set(config);
-    }
-}
-
-var keys;
-
-if (Object.keys) {
-    keys = Object.keys;
-} else {
-    keys = function (obj) {
-        var i, res = [];
-        for (i in obj) {
-            if (hasOwnProp(obj, i)) {
-                res.push(i);
-            }
-        }
-        return res;
-    };
-}
-
-var keys$1 = keys;
-
-var defaultCalendar = {
-    sameDay : '[Today at] LT',
-    nextDay : '[Tomorrow at] LT',
-    nextWeek : 'dddd [at] LT',
-    lastDay : '[Yesterday at] LT',
-    lastWeek : '[Last] dddd [at] LT',
-    sameElse : 'L'
-};
-
-function calendar (key, mom, now) {
-    var output = this._calendar[key] || this._calendar['sameElse'];
-    return isFunction(output) ? output.call(mom, now) : output;
-}
-
-var defaultLongDateFormat = {
-    LTS  : 'h:mm:ss A',
-    LT   : 'h:mm A',
-    L    : 'MM/DD/YYYY',
-    LL   : 'MMMM D, YYYY',
-    LLL  : 'MMMM D, YYYY h:mm A',
-    LLLL : 'dddd, MMMM D, YYYY h:mm A'
-};
-
-function longDateFormat (key) {
-    var format = this._longDateFormat[key],
-        formatUpper = this._longDateFormat[key.toUpperCase()];
-
-    if (format || !formatUpper) {
-        return format;
-    }
-
-    this._longDateFormat[key] = formatUpper.replace(/MMMM|MM|DD|dddd/g, function (val) {
-        return val.slice(1);
-    });
-
-    return this._longDateFormat[key];
-}
-
-var defaultInvalidDate = 'Invalid date';
-
-function invalidDate () {
-    return this._invalidDate;
-}
-
-var defaultOrdinal = '%d';
-var defaultDayOfMonthOrdinalParse = /\d{1,2}/;
-
-function ordinal (number) {
-    return this._ordinal.replace('%d', number);
-}
-
-var defaultRelativeTime = {
-    future : 'in %s',
-    past   : '%s ago',
-    s  : 'a few seconds',
-    ss : '%d seconds',
-    m  : 'a minute',
-    mm : '%d minutes',
-    h  : 'an hour',
-    hh : '%d hours',
-    d  : 'a day',
-    dd : '%d days',
-    M  : 'a month',
-    MM : '%d months',
-    y  : 'a year',
-    yy : '%d years'
-};
-
-function relativeTime (number, withoutSuffix, string, isFuture) {
-    var output = this._relativeTime[string];
-    return (isFunction(output)) ?
-        output(number, withoutSuffix, string, isFuture) :
-        output.replace(/%d/i, number);
-}
-
-function pastFuture (diff, output) {
-    var format = this._relativeTime[diff > 0 ? 'future' : 'past'];
-    return isFunction(format) ? format(output) : format.replace(/%s/i, output);
-}
-
-var aliases = {};
-
-function addUnitAlias (unit, shorthand) {
-    var lowerCase = unit.toLowerCase();
-    aliases[lowerCase] = aliases[lowerCase + 's'] = aliases[shorthand] = unit;
-}
-
-function normalizeUnits(units) {
-    return typeof units === 'string' ? aliases[units] || aliases[units.toLowerCase()] : undefined;
-}
-
-function normalizeObjectUnits(inputObject) {
-    var normalizedInput = {},
-        normalizedProp,
-        prop;
-
-    for (prop in inputObject) {
-        if (hasOwnProp(inputObject, prop)) {
-            normalizedProp = normalizeUnits(prop);
-            if (normalizedProp) {
-                normalizedInput[normalizedProp] = inputObject[prop];
-            }
-        }
-    }
-
-    return normalizedInput;
-}
-
-var priorities = {};
-
-function addUnitPriority(unit, priority) {
-    priorities[unit] = priority;
-}
-
-function getPrioritizedUnits(unitsObj) {
-    var units = [];
-    for (var u in unitsObj) {
-        units.push({unit: u, priority: priorities[u]});
-    }
-    units.sort(function (a, b) {
-        return a.priority - b.priority;
-    });
-    return units;
-}
-
-function makeGetSet (unit, keepTime) {
-    return function (value) {
-        if (value != null) {
-            set$1(this, unit, value);
-            hooks.updateOffset(this, keepTime);
-            return this;
-        } else {
-            return get(this, unit);
-        }
-    };
-}
-
-function get (mom, unit) {
-    return mom.isValid() ?
-        mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]() : NaN;
-}
-
-function set$1 (mom, unit, value) {
-    if (mom.isValid()) {
-        mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
-    }
-}
-
-// MOMENTS
-
-function stringGet (units) {
-    units = normalizeUnits(units);
-    if (isFunction(this[units])) {
-        return this[units]();
-    }
-    return this;
-}
-
-
-function stringSet (units, value) {
-    if (typeof units === 'object') {
-        units = normalizeObjectUnits(units);
-        var prioritized = getPrioritizedUnits(units);
-        for (var i = 0; i < prioritized.length; i++) {
-            this[prioritized[i].unit](units[prioritized[i].unit]);
-        }
-    } else {
-        units = normalizeUnits(units);
-        if (isFunction(this[units])) {
-            return this[units](value);
-        }
-    }
-    return this;
-}
-
-function zeroFill(number, targetLength, forceSign) {
-    var absNumber = '' + Math.abs(number),
-        zerosToFill = targetLength - absNumber.length,
-        sign = number >= 0;
-    return (sign ? (forceSign ? '+' : '') : '-') +
-        Math.pow(10, Math.max(0, zerosToFill)).toString().substr(1) + absNumber;
-}
-
-var formattingTokens = /(\[[^\[]*\])|(\\)?([Hh]mm(ss)?|Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|Qo?|YYYYYY|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|kk?|mm?|ss?|S{1,9}|x|X|zz?|ZZ?|.)/g;
-
-var localFormattingTokens = /(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g;
-
-var formatFunctions = {};
-
-var formatTokenFunctions = {};
-
-// token:    'M'
-// padded:   ['MM', 2]
-// ordinal:  'Mo'
-// callback: function () { this.month() + 1 }
-function addFormatToken (token, padded, ordinal, callback) {
-    var func = callback;
-    if (typeof callback === 'string') {
-        func = function () {
-            return this[callback]();
-        };
-    }
-    if (token) {
-        formatTokenFunctions[token] = func;
-    }
-    if (padded) {
-        formatTokenFunctions[padded[0]] = function () {
-            return zeroFill(func.apply(this, arguments), padded[1], padded[2]);
-        };
-    }
-    if (ordinal) {
-        formatTokenFunctions[ordinal] = function () {
-            return this.localeData().ordinal(func.apply(this, arguments), token);
-        };
-    }
-}
-
-function removeFormattingTokens(input) {
-    if (input.match(/\[[\s\S]/)) {
-        return input.replace(/^\[|\]$/g, '');
-    }
-    return input.replace(/\\/g, '');
-}
-
-function makeFormatFunction(format) {
-    var array = format.match(formattingTokens), i, length;
-
-    for (i = 0, length = array.length; i < length; i++) {
-        if (formatTokenFunctions[array[i]]) {
-            array[i] = formatTokenFunctions[array[i]];
-        } else {
-            array[i] = removeFormattingTokens(array[i]);
-        }
-    }
-
-    return function (mom) {
-        var output = '', i;
-        for (i = 0; i < length; i++) {
-            output += isFunction(array[i]) ? array[i].call(mom, format) : array[i];
-        }
-        return output;
-    };
-}
-
-// format date using native date object
-function formatMoment(m, format) {
-    if (!m.isValid()) {
-        return m.localeData().invalidDate();
-    }
-
-    format = expandFormat(format, m.localeData());
-    formatFunctions[format] = formatFunctions[format] || makeFormatFunction(format);
-
-    return formatFunctions[format](m);
-}
-
-function expandFormat(format, locale) {
-    var i = 5;
-
-    function replaceLongDateFormatTokens(input) {
-        return locale.longDateFormat(input) || input;
-    }
-
-    localFormattingTokens.lastIndex = 0;
-    while (i >= 0 && localFormattingTokens.test(format)) {
-        format = format.replace(localFormattingTokens, replaceLongDateFormatTokens);
-        localFormattingTokens.lastIndex = 0;
-        i -= 1;
-    }
-
-    return format;
-}
-
-var match1         = /\d/;            //       0 - 9
-var match2         = /\d\d/;          //      00 - 99
-var match3         = /\d{3}/;         //     000 - 999
-var match4         = /\d{4}/;         //    0000 - 9999
-var match6         = /[+-]?\d{6}/;    // -999999 - 999999
-var match1to2      = /\d\d?/;         //       0 - 99
-var match3to4      = /\d\d\d\d?/;     //     999 - 9999
-var match5to6      = /\d\d\d\d\d\d?/; //   99999 - 999999
-var match1to3      = /\d{1,3}/;       //       0 - 999
-var match1to4      = /\d{1,4}/;       //       0 - 9999
-var match1to6      = /[+-]?\d{1,6}/;  // -999999 - 999999
-
-var matchUnsigned  = /\d+/;           //       0 - inf
-var matchSigned    = /[+-]?\d+/;      //    -inf - inf
-
-var matchOffset    = /Z|[+-]\d\d:?\d\d/gi; // +00:00 -00:00 +0000 -0000 or Z
-var matchShortOffset = /Z|[+-]\d\d(?::?\d\d)?/gi; // +00 -00 +00:00 -00:00 +0000 -0000 or Z
-
-var matchTimestamp = /[+-]?\d+(\.\d{1,3})?/; // 123456789 123456789.123
-
-// any word (or two) characters or numbers including two/three word month in arabic.
-// includes scottish gaelic two word and hyphenated months
-var matchWord = /[0-9]*['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+|[\u0600-\u06FF\/]+(\s*?[\u0600-\u06FF]+){1,2}/i;
-
-
-var regexes = {};
-
-function addRegexToken (token, regex, strictRegex) {
-    regexes[token] = isFunction(regex) ? regex : function (isStrict, localeData) {
-        return (isStrict && strictRegex) ? strictRegex : regex;
-    };
-}
-
-function getParseRegexForToken (token, config) {
-    if (!hasOwnProp(regexes, token)) {
-        return new RegExp(unescapeFormat(token));
-    }
-
-    return regexes[token](config._strict, config._locale);
-}
-
-// Code from http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
-function unescapeFormat(s) {
-    return regexEscape(s.replace('\\', '').replace(/\\(\[)|\\(\])|\[([^\]\[]*)\]|\\(.)/g, function (matched, p1, p2, p3, p4) {
-        return p1 || p2 || p3 || p4;
-    }));
-}
-
-function regexEscape(s) {
-    return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-}
-
-var tokens = {};
-
-function addParseToken (token, callback) {
-    var i, func = callback;
-    if (typeof token === 'string') {
-        token = [token];
-    }
-    if (isNumber(callback)) {
-        func = function (input, array) {
-            array[callback] = toInt(input);
-        };
-    }
-    for (i = 0; i < token.length; i++) {
-        tokens[token[i]] = func;
-    }
-}
-
-function addWeekParseToken (token, callback) {
-    addParseToken(token, function (input, array, config, token) {
-        config._w = config._w || {};
-        callback(input, config._w, config, token);
-    });
-}
-
-function addTimeToArrayFromToken(token, input, config) {
-    if (input != null && hasOwnProp(tokens, token)) {
-        tokens[token](input, config._a, config, token);
-    }
-}
-
-var YEAR = 0;
-var MONTH = 1;
-var DATE = 2;
-var HOUR = 3;
-var MINUTE = 4;
-var SECOND = 5;
-var MILLISECOND = 6;
-var WEEK = 7;
-var WEEKDAY = 8;
-
-var indexOf;
-
-if (Array.prototype.indexOf) {
-    indexOf = Array.prototype.indexOf;
-} else {
-    indexOf = function (o) {
-        // I know
-        var i;
-        for (i = 0; i < this.length; ++i) {
-            if (this[i] === o) {
-                return i;
-            }
-        }
-        return -1;
-    };
-}
-
-var indexOf$1 = indexOf;
-
-function daysInMonth(year, month) {
-    return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
-}
-
-// FORMATTING
-
-addFormatToken('M', ['MM', 2], 'Mo', function () {
-    return this.month() + 1;
-});
-
-addFormatToken('MMM', 0, 0, function (format) {
-    return this.localeData().monthsShort(this, format);
-});
-
-addFormatToken('MMMM', 0, 0, function (format) {
-    return this.localeData().months(this, format);
-});
-
-// ALIASES
-
-addUnitAlias('month', 'M');
-
-// PRIORITY
-
-addUnitPriority('month', 8);
-
-// PARSING
-
-addRegexToken('M',    match1to2);
-addRegexToken('MM',   match1to2, match2);
-addRegexToken('MMM',  function (isStrict, locale) {
-    return locale.monthsShortRegex(isStrict);
-});
-addRegexToken('MMMM', function (isStrict, locale) {
-    return locale.monthsRegex(isStrict);
-});
-
-addParseToken(['M', 'MM'], function (input, array) {
-    array[MONTH] = toInt(input) - 1;
-});
-
-addParseToken(['MMM', 'MMMM'], function (input, array, config, token) {
-    var month = config._locale.monthsParse(input, token, config._strict);
-    // if we didn't find a month name, mark the date as invalid.
-    if (month != null) {
-        array[MONTH] = month;
-    } else {
-        getParsingFlags(config).invalidMonth = input;
-    }
-});
-
-// LOCALES
-
-var MONTHS_IN_FORMAT = /D[oD]?(\[[^\[\]]*\]|\s)+MMMM?/;
-var defaultLocaleMonths = 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_');
-function localeMonths (m, format) {
-    if (!m) {
-        return isArray(this._months) ? this._months :
-            this._months['standalone'];
-    }
-    return isArray(this._months) ? this._months[m.month()] :
-        this._months[(this._months.isFormat || MONTHS_IN_FORMAT).test(format) ? 'format' : 'standalone'][m.month()];
-}
-
-var defaultLocaleMonthsShort = 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_');
-function localeMonthsShort (m, format) {
-    if (!m) {
-        return isArray(this._monthsShort) ? this._monthsShort :
-            this._monthsShort['standalone'];
-    }
-    return isArray(this._monthsShort) ? this._monthsShort[m.month()] :
-        this._monthsShort[MONTHS_IN_FORMAT.test(format) ? 'format' : 'standalone'][m.month()];
-}
-
-function handleStrictParse(monthName, format, strict) {
-    var i, ii, mom, llc = monthName.toLocaleLowerCase();
-    if (!this._monthsParse) {
-        // this is not used
-        this._monthsParse = [];
-        this._longMonthsParse = [];
-        this._shortMonthsParse = [];
-        for (i = 0; i < 12; ++i) {
-            mom = createUTC([2000, i]);
-            this._shortMonthsParse[i] = this.monthsShort(mom, '').toLocaleLowerCase();
-            this._longMonthsParse[i] = this.months(mom, '').toLocaleLowerCase();
-        }
-    }
-
-    if (strict) {
-        if (format === 'MMM') {
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
-            return ii !== -1 ? ii : null;
-        } else {
-            ii = indexOf$1.call(this._longMonthsParse, llc);
-            return ii !== -1 ? ii : null;
-        }
-    } else {
-        if (format === 'MMM') {
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
-            if (ii !== -1) {
-                return ii;
-            }
-            ii = indexOf$1.call(this._longMonthsParse, llc);
-            return ii !== -1 ? ii : null;
-        } else {
-            ii = indexOf$1.call(this._longMonthsParse, llc);
-            if (ii !== -1) {
-                return ii;
-            }
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
-            return ii !== -1 ? ii : null;
-        }
-    }
-}
-
-function localeMonthsParse (monthName, format, strict) {
-    var i, mom, regex;
-
-    if (this._monthsParseExact) {
-        return handleStrictParse.call(this, monthName, format, strict);
-    }
-
-    if (!this._monthsParse) {
-        this._monthsParse = [];
-        this._longMonthsParse = [];
-        this._shortMonthsParse = [];
-    }
-
-    // TODO: add sorting
-    // Sorting makes sure if one month (or abbr) is a prefix of another
-    // see sorting in computeMonthsParse
-    for (i = 0; i < 12; i++) {
-        // make the regex if we don't have it already
-        mom = createUTC([2000, i]);
-        if (strict && !this._longMonthsParse[i]) {
-            this._longMonthsParse[i] = new RegExp('^' + this.months(mom, '').replace('.', '') + '$', 'i');
-            this._shortMonthsParse[i] = new RegExp('^' + this.monthsShort(mom, '').replace('.', '') + '$', 'i');
-        }
-        if (!strict && !this._monthsParse[i]) {
-            regex = '^' + this.months(mom, '') + '|^' + this.monthsShort(mom, '');
-            this._monthsParse[i] = new RegExp(regex.replace('.', ''), 'i');
-        }
-        // test the regex
-        if (strict && format === 'MMMM' && this._longMonthsParse[i].test(monthName)) {
-            return i;
-        } else if (strict && format === 'MMM' && this._shortMonthsParse[i].test(monthName)) {
-            return i;
-        } else if (!strict && this._monthsParse[i].test(monthName)) {
-            return i;
-        }
-    }
-}
-
-// MOMENTS
-
-function setMonth (mom, value) {
-    var dayOfMonth;
-
-    if (!mom.isValid()) {
-        // No op
-        return mom;
-    }
-
-    if (typeof value === 'string') {
-        if (/^\d+$/.test(value)) {
-            value = toInt(value);
-        } else {
-            value = mom.localeData().monthsParse(value);
-            // TODO: Another silent failure?
-            if (!isNumber(value)) {
-                return mom;
-            }
-        }
-    }
-
-    dayOfMonth = Math.min(mom.date(), daysInMonth(mom.year(), value));
-    mom._d['set' + (mom._isUTC ? 'UTC' : '') + 'Month'](value, dayOfMonth);
-    return mom;
-}
-
-function getSetMonth (value) {
-    if (value != null) {
-        setMonth(this, value);
-        hooks.updateOffset(this, true);
-        return this;
-    } else {
-        return get(this, 'Month');
-    }
-}
-
-function getDaysInMonth () {
-    return daysInMonth(this.year(), this.month());
-}
-
-var defaultMonthsShortRegex = matchWord;
-function monthsShortRegex (isStrict) {
-    if (this._monthsParseExact) {
-        if (!hasOwnProp(this, '_monthsRegex')) {
-            computeMonthsParse.call(this);
-        }
-        if (isStrict) {
-            return this._monthsShortStrictRegex;
-        } else {
-            return this._monthsShortRegex;
-        }
-    } else {
-        if (!hasOwnProp(this, '_monthsShortRegex')) {
-            this._monthsShortRegex = defaultMonthsShortRegex;
-        }
-        return this._monthsShortStrictRegex && isStrict ?
-            this._monthsShortStrictRegex : this._monthsShortRegex;
-    }
-}
-
-var defaultMonthsRegex = matchWord;
-function monthsRegex (isStrict) {
-    if (this._monthsParseExact) {
-        if (!hasOwnProp(this, '_monthsRegex')) {
-            computeMonthsParse.call(this);
-        }
-        if (isStrict) {
-            return this._monthsStrictRegex;
-        } else {
-            return this._monthsRegex;
-        }
-    } else {
-        if (!hasOwnProp(this, '_monthsRegex')) {
-            this._monthsRegex = defaultMonthsRegex;
-        }
-        return this._monthsStrictRegex && isStrict ?
-            this._monthsStrictRegex : this._monthsRegex;
-    }
-}
-
-function computeMonthsParse () {
-    function cmpLenRev(a, b) {
-        return b.length - a.length;
-    }
-
-    var shortPieces = [], longPieces = [], mixedPieces = [],
-        i, mom;
-    for (i = 0; i < 12; i++) {
-        // make the regex if we don't have it already
-        mom = createUTC([2000, i]);
-        shortPieces.push(this.monthsShort(mom, ''));
-        longPieces.push(this.months(mom, ''));
-        mixedPieces.push(this.months(mom, ''));
-        mixedPieces.push(this.monthsShort(mom, ''));
-    }
-    // Sorting makes sure if one month (or abbr) is a prefix of another it
-    // will match the longer piece.
-    shortPieces.sort(cmpLenRev);
-    longPieces.sort(cmpLenRev);
-    mixedPieces.sort(cmpLenRev);
-    for (i = 0; i < 12; i++) {
-        shortPieces[i] = regexEscape(shortPieces[i]);
-        longPieces[i] = regexEscape(longPieces[i]);
-    }
-    for (i = 0; i < 24; i++) {
-        mixedPieces[i] = regexEscape(mixedPieces[i]);
-    }
-
-    this._monthsRegex = new RegExp('^(' + mixedPieces.join('|') + ')', 'i');
-    this._monthsShortRegex = this._monthsRegex;
-    this._monthsStrictRegex = new RegExp('^(' + longPieces.join('|') + ')', 'i');
-    this._monthsShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')', 'i');
-}
-
-// FORMATTING
-
-addFormatToken('Y', 0, 0, function () {
-    var y = this.year();
-    return y <= 9999 ? '' + y : '+' + y;
-});
-
-addFormatToken(0, ['YY', 2], 0, function () {
-    return this.year() % 100;
-});
-
-addFormatToken(0, ['YYYY',   4],       0, 'year');
-addFormatToken(0, ['YYYYY',  5],       0, 'year');
-addFormatToken(0, ['YYYYYY', 6, true], 0, 'year');
-
-// ALIASES
-
-addUnitAlias('year', 'y');
-
-// PRIORITIES
-
-addUnitPriority('year', 1);
-
-// PARSING
-
-addRegexToken('Y',      matchSigned);
-addRegexToken('YY',     match1to2, match2);
-addRegexToken('YYYY',   match1to4, match4);
-addRegexToken('YYYYY',  match1to6, match6);
-addRegexToken('YYYYYY', match1to6, match6);
-
-addParseToken(['YYYYY', 'YYYYYY'], YEAR);
-addParseToken('YYYY', function (input, array) {
-    array[YEAR] = input.length === 2 ? hooks.parseTwoDigitYear(input) : toInt(input);
-});
-addParseToken('YY', function (input, array) {
-    array[YEAR] = hooks.parseTwoDigitYear(input);
-});
-addParseToken('Y', function (input, array) {
-    array[YEAR] = parseInt(input, 10);
-});
-
-// HELPERS
-
-function daysInYear(year) {
-    return isLeapYear(year) ? 366 : 365;
-}
-
-function isLeapYear(year) {
-    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-}
-
-// HOOKS
-
-hooks.parseTwoDigitYear = function (input) {
-    return toInt(input) + (toInt(input) > 68 ? 1900 : 2000);
-};
-
-// MOMENTS
-
-var getSetYear = makeGetSet('FullYear', true);
-
-function getIsLeapYear () {
-    return isLeapYear(this.year());
-}
-
-function createDate (y, m, d, h, M, s, ms) {
-    // can't just apply() to create a date:
-    // https://stackoverflow.com/q/181348
-    var date = new Date(y, m, d, h, M, s, ms);
-
-    // the date constructor remaps years 0-99 to 1900-1999
-    if (y < 100 && y >= 0 && isFinite(date.getFullYear())) {
-        date.setFullYear(y);
-    }
-    return date;
-}
-
-function createUTCDate (y) {
-    var date = new Date(Date.UTC.apply(null, arguments));
-
-    // the Date.UTC function remaps years 0-99 to 1900-1999
-    if (y < 100 && y >= 0 && isFinite(date.getUTCFullYear())) {
-        date.setUTCFullYear(y);
-    }
-    return date;
-}
-
-// start-of-first-week - start-of-year
-function firstWeekOffset(year, dow, doy) {
-    var // first-week day -- which january is always in the first week (4 for iso, 1 for other)
-        fwd = 7 + dow - doy,
-        // first-week day local weekday -- which local weekday is fwd
-        fwdlw = (7 + createUTCDate(year, 0, fwd).getUTCDay() - dow) % 7;
-
-    return -fwdlw + fwd - 1;
-}
-
-// https://en.wikipedia.org/wiki/ISO_week_date#Calculating_a_date_given_the_year.2C_week_number_and_weekday
-function dayOfYearFromWeeks(year, week, weekday, dow, doy) {
-    var localWeekday = (7 + weekday - dow) % 7,
-        weekOffset = firstWeekOffset(year, dow, doy),
-        dayOfYear = 1 + 7 * (week - 1) + localWeekday + weekOffset,
-        resYear, resDayOfYear;
-
-    if (dayOfYear <= 0) {
-        resYear = year - 1;
-        resDayOfYear = daysInYear(resYear) + dayOfYear;
-    } else if (dayOfYear > daysInYear(year)) {
-        resYear = year + 1;
-        resDayOfYear = dayOfYear - daysInYear(year);
-    } else {
-        resYear = year;
-        resDayOfYear = dayOfYear;
-    }
-
-    return {
-        year: resYear,
-        dayOfYear: resDayOfYear
-    };
-}
-
-function weekOfYear(mom, dow, doy) {
-    var weekOffset = firstWeekOffset(mom.year(), dow, doy),
-        week = Math.floor((mom.dayOfYear() - weekOffset - 1) / 7) + 1,
-        resWeek, resYear;
-
-    if (week < 1) {
-        resYear = mom.year() - 1;
-        resWeek = week + weeksInYear(resYear, dow, doy);
-    } else if (week > weeksInYear(mom.year(), dow, doy)) {
-        resWeek = week - weeksInYear(mom.year(), dow, doy);
-        resYear = mom.year() + 1;
-    } else {
-        resYear = mom.year();
-        resWeek = week;
-    }
-
-    return {
-        week: resWeek,
-        year: resYear
-    };
-}
-
-function weeksInYear(year, dow, doy) {
-    var weekOffset = firstWeekOffset(year, dow, doy),
-        weekOffsetNext = firstWeekOffset(year + 1, dow, doy);
-    return (daysInYear(year) - weekOffset + weekOffsetNext) / 7;
-}
-
-// FORMATTING
-
-addFormatToken('w', ['ww', 2], 'wo', 'week');
-addFormatToken('W', ['WW', 2], 'Wo', 'isoWeek');
-
-// ALIASES
-
-addUnitAlias('week', 'w');
-addUnitAlias('isoWeek', 'W');
-
-// PRIORITIES
-
-addUnitPriority('week', 5);
-addUnitPriority('isoWeek', 5);
-
-// PARSING
-
-addRegexToken('w',  match1to2);
-addRegexToken('ww', match1to2, match2);
-addRegexToken('W',  match1to2);
-addRegexToken('WW', match1to2, match2);
-
-addWeekParseToken(['w', 'ww', 'W', 'WW'], function (input, week, config, token) {
-    week[token.substr(0, 1)] = toInt(input);
-});
-
-// HELPERS
-
-// LOCALES
-
-function localeWeek (mom) {
-    return weekOfYear(mom, this._week.dow, this._week.doy).week;
-}
-
-var defaultLocaleWeek = {
-    dow : 0, // Sunday is the first day of the week.
-    doy : 6  // The week that contains Jan 1st is the first week of the year.
-};
-
-function localeFirstDayOfWeek () {
-    return this._week.dow;
-}
-
-function localeFirstDayOfYear () {
-    return this._week.doy;
-}
-
-// MOMENTS
-
-function getSetWeek (input) {
-    var week = this.localeData().week(this);
-    return input == null ? week : this.add((input - week) * 7, 'd');
-}
-
-function getSetISOWeek (input) {
-    var week = weekOfYear(this, 1, 4).week;
-    return input == null ? week : this.add((input - week) * 7, 'd');
-}
-
-// FORMATTING
-
-addFormatToken('d', 0, 'do', 'day');
-
-addFormatToken('dd', 0, 0, function (format) {
-    return this.localeData().weekdaysMin(this, format);
-});
-
-addFormatToken('ddd', 0, 0, function (format) {
-    return this.localeData().weekdaysShort(this, format);
-});
-
-addFormatToken('dddd', 0, 0, function (format) {
-    return this.localeData().weekdays(this, format);
-});
-
-addFormatToken('e', 0, 0, 'weekday');
-addFormatToken('E', 0, 0, 'isoWeekday');
-
-// ALIASES
-
-addUnitAlias('day', 'd');
-addUnitAlias('weekday', 'e');
-addUnitAlias('isoWeekday', 'E');
-
-// PRIORITY
-addUnitPriority('day', 11);
-addUnitPriority('weekday', 11);
-addUnitPriority('isoWeekday', 11);
-
-// PARSING
-
-addRegexToken('d',    match1to2);
-addRegexToken('e',    match1to2);
-addRegexToken('E',    match1to2);
-addRegexToken('dd',   function (isStrict, locale) {
-    return locale.weekdaysMinRegex(isStrict);
-});
-addRegexToken('ddd',   function (isStrict, locale) {
-    return locale.weekdaysShortRegex(isStrict);
-});
-addRegexToken('dddd',   function (isStrict, locale) {
-    return locale.weekdaysRegex(isStrict);
-});
-
-addWeekParseToken(['dd', 'ddd', 'dddd'], function (input, week, config, token) {
-    var weekday = config._locale.weekdaysParse(input, token, config._strict);
-    // if we didn't get a weekday name, mark the date as invalid
-    if (weekday != null) {
-        week.d = weekday;
-    } else {
-        getParsingFlags(config).invalidWeekday = input;
-    }
-});
-
-addWeekParseToken(['d', 'e', 'E'], function (input, week, config, token) {
-    week[token] = toInt(input);
-});
-
-// HELPERS
-
-function parseWeekday(input, locale) {
-    if (typeof input !== 'string') {
-        return input;
-    }
-
-    if (!isNaN(input)) {
-        return parseInt(input, 10);
-    }
-
-    input = locale.weekdaysParse(input);
-    if (typeof input === 'number') {
-        return input;
-    }
-
-    return null;
-}
-
-function parseIsoWeekday(input, locale) {
-    if (typeof input === 'string') {
-        return locale.weekdaysParse(input) % 7 || 7;
-    }
-    return isNaN(input) ? null : input;
-}
-
-// LOCALES
-
-var defaultLocaleWeekdays = 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_');
-function localeWeekdays (m, format) {
-    if (!m) {
-        return isArray(this._weekdays) ? this._weekdays :
-            this._weekdays['standalone'];
-    }
-    return isArray(this._weekdays) ? this._weekdays[m.day()] :
-        this._weekdays[this._weekdays.isFormat.test(format) ? 'format' : 'standalone'][m.day()];
-}
-
-var defaultLocaleWeekdaysShort = 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_');
-function localeWeekdaysShort (m) {
-    return (m) ? this._weekdaysShort[m.day()] : this._weekdaysShort;
-}
-
-var defaultLocaleWeekdaysMin = 'Su_Mo_Tu_We_Th_Fr_Sa'.split('_');
-function localeWeekdaysMin (m) {
-    return (m) ? this._weekdaysMin[m.day()] : this._weekdaysMin;
-}
-
-function handleStrictParse$1(weekdayName, format, strict) {
-    var i, ii, mom, llc = weekdayName.toLocaleLowerCase();
-    if (!this._weekdaysParse) {
-        this._weekdaysParse = [];
-        this._shortWeekdaysParse = [];
-        this._minWeekdaysParse = [];
-
-        for (i = 0; i < 7; ++i) {
-            mom = createUTC([2000, 1]).day(i);
-            this._minWeekdaysParse[i] = this.weekdaysMin(mom, '').toLocaleLowerCase();
-            this._shortWeekdaysParse[i] = this.weekdaysShort(mom, '').toLocaleLowerCase();
-            this._weekdaysParse[i] = this.weekdays(mom, '').toLocaleLowerCase();
-        }
-    }
-
-    if (strict) {
-        if (format === 'dddd') {
-            ii = indexOf$1.call(this._weekdaysParse, llc);
-            return ii !== -1 ? ii : null;
-        } else if (format === 'ddd') {
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
-            return ii !== -1 ? ii : null;
-        } else {
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
-            return ii !== -1 ? ii : null;
-        }
-    } else {
-        if (format === 'dddd') {
-            ii = indexOf$1.call(this._weekdaysParse, llc);
-            if (ii !== -1) {
-                return ii;
-            }
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
-            if (ii !== -1) {
-                return ii;
-            }
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
-            return ii !== -1 ? ii : null;
-        } else if (format === 'ddd') {
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
-            if (ii !== -1) {
-                return ii;
-            }
-            ii = indexOf$1.call(this._weekdaysParse, llc);
-            if (ii !== -1) {
-                return ii;
-            }
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
-            return ii !== -1 ? ii : null;
-        } else {
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
-            if (ii !== -1) {
-                return ii;
-            }
-            ii = indexOf$1.call(this._weekdaysParse, llc);
-            if (ii !== -1) {
-                return ii;
-            }
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
-            return ii !== -1 ? ii : null;
-        }
-    }
-}
-
-function localeWeekdaysParse (weekdayName, format, strict) {
-    var i, mom, regex;
-
-    if (this._weekdaysParseExact) {
-        return handleStrictParse$1.call(this, weekdayName, format, strict);
-    }
-
-    if (!this._weekdaysParse) {
-        this._weekdaysParse = [];
-        this._minWeekdaysParse = [];
-        this._shortWeekdaysParse = [];
-        this._fullWeekdaysParse = [];
-    }
-
-    for (i = 0; i < 7; i++) {
-        // make the regex if we don't have it already
-
-        mom = createUTC([2000, 1]).day(i);
-        if (strict && !this._fullWeekdaysParse[i]) {
-            this._fullWeekdaysParse[i] = new RegExp('^' + this.weekdays(mom, '').replace('.', '\.?') + '$', 'i');
-            this._shortWeekdaysParse[i] = new RegExp('^' + this.weekdaysShort(mom, '').replace('.', '\.?') + '$', 'i');
-            this._minWeekdaysParse[i] = new RegExp('^' + this.weekdaysMin(mom, '').replace('.', '\.?') + '$', 'i');
-        }
-        if (!this._weekdaysParse[i]) {
-            regex = '^' + this.weekdays(mom, '') + '|^' + this.weekdaysShort(mom, '') + '|^' + this.weekdaysMin(mom, '');
-            this._weekdaysParse[i] = new RegExp(regex.replace('.', ''), 'i');
-        }
-        // test the regex
-        if (strict && format === 'dddd' && this._fullWeekdaysParse[i].test(weekdayName)) {
-            return i;
-        } else if (strict && format === 'ddd' && this._shortWeekdaysParse[i].test(weekdayName)) {
-            return i;
-        } else if (strict && format === 'dd' && this._minWeekdaysParse[i].test(weekdayName)) {
-            return i;
-        } else if (!strict && this._weekdaysParse[i].test(weekdayName)) {
-            return i;
-        }
-    }
-}
-
-// MOMENTS
-
-function getSetDayOfWeek (input) {
-    if (!this.isValid()) {
-        return input != null ? this : NaN;
-    }
-    var day = this._isUTC ? this._d.getUTCDay() : this._d.getDay();
-    if (input != null) {
-        input = parseWeekday(input, this.localeData());
-        return this.add(input - day, 'd');
-    } else {
-        return day;
-    }
-}
-
-function getSetLocaleDayOfWeek (input) {
-    if (!this.isValid()) {
-        return input != null ? this : NaN;
-    }
-    var weekday = (this.day() + 7 - this.localeData()._week.dow) % 7;
-    return input == null ? weekday : this.add(input - weekday, 'd');
-}
-
-function getSetISODayOfWeek (input) {
-    if (!this.isValid()) {
-        return input != null ? this : NaN;
-    }
-
-    // behaves the same as moment#day except
-    // as a getter, returns 7 instead of 0 (1-7 range instead of 0-6)
-    // as a setter, sunday should belong to the previous week.
-
-    if (input != null) {
-        var weekday = parseIsoWeekday(input, this.localeData());
-        return this.day(this.day() % 7 ? weekday : weekday - 7);
-    } else {
-        return this.day() || 7;
-    }
-}
-
-var defaultWeekdaysRegex = matchWord;
-function weekdaysRegex (isStrict) {
-    if (this._weekdaysParseExact) {
-        if (!hasOwnProp(this, '_weekdaysRegex')) {
-            computeWeekdaysParse.call(this);
-        }
-        if (isStrict) {
-            return this._weekdaysStrictRegex;
-        } else {
-            return this._weekdaysRegex;
-        }
-    } else {
-        if (!hasOwnProp(this, '_weekdaysRegex')) {
-            this._weekdaysRegex = defaultWeekdaysRegex;
-        }
-        return this._weekdaysStrictRegex && isStrict ?
-            this._weekdaysStrictRegex : this._weekdaysRegex;
-    }
-}
-
-var defaultWeekdaysShortRegex = matchWord;
-function weekdaysShortRegex (isStrict) {
-    if (this._weekdaysParseExact) {
-        if (!hasOwnProp(this, '_weekdaysRegex')) {
-            computeWeekdaysParse.call(this);
-        }
-        if (isStrict) {
-            return this._weekdaysShortStrictRegex;
-        } else {
-            return this._weekdaysShortRegex;
-        }
-    } else {
-        if (!hasOwnProp(this, '_weekdaysShortRegex')) {
-            this._weekdaysShortRegex = defaultWeekdaysShortRegex;
-        }
-        return this._weekdaysShortStrictRegex && isStrict ?
-            this._weekdaysShortStrictRegex : this._weekdaysShortRegex;
-    }
-}
-
-var defaultWeekdaysMinRegex = matchWord;
-function weekdaysMinRegex (isStrict) {
-    if (this._weekdaysParseExact) {
-        if (!hasOwnProp(this, '_weekdaysRegex')) {
-            computeWeekdaysParse.call(this);
-        }
-        if (isStrict) {
-            return this._weekdaysMinStrictRegex;
-        } else {
-            return this._weekdaysMinRegex;
-        }
-    } else {
-        if (!hasOwnProp(this, '_weekdaysMinRegex')) {
-            this._weekdaysMinRegex = defaultWeekdaysMinRegex;
-        }
-        return this._weekdaysMinStrictRegex && isStrict ?
-            this._weekdaysMinStrictRegex : this._weekdaysMinRegex;
-    }
-}
-
-
-function computeWeekdaysParse () {
-    function cmpLenRev(a, b) {
-        return b.length - a.length;
-    }
-
-    var minPieces = [], shortPieces = [], longPieces = [], mixedPieces = [],
-        i, mom, minp, shortp, longp;
-    for (i = 0; i < 7; i++) {
-        // make the regex if we don't have it already
-        mom = createUTC([2000, 1]).day(i);
-        minp = this.weekdaysMin(mom, '');
-        shortp = this.weekdaysShort(mom, '');
-        longp = this.weekdays(mom, '');
-        minPieces.push(minp);
-        shortPieces.push(shortp);
-        longPieces.push(longp);
-        mixedPieces.push(minp);
-        mixedPieces.push(shortp);
-        mixedPieces.push(longp);
-    }
-    // Sorting makes sure if one weekday (or abbr) is a prefix of another it
-    // will match the longer piece.
-    minPieces.sort(cmpLenRev);
-    shortPieces.sort(cmpLenRev);
-    longPieces.sort(cmpLenRev);
-    mixedPieces.sort(cmpLenRev);
-    for (i = 0; i < 7; i++) {
-        shortPieces[i] = regexEscape(shortPieces[i]);
-        longPieces[i] = regexEscape(longPieces[i]);
-        mixedPieces[i] = regexEscape(mixedPieces[i]);
-    }
-
-    this._weekdaysRegex = new RegExp('^(' + mixedPieces.join('|') + ')', 'i');
-    this._weekdaysShortRegex = this._weekdaysRegex;
-    this._weekdaysMinRegex = this._weekdaysRegex;
-
-    this._weekdaysStrictRegex = new RegExp('^(' + longPieces.join('|') + ')', 'i');
-    this._weekdaysShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')', 'i');
-    this._weekdaysMinStrictRegex = new RegExp('^(' + minPieces.join('|') + ')', 'i');
-}
-
-// FORMATTING
-
-function hFormat() {
-    return this.hours() % 12 || 12;
-}
-
-function kFormat() {
-    return this.hours() || 24;
-}
-
-addFormatToken('H', ['HH', 2], 0, 'hour');
-addFormatToken('h', ['hh', 2], 0, hFormat);
-addFormatToken('k', ['kk', 2], 0, kFormat);
-
-addFormatToken('hmm', 0, 0, function () {
-    return '' + hFormat.apply(this) + zeroFill(this.minutes(), 2);
-});
-
-addFormatToken('hmmss', 0, 0, function () {
-    return '' + hFormat.apply(this) + zeroFill(this.minutes(), 2) +
-        zeroFill(this.seconds(), 2);
-});
-
-addFormatToken('Hmm', 0, 0, function () {
-    return '' + this.hours() + zeroFill(this.minutes(), 2);
-});
-
-addFormatToken('Hmmss', 0, 0, function () {
-    return '' + this.hours() + zeroFill(this.minutes(), 2) +
-        zeroFill(this.seconds(), 2);
-});
-
-function meridiem (token, lowercase) {
-    addFormatToken(token, 0, 0, function () {
-        return this.localeData().meridiem(this.hours(), this.minutes(), lowercase);
-    });
-}
-
-meridiem('a', true);
-meridiem('A', false);
-
-// ALIASES
-
-addUnitAlias('hour', 'h');
-
-// PRIORITY
-addUnitPriority('hour', 13);
-
-// PARSING
-
-function matchMeridiem (isStrict, locale) {
-    return locale._meridiemParse;
-}
-
-addRegexToken('a',  matchMeridiem);
-addRegexToken('A',  matchMeridiem);
-addRegexToken('H',  match1to2);
-addRegexToken('h',  match1to2);
-addRegexToken('k',  match1to2);
-addRegexToken('HH', match1to2, match2);
-addRegexToken('hh', match1to2, match2);
-addRegexToken('kk', match1to2, match2);
-
-addRegexToken('hmm', match3to4);
-addRegexToken('hmmss', match5to6);
-addRegexToken('Hmm', match3to4);
-addRegexToken('Hmmss', match5to6);
-
-addParseToken(['H', 'HH'], HOUR);
-addParseToken(['k', 'kk'], function (input, array, config) {
-    var kInput = toInt(input);
-    array[HOUR] = kInput === 24 ? 0 : kInput;
-});
-addParseToken(['a', 'A'], function (input, array, config) {
-    config._isPm = config._locale.isPM(input);
-    config._meridiem = input;
-});
-addParseToken(['h', 'hh'], function (input, array, config) {
-    array[HOUR] = toInt(input);
-    getParsingFlags(config).bigHour = true;
-});
-addParseToken('hmm', function (input, array, config) {
-    var pos = input.length - 2;
-    array[HOUR] = toInt(input.substr(0, pos));
-    array[MINUTE] = toInt(input.substr(pos));
-    getParsingFlags(config).bigHour = true;
-});
-addParseToken('hmmss', function (input, array, config) {
-    var pos1 = input.length - 4;
-    var pos2 = input.length - 2;
-    array[HOUR] = toInt(input.substr(0, pos1));
-    array[MINUTE] = toInt(input.substr(pos1, 2));
-    array[SECOND] = toInt(input.substr(pos2));
-    getParsingFlags(config).bigHour = true;
-});
-addParseToken('Hmm', function (input, array, config) {
-    var pos = input.length - 2;
-    array[HOUR] = toInt(input.substr(0, pos));
-    array[MINUTE] = toInt(input.substr(pos));
-});
-addParseToken('Hmmss', function (input, array, config) {
-    var pos1 = input.length - 4;
-    var pos2 = input.length - 2;
-    array[HOUR] = toInt(input.substr(0, pos1));
-    array[MINUTE] = toInt(input.substr(pos1, 2));
-    array[SECOND] = toInt(input.substr(pos2));
-});
-
-// LOCALES
-
-function localeIsPM (input) {
-    // IE8 Quirks Mode & IE7 Standards Mode do not allow accessing strings like arrays
-    // Using charAt should be more compatible.
-    return ((input + '').toLowerCase().charAt(0) === 'p');
-}
-
-var defaultLocaleMeridiemParse = /[ap]\.?m?\.?/i;
-function localeMeridiem (hours, minutes, isLower) {
-    if (hours > 11) {
-        return isLower ? 'pm' : 'PM';
-    } else {
-        return isLower ? 'am' : 'AM';
-    }
-}
-
-
-// MOMENTS
-
-// Setting the hour should keep the time, because the user explicitly
-// specified which hour he wants. So trying to maintain the same hour (in
-// a new timezone) makes sense. Adding/subtracting hours does not follow
-// this rule.
-var getSetHour = makeGetSet('Hours', true);
-
-// months
-// week
-// weekdays
-// meridiem
-var baseConfig = {
-    calendar: defaultCalendar,
-    longDateFormat: defaultLongDateFormat,
-    invalidDate: defaultInvalidDate,
-    ordinal: defaultOrdinal,
-    dayOfMonthOrdinalParse: defaultDayOfMonthOrdinalParse,
-    relativeTime: defaultRelativeTime,
-
-    months: defaultLocaleMonths,
-    monthsShort: defaultLocaleMonthsShort,
-
-    week: defaultLocaleWeek,
-
-    weekdays: defaultLocaleWeekdays,
-    weekdaysMin: defaultLocaleWeekdaysMin,
-    weekdaysShort: defaultLocaleWeekdaysShort,
-
-    meridiemParse: defaultLocaleMeridiemParse
-};
-
-// internal storage for locale config files
-var locales = {};
-var localeFamilies = {};
-var globalLocale;
-
-function normalizeLocale(key) {
-    return key ? key.toLowerCase().replace('_', '-') : key;
-}
-
-// pick the locale from the array
-// try ['en-au', 'en-gb'] as 'en-au', 'en-gb', 'en', as in move through the list trying each
-// substring from most specific to least, but move to the next array item if it's a more specific variant than the current root
-function chooseLocale(names) {
-    var i = 0, j, next, locale, split;
-
-    while (i < names.length) {
-        split = normalizeLocale(names[i]).split('-');
-        j = split.length;
-        next = normalizeLocale(names[i + 1]);
-        next = next ? next.split('-') : null;
-        while (j > 0) {
-            locale = loadLocale(split.slice(0, j).join('-'));
-            if (locale) {
-                return locale;
-            }
-            if (next && next.length >= j && compareArrays(split, next, true) >= j - 1) {
-                //the next array item is better than a shallower substring of this one
-                break;
-            }
-            j--;
-        }
-        i++;
-    }
-    return null;
-}
-
-function loadLocale(name) {
-    var oldLocale = null;
-    // TODO: Find a better way to register and load all the locales in Node
-    if (!locales[name] && (typeof module !== 'undefined') &&
-            module && module.exports) {
-        try {
-            oldLocale = globalLocale._abbr;
-            require('./locale/' + name);
-            // because defineLocale currently also sets the global locale, we
-            // want to undo that for lazy loaded locales
-            getSetGlobalLocale(oldLocale);
-        } catch (e) { }
-    }
-    return locales[name];
-}
-
-// This function will load locale and then set the global locale.  If
-// no arguments are passed in, it will simply return the current global
-// locale key.
-function getSetGlobalLocale (key, values) {
-    var data;
-    if (key) {
-        if (isUndefined(values)) {
-            data = getLocale(key);
-        }
-        else {
-            data = defineLocale(key, values);
-        }
-
-        if (data) {
-            // moment.duration._locale = moment._locale = data;
-            globalLocale = data;
-        }
-    }
-
-    return globalLocale._abbr;
-}
-
-function defineLocale (name, config) {
-    if (config !== null) {
-        var parentConfig = baseConfig;
-        config.abbr = name;
-        if (locales[name] != null) {
-            deprecateSimple('defineLocaleOverride',
-                    'use moment.updateLocale(localeName, config) to change ' +
-                    'an existing locale. moment.defineLocale(localeName, ' +
-                    'config) should only be used for creating a new locale ' +
-                    'See http://momentjs.com/guides/#/warnings/define-locale/ for more info.');
-            parentConfig = locales[name]._config;
-        } else if (config.parentLocale != null) {
-            if (locales[config.parentLocale] != null) {
-                parentConfig = locales[config.parentLocale]._config;
-            } else {
-                if (!localeFamilies[config.parentLocale]) {
-                    localeFamilies[config.parentLocale] = [];
-                }
-                localeFamilies[config.parentLocale].push({
-                    name: name,
-                    config: config
-                });
-                return null;
-            }
-        }
-        locales[name] = new Locale(mergeConfigs(parentConfig, config));
-
-        if (localeFamilies[name]) {
-            localeFamilies[name].forEach(function (x) {
-                defineLocale(x.name, x.config);
-            });
-        }
-
-        // backwards compat for now: also set the locale
-        // make sure we set the locale AFTER all child locales have been
-        // created, so we won't end up with the child locale set.
-        getSetGlobalLocale(name);
-
-
-        return locales[name];
-    } else {
-        // useful for testing
-        delete locales[name];
-        return null;
-    }
-}
-
-function updateLocale(name, config) {
-    if (config != null) {
-        var locale, parentConfig = baseConfig;
-        // MERGE
-        if (locales[name] != null) {
-            parentConfig = locales[name]._config;
-        }
-        config = mergeConfigs(parentConfig, config);
-        locale = new Locale(config);
-        locale.parentLocale = locales[name];
-        locales[name] = locale;
-
-        // backwards compat for now: also set the locale
-        getSetGlobalLocale(name);
-    } else {
-        // pass null for config to unupdate, useful for tests
-        if (locales[name] != null) {
-            if (locales[name].parentLocale != null) {
-                locales[name] = locales[name].parentLocale;
-            } else if (locales[name] != null) {
-                delete locales[name];
-            }
-        }
-    }
-    return locales[name];
-}
-
-// returns locale data
-function getLocale (key) {
-    var locale;
-
-    if (key && key._locale && key._locale._abbr) {
-        key = key._locale._abbr;
-    }
-
-    if (!key) {
-        return globalLocale;
-    }
-
-    if (!isArray(key)) {
-        //short-circuit everything else
-        locale = loadLocale(key);
-        if (locale) {
-            return locale;
-        }
-        key = [key];
-    }
-
-    return chooseLocale(key);
-}
-
-function listLocales() {
-    return keys$1(locales);
-}
-
-function checkOverflow (m) {
-    var overflow;
-    var a = m._a;
-
-    if (a && getParsingFlags(m).overflow === -2) {
-        overflow =
-            a[MONTH]       < 0 || a[MONTH]       > 11  ? MONTH :
-            a[DATE]        < 1 || a[DATE]        > daysInMonth(a[YEAR], a[MONTH]) ? DATE :
-            a[HOUR]        < 0 || a[HOUR]        > 24 || (a[HOUR] === 24 && (a[MINUTE] !== 0 || a[SECOND] !== 0 || a[MILLISECOND] !== 0)) ? HOUR :
-            a[MINUTE]      < 0 || a[MINUTE]      > 59  ? MINUTE :
-            a[SECOND]      < 0 || a[SECOND]      > 59  ? SECOND :
-            a[MILLISECOND] < 0 || a[MILLISECOND] > 999 ? MILLISECOND :
-            -1;
-
-        if (getParsingFlags(m)._overflowDayOfYear && (overflow < YEAR || overflow > DATE)) {
-            overflow = DATE;
-        }
-        if (getParsingFlags(m)._overflowWeeks && overflow === -1) {
-            overflow = WEEK;
-        }
-        if (getParsingFlags(m)._overflowWeekday && overflow === -1) {
-            overflow = WEEKDAY;
-        }
-
-        getParsingFlags(m).overflow = overflow;
-    }
-
-    return m;
-}
-
-// iso 8601 regex
-// 0000-00-00 0000-W00 or 0000-W00-0 + T + 00 or 00:00 or 00:00:00 or 00:00:00.000 + +00:00 or +0000 or +00)
-var extendedIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})-(?:\d\d-\d\d|W\d\d-\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?::\d\d(?::\d\d(?:[.,]\d+)?)?)?)([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?$/;
-var basicIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})(?:\d\d\d\d|W\d\d\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?:\d\d(?:\d\d(?:[.,]\d+)?)?)?)([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?$/;
-
-var tzRegex = /Z|[+-]\d\d(?::?\d\d)?/;
-
-var isoDates = [
-    ['YYYYYY-MM-DD', /[+-]\d{6}-\d\d-\d\d/],
-    ['YYYY-MM-DD', /\d{4}-\d\d-\d\d/],
-    ['GGGG-[W]WW-E', /\d{4}-W\d\d-\d/],
-    ['GGGG-[W]WW', /\d{4}-W\d\d/, false],
-    ['YYYY-DDD', /\d{4}-\d{3}/],
-    ['YYYY-MM', /\d{4}-\d\d/, false],
-    ['YYYYYYMMDD', /[+-]\d{10}/],
-    ['YYYYMMDD', /\d{8}/],
-    // YYYYMM is NOT allowed by the standard
-    ['GGGG[W]WWE', /\d{4}W\d{3}/],
-    ['GGGG[W]WW', /\d{4}W\d{2}/, false],
-    ['YYYYDDD', /\d{7}/]
-];
-
-// iso time formats and regexes
-var isoTimes = [
-    ['HH:mm:ss.SSSS', /\d\d:\d\d:\d\d\.\d+/],
-    ['HH:mm:ss,SSSS', /\d\d:\d\d:\d\d,\d+/],
-    ['HH:mm:ss', /\d\d:\d\d:\d\d/],
-    ['HH:mm', /\d\d:\d\d/],
-    ['HHmmss.SSSS', /\d\d\d\d\d\d\.\d+/],
-    ['HHmmss,SSSS', /\d\d\d\d\d\d,\d+/],
-    ['HHmmss', /\d\d\d\d\d\d/],
-    ['HHmm', /\d\d\d\d/],
-    ['HH', /\d\d/]
-];
-
-var aspNetJsonRegex = /^\/?Date\((\-?\d+)/i;
-
-// date from iso format
-function configFromISO(config) {
-    var i, l,
-        string = config._i,
-        match = extendedIsoRegex.exec(string) || basicIsoRegex.exec(string),
-        allowTime, dateFormat, timeFormat, tzFormat;
-
-    if (match) {
-        getParsingFlags(config).iso = true;
-
-        for (i = 0, l = isoDates.length; i < l; i++) {
-            if (isoDates[i][1].exec(match[1])) {
-                dateFormat = isoDates[i][0];
-                allowTime = isoDates[i][2] !== false;
-                break;
-            }
-        }
-        if (dateFormat == null) {
-            config._isValid = false;
-            return;
-        }
-        if (match[3]) {
-            for (i = 0, l = isoTimes.length; i < l; i++) {
-                if (isoTimes[i][1].exec(match[3])) {
-                    // match[2] should be 'T' or space
-                    timeFormat = (match[2] || ' ') + isoTimes[i][0];
-                    break;
-                }
-            }
-            if (timeFormat == null) {
-                config._isValid = false;
-                return;
-            }
-        }
-        if (!allowTime && timeFormat != null) {
-            config._isValid = false;
-            return;
-        }
-        if (match[4]) {
-            if (tzRegex.exec(match[4])) {
-                tzFormat = 'Z';
-            } else {
-                config._isValid = false;
-                return;
-            }
-        }
-        config._f = dateFormat + (timeFormat || '') + (tzFormat || '');
-        configFromStringAndFormat(config);
-    } else {
-        config._isValid = false;
-    }
-}
-
-// RFC 2822 regex: For details see https://tools.ietf.org/html/rfc2822#section-3.3
-var basicRfcRegex = /^((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d?\d\s(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(?:\d\d)?\d\d\s)(\d\d:\d\d)(\:\d\d)?(\s(?:UT|GMT|[ECMP][SD]T|[A-IK-Za-ik-z]|[+-]\d{4}))$/;
-
-// date and time from ref 2822 format
-function configFromRFC2822(config) {
-    var string, match, dayFormat,
-        dateFormat, timeFormat, tzFormat;
-    var timezones = {
-        ' GMT': ' +0000',
-        ' EDT': ' -0400',
-        ' EST': ' -0500',
-        ' CDT': ' -0500',
-        ' CST': ' -0600',
-        ' MDT': ' -0600',
-        ' MST': ' -0700',
-        ' PDT': ' -0700',
-        ' PST': ' -0800'
-    };
-    var military = 'YXWVUTSRQPONZABCDEFGHIKLM';
-    var timezone, timezoneIndex;
-
-    string = config._i
-        .replace(/\([^\)]*\)|[\n\t]/g, ' ') // Remove comments and folding whitespace
-        .replace(/(\s\s+)/g, ' ') // Replace multiple-spaces with a single space
-        .replace(/^\s|\s$/g, ''); // Remove leading and trailing spaces
-    match = basicRfcRegex.exec(string);
-
-    if (match) {
-        dayFormat = match[1] ? 'ddd' + ((match[1].length === 5) ? ', ' : ' ') : '';
-        dateFormat = 'D MMM ' + ((match[2].length > 10) ? 'YYYY ' : 'YY ');
-        timeFormat = 'HH:mm' + (match[4] ? ':ss' : '');
-
-        // TODO: Replace the vanilla JS Date object with an indepentent day-of-week check.
-        if (match[1]) { // day of week given
-            var momentDate = new Date(match[2]);
-            var momentDay = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][momentDate.getDay()];
-
-            if (match[1].substr(0,3) !== momentDay) {
-                getParsingFlags(config).weekdayMismatch = true;
-                config._isValid = false;
-                return;
-            }
-        }
-
-        switch (match[5].length) {
-            case 2: // military
-                if (timezoneIndex === 0) {
-                    timezone = ' +0000';
-                } else {
-                    timezoneIndex = military.indexOf(match[5][1].toUpperCase()) - 12;
-                    timezone = ((timezoneIndex < 0) ? ' -' : ' +') +
-                        (('' + timezoneIndex).replace(/^-?/, '0')).match(/..$/)[0] + '00';
-                }
-                break;
-            case 4: // Zone
-                timezone = timezones[match[5]];
-                break;
-            default: // UT or +/-9999
-                timezone = timezones[' GMT'];
-        }
-        match[5] = timezone;
-        config._i = match.splice(1).join('');
-        tzFormat = ' ZZ';
-        config._f = dayFormat + dateFormat + timeFormat + tzFormat;
-        configFromStringAndFormat(config);
-        getParsingFlags(config).rfc2822 = true;
-    } else {
-        config._isValid = false;
-    }
-}
-
-// date from iso format or fallback
-function configFromString(config) {
-    var matched = aspNetJsonRegex.exec(config._i);
-
-    if (matched !== null) {
-        config._d = new Date(+matched[1]);
-        return;
-    }
-
-    configFromISO(config);
-    if (config._isValid === false) {
-        delete config._isValid;
-    } else {
-        return;
-    }
-
-    configFromRFC2822(config);
-    if (config._isValid === false) {
-        delete config._isValid;
-    } else {
-        return;
-    }
-
-    // Final attempt, use Input Fallback
-    hooks.createFromInputFallback(config);
-}
-
-hooks.createFromInputFallback = deprecate(
-    'value provided is not in a recognized RFC2822 or ISO format. moment construction falls back to js Date(), ' +
-    'which is not reliable across all browsers and versions. Non RFC2822/ISO date formats are ' +
-    'discouraged and will be removed in an upcoming major release. Please refer to ' +
-    'http://momentjs.com/guides/#/warnings/js-date/ for more info.',
-    function (config) {
-        config._d = new Date(config._i + (config._useUTC ? ' UTC' : ''));
-    }
-);
-
-// Pick the first defined of two or three arguments.
-function defaults(a, b, c) {
-    if (a != null) {
-        return a;
-    }
-    if (b != null) {
-        return b;
-    }
-    return c;
-}
-
-function currentDateArray(config) {
-    // hooks is actually the exported moment object
-    var nowValue = new Date(hooks.now());
-    if (config._useUTC) {
-        return [nowValue.getUTCFullYear(), nowValue.getUTCMonth(), nowValue.getUTCDate()];
-    }
-    return [nowValue.getFullYear(), nowValue.getMonth(), nowValue.getDate()];
-}
-
-// convert an array to a date.
-// the array should mirror the parameters below
-// note: all values past the year are optional and will default to the lowest possible value.
-// [year, month, day , hour, minute, second, millisecond]
-function configFromArray (config) {
-    var i, date, input = [], currentDate, yearToUse;
-
-    if (config._d) {
-        return;
-    }
-
-    currentDate = currentDateArray(config);
-
-    //compute day of the year from weeks and weekdays
-    if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
-        dayOfYearFromWeekInfo(config);
-    }
-
-    //if the day of the year is set, figure out what it is
-    if (config._dayOfYear != null) {
-        yearToUse = defaults(config._a[YEAR], currentDate[YEAR]);
-
-        if (config._dayOfYear > daysInYear(yearToUse) || config._dayOfYear === 0) {
-            getParsingFlags(config)._overflowDayOfYear = true;
-        }
-
-        date = createUTCDate(yearToUse, 0, config._dayOfYear);
-        config._a[MONTH] = date.getUTCMonth();
-        config._a[DATE] = date.getUTCDate();
-    }
-
-    // Default to current date.
-    // * if no year, month, day of month are given, default to today
-    // * if day of month is given, default month and year
-    // * if month is given, default only year
-    // * if year is given, don't default anything
-    for (i = 0; i < 3 && config._a[i] == null; ++i) {
-        config._a[i] = input[i] = currentDate[i];
-    }
-
-    // Zero out whatever was not defaulted, including time
-    for (; i < 7; i++) {
-        config._a[i] = input[i] = (config._a[i] == null) ? (i === 2 ? 1 : 0) : config._a[i];
-    }
-
-    // Check for 24:00:00.000
-    if (config._a[HOUR] === 24 &&
-            config._a[MINUTE] === 0 &&
-            config._a[SECOND] === 0 &&
-            config._a[MILLISECOND] === 0) {
-        config._nextDay = true;
-        config._a[HOUR] = 0;
-    }
-
-    config._d = (config._useUTC ? createUTCDate : createDate).apply(null, input);
-    // Apply timezone offset from input. The actual utcOffset can be changed
-    // with parseZone.
-    if (config._tzm != null) {
-        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
-    }
-
-    if (config._nextDay) {
-        config._a[HOUR] = 24;
-    }
-}
-
-function dayOfYearFromWeekInfo(config) {
-    var w, weekYear, week, weekday, dow, doy, temp, weekdayOverflow;
-
-    w = config._w;
-    if (w.GG != null || w.W != null || w.E != null) {
-        dow = 1;
-        doy = 4;
-
-        // TODO: We need to take the current isoWeekYear, but that depends on
-        // how we interpret now (local, utc, fixed offset). So create
-        // a now version of current config (take local/utc/offset flags, and
-        // create now).
-        weekYear = defaults(w.GG, config._a[YEAR], weekOfYear(createLocal(), 1, 4).year);
-        week = defaults(w.W, 1);
-        weekday = defaults(w.E, 1);
-        if (weekday < 1 || weekday > 7) {
-            weekdayOverflow = true;
-        }
-    } else {
-        dow = config._locale._week.dow;
-        doy = config._locale._week.doy;
-
-        var curWeek = weekOfYear(createLocal(), dow, doy);
-
-        weekYear = defaults(w.gg, config._a[YEAR], curWeek.year);
-
-        // Default to current week.
-        week = defaults(w.w, curWeek.week);
-
-        if (w.d != null) {
-            // weekday -- low day numbers are considered next week
-            weekday = w.d;
-            if (weekday < 0 || weekday > 6) {
-                weekdayOverflow = true;
-            }
-        } else if (w.e != null) {
-            // local weekday -- counting starts from begining of week
-            weekday = w.e + dow;
-            if (w.e < 0 || w.e > 6) {
-                weekdayOverflow = true;
-            }
-        } else {
-            // default to begining of week
-            weekday = dow;
-        }
-    }
-    if (week < 1 || week > weeksInYear(weekYear, dow, doy)) {
-        getParsingFlags(config)._overflowWeeks = true;
-    } else if (weekdayOverflow != null) {
-        getParsingFlags(config)._overflowWeekday = true;
-    } else {
-        temp = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy);
-        config._a[YEAR] = temp.year;
-        config._dayOfYear = temp.dayOfYear;
-    }
-}
-
-// constant that refers to the ISO standard
-hooks.ISO_8601 = function () {};
-
-// constant that refers to the RFC 2822 form
-hooks.RFC_2822 = function () {};
-
-// date from string and format string
-function configFromStringAndFormat(config) {
-    // TODO: Move this to another part of the creation flow to prevent circular deps
-    if (config._f === hooks.ISO_8601) {
-        configFromISO(config);
-        return;
-    }
-    if (config._f === hooks.RFC_2822) {
-        configFromRFC2822(config);
-        return;
-    }
-    config._a = [];
-    getParsingFlags(config).empty = true;
-
-    // This array is used to make a Date, either with `new Date` or `Date.UTC`
-    var string = '' + config._i,
-        i, parsedInput, tokens, token, skipped,
-        stringLength = string.length,
-        totalParsedInputLength = 0;
-
-    tokens = expandFormat(config._f, config._locale).match(formattingTokens) || [];
-
-    for (i = 0; i < tokens.length; i++) {
-        token = tokens[i];
-        parsedInput = (string.match(getParseRegexForToken(token, config)) || [])[0];
-        // console.log('token', token, 'parsedInput', parsedInput,
-        //         'regex', getParseRegexForToken(token, config));
-        if (parsedInput) {
-            skipped = string.substr(0, string.indexOf(parsedInput));
-            if (skipped.length > 0) {
-                getParsingFlags(config).unusedInput.push(skipped);
-            }
-            string = string.slice(string.indexOf(parsedInput) + parsedInput.length);
-            totalParsedInputLength += parsedInput.length;
-        }
-        // don't parse if it's not a known token
-        if (formatTokenFunctions[token]) {
-            if (parsedInput) {
-                getParsingFlags(config).empty = false;
-            }
-            else {
-                getParsingFlags(config).unusedTokens.push(token);
-            }
-            addTimeToArrayFromToken(token, parsedInput, config);
-        }
-        else if (config._strict && !parsedInput) {
-            getParsingFlags(config).unusedTokens.push(token);
-        }
-    }
-
-    // add remaining unparsed input length to the string
-    getParsingFlags(config).charsLeftOver = stringLength - totalParsedInputLength;
-    if (string.length > 0) {
-        getParsingFlags(config).unusedInput.push(string);
-    }
-
-    // clear _12h flag if hour is <= 12
-    if (config._a[HOUR] <= 12 &&
-        getParsingFlags(config).bigHour === true &&
-        config._a[HOUR] > 0) {
-        getParsingFlags(config).bigHour = undefined;
-    }
-
-    getParsingFlags(config).parsedDateParts = config._a.slice(0);
-    getParsingFlags(config).meridiem = config._meridiem;
-    // handle meridiem
-    config._a[HOUR] = meridiemFixWrap(config._locale, config._a[HOUR], config._meridiem);
-
-    configFromArray(config);
-    checkOverflow(config);
-}
-
-
-function meridiemFixWrap (locale, hour, meridiem) {
-    var isPm;
-
-    if (meridiem == null) {
-        // nothing to do
-        return hour;
-    }
-    if (locale.meridiemHour != null) {
-        return locale.meridiemHour(hour, meridiem);
-    } else if (locale.isPM != null) {
-        // Fallback
-        isPm = locale.isPM(meridiem);
-        if (isPm && hour < 12) {
-            hour += 12;
-        }
-        if (!isPm && hour === 12) {
-            hour = 0;
-        }
-        return hour;
-    } else {
-        // this is not supposed to happen
-        return hour;
-    }
-}
-
-// date from string and array of format strings
-function configFromStringAndArray(config) {
-    var tempConfig,
-        bestMoment,
-
-        scoreToBeat,
-        i,
-        currentScore;
-
-    if (config._f.length === 0) {
-        getParsingFlags(config).invalidFormat = true;
-        config._d = new Date(NaN);
-        return;
-    }
-
-    for (i = 0; i < config._f.length; i++) {
-        currentScore = 0;
-        tempConfig = copyConfig({}, config);
-        if (config._useUTC != null) {
-            tempConfig._useUTC = config._useUTC;
-        }
-        tempConfig._f = config._f[i];
-        configFromStringAndFormat(tempConfig);
-
-        if (!isValid(tempConfig)) {
-            continue;
-        }
-
-        // if there is any input that was not parsed add a penalty for that format
-        currentScore += getParsingFlags(tempConfig).charsLeftOver;
-
-        //or tokens
-        currentScore += getParsingFlags(tempConfig).unusedTokens.length * 10;
-
-        getParsingFlags(tempConfig).score = currentScore;
-
-        if (scoreToBeat == null || currentScore < scoreToBeat) {
-            scoreToBeat = currentScore;
-            bestMoment = tempConfig;
-        }
-    }
-
-    extend(config, bestMoment || tempConfig);
-}
-
-function configFromObject(config) {
-    if (config._d) {
-        return;
-    }
-
-    var i = normalizeObjectUnits(config._i);
-    config._a = map([i.year, i.month, i.day || i.date, i.hour, i.minute, i.second, i.millisecond], function (obj) {
-        return obj && parseInt(obj, 10);
-    });
-
-    configFromArray(config);
-}
-
-function createFromConfig (config) {
-    var res = new Moment(checkOverflow(prepareConfig(config)));
-    if (res._nextDay) {
-        // Adding is smart enough around DST
-        res.add(1, 'd');
-        res._nextDay = undefined;
-    }
-
-    return res;
-}
-
-function prepareConfig (config) {
-    var input = config._i,
-        format = config._f;
-
-    config._locale = config._locale || getLocale(config._l);
-
-    if (input === null || (format === undefined && input === '')) {
-        return createInvalid({nullInput: true});
-    }
-
-    if (typeof input === 'string') {
-        config._i = input = config._locale.preparse(input);
-    }
-
-    if (isMoment(input)) {
-        return new Moment(checkOverflow(input));
-    } else if (isDate(input)) {
-        config._d = input;
-    } else if (isArray(format)) {
-        configFromStringAndArray(config);
-    } else if (format) {
-        configFromStringAndFormat(config);
-    }  else {
-        configFromInput(config);
-    }
-
-    if (!isValid(config)) {
-        config._d = null;
-    }
-
-    return config;
-}
-
-function configFromInput(config) {
-    var input = config._i;
-    if (isUndefined(input)) {
-        config._d = new Date(hooks.now());
-    } else if (isDate(input)) {
-        config._d = new Date(input.valueOf());
-    } else if (typeof input === 'string') {
-        configFromString(config);
-    } else if (isArray(input)) {
-        config._a = map(input.slice(0), function (obj) {
-            return parseInt(obj, 10);
-        });
-        configFromArray(config);
-    } else if (isObject(input)) {
-        configFromObject(config);
-    } else if (isNumber(input)) {
-        // from milliseconds
-        config._d = new Date(input);
-    } else {
-        hooks.createFromInputFallback(config);
-    }
-}
-
-function createLocalOrUTC (input, format, locale, strict, isUTC) {
-    var c = {};
-
-    if (locale === true || locale === false) {
-        strict = locale;
-        locale = undefined;
-    }
-
-    if ((isObject(input) && isObjectEmpty(input)) ||
-            (isArray(input) && input.length === 0)) {
-        input = undefined;
-    }
-    // object construction must be done this way.
-    // https://github.com/moment/moment/issues/1423
-    c._isAMomentObject = true;
-    c._useUTC = c._isUTC = isUTC;
-    c._l = locale;
-    c._i = input;
-    c._f = format;
-    c._strict = strict;
-
-    return createFromConfig(c);
-}
-
-function createLocal (input, format, locale, strict) {
-    return createLocalOrUTC(input, format, locale, strict, false);
-}
-
-var prototypeMin = deprecate(
-    'moment().min is deprecated, use moment.max instead. http://momentjs.com/guides/#/warnings/min-max/',
-    function () {
-        var other = createLocal.apply(null, arguments);
-        if (this.isValid() && other.isValid()) {
-            return other < this ? this : other;
-        } else {
-            return createInvalid();
-        }
-    }
-);
-
-var prototypeMax = deprecate(
-    'moment().max is deprecated, use moment.min instead. http://momentjs.com/guides/#/warnings/min-max/',
-    function () {
-        var other = createLocal.apply(null, arguments);
-        if (this.isValid() && other.isValid()) {
-            return other > this ? this : other;
-        } else {
-            return createInvalid();
-        }
-    }
-);
-
-// Pick a moment m from moments so that m[fn](other) is true for all
-// other. This relies on the function fn to be transitive.
-//
-// moments should either be an array of moment objects or an array, whose
-// first element is an array of moment objects.
-function pickBy(fn, moments) {
-    var res, i;
-    if (moments.length === 1 && isArray(moments[0])) {
-        moments = moments[0];
-    }
-    if (!moments.length) {
-        return createLocal();
-    }
-    res = moments[0];
-    for (i = 1; i < moments.length; ++i) {
-        if (!moments[i].isValid() || moments[i][fn](res)) {
-            res = moments[i];
-        }
-    }
-    return res;
-}
-
-// TODO: Use [].sort instead?
-function min () {
-    var args = [].slice.call(arguments, 0);
-
-    return pickBy('isBefore', args);
-}
-
-function max () {
-    var args = [].slice.call(arguments, 0);
-
-    return pickBy('isAfter', args);
-}
-
-var now = function () {
-    return Date.now ? Date.now() : +(new Date());
-};
-
-var ordering = ['year', 'quarter', 'month', 'week', 'day', 'hour', 'minute', 'second', 'millisecond'];
-
-function isDurationValid(m) {
-    for (var key in m) {
-        if (!(ordering.indexOf(key) !== -1 && (m[key] == null || !isNaN(m[key])))) {
-            return false;
-        }
-    }
-
-    var unitHasDecimal = false;
-    for (var i = 0; i < ordering.length; ++i) {
-        if (m[ordering[i]]) {
-            if (unitHasDecimal) {
-                return false; // only allow non-integers for smallest unit
-            }
-            if (parseFloat(m[ordering[i]]) !== toInt(m[ordering[i]])) {
-                unitHasDecimal = true;
-            }
-        }
-    }
-
-    return true;
-}
-
-function isValid$1() {
-    return this._isValid;
-}
-
-function createInvalid$1() {
-    return createDuration(NaN);
-}
-
-function Duration (duration) {
-    var normalizedInput = normalizeObjectUnits(duration),
-        years = normalizedInput.year || 0,
-        quarters = normalizedInput.quarter || 0,
-        months = normalizedInput.month || 0,
-        weeks = normalizedInput.week || 0,
-        days = normalizedInput.day || 0,
-        hours = normalizedInput.hour || 0,
-        minutes = normalizedInput.minute || 0,
-        seconds = normalizedInput.second || 0,
-        milliseconds = normalizedInput.millisecond || 0;
-
-    this._isValid = isDurationValid(normalizedInput);
-
-    // representation for dateAddRemove
-    this._milliseconds = +milliseconds +
-        seconds * 1e3 + // 1000
-        minutes * 6e4 + // 1000 * 60
-        hours * 1000 * 60 * 60; //using 1000 * 60 * 60 instead of 36e5 to avoid floating point rounding errors https://github.com/moment/moment/issues/2978
-    // Because of dateAddRemove treats 24 hours as different from a
-    // day when working around DST, we need to store them separately
-    this._days = +days +
-        weeks * 7;
-    // It is impossible translate months into days without knowing
-    // which months you are are talking about, so we have to store
-    // it separately.
-    this._months = +months +
-        quarters * 3 +
-        years * 12;
-
-    this._data = {};
-
-    this._locale = getLocale();
-
-    this._bubble();
-}
-
-function isDuration (obj) {
-    return obj instanceof Duration;
-}
-
-function absRound (number) {
-    if (number < 0) {
-        return Math.round(-1 * number) * -1;
-    } else {
-        return Math.round(number);
-    }
-}
-
-// FORMATTING
-
-function offset (token, separator) {
-    addFormatToken(token, 0, 0, function () {
-        var offset = this.utcOffset();
-        var sign = '+';
-        if (offset < 0) {
-            offset = -offset;
-            sign = '-';
-        }
-        return sign + zeroFill(~~(offset / 60), 2) + separator + zeroFill(~~(offset) % 60, 2);
-    });
-}
-
-offset('Z', ':');
-offset('ZZ', '');
-
-// PARSING
-
-addRegexToken('Z',  matchShortOffset);
-addRegexToken('ZZ', matchShortOffset);
-addParseToken(['Z', 'ZZ'], function (input, array, config) {
-    config._useUTC = true;
-    config._tzm = offsetFromString(matchShortOffset, input);
-});
-
-// HELPERS
-
-// timezone chunker
-// '+10:00' > ['10',  '00']
-// '-1530'  > ['-15', '30']
-var chunkOffset = /([\+\-]|\d\d)/gi;
-
-function offsetFromString(matcher, string) {
-    var matches = (string || '').match(matcher);
-
-    if (matches === null) {
-        return null;
-    }
-
-    var chunk   = matches[matches.length - 1] || [];
-    var parts   = (chunk + '').match(chunkOffset) || ['-', 0, 0];
-    var minutes = +(parts[1] * 60) + toInt(parts[2]);
-
-    return minutes === 0 ?
-      0 :
-      parts[0] === '+' ? minutes : -minutes;
-}
-
-// Return a moment from input, that is local/utc/zone equivalent to model.
-function cloneWithOffset(input, model) {
-    var res, diff;
-    if (model._isUTC) {
-        res = model.clone();
-        diff = (isMoment(input) || isDate(input) ? input.valueOf() : createLocal(input).valueOf()) - res.valueOf();
-        // Use low-level api, because this fn is low-level api.
-        res._d.setTime(res._d.valueOf() + diff);
-        hooks.updateOffset(res, false);
-        return res;
-    } else {
-        return createLocal(input).local();
-    }
-}
-
-function getDateOffset (m) {
-    // On Firefox.24 Date#getTimezoneOffset returns a floating point.
-    // https://github.com/moment/moment/pull/1871
-    return -Math.round(m._d.getTimezoneOffset() / 15) * 15;
-}
-
-// HOOKS
-
-// This function will be called whenever a moment is mutated.
-// It is intended to keep the offset in sync with the timezone.
-hooks.updateOffset = function () {};
-
-// MOMENTS
-
-// keepLocalTime = true means only change the timezone, without
-// affecting the local hour. So 5:31:26 +0300 --[utcOffset(2, true)]-->
-// 5:31:26 +0200 It is possible that 5:31:26 doesn't exist with offset
-// +0200, so we adjust the time as needed, to be valid.
-//
-// Keeping the time actually adds/subtracts (one hour)
-// from the actual represented time. That is why we call updateOffset
-// a second time. In case it wants us to change the offset again
-// _changeInProgress == true case, then we have to adjust, because
-// there is no such time in the given timezone.
-function getSetOffset (input, keepLocalTime, keepMinutes) {
-    var offset = this._offset || 0,
-        localAdjust;
-    if (!this.isValid()) {
-        return input != null ? this : NaN;
-    }
-    if (input != null) {
-        if (typeof input === 'string') {
-            input = offsetFromString(matchShortOffset, input);
-            if (input === null) {
-                return this;
-            }
-        } else if (Math.abs(input) < 16 && !keepMinutes) {
-            input = input * 60;
-        }
-        if (!this._isUTC && keepLocalTime) {
-            localAdjust = getDateOffset(this);
-        }
-        this._offset = input;
-        this._isUTC = true;
-        if (localAdjust != null) {
-            this.add(localAdjust, 'm');
-        }
-        if (offset !== input) {
-            if (!keepLocalTime || this._changeInProgress) {
-                addSubtract(this, createDuration(input - offset, 'm'), 1, false);
-            } else if (!this._changeInProgress) {
-                this._changeInProgress = true;
-                hooks.updateOffset(this, true);
-                this._changeInProgress = null;
-            }
-        }
-        return this;
-    } else {
-        return this._isUTC ? offset : getDateOffset(this);
-    }
-}
-
-function getSetZone (input, keepLocalTime) {
-    if (input != null) {
-        if (typeof input !== 'string') {
-            input = -input;
-        }
-
-        this.utcOffset(input, keepLocalTime);
-
-        return this;
-    } else {
-        return -this.utcOffset();
-    }
-}
-
-function setOffsetToUTC (keepLocalTime) {
-    return this.utcOffset(0, keepLocalTime);
-}
-
-function setOffsetToLocal (keepLocalTime) {
-    if (this._isUTC) {
-        this.utcOffset(0, keepLocalTime);
-        this._isUTC = false;
-
-        if (keepLocalTime) {
-            this.subtract(getDateOffset(this), 'm');
-        }
-    }
-    return this;
-}
-
-function setOffsetToParsedOffset () {
-    if (this._tzm != null) {
-        this.utcOffset(this._tzm, false, true);
-    } else if (typeof this._i === 'string') {
-        var tZone = offsetFromString(matchOffset, this._i);
-        if (tZone != null) {
-            this.utcOffset(tZone);
-        }
-        else {
-            this.utcOffset(0, true);
-        }
-    }
-    return this;
-}
-
-function hasAlignedHourOffset (input) {
-    if (!this.isValid()) {
-        return false;
-    }
-    input = input ? createLocal(input).utcOffset() : 0;
-
-    return (this.utcOffset() - input) % 60 === 0;
-}
-
-function isDaylightSavingTime () {
-    return (
-        this.utcOffset() > this.clone().month(0).utcOffset() ||
-        this.utcOffset() > this.clone().month(5).utcOffset()
-    );
-}
-
-function isDaylightSavingTimeShifted () {
-    if (!isUndefined(this._isDSTShifted)) {
-        return this._isDSTShifted;
-    }
-
-    var c = {};
-
-    copyConfig(c, this);
-    c = prepareConfig(c);
-
-    if (c._a) {
-        var other = c._isUTC ? createUTC(c._a) : createLocal(c._a);
-        this._isDSTShifted = this.isValid() &&
-            compareArrays(c._a, other.toArray()) > 0;
-    } else {
-        this._isDSTShifted = false;
-    }
-
-    return this._isDSTShifted;
-}
-
-function isLocal () {
-    return this.isValid() ? !this._isUTC : false;
-}
-
-function isUtcOffset () {
-    return this.isValid() ? this._isUTC : false;
-}
-
-function isUtc () {
-    return this.isValid() ? this._isUTC && this._offset === 0 : false;
-}
-
-// ASP.NET json date format regex
-var aspNetRegex = /^(\-)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)(\.\d*)?)?$/;
-
-// from http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
-// somewhat more in line with 4.4.3.2 2004 spec, but allows decimal anywhere
-// and further modified to allow for strings containing both week and day
-var isoRegex = /^(-)?P(?:(-?[0-9,.]*)Y)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)W)?(?:(-?[0-9,.]*)D)?(?:T(?:(-?[0-9,.]*)H)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)S)?)?$/;
-
-function createDuration (input, key) {
-    var duration = input,
-        // matching against regexp is expensive, do it on demand
-        match = null,
-        sign,
-        ret,
-        diffRes;
-
-    if (isDuration(input)) {
-        duration = {
-            ms : input._milliseconds,
-            d  : input._days,
-            M  : input._months
-        };
-    } else if (isNumber(input)) {
-        duration = {};
-        if (key) {
-            duration[key] = input;
-        } else {
-            duration.milliseconds = input;
-        }
-    } else if (!!(match = aspNetRegex.exec(input))) {
-        sign = (match[1] === '-') ? -1 : 1;
-        duration = {
-            y  : 0,
-            d  : toInt(match[DATE])                         * sign,
-            h  : toInt(match[HOUR])                         * sign,
-            m  : toInt(match[MINUTE])                       * sign,
-            s  : toInt(match[SECOND])                       * sign,
-            ms : toInt(absRound(match[MILLISECOND] * 1000)) * sign // the millisecond decimal point is included in the match
-        };
-    } else if (!!(match = isoRegex.exec(input))) {
-        sign = (match[1] === '-') ? -1 : 1;
-        duration = {
-            y : parseIso(match[2], sign),
-            M : parseIso(match[3], sign),
-            w : parseIso(match[4], sign),
-            d : parseIso(match[5], sign),
-            h : parseIso(match[6], sign),
-            m : parseIso(match[7], sign),
-            s : parseIso(match[8], sign)
-        };
-    } else if (duration == null) {// checks for null or undefined
-        duration = {};
-    } else if (typeof duration === 'object' && ('from' in duration || 'to' in duration)) {
-        diffRes = momentsDifference(createLocal(duration.from), createLocal(duration.to));
-
-        duration = {};
-        duration.ms = diffRes.milliseconds;
-        duration.M = diffRes.months;
-    }
-
-    ret = new Duration(duration);
-
-    if (isDuration(input) && hasOwnProp(input, '_locale')) {
-        ret._locale = input._locale;
-    }
-
-    return ret;
-}
-
-createDuration.fn = Duration.prototype;
-createDuration.invalid = createInvalid$1;
-
-function parseIso (inp, sign) {
-    // We'd normally use ~~inp for this, but unfortunately it also
-    // converts floats to ints.
-    // inp may be undefined, so careful calling replace on it.
-    var res = inp && parseFloat(inp.replace(',', '.'));
-    // apply sign while we're at it
-    return (isNaN(res) ? 0 : res) * sign;
-}
-
-function positiveMomentsDifference(base, other) {
-    var res = {milliseconds: 0, months: 0};
-
-    res.months = other.month() - base.month() +
-        (other.year() - base.year()) * 12;
-    if (base.clone().add(res.months, 'M').isAfter(other)) {
-        --res.months;
-    }
-
-    res.milliseconds = +other - +(base.clone().add(res.months, 'M'));
-
-    return res;
-}
-
-function momentsDifference(base, other) {
-    var res;
-    if (!(base.isValid() && other.isValid())) {
-        return {milliseconds: 0, months: 0};
-    }
-
-    other = cloneWithOffset(other, base);
-    if (base.isBefore(other)) {
-        res = positiveMomentsDifference(base, other);
-    } else {
-        res = positiveMomentsDifference(other, base);
-        res.milliseconds = -res.milliseconds;
-        res.months = -res.months;
-    }
-
-    return res;
-}
-
-// TODO: remove 'name' arg after deprecation is removed
-function createAdder(direction, name) {
-    return function (val, period) {
-        var dur, tmp;
-        //invert the arguments, but complain about it
-        if (period !== null && !isNaN(+period)) {
-            deprecateSimple(name, 'moment().' + name  + '(period, number) is deprecated. Please use moment().' + name + '(number, period). ' +
-            'See http://momentjs.com/guides/#/warnings/add-inverted-param/ for more info.');
-            tmp = val; val = period; period = tmp;
-        }
-
-        val = typeof val === 'string' ? +val : val;
-        dur = createDuration(val, period);
-        addSubtract(this, dur, direction);
-        return this;
-    };
-}
-
-function addSubtract (mom, duration, isAdding, updateOffset) {
-    var milliseconds = duration._milliseconds,
-        days = absRound(duration._days),
-        months = absRound(duration._months);
-
-    if (!mom.isValid()) {
-        // No op
-        return;
-    }
-
-    updateOffset = updateOffset == null ? true : updateOffset;
-
-    if (milliseconds) {
-        mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding);
-    }
-    if (days) {
-        set$1(mom, 'Date', get(mom, 'Date') + days * isAdding);
-    }
-    if (months) {
-        setMonth(mom, get(mom, 'Month') + months * isAdding);
-    }
-    if (updateOffset) {
-        hooks.updateOffset(mom, days || months);
-    }
-}
-
-var add      = createAdder(1, 'add');
-var subtract = createAdder(-1, 'subtract');
-
-function getCalendarFormat(myMoment, now) {
-    var diff = myMoment.diff(now, 'days', true);
-    return diff < -6 ? 'sameElse' :
-            diff < -1 ? 'lastWeek' :
-            diff < 0 ? 'lastDay' :
-            diff < 1 ? 'sameDay' :
-            diff < 2 ? 'nextDay' :
-            diff < 7 ? 'nextWeek' : 'sameElse';
-}
-
-function calendar$1 (time, formats) {
-    // We want to compare the start of today, vs this.
-    // Getting start-of-today depends on whether we're local/utc/offset or not.
-    var now = time || createLocal(),
-        sod = cloneWithOffset(now, this).startOf('day'),
-        format = hooks.calendarFormat(this, sod) || 'sameElse';
-
-    var output = formats && (isFunction(formats[format]) ? formats[format].call(this, now) : formats[format]);
-
-    return this.format(output || this.localeData().calendar(format, this, createLocal(now)));
-}
-
-function clone () {
-    return new Moment(this);
-}
-
-function isAfter (input, units) {
-    var localInput = isMoment(input) ? input : createLocal(input);
-    if (!(this.isValid() && localInput.isValid())) {
-        return false;
-    }
-    units = normalizeUnits(!isUndefined(units) ? units : 'millisecond');
-    if (units === 'millisecond') {
-        return this.valueOf() > localInput.valueOf();
-    } else {
-        return localInput.valueOf() < this.clone().startOf(units).valueOf();
-    }
-}
-
-function isBefore (input, units) {
-    var localInput = isMoment(input) ? input : createLocal(input);
-    if (!(this.isValid() && localInput.isValid())) {
-        return false;
-    }
-    units = normalizeUnits(!isUndefined(units) ? units : 'millisecond');
-    if (units === 'millisecond') {
-        return this.valueOf() < localInput.valueOf();
-    } else {
-        return this.clone().endOf(units).valueOf() < localInput.valueOf();
-    }
-}
-
-function isBetween (from, to, units, inclusivity) {
-    inclusivity = inclusivity || '()';
-    return (inclusivity[0] === '(' ? this.isAfter(from, units) : !this.isBefore(from, units)) &&
-        (inclusivity[1] === ')' ? this.isBefore(to, units) : !this.isAfter(to, units));
-}
-
-function isSame (input, units) {
-    var localInput = isMoment(input) ? input : createLocal(input),
-        inputMs;
-    if (!(this.isValid() && localInput.isValid())) {
-        return false;
-    }
-    units = normalizeUnits(units || 'millisecond');
-    if (units === 'millisecond') {
-        return this.valueOf() === localInput.valueOf();
-    } else {
-        inputMs = localInput.valueOf();
-        return this.clone().startOf(units).valueOf() <= inputMs && inputMs <= this.clone().endOf(units).valueOf();
-    }
-}
-
-function isSameOrAfter (input, units) {
-    return this.isSame(input, units) || this.isAfter(input,units);
-}
-
-function isSameOrBefore (input, units) {
-    return this.isSame(input, units) || this.isBefore(input,units);
-}
-
-function diff (input, units, asFloat) {
-    var that,
-        zoneDelta,
-        delta, output;
-
-    if (!this.isValid()) {
-        return NaN;
-    }
-
-    that = cloneWithOffset(input, this);
-
-    if (!that.isValid()) {
-        return NaN;
-    }
-
-    zoneDelta = (that.utcOffset() - this.utcOffset()) * 6e4;
-
-    units = normalizeUnits(units);
-
-    if (units === 'year' || units === 'month' || units === 'quarter') {
-        output = monthDiff(this, that);
-        if (units === 'quarter') {
-            output = output / 3;
-        } else if (units === 'year') {
-            output = output / 12;
-        }
-    } else {
-        delta = this - that;
-        output = units === 'second' ? delta / 1e3 : // 1000
-            units === 'minute' ? delta / 6e4 : // 1000 * 60
-            units === 'hour' ? delta / 36e5 : // 1000 * 60 * 60
-            units === 'day' ? (delta - zoneDelta) / 864e5 : // 1000 * 60 * 60 * 24, negate dst
-            units === 'week' ? (delta - zoneDelta) / 6048e5 : // 1000 * 60 * 60 * 24 * 7, negate dst
-            delta;
-    }
-    return asFloat ? output : absFloor(output);
-}
-
-function monthDiff (a, b) {
-    // difference in months
-    var wholeMonthDiff = ((b.year() - a.year()) * 12) + (b.month() - a.month()),
-        // b is in (anchor - 1 month, anchor + 1 month)
-        anchor = a.clone().add(wholeMonthDiff, 'months'),
-        anchor2, adjust;
-
-    if (b - anchor < 0) {
-        anchor2 = a.clone().add(wholeMonthDiff - 1, 'months');
-        // linear across the month
-        adjust = (b - anchor) / (anchor - anchor2);
-    } else {
-        anchor2 = a.clone().add(wholeMonthDiff + 1, 'months');
-        // linear across the month
-        adjust = (b - anchor) / (anchor2 - anchor);
-    }
-
-    //check for negative zero, return zero if negative zero
-    return -(wholeMonthDiff + adjust) || 0;
-}
-
-hooks.defaultFormat = 'YYYY-MM-DDTHH:mm:ssZ';
-hooks.defaultFormatUtc = 'YYYY-MM-DDTHH:mm:ss[Z]';
-
-function toString () {
-    return this.clone().locale('en').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ');
-}
-
-function toISOString() {
-    if (!this.isValid()) {
-        return null;
-    }
-    var m = this.clone().utc();
-    if (m.year() < 0 || m.year() > 9999) {
-        return formatMoment(m, 'YYYYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
-    }
-    if (isFunction(Date.prototype.toISOString)) {
-        // native implementation is ~50x faster, use it when we can
-        return this.toDate().toISOString();
-    }
-    return formatMoment(m, 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
-}
-
-/**
- * Return a human readable representation of a moment that can
- * also be evaluated to get a new moment which is the same
- *
- * @link https://nodejs.org/dist/latest/docs/api/util.html#util_custom_inspect_function_on_objects
- */
-function inspect () {
-    if (!this.isValid()) {
-        return 'moment.invalid(/* ' + this._i + ' */)';
-    }
-    var func = 'moment';
-    var zone = '';
-    if (!this.isLocal()) {
-        func = this.utcOffset() === 0 ? 'moment.utc' : 'moment.parseZone';
-        zone = 'Z';
-    }
-    var prefix = '[' + func + '("]';
-    var year = (0 <= this.year() && this.year() <= 9999) ? 'YYYY' : 'YYYYYY';
-    var datetime = '-MM-DD[T]HH:mm:ss.SSS';
-    var suffix = zone + '[")]';
-
-    return this.format(prefix + year + datetime + suffix);
-}
-
-function format (inputString) {
-    if (!inputString) {
-        inputString = this.isUtc() ? hooks.defaultFormatUtc : hooks.defaultFormat;
-    }
-    var output = formatMoment(this, inputString);
-    return this.localeData().postformat(output);
-}
-
-function from (time, withoutSuffix) {
-    if (this.isValid() &&
-            ((isMoment(time) && time.isValid()) ||
-             createLocal(time).isValid())) {
-        return createDuration({to: this, from: time}).locale(this.locale()).humanize(!withoutSuffix);
-    } else {
-        return this.localeData().invalidDate();
-    }
-}
-
-function fromNow (withoutSuffix) {
-    return this.from(createLocal(), withoutSuffix);
-}
-
-function to (time, withoutSuffix) {
-    if (this.isValid() &&
-            ((isMoment(time) && time.isValid()) ||
-             createLocal(time).isValid())) {
-        return createDuration({from: this, to: time}).locale(this.locale()).humanize(!withoutSuffix);
-    } else {
-        return this.localeData().invalidDate();
-    }
-}
-
-function toNow (withoutSuffix) {
-    return this.to(createLocal(), withoutSuffix);
-}
-
-// If passed a locale key, it will set the locale for this
-// instance.  Otherwise, it will return the locale configuration
-// variables for this instance.
-function locale (key) {
-    var newLocaleData;
-
-    if (key === undefined) {
-        return this._locale._abbr;
-    } else {
-        newLocaleData = getLocale(key);
-        if (newLocaleData != null) {
-            this._locale = newLocaleData;
-        }
-        return this;
-    }
-}
-
-var lang = deprecate(
-    'moment().lang() is deprecated. Instead, use moment().localeData() to get the language configuration. Use moment().locale() to change languages.',
-    function (key) {
-        if (key === undefined) {
-            return this.localeData();
-        } else {
-            return this.locale(key);
-        }
-    }
-);
-
-function localeData () {
-    return this._locale;
-}
-
-function startOf (units) {
-    units = normalizeUnits(units);
-    // the following switch intentionally omits break keywords
-    // to utilize falling through the cases.
-    switch (units) {
-        case 'year':
-            this.month(0);
-            /* falls through */
-        case 'quarter':
-        case 'month':
-            this.date(1);
-            /* falls through */
-        case 'week':
-        case 'isoWeek':
-        case 'day':
-        case 'date':
-            this.hours(0);
-            /* falls through */
-        case 'hour':
-            this.minutes(0);
-            /* falls through */
-        case 'minute':
-            this.seconds(0);
-            /* falls through */
-        case 'second':
-            this.milliseconds(0);
-    }
-
-    // weeks are a special case
-    if (units === 'week') {
-        this.weekday(0);
-    }
-    if (units === 'isoWeek') {
-        this.isoWeekday(1);
-    }
-
-    // quarters are also special
-    if (units === 'quarter') {
-        this.month(Math.floor(this.month() / 3) * 3);
-    }
-
-    return this;
-}
-
-function endOf (units) {
-    units = normalizeUnits(units);
-    if (units === undefined || units === 'millisecond') {
-        return this;
-    }
-
-    // 'date' is an alias for 'day', so it should be considered as such.
-    if (units === 'date') {
-        units = 'day';
-    }
-
-    return this.startOf(units).add(1, (units === 'isoWeek' ? 'week' : units)).subtract(1, 'ms');
-}
-
-function valueOf () {
-    return this._d.valueOf() - ((this._offset || 0) * 60000);
-}
-
-function unix () {
-    return Math.floor(this.valueOf() / 1000);
-}
-
-function toDate () {
-    return new Date(this.valueOf());
-}
-
-function toArray () {
-    var m = this;
-    return [m.year(), m.month(), m.date(), m.hour(), m.minute(), m.second(), m.millisecond()];
-}
-
-function toObject () {
-    var m = this;
-    return {
-        years: m.year(),
-        months: m.month(),
-        date: m.date(),
-        hours: m.hours(),
-        minutes: m.minutes(),
-        seconds: m.seconds(),
-        milliseconds: m.milliseconds()
-    };
-}
-
-function toJSON () {
-    // new Date(NaN).toJSON() === null
-    return this.isValid() ? this.toISOString() : null;
-}
-
-function isValid$2 () {
-    return isValid(this);
-}
-
-function parsingFlags () {
-    return extend({}, getParsingFlags(this));
-}
-
-function invalidAt () {
-    return getParsingFlags(this).overflow;
-}
-
-function creationData() {
-    return {
-        input: this._i,
-        format: this._f,
-        locale: this._locale,
-        isUTC: this._isUTC,
-        strict: this._strict
-    };
-}
-
-// FORMATTING
-
-addFormatToken(0, ['gg', 2], 0, function () {
-    return this.weekYear() % 100;
-});
-
-addFormatToken(0, ['GG', 2], 0, function () {
-    return this.isoWeekYear() % 100;
-});
-
-function addWeekYearFormatToken (token, getter) {
-    addFormatToken(0, [token, token.length], 0, getter);
-}
-
-addWeekYearFormatToken('gggg',     'weekYear');
-addWeekYearFormatToken('ggggg',    'weekYear');
-addWeekYearFormatToken('GGGG',  'isoWeekYear');
-addWeekYearFormatToken('GGGGG', 'isoWeekYear');
-
-// ALIASES
-
-addUnitAlias('weekYear', 'gg');
-addUnitAlias('isoWeekYear', 'GG');
-
-// PRIORITY
-
-addUnitPriority('weekYear', 1);
-addUnitPriority('isoWeekYear', 1);
-
-
-// PARSING
-
-addRegexToken('G',      matchSigned);
-addRegexToken('g',      matchSigned);
-addRegexToken('GG',     match1to2, match2);
-addRegexToken('gg',     match1to2, match2);
-addRegexToken('GGGG',   match1to4, match4);
-addRegexToken('gggg',   match1to4, match4);
-addRegexToken('GGGGG',  match1to6, match6);
-addRegexToken('ggggg',  match1to6, match6);
-
-addWeekParseToken(['gggg', 'ggggg', 'GGGG', 'GGGGG'], function (input, week, config, token) {
-    week[token.substr(0, 2)] = toInt(input);
-});
-
-addWeekParseToken(['gg', 'GG'], function (input, week, config, token) {
-    week[token] = hooks.parseTwoDigitYear(input);
-});
-
-// MOMENTS
-
-function getSetWeekYear (input) {
-    return getSetWeekYearHelper.call(this,
-            input,
-            this.week(),
-            this.weekday(),
-            this.localeData()._week.dow,
-            this.localeData()._week.doy);
-}
-
-function getSetISOWeekYear (input) {
-    return getSetWeekYearHelper.call(this,
-            input, this.isoWeek(), this.isoWeekday(), 1, 4);
-}
-
-function getISOWeeksInYear () {
-    return weeksInYear(this.year(), 1, 4);
-}
-
-function getWeeksInYear () {
-    var weekInfo = this.localeData()._week;
-    return weeksInYear(this.year(), weekInfo.dow, weekInfo.doy);
-}
-
-function getSetWeekYearHelper(input, week, weekday, dow, doy) {
-    var weeksTarget;
-    if (input == null) {
-        return weekOfYear(this, dow, doy).year;
-    } else {
-        weeksTarget = weeksInYear(input, dow, doy);
-        if (week > weeksTarget) {
-            week = weeksTarget;
-        }
-        return setWeekAll.call(this, input, week, weekday, dow, doy);
-    }
-}
-
-function setWeekAll(weekYear, week, weekday, dow, doy) {
-    var dayOfYearData = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy),
-        date = createUTCDate(dayOfYearData.year, 0, dayOfYearData.dayOfYear);
-
-    this.year(date.getUTCFullYear());
-    this.month(date.getUTCMonth());
-    this.date(date.getUTCDate());
-    return this;
-}
-
-// FORMATTING
-
-addFormatToken('Q', 0, 'Qo', 'quarter');
-
-// ALIASES
-
-addUnitAlias('quarter', 'Q');
-
-// PRIORITY
-
-addUnitPriority('quarter', 7);
-
-// PARSING
-
-addRegexToken('Q', match1);
-addParseToken('Q', function (input, array) {
-    array[MONTH] = (toInt(input) - 1) * 3;
-});
-
-// MOMENTS
-
-function getSetQuarter (input) {
-    return input == null ? Math.ceil((this.month() + 1) / 3) : this.month((input - 1) * 3 + this.month() % 3);
-}
-
-// FORMATTING
-
-addFormatToken('D', ['DD', 2], 'Do', 'date');
-
-// ALIASES
-
-addUnitAlias('date', 'D');
-
-// PRIOROITY
-addUnitPriority('date', 9);
-
-// PARSING
-
-addRegexToken('D',  match1to2);
-addRegexToken('DD', match1to2, match2);
-addRegexToken('Do', function (isStrict, locale) {
-    // TODO: Remove "ordinalParse" fallback in next major release.
-    return isStrict ?
-      (locale._dayOfMonthOrdinalParse || locale._ordinalParse) :
-      locale._dayOfMonthOrdinalParseLenient;
-});
-
-addParseToken(['D', 'DD'], DATE);
-addParseToken('Do', function (input, array) {
-    array[DATE] = toInt(input.match(match1to2)[0], 10);
-});
-
-// MOMENTS
-
-var getSetDayOfMonth = makeGetSet('Date', true);
-
-// FORMATTING
-
-addFormatToken('DDD', ['DDDD', 3], 'DDDo', 'dayOfYear');
-
-// ALIASES
-
-addUnitAlias('dayOfYear', 'DDD');
-
-// PRIORITY
-addUnitPriority('dayOfYear', 4);
-
-// PARSING
-
-addRegexToken('DDD',  match1to3);
-addRegexToken('DDDD', match3);
-addParseToken(['DDD', 'DDDD'], function (input, array, config) {
-    config._dayOfYear = toInt(input);
-});
-
-// HELPERS
-
-// MOMENTS
-
-function getSetDayOfYear (input) {
-    var dayOfYear = Math.round((this.clone().startOf('day') - this.clone().startOf('year')) / 864e5) + 1;
-    return input == null ? dayOfYear : this.add((input - dayOfYear), 'd');
-}
-
-// FORMATTING
-
-addFormatToken('m', ['mm', 2], 0, 'minute');
-
-// ALIASES
-
-addUnitAlias('minute', 'm');
-
-// PRIORITY
-
-addUnitPriority('minute', 14);
-
-// PARSING
-
-addRegexToken('m',  match1to2);
-addRegexToken('mm', match1to2, match2);
-addParseToken(['m', 'mm'], MINUTE);
-
-// MOMENTS
-
-var getSetMinute = makeGetSet('Minutes', false);
-
-// FORMATTING
-
-addFormatToken('s', ['ss', 2], 0, 'second');
-
-// ALIASES
-
-addUnitAlias('second', 's');
-
-// PRIORITY
-
-addUnitPriority('second', 15);
-
-// PARSING
-
-addRegexToken('s',  match1to2);
-addRegexToken('ss', match1to2, match2);
-addParseToken(['s', 'ss'], SECOND);
-
-// MOMENTS
-
-var getSetSecond = makeGetSet('Seconds', false);
-
-// FORMATTING
-
-addFormatToken('S', 0, 0, function () {
-    return ~~(this.millisecond() / 100);
-});
-
-addFormatToken(0, ['SS', 2], 0, function () {
-    return ~~(this.millisecond() / 10);
-});
-
-addFormatToken(0, ['SSS', 3], 0, 'millisecond');
-addFormatToken(0, ['SSSS', 4], 0, function () {
-    return this.millisecond() * 10;
-});
-addFormatToken(0, ['SSSSS', 5], 0, function () {
-    return this.millisecond() * 100;
-});
-addFormatToken(0, ['SSSSSS', 6], 0, function () {
-    return this.millisecond() * 1000;
-});
-addFormatToken(0, ['SSSSSSS', 7], 0, function () {
-    return this.millisecond() * 10000;
-});
-addFormatToken(0, ['SSSSSSSS', 8], 0, function () {
-    return this.millisecond() * 100000;
-});
-addFormatToken(0, ['SSSSSSSSS', 9], 0, function () {
-    return this.millisecond() * 1000000;
-});
-
-
-// ALIASES
-
-addUnitAlias('millisecond', 'ms');
-
-// PRIORITY
-
-addUnitPriority('millisecond', 16);
-
-// PARSING
-
-addRegexToken('S',    match1to3, match1);
-addRegexToken('SS',   match1to3, match2);
-addRegexToken('SSS',  match1to3, match3);
-
-var token;
-for (token = 'SSSS'; token.length <= 9; token += 'S') {
-    addRegexToken(token, matchUnsigned);
-}
-
-function parseMs(input, array) {
-    array[MILLISECOND] = toInt(('0.' + input) * 1000);
-}
-
-for (token = 'S'; token.length <= 9; token += 'S') {
-    addParseToken(token, parseMs);
-}
-// MOMENTS
-
-var getSetMillisecond = makeGetSet('Milliseconds', false);
-
-// FORMATTING
-
-addFormatToken('z',  0, 0, 'zoneAbbr');
-addFormatToken('zz', 0, 0, 'zoneName');
-
-// MOMENTS
-
-function getZoneAbbr () {
-    return this._isUTC ? 'UTC' : '';
-}
-
-function getZoneName () {
-    return this._isUTC ? 'Coordinated Universal Time' : '';
-}
-
-var proto = Moment.prototype;
-
-proto.add               = add;
-proto.calendar          = calendar$1;
-proto.clone             = clone;
-proto.diff              = diff;
-proto.endOf             = endOf;
-proto.format            = format;
-proto.from              = from;
-proto.fromNow           = fromNow;
-proto.to                = to;
-proto.toNow             = toNow;
-proto.get               = stringGet;
-proto.invalidAt         = invalidAt;
-proto.isAfter           = isAfter;
-proto.isBefore          = isBefore;
-proto.isBetween         = isBetween;
-proto.isSame            = isSame;
-proto.isSameOrAfter     = isSameOrAfter;
-proto.isSameOrBefore    = isSameOrBefore;
-proto.isValid           = isValid$2;
-proto.lang              = lang;
-proto.locale            = locale;
-proto.localeData        = localeData;
-proto.max               = prototypeMax;
-proto.min               = prototypeMin;
-proto.parsingFlags      = parsingFlags;
-proto.set               = stringSet;
-proto.startOf           = startOf;
-proto.subtract          = subtract;
-proto.toArray           = toArray;
-proto.toObject          = toObject;
-proto.toDate            = toDate;
-proto.toISOString       = toISOString;
-proto.inspect           = inspect;
-proto.toJSON            = toJSON;
-proto.toString          = toString;
-proto.unix              = unix;
-proto.valueOf           = valueOf;
-proto.creationData      = creationData;
-
-// Year
-proto.year       = getSetYear;
-proto.isLeapYear = getIsLeapYear;
-
-// Week Year
-proto.weekYear    = getSetWeekYear;
-proto.isoWeekYear = getSetISOWeekYear;
-
-// Quarter
-proto.quarter = proto.quarters = getSetQuarter;
-
-// Month
-proto.month       = getSetMonth;
-proto.daysInMonth = getDaysInMonth;
-
-// Week
-proto.week           = proto.weeks        = getSetWeek;
-proto.isoWeek        = proto.isoWeeks     = getSetISOWeek;
-proto.weeksInYear    = getWeeksInYear;
-proto.isoWeeksInYear = getISOWeeksInYear;
-
-// Day
-proto.date       = getSetDayOfMonth;
-proto.day        = proto.days             = getSetDayOfWeek;
-proto.weekday    = getSetLocaleDayOfWeek;
-proto.isoWeekday = getSetISODayOfWeek;
-proto.dayOfYear  = getSetDayOfYear;
-
-// Hour
-proto.hour = proto.hours = getSetHour;
-
-// Minute
-proto.minute = proto.minutes = getSetMinute;
-
-// Second
-proto.second = proto.seconds = getSetSecond;
-
-// Millisecond
-proto.millisecond = proto.milliseconds = getSetMillisecond;
-
-// Offset
-proto.utcOffset            = getSetOffset;
-proto.utc                  = setOffsetToUTC;
-proto.local                = setOffsetToLocal;
-proto.parseZone            = setOffsetToParsedOffset;
-proto.hasAlignedHourOffset = hasAlignedHourOffset;
-proto.isDST                = isDaylightSavingTime;
-proto.isLocal              = isLocal;
-proto.isUtcOffset          = isUtcOffset;
-proto.isUtc                = isUtc;
-proto.isUTC                = isUtc;
-
-// Timezone
-proto.zoneAbbr = getZoneAbbr;
-proto.zoneName = getZoneName;
-
-// Deprecations
-proto.dates  = deprecate('dates accessor is deprecated. Use date instead.', getSetDayOfMonth);
-proto.months = deprecate('months accessor is deprecated. Use month instead', getSetMonth);
-proto.years  = deprecate('years accessor is deprecated. Use year instead', getSetYear);
-proto.zone   = deprecate('moment().zone is deprecated, use moment().utcOffset instead. http://momentjs.com/guides/#/warnings/zone/', getSetZone);
-proto.isDSTShifted = deprecate('isDSTShifted is deprecated. See http://momentjs.com/guides/#/warnings/dst-shifted/ for more information', isDaylightSavingTimeShifted);
-
-function createUnix (input) {
-    return createLocal(input * 1000);
-}
-
-function createInZone () {
-    return createLocal.apply(null, arguments).parseZone();
-}
-
-function preParsePostFormat (string) {
-    return string;
-}
-
-var proto$1 = Locale.prototype;
-
-proto$1.calendar        = calendar;
-proto$1.longDateFormat  = longDateFormat;
-proto$1.invalidDate     = invalidDate;
-proto$1.ordinal         = ordinal;
-proto$1.preparse        = preParsePostFormat;
-proto$1.postformat      = preParsePostFormat;
-proto$1.relativeTime    = relativeTime;
-proto$1.pastFuture      = pastFuture;
-proto$1.set             = set;
-
-// Month
-proto$1.months            =        localeMonths;
-proto$1.monthsShort       =        localeMonthsShort;
-proto$1.monthsParse       =        localeMonthsParse;
-proto$1.monthsRegex       = monthsRegex;
-proto$1.monthsShortRegex  = monthsShortRegex;
-
-// Week
-proto$1.week = localeWeek;
-proto$1.firstDayOfYear = localeFirstDayOfYear;
-proto$1.firstDayOfWeek = localeFirstDayOfWeek;
-
-// Day of Week
-proto$1.weekdays       =        localeWeekdays;
-proto$1.weekdaysMin    =        localeWeekdaysMin;
-proto$1.weekdaysShort  =        localeWeekdaysShort;
-proto$1.weekdaysParse  =        localeWeekdaysParse;
-
-proto$1.weekdaysRegex       =        weekdaysRegex;
-proto$1.weekdaysShortRegex  =        weekdaysShortRegex;
-proto$1.weekdaysMinRegex    =        weekdaysMinRegex;
-
-// Hours
-proto$1.isPM = localeIsPM;
-proto$1.meridiem = localeMeridiem;
-
-function get$1 (format, index, field, setter) {
-    var locale = getLocale();
-    var utc = createUTC().set(setter, index);
-    return locale[field](utc, format);
-}
-
-function listMonthsImpl (format, index, field) {
-    if (isNumber(format)) {
-        index = format;
-        format = undefined;
-    }
-
-    format = format || '';
-
-    if (index != null) {
-        return get$1(format, index, field, 'month');
-    }
-
-    var i;
-    var out = [];
-    for (i = 0; i < 12; i++) {
-        out[i] = get$1(format, i, field, 'month');
-    }
-    return out;
-}
-
-// ()
-// (5)
-// (fmt, 5)
-// (fmt)
-// (true)
-// (true, 5)
-// (true, fmt, 5)
-// (true, fmt)
-function listWeekdaysImpl (localeSorted, format, index, field) {
-    if (typeof localeSorted === 'boolean') {
-        if (isNumber(format)) {
-            index = format;
-            format = undefined;
-        }
-
-        format = format || '';
-    } else {
-        format = localeSorted;
-        index = format;
-        localeSorted = false;
-
-        if (isNumber(format)) {
-            index = format;
-            format = undefined;
-        }
-
-        format = format || '';
-    }
-
-    var locale = getLocale(),
-        shift = localeSorted ? locale._week.dow : 0;
-
-    if (index != null) {
-        return get$1(format, (index + shift) % 7, field, 'day');
-    }
-
-    var i;
-    var out = [];
-    for (i = 0; i < 7; i++) {
-        out[i] = get$1(format, (i + shift) % 7, field, 'day');
-    }
-    return out;
-}
-
-function listMonths (format, index) {
-    return listMonthsImpl(format, index, 'months');
-}
-
-function listMonthsShort (format, index) {
-    return listMonthsImpl(format, index, 'monthsShort');
-}
-
-function listWeekdays (localeSorted, format, index) {
-    return listWeekdaysImpl(localeSorted, format, index, 'weekdays');
-}
-
-function listWeekdaysShort (localeSorted, format, index) {
-    return listWeekdaysImpl(localeSorted, format, index, 'weekdaysShort');
-}
-
-function listWeekdaysMin (localeSorted, format, index) {
-    return listWeekdaysImpl(localeSorted, format, index, 'weekdaysMin');
-}
-
-getSetGlobalLocale('en', {
-    dayOfMonthOrdinalParse: /\d{1,2}(th|st|nd|rd)/,
-    ordinal : function (number) {
-        var b = number % 10,
-            output = (toInt(number % 100 / 10) === 1) ? 'th' :
-            (b === 1) ? 'st' :
-            (b === 2) ? 'nd' :
-            (b === 3) ? 'rd' : 'th';
-        return number + output;
-    }
-});
-
-// Side effect imports
-hooks.lang = deprecate('moment.lang is deprecated. Use moment.locale instead.', getSetGlobalLocale);
-hooks.langData = deprecate('moment.langData is deprecated. Use moment.localeData instead.', getLocale);
-
-var mathAbs = Math.abs;
-
-function abs () {
-    var data           = this._data;
-
-    this._milliseconds = mathAbs(this._milliseconds);
-    this._days         = mathAbs(this._days);
-    this._months       = mathAbs(this._months);
-
-    data.milliseconds  = mathAbs(data.milliseconds);
-    data.seconds       = mathAbs(data.seconds);
-    data.minutes       = mathAbs(data.minutes);
-    data.hours         = mathAbs(data.hours);
-    data.months        = mathAbs(data.months);
-    data.years         = mathAbs(data.years);
-
-    return this;
-}
-
-function addSubtract$1 (duration, input, value, direction) {
-    var other = createDuration(input, value);
-
-    duration._milliseconds += direction * other._milliseconds;
-    duration._days         += direction * other._days;
-    duration._months       += direction * other._months;
-
-    return duration._bubble();
-}
-
-// supports only 2.0-style add(1, 's') or add(duration)
-function add$1 (input, value) {
-    return addSubtract$1(this, input, value, 1);
-}
-
-// supports only 2.0-style subtract(1, 's') or subtract(duration)
-function subtract$1 (input, value) {
-    return addSubtract$1(this, input, value, -1);
-}
-
-function absCeil (number) {
-    if (number < 0) {
-        return Math.floor(number);
-    } else {
-        return Math.ceil(number);
-    }
-}
-
-function bubble () {
-    var milliseconds = this._milliseconds;
-    var days         = this._days;
-    var months       = this._months;
-    var data         = this._data;
-    var seconds, minutes, hours, years, monthsFromDays;
-
-    // if we have a mix of positive and negative values, bubble down first
-    // check: https://github.com/moment/moment/issues/2166
-    if (!((milliseconds >= 0 && days >= 0 && months >= 0) ||
-            (milliseconds <= 0 && days <= 0 && months <= 0))) {
-        milliseconds += absCeil(monthsToDays(months) + days) * 864e5;
-        days = 0;
-        months = 0;
-    }
-
-    // The following code bubbles up values, see the tests for
-    // examples of what that means.
-    data.milliseconds = milliseconds % 1000;
-
-    seconds           = absFloor(milliseconds / 1000);
-    data.seconds      = seconds % 60;
-
-    minutes           = absFloor(seconds / 60);
-    data.minutes      = minutes % 60;
-
-    hours             = absFloor(minutes / 60);
-    data.hours        = hours % 24;
-
-    days += absFloor(hours / 24);
-
-    // convert days to months
-    monthsFromDays = absFloor(daysToMonths(days));
-    months += monthsFromDays;
-    days -= absCeil(monthsToDays(monthsFromDays));
-
-    // 12 months -> 1 year
-    years = absFloor(months / 12);
-    months %= 12;
-
-    data.days   = days;
-    data.months = months;
-    data.years  = years;
-
-    return this;
-}
-
-function daysToMonths (days) {
-    // 400 years have 146097 days (taking into account leap year rules)
-    // 400 years have 12 months === 4800
-    return days * 4800 / 146097;
-}
-
-function monthsToDays (months) {
-    // the reverse of daysToMonths
-    return months * 146097 / 4800;
-}
-
-function as (units) {
-    if (!this.isValid()) {
-        return NaN;
-    }
-    var days;
-    var months;
-    var milliseconds = this._milliseconds;
-
-    units = normalizeUnits(units);
-
-    if (units === 'month' || units === 'year') {
-        days   = this._days   + milliseconds / 864e5;
-        months = this._months + daysToMonths(days);
-        return units === 'month' ? months : months / 12;
-    } else {
-        // handle milliseconds separately because of floating point math errors (issue #1867)
-        days = this._days + Math.round(monthsToDays(this._months));
-        switch (units) {
-            case 'week'   : return days / 7     + milliseconds / 6048e5;
-            case 'day'    : return days         + milliseconds / 864e5;
-            case 'hour'   : return days * 24    + milliseconds / 36e5;
-            case 'minute' : return days * 1440  + milliseconds / 6e4;
-            case 'second' : return days * 86400 + milliseconds / 1000;
-            // Math.floor prevents floating point math errors here
-            case 'millisecond': return Math.floor(days * 864e5) + milliseconds;
-            default: throw new Error('Unknown unit ' + units);
-        }
-    }
-}
-
-// TODO: Use this.as('ms')?
-function valueOf$1 () {
-    if (!this.isValid()) {
-        return NaN;
-    }
-    return (
-        this._milliseconds +
-        this._days * 864e5 +
-        (this._months % 12) * 2592e6 +
-        toInt(this._months / 12) * 31536e6
-    );
-}
-
-function makeAs (alias) {
-    return function () {
-        return this.as(alias);
-    };
-}
-
-var asMilliseconds = makeAs('ms');
-var asSeconds      = makeAs('s');
-var asMinutes      = makeAs('m');
-var asHours        = makeAs('h');
-var asDays         = makeAs('d');
-var asWeeks        = makeAs('w');
-var asMonths       = makeAs('M');
-var asYears        = makeAs('y');
-
-function get$2 (units) {
-    units = normalizeUnits(units);
-    return this.isValid() ? this[units + 's']() : NaN;
-}
-
-function makeGetter(name) {
-    return function () {
-        return this.isValid() ? this._data[name] : NaN;
-    };
-}
-
-var milliseconds = makeGetter('milliseconds');
-var seconds      = makeGetter('seconds');
-var minutes      = makeGetter('minutes');
-var hours        = makeGetter('hours');
-var days         = makeGetter('days');
-var months       = makeGetter('months');
-var years        = makeGetter('years');
-
-function weeks () {
-    return absFloor(this.days() / 7);
-}
-
-var round = Math.round;
-var thresholds = {
-    ss: 44,         // a few seconds to seconds
-    s : 45,         // seconds to minute
-    m : 45,         // minutes to hour
-    h : 22,         // hours to day
-    d : 26,         // days to month
-    M : 11          // months to year
-};
-
-// helper function for moment.fn.from, moment.fn.fromNow, and moment.duration.fn.humanize
-function substituteTimeAgo(string, number, withoutSuffix, isFuture, locale) {
-    return locale.relativeTime(number || 1, !!withoutSuffix, string, isFuture);
-}
-
-function relativeTime$1 (posNegDuration, withoutSuffix, locale) {
-    var duration = createDuration(posNegDuration).abs();
-    var seconds  = round(duration.as('s'));
-    var minutes  = round(duration.as('m'));
-    var hours    = round(duration.as('h'));
-    var days     = round(duration.as('d'));
-    var months   = round(duration.as('M'));
-    var years    = round(duration.as('y'));
-
-    var a = seconds <= thresholds.ss && ['s', seconds]  ||
-            seconds < thresholds.s   && ['ss', seconds] ||
-            minutes <= 1             && ['m']           ||
-            minutes < thresholds.m   && ['mm', minutes] ||
-            hours   <= 1             && ['h']           ||
-            hours   < thresholds.h   && ['hh', hours]   ||
-            days    <= 1             && ['d']           ||
-            days    < thresholds.d   && ['dd', days]    ||
-            months  <= 1             && ['M']           ||
-            months  < thresholds.M   && ['MM', months]  ||
-            years   <= 1             && ['y']           || ['yy', years];
-
-    a[2] = withoutSuffix;
-    a[3] = +posNegDuration > 0;
-    a[4] = locale;
-    return substituteTimeAgo.apply(null, a);
-}
-
-// This function allows you to set the rounding function for relative time strings
-function getSetRelativeTimeRounding (roundingFunction) {
-    if (roundingFunction === undefined) {
-        return round;
-    }
-    if (typeof(roundingFunction) === 'function') {
-        round = roundingFunction;
-        return true;
-    }
-    return false;
-}
-
-// This function allows you to set a threshold for relative time strings
-function getSetRelativeTimeThreshold (threshold, limit) {
-    if (thresholds[threshold] === undefined) {
-        return false;
-    }
-    if (limit === undefined) {
-        return thresholds[threshold];
-    }
-    thresholds[threshold] = limit;
-    if (threshold === 's') {
-        thresholds.ss = limit - 1;
-    }
-    return true;
-}
-
-function humanize (withSuffix) {
-    if (!this.isValid()) {
-        return this.localeData().invalidDate();
-    }
-
-    var locale = this.localeData();
-    var output = relativeTime$1(this, !withSuffix, locale);
-
-    if (withSuffix) {
-        output = locale.pastFuture(+this, output);
-    }
-
-    return locale.postformat(output);
-}
-
-var abs$1 = Math.abs;
-
-function toISOString$1() {
-    // for ISO strings we do not use the normal bubbling rules:
-    //  * milliseconds bubble up until they become hours
-    //  * days do not bubble at all
-    //  * months bubble up until they become years
-    // This is because there is no context-free conversion between hours and days
-    // (think of clock changes)
-    // and also not between days and months (28-31 days per month)
-    if (!this.isValid()) {
-        return this.localeData().invalidDate();
-    }
-
-    var seconds = abs$1(this._milliseconds) / 1000;
-    var days         = abs$1(this._days);
-    var months       = abs$1(this._months);
-    var minutes, hours, years;
-
-    // 3600 seconds -> 60 minutes -> 1 hour
-    minutes           = absFloor(seconds / 60);
-    hours             = absFloor(minutes / 60);
-    seconds %= 60;
-    minutes %= 60;
-
-    // 12 months -> 1 year
-    years  = absFloor(months / 12);
-    months %= 12;
-
-
-    // inspired by https://github.com/dordille/moment-isoduration/blob/master/moment.isoduration.js
-    var Y = years;
-    var M = months;
-    var D = days;
-    var h = hours;
-    var m = minutes;
-    var s = seconds;
-    var total = this.asSeconds();
-
-    if (!total) {
-        // this is the same as C#'s (Noda) and python (isodate)...
-        // but not other JS (goog.date)
-        return 'P0D';
-    }
-
-    return (total < 0 ? '-' : '') +
-        'P' +
-        (Y ? Y + 'Y' : '') +
-        (M ? M + 'M' : '') +
-        (D ? D + 'D' : '') +
-        ((h || m || s) ? 'T' : '') +
-        (h ? h + 'H' : '') +
-        (m ? m + 'M' : '') +
-        (s ? s + 'S' : '');
-}
-
-var proto$2 = Duration.prototype;
-
-proto$2.isValid        = isValid$1;
-proto$2.abs            = abs;
-proto$2.add            = add$1;
-proto$2.subtract       = subtract$1;
-proto$2.as             = as;
-proto$2.asMilliseconds = asMilliseconds;
-proto$2.asSeconds      = asSeconds;
-proto$2.asMinutes      = asMinutes;
-proto$2.asHours        = asHours;
-proto$2.asDays         = asDays;
-proto$2.asWeeks        = asWeeks;
-proto$2.asMonths       = asMonths;
-proto$2.asYears        = asYears;
-proto$2.valueOf        = valueOf$1;
-proto$2._bubble        = bubble;
-proto$2.get            = get$2;
-proto$2.milliseconds   = milliseconds;
-proto$2.seconds        = seconds;
-proto$2.minutes        = minutes;
-proto$2.hours          = hours;
-proto$2.days           = days;
-proto$2.weeks          = weeks;
-proto$2.months         = months;
-proto$2.years          = years;
-proto$2.humanize       = humanize;
-proto$2.toISOString    = toISOString$1;
-proto$2.toString       = toISOString$1;
-proto$2.toJSON         = toISOString$1;
-proto$2.locale         = locale;
-proto$2.localeData     = localeData;
-
-// Deprecations
-proto$2.toIsoString = deprecate('toIsoString() is deprecated. Please use toISOString() instead (notice the capitals)', toISOString$1);
-proto$2.lang = lang;
-
-// Side effect imports
-
-// FORMATTING
-
-addFormatToken('X', 0, 0, 'unix');
-addFormatToken('x', 0, 0, 'valueOf');
-
-// PARSING
-
-addRegexToken('x', matchSigned);
-addRegexToken('X', matchTimestamp);
-addParseToken('X', function (input, array, config) {
-    config._d = new Date(parseFloat(input, 10) * 1000);
-});
-addParseToken('x', function (input, array, config) {
-    config._d = new Date(toInt(input));
-});
-
-// Side effect imports
-
-
-hooks.version = '2.18.1';
-
-setHookCallback(createLocal);
-
-hooks.fn                    = proto;
-hooks.min                   = min;
-hooks.max                   = max;
-hooks.now                   = now;
-hooks.utc                   = createUTC;
-hooks.unix                  = createUnix;
-hooks.months                = listMonths;
-hooks.isDate                = isDate;
-hooks.locale                = getSetGlobalLocale;
-hooks.invalid               = createInvalid;
-hooks.duration              = createDuration;
-hooks.isMoment              = isMoment;
-hooks.weekdays              = listWeekdays;
-hooks.parseZone             = createInZone;
-hooks.localeData            = getLocale;
-hooks.isDuration            = isDuration;
-hooks.monthsShort           = listMonthsShort;
-hooks.weekdaysMin           = listWeekdaysMin;
-hooks.defineLocale          = defineLocale;
-hooks.updateLocale          = updateLocale;
-hooks.locales               = listLocales;
-hooks.weekdaysShort         = listWeekdaysShort;
-hooks.normalizeUnits        = normalizeUnits;
-hooks.relativeTimeRounding = getSetRelativeTimeRounding;
-hooks.relativeTimeThreshold = getSetRelativeTimeThreshold;
-hooks.calendarFormat        = getCalendarFormat;
-hooks.prototype             = proto;
-
-return hooks;
-
-})));
-
-define('moment', ['moment/moment'], function (main) { return main; });
-
-//! moment.js locale configuration
-//! locale : Afrikaans [af]
-//! author : Werner Mollentze : https://github.com/wernerm
-
-;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define('moment/locale/af',['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-var af = moment.defineLocale('af', {
-    months : 'Januarie_Februarie_Maart_April_Mei_Junie_Julie_Augustus_September_Oktober_November_Desember'.split('_'),
-    monthsShort : 'Jan_Feb_Mrt_Apr_Mei_Jun_Jul_Aug_Sep_Okt_Nov_Des'.split('_'),
-    weekdays : 'Sondag_Maandag_Dinsdag_Woensdag_Donderdag_Vrydag_Saterdag'.split('_'),
-    weekdaysShort : 'Son_Maa_Din_Woe_Don_Vry_Sat'.split('_'),
-    weekdaysMin : 'So_Ma_Di_Wo_Do_Vr_Sa'.split('_'),
-    meridiemParse: /vm|nm/i,
-    isPM : function (input) {
-        return /^nm$/i.test(input);
-    },
-    meridiem : function (hours, minutes, isLower) {
-        if (hours < 12) {
-            return isLower ? 'vm' : 'VM';
-        } else {
-            return isLower ? 'nm' : 'NM';
-        }
-    },
-    longDateFormat : {
-        LT : 'HH:mm',
-        LTS : 'HH:mm:ss',
-        L : 'DD/MM/YYYY',
-        LL : 'D MMMM YYYY',
-        LLL : 'D MMMM YYYY HH:mm',
-        LLLL : 'dddd, D MMMM YYYY HH:mm'
-    },
-    calendar : {
-        sameDay : '[Vandag om] LT',
-        nextDay : '[Môre om] LT',
-        nextWeek : 'dddd [om] LT',
-        lastDay : '[Gister om] LT',
-        lastWeek : '[Laas] dddd [om] LT',
-        sameElse : 'L'
-    },
-    relativeTime : {
-        future : 'oor %s',
-        past : '%s gelede',
-        s : '\'n paar sekondes',
-        m : '\'n minuut',
-        mm : '%d minute',
-        h : '\'n uur',
-        hh : '%d ure',
-        d : '\'n dag',
-        dd : '%d dae',
-        M : '\'n maand',
-        MM : '%d maande',
-        y : '\'n jaar',
-        yy : '%d jaar'
-    },
-    dayOfMonthOrdinalParse: /\d{1,2}(ste|de)/,
-    ordinal : function (number) {
-        return number + ((number === 1 || number === 8 || number >= 20) ? 'ste' : 'de'); // Thanks to Joris Röling : https://github.com/jjupiter
-    },
-    week : {
-        dow : 1, // Maandag is die eerste dag van die week.
-        doy : 4  // Die week wat die 4de Januarie bevat is die eerste week van die jaar.
-    }
-});
-
-return af;
-
-})));
-
-//! moment.js locale configuration
-//! locale : German [de]
-//! author : lluchs : https://github.com/lluchs
-//! author: Menelion Elensúle: https://github.com/Oire
-//! author : Mikolaj Dadela : https://github.com/mik01aj
-
-;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define('moment/locale/de',['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-function processRelativeTime(number, withoutSuffix, key, isFuture) {
-    var format = {
-        'm': ['eine Minute', 'einer Minute'],
-        'h': ['eine Stunde', 'einer Stunde'],
-        'd': ['ein Tag', 'einem Tag'],
-        'dd': [number + ' Tage', number + ' Tagen'],
-        'M': ['ein Monat', 'einem Monat'],
-        'MM': [number + ' Monate', number + ' Monaten'],
-        'y': ['ein Jahr', 'einem Jahr'],
-        'yy': [number + ' Jahre', number + ' Jahren']
-    };
-    return withoutSuffix ? format[key][0] : format[key][1];
-}
-
-var de = moment.defineLocale('de', {
-    months : 'Januar_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
-    monthsShort : 'Jan._Febr._Mrz._Apr._Mai_Jun._Jul._Aug._Sept._Okt._Nov._Dez.'.split('_'),
-    monthsParseExact : true,
-    weekdays : 'Sonntag_Montag_Dienstag_Mittwoch_Donnerstag_Freitag_Samstag'.split('_'),
-    weekdaysShort : 'So._Mo._Di._Mi._Do._Fr._Sa.'.split('_'),
-    weekdaysMin : 'So_Mo_Di_Mi_Do_Fr_Sa'.split('_'),
-    weekdaysParseExact : true,
-    longDateFormat : {
-        LT: 'HH:mm',
-        LTS: 'HH:mm:ss',
-        L : 'DD.MM.YYYY',
-        LL : 'D. MMMM YYYY',
-        LLL : 'D. MMMM YYYY HH:mm',
-        LLLL : 'dddd, D. MMMM YYYY HH:mm'
-    },
-    calendar : {
-        sameDay: '[heute um] LT [Uhr]',
-        sameElse: 'L',
-        nextDay: '[morgen um] LT [Uhr]',
-        nextWeek: 'dddd [um] LT [Uhr]',
-        lastDay: '[gestern um] LT [Uhr]',
-        lastWeek: '[letzten] dddd [um] LT [Uhr]'
-    },
-    relativeTime : {
-        future : 'in %s',
-        past : 'vor %s',
-        s : 'ein paar Sekunden',
-        m : processRelativeTime,
-        mm : '%d Minuten',
-        h : processRelativeTime,
-        hh : '%d Stunden',
-        d : processRelativeTime,
-        dd : processRelativeTime,
-        M : processRelativeTime,
-        MM : processRelativeTime,
-        y : processRelativeTime,
-        yy : processRelativeTime
-    },
-    dayOfMonthOrdinalParse: /\d{1,2}\./,
-    ordinal : '%d.',
-    week : {
-        dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
-    }
-});
-
-return de;
-
-})));
-
-//! moment.js locale configuration
-//! locale : Spanish [es]
-//! author : Julio Napurí : https://github.com/julionc
-
-;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define('moment/locale/es',['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-var monthsShortDot = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_');
-var monthsShort = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
-
-var es = moment.defineLocale('es', {
-    months : 'enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre'.split('_'),
-    monthsShort : function (m, format) {
-        if (!m) {
-            return monthsShortDot;
-        } else if (/-MMM-/.test(format)) {
-            return monthsShort[m.month()];
-        } else {
-            return monthsShortDot[m.month()];
-        }
-    },
-    monthsParseExact : true,
-    weekdays : 'domingo_lunes_martes_miércoles_jueves_viernes_sábado'.split('_'),
-    weekdaysShort : 'dom._lun._mar._mié._jue._vie._sáb.'.split('_'),
-    weekdaysMin : 'do_lu_ma_mi_ju_vi_sá'.split('_'),
-    weekdaysParseExact : true,
-    longDateFormat : {
-        LT : 'H:mm',
-        LTS : 'H:mm:ss',
-        L : 'DD/MM/YYYY',
-        LL : 'D [de] MMMM [de] YYYY',
-        LLL : 'D [de] MMMM [de] YYYY H:mm',
-        LLLL : 'dddd, D [de] MMMM [de] YYYY H:mm'
-    },
-    calendar : {
-        sameDay : function () {
-            return '[hoy a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
-        },
-        nextDay : function () {
-            return '[mañana a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
-        },
-        nextWeek : function () {
-            return 'dddd [a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
-        },
-        lastDay : function () {
-            return '[ayer a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
-        },
-        lastWeek : function () {
-            return '[el] dddd [pasado a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
-        },
-        sameElse : 'L'
-    },
-    relativeTime : {
-        future : 'en %s',
-        past : 'hace %s',
-        s : 'unos segundos',
-        m : 'un minuto',
-        mm : '%d minutos',
-        h : 'una hora',
-        hh : '%d horas',
-        d : 'un día',
-        dd : '%d días',
-        M : 'un mes',
-        MM : '%d meses',
-        y : 'un año',
-        yy : '%d años'
-    },
-    dayOfMonthOrdinalParse : /\d{1,2}º/,
-    ordinal : '%dº',
-    week : {
-        dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
-    }
-});
-
-return es;
-
-})));
-
-//! moment.js locale configuration
-//! locale : French [fr]
-//! author : John Fischer : https://github.com/jfroffice
-
-;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define('moment/locale/fr',['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-var fr = moment.defineLocale('fr', {
-    months : 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
-    monthsShort : 'janv._févr._mars_avr._mai_juin_juil._août_sept._oct._nov._déc.'.split('_'),
-    monthsParseExact : true,
-    weekdays : 'dimanche_lundi_mardi_mercredi_jeudi_vendredi_samedi'.split('_'),
-    weekdaysShort : 'dim._lun._mar._mer._jeu._ven._sam.'.split('_'),
-    weekdaysMin : 'Di_Lu_Ma_Me_Je_Ve_Sa'.split('_'),
-    weekdaysParseExact : true,
-    longDateFormat : {
-        LT : 'HH:mm',
-        LTS : 'HH:mm:ss',
-        L : 'DD/MM/YYYY',
-        LL : 'D MMMM YYYY',
-        LLL : 'D MMMM YYYY HH:mm',
-        LLLL : 'dddd D MMMM YYYY HH:mm'
-    },
-    calendar : {
-        sameDay : '[Aujourd’hui à] LT',
-        nextDay : '[Demain à] LT',
-        nextWeek : 'dddd [à] LT',
-        lastDay : '[Hier à] LT',
-        lastWeek : 'dddd [dernier à] LT',
-        sameElse : 'L'
-    },
-    relativeTime : {
-        future : 'dans %s',
-        past : 'il y a %s',
-        s : 'quelques secondes',
-        m : 'une minute',
-        mm : '%d minutes',
-        h : 'une heure',
-        hh : '%d heures',
-        d : 'un jour',
-        dd : '%d jours',
-        M : 'un mois',
-        MM : '%d mois',
-        y : 'un an',
-        yy : '%d ans'
-    },
-    dayOfMonthOrdinalParse: /\d{1,2}(er|)/,
-    ordinal : function (number, period) {
-        switch (period) {
-            // TODO: Return 'e' when day of month > 1. Move this case inside
-            // block for masculine words below.
-            // See https://github.com/moment/moment/issues/3375
-            case 'D':
-                return number + (number === 1 ? 'er' : '');
-
-            // Words with masculine grammatical gender: mois, trimestre, jour
-            default:
-            case 'M':
-            case 'Q':
-            case 'DDD':
-            case 'd':
-                return number + (number === 1 ? 'er' : 'e');
-
-            // Words with feminine grammatical gender: semaine
-            case 'w':
-            case 'W':
-                return number + (number === 1 ? 're' : 'e');
-        }
-    },
-    week : {
-        dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
-    }
-});
-
-return fr;
-
-})));
-
-//! moment.js locale configuration
-//! locale : Hebrew [he]
-//! author : Tomer Cohen : https://github.com/tomer
-//! author : Moshe Simantov : https://github.com/DevelopmentIL
-//! author : Tal Ater : https://github.com/TalAter
-
-;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define('moment/locale/he',['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-var he = moment.defineLocale('he', {
-    months : 'ינואר_פברואר_מרץ_אפריל_מאי_יוני_יולי_אוגוסט_ספטמבר_אוקטובר_נובמבר_דצמבר'.split('_'),
-    monthsShort : 'ינו׳_פבר׳_מרץ_אפר׳_מאי_יוני_יולי_אוג׳_ספט׳_אוק׳_נוב׳_דצמ׳'.split('_'),
-    weekdays : 'ראשון_שני_שלישי_רביעי_חמישי_שישי_שבת'.split('_'),
-    weekdaysShort : 'א׳_ב׳_ג׳_ד׳_ה׳_ו׳_ש׳'.split('_'),
-    weekdaysMin : 'א_ב_ג_ד_ה_ו_ש'.split('_'),
-    longDateFormat : {
-        LT : 'HH:mm',
-        LTS : 'HH:mm:ss',
-        L : 'DD/MM/YYYY',
-        LL : 'D [ב]MMMM YYYY',
-        LLL : 'D [ב]MMMM YYYY HH:mm',
-        LLLL : 'dddd, D [ב]MMMM YYYY HH:mm',
-        l : 'D/M/YYYY',
-        ll : 'D MMM YYYY',
-        lll : 'D MMM YYYY HH:mm',
-        llll : 'ddd, D MMM YYYY HH:mm'
-    },
-    calendar : {
-        sameDay : '[היום ב־]LT',
-        nextDay : '[מחר ב־]LT',
-        nextWeek : 'dddd [בשעה] LT',
-        lastDay : '[אתמול ב־]LT',
-        lastWeek : '[ביום] dddd [האחרון בשעה] LT',
-        sameElse : 'L'
-    },
-    relativeTime : {
-        future : 'בעוד %s',
-        past : 'לפני %s',
-        s : 'מספר שניות',
-        m : 'דקה',
-        mm : '%d דקות',
-        h : 'שעה',
-        hh : function (number) {
-            if (number === 2) {
-                return 'שעתיים';
-            }
-            return number + ' שעות';
-        },
-        d : 'יום',
-        dd : function (number) {
-            if (number === 2) {
-                return 'יומיים';
-            }
-            return number + ' ימים';
-        },
-        M : 'חודש',
-        MM : function (number) {
-            if (number === 2) {
-                return 'חודשיים';
-            }
-            return number + ' חודשים';
-        },
-        y : 'שנה',
-        yy : function (number) {
-            if (number === 2) {
-                return 'שנתיים';
-            } else if (number % 10 === 0 && number !== 10) {
-                return number + ' שנה';
-            }
-            return number + ' שנים';
-        }
-    },
-    meridiemParse: /אחה"צ|לפנה"צ|אחרי הצהריים|לפני הצהריים|לפנות בוקר|בבוקר|בערב/i,
-    isPM : function (input) {
-        return /^(אחה"צ|אחרי הצהריים|בערב)$/.test(input);
-    },
-    meridiem : function (hour, minute, isLower) {
-        if (hour < 5) {
-            return 'לפנות בוקר';
-        } else if (hour < 10) {
-            return 'בבוקר';
-        } else if (hour < 12) {
-            return isLower ? 'לפנה"צ' : 'לפני הצהריים';
-        } else if (hour < 18) {
-            return isLower ? 'אחה"צ' : 'אחרי הצהריים';
-        } else {
-            return 'בערב';
-        }
-    }
-});
-
-return he;
-
-})));
-
-//! moment.js locale configuration
-//! locale : Hungarian [hu]
-//! author : Adam Brunner : https://github.com/adambrunner
-
-;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define('moment/locale/hu',['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-var weekEndings = 'vasárnap hétfőn kedden szerdán csütörtökön pénteken szombaton'.split(' ');
-function translate(number, withoutSuffix, key, isFuture) {
-    var num = number,
-        suffix;
-    switch (key) {
-        case 's':
-            return (isFuture || withoutSuffix) ? 'néhány másodperc' : 'néhány másodperce';
-        case 'm':
-            return 'egy' + (isFuture || withoutSuffix ? ' perc' : ' perce');
-        case 'mm':
-            return num + (isFuture || withoutSuffix ? ' perc' : ' perce');
-        case 'h':
-            return 'egy' + (isFuture || withoutSuffix ? ' óra' : ' órája');
-        case 'hh':
-            return num + (isFuture || withoutSuffix ? ' óra' : ' órája');
-        case 'd':
-            return 'egy' + (isFuture || withoutSuffix ? ' nap' : ' napja');
-        case 'dd':
-            return num + (isFuture || withoutSuffix ? ' nap' : ' napja');
-        case 'M':
-            return 'egy' + (isFuture || withoutSuffix ? ' hónap' : ' hónapja');
-        case 'MM':
-            return num + (isFuture || withoutSuffix ? ' hónap' : ' hónapja');
-        case 'y':
-            return 'egy' + (isFuture || withoutSuffix ? ' év' : ' éve');
-        case 'yy':
-            return num + (isFuture || withoutSuffix ? ' év' : ' éve');
-    }
-    return '';
-}
-function week(isFuture) {
-    return (isFuture ? '' : '[múlt] ') + '[' + weekEndings[this.day()] + '] LT[-kor]';
-}
-
-var hu = moment.defineLocale('hu', {
-    months : 'január_február_március_április_május_június_július_augusztus_szeptember_október_november_december'.split('_'),
-    monthsShort : 'jan_feb_márc_ápr_máj_jún_júl_aug_szept_okt_nov_dec'.split('_'),
-    weekdays : 'vasárnap_hétfő_kedd_szerda_csütörtök_péntek_szombat'.split('_'),
-    weekdaysShort : 'vas_hét_kedd_sze_csüt_pén_szo'.split('_'),
-    weekdaysMin : 'v_h_k_sze_cs_p_szo'.split('_'),
-    longDateFormat : {
-        LT : 'H:mm',
-        LTS : 'H:mm:ss',
-        L : 'YYYY.MM.DD.',
-        LL : 'YYYY. MMMM D.',
-        LLL : 'YYYY. MMMM D. H:mm',
-        LLLL : 'YYYY. MMMM D., dddd H:mm'
-    },
-    meridiemParse: /de|du/i,
-    isPM: function (input) {
-        return input.charAt(1).toLowerCase() === 'u';
-    },
-    meridiem : function (hours, minutes, isLower) {
-        if (hours < 12) {
-            return isLower === true ? 'de' : 'DE';
-        } else {
-            return isLower === true ? 'du' : 'DU';
-        }
-    },
-    calendar : {
-        sameDay : '[ma] LT[-kor]',
-        nextDay : '[holnap] LT[-kor]',
-        nextWeek : function () {
-            return week.call(this, true);
-        },
-        lastDay : '[tegnap] LT[-kor]',
-        lastWeek : function () {
-            return week.call(this, false);
-        },
-        sameElse : 'L'
-    },
-    relativeTime : {
-        future : '%s múlva',
-        past : '%s',
-        s : translate,
-        m : translate,
-        mm : translate,
-        h : translate,
-        hh : translate,
-        d : translate,
-        dd : translate,
-        M : translate,
-        MM : translate,
-        y : translate,
-        yy : translate
-    },
-    dayOfMonthOrdinalParse: /\d{1,2}\./,
-    ordinal : '%d.',
-    week : {
-        dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
-    }
-});
-
-return hu;
-
-})));
-
-//! moment.js locale configuration
-//! locale : Indonesian [id]
-//! author : Mohammad Satrio Utomo : https://github.com/tyok
-//! reference: http://id.wikisource.org/wiki/Pedoman_Umum_Ejaan_Bahasa_Indonesia_yang_Disempurnakan
-
-;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define('moment/locale/id',['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-var id = moment.defineLocale('id', {
-    months : 'Januari_Februari_Maret_April_Mei_Juni_Juli_Agustus_September_Oktober_November_Desember'.split('_'),
-    monthsShort : 'Jan_Feb_Mar_Apr_Mei_Jun_Jul_Ags_Sep_Okt_Nov_Des'.split('_'),
-    weekdays : 'Minggu_Senin_Selasa_Rabu_Kamis_Jumat_Sabtu'.split('_'),
-    weekdaysShort : 'Min_Sen_Sel_Rab_Kam_Jum_Sab'.split('_'),
-    weekdaysMin : 'Mg_Sn_Sl_Rb_Km_Jm_Sb'.split('_'),
-    longDateFormat : {
-        LT : 'HH.mm',
-        LTS : 'HH.mm.ss',
-        L : 'DD/MM/YYYY',
-        LL : 'D MMMM YYYY',
-        LLL : 'D MMMM YYYY [pukul] HH.mm',
-        LLLL : 'dddd, D MMMM YYYY [pukul] HH.mm'
-    },
-    meridiemParse: /pagi|siang|sore|malam/,
-    meridiemHour : function (hour, meridiem) {
-        if (hour === 12) {
-            hour = 0;
-        }
-        if (meridiem === 'pagi') {
-            return hour;
-        } else if (meridiem === 'siang') {
-            return hour >= 11 ? hour : hour + 12;
-        } else if (meridiem === 'sore' || meridiem === 'malam') {
-            return hour + 12;
-        }
-    },
-    meridiem : function (hours, minutes, isLower) {
-        if (hours < 11) {
-            return 'pagi';
-        } else if (hours < 15) {
-            return 'siang';
-        } else if (hours < 19) {
-            return 'sore';
-        } else {
-            return 'malam';
-        }
-    },
-    calendar : {
-        sameDay : '[Hari ini pukul] LT',
-        nextDay : '[Besok pukul] LT',
-        nextWeek : 'dddd [pukul] LT',
-        lastDay : '[Kemarin pukul] LT',
-        lastWeek : 'dddd [lalu pukul] LT',
-        sameElse : 'L'
-    },
-    relativeTime : {
-        future : 'dalam %s',
-        past : '%s yang lalu',
-        s : 'beberapa detik',
-        m : 'semenit',
-        mm : '%d menit',
-        h : 'sejam',
-        hh : '%d jam',
-        d : 'sehari',
-        dd : '%d hari',
-        M : 'sebulan',
-        MM : '%d bulan',
-        y : 'setahun',
-        yy : '%d tahun'
-    },
-    week : {
-        dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
-    }
-});
-
-return id;
-
-})));
-
-//! moment.js locale configuration
-//! locale : Italian [it]
-//! author : Lorenzo : https://github.com/aliem
-//! author: Mattia Larentis: https://github.com/nostalgiaz
-
-;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define('moment/locale/it',['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-var it = moment.defineLocale('it', {
-    months : 'gennaio_febbraio_marzo_aprile_maggio_giugno_luglio_agosto_settembre_ottobre_novembre_dicembre'.split('_'),
-    monthsShort : 'gen_feb_mar_apr_mag_giu_lug_ago_set_ott_nov_dic'.split('_'),
-    weekdays : 'domenica_lunedì_martedì_mercoledì_giovedì_venerdì_sabato'.split('_'),
-    weekdaysShort : 'dom_lun_mar_mer_gio_ven_sab'.split('_'),
-    weekdaysMin : 'do_lu_ma_me_gi_ve_sa'.split('_'),
-    longDateFormat : {
-        LT : 'HH:mm',
-        LTS : 'HH:mm:ss',
-        L : 'DD/MM/YYYY',
-        LL : 'D MMMM YYYY',
-        LLL : 'D MMMM YYYY HH:mm',
-        LLLL : 'dddd, D MMMM YYYY HH:mm'
-    },
-    calendar : {
-        sameDay: '[Oggi alle] LT',
-        nextDay: '[Domani alle] LT',
-        nextWeek: 'dddd [alle] LT',
-        lastDay: '[Ieri alle] LT',
-        lastWeek: function () {
-            switch (this.day()) {
-                case 0:
-                    return '[la scorsa] dddd [alle] LT';
-                default:
-                    return '[lo scorso] dddd [alle] LT';
-            }
-        },
-        sameElse: 'L'
-    },
-    relativeTime : {
-        future : function (s) {
-            return ((/^[0-9].+$/).test(s) ? 'tra' : 'in') + ' ' + s;
-        },
-        past : '%s fa',
-        s : 'alcuni secondi',
-        m : 'un minuto',
-        mm : '%d minuti',
-        h : 'un\'ora',
-        hh : '%d ore',
-        d : 'un giorno',
-        dd : '%d giorni',
-        M : 'un mese',
-        MM : '%d mesi',
-        y : 'un anno',
-        yy : '%d anni'
-    },
-    dayOfMonthOrdinalParse : /\d{1,2}º/,
-    ordinal: '%dº',
-    week : {
-        dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
-    }
-});
-
-return it;
-
-})));
-
-//! moment.js locale configuration
-//! locale : Japanese [ja]
-//! author : LI Long : https://github.com/baryon
-
-;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define('moment/locale/ja',['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-var ja = moment.defineLocale('ja', {
-    months : '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
-    monthsShort : '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
-    weekdays : '日曜日_月曜日_火曜日_水曜日_木曜日_金曜日_土曜日'.split('_'),
-    weekdaysShort : '日_月_火_水_木_金_土'.split('_'),
-    weekdaysMin : '日_月_火_水_木_金_土'.split('_'),
-    longDateFormat : {
-        LT : 'HH:mm',
-        LTS : 'HH:mm:ss',
-        L : 'YYYY/MM/DD',
-        LL : 'YYYY年M月D日',
-        LLL : 'YYYY年M月D日 HH:mm',
-        LLLL : 'YYYY年M月D日 HH:mm dddd',
-        l : 'YYYY/MM/DD',
-        ll : 'YYYY年M月D日',
-        lll : 'YYYY年M月D日 HH:mm',
-        llll : 'YYYY年M月D日 HH:mm dddd'
-    },
-    meridiemParse: /午前|午後/i,
-    isPM : function (input) {
-        return input === '午後';
-    },
-    meridiem : function (hour, minute, isLower) {
-        if (hour < 12) {
-            return '午前';
-        } else {
-            return '午後';
-        }
-    },
-    calendar : {
-        sameDay : '[今日] LT',
-        nextDay : '[明日] LT',
-        nextWeek : '[来週]dddd LT',
-        lastDay : '[昨日] LT',
-        lastWeek : '[前週]dddd LT',
-        sameElse : 'L'
-    },
-    dayOfMonthOrdinalParse : /\d{1,2}日/,
-    ordinal : function (number, period) {
-        switch (period) {
-            case 'd':
-            case 'D':
-            case 'DDD':
-                return number + '日';
-            default:
-                return number;
-        }
-    },
-    relativeTime : {
-        future : '%s後',
-        past : '%s前',
-        s : '数秒',
-        m : '1分',
-        mm : '%d分',
-        h : '1時間',
-        hh : '%d時間',
-        d : '1日',
-        dd : '%d日',
-        M : '1ヶ月',
-        MM : '%dヶ月',
-        y : '1年',
-        yy : '%d年'
-    }
-});
-
-return ja;
-
-})));
-
-//! moment.js locale configuration
-//! locale : Norwegian Bokmål [nb]
-//! authors : Espen Hovlandsdal : https://github.com/rexxars
-//!           Sigurd Gartmann : https://github.com/sigurdga
-
-;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define('moment/locale/nb',['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-var nb = moment.defineLocale('nb', {
-    months : 'januar_februar_mars_april_mai_juni_juli_august_september_oktober_november_desember'.split('_'),
-    monthsShort : 'jan._feb._mars_april_mai_juni_juli_aug._sep._okt._nov._des.'.split('_'),
-    monthsParseExact : true,
-    weekdays : 'søndag_mandag_tirsdag_onsdag_torsdag_fredag_lørdag'.split('_'),
-    weekdaysShort : 'sø._ma._ti._on._to._fr._lø.'.split('_'),
-    weekdaysMin : 'sø_ma_ti_on_to_fr_lø'.split('_'),
-    weekdaysParseExact : true,
-    longDateFormat : {
-        LT : 'HH:mm',
-        LTS : 'HH:mm:ss',
-        L : 'DD.MM.YYYY',
-        LL : 'D. MMMM YYYY',
-        LLL : 'D. MMMM YYYY [kl.] HH:mm',
-        LLLL : 'dddd D. MMMM YYYY [kl.] HH:mm'
-    },
-    calendar : {
-        sameDay: '[i dag kl.] LT',
-        nextDay: '[i morgen kl.] LT',
-        nextWeek: 'dddd [kl.] LT',
-        lastDay: '[i går kl.] LT',
-        lastWeek: '[forrige] dddd [kl.] LT',
-        sameElse: 'L'
-    },
-    relativeTime : {
-        future : 'om %s',
-        past : '%s siden',
-        s : 'noen sekunder',
-        m : 'ett minutt',
-        mm : '%d minutter',
-        h : 'en time',
-        hh : '%d timer',
-        d : 'en dag',
-        dd : '%d dager',
-        M : 'en måned',
-        MM : '%d måneder',
-        y : 'ett år',
-        yy : '%d år'
-    },
-    dayOfMonthOrdinalParse: /\d{1,2}\./,
-    ordinal : '%d.',
-    week : {
-        dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
-    }
-});
-
-return nb;
-
-})));
-
-//! moment.js locale configuration
-//! locale : Dutch [nl]
-//! author : Joris Röling : https://github.com/jorisroling
-//! author : Jacob Middag : https://github.com/middagj
-
-;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define('moment/locale/nl',['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-var monthsShortWithDots = 'jan._feb._mrt._apr._mei_jun._jul._aug._sep._okt._nov._dec.'.split('_');
-var monthsShortWithoutDots = 'jan_feb_mrt_apr_mei_jun_jul_aug_sep_okt_nov_dec'.split('_');
-
-var monthsParse = [/^jan/i, /^feb/i, /^maart|mrt.?$/i, /^apr/i, /^mei$/i, /^jun[i.]?$/i, /^jul[i.]?$/i, /^aug/i, /^sep/i, /^okt/i, /^nov/i, /^dec/i];
-var monthsRegex = /^(januari|februari|maart|april|mei|april|ju[nl]i|augustus|september|oktober|november|december|jan\.?|feb\.?|mrt\.?|apr\.?|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i;
-
-var nl = moment.defineLocale('nl', {
-    months : 'januari_februari_maart_april_mei_juni_juli_augustus_september_oktober_november_december'.split('_'),
-    monthsShort : function (m, format) {
-        if (!m) {
-            return monthsShortWithDots;
-        } else if (/-MMM-/.test(format)) {
-            return monthsShortWithoutDots[m.month()];
-        } else {
-            return monthsShortWithDots[m.month()];
-        }
-    },
-
-    monthsRegex: monthsRegex,
-    monthsShortRegex: monthsRegex,
-    monthsStrictRegex: /^(januari|februari|maart|mei|ju[nl]i|april|augustus|september|oktober|november|december)/i,
-    monthsShortStrictRegex: /^(jan\.?|feb\.?|mrt\.?|apr\.?|mei|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i,
-
-    monthsParse : monthsParse,
-    longMonthsParse : monthsParse,
-    shortMonthsParse : monthsParse,
-
-    weekdays : 'zondag_maandag_dinsdag_woensdag_donderdag_vrijdag_zaterdag'.split('_'),
-    weekdaysShort : 'zo._ma._di._wo._do._vr._za.'.split('_'),
-    weekdaysMin : 'Zo_Ma_Di_Wo_Do_Vr_Za'.split('_'),
-    weekdaysParseExact : true,
-    longDateFormat : {
-        LT : 'HH:mm',
-        LTS : 'HH:mm:ss',
-        L : 'DD-MM-YYYY',
-        LL : 'D MMMM YYYY',
-        LLL : 'D MMMM YYYY HH:mm',
-        LLLL : 'dddd D MMMM YYYY HH:mm'
-    },
-    calendar : {
-        sameDay: '[vandaag om] LT',
-        nextDay: '[morgen om] LT',
-        nextWeek: 'dddd [om] LT',
-        lastDay: '[gisteren om] LT',
-        lastWeek: '[afgelopen] dddd [om] LT',
-        sameElse: 'L'
-    },
-    relativeTime : {
-        future : 'over %s',
-        past : '%s geleden',
-        s : 'een paar seconden',
-        m : 'één minuut',
-        mm : '%d minuten',
-        h : 'één uur',
-        hh : '%d uur',
-        d : 'één dag',
-        dd : '%d dagen',
-        M : 'één maand',
-        MM : '%d maanden',
-        y : 'één jaar',
-        yy : '%d jaar'
-    },
-    dayOfMonthOrdinalParse: /\d{1,2}(ste|de)/,
-    ordinal : function (number) {
-        return number + ((number === 1 || number === 8 || number >= 20) ? 'ste' : 'de');
-    },
-    week : {
-        dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
-    }
-});
-
-return nl;
-
-})));
-
-//! moment.js locale configuration
-//! locale : Polish [pl]
-//! author : Rafal Hirsz : https://github.com/evoL
-
-;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define('moment/locale/pl',['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-var monthsNominative = 'styczeń_luty_marzec_kwiecień_maj_czerwiec_lipiec_sierpień_wrzesień_październik_listopad_grudzień'.split('_');
-var monthsSubjective = 'stycznia_lutego_marca_kwietnia_maja_czerwca_lipca_sierpnia_września_października_listopada_grudnia'.split('_');
-function plural(n) {
-    return (n % 10 < 5) && (n % 10 > 1) && ((~~(n / 10) % 10) !== 1);
-}
-function translate(number, withoutSuffix, key) {
-    var result = number + ' ';
-    switch (key) {
-        case 'm':
-            return withoutSuffix ? 'minuta' : 'minutę';
-        case 'mm':
-            return result + (plural(number) ? 'minuty' : 'minut');
-        case 'h':
-            return withoutSuffix  ? 'godzina'  : 'godzinę';
-        case 'hh':
-            return result + (plural(number) ? 'godziny' : 'godzin');
-        case 'MM':
-            return result + (plural(number) ? 'miesiące' : 'miesięcy');
-        case 'yy':
-            return result + (plural(number) ? 'lata' : 'lat');
-    }
-}
-
-var pl = moment.defineLocale('pl', {
-    months : function (momentToFormat, format) {
-        if (!momentToFormat) {
-            return monthsNominative;
-        } else if (format === '') {
-            // Hack: if format empty we know this is used to generate
-            // RegExp by moment. Give then back both valid forms of months
-            // in RegExp ready format.
-            return '(' + monthsSubjective[momentToFormat.month()] + '|' + monthsNominative[momentToFormat.month()] + ')';
-        } else if (/D MMMM/.test(format)) {
-            return monthsSubjective[momentToFormat.month()];
-        } else {
-            return monthsNominative[momentToFormat.month()];
-        }
-    },
-    monthsShort : 'sty_lut_mar_kwi_maj_cze_lip_sie_wrz_paź_lis_gru'.split('_'),
-    weekdays : 'niedziela_poniedziałek_wtorek_środa_czwartek_piątek_sobota'.split('_'),
-    weekdaysShort : 'ndz_pon_wt_śr_czw_pt_sob'.split('_'),
-    weekdaysMin : 'Nd_Pn_Wt_Śr_Cz_Pt_So'.split('_'),
-    longDateFormat : {
-        LT : 'HH:mm',
-        LTS : 'HH:mm:ss',
-        L : 'DD.MM.YYYY',
-        LL : 'D MMMM YYYY',
-        LLL : 'D MMMM YYYY HH:mm',
-        LLLL : 'dddd, D MMMM YYYY HH:mm'
-    },
-    calendar : {
-        sameDay: '[Dziś o] LT',
-        nextDay: '[Jutro o] LT',
-        nextWeek: '[W] dddd [o] LT',
-        lastDay: '[Wczoraj o] LT',
-        lastWeek: function () {
-            switch (this.day()) {
-                case 0:
-                    return '[W zeszłą niedzielę o] LT';
-                case 3:
-                    return '[W zeszłą środę o] LT';
-                case 6:
-                    return '[W zeszłą sobotę o] LT';
-                default:
-                    return '[W zeszły] dddd [o] LT';
-            }
-        },
-        sameElse: 'L'
-    },
-    relativeTime : {
-        future : 'za %s',
-        past : '%s temu',
-        s : 'kilka sekund',
-        m : translate,
-        mm : translate,
-        h : translate,
-        hh : translate,
-        d : '1 dzień',
-        dd : '%d dni',
-        M : 'miesiąc',
-        MM : translate,
-        y : 'rok',
-        yy : translate
-    },
-    dayOfMonthOrdinalParse: /\d{1,2}\./,
-    ordinal : '%d.',
-    week : {
-        dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
-    }
-});
-
-return pl;
-
-})));
-
-//! moment.js locale configuration
-//! locale : Portuguese (Brazil) [pt-br]
-//! author : Caio Ribeiro Pereira : https://github.com/caio-ribeiro-pereira
-
-;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define('moment/locale/pt-br',['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-var ptBr = moment.defineLocale('pt-br', {
-    months : 'Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro'.split('_'),
-    monthsShort : 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_'),
-    weekdays : 'Domingo_Segunda-feira_Terça-feira_Quarta-feira_Quinta-feira_Sexta-feira_Sábado'.split('_'),
-    weekdaysShort : 'Dom_Seg_Ter_Qua_Qui_Sex_Sáb'.split('_'),
-    weekdaysMin : 'Do_2ª_3ª_4ª_5ª_6ª_Sá'.split('_'),
-    weekdaysParseExact : true,
-    longDateFormat : {
-        LT : 'HH:mm',
-        LTS : 'HH:mm:ss',
-        L : 'DD/MM/YYYY',
-        LL : 'D [de] MMMM [de] YYYY',
-        LLL : 'D [de] MMMM [de] YYYY [às] HH:mm',
-        LLLL : 'dddd, D [de] MMMM [de] YYYY [às] HH:mm'
-    },
-    calendar : {
-        sameDay: '[Hoje às] LT',
-        nextDay: '[Amanhã às] LT',
-        nextWeek: 'dddd [às] LT',
-        lastDay: '[Ontem às] LT',
-        lastWeek: function () {
-            return (this.day() === 0 || this.day() === 6) ?
-                '[Último] dddd [às] LT' : // Saturday + Sunday
-                '[Última] dddd [às] LT'; // Monday - Friday
-        },
-        sameElse: 'L'
-    },
-    relativeTime : {
-        future : 'em %s',
-        past : '%s atrás',
-        s : 'poucos segundos',
-        m : 'um minuto',
-        mm : '%d minutos',
-        h : 'uma hora',
-        hh : '%d horas',
-        d : 'um dia',
-        dd : '%d dias',
-        M : 'um mês',
-        MM : '%d meses',
-        y : 'um ano',
-        yy : '%d anos'
-    },
-    dayOfMonthOrdinalParse: /\d{1,2}º/,
-    ordinal : '%dº'
-});
-
-return ptBr;
-
-})));
-
-//! moment.js locale configuration
-//! locale : Russian [ru]
-//! author : Viktorminator : https://github.com/Viktorminator
-//! Author : Menelion Elensúle : https://github.com/Oire
-//! author : Коренберг Марк : https://github.com/socketpair
-
-;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define('moment/locale/ru',['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-function plural(word, num) {
-    var forms = word.split('_');
-    return num % 10 === 1 && num % 100 !== 11 ? forms[0] : (num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2]);
-}
-function relativeTimeWithPlural(number, withoutSuffix, key) {
-    var format = {
-        'mm': withoutSuffix ? 'минута_минуты_минут' : 'минуту_минуты_минут',
-        'hh': 'час_часа_часов',
-        'dd': 'день_дня_дней',
-        'MM': 'месяц_месяца_месяцев',
-        'yy': 'год_года_лет'
-    };
-    if (key === 'm') {
-        return withoutSuffix ? 'минута' : 'минуту';
-    }
-    else {
-        return number + ' ' + plural(format[key], +number);
-    }
-}
-var monthsParse = [/^янв/i, /^фев/i, /^мар/i, /^апр/i, /^ма[йя]/i, /^июн/i, /^июл/i, /^авг/i, /^сен/i, /^окт/i, /^ноя/i, /^дек/i];
-
-// http://new.gramota.ru/spravka/rules/139-prop : § 103
-// Сокращения месяцев: http://new.gramota.ru/spravka/buro/search-answer?s=242637
-// CLDR data:          http://www.unicode.org/cldr/charts/28/summary/ru.html#1753
-var ru = moment.defineLocale('ru', {
-    months : {
-        format: 'января_февраля_марта_апреля_мая_июня_июля_августа_сентября_октября_ноября_декабря'.split('_'),
-        standalone: 'январь_февраль_март_апрель_май_июнь_июль_август_сентябрь_октябрь_ноябрь_декабрь'.split('_')
-    },
-    monthsShort : {
-        // по CLDR именно "июл." и "июн.", но какой смысл менять букву на точку ?
-        format: 'янв._февр._мар._апр._мая_июня_июля_авг._сент._окт._нояб._дек.'.split('_'),
-        standalone: 'янв._февр._март_апр._май_июнь_июль_авг._сент._окт._нояб._дек.'.split('_')
-    },
-    weekdays : {
-        standalone: 'воскресенье_понедельник_вторник_среда_четверг_пятница_суббота'.split('_'),
-        format: 'воскресенье_понедельник_вторник_среду_четверг_пятницу_субботу'.split('_'),
-        isFormat: /\[ ?[Вв] ?(?:прошлую|следующую|эту)? ?\] ?dddd/
-    },
-    weekdaysShort : 'вс_пн_вт_ср_чт_пт_сб'.split('_'),
-    weekdaysMin : 'вс_пн_вт_ср_чт_пт_сб'.split('_'),
-    monthsParse : monthsParse,
-    longMonthsParse : monthsParse,
-    shortMonthsParse : monthsParse,
-
-    // полные названия с падежами, по три буквы, для некоторых, по 4 буквы, сокращения с точкой и без точки
-    monthsRegex: /^(январ[ья]|янв\.?|феврал[ья]|февр?\.?|марта?|мар\.?|апрел[ья]|апр\.?|ма[йя]|июн[ья]|июн\.?|июл[ья]|июл\.?|августа?|авг\.?|сентябр[ья]|сент?\.?|октябр[ья]|окт\.?|ноябр[ья]|нояб?\.?|декабр[ья]|дек\.?)/i,
-
-    // копия предыдущего
-    monthsShortRegex: /^(январ[ья]|янв\.?|феврал[ья]|февр?\.?|марта?|мар\.?|апрел[ья]|апр\.?|ма[йя]|июн[ья]|июн\.?|июл[ья]|июл\.?|августа?|авг\.?|сентябр[ья]|сент?\.?|октябр[ья]|окт\.?|ноябр[ья]|нояб?\.?|декабр[ья]|дек\.?)/i,
-
-    // полные названия с падежами
-    monthsStrictRegex: /^(январ[яь]|феврал[яь]|марта?|апрел[яь]|ма[яй]|июн[яь]|июл[яь]|августа?|сентябр[яь]|октябр[яь]|ноябр[яь]|декабр[яь])/i,
-
-    // Выражение, которое соотвествует только сокращённым формам
-    monthsShortStrictRegex: /^(янв\.|февр?\.|мар[т.]|апр\.|ма[яй]|июн[ья.]|июл[ья.]|авг\.|сент?\.|окт\.|нояб?\.|дек\.)/i,
-    longDateFormat : {
-        LT : 'HH:mm',
-        LTS : 'HH:mm:ss',
-        L : 'DD.MM.YYYY',
-        LL : 'D MMMM YYYY г.',
-        LLL : 'D MMMM YYYY г., HH:mm',
-        LLLL : 'dddd, D MMMM YYYY г., HH:mm'
-    },
-    calendar : {
-        sameDay: '[Сегодня в] LT',
-        nextDay: '[Завтра в] LT',
-        lastDay: '[Вчера в] LT',
-        nextWeek: function (now) {
-            if (now.week() !== this.week()) {
-                switch (this.day()) {
-                    case 0:
-                        return '[В следующее] dddd [в] LT';
-                    case 1:
-                    case 2:
-                    case 4:
-                        return '[В следующий] dddd [в] LT';
-                    case 3:
-                    case 5:
-                    case 6:
-                        return '[В следующую] dddd [в] LT';
-                }
-            } else {
-                if (this.day() === 2) {
-                    return '[Во] dddd [в] LT';
-                } else {
-                    return '[В] dddd [в] LT';
-                }
-            }
-        },
-        lastWeek: function (now) {
-            if (now.week() !== this.week()) {
-                switch (this.day()) {
-                    case 0:
-                        return '[В прошлое] dddd [в] LT';
-                    case 1:
-                    case 2:
-                    case 4:
-                        return '[В прошлый] dddd [в] LT';
-                    case 3:
-                    case 5:
-                    case 6:
-                        return '[В прошлую] dddd [в] LT';
-                }
-            } else {
-                if (this.day() === 2) {
-                    return '[Во] dddd [в] LT';
-                } else {
-                    return '[В] dddd [в] LT';
-                }
-            }
-        },
-        sameElse: 'L'
-    },
-    relativeTime : {
-        future : 'через %s',
-        past : '%s назад',
-        s : 'несколько секунд',
-        m : relativeTimeWithPlural,
-        mm : relativeTimeWithPlural,
-        h : 'час',
-        hh : relativeTimeWithPlural,
-        d : 'день',
-        dd : relativeTimeWithPlural,
-        M : 'месяц',
-        MM : relativeTimeWithPlural,
-        y : 'год',
-        yy : relativeTimeWithPlural
-    },
-    meridiemParse: /ночи|утра|дня|вечера/i,
-    isPM : function (input) {
-        return /^(дня|вечера)$/.test(input);
-    },
-    meridiem : function (hour, minute, isLower) {
-        if (hour < 4) {
-            return 'ночи';
-        } else if (hour < 12) {
-            return 'утра';
-        } else if (hour < 17) {
-            return 'дня';
-        } else {
-            return 'вечера';
-        }
-    },
-    dayOfMonthOrdinalParse: /\d{1,2}-(й|го|я)/,
-    ordinal: function (number, period) {
-        switch (period) {
-            case 'M':
-            case 'd':
-            case 'DDD':
-                return number + '-й';
-            case 'D':
-                return number + '-го';
-            case 'w':
-            case 'W':
-                return number + '-я';
-            default:
-                return number;
-        }
-    },
-    week : {
-        dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
-    }
-});
-
-return ru;
-
-})));
-
-//! moment.js locale configuration
-//! locale : Ukrainian [uk]
-//! author : zemlanin : https://github.com/zemlanin
-//! Author : Menelion Elensúle : https://github.com/Oire
-
-;(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined'
-       && typeof require === 'function' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define('moment/locale/uk',['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-function plural(word, num) {
-    var forms = word.split('_');
-    return num % 10 === 1 && num % 100 !== 11 ? forms[0] : (num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2]);
-}
-function relativeTimeWithPlural(number, withoutSuffix, key) {
-    var format = {
-        'mm': withoutSuffix ? 'хвилина_хвилини_хвилин' : 'хвилину_хвилини_хвилин',
-        'hh': withoutSuffix ? 'година_години_годин' : 'годину_години_годин',
-        'dd': 'день_дні_днів',
-        'MM': 'місяць_місяці_місяців',
-        'yy': 'рік_роки_років'
-    };
-    if (key === 'm') {
-        return withoutSuffix ? 'хвилина' : 'хвилину';
-    }
-    else if (key === 'h') {
-        return withoutSuffix ? 'година' : 'годину';
-    }
-    else {
-        return number + ' ' + plural(format[key], +number);
-    }
-}
-function weekdaysCaseReplace(m, format) {
-    var weekdays = {
-        'nominative': 'неділя_понеділок_вівторок_середа_четвер_п’ятниця_субота'.split('_'),
-        'accusative': 'неділю_понеділок_вівторок_середу_четвер_п’ятницю_суботу'.split('_'),
-        'genitive': 'неділі_понеділка_вівторка_середи_четверга_п’ятниці_суботи'.split('_')
-    };
-
-    if (!m) {
-        return weekdays['nominative'];
-    }
-
-    var nounCase = (/(\[[ВвУу]\]) ?dddd/).test(format) ?
-        'accusative' :
-        ((/\[?(?:минулої|наступної)? ?\] ?dddd/).test(format) ?
-            'genitive' :
-            'nominative');
-    return weekdays[nounCase][m.day()];
-}
-function processHoursFunction(str) {
-    return function () {
-        return str + 'о' + (this.hours() === 11 ? 'б' : '') + '] LT';
-    };
-}
-
-var uk = moment.defineLocale('uk', {
-    months : {
-        'format': 'січня_лютого_березня_квітня_травня_червня_липня_серпня_вересня_жовтня_листопада_грудня'.split('_'),
-        'standalone': 'січень_лютий_березень_квітень_травень_червень_липень_серпень_вересень_жовтень_листопад_грудень'.split('_')
-    },
-    monthsShort : 'січ_лют_бер_квіт_трав_черв_лип_серп_вер_жовт_лист_груд'.split('_'),
-    weekdays : weekdaysCaseReplace,
-    weekdaysShort : 'нд_пн_вт_ср_чт_пт_сб'.split('_'),
-    weekdaysMin : 'нд_пн_вт_ср_чт_пт_сб'.split('_'),
-    longDateFormat : {
-        LT : 'HH:mm',
-        LTS : 'HH:mm:ss',
-        L : 'DD.MM.YYYY',
-        LL : 'D MMMM YYYY р.',
-        LLL : 'D MMMM YYYY р., HH:mm',
-        LLLL : 'dddd, D MMMM YYYY р., HH:mm'
-    },
-    calendar : {
-        sameDay: processHoursFunction('[Сьогодні '),
-        nextDay: processHoursFunction('[Завтра '),
-        lastDay: processHoursFunction('[Вчора '),
-        nextWeek: processHoursFunction('[У] dddd ['),
-        lastWeek: function () {
-            switch (this.day()) {
-                case 0:
-                case 3:
-                case 5:
-                case 6:
-                    return processHoursFunction('[Минулої] dddd [').call(this);
-                case 1:
-                case 2:
-                case 4:
-                    return processHoursFunction('[Минулого] dddd [').call(this);
-            }
-        },
-        sameElse: 'L'
-    },
-    relativeTime : {
-        future : 'за %s',
-        past : '%s тому',
-        s : 'декілька секунд',
-        m : relativeTimeWithPlural,
-        mm : relativeTimeWithPlural,
-        h : 'годину',
-        hh : relativeTimeWithPlural,
-        d : 'день',
-        dd : relativeTimeWithPlural,
-        M : 'місяць',
-        MM : relativeTimeWithPlural,
-        y : 'рік',
-        yy : relativeTimeWithPlural
-    },
-    // M. E.: those two are virtually unused but a user might want to implement them for his/her website for some reason
-    meridiemParse: /ночі|ранку|дня|вечора/,
-    isPM: function (input) {
-        return /^(дня|вечора)$/.test(input);
-    },
-    meridiem : function (hour, minute, isLower) {
-        if (hour < 4) {
-            return 'ночі';
-        } else if (hour < 12) {
-            return 'ранку';
-        } else if (hour < 17) {
-            return 'дня';
-        } else {
-            return 'вечора';
-        }
-    },
-    dayOfMonthOrdinalParse: /\d{1,2}-(й|го)/,
-    ordinal: function (number, period) {
-        switch (period) {
-            case 'M':
-            case 'd':
-            case 'DDD':
-            case 'w':
-            case 'W':
-                return number + '-й';
-            case 'D':
-                return number + '-го';
-            default:
-                return number;
-        }
-    },
-    week : {
-        dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
-    }
-});
-
-return uk;
-
-})));
-
-/*
- * This file specifies the supported locales for moment.js.
- *
- * Translations take up a lot of space and you are therefore advised to remove
- * from here any languages that you don't need.
- *
- * See also src/locales.js
- */
-(function (root, factory) {
-    define("moment_with_locales", [
-        'moment',   // Everything below can be removed except for moment itself.
-        'moment/locale/af',
-        'moment/locale/de',
-        'moment/locale/es',
-        'moment/locale/fr',
-        'moment/locale/he',
-        'moment/locale/hu',
-        'moment/locale/id',
-        'moment/locale/it',
-        'moment/locale/ja',
-        'moment/locale/nb',
-        'moment/locale/nl',
-        'moment/locale/pl',
-        'moment/locale/pt-br',
-        'moment/locale/ru',
-        'moment/locale/uk',
-        // 'moment/locale/zh' (No longer in locales, now only with
-        // country codes, e.g. zh-cn.js zh-hk.js zh-tw.js).
-        ], function (moment) {
-            return moment;
-        });
-})(this);
-
 /** File: strophe.js
  *  A JavaScript library for writing XMPP clients.
  *
@@ -42778,6 +42452,11 @@ Strophe.Connection.prototype = {
      *  are ready and keep poll requests going.
      */
     _onIdle: function () {
+        // if (typeof previous_date === 'undefined') {
+        //     previous_date = new Date();
+        // }
+        // console.log(Math.abs(new Date() - previous_date));
+        // previous_date = new Date();
         var i, thand, since, newList;
 
         // add timed handlers scheduled for addition
@@ -44757,13 +44436,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define, escape, locales, window, Jed */
+/*global define, escape, window */
 (function (root, factory) {
-    define('utils',["sizzle", "es6-promise", "jquery.browser", "lodash.noconflict", "locales", "moment_with_locales", "strophe"], factory);
-})(undefined, function (sizzle, Promise, jQBrowser, _, locales, moment, Strophe) {
+    define('utils',["sizzle", "es6-promise", "jquery.browser", "lodash.noconflict", "strophe"], factory);
+})(undefined, function (sizzle, Promise, jQBrowser, _, Strophe) {
     "use strict";
 
-    locales = locales || {};
     var b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
 
@@ -44842,53 +44520,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     }
 
     var u = {};
-
-    // Translation machinery
-    // ---------------------
-    u.__ = function (str) {
-        if (_.isUndefined(window.Jed)) {
-            return str;
-        }
-        if (!u.isConverseLocale(this.locale) || this.locale === 'en') {
-            return Jed.sprintf.apply(window.Jed, arguments);
-        }
-        if (typeof this.jed === "undefined") {
-            this.jed = new Jed(window.JSON.parse(locales[this.locale]));
-        }
-        var t = this.jed.translate(str);
-        if (arguments.length > 1) {
-            return t.fetch.apply(t, [].slice.call(arguments, 1));
-        } else {
-            return t.fetch();
-        }
-    };
-
-    u.___ = function (str) {
-        /* XXX: This is part of a hack to get gettext to scan strings to be
-         * translated. Strings we cannot send to the function above because
-         * they require variable interpolation and we don't yet have the
-         * variables at scan time.
-         *
-         * See actionInfoMessages in src/converse-muc.js
-         */
-        return str;
-    };
-
-    u.isLocaleAvailable = function (locale, available) {
-        /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
-         *
-         * Parameters:
-         *      (Function) available - returns a boolean indicating whether the locale is supported
-         */
-        if (available(locale)) {
-            return locale;
-        } else {
-            var sublocale = locale.split("-")[0];
-            if (sublocale !== locale && available(sublocale)) {
-                return sublocale;
-            }
-        }
-    };
 
     u.addHyperlinks = function (text) {
         var list = text.match(URL_REGEX) || [];
@@ -45057,6 +44688,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
+    u.isValidJID = function (jid) {
+        return _.filter(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+    };
+
     u.isSameBareJID = function (jid1, jid2) {
         return Strophe.getBareJidFromJid(jid1).toLowerCase() === Strophe.getBareJidFromJid(jid2).toLowerCase();
     };
@@ -45182,64 +44817,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 throw new TypeError('contains: wrong attribute type. Must be string or array.');
             }
         };
-    };
-
-    u.detectLocale = function (library_check) {
-        /* Determine which locale is supported by the user's system as well
-         * as by the relevant library (e.g. converse.js or moment.js).
-         *
-         * Parameters:
-         *      (Function) library_check - returns a boolean indicating whether
-         *          the locale is supported.
-         */
-        var locale, i;
-        if (window.navigator.userLanguage) {
-            locale = u.isLocaleAvailable(window.navigator.userLanguage, library_check);
-        }
-        if (window.navigator.languages && !locale) {
-            for (i = 0; i < window.navigator.languages.length && !locale; i++) {
-                locale = u.isLocaleAvailable(window.navigator.languages[i], library_check);
-            }
-        }
-        if (window.navigator.browserLanguage && !locale) {
-            locale = u.isLocaleAvailable(window.navigator.browserLanguage, library_check);
-        }
-        if (window.navigator.language && !locale) {
-            locale = u.isLocaleAvailable(window.navigator.language, library_check);
-        }
-        if (window.navigator.systemLanguage && !locale) {
-            locale = u.isLocaleAvailable(window.navigator.systemLanguage, library_check);
-        }
-        return locale || 'en';
-    };
-
-    u.isConverseLocale = function (locale) {
-        if (!_.isString(locale)) {
-            return false;
-        }
-        return _.includes(_.keys(locales || {}), locale);
-    };
-
-    u.isMomentLocale = function (locale) {
-        if (!_.isString(locale)) {
-            return false;
-        }
-        return moment.locale() !== moment.locale(locale);
-    };
-
-    u.getLocale = function (preferred_locale, isSupportedByLibrary) {
-        if (_.isString(preferred_locale)) {
-            if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
-                return preferred_locale;
-            }
-            try {
-                var obj = window.JSON.parse(preferred_locale);
-                return obj.locale_data.converse[""].lang;
-            } catch (e) {
-                logger.error(e);
-            }
-        }
-        return u.detectLocale(isSupportedByLibrary) || 'en';
     };
 
     u.isOfType = function (type, item) {
@@ -45557,7 +45134,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         },
 
         // `initializePlugin` applies the overrides (if any) defined on all
-        // the registered plugins and then calls the initialize method for each plugin.
+        // the registered plugins and then calls the initialize method of the plugin
         initializePlugin: function initializePlugin(plugin) {
             if (!_.includes(_.keys(this.allowed_plugins), plugin.__name__)) {
                 /* Don't initialize disallowed plugins. */
@@ -45569,15 +45146,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 */
                 return;
             }
-            _.extend(plugin, this.properties);
-            if (plugin.optional_dependencies) {
-                this.loadOptionalDependencies(plugin);
+            if (_.isBoolean(plugin.enabled) && plugin.enabled || _.isFunction(plugin.enabled) && plugin.enabled(this.plugged) || _.isNil(plugin.enabled)) {
+
+                _.extend(plugin, this.properties);
+                if (plugin.optional_dependencies) {
+                    this.loadOptionalDependencies(plugin);
+                }
+                this.applyOverrides(plugin);
+                if (typeof plugin.initialize === "function") {
+                    plugin.initialize.bind(plugin)(this);
+                }
+                this.initialized_plugins.push(plugin.__name__);
             }
-            this.applyOverrides(plugin);
-            if (typeof plugin.initialize === "function") {
-                plugin.initialize.bind(plugin)(this);
-            }
-            this.initialized_plugins.push(plugin.__name__);
         },
 
         // `registerPlugin` registers (or inserts, if you'd like) a plugin,
@@ -47941,8 +47521,8 @@ return Backbone.BrowserStorage;
 //
 /*global Backbone, define, window, document, JSON */
 (function (root, factory) {
-    define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "polyfill", "utils", "moment_with_locales", "strophe", "pluggable", "backbone.noconflict", "backbone.browserStorage", "backbone.overview"], factory);
-})(undefined, function (sizzle, Promise, _, polyfill, utils, moment, Strophe, pluggable, Backbone) {
+    define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "polyfill", "i18n", "utils", "moment", "strophe", "pluggable", "backbone.noconflict", "backbone.browserStorage", "backbone.overview"], factory);
+})(undefined, function (sizzle, Promise, _, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
 
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -47959,6 +47539,19 @@ return Backbone.BrowserStorage;
     var b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
 
+    // Add Strophe Namespaces
+    Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
+    Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
+    Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
+    Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
+    Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
+    Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
+    Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
+    Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
+    Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
+    Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
+    Strophe.addNamespace('XFORM', 'jabber:x:data');
+
     // Use Mustache style syntax for variable interpolation
     /* Configuration of Lodash templates (this config is distinct to the
      * config of requirejs-tpl in main.js). This one is for normal inline templates.
@@ -47966,7 +47559,8 @@ return Backbone.BrowserStorage;
     _.templateSettings = {
         'escape': /\{\{\{([\s\S]+?)\}\}\}/g,
         'evaluate': /\{\[([\s\S]+?)\]\}/g,
-        'interpolate': /\{\{([\s\S]+?)\}\}/g
+        'interpolate': /\{\{([\s\S]+?)\}\}/g,
+        'imports': { '_': _ }
     };
 
     var _converse = {
@@ -47976,7 +47570,7 @@ return Backbone.BrowserStorage;
 
     _.extend(_converse, Backbone.Events);
 
-    _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-vcard'];
+    _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton', 'converse-vcard'];
 
     // Make converse pluggable
     pluggable.enable(_converse, '_converse', 'pluggable');
@@ -48026,9 +47620,28 @@ return Backbone.BrowserStorage;
     _converse.DEFAULT_IMAGE = "iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAIAAABt+uBvAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gwHCy455JBsggAABkJJREFUeNrtnM1PE1sUwHvvTD8otWLHST/Gimi1CEgr6M6FEWuIBo2pujDVsNDEP8GN/4MbN7oxrlipG2OCgZgYlxAbkRYw1KqkIDRCSkM7nXvvW8x7vjyNeQ9m7p1p3z1LQk/v/Dhz7vkEXL161cHl9wI5Ag6IA+KAOCAOiAPigDggLhwQB2S+iNZ+PcYY/SWEEP2HAAAIoSAIoihCCP+ngDDGtVotGAz29/cfOXJEUZSOjg6n06lp2sbGRqlUWlhYyGazS0tLbrdbEASrzgksyeYJId3d3el0uqenRxRFAAAA4KdfIIRgjD9+/Pj8+fOpqSndslofEIQwHA6Pjo4mEon//qmFhYXHjx8vLi4ihBgDEnp7e9l8E0Jo165dQ0NDd+/eDYVC2/qsJElDQ0OEkKWlpa2tLZamxAhQo9EIBoOjo6MXL17csZLe3l5FUT59+lQul5l5JRaAVFWNRqN37tw5ceKEQVWRSOTw4cOFQuHbt2+iKLYCIISQLMu3b99OJpOmKAwEAgcPHszn8+vr6wzsiG6UQQhxuVyXLl0aGBgwUW0sFstkMl6v90fo1KyAMMYDAwPnzp0zXfPg4GAqlWo0Gk0MiBAiy/L58+edTqf5Aa4onj59OhaLYYybFRCEMBaL0fNxBw4cSCQStN0QRUBut3t4eJjq6U+dOiVJElVPRBFQIBDo6+ujCqirqyscDlONGykC2lYyYSR6pBoQQapHZwAoHo/TuARYAOrs7GQASFEUqn6aIiBJkhgA6ujooFpUo6iaTa7koFwnaoWadLNe81tbWwzoaJrWrICWl5cZAFpbW6OabVAEtLi4yABQsVjUNK0pAWWzWQaAcrlcswKanZ1VVZUqHYRQEwOq1Wpv3ryhCmh6erpcLjdrNl+v1ycnJ+l5UELI27dvv3//3qxxEADgy5cvExMT9Mznw4cPtFtAdAPFarU6Pj5eKpVM17yxsfHy5cvV1VXazXu62gVBKBQKT58+rdVqJqrFGL948eLdu3dU8/g/H4FBUaJYLAqC0NPTY9brMD4+PjY25mDSracOCABACJmZmXE6nUePHjWu8NWrV48ePSKEsGlAs7Agfd5nenq6Wq0mk0kjDzY2NvbkyRMIIbP2PLvhBUEQ8vl8NpuNx+M+n29bzhVjvLKycv/+/YmJCcazQuwA6YzW1tYmJyf1SY+2trZ/rRk1Go1SqfT69esHDx4UCgVmNaa/zZ/9ABUhRFXVYDB48uTJeDweiUQkSfL7/T9MA2NcqVTK5fLy8vL8/PzU1FSxWHS5XJaM4wGr9sUwxqqqer3eUCgkSZJuUBBCfTRvc3OzXC6vrKxUKhWn02nhCJ5lM4oQQo/HgxD6+vXr58+fHf8sDOp+HQDg8XgclorFU676dKLlo6yWRdItIBwQB8QBcUCtfosRQjRNQwhhjPUC4w46WXryBSHU1zgEQWBz99EFhDGu1+t+v//48ePxeFxRlD179ng8nh0Efgiher2+vr6ur3HMzMysrq7uTJVdACGEurq6Ll++nEgkPB7Pj9jPoDHqOxyqqubz+WfPnuVyuV9XPeyeagAAAoHArVu3BgcHab8CuVzu4cOHpVKJUnfA5GweY+xyuc6cOXPv3r1IJMLAR8iyPDw8XK/Xi8Wiqqqmm5KZgBBC7e3tN27cuHbtGuPVpf7+/lAoNDs7W61WzfVKpgHSSzw3b95MpVKW3MfRaDQSiczNzVUqFRMZmQOIEOL1eq9fv3727FlL1t50URRFluX5+flqtWpWEGAOIFEUU6nUlStXLKSjy759+xwOx9zcnKZpphzGHMzhcDiTydgk9r1w4YIp7RPTAAmCkMlk2FeLf/tIEKbTab/fbwtAhJBoNGrutpNx6e7uPnTokC1eMU3T0um0DZPMkZER6wERQnw+n/FFSxpy7Nix3bt3WwwIIcRgIWnHkkwmjecfRgGx7DtuV/r6+iwGhDHev3+/bQF1dnYaH6E2CkiWZdsC2rt3r8WAHA5HW1ubbQGZcjajgOwTH/4qNko1Wlg4IA6IA+KAOKBWBUQIsfNojyliKIoRRfH9+/dut9umf3wzpoUNNQ4BAJubmwz+ic+OxefzWWlBhJD29nbug7iT5sIBcUAcEAfEAXFAHBAHxOVn+QMrmWpuPZx12gAAAABJRU5ErkJggg==";
 
     _converse.log = function (message, level) {
+        var style = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+
+        /* Logs messages to the browser's developer console.
+         *
+         * Parameters:
+         *      (String) message - The message to be logged.
+         *      (Integer) level - The loglevel which allows for filtering of log
+         *                       messages.
+         *
+         *  Available loglevels are 0 for 'debug', 1 for 'info', 2 for 'warn',
+         *  3 for 'error' and 4 for 'fatal'.
+         *
+         *  When using the 'error' or 'warn' loglevels, a full stacktrace will be
+         *  logged as well.
+         */
+        if (level === Strophe.LogLevel.ERROR || level === Strophe.LogLevel.FATAL) {
+            style = style || 'color: maroon';
+        }
         if (message instanceof Error) {
             message = message.stack;
         }
+        var prefix = style ? '%c' : '';
         var logger = _.assign({
             'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
             'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
@@ -48037,26 +47650,51 @@ return Backbone.BrowserStorage;
         }, console);
         if (level === Strophe.LogLevel.ERROR) {
             if (_converse.debug) {
-                logger.trace("ERROR: " + message);
+                logger.trace(prefix + " " + moment().format() + " ERROR: " + message, style);
             } else {
-                logger.error("ERROR: " + message);
+                logger.error(prefix + " ERROR: " + message, style);
             }
         } else if (level === Strophe.LogLevel.WARN) {
-            logger.warn("WARNING: " + message);
+            if (_converse.debug) {
+                logger.warn(prefix + " " + moment().format() + " WARNING: " + message, style);
+            } else {
+                logger.warn(prefix + " WARNING: " + message, style);
+            }
         } else if (level === Strophe.LogLevel.FATAL) {
             if (_converse.debug) {
-                logger.trace("FATAL: " + message);
+                logger.trace(prefix + " " + moment().format() + " FATAL: " + message, style);
             } else {
-                logger.error("FATAL: " + message);
+                logger.error(prefix + " FATAL: " + message, style);
             }
         } else if (_converse.debug) {
             if (level === Strophe.LogLevel.DEBUG) {
-                logger.debug("DEBUG: " + message);
+                logger.debug(prefix + " " + moment().format() + " DEBUG: " + message, style);
             } else {
-                logger.info("INFO: " + message);
+                logger.info(prefix + " " + moment().format() + " INFO: " + message, style);
             }
         }
     };
+
+    Strophe.log = function (level, msg) {
+        _converse.log(level + ' ' + msg, level);
+    };
+    Strophe.error = function (msg) {
+        _converse.log(msg, Strophe.LogLevel.ERROR);
+    };
+
+    _converse.__ = function (str) {
+        /* Translate the given string based on the current locale.
+         *
+         * Parameters:
+         *      (String) str - The string to translate.
+         */
+        if (_.isUndefined(i18n)) {
+            return str;
+        }
+        return i18n.translate.apply(i18n, arguments);
+    };
+
+    var __ = _converse.__;
 
     var PROMISES = ['initialized', 'cachedRoster', 'connectionInitialized', 'pluginsInitialized', 'roster', 'rosterContactsFetched', 'rosterGroupsFetched', 'rosterInitialized', 'statusInitialized'];
 
@@ -48075,6 +47713,8 @@ return Backbone.BrowserStorage;
             promise.resolve();
         }
     };
+
+    _converse.router = new Backbone.Router();
 
     _converse.initialize = function (settings, callback) {
         "use strict";
@@ -48111,42 +47751,11 @@ return Backbone.BrowserStorage;
             unloadevent = 'unload';
         }
 
-        // Logging
-        Strophe.log = function (level, msg) {
-            _converse.log(level + ' ' + msg, level);
-        };
-        Strophe.error = function (msg) {
-            _converse.log(msg, Strophe.LogLevel.ERROR);
-        };
-
-        // Add Strophe Namespaces
-        Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
-        Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
-        Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
-        Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
-        Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
-        Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
-        Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
-        Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
-        Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
-        Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
-        Strophe.addNamespace('XFORM', 'jabber:x:data');
-
         // Instance level constants
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
             'PAUSED': 10000,
             'INACTIVE': 90000
         };
-
-        // Internationalization
-        this.locale = utils.getLocale(settings.i18n, utils.isConverseLocale);
-        if (!moment.locale) {
-            //moment.lang is deprecated after 2.8.1, use moment.locale instead
-            moment.locale = moment.lang;
-        }
-        moment.locale(utils.getLocale(settings.i18n, utils.isMomentLocale));
-        var __ = _converse.__ = utils.__.bind(_converse);
-        _converse.___ = utils.___;
 
         // XEP-0085 Chat states
         // http://xmpp.org/extensions/xep-0085.html
@@ -48182,6 +47791,8 @@ return Backbone.BrowserStorage;
             include_offline_state: false,
             jid: undefined,
             keepalive: true,
+            locales_url: '/locale/{{{locale}}}/LC_MESSAGES/converse.json',
+            locales: ['af', 'ca', 'de', 'es', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'uk', 'zh'],
             message_carbons: true,
             message_storage: 'session',
             password: undefined,
@@ -48196,6 +47807,7 @@ return Backbone.BrowserStorage;
             storage: 'session',
             strict_plugin_dependencies: false,
             synchronize_availability: true,
+            view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
             websocket_url: undefined,
             whitelisted_plugins: [],
             xhr_custom_status: false,
@@ -48209,6 +47821,13 @@ return Backbone.BrowserStorage;
             if (this.auto_login && !this.jid) {
                 throw new Error("Config Error: you need to provide the server's " + "domain via the 'jid' option when using anonymous " + "authentication with auto_login.");
             }
+        }
+
+        /* Localisation */
+        if (!_.isUndefined(i18n)) {
+            i18n.setLocales(settings.i18n, _converse);
+        } else {
+            _converse.locale = 'en';
         }
 
         // Module-level variables
@@ -48585,16 +48204,33 @@ return Backbone.BrowserStorage;
         };
 
         this.populateRoster = function () {
+            var ignore_cache = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
             /* Fetch all the roster groups, and then the roster contacts.
              * Emit an event after fetching is done in each case.
+             *
+             * Parameters:
+             *    (Bool) ignore_cache - If set to to true, the local cache
+             *      will be ignored it's guaranteed that the XMPP server
+             *      will be queried for the roster.
              */
-            _converse.rostergroups.fetchRosterGroups().then(function () {
-                _converse.emit('rosterGroupsFetched');
-                _converse.roster.fetchRosterContacts().then(function () {
+            if (ignore_cache) {
+                _converse.send_initial_presence = true;
+                _converse.roster.fetchFromServer().then(function () {
                     _converse.emit('rosterContactsFetched');
                     _converse.sendInitialPresence();
+                }).catch(_converse.sendInitialPresence);
+            } else {
+                _converse.rostergroups.fetchRosterGroups().then(function () {
+                    _converse.emit('rosterGroupsFetched');
+                    return _converse.roster.fetchRosterContacts();
+                }).then(function () {
+                    _converse.emit('rosterContactsFetched');
+                    _converse.sendInitialPresence();
+                }).catch(function () {
+                    _converse.sendInitialPresence();
                 });
-            });
+            }
         };
 
         this.unregisterPresenceHandler = function () {
@@ -48634,11 +48270,9 @@ return Backbone.BrowserStorage;
                 _converse.initRoster();
             }
             _converse.roster.onConnected();
-            _converse.populateRoster();
+            _converse.populateRoster(reconnecting);
             _converse.registerPresenceHandler();
-            if (reconnecting) {
-                _converse.xmppstatus.sendPresence();
-            } else {
+            if (!reconnecting) {
                 init_promise.resolve();
                 _converse.emit('initialized');
             }
@@ -48905,14 +48539,8 @@ return Backbone.BrowserStorage;
                         add: true,
                         success: function success(collection) {
                             if (collection.length === 0) {
-                                /* We don't have any roster contacts stored in sessionStorage,
-                                * so lets fetch the roster from the XMPP server. We pass in
-                                * 'sendPresence' as callback method, because after initially
-                                * fetching the roster we are ready to receive presence
-                                * updates from our contacts.
-                                */
                                 _converse.send_initial_presence = true;
-                                _converse.roster.fetchFromServer(resolve);
+                                _converse.roster.fetchFromServer().then(resolve).catch(reject);
                             } else {
                                 _converse.emit('cachedRoster', collection);
                                 resolve();
@@ -49047,15 +48675,23 @@ return Backbone.BrowserStorage;
                 _converse.emit('rosterPush', iq);
                 return true;
             },
-            fetchFromServer: function fetchFromServer(callback) {
-                var _this6 = this,
-                    _arguments = arguments;
+            fetchFromServer: function fetchFromServer() {
+                var _this6 = this;
 
-                /* Get the roster from the XMPP server */
-                var iq = $iq({ type: 'get', 'id': _converse.connection.getUniqueId('roster') }).c('query', { xmlns: Strophe.NS.ROSTER });
-                return _converse.connection.sendIQ(iq, function (iq) {
-                    _this6.onReceivedFromServer(iq);
-                    callback.apply(_this6, _arguments);
+                /* Fetch the roster from the XMPP server */
+                return new Promise(function (resolve, reject) {
+                    var iq = $iq({
+                        'type': 'get',
+                        'id': _converse.connection.getUniqueId('roster')
+                    }).c('query', { xmlns: Strophe.NS.ROSTER });
+
+                    var callback = _.flow(_this6.onReceivedFromServer.bind(_this6), resolve);
+                    var errback = function errback(iq) {
+                        var errmsg = "Error while trying to fetch roster from the server";
+                        _converse.log(errmsg, Strophe.LogLevel.ERROR);
+                        reject(new Error(errmsg));
+                    };
+                    return _converse.connection.sendIQ(iq, callback, errback);
                 });
             },
             onReceivedFromServer: function onReceivedFromServer(iq) {
@@ -49416,10 +49052,10 @@ return Backbone.BrowserStorage;
             };
             if (this.debug) {
                 this.connection.xmlInput = function (body) {
-                    _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG);
+                    _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkgoldenrod');
                 };
                 this.connection.xmlOutput = function (body) {
-                    _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG);
+                    _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkcyan');
                 };
             }
         };
@@ -49648,19 +49284,33 @@ return Backbone.BrowserStorage;
         if (settings.connection) {
             this.connection = settings.connection;
         }
-        _converse.initPlugins();
-        _converse.initConnection();
-        _converse.setUpXMLLogging();
-        _converse.logIn();
-        _converse.registerGlobalEventHandlers();
 
-        Backbone.history.start();
+        function finishInitialization() {
+            _converse.initPlugins();
+            _converse.initConnection();
+            _converse.setUpXMLLogging();
+            _converse.logIn();
+            _converse.registerGlobalEventHandlers();
+
+            if (!Backbone.history.started) {
+                Backbone.history.start();
+            }
+        }
 
         if (!_.isUndefined(_converse.connection) && _converse.connection.service === 'jasmine tests') {
+            finishInitialization();
             return _converse;
+        } else if (_.isUndefined(i18n)) {
+            finishInitialization();
         } else {
-            return init_promise.promise;
+            i18n.fetchTranslations(_converse.locale, _converse.locales, _.template(_converse.locales_url)({ 'locale': _converse.locale })).then(function () {
+                finishInitialization();
+            }).catch(function (reason) {
+                finishInitialization();
+                _converse.log(reason, Strophe.LogLevel.ERROR);
+            });
         }
+        return init_promise.promise;
     };
 
     // API methods only available to plugins
@@ -49853,6 +49503,7 @@ return Backbone.BrowserStorage;
 
     var _converse$env = converse.env,
         Backbone = _converse$env.Backbone,
+        Promise = _converse$env.Promise,
         Strophe = _converse$env.Strophe,
         b64_sha1 = _converse$env.b64_sha1,
         utils = _converse$env.utils,
@@ -49903,6 +49554,16 @@ return Backbone.BrowserStorage;
 
 
             _converse.api.promises.add(['chatBoxesFetched', 'chatBoxesInitialized']);
+
+            function openChat(jid) {
+                if (!utils.isValidJID(jid)) {
+                    return converse.log("Invalid JID \"" + jid + "\" provided in URL fragment", Strophe.LogLevel.WARN);
+                }
+                Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(function () {
+                    _converse.api.chats.open(jid);
+                });
+            }
+            _converse.router.route('converse/chat?jid=:jid', openChat);
 
             _converse.ChatBoxes = Backbone.Collection.extend({
                 comparator: 'time_opened',
@@ -50171,7 +49832,12 @@ return Backbone.BrowserStorage;
                             _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
                             return null;
                         } else if (_.isString(jids)) {
-                            return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids, true, attrs).trigger('show'));
+                            var chatbox = _converse.chatboxes.getChatBox(jids, true, attrs);
+                            if (_.isNil(chatbox)) {
+                                _converse.log("Could not open chatbox for JID: " + jids);
+                                return;
+                            }
+                            return _converse.getViewForChatBox(chatbox.trigger('show'));
                         }
                         return _.map(jids, function (jid) {
                             return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jid, true, attrs).trigger('show'));
@@ -53484,6 +53150,9 @@ return __p
                 close: function close(ev) {
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
+                    }
+                    if (Backbone.history.getFragment() === "converse/chat?jid=" + this.model.get('jid')) {
+                        _converse.router.navigate('');
                     }
                     if (_converse.connection.connected) {
                         // Immediately sending the chat state, because the
@@ -57416,7 +57085,7 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">\n    <legend>' +
 __e(__("Login")) +
-'</legend>\n\n    <div class="conn-feedback fade-in ';
+'</legend>\n    <div class="conn-feedback fade-in ';
  if (!conn_feedback_subject) { ;
 __p += ' hidden ';
  } ;
@@ -57430,7 +57099,7 @@ __p += ' hidden ';
  } ;
 __p += '">' +
 __e(conn_feedback_message) +
-'</p>\n    </div>\n\n    ';
+'</p>\n    </div>\n    ';
  if (auto_login || _converse.CONNECTION_STATUS[connection_status] === 'CONNECTING') { ;
 __p += '\n        <span class="spinner centered"/>\n    ';
  } else { ;
@@ -57438,33 +57107,13 @@ __p += '\n        ';
  if (authentication == LOGIN || authentication == EXTERNAL) { ;
 __p += '\n            <label>' +
 __e(__("Jabber ID:")) +
-'</label>\n            <p class="form-help fade-in error ';
- if (!_.includes(errors, 'invalid_jid')) { ;
-__p += ' hidden ';
- } ;
-__p += '">\n                ' +
-__e(__('Please enter a valid XMPP address')) +
-'\n            </p>\n            <input autofocus\n                   type="text"\n                   name="jid"\n                   class="';
- if (_.includes(errors, 'invalid_jid')) { ;
-__p += ' error ';
- } ;
-__p += '"\n                   placeholder="' +
+'</label>\n            <input autofocus required\n                   type="text"\n                   name="jid"\n                   placeholder="' +
 __e(placeholder_username) +
 '">\n            ';
  if (authentication !== EXTERNAL) { ;
 __p += '\n                <label>' +
 __e(__("Password:")) +
-'</label>\n                <p class="form-help fade-in error ';
- if (!_.includes(errors, 'password_required')) { ;
-__p += ' hidden ';
- } ;
-__p += '">\n                    ' +
-__e(__('Please enter your password')) +
-'\n                </p>\n                <input type="password"\n                       name="password"\n                       class="';
- if (_.includes(errors, 'password_required')) { ;
-__p += ' error ';
- } ;
-__p += '"\n                       placeholder="' +
+'</label>\n                <input required\n                       type="password" name="password"\n                       placeholder="' +
 __e(__('password')) +
 '">\n            ';
  } ;
@@ -57807,8 +57456,7 @@ return __p
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse,
-                __ = _converse.__,
-                ___ = _converse.___;
+                __ = _converse.__;
 
 
             _converse.api.settings.update({
@@ -58289,14 +57937,14 @@ return __p
                          */
                         this.el.classList.add('pending-xmpp-contact');
                         this.$el.html(tpl_pending_contact(_.extend(item.toJSON(), {
-                            'desc_remove': __(___('Click to remove %1$s as a contact'), item.get('fullname')),
+                            'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname')),
                             'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                         })));
                     } else if (requesting === true) {
                         this.el.classList.add('requesting-xmpp-contact');
                         this.$el.html(tpl_requesting_contact(_.extend(item.toJSON(), {
-                            'desc_accept': __(___("Click to accept the contact request from %1$s"), item.get('fullname')),
-                            'desc_decline': __(___("Click to decline the contact request from %1$s"), item.get('fullname')),
+                            'desc_accept': __("Click to accept the contact request from %1$s", item.get('fullname')),
+                            'desc_decline': __("Click to decline the contact request from %1$s", item.get('fullname')),
                             'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                         })));
                     } else if (subscription === 'both' || subscription === 'to') {
@@ -58312,7 +57960,7 @@ return __p
                     this.$el.html(tpl_roster_item(_.extend(item.toJSON(), {
                         'desc_status': STATUSES[chat_status || 'offline'],
                         'desc_chat': __('Click to chat with this contact'),
-                        'desc_remove': __(___('Click to remove %1$s as a contact'), item.get('fullname')),
+                        'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname')),
                         'title_fullname': __('Name'),
                         'allow_contact_removal': _converse.allow_contact_removal,
                         'num_unread': item.get('num_unread') || 0
@@ -58868,7 +58516,7 @@ return __p
 
             _converse.ControlBoxView = _converse.ChatBoxView.extend({
                 tagName: 'div',
-                className: 'chatbox fade-in',
+                className: 'chatbox',
                 id: 'controlbox',
                 events: {
                     'click a.close-chatbox-button': 'close',
@@ -59062,7 +58710,7 @@ return __p
                 className: 'controlbox-pane fade-in',
                 events: {
                     'submit form#converse-login': 'authenticate',
-                    'blur   input': 'validate'
+                    'change input': 'validate'
                 },
 
                 initialize: function initialize(cfg) {
@@ -59103,17 +58751,13 @@ return __p
                 },
                 validate: function validate() {
                     var form = this.el.querySelector('form');
-                    var jid = form.querySelector('input[name=jid]').value;
-                    var password = _.get(form.querySelector('input[name=password]'), 'value');
-                    var errors = [];
-                    if (!jid || !_converse.locked_domain && !_converse.default_domain && _.filter(jid.split('@')).length < 2) {
-                        errors.push(errors, 'invalid_jid');
+                    var jid_element = form.querySelector('input[name=jid]');
+                    if (jid_element.value && !_converse.locked_domain && !_converse.default_domain && !utils.isValidJID(jid_element.value)) {
+                        jid_element.setCustomValidity(__('Please enter a valid XMPP address'));
+                        return false;
                     }
-                    if (!password && _converse.authentication !== _converse.EXTERNAL) {
-                        errors.push(errors, 'password_required');
-                    }
-                    this.model.set('errors', errors);
-                    return errors.length == 0;
+                    jid_element.setCustomValidity('');
+                    return true;
                 },
                 authenticate: function authenticate(ev) {
                     /* Authenticate the user based on a form submission event.
@@ -59129,15 +58773,12 @@ return __p
                         return;
                     }
                     var jid = ev.target.querySelector('input[name=jid]').value;
-                    var password = _.get(ev.target.querySelector('input[name=password]'), 'value');
-
                     if (_converse.locked_domain) {
                         jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
                     } else if (_converse.default_domain && !_.includes(jid, '@')) {
                         jid = jid + '@' + _converse.default_domain;
                     }
-                    this.connect(jid, password);
-                    return false;
+                    this.connect(jid, _.get(ev.target.querySelector('input[name=password]'), 'value'));
                 },
                 connect: function connect(jid, password) {
                     if (jid) {
@@ -59147,6 +58788,9 @@ return __p
                         } else {
                             jid = Strophe.getBareJidFromJid(jid).toLowerCase() + '/' + resource;
                         }
+                    }
+                    if (_.includes(["converse/login", "converse/register"], Backbone.history.getFragment())) {
+                        _converse.router.navigate('', { 'replace': true });
                     }
                     _converse.connection.reset();
                     _converse.connection.connect(jid, password, _converse.onConnectStatusChanged);
@@ -59726,7 +59370,7 @@ return __p
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define, escape, locales, Jed */
+/*global define, escape, Jed */
 (function (root, factory) {
     define('form-utils',["sizzle", "lodash.noconflict", "utils", "tpl!field", "tpl!select_option", "tpl!form_select", "tpl!form_textarea", "tpl!form_checkbox", "tpl!form_username", "tpl!form_input", "tpl!form_captcha", "tpl!form_url"], factory);
 })(undefined, function (sizzle, _, u, tpl_field, tpl_select_option, tpl_form_select, tpl_form_textarea, tpl_form_checkbox, tpl_form_username, tpl_form_input, tpl_form_captcha, tpl_form_url) {
@@ -61262,10 +60906,10 @@ Strophe.addConnectionPlugin('disco',
 
             _converse.DiscoEntity = Backbone.Model.extend({
                 /* A Disco Entity is a JID addressable entity that can be queried
-                * for features.
-                *
-                * See XEP-0030: https://xmpp.org/extensions/xep-0030.html
-                */
+                 * for features.
+                 *
+                 * See XEP-0030: https://xmpp.org/extensions/xep-0030.html
+                 */
                 idAttribute: 'jid',
 
                 initialize: function initialize() {
@@ -61385,6 +61029,43 @@ Strophe.addConnectionPlugin('disco',
                     });
                     _converse.disco_entities.reset();
                     _converse.disco_entities.browserStorage._clear();
+                }
+            });
+
+            /* We extend the default converse.js API to add methods specific to service discovery */
+            _.extend(_converse.api, {
+                'disco': {
+                    'supports': function supports(entity_jid, feature) {
+                        /* Returns a Promise which returns a boolean indicating
+                         * whether the feature is supported or by the given
+                         * entity or not.
+                         *
+                         * Parameters:
+                         *    (String) entity_jid - The JID of the entity which might support the feature.
+                         *    (String) feature - The feature that might be
+                         *          supported. In the XML stanza, this is the `var`
+                         *          attribute of the `<feature>` element. For
+                         *          example: 'http://jabber.org/protocol/muc'
+                         */
+                        return _converse.api.waitUntil('discoInitialized').then(function () {
+                            return new Promise(function (resolve, reject) {
+                                function fulfillPromise(entity) {
+                                    if (entity.features.findWhere({ 'var': feature })) {
+                                        resolve(true);
+                                    } else {
+                                        resolve(false);
+                                    }
+                                }
+                                var entity = _converse.disco_entities.get(entity_jid);
+                                if (_.isUndefined(entity)) {
+                                    entity = _converse.disco_entities.create({ 'jid': entity_jid });
+                                    entity.on('featuresDiscovered', _.partial(fulfillPromise, entity));
+                                } else {
+                                    fulfillPromise(entity);
+                                }
+                            });
+                        });
+                    }
                 }
             });
         }
@@ -61604,8 +61285,20 @@ Strophe.addConnectionPlugin('disco',
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse,
-                __ = _converse.__,
-                ___ = _converse.___;
+                __ = _converse.__;
+
+
+            function ___(str) {
+                /* This is part of a hack to get gettext to scan strings to be
+                * translated. Strings we cannot send to the function above because
+                * they require variable interpolation and we don't yet have the
+                * variables at scan time.
+                *
+                * See actionInfoMessages further below.
+                */
+                return str;
+            }
+
             // XXX: Inside plugins, all calls to the translation machinery
             // (e.g. utils.__) should only be done in the initialize function.
             // If called before, we won't know what language the user wants,
@@ -61674,8 +61367,8 @@ Strophe.addConnectionPlugin('disco',
                 },
 
                 new_nickname_messages: {
-                    210: ___('Your nickname has been automatically set to: %1$s'),
-                    303: ___('Your nickname has been changed to: %1$s')
+                    210: ___('Your nickname has been automatically set to %1$s'),
+                    303: ___('Your nickname has been changed to %1$s')
                 }
             };
 
@@ -61700,9 +61393,23 @@ Strophe.addConnectionPlugin('disco',
                     'toggle_occupants': true
                 }
             });
-            _converse.api.promises.add('roomsPanelRendered');
+            _converse.api.promises.add(['roomsPanelRendered', 'roomsAutoJoined']);
 
-            _converse.openChatRoom = function (settings, bring_to_foreground) {
+            function openRoom(jid) {
+                if (!utils.isValidJID(jid)) {
+                    return converse.log("Invalid JID \"" + jid + "\" provided in URL fragment", Strophe.LogLevel.WARN);
+                }
+                var promises = [_converse.api.waitUntil('roomsAutoJoined')];
+                if (!_converse.allow_bookmarks) {
+                    promises.push(_converse.api.waitUntil('bookmarksInitialized'));
+                }
+                Promise.all(promises).then(function () {
+                    _converse.api.rooms.open(jid);
+                });
+            }
+            _converse.router.route('converse/room?jid=:jid', openRoom);
+
+            function _openChatRoom(settings, bring_to_foreground) {
                 /* Opens a chat room, making sure that certain attributes
                  * are correct, for example that the "type" is set to
                  * "chatroom".
@@ -61714,7 +61421,7 @@ Strophe.addConnectionPlugin('disco',
                 settings.id = settings.jid;
                 settings.box_id = b64_sha1(settings.jid);
                 return _converse.chatboxviews.showChat(settings, bring_to_foreground);
-            };
+            }
 
             _converse.ChatRoom = _converse.ChatBox.extend({
                 defaults: function defaults() {
@@ -62128,6 +61835,7 @@ Strophe.addConnectionPlugin('disco',
                     }
                     return new Promise(function (resolve, reject) {
                         var promises = _.map(affiliations, _.partial(_this3.requestMemberList, _this3.model.get('jid')));
+
                         Promise.all(promises).then(_.flow(_this3.marshallAffiliationIQs.bind(_this3), resolve), _.flow(_this3.marshallAffiliationIQs.bind(_this3), resolve));
                     });
                 },
@@ -62499,6 +62207,9 @@ Strophe.addConnectionPlugin('disco',
                      *      reason for leaving.
                      */
                     this.hide();
+                    if (Backbone.history.getFragment() === "converse/room?jid=" + this.model.get('jid')) {
+                        _converse.router.navigate('');
+                    }
                     this.occupantsview.model.reset();
                     this.occupantsview.model.browserStorage._clear();
                     if (_converse.connection.connected) {
@@ -63788,7 +63499,7 @@ Strophe.addConnectionPlugin('disco',
                     ev.preventDefault();
                     var data = this.parseRoomDataFromEvent(ev);
                     if (!_.isUndefined(data)) {
-                        _converse.openChatRoom(data);
+                        _openChatRoom(data);
                     }
                 },
                 setDomain: function setDomain(ev) {
@@ -63828,7 +63539,7 @@ Strophe.addConnectionPlugin('disco',
                     }
                 }
                 if (result === true) {
-                    var chatroom = _converse.openChatRoom({
+                    var chatroom = _openChatRoom({
                         'jid': room_jid,
                         'password': $x.attr('password')
                     });
@@ -63864,6 +63575,7 @@ Strophe.addConnectionPlugin('disco',
                         _converse.log('Invalid room criteria specified for "auto_join_rooms"', Strophe.LogLevel.ERROR);
                     }
                 });
+                _converse.emit('roomsAutoJoined');
             }
             _converse.on('chatBoxesFetched', autoJoinRooms);
 
@@ -63919,9 +63631,9 @@ Strophe.addConnectionPlugin('disco',
                         if (_.isUndefined(jids)) {
                             throw new TypeError('rooms.open: You need to provide at least one JID');
                         } else if (_.isString(jids)) {
-                            return _converse.getChatRoom(jids, attrs, _converse.openChatRoom);
+                            return _converse.getChatRoom(jids, attrs, _openChatRoom);
                         }
-                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, _converse.openChatRoom));
+                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, _openChatRoom));
                     },
                     'get': function get(jids, attrs, create) {
                         if (_.isString(attrs)) {
@@ -64265,8 +63977,7 @@ return __p
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse,
-                __ = _converse.__,
-                ___ = _converse.___;
+                __ = _converse.__;
 
             // Configuration values for this plugin
             // ====================================
@@ -64288,7 +63999,7 @@ return __p
                     ev.preventDefault();
                     var name = ev.target.getAttribute('data-bookmark-name');
                     var jid = ev.target.getAttribute('data-room-jid');
-                    if (confirm(__(___("Are you sure you want to remove the bookmark \"%1$s\"?"), name))) {
+                    if (confirm(__("Are you sure you want to remove the bookmark \"%1$s\"?", name))) {
                         _.invokeMap(_converse.bookmarks.where({ 'jid': jid }), Backbone.Model.prototype.destroy);
                     }
                 },
@@ -64415,8 +64126,8 @@ return __p
                 },
                 onBookmarksReceivedError: function onBookmarksReceivedError(deferred, iq) {
                     window.sessionStorage.setItem(this.fetched_flag, true);
-                    _converse.log('Error while fetching bookmarks', Strophe.LogLevel.ERROR);
-                    _converse.log(iq, Strophe.LogLevel.DEBUG);
+                    _converse.log('Error while fetching bookmarks', Strophe.LogLevel.WARN);
+                    _converse.log(iq.outerHTML, Strophe.LogLevel.DEBUG);
                     if (!_.isNil(deferred)) {
                         return deferred.reject();
                     }
@@ -64692,8 +64403,7 @@ return __p
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse,
-                __ = _converse.__,
-                ___ = _converse.___;
+                __ = _converse.__;
 
 
             _converse.RoomsList = Backbone.Model.extend({
@@ -64760,7 +64470,7 @@ return __p
                     ev.preventDefault();
                     var name = ev.target.getAttribute('data-room-name');
                     var jid = ev.target.getAttribute('data-room-jid');
-                    if (confirm(__(___("Are you sure you want to leave the room \"%1$s\"?"), name))) {
+                    if (confirm(__("Are you sure you want to leave the room \"%1$s\"?", name))) {
                         _converse.chatboxviews.get(jid).leave();
                     }
                 },
@@ -64965,31 +64675,6 @@ Strophe.RSM.prototype = {
     // XEP-0313 Message Archive Management
     var MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
-    function checkMAMSupport(_converse) {
-        /* Returns a promise which resolves when MAM is supported
-         * for this user, or which rejects if not.
-         */
-        return _converse.api.waitUntil('discoInitialized').then(function () {
-            return new Promise(function (resolve, reject) {
-
-                function fulfillPromise(entity) {
-                    if (entity.features.findWhere({ 'var': Strophe.NS.MAM })) {
-                        resolve(true);
-                    } else {
-                        resolve(false);
-                    }
-                }
-                var entity = _converse.disco_entities.get(_converse.bare_jid);
-                if (_.isUndefined(entity)) {
-                    entity = _converse.disco_entities.create({ 'jid': _converse.bare_jid });
-                    entity.on('featuresDiscovered', _.partial(fulfillPromise, entity));
-                } else {
-                    fulfillPromise(entity);
-                }
-            });
-        });
-    }
-
     converse.plugins.add('converse-mam', {
 
         overrides: {
@@ -65025,7 +64710,7 @@ Strophe.RSM.prototype = {
 
                     this.addSpinner();
 
-                    checkMAMSupport(_converse).then(function (supported) {
+                    _converse.api.disco.supports(_converse.bare_jid, Strophe.NS.MAM).then(function (supported) {
                         // Success
                         if (supported) {
                             _this.fetchArchivedMessages();
@@ -65245,14 +64930,6 @@ Strophe.RSM.prototype = {
                 }, _converse.message_archiving_timeout);
             };
 
-            _.extend(_converse.api, {
-                /* Extend default converse.js API to add methods specific to MAM
-                 */
-                'archive': {
-                    'query': _converse.queryForArchivedMessages.bind(_converse)
-                }
-            });
-
             _converse.onMAMError = function (iq) {
                 if ($(iq).find('feature-not-implemented').length) {
                     _converse.log("Message Archive Management (XEP-0313) not supported by this server", Strophe.LogLevel.WARN);
@@ -65308,6 +64985,19 @@ Strophe.RSM.prototype = {
 
             _converse.on('afterMessagesFetched', function (chatboxview) {
                 chatboxview.fetchArchivedMessagesIfNecessary();
+            });
+
+            _.extend(_converse.api, {
+                /* Extend default converse.js API to add methods specific to MAM
+                 */
+                'archive': {
+                    'query': function query() {
+                        if (!_converse.api.connection.connected()) {
+                            throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
+                        }
+                        return _converse.queryForArchivedMessages.apply(this, arguments);
+                    }
+                }
             });
         }
     });
@@ -65421,7 +65111,7 @@ Strophe.RSM.prototype = {
 
                     var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
                     _converse.getVCard(bare_jid, _.partial(_converse.createRequestingContactFromVCard, presence), function (iq, jid) {
-                        _converse.log("Error while retrieving vcard for " + jid, Strophe.LogLevel.ERROR);
+                        _converse.log("Error while retrieving vcard for " + jid, Strophe.LogLevel.WARN);
                         _converse.createRequestingContactFromVCard(presence, iq, jid);
                     });
                 }
@@ -73315,8 +73005,8 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<div class="switch-form">\n    <p>' +
 __e( __("Don't have a chat account?") ) +
-'</p>\n    <p><a class="register-account toggle-register-login" href="#converse-register">' +
-__e(__("Register an account")) +
+'</p>\n    <p><a class="register-account toggle-register-login" href="#converse/register">' +
+__e(__("Create an account")) +
 '</a></p>\n</div>\n';
 
 }
@@ -73330,7 +73020,7 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<form id="converse-register" class="pure-form converse-form">\n    <legend>' +
-__e(__("Account Registration")) +
+__e(__("Create your account")) +
 '</legend>\n\n    <label>' +
 __e(__("Please enter the XMPP provider to register with:")) +
 '</label>\n    <p class="form-help">' +
@@ -73341,13 +73031,13 @@ __e(href_providers) +
 __e(help_providers_link) +
 '</a>.</p>\n    <div class="form-errors hidden"></div>\n\n    ';
  if (default_domain) { ;
-__p += '\n    	' +
+__p += '\n        ' +
 __e(default_domain) +
 '\n    ';
  } ;
 __p += '\n    ';
  if (!default_domain) { ;
-__p += '\n    	<input autofocus type="text" name="domain" placeholder="' +
+__p += '\n        <input autofocus required type="text" name="domain" placeholder="' +
 __e(domain_placeholder) +
 '">\n        <input class="pure-button button-primary" type="submit" value="' +
 __e(label_register) +
@@ -73355,7 +73045,7 @@ __e(label_register) +
  } ;
 __p += '\n</form>\n\n<div class="switch-form">\n    <p>' +
 __e( __("Already have a chat account?") ) +
-'</p>\n    <p>\n        <a class="login-here toggle-register-login" href="#converse-login">' +
+'</p>\n    <p>\n        <a class="login-here toggle-register-login" href="#converse/login">' +
 __e(__("Log in here")) +
 '</a>\n    </p>\n</div>\n';
 
@@ -73479,22 +73169,9 @@ return __p
             },
 
             ControlBoxView: {
-
-                events: {
-                    'click .toggle-register-login': 'switchToRegisterForm'
-                },
-
                 initialize: function initialize() {
                     this.__super__.initialize.apply(this, arguments);
                     this.model.on('change:active-form', this.showLoginOrRegisterForm.bind(this));
-                },
-                switchToRegisterForm: function switchToRegisterForm(ev) {
-                    ev.preventDefault();
-                    if (this.model.get('active-form') == "register") {
-                        this.model.set('active-form', 'login');
-                    } else {
-                        this.model.set('active-form', 'register');
-                    }
                 },
                 showLoginOrRegisterForm: function showLoginOrRegisterForm() {
                     var _converse = this.__super__._converse;
@@ -73554,19 +73231,14 @@ return __p
                 providers_link: 'https://xmpp.net/directory.php' // Link to XMPP providers shown on registration page
             });
 
-            _converse.RegistrationRouter = Backbone.Router.extend({
-                initialize: function initialize() {
-                    this.route('converse-login', _.partial(this.setActiveForm, 'login'));
-                    this.route('converse-register', _.partial(this.setActiveForm, 'register'));
-                },
-                setActiveForm: function setActiveForm(value) {
-                    _converse.api.waitUntil('controlboxInitialized').then(function () {
-                        var controlbox = _converse.chatboxes.get('controlbox');
-                        controlbox.set({ 'active-form': value });
-                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                }
-            });
-            var router = new _converse.RegistrationRouter();
+            function setActiveForm(value) {
+                _converse.api.waitUntil('controlboxInitialized').then(function () {
+                    var controlbox = _converse.chatboxes.get('controlbox');
+                    controlbox.set({ 'active-form': value });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            }
+            _converse.router.route('converse/login', _.partial(setActiveForm, 'login'));
+            _converse.router.route('converse/register', _.partial(setActiveForm, 'register'));
 
             _converse.RegisterPanel = Backbone.View.extend({
                 tagName: 'div',
@@ -73766,7 +73438,6 @@ return __p
                     this.model.set('registration_form_rendered', false);
                     return form;
                 },
-                showRegistrationForm: function showRegistrationForm() {},
                 showSpinner: function showSpinner() {
                     var form = this.el.querySelector('form');
                     form.innerHTML = tpl_spinner();
@@ -73789,10 +73460,13 @@ return __p
                         _converse.log("Problem during registration: Strophe.Status is " + _converse.CONNECTION_STATUS[status_code], Strophe.LogLevel.ERROR);
                         this.abortRegistration();
                     } else if (status_code === Strophe.Status.REGISTERED) {
-                        router.navigate(); // Strip the URL fragment
                         _converse.log("Registered successfully.");
                         _converse.connection.reset();
                         this.showSpinner();
+
+                        if (_.includes(["converse/login", "converse/register"], Backbone.history.getFragment())) {
+                            _converse.router.navigate('', { 'replace': true });
+                        }
 
                         if (this.fields.password && this.fields.username) {
                             // automatically log the user in
@@ -74269,11 +73943,7 @@ return __p
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse;
-
-            // For translations
-
             var __ = _converse.__;
-            var ___ = _converse.___;
 
 
             _converse.supports_html5_notification = "Notification" in window;
@@ -74320,6 +73990,18 @@ return __p
                 return true;
             };
 
+            _converse.isMessageToHiddenChat = function (message) {
+                if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
+                    var jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
+                    var model = _converse.chatboxes.get(jid);
+                    if (!_.isNil(model)) {
+                        return model.get('hidden') || _converse.windowState === 'hidden';
+                    }
+                    return true;
+                }
+                return _converse.windowState === 'hidden';
+            };
+
             _converse.shouldNotifyOfMessage = function (message) {
                 /* Is this a message worthy of notification?
                  */
@@ -74333,10 +74015,10 @@ return __p
                     return _converse.shouldNotifyOfGroupMessage(message);
                 } else if (utils.isHeadlineMessage(message)) {
                     // We want to show notifications for headline messages.
-                    return true;
+                    return _converse.isMessageToHiddenChat(message);
                 }
                 var is_me = Strophe.getBareJidFromJid(message.getAttribute('from')) === _converse.bare_jid;
-                return !_converse.isOnlyChatStateNotification(message) && !is_me;
+                return !_converse.isOnlyChatStateNotification(message) && !is_me && _converse.isMessageToHiddenChat(message);
             };
 
             _converse.playSoundNotification = function () {
@@ -74357,13 +74039,8 @@ return __p
                 }
             };
 
-            _converse.areDesktopNotificationsEnabled = function (ignore_hidden) {
-                var enabled = _converse.supports_html5_notification && _converse.show_desktop_notifications && Notification.permission === "granted";
-                if (ignore_hidden) {
-                    return enabled;
-                } else {
-                    return enabled && _converse.windowState === 'hidden';
-                }
+            _converse.areDesktopNotificationsEnabled = function () {
+                return _converse.supports_html5_notification && _converse.show_desktop_notifications && Notification.permission === "granted";
             };
 
             _converse.showMessageNotification = function (message) {
@@ -74376,15 +74053,15 @@ return __p
                     from_jid = Strophe.getBareJidFromJid(full_from_jid);
                 if (message.getAttribute('type') === 'headline') {
                     if (!_.includes(from_jid, '@') || _converse.allow_non_roster_messaging) {
-                        title = __(___("Notification from %1$s"), from_jid);
+                        title = __("Notification from %1$s", from_jid);
                     } else {
                         return;
                     }
                 } else if (!_.includes(from_jid, '@')) {
                     // XXX: workaround for Prosody which doesn't give type "headline"
-                    title = __(___("Notification from %1$s"), from_jid);
+                    title = __("Notification from %1$s", from_jid);
                 } else if (message.getAttribute('type') === 'groupchat') {
-                    title = __(___("%1$s says"), Strophe.getResourceFromJid(full_from_jid));
+                    title = __("%1$s says", Strophe.getResourceFromJid(full_from_jid));
                 } else {
                     if (_.isUndefined(_converse.roster)) {
                         _converse.log("Could not send notification, because roster is undefined", Strophe.LogLevel.ERROR);
@@ -74392,10 +74069,10 @@ return __p
                     }
                     roster_item = _converse.roster.get(from_jid);
                     if (!_.isUndefined(roster_item)) {
-                        title = __(___("%1$s says"), roster_item.get('fullname'));
+                        title = __("%1$s says", roster_item.get('fullname'));
                     } else {
                         if (_converse.allow_non_roster_messaging) {
-                            title = __(___("%1$s says"), from_jid);
+                            title = __("%1$s says", from_jid);
                         } else {
                             return;
                         }
@@ -74623,6 +74300,11 @@ return __p
          * NB: These plugins need to have already been loaded via require.js.
          */
         optional_dependencies: ["converse-controlbox", "converse-muc"],
+
+        enabled: function enabled(_converse) {
+            return _converse.view_mode == 'overlayed';
+        },
+
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -75163,6 +74845,11 @@ return __p
          */
         optional_dependencies: ["converse-headline"],
 
+        enabled: function enabled(_converse) {
+            return _converse.view_mode == 'overlayed';
+        },
+
+
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -75588,15 +75275,219 @@ return __p
     });
 });
 //# sourceMappingURL=converse-headline.js.map;
+
+define('tpl!inverse_brand_heading', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<span class="brand-heading-container">\n    <h1 class="brand-heading"><i class="icon-conversejs"></i>inverse</h1>\n    <p class="brand-subtitle"><a href="https://conversejs.org">Open Source</a> XMPP chat client</p>\n<span>\n';
+
+}
+return __p
+};});
+
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, JC Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global Backbone, define, window, document, JSON */
+
+/* converse-singleton
+ * ******************
+ *
+ * A plugin which ensures that only one chat (private or groupchat) is
+ * visible at any one time. All other ongoing chats are hidden and kept in the
+ * background.
+ *
+ * This plugin makes sense in mobile or fullscreen chat environments (as
+ * configured by the `view_mode` setting).
+ *
+ */
+(function (root, factory) {
+    define('converse-singleton',["converse-core", "converse-chatview"], factory);
+})(undefined, function (converse) {
+    "use strict";
+
+    var _converse$env = converse.env,
+        _ = _converse$env._,
+        Strophe = _converse$env.Strophe;
+
+
+    function hideChat(view) {
+        if (view.model.get('id') === 'controlbox') {
+            return;
+        }
+        view.model.save({ 'hidden': true });
+        view.hide();
+    }
+
+    converse.plugins.add('converse-singleton', {
+        // It's possible however to make optional dependencies non-optional.
+        // If the setting "strict_plugin_dependencies" is set to true,
+        // an error will be raised if the plugin is not found.
+        //
+        // NB: These plugins need to have already been loaded via require.js.
+        optional_dependencies: ['converse-muc', 'converse-controlbox', 'converse-rosterview'],
+
+        enabled: function enabled(_converse) {
+            return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
+        },
+
+
+        overrides: {
+            // overrides mentioned here will be picked up by converse.js's
+            // plugin architecture they will replace existing methods on the
+            // relevant objects or classes.
+            //
+            // new functions which don't exist yet can also be added.
+
+            ChatBoxes: {
+                createChatBox: function createChatBox(jid, attrs) {
+                    /* Make sure new chat boxes are hidden by default.
+                     */
+                    attrs = attrs || {};
+                    attrs.hidden = true;
+                    return this.__super__.createChatBox.call(this, jid, attrs);
+                }
+            },
+
+            RoomsPanel: {
+                parseRoomDataFromEvent: function parseRoomDataFromEvent(ev) {
+                    /* We set hidden to false for rooms opened manually by the
+                     * user. They should always be shown.
+                     */
+                    var result = this.__super__.parseRoomDataFromEvent.apply(this, arguments);
+                    if (_.isUndefined(result)) {
+                        return;
+                    }
+                    result.hidden = false;
+                    return result;
+                }
+            },
+
+            ChatBoxViews: {
+                showChat: function showChat(attrs, force) {
+                    /* We only have one chat visible at any one
+                     * time. So before opening a chat, we make sure all other
+                     * chats are hidden.
+                     */
+                    var _converse = this.__super__._converse;
+
+                    var chatbox = this.getChatBox(attrs, true);
+                    var hidden = _.isUndefined(attrs.hidden) ? chatbox.get('hidden') : attrs.hidden;
+                    if ((force || !hidden) && _converse.connection.authenticated) {
+                        _.each(_converse.chatboxviews.xget(chatbox.get('id')), hideChat);
+                        chatbox.save({ 'hidden': false });
+                    }
+                    return this.__super__.showChat.apply(this, arguments);
+                }
+            },
+
+            ChatBoxView: {
+                _show: function _show(focus) {
+                    /* We only have one chat visible at any one
+                     * time. So before opening a chat, we make sure all other
+                     * chats are hidden.
+                     */
+                    if (!this.model.get('hidden')) {
+                        _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
+                        return this.__super__._show.apply(this, arguments);
+                    }
+                }
+            },
+
+            RosterContactView: {
+                openChat: function openChat(ev) {
+                    /* We only have one chat visible at any one
+                     * time. So before opening a chat, we make sure all other
+                     * chats are hidden.
+                     */
+                    _.each(this.__super__._converse.chatboxviews.xget('controlbox'), hideChat);
+                    this.model.save({ 'hidden': false });
+                    return this.__super__.openChat.apply(this, arguments);
+                }
+            }
+        }
+    });
+});
+//# sourceMappingURL=converse-singleton.js.map;
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) JC Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global define */
+
+(function (root, factory) {
+    define('converse-fullscreen',["converse-core", "tpl!inverse_brand_heading", "converse-chatview", "converse-controlbox", "converse-muc", "converse-singleton"], factory);
+})(undefined, function (converse, tpl_brand_heading) {
+    "use strict";
+
+    var _converse$env = converse.env,
+        Strophe = _converse$env.Strophe,
+        _ = _converse$env._;
+
+
+    converse.plugins.add('converse-fullscreen', {
+        enabled: function enabled(_converse) {
+            return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
+        },
+
+
+        overrides: {
+            // overrides mentioned here will be picked up by converse.js's
+            // plugin architecture they will replace existing methods on the
+            // relevant objects or classes.
+            //
+            // new functions which don't exist yet can also be added.
+
+            ControlBoxView: {
+                createBrandHeadingHTML: function createBrandHeadingHTML() {
+                    return tpl_brand_heading();
+                },
+                insertBrandHeading: function insertBrandHeading() {
+                    var el = document.getElementById('converse-login-panel');
+                    el.parentNode.insertAdjacentHTML('afterbegin', this.createBrandHeadingHTML());
+                }
+            },
+
+            ChatRoomView: {
+                afterShown: function afterShown(focus) {
+                    /* Make sure chat rooms are scrolled down when opened
+                     */
+                    this.scrollDown();
+                    if (focus) {
+                        this.focus();
+                    }
+                    return this.__super__.afterShown.apply(this, arguments);
+                }
+            }
+        },
+
+        initialize: function initialize() {
+            this._converse.api.settings.update({
+                chatview_avatar_height: 44,
+                chatview_avatar_width: 44,
+                hide_open_bookmarks: true,
+                show_controlbox_by_default: true,
+                sticky_controlbox: true
+            });
+        }
+    });
+});
+//# sourceMappingURL=converse-fullscreen.js.map;
 /*global define */
 if (typeof define !== 'undefined') {
     // The section below determines which plugins will be included in a build
     define('converse',[
         "converse-core",
-        // PLEASE NOTE: By default all translations are included.
-        // You can modify the file src/locales.js to include only those
-        // translations that you care about.
-
         /* START: Removable components
          * --------------------
          * Any of the following components may be removed if they're not needed.
@@ -75615,6 +75506,7 @@ if (typeof define !== 'undefined') {
         "converse-minimize",    // Allows chat boxes to be minimized
         "converse-dragresize",  // Allows chat boxes to be resized by dragging them
         "converse-headline",    // Support for headline messages
+        "converse-fullscreen",
         /* END: Removable components */
     ], function (converse) {
         return converse;

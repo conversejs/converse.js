@@ -431,6 +431,48 @@ disconnect
 Terminates the connection.
 
 
+The **disco** grouping
+----------------------
+
+This grouping collects API functions related to `service discovery
+<https://xmpp.org/extensions/xep-0030.html>`_.
+
+supports
+~~~~~~~~
+
+Used to determine whether an entity supports a given feature.
+
+Returns a `Promise` which, when resolved, returns a map/object with keys
+`supported` (a boolean) and `feature` which is a `Backbone.Model <http://backbonejs.org/#Model>`_.
+
+.. code-block:: javascript
+
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            _converse.api.disco.supports(_converse.bare_jid, Strophe.NS.MAM).then(
+                function (value) {
+                    // `value` is a map with two keys, `supported` and `feature`.
+
+                    if (value.supported) {
+                        // The feature is supported
+                    } else {
+                        // The feature is not supported
+                    }
+                },
+                function () { // Error
+                    _converse.log(
+                        "Error or timeout while checking for feature support",
+                        Strophe.LogLevel.ERROR
+                    );
+                }
+            ).catch((msg) => {
+                _converse.log(msg, Strophe.LogLevel.FATAL);
+            });
+        }
+    });
+
+
 The **user** grouping
 ---------------------
 
@@ -681,7 +723,7 @@ Note, for MUC chat rooms, you need to use the "rooms" grouping instead.
 get
 ~~~
 
-Returns an object representing a chat box.
+Returns an object representing a chat box. The chat box should already be open.
 
 To return a single chat box, provide the JID of the contact you're chatting
 with in that chat box:
@@ -703,16 +745,36 @@ To return all open chat boxes, call the method without any JIDs::
 open
 ~~~~
 
-Opens a chat box and returns a Backbone.View object representing a chat box.
+Opens a chat box and returns a `Backbone.View <http://backbonejs.org/#View>`_ object
+representing a chat box.
 
-To open a single chat box, provide the JID of the contact:
+Note that converse doesn't allow opening chats with users who aren't in your roster
+(unless you have set :ref:`allow_non_roster_messaging` to ``true``).
+
+Before opening a chat, you should first wait until the roster has been populated.
+This is the :ref:`rosterContactsFetched` event/promise.
+
+Besides that, it's a good idea to also first wait until already opened chat boxes
+(which are cached in sessionStorage) have also been fetched from the cache.
+This is the :ref:`chatBoxesFetched` event/promise.
+
+These two events fire only once per session, so they're also available as promises.
+
+So, to open a single chat box:
 
 .. code-block:: javascript
 
     converse.plugins.add('myplugin', {
-        initialize: function () {
-            this._converse.api.chats.open('buddy@example.com')
-        }
+      initialize: function() {
+        var _converse = this._converse;
+        Promise.all([
+            _converse.api.waitUntil('rosterContactsFetched'),
+            _converse.api.waitUntil('chatBoxesFetched')
+        ]).then(function() {
+            // Note, buddy@example.org must be in your contacts roster!
+            _converse.api.chats.open('buddy@example.com')
+        });
+      }
     });
 
 To return an array of chat boxes, provide an array of JIDs:
@@ -721,7 +783,14 @@ To return an array of chat boxes, provide an array of JIDs:
 
     converse.plugins.add('myplugin', {
         initialize: function () {
-            this._converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com'])
+            var _converse = this._converse;
+            Promise.all([
+                _converse.api.waitUntil('rosterContactsFetched'),
+                _converse.api.waitUntil('chatBoxesFetched')
+            ]).then(function() {
+                // Note, these users must first be in your contacts roster!
+                _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com'])
+            });
         }
     });
 
@@ -759,6 +828,67 @@ To return an array of chat boxes, provide an array of JIDs:
 +-------------+-----------------------------------------------------+
 | url         | The URL of the chat box heading.                    |
 +-------------+-----------------------------------------------------+
+
+.. _`listen-grouping`:
+
+The **listen** grouping
+-----------------------
+
+Converse.js emits events to which you can subscribe from your own JavaScript.
+
+Concerning events, the following methods are available under the "listen"
+grouping:
+
+* **on(eventName, callback, [context])**:
+
+    Calling the ``on`` method allows you to subscribe to an event.
+    Every time the event fires, the callback method specified by ``callback`` will be
+    called.
+
+    Parameters:
+
+    * ``eventName`` is the event name as a string.
+    * ``callback`` is the callback method to be called when the event is emitted.
+    * ``context`` (optional), the value of the `this` parameter for the callback.
+
+    For example:
+
+.. code-block:: javascript
+
+        _converse.api.listen.on('message', function (messageXML) { ... });
+
+* **once(eventName, callback, [context])**:
+
+    Calling the ``once`` method allows you to listen to an event
+    exactly once.
+
+    Parameters:
+
+    * ``eventName`` is the event name as a string.
+    * ``callback`` is the callback method to be called when the event is emitted.
+    * ``context`` (optional), the value of the `this` parameter for the callback.
+
+    For example:
+
+.. code-block:: javascript
+
+        _converse.api.listen.once('message', function (messageXML) { ... });
+
+* **not(eventName, callback)**
+
+    To stop listening to an event, you can use the ``not`` method.
+
+    Parameters:
+
+    * ``eventName`` is the event name as a string.
+    * ``callback`` refers to the function that is to be no longer executed.
+
+    For example:
+
+.. code-block:: javascript
+
+        _converse.api.listen.not('message', function (messageXML) { ... });
+
 
 The **rooms** grouping
 ----------------------
@@ -897,7 +1027,7 @@ JIDs.
 The **promises** grouping
 -------------------------
 
-Converse.js and its plugins emit various events which you can listen to via the 
+Converse.js and its plugins emit various events which you can listen to via the
 :ref:`listen-grouping`.
 
 Some of these events are also available as `ES2015 Promises <http://es6-features.org/#PromiseUsage>`_,
@@ -1061,63 +1191,28 @@ Example:
     });
 
 
-.. _`listen-grouping`:
-
-The **listen** grouping
+The **vcard** grouping
 -----------------------
 
-Converse.js emits events to which you can subscribe from your own JavaScript.
+get
+~~~
 
-Concerning events, the following methods are available under the "listen"
-grouping:
+Returns a Promise which results with the VCard data for a particular JID.
 
-* **on(eventName, callback, [context])**:
-
-    Calling the ``on`` method allows you to subscribe to an event.
-    Every time the event fires, the callback method specified by ``callback`` will be
-    called.
-
-    Parameters:
-
-    * ``eventName`` is the event name as a string.
-    * ``callback`` is the callback method to be called when the event is emitted.
-    * ``context`` (optional), the value of the `this` parameter for the callback.
-
-    For example:
+Example:
 
 .. code-block:: javascript
 
-        _converse.api.listen.on('message', function (messageXML) { ... });
+    converse.plugins.add('myplugin', {
+        initialize: function () {
 
-* **once(eventName, callback, [context])**:
+            _converse.api.waitUntil('rosterContactsFetched').then(() => {
+                this._converse.api.vcard.get('someone@example.org').then(
+                    (vcard) => {
+                        // Do something with the vcard...
+                    }
+                );
+            });
 
-    Calling the ``once`` method allows you to listen to an event
-    exactly once.
-
-    Parameters:
-
-    * ``eventName`` is the event name as a string.
-    * ``callback`` is the callback method to be called when the event is emitted.
-    * ``context`` (optional), the value of the `this` parameter for the callback.
-
-    For example:
-
-.. code-block:: javascript
-
-        _converse.api.listen.once('message', function (messageXML) { ... });
-
-* **not(eventName, callback)**
-
-    To stop listening to an event, you can use the ``not`` method.
-
-    Parameters:
-
-    * ``eventName`` is the event name as a string.
-    * ``callback`` refers to the function that is to be no longer executed.
-
-    For example:
-
-.. code-block:: javascript
-
-        _converse.api.listen.not('message', function (messageXML) { ... });
-
+        }
+    });

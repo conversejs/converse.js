@@ -546,8 +546,16 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+
+                test_utils.waitUntilFeatureSupportConfirmed(_converse, 'vcard-temp')
+                .then(function () {
+                    return test_utils.waitUntil(function () {
+                        return _converse.xmppstatus.get('fullname');
+                    }, 300);
+                }).then(function () {
+                    test_utils.createContacts(_converse, 'current');
+                    return test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                }).then(function () {
                     var view = _converse.chatboxviews.get('lounge@localhost');
                     if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
                     var message = '/me is tired';
@@ -808,7 +816,7 @@
                     expect($sent_stanza.find('field[var="muc#roomconfig_allowpm"] value').text()).toBe('moderators');
                     expect($sent_stanza.find('field[var="muc#roomconfig_presencebroadcast"] value').text()).toBe('moderator');
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
 
             it("shows users currently present in the room",

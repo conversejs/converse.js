@@ -1,31 +1,33 @@
-<form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">
-    <legend>{{{__("Login")}}}</legend>
-    <div class="conn-feedback fade-in {[ if (!conn_feedback_subject) { ]} hidden {[ } ]} {{{conn_feedback_class}}}">
-        <p class="feedback-subject">{{{ conn_feedback_subject }}}</p>
-        <p class="feedback-message {[ if (!conn_feedback_message) { ]} hidden {[ } ]}">{{{conn_feedback_message}}}</p>
-    </div>
-    {[ if (auto_login || _converse.CONNECTION_STATUS[connection_status] === 'CONNECTING') { ]}
-        <span class="spinner centered"/>
-    {[ } else { ]}
-        {[ if (authentication == LOGIN || authentication == EXTERNAL) { ]}
-            <label>{{{__("Jabber ID:")}}}</label>
-            <input autofocus required
-                   type="text"
-                   name="jid"
-                   placeholder="{{{placeholder_username}}}">
-            {[ if (authentication !== EXTERNAL) { ]}
-                <label>{{{__("Password:")}}}</label>
-                <input required
-                       type="password" name="password"
-                       placeholder="{{{__('password')}}}">
+<div id="converse-login-panel" class="controlbox-pane fade-in">
+    <form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">
+        <legend>{{{o.__("Login")}}}</legend>
+        <div class="conn-feedback fade-in {[ if (!o.conn_feedback_subject) { ]} hidden {[ } ]} {{{o.conn_feedback_class}}}">
+            <p class="feedback-subject">{{{ o.conn_feedback_subject }}}</p>
+            <p class="feedback-message {[ if (!o.conn_feedback_message) { ]} hidden {[ } ]}">{{{o.conn_feedback_message}}}</p>
+        </div>
+        {[ if (o.auto_login || o._converse.CONNECTION_STATUS[o.connection_status] === 'CONNECTING') { ]}
+            <span class="spinner centered"/>
+        {[ } else { ]}
+            {[ if (o.authentication == o.LOGIN || o.authentication == o.EXTERNAL) { ]}
+                <label>{{{o.__("Jabber ID:")}}}</label>
+                <input autofocus required
+                    type="text"
+                    name="jid"
+                    placeholder="{{{o.placeholder_username}}}">
+                {[ if (o.authentication !== o.EXTERNAL) { ]}
+                    <label>{{{o.__("Password:")}}}</label>
+                    <input required
+                        type="password" name="password"
+                        placeholder="{{{o.__('password')}}}">
+                {[ } ]}
+                <input class="pure-button button-primary" type="submit" value="{{{o.__('Submit')}}}">
             {[ } ]}
-            <input class="pure-button button-primary" type="submit" value="{{{__('Submit')}}}">
+            {[ if (o.authentication == o.ANONYMOUS) { ]}
+                <input class="pure-button button-primary login-anon" type="submit" value="{{{o.__('Click here to log in anonymously')}}}"/>
+            {[ } ]}
+            {[ if (o.authentication == o.PREBIND) { ]}
+                <p>Disconnected.</p>
+            {[ } ]}
         {[ } ]}
-        {[ if (authentication == ANONYMOUS) { ]}
-            <input class="pure-button button-primary login-anon" type="submit" value="{{{__('Click here to log in anonymously')}}}"/>
-        {[ } ]}
-        {[ if (authentication == PREBIND) { ]}
-            <p>Disconnected.</p>
-        {[ } ]}
-    {[ } ]}
-</form>
+    </form>
+</div>

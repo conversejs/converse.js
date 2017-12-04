@@ -22,10 +22,12 @@ require.config({
         "backbone.browserStorage":  "node_modules/backbone.browserStorage/backbone.browserStorage",
         "backbone.noconflict":      "src/backbone.noconflict",
         "backbone.overview":        "node_modules/backbone.overview/backbone.overview",
+        "backbone.vdomview":        "node_modules/backbone.vdomview/backbone.vdomview",
         "emojione":                 "node_modules/emojione/lib/js/emojione",
         "es6-promise":              "node_modules/es6-promise/dist/es6-promise.auto",
         "eventemitter":             "node_modules/otr/build/dep/eventemitter",
         "form-utils":               "src/form-utils",
+        "i18n":                     "src/i18n",
         "jed":                      "node_modules/jed/jed",
         "jquery":                   "node_modules/jquery/dist/jquery",
         "jquery.browser":           "node_modules/jquery.browser/dist/jquery.browser",
@@ -34,7 +36,6 @@ require.config({
         "lodash.converter":         "3rdparty/lodash.fp",
         "lodash.fp":                "src/lodash.fp",
         "lodash.noconflict":        "src/lodash.noconflict",
-        "moment_with_locales":      "3rdparty/moment_locales",
         "pluggable":                "node_modules/pluggable.js/dist/pluggable",
         "polyfill":                 "src/polyfill",
         "sizzle":                   "node_modules/jquery/sizzle/dist/sizzle",
@@ -54,7 +55,6 @@ require.config({
 
         // Converse
         "converse":                 "src/converse",
-        "inverse":                  "src/inverse",
 
         "converse-bookmarks":       "src/converse-bookmarks",
         "converse-chatboxes":       "src/converse-chatboxes",
@@ -64,7 +64,7 @@ require.config({
         "converse-disco":           "src/converse-disco",
         "converse-dragresize":      "src/converse-dragresize",
         "converse-headline":        "src/converse-headline",
-        "converse-inverse":         "src/converse-inverse",
+        "converse-fullscreen":      "src/converse-fullscreen",
         "converse-mam":             "src/converse-mam",
         "converse-minimize":        "src/converse-minimize",
         "converse-muc":             "src/converse-muc",
@@ -72,6 +72,7 @@ require.config({
         "converse-notification":    "src/converse-notification",
         "converse-otr":             "src/converse-otr",
         "converse-ping":            "src/converse-ping",
+        "converse-profile":         "src/converse-profile",
         "converse-register":        "src/converse-register",
         "converse-roomslist":       "src/converse-roomslist",
         "converse-rosterview":      "src/converse-rosterview",
@@ -115,7 +116,13 @@ require.config({
         templateSettings: {
             "escape": /\{\{\{([\s\S]+?)\}\}\}/g,
             "evaluate": /\{\[([\s\S]+?)\]\}/g,
-            "interpolate": /\{\{([\s\S]+?)\}\}/g
+            "interpolate": /\{\{([\s\S]+?)\}\}/g,
+            // By default, template places the values from your data in the
+            // local scope via the with statement. However, you can specify
+            // a single variable name with the variable setting. This can
+            // significantly improve the speed at which a template is able
+            // to render.
+            "variable": 'o'
         }
     },
 

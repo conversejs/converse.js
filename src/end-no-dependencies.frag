@@ -6,7 +6,6 @@
     define('lodash', [], function () { return _; });
     define('lodash.converter', [], function () { return fp; });
     define('lodash.noconflict', [], function () { return _; });
-    define('moment_with_locales', [], function () { return moment; });
     define('strophe', [], function () {
         return {
             'Strophe':         Strophe,
@@ -33,6 +32,5 @@
     define('backbone.browserStorage', ['backbone'], emptyFunction);
     define('backbone.overview', ['backbone'], emptyFunction);
     define('otr', [], function () { return { 'DSA': DSA, 'OTR': OTR };});
-    define("locales", [], emptyFunction);
     return require('converse');
 }));

@@ -2,11 +2,11 @@
 
     <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/setup.rst">Edit me on GitHub</a></div>
 
+.. _what-you-will-need:
+
 =====================
 Setup and integration
 =====================
-
-.. _what-you-will-need:
 
 This page documents what you'll need to do to be able to connect Converse.js with
 your own XMPP server and to better integrate it into your website.

@@ -1,13 +1,13 @@
-<li class="{{{ role }}} occupant" id="{{{ id }}}"
-    {[ if (role === "moderator") { ]}
-       title="{{{ jid }}} {{{ desc_moderator }}} {{{ hint_occupant }}}"
+<li class="{{{ o.role }}} occupant" id="{{{ o.id }}}"
+    {[ if (o.role === "moderator") { ]}
+       title="{{{ o.jid }}} {{{ o.desc_moderator }}} {{{ o.hint_occupant }}}"
     {[ } ]}
-    {[ if (role === "occupant") { ]}
-       title="{{{ jid }}} {{{ desc_occupant }}} {{{ hint_occupant }}}"
+    {[ if (o.role === "occupant") { ]}
+       title="{{{ o.jid }}} {{{ o.desc_occupant }}} {{{ o.hint_occupant }}}"
     {[ } ]}
-    {[ if (role === "visitor") { ]}
-       title="{{{ jid }}} {{{ desc_visitor }}} {{{ hint_occupant }}}"
+    {[ if (o.role === "visitor") { ]}
+       title="{{{ o.jid }}} {{{ o.desc_visitor }}} {{{ o.hint_occupant }}}"
     {[ } ]}
-    {[ if (!_.includes(["visitor", "occupant", "moderator"], role)) { ]}
-       title="{{{ jid }}} {{{ hint_occupant }}}"
-       {[ } ]}><div class="occupant-status occupant-{{{show}}} circle" title="{{{hint_show}}}"></div>{{{nick}}}</li>
+    {[ if (!_.includes(["visitor", "occupant", "moderator"], o.role)) { ]}
+       title="{{{ o.jid }}} {{{ o.hint_occupant }}}"
+       {[ } ]}><div class="occupant-status occupant-{{{o.show}}} circle" title="{{{o.hint_show}}}"></div>{{{o.nick}}}</li>

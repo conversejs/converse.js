@@ -3,10 +3,6 @@ if (typeof define !== 'undefined') {
     // The section below determines which plugins will be included in a build
     define([
         "converse-core",
-        // PLEASE NOTE: By default all translations are included.
-        // You can modify the file src/locales.js to include only those
-        // translations that you care about.
-
         /* START: Removable components
          * --------------------
          * Any of the following components may be removed if they're not needed.
@@ -25,6 +21,7 @@ if (typeof define !== 'undefined') {
         "converse-minimize",    // Allows chat boxes to be minimized
         "converse-dragresize",  // Allows chat boxes to be resized by dragging them
         "converse-headline",    // Support for headline messages
+        "converse-fullscreen",
         /* END: Removable components */
     ], function (converse) {
         return converse;

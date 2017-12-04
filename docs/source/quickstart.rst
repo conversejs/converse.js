@@ -33,6 +33,11 @@ via the *script* and *link* tags:
     <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/css/converse.min.css">
     <script src="https://cdn.conversejs.org/dist/converse.min.js"></script>
 
+
+.. note:: For the fullscreen version of converse.js, replace
+    ``converse.min.js`` with ``inverse.min.js`` and ``converse.min.css`` with
+    ``inverse.min.css``.
+
 .. note:: Instead of always loading the latest version of Converse.js via the
     CDN, it's generally better to load a specific version (preferably the
     latest one), to avoid breakage when new backwards-incompatible versions are
@@ -49,7 +54,7 @@ bottom of your page (after the closing *</body>* element)::
 
     <script>
         converse.initialize({
-            bosh_service_url: 'https://bind.conversejs.org', // Please use this connection manager only for testing purposes
+            bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
             show_controlbox_by_default: true
         });
     </script>
@@ -61,12 +66,22 @@ Alternative builds of Converse.js
 =================================
 
 The minified ``.js`` and ``.css`` files provide the same functionality as is available
-on the `conversejs.org <http://conversejs.org>`_ website. Useful for testing or demoing.
+on the `conversejs.org <https://conversejs.org>`_ website. Useful for testing or demoing.
 
 Alternative builds are however also available via the CDN.
 
-Mobile build
-------------
+Fullscreen version
+------------------
+
+Converse.js also comes in a fullscreen version (often referred to as Inverse).
+A hosted version is available online at `inverse.chat <https://inverse.chat>`_.
+
+To load the fullscreen version, simply replace
+``converse.min.js`` with ``inverse.min.js`` and ``converse.min.css`` with
+``inverse.min.css``.
+
+Mobile version
+--------------
 
 Besides the default build mentioned above, there is a build intended for mobile
 websites, called ``converse-mobile.min.js``.

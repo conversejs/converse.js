@@ -10,44 +10,33 @@
     define(["jquery.noconflict",
             "converse-core",
             "lodash.fp",
-            "virtual-dom",
-            "vdom-parser",
             "tpl!add_contact_dropdown",
             "tpl!add_contact_form",
             "tpl!converse_brand_heading",
-            "tpl!change_status_message",
-            "tpl!chat_status",
-            "tpl!choose_status",
             "tpl!contacts_panel",
             "tpl!contacts_tab",
             "tpl!controlbox",
             "tpl!controlbox_toggle",
             "tpl!login_panel",
             "tpl!search_contact",
-            "tpl!status_option",
             "tpl!spinner",
             "converse-chatview",
-            "converse-rosterview"
+            "converse-rosterview",
+            "converse-profile"
     ], factory);
 }(this, function (
             $,
             converse,
             fp,
-            vdom,
-            vdom_parser,
             tpl_add_contact_dropdown,
             tpl_add_contact_form,
             tpl_brand_heading,
-            tpl_change_status_message,
-            tpl_chat_status,
-            tpl_choose_status,
             tpl_contacts_panel,
             tpl_contacts_tab,
             tpl_controlbox,
             tpl_controlbox_toggle,
             tpl_login_panel,
             tpl_search_contact,
-            tpl_status_option,
             tpl_spinner
         ) {
     "use strict";
@@ -268,7 +257,7 @@
                             .then(this.insertRoster.bind(this))
                             .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
-                    _converse.emit('controlboxInitialized');
+                    _converse.emit('controlboxInitialized', this);
                 },
 
                 render () {
@@ -456,7 +445,7 @@
                 }
             });
 
-            _converse.LoginPanel = Backbone.View.extend({
+            _converse.LoginPanel = Backbone.VDOMView.extend({
                 tagName: 'div',
                 id: "converse-login-panel",
                 className: 'controlbox-pane fade-in',
@@ -470,14 +459,14 @@
                     this.listenTo(_converse.connfeedback, 'change', this.render);
                 },
 
-                render () {
+                renderHTML () {
                     const connection_status = _converse.connfeedback.get('connection_status');
                     let feedback_class, pretty_status;
                     if (_.includes(REPORTABLE_STATUSES, connection_status)) {
                         pretty_status = PRETTY_CONNECTION_STATUS[connection_status];
                         feedback_class = CONNECTION_STATUS_CSS_CLASS[pretty_status];
                     }
-                    const html = tpl_login_panel(
+                    return tpl_login_panel(
                         _.extend(this.model.toJSON(), {
                             '__': __,
                             '_converse': _converse,
@@ -495,14 +484,6 @@
                                                     __('Username') || __('user@domain'),
                         })
                     );
-                    const form = this.el.querySelector('form');
-                    if (_.isNull(form)) {
-                        this.el.innerHTML = html;
-                    } else {
-                        const patches = vdom.diff(vdom_parser(form), vdom_parser(html));
-                        vdom.patch(form, patches);
-                    }
-                    return this;
                 },
 
                 validate () {
@@ -511,7 +492,7 @@
                     if (jid_element.value &&
                             !_converse.locked_domain &&
                             !_converse.default_domain &&
-                            _.filter(jid_element.value.split('@')).length < 2) {
+                            !utils.isValidJID(jid_element.value)) {
                         jid_element.setCustomValidity(__('Please enter a valid XMPP address'));
                         return false;
                     }
@@ -550,122 +531,12 @@
                             jid = Strophe.getBareJidFromJid(jid).toLowerCase()+'/'+resource;
                         }
                     }
+                    if (_.includes(["converse/login", "converse/register"],
+                            Backbone.history.getFragment())) {
+                        _converse.router.navigate('', {'replace': true});
+                    }
                     _converse.connection.reset();
                     _converse.connection.connect(jid, password, _converse.onConnectStatusChanged);
-                }
-            });
-
-
-            _converse.XMPPStatusView = Backbone.View.extend({
-                el: "form#set-xmpp-status",
-                events: {
-                    "click a.choose-xmpp-status": "toggleOptions",
-                    "click #fancy-xmpp-status-select a.change-xmpp-status-message": "renderStatusChangeForm",
-                    "submit": "setStatusMessage",
-                    "click .dropdown dd ul li a": "setStatus"
-                },
-
-                initialize () {
-                    this.model.on("change:status", this.updateStatusUI, this);
-                    this.model.on("change:status_message", this.updateStatusUI, this);
-                    this.model.on("update-status-ui", this.updateStatusUI, this);
-                },
-
-                render () {
-                    // Replace the default dropdown with something nicer
-                    const $select = this.$el.find('select#select-xmpp-status');
-                    const chat_status = this.model.get('status') || 'offline';
-                    const options = $('option', $select);
-                    const options_list = [];
-                    this.$el.html(tpl_choose_status());
-                    this.$el.find('#fancy-xmpp-status-select')
-                            .html(tpl_chat_status({
-                                'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
-                                'chat_status': chat_status,
-                                'desc_custom_status': __('Click here to write a custom status message'),
-                                'desc_change_status': __('Click to change your chat status')
-                                }));
-                    // iterate through all the <option> elements and add option values
-                    options.each(function () {
-                        options_list.push(tpl_status_option({
-                            'value': $(this).val(),
-                            'text': this.text
-                        }));
-                    });
-                    const $options_target = this.$el.find("#target dd ul").hide();
-                    $options_target.append(options_list.join(''));
-                    $select.remove();
-                    return this;
-                },
-
-                toggleOptions (ev) {
-                    ev.preventDefault();
-                    utils.slideInAllElements(
-                        document.querySelectorAll('#conversejs .contact-form-container')
-                    );
-                    $(ev.target).parent().parent().siblings('dd').find('ul').toggle('fast');
-                },
-
-                renderStatusChangeForm (ev) {
-                    ev.preventDefault();
-                    const status_message = _converse.xmppstatus.get('status_message') || '';
-                    const input = tpl_change_status_message({
-                        'status_message': status_message,
-                        'label_custom_status': __('Custom status'),
-                        'label_save': __('Save')
-                    });
-                    const $xmppstatus = this.$el.find('.xmpp-status');
-                    $xmppstatus.parent().addClass('no-border');
-                    $xmppstatus.replaceWith(input);
-                    this.$el.find('.custom-xmpp-status').focus().focus();
-                },
-
-                setStatusMessage (ev) {
-                    ev.preventDefault();
-                    this.model.setStatusMessage($(ev.target).find('input').val());
-                },
-
-                setStatus (ev) {
-                    ev.preventDefault();
-                    const $el = $(ev.currentTarget),
-                        value = $el.attr('data-value');
-                    if (value === 'logout') {
-                        this.$el.find(".dropdown dd ul").hide();
-                        _converse.logOut();
-                    } else {
-                        this.model.setStatus(value);
-                        this.$el.find(".dropdown dd ul").hide();
-                    }
-                },
-
-                getPrettyStatus (stat) {
-                    if (stat === 'chat') {
-                        return __('online');
-                    } else if (stat === 'dnd') {
-                        return __('busy');
-                    } else if (stat === 'xa') {
-                        return __('away for long');
-                    } else if (stat === 'away') {
-                        return __('away');
-                    } else if (stat === 'offline') {
-                        return __('offline');
-                    } else {
-                        return __(stat) || __('online');
-                    }
-                },
-
-                updateStatusUI (model) {
-                    const stat = model.get('status');
-                    // For translators: the %1$s part gets replaced with the status
-                    // Example, I am online
-                    const status_message = model.get('status_message') || __("I am %1$s", this.getPrettyStatus(stat));
-                    this.$el.find('#fancy-xmpp-status-select').removeClass('no-border').html(
-                        tpl_chat_status({
-                            'chat_status': stat,
-                            'status_message': status_message,
-                            'desc_custom_status': __('Click here to write a custom status message'),
-                            'desc_change_status': __('Click to change your chat status')
-                        }));
                 }
             });
 
@@ -752,8 +623,8 @@
                     this.el.querySelector('.search-xmpp div').innerHTML = this.generateAddContactHTML();
                     var dropdown = this.el.querySelector('.contact-form-container');
                     utils.slideToggleElement(dropdown).then(() => {
-                        if ($(dropdown).is(':visible')) {
-                            $(dropdown).find('input.username').focus();
+                        if (utils.isVisible(dropdown)) {
+                            dropdown.querySelector('input.username').focus();
                         }
                     });
                 },
@@ -784,8 +655,8 @@
 
                 addContactFromForm (ev) {
                     ev.preventDefault();
-                    const $input = $(ev.target).find('input');
-                    const jid = $input.val();
+                    const input = ev.target.querySelector('input');
+                    const jid = input.value;
                     if (!jid || _.filter(jid.split('@')).length < 2) {
                         this.el.querySelector('.search-xmpp div').innerHTML =
                             this.generateAddContactHTML({
@@ -802,11 +673,11 @@
 
                 addContactFromList (ev) {
                     ev.preventDefault();
-                    const $target = $(ev.target),
-                        jid = $target.attr('data-recipient'),
-                        name = $target.text();
+                    const jid = ev.target.getAttribute('data-recipient'),
+                        name = ev.target.textContent;
                     _converse.roster.addAndSubscribe(jid, name);
-                    $target.parent().remove();
+                    const parent = ev.target.parentNode;
+                    parent.parentNode.removeChild(parent);
                     utils.slideIn(this.el.querySelector('.contact-form-container'));
                 }
             });
@@ -881,7 +752,7 @@
 
                 onClick (e) {
                     e.preventDefault();
-                    if ($("div#controlbox").is(':visible')) {
+                    if (utils.isVisible(document.querySelector("#controlbox"))) {
                         const controlbox = _converse.chatboxes.get('controlbox');
                         if (_converse.connection.connected) {
                             controlbox.save({closed: true});

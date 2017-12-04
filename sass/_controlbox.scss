@@ -506,6 +506,9 @@
         .xmpp-status-menu {
             text-align: left;
             box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4);
+            &.collapsed {
+                box-shadow: none;
+            }
             li {
                 padding: 2px;
                 a {

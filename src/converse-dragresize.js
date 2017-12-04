@@ -44,6 +44,10 @@
          */
         optional_dependencies: ["converse-headline"],
 
+        enabled (_converse) {
+            return _converse.view_mode == 'overlayed';
+        },
+
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -53,7 +57,7 @@
 
             registerGlobalEventHandlers () {
                 const that = this;
-                
+
                 $(document).on('mousemove', function (ev) {
                     if (!that.resizing || !that.allow_dragresize) { return true; }
                     ev.preventDefault();

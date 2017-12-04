@@ -9,45 +9,22 @@
 // XEP-0059 Result Set Management
 
 (function (root, factory) {
-    define(["jquery.noconflict",
+    define(["sizzle",
             "converse-core",
+            "utils",
             "converse-disco",
             "converse-chatview", // Could be made a soft dependency
             "converse-muc", // Could be made a soft dependency
             "strophe.rsm"
     ], factory);
-}(this, function ($, converse) {
+}(this, function (sizzle, converse, utils) {
     "use strict";
+    const CHATROOMS_TYPE = 'chatroom';
     const { Promise, Strophe, $iq, _, moment } = converse.env;
 
     const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
     // XEP-0313 Message Archive Management
     const MAM_ATTRIBUTES = ['with', 'start', 'end'];
-
-    function checkMAMSupport (_converse) {
-        /* Returns a promise which resolves when MAM is supported
-         * for this user, or which rejects if not.
-         */
-        return _converse.api.waitUntil('discoInitialized').then(() =>
-            new Promise((resolve, reject) => {
-
-                function fulfillPromise (entity) {
-                    if (entity.features.findWhere({'var': Strophe.NS.MAM})) {
-                        resolve(true);
-                    } else {
-                        resolve(false);
-                    }
-                }
-                let entity = _converse.disco_entities.get(_converse.bare_jid);
-                if (_.isUndefined(entity)) {
-                    entity = _converse.disco_entities.create({'jid': _converse.bare_jid});
-                    entity.on('featuresDiscovered', _.partial(fulfillPromise, entity));
-                } else {
-                    fulfillPromise(entity);
-                }
-            })
-        );
-    }
 
 
     converse.plugins.add('converse-mam', {
@@ -61,7 +38,10 @@
             ChatBox: {
                 getMessageAttributes ($message, $delay, original_stanza) {
                     const attrs = this.__super__.getMessageAttributes.apply(this, arguments);
-                    attrs.archive_id = $(original_stanza).find(`result[xmlns="${Strophe.NS.MAM}"]`).attr('id');
+                    const result = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, original_stanza).pop();
+                    if (!_.isUndefined(result)) {
+                        attrs.archive_id =  result.getAttribute('id');
+                    }
                     return attrs;
                 }
             },
@@ -75,6 +55,44 @@
                     return result;
                 },
 
+                fetchNewestMessages () {
+                    /* Fetches messages that might have been archived *after*
+                     * the last archived message in our local cache.
+                     */
+                    if (this.disable_mam) { return; }
+                    const { _converse } = this.__super__;
+                    this.addSpinner(true);
+                    _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
+                        (result) => { // Success
+                            if (result.supported) {
+                                const most_recent_msg = utils.getMostRecentMessage(this.model);
+                                const archive_id = most_recent_msg.get('archive_id');
+                                if (archive_id) {
+                                    this.fetchArchivedMessages({
+                                        'after': most_recent_msg.get('archive_id')
+                                    });
+                                } else {
+                                    this.fetchArchivedMessages({
+                                        'start': most_recent_msg.get('time')
+                                    });
+                                }
+                            } else {
+                                this.clearSpinner();
+                            }
+                        },
+                        () => { // Error
+                            this.clearSpinner();
+                            _converse.log(
+                                "Error or timeout while checking for MAM support",
+                                Strophe.LogLevel.ERROR
+                            );
+                        }
+                    ).catch((msg) => {
+                        this.clearSpinner();
+                        _converse.log(msg, Strophe.LogLevel.FATAL);
+                    });
+                },
+
                 fetchArchivedMessagesIfNecessary () {
                     /* Check if archived messages should be fetched, and if so, do so. */
                     if (this.disable_mam || this.model.get('mam_initialized')) {
@@ -83,9 +101,9 @@
                     const { _converse } = this.__super__;
                     this.addSpinner();
 
-                    checkMAMSupport(_converse).then(
-                        (supported) => { // Success
-                            if (supported) {
+                    _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
+                        (result) => { // Success
+                            if (result.supported) {
                                 this.fetchArchivedMessages();
                             } else {
                                 this.clearSpinner();
@@ -148,10 +166,18 @@
 
                 onScroll (ev) {
                     const { _converse } = this.__super__;
-                    if ($(ev.target).scrollTop() === 0 && this.model.messages.length) {
-                        this.fetchArchivedMessages({
-                            'before': this.model.messages.at(0).get('archive_id')
-                        });
+                    if (ev.target.scrollTop === 0 && this.model.messages.length) {
+                        const oldest_message = this.model.messages.at(0);
+                        const archive_id = oldest_message.get('archive_id');
+                        if (archive_id) {
+                            this.fetchArchivedMessages({
+                                'before': archive_id
+                            });
+                        } else {
+                            this.fetchArchivedMessages({
+                                'end': oldest_message.get('time')
+                            });
+                        }
                     }
                 },
             },
@@ -177,8 +203,7 @@
                     /* MAM (message archive management XEP-0313) messages are
                      * ignored, since they're handled separately.
                      */
-                    const is_mam = $(stanza).find(`[xmlns="${Strophe.NS.MAM}"]`).length > 0;
-                    if (is_mam) {
+                    if (sizzle(`[xmlns="${Strophe.NS.MAM}"]`, stanza).length > 0) {
                         return true;
                     }
                     return this.__super__.handleMUCMessage.apply(this, arguments);
@@ -329,16 +354,8 @@
                 );
             };
 
-            _.extend(_converse.api, {
-                /* Extend default converse.js API to add methods specific to MAM
-                 */
-                'archive': {
-                    'query': _converse.queryForArchivedMessages.bind(_converse)
-                }
-            });
-
             _converse.onMAMError = function (iq) {
-                if ($(iq).find('feature-not-implemented').length) {
+                if (iq.querySelectorAll('feature-not-implemented').length) {
                     _converse.log(
                         "Message Archive Management (XEP-0313) not supported by this server",
                         Strophe.LogLevel.WARN);
@@ -361,12 +378,15 @@
                  * Per JID preferences will be set in chat boxes, so it'll
                  * probbaly be handled elsewhere in any case.
                  */
-                const $prefs = $(iq).find(`prefs[xmlns="${Strophe.NS.MAM}"]`);
-                const default_pref = $prefs.attr('default');
-                let stanza;
+                const preference = sizzle(`prefs[xmlns="${Strophe.NS.MAM}"]`, iq).pop();
+                const default_pref = preference.getAttribute('default');
                 if (default_pref !== _converse.message_archiving) {
-                    stanza = $iq({'type': 'set'}).c('prefs', {'xmlns':Strophe.NS.MAM, 'default':_converse.message_archiving});
-                    $prefs.children().each(function (idx, child) {
+                    const stanza = $iq({'type': 'set'})
+                        .c('prefs', {
+                            'xmlns':Strophe.NS.MAM,
+                            'default':_converse.message_archiving
+                        });
+                    _.each(preference.children, function (child) {
                         stanza.cnode(child).up();
                     });
                     _converse.connection.sendIQ(stanza, _.partial(function (feature, iq) {
@@ -403,6 +423,26 @@
 
             _converse.on('afterMessagesFetched', (chatboxview) => {
                 chatboxview.fetchArchivedMessagesIfNecessary();
+            });
+
+            _converse.on('reconnected', () => {
+                const private_chats = _converse.chatboxviews.filter(
+                    (view) => _.at(view, 'model.attributes.type')[0] === 'chatbox'
+                );
+                _.each(private_chats, (view) => view.fetchNewestMessages())
+            });
+
+            _.extend(_converse.api, {
+                /* Extend default converse.js API to add methods specific to MAM
+                 */
+                'archive': {
+                    'query': function () {
+                        if (!_converse.api.connection.connected()) {
+                            throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
+                        }
+                        return _converse.queryForArchivedMessages.apply(this, arguments);
+                    }
+                }
             });
         }
     });

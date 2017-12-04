@@ -10,8 +10,10 @@
 } (this, function ($, jasmine, utils, converse, mock, test_utils) {
     "use strict";
     var _ = converse.env._;
+    var $iq = converse.env.$iq;
     var $msg = converse.env.$msg;
     var Strophe = converse.env.Strophe;
+    var Promise = converse.env.Promise;
     var moment = converse.env.moment;
 
     return describe("Chatboxes", function() {
@@ -22,30 +24,37 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                test_utils.openControlBox();
-                test_utils.openContactsPanel(_converse);
-                expect(_converse.chatboxes.length).toEqual(1);
-                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var message = '/me is tired';
-                var msg = $msg({
-                        from: sender_jid,
-                        to: _converse.connection.jid,
-                        type: 'chat',
-                        id: (new Date()).getTime()
-                    }).c('body').t(message).up()
-                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                test_utils.waitUntilFeatureSupportConfirmed(_converse, 'vcard-temp')
+                .then(function () {
+                    return test_utils.waitUntil(function () {
+                        return _converse.xmppstatus.get('fullname');
+                    }, 300);
+                }).then(function () {
+                    test_utils.createContacts(_converse, 'current');
+                    test_utils.openControlBox();
+                    test_utils.openContactsPanel(_converse);
+                    expect(_converse.chatboxes.length).toEqual(1);
+                    var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var message = '/me is tired';
+                    var msg = $msg({
+                            from: sender_jid,
+                            to: _converse.connection.jid,
+                            type: 'chat',
+                            id: (new Date()).getTime()
+                        }).c('body').t(message).up()
+                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
 
-                _converse.chatboxes.onMessage(msg);
-                var view = _converse.chatboxviews.get(sender_jid);
-                expect(_.includes(view.$el.find('.chat-msg-author').text(), '**Max Frankfurter')).toBeTruthy();
-                expect(view.$el.find('.chat-msg-content').text()).toBe(' is tired');
+                    _converse.chatboxes.onMessage(msg);
+                    var view = _converse.chatboxviews.get(sender_jid);
+                    expect(_.includes(view.$el.find('.chat-msg-author').text(), '**Max Frankfurter')).toBeTruthy();
+                    expect(view.$el.find('.chat-msg-content').text()).toBe(' is tired');
 
-                message = '/me is as well';
-                test_utils.sendMessage(view, message);
-                expect(_.includes(view.$el.find('.chat-msg-author:last').text(), '**Max Mustermann')).toBeTruthy();
-                expect(view.$el.find('.chat-msg-content:last').text()).toBe(' is as well');
-                done();
+                    message = '/me is as well';
+                    test_utils.sendMessage(view, message);
+                    expect(_.includes(view.$el.find('.chat-msg-author:last').text(), '**Max Mustermann')).toBeTruthy();
+                    expect(view.$el.find('.chat-msg-content:last').text()).toBe(' is as well');
+                    done();
+                });
             }));
 
             it("is created when you click on a roster item",
@@ -385,45 +394,43 @@
                     test_utils.openControlBox();
                     test_utils.openContactsPanel(_converse);
 
-                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost',
-                        view, $toolbar, $textarea;
+                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.openChatBoxFor(_converse, contact_jid);
-                    view = _converse.chatboxviews.get(contact_jid);
-                    $toolbar = view.$el.find('ul.chat-toolbar');
-                    $textarea = view.$el.find('textarea.chat-textarea');
-                    expect($toolbar.children('li.toggle-smiley').length).toBe(1);
+                    var view = _converse.chatboxviews.get(contact_jid);
+                    var toolbar = view.el.querySelector('ul.chat-toolbar');
+                    expect(toolbar.querySelectorAll('li.toggle-smiley').length).toBe(1);
                     // Register spies
                     spyOn(view, 'toggleEmojiMenu').and.callThrough();
                     spyOn(view, 'insertEmoji').and.callThrough();
 
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                    $toolbar.children('li.toggle-smiley').click();
+                    toolbar.querySelector('li.toggle-smiley').click();
 
                     test_utils.waitUntil(function () {
-                        var $picker = view.$el.find('.toggle-smiley .emoji-picker-container');
-                        return $picker.is(':visible');
-                    }, 300).then(function () {
-                        var $picker = view.$el.find('.toggle-smiley .emoji-picker-container');
-                        var $items = $picker.find('.emoji-picker li');
-                        $items.first().click();
+                        return utils.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container'));
+                    }, 150).then(function () {
+                        var picker = view.el.querySelector('.toggle-smiley .emoji-picker-container');
+                        var items = picker.querySelectorAll('.emoji-picker li');
+                        items[0].click()
                         expect(view.insertEmoji).toHaveBeenCalled();
-                        test_utils.waitUntil(function () {
+                        toolbar.querySelector('li.toggle-smiley').click(); // Close the panel again
+                        return test_utils.waitUntil(function () {
                             return !view.el.querySelector('.toggle-smiley .toolbar-menu').offsetHeight;
-                        }, 300)
-                    .then(function () {
-                        $toolbar.children('li.toggle-smiley').click();
+                        }, 300);
+                    }).then(function () {
+                        toolbar.querySelector('li.toggle-smiley').click();
                         expect(view.toggleEmojiMenu).toHaveBeenCalled();
-
-                        test_utils.waitUntil(function () {
+                        return test_utils.waitUntil(function () {
                             var $picker = view.$el.find('.toggle-smiley .emoji-picker-container');
                             return $picker.is(':visible');
-                        }, 300)
-                    .then(function () {
-                        view.$el.find('.toggle-smiley ul').children('li').last().click();
-                        expect(view.$el.find('textarea.chat-textarea').val()).toBe(':grinning: ');
+                        }, 300);
+                    }).then(function () {
+                        var nodes = view.el.querySelectorAll('.toggle-smiley ul li');
+                        nodes[nodes.length-1].click();
+                        expect(view.el.querySelector('textarea.chat-textarea').value).toBe(':grinning: ');
                         expect(view.insertEmoji).toHaveBeenCalled();
                         done();
-                    }); }); });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 }));
 
                 it("contains a button for starting an encrypted chat session",
@@ -529,7 +536,8 @@
             describe("A Chat Message", function () {
 
                 describe("when received from someone else", function () {
-                    it("can be received which will open a chatbox and be displayed inside it",
+
+                    it("will open a chatbox and be displayed inside it",
                         mock.initConverseWithPromises(
                             null, ['rosterGroupsFetched'], {},
                             function (done, _converse) {
@@ -581,7 +589,65 @@
                         });
                     }));
 
+                    describe("when a chatbox is opened for someone who is not in the roster", function () {
+
+                        it("the VCard for that user is fetched and the chatbox updated with the results",
+                            mock.initConverseWithPromises(
+                                null, ['rosterGroupsFetched'], {},
+                                function (done, _converse) {
+
+                            _converse.allow_non_roster_messaging = true;
+                            spyOn(_converse, 'emit').and.callThrough();
+
+                            var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                            var vcard_fetched = false;
+                            spyOn(_converse.api.vcard, "get").and.callFake(function () {
+                                vcard_fetched = true;
+                                return Promise.resolve({
+                                    'fullname': mock.cur_names[0],
+                                    'vcard_updated': moment().format(),
+                                    'jid': sender_jid
+                                });
+                            });
+                            var message = 'This is a received message from someone not on the roster';
+                            var msg = $msg({
+                                    from: sender_jid,
+                                    to: _converse.connection.jid,
+                                    type: 'chat',
+                                    id: (new Date()).getTime()
+                                }).c('body').t(message).up()
+                                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+
+                            // We don't already have an open chatbox for this user
+                            expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
+
+                            _converse.chatboxes.onMessage(msg);
+                            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+
+                            // Check that the chatbox and its view now exist
+                            var chatbox = _converse.chatboxes.get(sender_jid);
+                            var chatboxview = _converse.chatboxviews.get(sender_jid);
+                            expect(chatbox).toBeDefined();
+                            expect(chatboxview).toBeDefined();
+                            // XXX: I don't really like the convention of
+                            // setting "fullname" to the JID if there's
+                            // no fullname. Should ideally be null if
+                            // there's no fullname.
+                            expect(chatbox.get('fullname') === sender_jid);
+                            test_utils.waitUntil(function () { return vcard_fetched; }, 100)
+                            .then(function () {
+                                expect(_converse.api.vcard.get).toHaveBeenCalled();
+                                return test_utils.waitUntil(function () {
+                                    return chatbox.get('fullname') === mock.cur_names[0]; 
+                                }, 100);
+                            }).then(function () {
+                                done();
+                            });
+                        }));
+                    });
+
                     describe("who is not on the roster", function () {
+
                         it("will open a chatbox and be displayed inside it if allow_non_roster_messaging is true",
                             mock.initConverseWithPromises(
                                 null, ['rosterGroupsFetched'], {},
@@ -955,47 +1021,55 @@
                         null, ['rosterGroupsFetched'], {},
                         function (done, _converse) {
 
-                    test_utils.createContacts(_converse, 'current');
-                    test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
+                    var contact, sent_stanza, IQ_id, stanza;
+                    test_utils.waitUntilFeatureSupportConfirmed(_converse, 'vcard-temp')
+                    .then(function () {
+                        return test_utils.waitUntil(function () {
+                            return _converse.xmppstatus.get('fullname');
+                        }, 300);
+                    }).then(function () {
+                        test_utils.createContacts(_converse, 'current');
+                        test_utils.openControlBox();
+                        test_utils.openContactsPanel(_converse);
 
-                    // Send a message from a different resource
-                    spyOn(_converse, 'log');
-                    var msgtext = 'This is a sent carbon message';
-                    var recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var msg = $msg({
-                            'from': _converse.bare_jid,
-                            'id': (new Date()).getTime(),
-                            'to': _converse.connection.jid,
-                            'type': 'chat',
-                            'xmlns': 'jabber:client'
-                        }).c('sent', {'xmlns': 'urn:xmpp:carbons:2'})
-                          .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                          .c('message', {
-                                'xmlns': 'jabber:client',
-                                'from': _converse.bare_jid+'/another-resource',
-                                'to': recipient_jid,
-                                'type': 'chat'
-                        }).c('body').t(msgtext).tree();
-                    _converse.chatboxes.onMessage(msg);
+                        // Send a message from a different resource
+                        spyOn(_converse, 'log');
+                        var msgtext = 'This is a sent carbon message';
+                        var recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        var msg = $msg({
+                                'from': _converse.bare_jid,
+                                'id': (new Date()).getTime(),
+                                'to': _converse.connection.jid,
+                                'type': 'chat',
+                                'xmlns': 'jabber:client'
+                            }).c('sent', {'xmlns': 'urn:xmpp:carbons:2'})
+                            .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                            .c('message', {
+                                    'xmlns': 'jabber:client',
+                                    'from': _converse.bare_jid+'/another-resource',
+                                    'to': recipient_jid,
+                                    'type': 'chat'
+                            }).c('body').t(msgtext).tree();
+                        _converse.chatboxes.onMessage(msg);
 
-                    // Check that the chatbox and its view now exist
-                    var chatbox = _converse.chatboxes.get(recipient_jid);
-                    var chatboxview = _converse.chatboxviews.get(recipient_jid);
-                    expect(chatbox).toBeDefined();
-                    expect(chatboxview).toBeDefined();
-                    // Check that the message was received and check the message parameters
-                    expect(chatbox.messages.length).toEqual(1);
-                    var msg_obj = chatbox.messages.models[0];
-                    expect(msg_obj.get('message')).toEqual(msgtext);
-                    expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
-                    expect(msg_obj.get('sender')).toEqual('me');
-                    expect(msg_obj.get('delayed')).toEqual(false);
-                    // Now check that the message appears inside the chatbox in the DOM
-                    var $chat_content = chatboxview.$el.find('.chat-content');
-                    var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
-                    expect(msg_txt).toEqual(msgtext);
-                    done();
+                        // Check that the chatbox and its view now exist
+                        var chatbox = _converse.chatboxes.get(recipient_jid);
+                        var chatboxview = _converse.chatboxviews.get(recipient_jid);
+                        expect(chatbox).toBeDefined();
+                        expect(chatboxview).toBeDefined();
+                        // Check that the message was received and check the message parameters
+                        expect(chatbox.messages.length).toEqual(1);
+                        var msg_obj = chatbox.messages.models[0];
+                        expect(msg_obj.get('message')).toEqual(msgtext);
+                        expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
+                        expect(msg_obj.get('sender')).toEqual('me');
+                        expect(msg_obj.get('delayed')).toEqual(false);
+                        // Now check that the message appears inside the chatbox in the DOM
+                        var $chat_content = chatboxview.$el.find('.chat-content');
+                        var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
+                        expect(msg_txt).toEqual(msgtext);
+                        done();
+                    });
                 }));
 
                 it("will be discarded if it's a malicious message meant to look like a carbon copy",
@@ -1563,41 +1637,48 @@
                             null, ['rosterGroupsFetched'], {},
                             function (done, _converse) {
 
-                        test_utils.createContacts(_converse, 'current');
+                        var contact, sent_stanza, IQ_id, stanza;
+                        test_utils.waitUntilFeatureSupportConfirmed(_converse, 'vcard-temp')
+                        .then(function () {
+                            return test_utils.waitUntil(function () {
+                                return _converse.xmppstatus.get('fullname');
+                            }, 300);
+                        }).then(function () {
+                            test_utils.createContacts(_converse, 'current');
+                            // Send a message from a different resource
+                            spyOn(_converse, 'log');
+                            var recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+                            test_utils.openChatBoxFor(_converse, recipient_jid);
+                            var msg = $msg({
+                                    'from': _converse.bare_jid,
+                                    'id': (new Date()).getTime(),
+                                    'to': _converse.connection.jid,
+                                    'type': 'chat',
+                                    'xmlns': 'jabber:client'
+                                }).c('sent', {'xmlns': 'urn:xmpp:carbons:2'})
+                                  .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                                  .c('message', {
+                                        'xmlns': 'jabber:client',
+                                        'from': _converse.bare_jid+'/another-resource',
+                                        'to': recipient_jid,
+                                        'type': 'chat'
+                                }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                            _converse.chatboxes.onMessage(msg);
 
-                        // Send a message from a different resource
-                        spyOn(_converse, 'log');
-                        var recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        test_utils.openChatBoxFor(_converse, recipient_jid);
-                        var msg = $msg({
-                                'from': _converse.bare_jid,
-                                'id': (new Date()).getTime(),
-                                'to': _converse.connection.jid,
-                                'type': 'chat',
-                                'xmlns': 'jabber:client'
-                            }).c('sent', {'xmlns': 'urn:xmpp:carbons:2'})
-                              .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                              .c('message', {
-                                    'xmlns': 'jabber:client',
-                                    'from': _converse.bare_jid+'/another-resource',
-                                    'to': recipient_jid,
-                                    'type': 'chat'
-                            }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        _converse.chatboxes.onMessage(msg);
-
-                        // Check that the chatbox and its view now exist
-                        var chatbox = _converse.chatboxes.get(recipient_jid);
-                        var chatboxview = _converse.chatboxviews.get(recipient_jid);
-                        // Check that the message was received and check the message parameters
-                        expect(chatbox.messages.length).toEqual(1);
-                        var msg_obj = chatbox.messages.models[0];
-                        expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
-                        expect(msg_obj.get('sender')).toEqual('me');
-                        expect(msg_obj.get('delayed')).toEqual(false);
-                        var $chat_content = chatboxview.$el.find('.chat-content');
-                        var status_text = $chat_content.find('.chat-info.chat-event').text();
-                        expect(status_text).toBe('Typing from another device');
-                        done();
+                            // Check that the chatbox and its view now exist
+                            var chatbox = _converse.chatboxes.get(recipient_jid);
+                            var chatboxview = _converse.chatboxviews.get(recipient_jid);
+                            // Check that the message was received and check the message parameters
+                            expect(chatbox.messages.length).toEqual(1);
+                            var msg_obj = chatbox.messages.models[0];
+                            expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
+                            expect(msg_obj.get('sender')).toEqual('me');
+                            expect(msg_obj.get('delayed')).toEqual(false);
+                            var $chat_content = chatboxview.$el.find('.chat-content');
+                            var status_text = $chat_content.find('.chat-info.chat-event').text();
+                            expect(status_text).toBe('Typing from another device');
+                            done();
+                        });
                     }));
                 });
 
@@ -1704,41 +1785,48 @@
                             null, ['rosterGroupsFetched'], {},
                             function (done, _converse) {
 
-                        test_utils.createContacts(_converse, 'current');
+                        var contact, sent_stanza, IQ_id, stanza;
+                        test_utils.waitUntilFeatureSupportConfirmed(_converse, 'vcard-temp')
+                        .then(function () {
+                            return test_utils.waitUntil(function () {
+                                return _converse.xmppstatus.get('fullname');
+                            }, 300);
+                        }).then(function () {
+                            test_utils.createContacts(_converse, 'current');
+                            // Send a message from a different resource
+                            spyOn(_converse, 'log');
+                            var recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+                            test_utils.openChatBoxFor(_converse, recipient_jid);
+                            var msg = $msg({
+                                    'from': _converse.bare_jid,
+                                    'id': (new Date()).getTime(),
+                                    'to': _converse.connection.jid,
+                                    'type': 'chat',
+                                    'xmlns': 'jabber:client'
+                                }).c('sent', {'xmlns': 'urn:xmpp:carbons:2'})
+                                  .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                                  .c('message', {
+                                        'xmlns': 'jabber:client',
+                                        'from': _converse.bare_jid+'/another-resource',
+                                        'to': recipient_jid,
+                                        'type': 'chat'
+                                }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                            _converse.chatboxes.onMessage(msg);
 
-                        // Send a message from a different resource
-                        spyOn(_converse, 'log');
-                        var recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        test_utils.openChatBoxFor(_converse, recipient_jid);
-                        var msg = $msg({
-                                'from': _converse.bare_jid,
-                                'id': (new Date()).getTime(),
-                                'to': _converse.connection.jid,
-                                'type': 'chat',
-                                'xmlns': 'jabber:client'
-                            }).c('sent', {'xmlns': 'urn:xmpp:carbons:2'})
-                              .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                              .c('message', {
-                                    'xmlns': 'jabber:client',
-                                    'from': _converse.bare_jid+'/another-resource',
-                                    'to': recipient_jid,
-                                    'type': 'chat'
-                            }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        _converse.chatboxes.onMessage(msg);
-
-                        // Check that the chatbox and its view now exist
-                        var chatbox = _converse.chatboxes.get(recipient_jid);
-                        var chatboxview = _converse.chatboxviews.get(recipient_jid);
-                        // Check that the message was received and check the message parameters
-                        expect(chatbox.messages.length).toEqual(1);
-                        var msg_obj = chatbox.messages.models[0];
-                        expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
-                        expect(msg_obj.get('sender')).toEqual('me');
-                        expect(msg_obj.get('delayed')).toEqual(false);
-                        var $chat_content = chatboxview.$el.find('.chat-content');
-                        var status_text = $chat_content.find('.chat-info.chat-event').text();
-                        expect(status_text).toBe('Stopped typing on the other device');
-                        done();
+                            // Check that the chatbox and its view now exist
+                            var chatbox = _converse.chatboxes.get(recipient_jid);
+                            var chatboxview = _converse.chatboxviews.get(recipient_jid);
+                            // Check that the message was received and check the message parameters
+                            expect(chatbox.messages.length).toEqual(1);
+                            var msg_obj = chatbox.messages.models[0];
+                            expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
+                            expect(msg_obj.get('sender')).toEqual('me');
+                            expect(msg_obj.get('delayed')).toEqual(false);
+                            var $chat_content = chatboxview.$el.find('.chat-content');
+                            var status_text = $chat_content.find('.chat-info.chat-event').text();
+                            expect(status_text).toBe('Stopped typing on the other device');
+                            done();
+                        });
                     }));
                 });
 

@@ -59,7 +59,7 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-        
+
             LoginPanel: {
 
                 render: function (cfg) {
@@ -80,9 +80,6 @@
 
             ControlBoxView: {
 
-                events: {
-                },
-
                 initialize () {
                     this.__super__.initialize.apply(this, arguments);
                     this.model.on('change:active-form', this.showLoginOrRegisterForm.bind(this))
@@ -101,7 +98,6 @@
                         this.registerpanel.el.classList.add('hidden');
                     }
                 },
-
 
                 renderRegistrationPanel () {
                     const { _converse } = this.__super__;
@@ -149,21 +145,15 @@
                 providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             });
 
-            _converse.RegistrationRouter = Backbone.Router.extend({
 
-                initialize () {
-                    this.route('converse-login', _.partial(this.setActiveForm, 'login'));
-                    this.route('converse-register', _.partial(this.setActiveForm, 'register'));
-                },
-
-                setActiveForm (value) {
-                    _converse.api.waitUntil('controlboxInitialized').then(() => {
-                        const controlbox = _converse.chatboxes.get('controlbox')
-                        controlbox.set({'active-form': value});
-                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                }
-            });
-            const router = new _converse.RegistrationRouter();
+            function setActiveForm (value) {
+                _converse.api.waitUntil('controlboxInitialized').then(() => {
+                    const controlbox = _converse.chatboxes.get('controlbox')
+                    controlbox.set({'active-form': value});
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            }
+            _converse.router.route('converse/login', _.partial(setActiveForm, 'login'));
+            _converse.router.route('converse/register', _.partial(setActiveForm, 'register'));
 
 
             _converse.RegisterPanel = Backbone.View.extend({
@@ -266,7 +256,7 @@
                     if (stanza.getAttribute("type") === "error") {
                         _converse.connection._changeConnectStatus(
                             Strophe.Status.REGIFAIL,
-                            __('Something went wrong while establishing a connection with "%1$s".'+
+                            __('Something went wrong while establishing a connection with "%1$s". '+
                                'Are you sure it exists?', this.domain)
                         );
                         return false;
@@ -425,10 +415,13 @@
                         );
                         this.abortRegistration();
                     } else if (status_code === Strophe.Status.REGISTERED) {
-                        router.navigate(); // Strip the URL fragment
                         _converse.log("Registered successfully.");
                         _converse.connection.reset();
                         this.showSpinner();
+
+                        if (_.includes(["converse/login", "converse/register"], Backbone.history.getFragment())) {
+                            _converse.router.navigate('', {'replace': true});
+                        }
 
                         if (this.fields.password && this.fields.username) {
                             // automatically log the user in
@@ -464,7 +457,7 @@
                             form.insertAdjacentHTML(
                                 'beforeend',
                                 tpl_form_input({
-                                    'label': key, 
+                                    'label': key,
                                     'name': key,
                                     'placeholder': key,
                                     'required': true,

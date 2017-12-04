@@ -169,6 +169,8 @@ Allows users to be invited to join MUC chat rooms. An "Invite" widget will
 appear in the sidebar of the chat room where you can type in the JID of a user
 to invite into the chat room.
 
+.. _`allow_non_roster_messaging`:
+
 allow_non_roster_messaging
 --------------------------
 
@@ -336,6 +338,60 @@ specifies the room's JID and the nickname that should be used.
 For example::
 
     `[{'jid': 'room@example.org', 'nick': 'WizardKing69' }]`
+
+
+blacklisted_plugins
+-------------------
+
+* Default: ``[]`` (``['converse-minimize', 'converse-dragresize']`` for inVerse)
+
+A list of plugin names that are blacklisted and will therefore not be
+initialized once ``converse.initialize`` is called, even if the same plugin is
+whitelisted.
+
+From Converse.js 3.0 onwards most of the API is available only to plugins and
+all plugins need to be whitelisted first.
+
+The usecase for blacklisting is generally to disable removed core plugins
+(which are automatically whitelisted) to prevent other (potentially malicious)
+plugins from registering themselves under those names.
+
+The core, and by default whitelisted, plugins are::
+
+    converse-bookmarks
+    converse-chatview
+    converse-controlbox
+    converse-core
+    converse-dragresize
+    converse-headline
+    converse-mam
+    converse-minimize
+    converse-muc
+    converse-notification
+    converse-otr
+    converse-ping
+    converse-register
+    converse-rosterview
+    converse-vcard
+
+An example from `the embedded room demo <https://conversejs.org/demo/embedded.html>`_
+
+.. code-block:: javascript
+
+    require(['converse-core', 'converse-muc-embedded'], function (converse) {
+        converse.initialize({
+            // other settings removed for brevity
+            blacklisted_plugins: [
+                'converse-controlbox',
+                'converse-dragresize',
+                'converse-minimize',
+                'converse-vcard'
+            ],
+        });
+    });
+
+
+
 
 .. _`bosh-service-url`:
 
@@ -645,6 +701,8 @@ confusing and appears "broken".
 If you are however aware of this issue and still want to allow the `offline`
 state, then you can set this option to `true` to enable it.
 
+.. _`i18n`:
+
 i18n
 ----
 
@@ -699,6 +757,34 @@ See also:
     `XEP-0198 <http://xmpp.org/extensions/xep-0198.html>`_, specifically
     with regards to "stream resumption".
 
+.. _`locales`:
+
+locales
+-------
+
+* Default:
+
+.. code-block:: javascript
+
+    locales: [
+        'af', 'ca', 'de',
+        'es', 'en', 'fr',
+        'he', 'hu', 'id',
+        'it', 'ja', 'nb',
+        'nl', 'pl', 'pt_BR',
+        'ru', 'uk', 'zh'
+    ]
+
+This setting restricts the locales that are supported by Converse.js and
+therefore what may be given as value for the :ref:`i18n` option.
+
+Any other locales will be ignored.
+
+When self-hosting, also make sure that the locales are served and therefore
+fetchable (via ``XMLHttpRequest``) at the URL specified by :ref:`locales-url`.
+
+.. _`locales-url`:
+
 locales_url
 -----------
 
@@ -707,7 +793,7 @@ locales_url
 The URL from where Converse.js should fetch translation JSON.
 
 The three curly braces ``{{{ }}}`` are
-`Mustache<https://github.com/janl/mustache.js#readme>`_-style
+`Mustache <https://github.com/janl/mustache.js#readme>`_-style
 variable interpolation which HTML-escapes the value being inserted. It's
 important that the inserted value is HTML-escaped, otherwise a malicious script
 injection attack could be attempted.
@@ -1264,55 +1350,51 @@ support.
 .. note::
     Converse.js does not yet support "keepalive" with websockets.
 
-blacklisted_plugins
--------------------
 
-* Default: ``[]`` (``['converse-minimize', 'converse-dragresize']`` for inVerse)
+view_mode
+---------
 
-A list of plugin names that are blacklisted and will therefore not be
-initialized once ``converse.initialize`` is called, even if the same plugin is
-whitelisted.
+* Default: ``overlayed``
+* Allowed values: ``overlayed``, ``fullscreen``, ``mobile``
 
-From Converse.js 3.0 onwards most of the API is available only to plugins and
-all plugins need to be whitelisted first.
+The ``view_mode`` setting configures converse.js's mode and resulting behavior.
 
-The usecase for blacklisting is generally to disable removed core plugins
-(which are automatically whitelisted) to prevent other (potentially malicious)
-plugins from registering themselves under those names.
+Before the introduction of this setting (in version 3.3.0), there were there
+different builds, each for the diffent modes.
 
-The core, and by default whitelisted, plugins are::
+These were:
 
-    converse-bookmarks
-    converse-chatview
-    converse-controlbox
-    converse-core
-    converse-dragresize
-    converse-headline
-    converse-mam
-    converse-minimize
-    converse-muc
-    converse-notification
-    converse-otr
-    converse-ping
-    converse-register
-    converse-rosterview
-    converse-vcard
+* ``converse.js`` for the ``overlayed`` mode
+* ``converse-mobile.js`` for the ``mobile`` mode
+* ``inverse.js`` for the ``fullscreen`` mode
 
-An example from `the embedded room demo <https://conversejs.org/demo/embedded.html>`_
+Besides having three different builds, certain plugins had to be whitelisted
+and blacklisted for the different modes.
 
-.. code-block:: javascript
+``converse-singleton`` had to be whitelisted for the ``mobile`` and ``fullscreen``
+modes, additionally ``converse-inverse`` had to be whitelisted for the
+``fullscreen`` mode.
 
-    require(['converse-core', 'converse-muc-embedded'], function (converse) {
-        converse.initialize({
-            // other settings removed for brevity
-            blacklisted_plugins: [
-                'converse-controlbox',
-                'converse-dragresize',
-                'converse-minimize',
-                'converse-vcard'
-            ],
-        });
-    });
+For both those modes the ``converse-minimize`` and ``converse-dragresize``
+plugins had to be blacklisted.
+
+Since version 3.3.0, the last two builds no longer exist, and instead the
+standard ``converse.js`` build is used, together with the appropraite
+``view_mode`` value.
+
+Furthermore, it's no longer necessary to whitelist or blacklist any plugins.
+
+.. note::
+    Although the ``view_mode`` setting has removed the need for different
+    JavaScript builds, you'll still need to use different CSS files depending
+    on the view mode.
+
+    * For ``overlayed`` this is ``./css/converse.css``
+    * For ``fullscreen`` you need ``./css/inverse.css``
+    * For ``mobile`` you need to use both ``./css/converse.css`` and ``./css/mobile.css``
+
+    Hopefully in a future release the CSS files will be combined and you'll
+    only need ``converse.css``
 
 
 .. _`whitelisted_plugins`:

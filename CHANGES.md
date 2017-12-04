@@ -15,6 +15,7 @@
   Otherwise connected contacts might not get your presence updates.
 - The way the archive ID of a MAM message is specified, has changed.
   See https://xmpp.org/extensions/xep-0313.html#archives_id
+- Fixed error building DOM toggle_chats.html span.unread-message-count class attribute
 
 ### New Features
 - #314 Add support for opening chat rooms with a URL fragment such as `#converse/room?jid=room@domain`

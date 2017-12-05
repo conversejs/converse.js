@@ -10,6 +10,8 @@ It enables you to add chat functionality to your website, independent of
 any specific backend. You will however need an XMPP server to connect
 to, either your own, or a public one.
 
+Please support this project via [Patreon](https://www.patreon.com/jcbrand)
+
 ## Demo
 
 Converse.js is hosted and can be used at [https://conversejs.org](https://conversejs.org).

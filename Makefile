@@ -1,3 +1,4 @@
+SHELL := /bin/bash --login
 # You can set these variables from the command line.
 UGLIFYJS		?= node_modules/.bin/uglifyjs
 BABEL			?= node_modules/.bin/babel
@@ -16,6 +17,15 @@ SASS			?= ./.bundle/bin/sass
 SPHINXBUILD	 	?= ./bin/sphinx-build
 SED				?= sed
 SPHINXOPTS	  	=
+
+
+
+# In the case user wishes to use RVM 
+USE_RVM                 ?= false
+RVM_RUBY_VERSION        ?= 2.4.2
+ifeq ($(USE_RVM),true)
+	RVM_USE                 = rvm use $(RVM_RUBY_VERSION)
+endif
 
 # Internal variables.
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
@@ -103,6 +113,7 @@ stamp-npm: package.json
 
 stamp-bundler: Gemfile
 	mkdir -p .bundle
+	$(RVM_USE)
 	gem install --user bundler --bindir .bundle/bin
 	$(BUNDLE) install --path .bundle --binstubs .bundle/bin
 	touch stamp-bundler

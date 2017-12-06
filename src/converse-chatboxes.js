@@ -10,7 +10,7 @@
     define(["converse-core"], factory);
 }(this, function (converse) {
     "use strict";
-    const { Backbone, Promise, Strophe, b64_sha1, utils, _ } = converse.env;
+    const { Backbone, Promise, Strophe, b64_sha1, moment, utils, _ } = converse.env;
 
     converse.plugins.add('converse-chatboxes', {
 
@@ -70,6 +70,127 @@
                 });
             }
             _converse.router.route('converse/chat?jid=:jid', openChat);
+
+
+            _converse.Message = Backbone.Model.extend({
+                defaults(){
+                    return {
+                        msgid: _converse.connection.getUniqueId()
+                    };
+                }
+            });
+
+
+            _converse.Messages = Backbone.Collection.extend({
+                model: _converse.Message,
+                comparator: 'time'
+            });
+
+
+            _converse.ChatBox = Backbone.Model.extend({
+                defaults: {
+                    'type': 'chatbox',
+                    'bookmarked': false,
+                    'chat_state': undefined,
+                    'num_unread': 0,
+                    'url': ''
+                },
+
+                initialize () {
+                    this.messages = new _converse.Messages();
+                    this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
+                        b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
+                    this.save({
+                        // The chat_state will be set to ACTIVE once the chat box is opened
+                        // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
+                        'box_id' : b64_sha1(this.get('jid')),
+                        'time_opened': this.get('time_opened') || moment().valueOf(),
+                        'user_id' : Strophe.getNodeFromJid(this.get('jid'))
+                    });
+                },
+
+                getMessageBody (message) {
+                    const type = message.getAttribute('type');
+                    return (type === 'error') ?
+                        _.propertyOf(message.querySelector('error text'))('textContent') :
+                            _.propertyOf(message.querySelector('body'))('textContent');
+                },
+
+                getMessageAttributes (message, delay, original_stanza) {
+                    delay = delay || message.querySelector('delay');
+                    const type = message.getAttribute('type'),
+                        body = this.getMessageBody(message);
+
+                    const delayed = !_.isNull(delay),
+                        is_groupchat = type === 'groupchat',
+                        chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
+                            message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
+                            message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
+                            message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
+                            message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
+
+                    let from;
+                    if (is_groupchat) {
+                        from = Strophe.unescapeNode(Strophe.getResourceFromJid(message.getAttribute('from')));
+                    } else {
+                        from = Strophe.getBareJidFromJid(message.getAttribute('from'));
+                    }
+                    const time = delayed ? delay.getAttribute('stamp') : moment().format();
+                    let sender, fullname;
+                    if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === _converse.bare_jid)) {
+                        sender = 'me';
+                        fullname = _converse.xmppstatus.get('fullname') || from;
+                    } else {
+                        sender = 'them';
+                        fullname = this.get('fullname') || from;
+                    }
+                    return {
+                        'type': type,
+                        'chat_state': chat_state,
+                        'delayed': delayed,
+                        'fullname': fullname,
+                        'message': body || undefined,
+                        'msgid': message.getAttribute('id'),
+                        'sender': sender,
+                        'time': time
+                    };
+                },
+
+                createMessage (message, delay, original_stanza) {
+                    return this.messages.create(this.getMessageAttributes.apply(this, arguments));
+                },
+
+                newMessageWillBeHidden () {
+                    /* Returns a boolean to indicate whether a newly received
+                    * message will be visible to the user or not.
+                    */
+                    return this.get('hidden') ||
+                        this.get('minimized') ||
+                        this.isScrolledUp() ||
+                        _converse.windowState === 'hidden';
+                },
+
+                incrementUnreadMsgCounter (stanza) {
+                    /* Given a newly received message, update the unread counter if
+                    * necessary.
+                    */
+                    if (_.isNull(stanza.querySelector('body'))) {
+                        return; // The message has no text
+                    }
+                    if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                        this.save({'num_unread': this.get('num_unread') + 1});
+                        _converse.incrementMsgCounter();
+                    }
+                },
+
+                clearUnreadMsgCounter() {
+                    this.save({'num_unread': 0});
+                },
+
+                isScrolledUp () {
+                    return this.get('scrolled', true);
+                }
+            });
 
 
             _converse.ChatBoxes = Backbone.Collection.extend({

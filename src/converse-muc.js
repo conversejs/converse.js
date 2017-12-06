@@ -947,7 +947,7 @@
                     const item = $build("item", {nick, role});
                     const iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
                     if (reason !== null) { iq.c("reason", reason); }
-                    return _converse.connection.sendIQ(iq.tree(), onSuccess, onError);
+                    return _converse.connection.sendIQ(iq, onSuccess, onError);
                 },
 
                 validateRoleChangeCommand (command, args) {
@@ -1261,7 +1261,8 @@
                     _.each(container_el.children, u.hideElement);
                     container_el.insertAdjacentHTML('beforeend', tpl_chatroom_form());
 
-                    const $form = $(container_el).find('form.chatroom-form');
+                    const form = container_el.querySelector('form.chatroom-form');
+                    const $form = $(form);
                     let $fieldset = $form.children('fieldset:first');
                     const $stanza = $(stanza),
                           $fields = $stanza.find('field'),
@@ -1283,12 +1284,15 @@
                         ev.preventDefault();
                         this.closeForm();
                     });
-                    $form.on('submit', (ev) => {
-                        ev.preventDefault();
-                        this.saveConfiguration(ev.target).then(
-                            this.getRoomFeatures.bind(this)
-                        );
-                    });
+
+                    form.addEventListener('submit', (ev) => {
+                            ev.preventDefault();
+                            this.saveConfiguration(ev.target).then(
+                                this.getRoomFeatures.bind(this)
+                            );
+                        },
+                        false
+                    );
                 },
 
                 sendConfiguration(config, onSuccess, onError) {
@@ -1620,7 +1624,7 @@
                     this.model.save('connection_status', converse.ROOMSTATUS.NICKNAME_REQUIRED);
 
                     const form_el = this.el.querySelector('.chatroom-form');
-                    form_el.addEventListener('submit', this.submitNickname.bind(this));
+                    form_el.addEventListener('submit', this.submitNickname.bind(this), false);
                 },
 
                 submitPassword (ev) {
@@ -1643,7 +1647,8 @@
                         }));
 
                     this.model.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
-                    this.el.querySelector('.chatroom-form').addEventListener('submit', this.submitPassword.bind(this));
+                    this.el.querySelector('.chatroom-form').addEventListener(
+                        'submit', this.submitPassword.bind(this), false);
                 },
 
                 showDisconnectMessage (msg) {
@@ -1796,9 +1801,9 @@
                         // occupant model. Doing so avoids showing duplicate
                         // join messages.
                         if (!_.isNull(stat) && stat.textContent) {
-                            return [{'messages': [__(nick+' has joined the room. "'+stat.textContent+'"')]}];
+                            return [{'messages': [__(nick+' has entered the room. "'+stat.textContent+'"')]}];
                         } else {
-                            return [{'messages': [__(nick+' has joined the room.')]}];
+                            return [{'messages': [__(nick+' has entered the room.')]}];
                         }
                     }
                 },
@@ -2382,7 +2387,7 @@
                     if (_.isNull(form)) {
                         return;
                     }
-                    form.addEventListener('submit', this.inviteFormSubmitted.bind(this));
+                    form.addEventListener('submit', this.inviteFormSubmitted.bind(this), false);
                     const el = this.el.querySelector('input.invited-contact');
                     const list = _converse.roster.map(function (item) {
                             const label = item.get('fullname') || item.get('jid');
@@ -2494,8 +2499,10 @@
                 },
 
                 onNickChange (model) {
-                    const $nick = this.$el.find('input.new-chatroom-nick');
-                    $nick.val(model.get('nick'));
+                    const nick = this.el.querySelector('input.new-chatroom-nick');
+                    if (!_.isNull(nick)) {
+                        nick.value = model.get('nick');
+                    }
                 },
 
                 informNoRoomsFound () {

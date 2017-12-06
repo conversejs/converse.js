@@ -132,10 +132,8 @@
                         child.classList.add('hidden');
                     });
                     // Remove any existing forms
-                    let form = body.querySelector('form.chatroom-form');
-                    if (!_.isNull(form)) {
-                        form.parentNode.removeChild(form);
-                    }
+                    _.each(body.querySelectorAll('.chatroom-form-container'), utils.removeElement);
+
                     body.insertAdjacentHTML(
                         'beforeend', 
                         tpl_chatroom_bookmark_form({
@@ -148,14 +146,14 @@
                             label_cancel: __('Cancel')
                         })
                     );
-                    form = body.querySelector('form.chatroom-form');
+                    const form = body.querySelector('form.chatroom-form');
                     form.addEventListener(
                         'submit',
                         this.onBookmarkFormSubmitted.bind(this)
                     );
                     form.querySelector('.button-cancel').addEventListener(
                         'click',
-                        this.cancelConfiguration.bind(this)
+                        this.closeForm.bind(this)
                     );
                 },
 

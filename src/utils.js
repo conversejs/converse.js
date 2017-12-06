@@ -104,6 +104,18 @@
 
     var u = {};
 
+    u.removeElement = function (el) {
+        if (!_.isNil(el) && !_.isNil(el.parentNode)) {
+            el.parentNode.removeChild(el);
+        }
+    }
+
+    u.hideElement = function (el) {
+        if (!_.isNil(el)) {
+            el.classList.add('hidden');
+        }
+    }
+
     u.addHyperlinks = function (text) {
         const list = text.match(URL_REGEX) || [];
         var links = [];

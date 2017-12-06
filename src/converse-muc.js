@@ -41,7 +41,7 @@
     ], factory);
 }(this, function (
             $,
-            utils,
+            u,
             converse,
             fp,
             tpl_chatarea,
@@ -134,7 +134,7 @@
             _tearDown () {
                 const rooms = this.chatboxes.where({'type': CHATROOMS_TYPE});
                 _.each(rooms, function (room) {
-                    utils.safeSave(room, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
+                    u.safeSave(room, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
                 });
                 this.__super__._tearDown.call(this, arguments);
             },
@@ -213,7 +213,7 @@
             }
 
             // XXX: Inside plugins, all calls to the translation machinery
-            // (e.g. utils.__) should only be done in the initialize function.
+            // (e.g. u.__) should only be done in the initialize function.
             // If called before, we won't know what language the user wants,
             // and it'll fall back to English.
 
@@ -310,7 +310,7 @@
 
 
             function openRoom (jid) {
-                if (!utils.isValidJID(jid)) {
+                if (!u.isValidJID(jid)) {
                     return converse.log(
                         `Invalid JID "${jid}" provided in URL fragment`,
                         Strophe.LogLevel.WARN
@@ -390,7 +390,7 @@
                     if (_.isNull(body)) {
                         return; // The message has no text
                     }
-                    if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                    if (u.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
                         this.save({'num_unread_general': this.get('num_unread_general') + 1});
                         if (this.isUserMentioned(body.textContent)) {
                             this.save({'num_unread': this.get('num_unread') + 1});
@@ -400,7 +400,7 @@
                 },
 
                 clearUnreadMsgCounter() {
-                    utils.safeSave(this, {
+                    u.safeSave(this, {
                         'num_unread': 0,
                         'num_unread_general': 0
                     });
@@ -465,7 +465,7 @@
                     if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                         this.showSpinner();
                     }
-                    utils.refreshWebkit();
+                    u.refreshWebkit();
                     return this;
                 },
 
@@ -478,21 +478,21 @@
                     /* Render the UI container in which chat room messages will
                      * appear.
                      */
-                    if (!this.$('.chat-area').length) {
-                        this.$('.chatroom-body').empty()
-                            .append(tpl_chatarea({
-                                    'label_message': __('Message'),
-                                    'label_send': __('Send'),
-                                    'show_send_button': _converse.show_send_button,
-                                    'show_toolbar': _converse.show_toolbar,
-                                    'unread_msgs': __('You have unread messages')
-                                }))
-                            .append(this.occupantsview.$el);
+                    if (_.isNull(this.el.querySelector('.chat-area'))) {
+                        const container_el = this.el.querySelector('.chatroom-body');
+                        container_el.innerHTML = tpl_chatarea({
+                            'label_message': __('Message'),
+                            'label_send': __('Send'),
+                            'show_send_button': _converse.show_send_button,
+                            'show_toolbar': _converse.show_toolbar,
+                            'unread_msgs': __('You have unread messages')
+                        });
+                        container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
                         this.renderToolbar(tpl_chatroom_toolbar);
                         this.content = this.el.querySelector('.chat-content');
                         this.$content = $(this.content);
+                        this.toggleOccupants(null, true);
                     }
-                    this.toggleOccupants(null, true);
                     return this;
                 },
 
@@ -587,17 +587,22 @@
                     }
                     if (!this.model.get('hidden_occupants')) {
                         this.model.save({hidden_occupants: true});
-                        this.$('.icon-hide-users').removeClass('icon-hide-users').addClass('icon-show-users');
-                        this.$('.occupants').addClass('hidden');
-                        this.$('.chat-area').addClass('full');
-                        this.scrollDown();
+                        const icon_el = this.el.querySelector('.icon-hide-users');
+                        icon_el.classList.remove('icon-hide-users');
+                        icon_el.classList.add('icon-show-users');
+                        this.el.querySelector('.chat-area').classList.add('full');
+                        u.hideElement(this.el.querySelector('.occupants'));
                     } else {
                         this.model.save({hidden_occupants: false});
-                        this.$('.icon-show-users').removeClass('icon-show-users').addClass('icon-hide-users');
-                        this.$('.chat-area').removeClass('full');
-                        this.$('div.occupants').removeClass('hidden');
-                        this.scrollDown();
+                        const icon_el = this.el.querySelector('.icon-show-users');
+                        if (!_.isNull(icon_el)) {
+                            icon_el.classList.remove('icon-show-users');
+                            icon_el.classList.add('icon-hide-users');
+                        }
+                        this.el.querySelector('.chat-area').classList.remove('full');
+                        this.el.querySelector('.occupants').classList.remove('hidden');
                     }
+                    this.scrollDown();
                 },
 
                 onOccupantClicked (ev) {
@@ -1228,7 +1233,7 @@
                     if (_converse.connection.connected) {
                         this.sendUnavailablePresence(exit_msg);
                     }
-                    utils.safeSave(
+                    u.safeSave(
                         this.model,
                         {'connection_status': converse.ROOMSTATUS.DISCONNECTED}
                     );
@@ -1247,13 +1252,12 @@
                      *  (XMLElement) stanza: The IQ stanza containing the room
                      *      config.
                      */
-                    const $body = this.$('.chatroom-body');
-                    $body.children().addClass('hidden');
-                    // Remove any existing forms
-                    $body.find('form.chatroom-form').remove();
-                    $body.append(tpl_chatroom_form());
+                    const container_el = this.el.querySelector('.chatroom-body');
+                    _.each(container_el.querySelectorAll('.chatroom-form-container'), u.removeElement);
+                    _.each(container_el.children, u.hideElement);
+                    container_el.insertAdjacentHTML('beforeend', tpl_chatroom_form());
 
-                    const $form = $body.find('form.chatroom-form');
+                    const $form = $(container_el).find('form.chatroom-form');
                     let $fieldset = $form.children('fieldset:first');
                     const $stanza = $(stanza),
                           $fields = $stanza.find('field'),
@@ -1265,7 +1269,7 @@
                         $fieldset.append($('<p class="instructions">').text(instructions));
                     }
                     _.each($fields, function (field) {
-                        $fieldset.append(utils.xForm2webForm(field, stanza));
+                        $fieldset.append(u.xForm2webForm(field, stanza));
                     });
                     $form.append('<fieldset></fieldset>');
                     $fieldset = $form.children('fieldset:last');
@@ -1273,7 +1277,7 @@
                     $fieldset.append(`<input type="button" class="pure-button button-cancel" value="${__('Cancel')}"/>`);
                     $fieldset.find('input[type=button]').on('click', (ev) => {
                         ev.preventDefault();
-                        this.cancelConfiguration();
+                        this.closeForm();
                     });
                     $form.on('submit', (ev) => {
                         ev.preventDefault();
@@ -1320,13 +1324,10 @@
                         const $inputs = $(form).find(':input:not([type=button]):not([type=submit])'),
                             configArray = [];
                         $inputs.each(function () {
-                            configArray.push(utils.webForm2xForm(this));
+                            configArray.push(u.webForm2xForm(this));
                         });
                         this.sendConfiguration(configArray, resolve, reject);
-                        this.$el.find('div.chatroom-form-container').hide((el) => {
-                            $(el).remove();
-                            this.renderAfterTransition();
-                        });
+                        this.closeForm();
                     });
                 },
 
@@ -1376,15 +1377,12 @@
                     });
                 },
 
-                cancelConfiguration () {
+                closeForm () {
                     /* Remove the configuration form without submitting and
                      * return to the chat view.
                      */
-                    this.$el.find('div.chatroom-form-container').hide(
-                        (el) => {
-                            $(el).remove();
-                            this.renderAfterTransition();
-                        });
+                    u.removeElement(this.el.querySelector('.chatroom-form-container'));
+                    this.renderAfterTransition();
                 },
 
                 fetchRoomConfiguration (handler) {
@@ -1499,8 +1497,7 @@
                     else {
                         nick_el.classList.remove('error');
                     }
-                    this.$el.find('.chatroom-form-container')
-                        .replaceWith(tpl_spinner);
+                    this.el.querySelector('.chatroom-form-container').outerHTML = tpl_spinner();
                     this.join(nick);
                 },
 
@@ -1591,16 +1588,25 @@
                     }
                 },
 
+                hideChatRoomContents () {
+                    const container_el = this.el.querySelector('.chatroom-body');
+                    if (!_.isNull(container_el)) {
+                        _.each(container_el.children, (child) => { child.classList.add('hidden'); });
+                    }
+                },
+
                 renderNicknameForm (message) {
                     /* Render a form which allows the user to choose their
                      * nickname.
                      */
-                    this.$('.chatroom-body').children().addClass('hidden');
-                    this.$('span.centered.spinner').remove();
+                    this.hideChatRoomContents();
+                    _.each(this.el.querySelectorAll('span.centered.spinner'), u.removeElement);
                     if (!_.isString(message)) {
                         message = '';
                     }
-                    this.$('.chatroom-body').append(
+                    const container_el = this.el.querySelector('.chatroom-body');
+                    container_el.insertAdjacentHTML(
+                        'beforeend',
                         tpl_chatroom_nickname_form({
                             heading: __('Please choose your nickname'),
                             label_nickname: __('Nickname'),
@@ -1608,36 +1614,44 @@
                             validation_message: message
                         }));
                     this.model.save('connection_status', converse.ROOMSTATUS.NICKNAME_REQUIRED);
-                    this.$('.chatroom-form').on('submit', this.submitNickname.bind(this));
+
+                    const form_el = this.el.querySelector('.chatroom-form');
+                    form_el.addEventListener('submit', this.submitNickname.bind(this));
                 },
 
                 submitPassword (ev) {
                     ev.preventDefault();
                     const password = this.$el.find('.chatroom-form').find('input[type=password]').val();
-                    this.$el.find('.chatroom-form-container').replaceWith(tpl_spinner);
+                    this.el.querySelector('.chatroom-form-container').outerHTML = tpl_spinner();
                     this.join(this.model.get('nick'), password);
                 },
 
                 renderPasswordForm () {
-                    this.$('.chatroom-body').children().addClass('hidden');
-                    this.$('span.centered.spinner').remove();
-                    this.$('.chatroom-body').append(
+                    const container_el = this.el.querySelector('.chatroom-body');
+                    _.each(container_el.children, u.hideElement);
+                    _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
+
+                    container_el.insertAdjacentHTML('beforeend',
                         tpl_chatroom_password_form({
                             heading: __('This chatroom requires a password'),
                             label_password: __('Password: '),
                             label_submit: __('Submit')
                         }));
+
                     this.model.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
-                    this.$('.chatroom-form').on('submit', this.submitPassword.bind(this));
+                    this.el.querySelector('.chatroom-form').addEventListener('submit', this.submitPassword.bind(this));
                 },
 
                 showDisconnectMessage (msg) {
-                    this.$('.chat-area').addClass('hidden');
-                    this.$('.occupants').addClass('hidden');
-                    this.$('span.centered.spinner').remove();
-                    this.$('.chatroom-body').append(tpl_chatroom_disconnect({
-                        'disconnect_message': msg
-                    }));
+                    u.hideElement(this.el.querySelector('.chat-area'));
+                    u.hideElement(this.el.querySelector('.occupants'));
+                    _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
+                    this.el.querySelector('.chatroom-body').insertAdjacentHTML(
+                        'beforeend',
+                        tpl_chatroom_disconnect({
+                            'disconnect_message': msg
+                        })
+                    );
                 },
 
                 getMessageFromStatus (stat, stanza, is_self) {
@@ -1856,8 +1870,13 @@
                 },
 
                 showSpinner () {
-                    this.$('.chatroom-body').children().addClass('hidden');
-                    this.$el.find('.chatroom-body').prepend(tpl_spinner);
+                    u.removeElement(this.el.querySelector('.spinner'));
+
+                    const container_el = this.el.querySelector('.chatroom-body');
+                    const children = Array.prototype.slice.call(container_el.children, 0);
+                    container_el.insertAdjacentHTML('afterbegin', tpl_spinner());
+                    _.each(children, u.hideElement);
+
                 },
 
                 hideSpinner () {
@@ -1867,7 +1886,7 @@
                      */
                     const spinner = this.el.querySelector('.spinner');
                     if (!_.isNull(spinner)) {
-                        spinner.parentNode.removeChild(spinner);
+                        u.removeElement(spinner);
                         this.renderAfterTransition();
                     }
                     return this;
@@ -2448,13 +2467,13 @@
                 renderTab () {
                     const controlbox = _converse.chatboxes.get('controlbox');
                     const chatrooms = fp.filter(
-                        _.partial(utils.isOfType, CHATROOMS_TYPE),
+                        _.partial(u.isOfType, CHATROOMS_TYPE),
                         _converse.chatboxes.models
                     );
                     this.tab_el.innerHTML = tpl_chatrooms_tab({
                         'label_rooms': __('Rooms'),
                         'is_current': controlbox.get('active-panel') === ROOMS_PANEL_ID,
-                        'num_unread': fp.sum(fp.map(fp.curry(utils.getAttribute)('num_unread'), chatrooms))
+                        'num_unread': fp.sum(fp.map(fp.curry(u.getAttribute)('num_unread'), chatrooms))
                     });
                 },
 

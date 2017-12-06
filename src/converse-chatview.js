@@ -554,10 +554,13 @@
 
                 showHelpMessages (msgs, type, spinner) {
                     _.each(msgs, (msg) => {
-                        this.$content.append($(tpl_help_message({
-                            'type': type||'info',
-                            'message': msgs
-                        })));
+                        this.content.insertAdjacentHTML(
+                            'beforeend',
+                            tpl_help_message({
+                                'type': type||'info',
+                                'message': xss.filterXSS(msg, {'whiteList': {'strong': []}})
+                            })
+                        );
                     });
                     if (spinner === true) {
                         this.$content.append(tpl_spinner);

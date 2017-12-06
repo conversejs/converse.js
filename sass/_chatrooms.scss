@@ -119,10 +119,8 @@
                         font-weight: bold;
                     }
                     .chatroom-features {
-                        position: absolute;
                         bottom: 0.5em;
-                        width: 25%;
-                        @include calc(width, '30% - 1em');
+                        width: 100%;
                     }
                     .awesomplete {
                         ul {

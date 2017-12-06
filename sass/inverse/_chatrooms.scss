@@ -46,8 +46,6 @@
                     }
                     .chatroom-features {
                         bottom: $padding;
-                        width: 25%;
-                        @include calc(width, '30% - 2em');
                     }
                     ul {
                         &.occupant-list {

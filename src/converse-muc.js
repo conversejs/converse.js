@@ -573,6 +573,27 @@
                     this.leave();
                 },
 
+                setOccupantsVisibility () {
+                    if (this.model.get('hidden_occupants')) {
+                        const icon_el = this.el.querySelector('.icon-show-users');
+                        if (!_.isNull(icon_el)) {
+                            icon_el.classList.remove('icon-show-users');
+                            icon_el.classList.add('icon-hide-users');
+                        }
+                        this.el.querySelector('.chat-area').classList.remove('full');
+                        this.el.querySelector('.occupants').classList.remove('hidden');
+                    } else {
+                        const icon_el = this.el.querySelector('.icon-hide-users');
+                        if (!_.isNull(icon_el)) {
+                            icon_el.classList.remove('icon-hide-users');
+                            icon_el.classList.add('icon-show-users');
+                        }
+                        this.el.querySelector('.chat-area').classList.add('full');
+                        u.hideElement(this.el.querySelector('.occupants'));
+                    }
+                    this.occupantsview.setOccupantsHeight();
+                },
+
                 toggleOccupants (ev, preserve_state) {
                     /* Show or hide the right sidebar containing the chat
                      * occupants (and the invite widget).
@@ -581,27 +602,10 @@
                         ev.preventDefault();
                         ev.stopPropagation();
                     }
-                    if (preserve_state) {
-                        // Bit of a hack, to make sure that the sidebar's state doesn't change
+                    if (!preserve_state) {
                         this.model.set({hidden_occupants: !this.model.get('hidden_occupants')});
                     }
-                    if (!this.model.get('hidden_occupants')) {
-                        this.model.save({hidden_occupants: true});
-                        const icon_el = this.el.querySelector('.icon-hide-users');
-                        icon_el.classList.remove('icon-hide-users');
-                        icon_el.classList.add('icon-show-users');
-                        this.el.querySelector('.chat-area').classList.add('full');
-                        u.hideElement(this.el.querySelector('.occupants'));
-                    } else {
-                        this.model.save({hidden_occupants: false});
-                        const icon_el = this.el.querySelector('.icon-show-users');
-                        if (!_.isNull(icon_el)) {
-                            icon_el.classList.remove('icon-show-users');
-                            icon_el.classList.add('icon-hide-users');
-                        }
-                        this.el.querySelector('.chat-area').classList.remove('full');
-                        this.el.querySelector('.occupants').classList.remove('hidden');
-                    }
+                    this.setOccupantsVisibility();
                     this.scrollDown();
                 },
 
@@ -1862,9 +1866,8 @@
                     } else if (this.model.get('connection_status') == converse.ROOMSTATUS.PASSWORD_REQUIRED) {
                         this.renderPasswordForm();
                     } else {
-                        this.$el.find('.chat-area').removeClass('hidden');
-                        this.$el.find('.occupants').removeClass('hidden');
-                        this.occupantsview.setOccupantsHeight();
+                        this.el.querySelector('.chat-area').classList.remove('hidden');
+                        this.setOccupantsVisibility();
                         this.scrollDown();
                     }
                 },

@@ -2595,11 +2595,8 @@
           font-weight: bold; }
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants .chatroom-features,
         #conversejs .chatroom .box-flyout .chatroom-body .occupants .chatroom-features {
-          position: absolute;
           bottom: 0.5em;
-          width: 25%;
-          width: -webkit-calc(30% - 1em);
-          width: calc(30% - 1em); }
+          width: 100%; }
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants .awesomplete ul,
         #conversejs .chatroom .box-flyout .chatroom-body .occupants .awesomplete ul {
           padding: 0; }

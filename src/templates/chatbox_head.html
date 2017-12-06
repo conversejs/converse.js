@@ -1,9 +1,11 @@
 <div class="chat-head chat-head-chatbox">
     <a class="chatbox-btn close-chatbox-button icon-close" title="{{{o.info_close}}}"></a>
-    <img alt="User Avatar"
-         class="avatar"
-         height="{{{o.avatar_height}}}px" width="{{{o.avatar_width}}}px"
-         src="data:{{{o.image_type}}};base64,{{{o.image}}}"/>
+    {[ if (o.show_avatar) { ]}
+        <img alt="User Avatar"
+            class="avatar"
+            height="{{{o.avatar_height}}}px" width="{{{o.avatar_width}}}px"
+            src="data:{{{o.image_type}}};base64,{{{o.image}}}"/>
+    {[ } ]}
     <div class="chat-title">
         {[ if (o.url) { ]}
             <a href="{{{o.url}}}" target="_blank" rel="noopener" class="user">

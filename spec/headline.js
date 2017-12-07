@@ -76,6 +76,10 @@
             expect(utils.isHeadlineMessage.called).toBeTruthy();
             expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
             utils.isHeadlineMessage.restore(); // unwraps
+            // Headlines boxes don't show an avatar
+            var view = _converse.chatboxviews.get('notify.example.com');
+            expect(view.model.get('show_avatar')).toBeFalsy();
+            expect(view.el.querySelector('img.avatar')).toBe(null);
             done();
         }));
 

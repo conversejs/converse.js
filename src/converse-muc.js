@@ -506,7 +506,15 @@
                     this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
                     this.occupantsview.render();
                     this.occupantsview.model.fetch({add:true});
+                    this.occupantsview.model.on('change:role', this.informOfOccupantsRoleChange, this);
                     return this;
+                },
+
+                informOfOccupantsRoleChange (occupant) {
+                    if (occupant.get('role') === 'visitor') {
+                        this.showStatusNotification(
+                            __("%1$s has been muted.", occupant.get('nick')), false, true)
+                    }
                 },
 
                 generateHeadingHTML () {

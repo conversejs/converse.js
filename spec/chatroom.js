@@ -1958,7 +1958,7 @@
                      *       </x>
                      *     </presence>
                      */
-                    var features_stanza = $pres({
+                    var presence = $pres({
                             'from': 'lounge@localhost/annoyingGuy',
                             'to': 'dummy@localhost/desktop',
                             'type': 'unavailable'
@@ -1969,9 +1969,9 @@
                                 'role': 'none'
                             }).up()
                             .c('status', {'code': '307'});
-                    _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(
-                        view.el.querySelectorAll('.chat-info')[2].textContent, 
+                        view.el.querySelectorAll('.chat-info')[2].textContent).toBe(
                         "annoyingGuy has been kicked out");
                     done();
                 });
@@ -1994,6 +1994,32 @@
                     spyOn(view, 'modifyRole').and.callThrough();
                     spyOn(view, 'showStatusNotification').and.callThrough();
                     spyOn(view, 'validateRoleChangeCommand').and.callThrough();
+
+                    // New user enters the room
+                    /* <presence
+                     *     from='coven@chat.shakespeare.lit/thirdwitch'
+                     *     id='27C55F89-1C6A-459A-9EB5-77690145D624'
+                     *     to='crone1@shakespeare.lit/desktop'>
+                     * <x xmlns='http://jabber.org/protocol/muc#user'>
+                     *     <item affiliation='member' role='participant'/>
+                     * </x>
+                     * </presence>
+                     */
+                    var presence = $pres({
+                            'from': 'lounge@localhost/annoyingGuy',
+                            'id':'27C55F89-1C6A-459A-9EB5-77690145D624',
+                            'to': 'dummy@localhost/desktop'
+                        })
+                        .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                            .c('item', {
+                                'jid': 'annoyingguy@localhost',
+                                'affiliation': 'member',
+                                'role': 'participant'
+                            });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    var info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                    expect(info_msgs.pop().textContent).toBe("annoyingGuy has entered the room.");
+
                     view.$el.find('.chat-textarea').text('/mute');
                     view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
                     expect(view.onMessageSubmitted).toHaveBeenCalled();
@@ -2019,6 +2045,30 @@
                                 "</item>"+
                             "</query>"+
                         "</iq>");
+
+                   /* <presence
+                    *     from='coven@chat.shakespeare.lit/thirdwitch'
+                    *     to='crone1@shakespeare.lit/desktop'>
+                    * <x xmlns='http://jabber.org/protocol/muc#user'>
+                    *     <item affiliation='member'
+                    *         jid='hag66@shakespeare.lit/pda'
+                    *         role='visitor'/>
+                    * </x>
+                    * </presence>
+                    */
+                    presence = $pres({
+                            'from': 'lounge@localhost/annoyingGuy',
+                            'to': 'dummy@localhost/desktop'
+                        })
+                        .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                            .c('item', {
+                                'jid': 'annoyingguy@localhost',
+                                'affiliation': 'member',
+                                'role': 'visitor'
+                            });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                    expect(info_msgs.pop().textContent).toBe("annoyingGuy has been muted.");
                     done();
                 });
             }));

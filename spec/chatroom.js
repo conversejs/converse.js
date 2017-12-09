@@ -10,16 +10,27 @@
 
     return describe("ChatRooms", function () {
         describe("The \"rooms\" API", function () {
+            var original_timeout;
+
+            beforeEach(function() {
+                original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+                jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+            });
+
+            afterEach(function() {
+                jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout;
+            });
 
             it("has a method 'close' which closes rooms by JID or all rooms when called with no arguments",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                test_utils.openAndEnterChatRoom(_converse, 'leisure', 'localhost', 'dummy').then(function () {
-                test_utils.openAndEnterChatRoom(_converse, 'news', 'localhost', 'dummy').then(function () {
+                    return test_utils.openAndEnterChatRoom(_converse, 'leisure', 'localhost', 'dummy');
+                }).then(function () {
+                    return test_utils.openAndEnterChatRoom(_converse, 'news', 'localhost', 'dummy');
+                }).then(function () {
                     expect(_converse.chatboxviews.get('lounge@localhost').$el.is(':visible')).toBeTruthy();
                     expect(_converse.chatboxviews.get('leisure@localhost').$el.is(':visible')).toBeTruthy();
                     expect(_converse.chatboxviews.get('news@localhost').$el.is(':visible')).toBeTruthy();
@@ -38,20 +49,19 @@
                     expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                     expect(_converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
                     expect(_converse.chatboxviews.get('news@localhost')).toBeUndefined();
-
-                    test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                    test_utils.openAndEnterChatRoom(_converse, 'leisure', 'localhost', 'dummy').then(function () {
-                        expect(_converse.chatboxviews.get('lounge@localhost').$el.is(':visible')).toBeTruthy();
-                        expect(_converse.chatboxviews.get('leisure@localhost').$el.is(':visible')).toBeTruthy();
-
-                        _converse.api.rooms.close();
-                        expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
-                        expect(_converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
-                        done();
-                    });
-                    });
-                });
-                });
+                    return test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                }).then(function () {
+                    return test_utils.openAndEnterChatRoom(_converse, 'leisure', 'localhost', 'dummy')
+                }).then(function () {
+                    expect(_converse.chatboxviews.get('lounge@localhost').$el.is(':visible')).toBeTruthy();
+                    expect(_converse.chatboxviews.get('leisure@localhost').$el.is(':visible')).toBeTruthy();
+                    _converse.api.rooms.close();
+                    expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
+                    expect(_converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
+                    return done();
+                }).catch((err) => {
+                    _converse.log(err, Strophe.LogLevel.FATAL);
+                    done();
                 });
             }));
 
@@ -300,6 +310,7 @@
 
                 var view = _converse.chatboxviews.get('lounge@localhost');
                 spyOn(view, 'join').and.callThrough();
+                spyOn(view, 'submitNickname').and.callThrough();
 
                 /* <iq to="myroom@conference.chat.example.org"
                  *     from="jordie.langen@chat.example.org/converse.js-11659299"
@@ -329,10 +340,10 @@
                     .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                    // TODO: enter nickname
-                    var $input = view.$el.find('input.new-chatroom-nick');
-                    $input.val('nicky').parents('form').submit();
-
+                    var input = view.el.querySelector('input.new-chatroom-nick');
+                    input.value = 'nicky';
+                    view.el.querySelector('input[type=submit]').click();
+                    expect(view.submitNickname).toHaveBeenCalled();
                     expect(view.join).toHaveBeenCalled();
 
                     // The user has just entered the room (because join was called)
@@ -426,7 +437,7 @@
                     }).up()
                     .c('status', {code: '110'});
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect($chat_content.find('div.chat-info:first').html()).toBe("some1 has joined the room.");
+                expect($chat_content.find('div.chat-info:first').html()).toBe("some1 has entered the room.");
 
                 presence = $pres({
                         to: 'dummy@localhost/_converse.js-29092160',
@@ -439,7 +450,7 @@
                     });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect($chat_content.find('div.chat-info').length).toBe(2);
-                expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has joined the room.");
+                expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has entered the room.");
 
                 // Don't show duplicate join messages
                 presence = $pres({
@@ -1335,7 +1346,7 @@
                     expect($occupants.children().first(0).text()).toBe("oldnick");
 
                     expect($chat_content.find('div.chat-info').length).toBe(2);
-                    expect($chat_content.find('div.chat-info:first').html()).toBe("oldnick has joined the room.");
+                    expect($chat_content.find('div.chat-info:first').html()).toBe("oldnick has entered the room.");
                     expect($chat_content.find('div.chat-info:last').html()).toBe(
                         __(_converse.muc.new_nickname_messages["210"], "oldnick")
                     );
@@ -1384,7 +1395,7 @@
                         __(_converse.muc.new_nickname_messages["303"], "newnick")
                     );
                     expect($chat_content.find('div.chat-info').last().html()).toBe(
-                        "newnick has joined the room.");
+                        "newnick has entered the room.");
                     $occupants = view.$('.occupant-list');
                     expect($occupants.children().length).toBe(1);
                     expect($occupants.children().first(0).text()).toBe("newnick");
@@ -1706,152 +1717,360 @@
 
         describe("Each chat room can take special commands", function () {
 
-            it("to set the room topic",
+            it("/help to show the available commands",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                var sent_stanza;
-                test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                var view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
-                spyOn(view, 'clearChatRoomMessages');
-                spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
-                    sent_stanza = stanza;
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                    var view = _converse.chatboxviews.get('lounge@localhost');
+                    spyOn(view, 'onMessageSubmitted').and.callThrough();
+                    var textarea = view.el.querySelector('.chat-textarea');
+                    textarea.textContent = '/help This is the room subject';
+                    $(textarea).trigger($.Event('keypress', {keyCode: 13}));
+                    expect(view.onMessageSubmitted).toHaveBeenCalled();
+                    const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                    expect(info_messages.length).toBe(17);
+                    expect(info_messages.pop().textContent).toBe('/voice: Allow muted user to post messages');
+                    expect(info_messages.pop().textContent).toBe('/topic: Set room subject (alias for /subject)');
+                    expect(info_messages.pop().textContent).toBe('/subject: Set room subject');
+                    expect(info_messages.pop().textContent).toBe('/revoke: Revoke user\'s membership');
+                    expect(info_messages.pop().textContent).toBe('/owner: Grant ownership of this room');
+                    expect(info_messages.pop().textContent).toBe('/op: Grant moderator role to user');
+                    expect(info_messages.pop().textContent).toBe('/nick: Change your nickname');
+                    expect(info_messages.pop().textContent).toBe('/mute: Remove user\'s ability to post messages');
+                    expect(info_messages.pop().textContent).toBe('/member: Grant membership to a user');
+                    expect(info_messages.pop().textContent).toBe('/me: Write in 3rd person');
+                    expect(info_messages.pop().textContent).toBe('/kick: Kick user from room');
+                    expect(info_messages.pop().textContent).toBe('/help: Show this menu');
+                    expect(info_messages.pop().textContent).toBe('/deop: Change user role to occupant');
+                    expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
+                    expect(info_messages.pop().textContent).toBe('/ban: Ban user from room');
+                    expect(info_messages.pop().textContent).toBe('/admin: Change user\'s affiliation to admin');
+                    done();
                 });
-                // Check the alias /topic
-                var $textarea = view.$el.find('.chat-textarea');
-                $textarea.text('/topic This is the room subject');
-                $textarea.trigger($.Event('keypress', {keyCode: 13}));
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
-                expect(_converse.connection.send).toHaveBeenCalled();
-                expect(sent_stanza.textContent).toBe('This is the room subject');
-
-                // Check /subject
-                $textarea.val('/subject This is a new subject');
-                $textarea.trigger($.Event('keypress', {keyCode: 13}));
-                expect(sent_stanza.textContent).toBe('This is a new subject');
-
-                // Check case insensitivity
-                //
-                // XXX: This works in the browser but fails on phantomjs
-                // expect(sent_stanza.outerHTML).toBe(
-                //     '<message to="lounge@localhost" from="dummy@localhost/resource" type="groupchat" xmlns="jabber:client">'+
-                //         '<subject xmlns="jabber:client">This is yet another subject</subject>'+
-                //     '</message>');
-                $textarea.val('/Subject This is yet another subject');
-                $textarea.trigger($.Event('keypress', {keyCode: 13}));
-                expect(sent_stanza.textContent).toBe('This is yet another subject');
-                done();
             }));
 
-            it("to clear messages",
+            it("/topic to set the room topic",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                var view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
-                spyOn(view, 'clearChatRoomMessages');
-                view.$el.find('.chat-textarea').text('/clear');
-                view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
-                expect(view.clearChatRoomMessages).toHaveBeenCalled();
-                done();
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                    var sent_stanza;
+                    var view = _converse.chatboxviews.get('lounge@localhost');
+                    spyOn(view, 'onMessageSubmitted').and.callThrough();
+                    spyOn(view, 'clearChatRoomMessages');
+                    spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
+                        sent_stanza = stanza;
+                    });
+                    // Check the alias /topic
+                    var $textarea = view.$el.find('.chat-textarea');
+                    $textarea.text('/topic This is the room subject');
+                    $textarea.trigger($.Event('keypress', {keyCode: 13}));
+                    expect(view.onMessageSubmitted).toHaveBeenCalled();
+                    expect(_converse.connection.send).toHaveBeenCalled();
+                    expect(sent_stanza.textContent).toBe('This is the room subject');
+
+                    // Check /subject
+                    $textarea.val('/subject This is a new subject');
+                    $textarea.trigger($.Event('keypress', {keyCode: 13}));
+                    expect(sent_stanza.textContent).toBe('This is a new subject');
+                    expect(sent_stanza.outerHTML).toBe(
+                        '<message to="lounge@localhost" from="dummy@localhost/resource" type="groupchat" xmlns="jabber:client">'+
+                            '<subject xmlns="jabber:client">This is a new subject</subject>'+
+                        '</message>');
+
+                    // Check case insensitivity
+                    $textarea.val('/Subject This is yet another subject');
+                    $textarea.trigger($.Event('keypress', {keyCode: 13}));
+                    expect(sent_stanza.textContent).toBe('This is yet another subject');
+                    expect(sent_stanza.outerHTML).toBe(
+                        '<message to="lounge@localhost" from="dummy@localhost/resource" type="groupchat" xmlns="jabber:client">'+
+                            '<subject xmlns="jabber:client">This is yet another subject</subject>'+
+                        '</message>');
+                    done();
+                });
             }));
 
-            it("to make a user an owner",
+            it("/clear to clear messages",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                var sent_IQ, IQ_id;
-                var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_IQ = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                    var view = _converse.chatboxviews.get('lounge@localhost');
+                    spyOn(view, 'onMessageSubmitted').and.callThrough();
+                    spyOn(view, 'clearChatRoomMessages');
+                    view.$el.find('.chat-textarea').text('/clear');
+                    view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                    expect(view.onMessageSubmitted).toHaveBeenCalled();
+                    expect(view.clearChatRoomMessages).toHaveBeenCalled();
+                    done();
                 });
-                test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                var view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
-                spyOn(view, 'setAffiliation').and.callThrough();
-                spyOn(view, 'showStatusNotification').and.callThrough();
-                spyOn(view, 'validateRoleChangeCommand').and.callThrough();
-                view.$el.find('.chat-textarea').text('/owner');
-                view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
-                expect(view.validateRoleChangeCommand).toHaveBeenCalled();
-                expect(view.showStatusNotification).toHaveBeenCalledWith(
-                    "Error: the \"owner\" command takes two arguments, the user's nickname and optionally a reason.",
-                    true
-                );
-                expect(view.setAffiliation).not.toHaveBeenCalled();
-
-                // Call now with the correct amount of arguments.
-                // XXX: Calling onMessageSubmitted directly, trying
-                // again via triggering Event doesn't work for some weird
-                // reason.
-                view.onMessageSubmitted('/owner annoyingGuy@localhost You\'re annoying');
-                expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
-                expect(view.showStatusNotification.calls.count()).toBe(1);
-                expect(view.setAffiliation).toHaveBeenCalled();
-                // Check that the member list now gets updated
-                expect(sent_IQ.toLocaleString()).toBe(
-                    "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                        "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
-                            "<item affiliation='owner' jid='annoyingGuy@localhost'>"+
-                                "<reason>You&apos;re annoying</reason>"+
-                            "</item>"+
-                        "</query>"+
-                    "</iq>");
-                done();
             }));
 
-            it("to ban a user",
+            it("/owner to make a user an owner",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                var sent_IQ, IQ_id;
-                var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_IQ = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                    var sent_IQ, IQ_id;
+                    var sendIQ = _converse.connection.sendIQ;
+                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                        sent_IQ = iq;
+                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                    });
+                    var view = _converse.chatboxviews.get('lounge@localhost');
+                    spyOn(view, 'onMessageSubmitted').and.callThrough();
+                    spyOn(view, 'setAffiliation').and.callThrough();
+                    spyOn(view, 'showStatusNotification').and.callThrough();
+                    spyOn(view, 'validateRoleChangeCommand').and.callThrough();
+                    view.$el.find('.chat-textarea').text('/owner');
+                    view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                    expect(view.onMessageSubmitted).toHaveBeenCalled();
+                    expect(view.validateRoleChangeCommand).toHaveBeenCalled();
+                    expect(view.showStatusNotification).toHaveBeenCalledWith(
+                        "Error: the \"owner\" command takes two arguments, the user's nickname and optionally a reason.",
+                        true
+                    );
+                    expect(view.setAffiliation).not.toHaveBeenCalled();
+
+                    // Call now with the correct amount of arguments.
+                    // XXX: Calling onMessageSubmitted directly, trying
+                    // again via triggering Event doesn't work for some weird
+                    // reason.
+                    view.onMessageSubmitted('/owner annoyingGuy@localhost You\'re responsible');
+                    expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
+                    expect(view.showStatusNotification.calls.count()).toBe(1);
+                    expect(view.setAffiliation).toHaveBeenCalled();
+                    // Check that the member list now gets updated
+                    expect(sent_IQ.toLocaleString()).toBe(
+                        "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                            "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                                "<item affiliation='owner' jid='annoyingGuy@localhost'>"+
+                                    "<reason>You&apos;re responsible</reason>"+
+                                "</item>"+
+                            "</query>"+
+                        "</iq>");
+                    done();
                 });
-                test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                var view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
-                spyOn(view, 'setAffiliation').and.callThrough();
-                spyOn(view, 'showStatusNotification').and.callThrough();
-                spyOn(view, 'validateRoleChangeCommand').and.callThrough();
-                view.$el.find('.chat-textarea').text('/ban');
-                view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
-                expect(view.validateRoleChangeCommand).toHaveBeenCalled();
-                expect(view.showStatusNotification).toHaveBeenCalledWith(
-                    "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.",
-                    true
-                );
-                expect(view.setAffiliation).not.toHaveBeenCalled();
-                // Call now with the correct amount of arguments.
-                // XXX: Calling onMessageSubmitted directly, trying
-                // again via triggering Event doesn't work for some weird
-                // reason.
-                view.onMessageSubmitted('/ban annoyingGuy@localhost You\'re annoying');
-                expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
-                expect(view.showStatusNotification.calls.count()).toBe(1);
-                expect(view.setAffiliation).toHaveBeenCalled();
-                // Check that the member list now gets updated
-                expect(sent_IQ.toLocaleString()).toBe(
-                    "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                        "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
-                            "<item affiliation='outcast' jid='annoyingGuy@localhost'>"+
-                                "<reason>You&apos;re annoying</reason>"+
-                            "</item>"+
-                        "</query>"+
-                    "</iq>");
-                done();
+            }));
+
+            it("/ban to ban a user",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                    var sent_IQ, IQ_id;
+                    var sendIQ = _converse.connection.sendIQ;
+                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                        sent_IQ = iq;
+                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                    });
+                    var view = _converse.chatboxviews.get('lounge@localhost');
+                    spyOn(view, 'onMessageSubmitted').and.callThrough();
+                    spyOn(view, 'setAffiliation').and.callThrough();
+                    spyOn(view, 'showStatusNotification').and.callThrough();
+                    spyOn(view, 'validateRoleChangeCommand').and.callThrough();
+                    view.$el.find('.chat-textarea').text('/ban');
+                    view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                    expect(view.onMessageSubmitted).toHaveBeenCalled();
+                    expect(view.validateRoleChangeCommand).toHaveBeenCalled();
+                    expect(view.showStatusNotification).toHaveBeenCalledWith(
+                        "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.",
+                        true
+                    );
+                    expect(view.setAffiliation).not.toHaveBeenCalled();
+                    // Call now with the correct amount of arguments.
+                    // XXX: Calling onMessageSubmitted directly, trying
+                    // again via triggering Event doesn't work for some weird
+                    // reason.
+                    view.onMessageSubmitted('/ban annoyingGuy@localhost You\'re annoying');
+                    expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
+                    expect(view.showStatusNotification.calls.count()).toBe(1);
+                    expect(view.setAffiliation).toHaveBeenCalled();
+                    // Check that the member list now gets updated
+                    expect(sent_IQ.toLocaleString()).toBe(
+                        "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                            "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                                "<item affiliation='outcast' jid='annoyingGuy@localhost'>"+
+                                    "<reason>You&apos;re annoying</reason>"+
+                                "</item>"+
+                            "</query>"+
+                        "</iq>");
+                    done();
+                });
+            }));
+
+            it("/kick to kick a user",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                    var sent_IQ, IQ_id;
+                    var sendIQ = _converse.connection.sendIQ;
+                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                        sent_IQ = iq;
+                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                    });
+                    var view = _converse.chatboxviews.get('lounge@localhost');
+                    spyOn(view, 'onMessageSubmitted').and.callThrough();
+                    spyOn(view, 'modifyRole').and.callThrough();
+                    spyOn(view, 'showStatusNotification').and.callThrough();
+                    spyOn(view, 'validateRoleChangeCommand').and.callThrough();
+                    view.$el.find('.chat-textarea').text('/kick');
+                    view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                    expect(view.onMessageSubmitted).toHaveBeenCalled();
+                    expect(view.validateRoleChangeCommand).toHaveBeenCalled();
+                    expect(view.showStatusNotification).toHaveBeenCalledWith(
+                        "Error: the \"kick\" command takes two arguments, the user's nickname and optionally a reason.",
+                        true
+                    );
+                    expect(view.modifyRole).not.toHaveBeenCalled();
+                    // Call now with the correct amount of arguments.
+                    // XXX: Calling onMessageSubmitted directly, trying
+                    // again via triggering Event doesn't work for some weird
+                    // reason.
+                    view.onMessageSubmitted('/kick annoyingGuy You\'re annoying');
+                    expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
+                    expect(view.showStatusNotification.calls.count()).toBe(1);
+                    expect(view.modifyRole).toHaveBeenCalled();
+                    expect(sent_IQ.toLocaleString()).toBe(
+                        "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                            "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                                "<item nick='annoyingGuy' role='none'>"+
+                                    "<reason>You&apos;re annoying</reason>"+
+                                "</item>"+
+                            "</query>"+
+                        "</iq>");
+
+                    /* <presence
+                     *     from='harfleur@chat.shakespeare.lit/pistol'
+                     *     to='gower@shakespeare.lit/cell'
+                     *     type='unavailable'>
+                     *       <x xmlns='http://jabber.org/protocol/muc#user'>
+                     *         <item affiliation='none' role='none'/>
+                     *         <status code='307'/>
+                     *       </x>
+                     *     </presence>
+                     */
+                    var presence = $pres({
+                            'from': 'lounge@localhost/annoyingGuy',
+                            'to': 'dummy@localhost/desktop',
+                            'type': 'unavailable'
+                        })
+                        .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                            .c('item', {
+                                'affiliation': 'none',
+                                'role': 'none'
+                            }).up()
+                            .c('status', {'code': '307'});
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(
+                        view.el.querySelectorAll('.chat-info')[2].textContent).toBe(
+                        "annoyingGuy has been kicked out");
+                    done();
+                });
+            }));
+
+            it("/mute to mute a user",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                    var sent_IQ, IQ_id;
+                    var sendIQ = _converse.connection.sendIQ;
+                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                        sent_IQ = iq;
+                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                    });
+                    var view = _converse.chatboxviews.get('lounge@localhost');
+                    spyOn(view, 'onMessageSubmitted').and.callThrough();
+                    spyOn(view, 'modifyRole').and.callThrough();
+                    spyOn(view, 'showStatusNotification').and.callThrough();
+                    spyOn(view, 'validateRoleChangeCommand').and.callThrough();
+
+                    // New user enters the room
+                    /* <presence
+                     *     from='coven@chat.shakespeare.lit/thirdwitch'
+                     *     id='27C55F89-1C6A-459A-9EB5-77690145D624'
+                     *     to='crone1@shakespeare.lit/desktop'>
+                     * <x xmlns='http://jabber.org/protocol/muc#user'>
+                     *     <item affiliation='member' role='participant'/>
+                     * </x>
+                     * </presence>
+                     */
+                    var presence = $pres({
+                            'from': 'lounge@localhost/annoyingGuy',
+                            'id':'27C55F89-1C6A-459A-9EB5-77690145D624',
+                            'to': 'dummy@localhost/desktop'
+                        })
+                        .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                            .c('item', {
+                                'jid': 'annoyingguy@localhost',
+                                'affiliation': 'member',
+                                'role': 'participant'
+                            });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    var info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                    expect(info_msgs.pop().textContent).toBe("annoyingGuy has entered the room.");
+
+                    view.$el.find('.chat-textarea').text('/mute');
+                    view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                    expect(view.onMessageSubmitted).toHaveBeenCalled();
+                    expect(view.validateRoleChangeCommand).toHaveBeenCalled();
+                    expect(view.showStatusNotification).toHaveBeenCalledWith(
+                        "Error: the \"mute\" command takes two arguments, the user's nickname and optionally a reason.",
+                        true
+                    );
+                    expect(view.modifyRole).not.toHaveBeenCalled();
+                    // Call now with the correct amount of arguments.
+                    // XXX: Calling onMessageSubmitted directly, trying
+                    // again via triggering Event doesn't work for some weird
+                    // reason.
+                    view.onMessageSubmitted('/mute annoyingGuy You\'re annoying');
+                    expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
+                    expect(view.showStatusNotification.calls.count()).toBe(1);
+                    expect(view.modifyRole).toHaveBeenCalled();
+                    expect(sent_IQ.toLocaleString()).toBe(
+                        "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                            "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                                "<item nick='annoyingGuy' role='visitor'>"+
+                                    "<reason>You&apos;re annoying</reason>"+
+                                "</item>"+
+                            "</query>"+
+                        "</iq>");
+
+                   /* <presence
+                    *     from='coven@chat.shakespeare.lit/thirdwitch'
+                    *     to='crone1@shakespeare.lit/desktop'>
+                    * <x xmlns='http://jabber.org/protocol/muc#user'>
+                    *     <item affiliation='member'
+                    *         jid='hag66@shakespeare.lit/pda'
+                    *         role='visitor'/>
+                    * </x>
+                    * </presence>
+                    */
+                    presence = $pres({
+                            'from': 'lounge@localhost/annoyingGuy',
+                            'to': 'dummy@localhost/desktop'
+                        })
+                        .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                            .c('item', {
+                                'jid': 'annoyingguy@localhost',
+                                'affiliation': 'member',
+                                'role': 'visitor'
+                            });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                    expect(info_msgs.pop().textContent).toBe("annoyingGuy has been muted.");
+                    done();
+                });
             }));
         });
 

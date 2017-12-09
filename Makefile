@@ -8,6 +8,7 @@ CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
 CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
 ESLINT		  	?= ./node_modules/.bin/eslint
 HTTPSERVE	   	?= ./node_modules/.bin/http-server
+HTTPSERVE_PORT	        ?= 8000
 PAPER		   	=
 PO2JSON		 	?= ./node_modules/.bin/po2json
 RJS			 	?= ./node_modules/.bin/r.js
@@ -51,11 +52,11 @@ help:
 
 .PHONY: serve
 serve: dev 
-	$(HTTPSERVE) -p 8000 -c-1
+	$(HTTPSERVE) -p $(HTTPSERVE_PORT) -c-1
 
 .PHONY: serve_bg
 serve_bg: dev
-	$(HTTPSERVE) -p 8000 -c-1 -s &
+	$(HTTPSERVE) -p $(HTTPSERVE_PORT) -c-1 -s &
 
 ########################################################################
 ## Translation machinery
@@ -159,14 +160,15 @@ transpile: stamp-npm src
 
 BUILDS = dist/converse.js \
 		 dist/converse.min.js \
-		 dist/converse-esnext.js \
-		 dist/converse-esnext.min.js \
 		 dist/converse-muc-embedded.js \
 		 dist/converse-muc-embedded.min.js \
 		 dist/converse-no-jquery.js \
  		 dist/converse-no-jquery.min.js \
 		 dist/converse-no-dependencies.min.js \
 		 dist/converse-no-dependencies.js
+
+# dist/converse-esnext.js \
+# dist/converse-esnext.min.js \
 
 dist/converse.js: transpile src node_modules
 	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
@@ -205,7 +207,7 @@ eslint: stamp-npm
 
 .PHONY: check
 check: eslint
-	LOG_CR_VERBOSITY=INFO $(CHROMIUM) http://localhost:8000/tests.html
+	LOG_CR_VERBOSITY=INFO $(CHROMIUM) http://localhost:$(HTTPSERVE_PORT)/tests.html
 
 
 ########################################################################

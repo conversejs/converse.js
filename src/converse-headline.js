@@ -15,6 +15,7 @@
 }(this, function (converse, tpl_chatbox) {
     "use strict";
     const { _, utils } = converse.env;
+    const HEADLINES_TYPE = 'headline';
 
     converse.plugins.add('converse-headline', {
 
@@ -24,6 +25,17 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
+
+            ChatBoxes: {
+                model (attrs, options) {
+                    const { _converse } = this.__super__;
+                    if (attrs.type == HEADLINES_TYPE) {
+                        return new _converse.HeadlinesBox(attrs, options);
+                    } else {
+                        return this.__super__.model.apply(this, arguments);
+                    }
+                },
+            },
 
             ChatBoxViews: {
                 onChatBoxAdded (item) {
@@ -40,12 +52,25 @@
             }
         },
 
+
         initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
             const { _converse } = this,
                 { __ } = _converse;
+
+            _converse.HeadlinesBox = _converse.ChatBox.extend({
+                defaults: {
+                    'type': 'headline',
+                    'show_avatar': false,
+                    'bookmarked': false,
+                    'chat_state': undefined,
+                    'num_unread': 0,
+                    'url': ''
+                },
+            });
+
 
             _converse.HeadlinesBoxView = _converse.ChatBoxView.extend({
                 className: 'chatbox headlines',
@@ -74,7 +99,6 @@
                         _.extend(this.model.toJSON(), {
                                 info_close: '',
                                 label_personal_message: '',
-                                show_avatar: false,
                                 show_send_button: false,
                                 show_textarea: false,
                                 show_toolbar: false,
@@ -82,6 +106,7 @@
                             }
                         ));
                     this.$content = this.$el.find('.chat-content');
+                    this.content = this.$content[0];
                     utils.refreshWebkit();
                     return this;
                 }
@@ -98,7 +123,7 @@
                         'id': from_jid,
                         'jid': from_jid,
                         'fullname':  from_jid,
-                        'type': 'headline'
+                        'type': 'headline',
                     });
                     chatbox.createMessage(message, undefined, message);
                     _converse.emit('message', {'chatbox': chatbox, 'stanza': message});

@@ -32,14 +32,14 @@
             var jid = 'theplay@conference.shakespeare.lit';
             var view = _converse.chatboxviews.get(jid);
             spyOn(view, 'renderBookmarkForm').and.callThrough();
-            spyOn(view, 'cancelConfiguration').and.callThrough();
+            spyOn(view, 'closeForm').and.callThrough();
 
             var $bookmark = view.$el.find('.icon-pushpin');
             $bookmark.click();
             expect(view.renderBookmarkForm).toHaveBeenCalled();
 
             view.$el.find('.button-cancel').click();
-            expect(view.cancelConfiguration).toHaveBeenCalled();
+            expect(view.closeForm).toHaveBeenCalled();
             expect($bookmark.hasClass('on-button'), false);
 
             $bookmark.click();

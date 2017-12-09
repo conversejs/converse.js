@@ -88,6 +88,58 @@
              *
              *      _converse.api.waitUntil('operationCompleted', function { ... });
              */
+            const initSpoilers = function () {
+                var spoiler_button = document.createElement('li');
+                spoiler_button.classList.add("toggle-spoiler");
+                spoiler_button.setAttribute("active", "false");
+                spoiler_button.onclick = toggleEditSpoilerMessage;
+                spoiler_button.innerHTML = '<a class="icon-eye" title="' + _('Click here to write a message as a spoiler') + '"></a>';
+                document.querySelector('.chat-toolbar').appendChild(spoiler_button);
+            };
+            
+            function toggleEditSpoilerMessage() {
+                let form = document.querySelector('.sendXMPPMessage');
+                let textArea = document.querySelector('.chat-textarea');
+                let hintTextArea = null;
+                let spoiler_button = document.querySelector('.toggle-spoiler');
+                
+                if (!isEditSpoilerMessage()) {
+                    textArea.style['background-color'] = '#D5FFD2';
+                    textArea.setAttribute('placeholder', _('Write your spoiler\'s content here'));
+                    spoiler_button.setAttribute("active", "true");
+                    spoiler_button.innerHTML = '<a class="icon-eye-blocked" title="' + _('Cancel writing spoiler message') + '"></a>'; // better get the element <a></a> and change the class?
+                    hintTextArea = createHintTextArea();
+                    form.insertBefore(hintTextArea, textArea);
+//                     <textarea type="text" class="chat-textarea-hint " placeholder="Hint (optional)" style="background-color: rgb(188, 203, 209); height:30px;"></textarea>
+
+                } else {
+                    textArea.style['background-color'] = '';
+                    textArea.setAttribute('placeholder', _('Personal message'));
+                    spoiler_button.setAttribute("active", "false");
+                    spoiler_button.innerHTML = '<a class="icon-eye" title="' + _('Click here to write a message as a spoiler') + '"></a>'; // better get the element <a></a> and change the class?
+                    hintTextArea = document.querySelector('.chat-textarea-hint');
+                    if ( hintTextArea ) {
+                        hintTextArea.remove();
+                        
+                    }
+                }
+                
+            }
+            
+            function isEditSpoilerMessage() {
+                return document.querySelector('.toggle-spoiler').getAttribute('active') === 'true';
+            }
+            
+            function createHintTextArea(){
+                let hintTextArea = document.createElement('input');
+                hintTextArea.setAttribute('type', 'text');
+                hintTextArea.setAttribute('placeholder', _('Hint (optional)'));
+                hintTextArea.classList.add('chat-textarea-hint');
+                hintTextArea.style['height'] = '30px';
+                return hintTextArea;
+            }
+            _converse.on('chatBoxFocused', function (chatbox) { initSpoilers(); });
+
         },
 
         /* If you want to override some function or a Backbone model or

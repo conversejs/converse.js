@@ -343,6 +343,7 @@
                 visible_toolbar_buttons: {
                     'toggle_occupants': true
                 },
+                hide_occupants:false
             });
             _converse.api.promises.add('roomsPanelRendered');
 
@@ -1862,10 +1863,17 @@
                     } else if (this.model.get('connection_status') == converse.ROOMSTATUS.PASSWORD_REQUIRED) {
                         this.renderPasswordForm();
                     } else {
+                      if(_converse.hide_occupants==true){
+                        this.model.save({hidden_occupants: true});
+                        this.$('.icon-hide-users').removeClass('icon-hide-users').addClass('icon-show-users');
+                        this.$('.occupants').addClass('hidden');
+                        this.$('.chat-area').removeClass('hidden').addClass('full');
+                      }else{
                         this.$el.find('.chat-area').removeClass('hidden');
                         this.$el.find('.occupants').removeClass('hidden');
                         this.occupantsview.setOccupantsHeight();
                         this.scrollDown();
+                      }
                     }
                 },
 

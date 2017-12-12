@@ -1,0 +1,732 @@
+{
+   "domain": "converse",
+   "locale_data": {
+      "converse": {
+         "": {
+            "domain": "converse",
+            "plural_forms": "nplurals=2; plural=(n != 1);",
+            "lang": "fi"
+         },
+         "Bookmark this room": [
+            null,
+            "Lisää huone kirjanmerkkeihin"
+         ],
+         "The name for this bookmark:": [
+            null,
+            "Kirjanmerkin nimi:"
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            "Haluatko liittyä automaattisesti tähän huoneeseen?"
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            "Millä nimellä haluat näkyä tässä huoneessa?"
+         ],
+         "Save": [
+            null,
+            "Tallenna"
+         ],
+         "Cancel": [
+            null,
+            "Peruuta"
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            "Kirjanmerkin tallennus epäonnistui."
+         ],
+         "Bookmarks": [
+            null,
+            "Kirjanmerkit"
+         ],
+         "Remove this bookmark": [
+            null,
+            "Poista tämä kirjanmerkki"
+         ],
+         "Show more information on this room": [
+            null,
+            "Näytä lisää tietoa tästä huoneesta"
+         ],
+         "Click to open this room": [
+            null,
+            "Avaa tämä huone"
+         ],
+         "Personal message": [
+            null,
+            "Yksityinen viesti"
+         ],
+         "Send": [
+            null,
+            "Lähetä"
+         ],
+         "me": [
+            null,
+            "minä"
+         ],
+         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+            null,
+            "Isokokoinen viesti vastaanotettu. Tämä voi johtua palvelunestohyökkäyksestä."
+         ],
+         "Typing from another device": [
+            null,
+            "Kirjoittaa toisella laitteella"
+         ],
+         "is typing": [
+            null,
+            "kirjoittaa"
+         ],
+         "Stopped typing on the other device": [
+            null,
+            "Lopetti kirjoittamisen toisella laitteella"
+         ],
+         "has stopped typing": [
+            null,
+            "lopetti kirjoittamisen"
+         ],
+         "Show this menu": [
+            null,
+            "Näytä tämä valikko"
+         ],
+         "Write in the third person": [
+            null,
+            "Kirjoita kolmannessa persoonassa"
+         ],
+         "Remove messages": [
+            null,
+            "Poista viestit"
+         ],
+         "Are you sure you want to clear the messages from this chat box?": [
+            null,
+            "Haluatko varmasti poistaa tämän huoneen viestit?"
+         ],
+         "Insert a smiley": [
+            null,
+            "Lisää emoji"
+         ],
+         "Start a call": [
+            null,
+            "Aloita puhelu"
+         ],
+         "Contacts": [
+            null,
+            "Kontaktit"
+         ],
+         "Password:": [
+            null,
+            "Salasana:"
+         ],
+         "Log In": [
+            null,
+            "Kirjaudu sisään"
+         ],
+         "user@server": [
+            null,
+            "käyttäjä@palvelin"
+         ],
+         "Sign in": [
+            null,
+            "Rekisteröidy"
+         ],
+         "I am %1$s": [
+            null,
+            "Olen %1$s"
+         ],
+         "Click here to write a custom status message": [
+            null,
+            "Kirjoita oma tilaviesti"
+         ],
+         "Click to change your chat status": [
+            null,
+            "Vaihda chat-tilasi"
+         ],
+         "Custom status": [
+            null,
+            "Oma tilasi"
+         ],
+         "online": [
+            null,
+            "online"
+         ],
+         "busy": [
+            null,
+            "varattu"
+         ],
+         "away for long": [
+            null,
+            "poissa kauan"
+         ],
+         "away": [
+            null,
+            "poissa"
+         ],
+         "Online": [
+            null,
+            "Online"
+         ],
+         "Busy": [
+            null,
+            "Varattu"
+         ],
+         "Away": [
+            null,
+            "Poissa"
+         ],
+         "Offline": [
+            null,
+            "Offline"
+         ],
+         "Click to add new chat contacts": [
+            null,
+            "Lisää uusia kontakteja"
+         ],
+         "Add a contact": [
+            null,
+            "Lisää kontakti"
+         ],
+         "Contact name": [
+            null,
+            "Kontaktin nimi"
+         ],
+         "Search": [
+            null,
+            "Etsi"
+         ],
+         "e.g. user@example.org": [
+            null,
+            "esim. kayttaja@esimerkki.org"
+         ],
+         "Add": [
+            null,
+            "Lisää"
+         ],
+         "No users found": [
+            null,
+            "Käyttäjiä ei löytynyt"
+         ],
+         "Sorry, there was an error while trying to add %1$s as a contact.": [
+            null,
+            "Käyttäjän %1$s lisäys kontaktiksi epäonnistui"
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            "Käyttäjä ei salli läsnäoloilmoituksia"
+         ],
+         "Minimize this chat box": [
+            null,
+            "Pienennä huone"
+         ],
+         "Click to restore this chat": [
+            null,
+            "Palauta tämä keskustelu"
+         ],
+         "Minimized": [
+            null,
+            "Pienennä"
+         ],
+         "This room is not anonymous": [
+            null,
+            "Huoneessa ei voi keskustella anonyymisti"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            "Huone näyttää nyt poissa olevat jäsenet"
+         ],
+         "This room does not show unavailable members": [
+            null,
+            "Huone ei näytä poissa olevia jäseniä"
+         ],
+         "Room logging is now enabled": [
+            null,
+            "Huoneen keskustelut tallennetaan"
+         ],
+         "Room logging is now disabled": [
+            null,
+            "Huoneen keskusteluja ei tallenneta"
+         ],
+         "Message": [
+            null,
+            "Viesti"
+         ],
+         "Hide the list of occupants": [
+            null,
+            "Piilota osallistujalista"
+         ],
+         "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
+            null,
+            "Virhe: Komento \"%1$s\" ottaa kaksi parametria, käyttäjän nimen ja mahdollisen”\n“syyn. "
+         ],
+         "Are you sure you want to clear the messages from this room?": [
+            null,
+            "Haluatko varmasti poistaa tämän huoneen viestit?"
+         ],
+         "Error: could not execute the command": [
+            null,
+            "Virhe: käskyä ei voitu toteuttaa"
+         ],
+         "Change user's affiliation to admin": [
+            null,
+            "Muuta käyttäjän rooliksi ylläpitäjä"
+         ],
+         "Change user role to occupant": [
+            null,
+            "Vaihda käyttäjän rooliksi osallistuja"
+         ],
+         "Grant membership to a user": [
+            null,
+            "Tee käyttäjästä jäsen"
+         ],
+         "Remove user's ability to post messages": [
+            null,
+            "Poista käyttäjältä mahdollisuus kirjoittaa viestejä"
+         ],
+         "Change your nickname": [
+            null,
+            "Vaihda nimeäsi"
+         ],
+         "Grant moderator role to user": [
+            null,
+            "Tee käyttäjästä moderaattori"
+         ],
+         "Revoke user's membership": [
+            null,
+            "Peru käyttäjän jäsenyys"
+         ],
+         "Set room subject (alias for /subject)": [
+            null,
+            "Anna huoneelle aihe"
+         ],
+         "Allow muted user to post messages": [
+            null,
+            "Anna mykistetyn käyttäjän kirjoittaa viestejä"
+         ],
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
+            null,
+            "Valitsemasi nimi on käytössä, valitse toinen nimi"
+         ],
+         "Please choose your nickname": [
+            null,
+            "Valitse nimi"
+         ],
+         "Nickname": [
+            null,
+            "Nimi"
+         ],
+         "This chatroom requires a password": [
+            null,
+            "Tähän huoneeseen pääsee vain salasanalla"
+         ],
+         "Password: ": [
+            null,
+            "Salasana: "
+         ],
+         "Submit": [
+            null,
+            "Lähetä"
+         ],
+         "The reason given is: \"%1$s\".": [
+            null,
+            "Syy: \"%1$s\"."
+         ],
+         "The reason given is: \"%1$s \"": [
+            null,
+            "Syy: \"%1$s \""
+         ],
+         " has left the room. \"": [
+            null,
+            " on poistunut huoneesta. \""
+         ],
+         " has joined the room. \"": [
+            null,
+            " on tullut huoneeseen. \""
+         ],
+         " has joined the room.": [
+            null,
+            " on tullut huoneeseen."
+         ],
+         "Topic set by %1$s to: %2$s": [
+            null,
+            "%1$s on vaihtanut aiheeksi: %2$s"
+         ],
+         "Occupants": [
+            null,
+            "Osallistujat"
+         ],
+         "Invite": [
+            null,
+            "Kutsu"
+         ],
+         "Hidden": [
+            null,
+            "Piilotettu"
+         ],
+         "Message archiving": [
+            null,
+            "Viestien arkistointi"
+         ],
+         "Members only": [
+            null,
+            "Vain jäsenille"
+         ],
+         "Moderated": [
+            null,
+            "Moderoitu"
+         ],
+         "Non-anonymous": [
+            null,
+            "Ei-anonyymi"
+         ],
+         "Persistent": [
+            null,
+            "Pysyvä"
+         ],
+         "Public": [
+            null,
+            "Julkinen"
+         ],
+         "Semi-anonymous": [
+            null,
+            "Osittain anonyymi"
+         ],
+         "Unmoderated": [
+            null,
+            "Moderoimaton"
+         ],
+         "Unsecured": [
+            null,
+            "Suojaamaton"
+         ],
+         "Messages are archived on the server": [
+            null,
+            "Viestit on tallennettu palvelimelle"
+         ],
+         "All other room occupants can see your XMPP username": [
+            null,
+            "Huoneen osallistujat voivat nähdä XMPP-käyttäjänimesi"
+         ],
+         "This room persists even if it's unoccupied": [
+            null,
+            "Tämä on pysyvä huone myös tyhjänä"
+         ],
+         "Only moderators can see your XMPP username": [
+            null,
+            "Vain moderaattorit voivat nähdä XMPP-käyttäjänimesi"
+         ],
+         "This room will disappear once the last person leaves": [
+            null,
+            "Huone katoaa, kun viimeinen henkilö poistuu huoneesta"
+         ],
+         "You are about to invite %1$s to the chat room \"%2$s\". ": [
+            null,
+            "Olet kutsumassa käyttäjän %1$s huoneeseen \"%2$s\". "
+         ],
+         "You may optionally include a message, explaining the reason for the invitation.": [
+            null,
+            "Voit halutessasi kirjoittaa viestin, jossa kerrot kutsun syyn."
+         ],
+         "Please enter a valid XMPP username": [
+            null,
+            "Syötä käyttänimi oikeassa muodossa"
+         ],
+         "Room name": [
+            null,
+            "Luo uusi huone"
+         ],
+         "Server": [
+            null,
+            "Palvelin"
+         ],
+         "Show rooms": [
+            null,
+            "Näytä huoneet"
+         ],
+         "Rooms": [
+            null,
+            "Huoneet"
+         ],
+         "No rooms on %1$s": [
+            null,
+            "Ei huoneita palvelimella %1$s"
+         ],
+         "Description:": [
+            null,
+            "Kuvaus:"
+         ],
+         "Room Address (JID):": [
+            null,
+            "Osoite (JID):"
+         ],
+         "Occupants:": [
+            null,
+            "Osallistujat:"
+         ],
+         "Features:": [
+            null,
+            "Ominaisuudet:"
+         ],
+         "Requires authentication": [
+            null,
+            "Vaatii tunnistautumisen"
+         ],
+         "Requires an invitation": [
+            null,
+            "Vaatii kutsun"
+         ],
+         "Open room": [
+            null,
+            "Avaa huone"
+         ],
+         "Permanent room": [
+            null,
+            "Pysyvä huone"
+         ],
+         "Temporary room": [
+            null,
+            "Väliaikainen huone"
+         ],
+         "%1$s has invited you to join a chat room: %2$s": [
+            null,
+            "%1$s on kutsunut sinut huoneeseen %2$s"
+         ],
+         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \"%3$s\"": [
+            null,
+            "%1$s on kutsunut sinut huoneeseen: %2$s, koska: \"%3$s\""
+         ],
+         "Notification from %1$s": [
+            null,
+            "Ilmoitus käyttäjältä %1$s"
+         ],
+         "%1$s says": [
+            null,
+            "%1$s sanoo"
+         ],
+         "wants to be your contact": [
+            null,
+            "haluaa kontakteihisi"
+         ],
+         "Re-establishing encrypted session": [
+            null,
+            "Luo uutta salattua istuntoa"
+         ],
+         "Generating private key.": [
+            null,
+            "Luo avainkoodia"
+         ],
+         "Your browser might become unresponsive.": [
+            null,
+            "Selaimesi saattaa mennä jumiin."
+         ],
+         "Could not verify this user's identify.": [
+            null,
+            "Käyttäjän henkilöllisyyttä ei voitu varmistaa."
+         ],
+         "Your messages are not encrypted anymore": [
+            null,
+            "Viestisi eivät ole enää salattuja"
+         ],
+         "Your message could not be sent": [
+            null,
+            "Viestiäsi ei voitu lähettää"
+         ],
+         "We received an unencrypted message": [
+            null,
+            "Salaamaton viesti"
+         ],
+         "We received an unreadable encrypted message": [
+            null,
+            "Vastaanotettu salaamaton viesti, jota ei voi lukea"
+         ],
+         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
+            null,
+            "Vahvista tunniste käyttäjän %1$s kanssa chatin ulkopuolella.\n\nTunnisteesi: %2$s: %3$s\n\nKäyttäjän %1$s tunniste: %4$s\n\nJos olette vahvistaneet tunnisteet, klikkaa OK, muussa tapauksessaperuuta."
+         ],
+         "What is your security question?": [
+            null,
+            "Turvakysymys:"
+         ],
+         "What is the answer to the security question?": [
+            null,
+            "Turvakysymyksen vastaus:"
+         ],
+         "Invalid authentication scheme provided": [
+            null,
+            "Todentaminen ei onnistu"
+         ],
+         "Your messages are not encrypted. Click here to enable OTR encryption.": [
+            null,
+            "Viestejäsi ei ole salattu. Klikkaa tästä salliaksesi OTR-salaus."
+         ],
+         "End encrypted conversation": [
+            null,
+            "Lopeta salattu keskustelu"
+         ],
+         "Refresh encrypted conversation": [
+            null,
+            "Lataa salattu keskustelu uudelleen"
+         ],
+         "Start encrypted conversation": [
+            null,
+            "Aloita salattu keskustelu"
+         ],
+         "Verify with fingerprints": [
+            null,
+            "Vahvista tunnisteella"
+         ],
+         "Verify with SMP": [
+            null,
+            "Vahvista SMP:llä"
+         ],
+         "What's this?": [
+            null,
+            "Mikä tämä on?"
+         ],
+         "unencrypted": [
+            null,
+            "salaamaton"
+         ],
+         "unverified": [
+            null,
+            "vahvistamaton"
+         ],
+         "verified": [
+            null,
+            "vahvistettu"
+         ],
+         "finished": [
+            null,
+            "valmis"
+         ],
+         " e.g. conversejs.org": [
+            null,
+            "esim. conversejs.org"
+         ],
+         "Your XMPP provider's domain name:": [
+            null,
+            "XMPP-palveluntarjoajasi domain-nimi"
+         ],
+         "Fetch registration form": [
+            null,
+            "Hae rekisteröintilomake"
+         ],
+         "Tip: A list of public XMPP providers is available": [
+            null,
+            "Vihje: Lista julkisista XMPP-palveluntarjoajista on saatavilla"
+         ],
+         "here": [
+            null,
+            "tähän"
+         ],
+         "Register": [
+            null,
+            "Rekisteröidy"
+         ],
+         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
+            null,
+            "Antamasi palveluntarjoaja ei tue suoraa tilin rekisteröintiä, kokeile toista”\n“palveluntarjoajaa"
+         ],
+         "Requesting a registration form from the XMPP server": [
+            null,
+            "Pyydetään rekisteröintilomaketta XMPP-palvelimelta"
+         ],
+         "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
+            null,
+            "Yhteyden luominen huoneeseen \"%1$s\" ei onnistunut. Oletko varma, että se on olemassa?"
+         ],
+         "Now logging you in": [
+            null,
+            "Kirjaudutaan sisälle"
+         ],
+         "Registered successfully": [
+            null,
+            "Rekisteröityminen onnistui"
+         ],
+         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
+            null,
+            "Palveluntarjoaja hylkäsi rekisteröitymisen. Tarkista syöttämäsi tiedot"
+         ],
+         "Retry": [
+            null,
+            "Yritä uudelleen"
+         ],
+         "This contact is busy": [
+            null,
+            "Tämä kontakti on varattu"
+         ],
+         "This contact is online": [
+            null,
+            "Tämä kontakti on online-tilassa"
+         ],
+         "This contact is offline": [
+            null,
+            "Tämä kontakti on offline-tilassa"
+         ],
+         "This contact is unavailable": [
+            null,
+            "Tämä kontakti ei ole paikalla"
+         ],
+         "This contact is away for an extended period": [
+            null,
+            "Tämä kontakti on ollut poissa kauan"
+         ],
+         "This contact is away": [
+            null,
+            "Tämä kontakti on poissa"
+         ],
+         "Groups": [
+            null,
+            "Ryhmät"
+         ],
+         "My contacts": [
+            null,
+            "Omat kontaktit"
+         ],
+         "Pending contacts": [
+            null,
+            "Avoimet kontaktipyynnöt"
+         ],
+         "Contact requests": [
+            null,
+            "Kontaktipyynnöt"
+         ],
+         "Ungrouped": [
+            null,
+            "Ryhmittelemättömät"
+         ],
+         "Filter": [
+            null,
+            "Suodata"
+         ],
+         "State": [
+            null,
+            "Tila"
+         ],
+         "Any": [
+            null,
+            "Kaikki"
+         ],
+         "Unread": [
+            null,
+            "Uudet"
+         ],
+         "Chatty": [
+            null,
+            "Aktiivisimmat"
+         ],
+         "Extended Away": [
+            null,
+            "Kauan poissa olleet"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "Keskustele tämän kontaktin kanssa"
+         ],
+         "Name": [
+            null,
+            "Nimi"
+         ],
+         "Are you sure you want to remove this contact?": [
+            null,
+            "Haluatko varmasti poistaa tämän kontaktin"
+         ]
+      }
+   }
+}

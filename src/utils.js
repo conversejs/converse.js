@@ -562,7 +562,7 @@
                 return value
             }));
             const tones = [':tone1:', ':tone2:', ':tone3:', ':tone4:', ':tone5:'];
-            const excluded = [':kiss_ww:', ':kiss_mm:', ':kiss_woman_man:'];
+            const excluded = [':kiss_ww:', ':kiss_mm:', ':kiss_woman_man:', ':middle_finger:'];
             const excluded_substrings = [
                 ':woman', ':man', ':women_', ':men_', '_man_', '_woman_', '_woman:', '_man:'
             ];

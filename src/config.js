@@ -89,6 +89,7 @@ require.config({
         "ca":        "locale/ca/LC_MESSAGES/converse.json",
         "de":        "locale/de/LC_MESSAGES/converse.json",
         "es":        "locale/es/LC_MESSAGES/converse.json",
+        "fi":        "locale/fi/LC_MESSAGES/converse.json",
         "fr":        "locale/fr/LC_MESSAGES/converse.json",
         "he":        "locale/he/LC_MESSAGES/converse.json",
         "hu":        "locale/hu/LC_MESSAGES/converse.json",

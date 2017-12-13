@@ -552,6 +552,8 @@
                         this.model.save();
                     }
                     this.occupantsview.setOccupantsHeight();
+                    // TODO make configurable
+                    this.toggleOccupants();
                 },
 
                 afterConnected () {

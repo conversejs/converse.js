@@ -9,6 +9,7 @@
         "text!de",
         "text!en",
         "text!es",
+        "text!fi",
         "text!fr",
         "text!he",
         "text!hu",

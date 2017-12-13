@@ -145,7 +145,7 @@
                     this.model.on('change:filter_text', this.renderClearButton, this);
                 },
 
-                renderHTML () {
+                toHTML () {
                     return tpl_roster_filter(
                         _.extend(this.model.toJSON(), {
                             visible: this.shouldBeVisible(),

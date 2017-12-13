@@ -2416,7 +2416,7 @@
                     this.model.on('change:muc_domain', this.render, this);
                 },
 
-                renderHTML () {
+                toHTML () {
                     return tpl_chatroom_join_form(_.assign(this.model.toJSON(), {
                         'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
                         'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',

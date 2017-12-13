@@ -47,8 +47,9 @@
 - Focus the message textarea when the emojis panel is opened or closed.
 
 ### Technical changes
-- Converse.js now includes a [Virtual DOM](https://github.com/Matt-Esch/virtual-dom)
-  and uses it to render the login form.
+- Converse.js now includes a [Virtual DOM](https://github.com/snabbdom/snabbdom)
+  via [backbone.vdomview](https://github.com/jcbrand/backbone.vdomview) and uses
+  it to render various views.
 - Converse.js no longer includes all the translations in its build. Instead,
   only the currently relevant translation is requested. This results in a much
   smaller filesize but means that the translations you want to provide need to

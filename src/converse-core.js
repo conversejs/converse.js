@@ -128,7 +128,7 @@
         7: 'DISCONNECTING',
         8: 'ATTACHED',
         9: 'REDIRECT',
-       10: 'RECONNECTING'
+       10: 'RECONNECTING',
     };
 
     _converse.DEFAULT_IMAGE_TYPE = 'image/png';
@@ -1459,7 +1459,7 @@
 
         this.ConnectionFeedback = Backbone.Model.extend({
             defaults: {
-                'connection_status': undefined,
+                'connection_status': Strophe.Status.DISCONNECTED,
                 'message': ''
             },
 

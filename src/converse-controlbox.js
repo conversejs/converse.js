@@ -184,7 +184,8 @@
                 show_controlbox_by_default: false,
                 sticky_controlbox: false,
                 xhr_user_search: false,
-                xhr_user_search_url: ''
+                xhr_user_search_url: '',
+                hide_minimized_chats_when_closed:false
             });
 
             const LABEL_CONTACTS = __('Contacts');
@@ -304,6 +305,9 @@
                     }
                     if (_converse.connection.connected && !_converse.connection.disconnecting) {
                         this.model.save({'closed': true});
+                        if(_converse.hide_minimized_chats_when_closed){
+                            document.getElementById('minimized-chats').classList.add('hidden');
+                        }
                     } else {
                         this.model.trigger('hide');
                     }
@@ -347,6 +351,9 @@
                     _converse.controlboxtoggle.hide(
                         this.onControlBoxToggleHidden.bind(this)
                     );
+                    if(_converse.hide_minimized_chats_when_closed){
+                        document.getElementById('minimized-chats').classList.remove('hidden');
+                    }
                     return this;
                 },
 
@@ -787,12 +794,14 @@
 
                 showControlBox () {
                     let controlbox = _converse.chatboxes.get('controlbox');
+
                     if (!controlbox) {
                         controlbox = _converse.addControlBox();
                     }
                     if (_converse.connection.connected) {
                         controlbox.save({closed: false});
                     } else {
+
                         controlbox.trigger('show');
                     }
                 },

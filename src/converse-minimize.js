@@ -318,7 +318,8 @@
 
             _converse.api.settings.update({
                 no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
-                auto_minimize: false
+                auto_minimize: false,
+                hide_minimized_chats_when_closed:false
             });
 
             _converse.api.promises.add('minimizedChatsInitialized');
@@ -397,7 +398,7 @@
                         this.el.innerHTML = tpl_chats_panel();
                         _converse.chatboxviews.el.appendChild(this.el);
                     }
-                    if (this.keys().length === 0) {
+                    if (this.keys().length === 0 || (document.getElementById('controlbox').classList.contains('hidden') && _converse.hide_minimized_chats_when_closed)) {
                         this.el.classList.add('hidden');
                     } else if (this.keys().length > 0 && !this.$el.is(':visible')) {
                         this.el.classList.remove('hidden');

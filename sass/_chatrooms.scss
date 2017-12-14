@@ -182,6 +182,9 @@
                             &.moderator {
                                 color: $moderator-color;
                             }
+                            &.visitor {
+                                color: $visitor-color;
+                            }
                         }
                     }
                 }

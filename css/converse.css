@@ -2658,6 +2658,9 @@
             #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li.moderator,
             #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.moderator {
               color: #D24E2B; }
+            #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li.visitor,
+            #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.visitor {
+              color: #A8ABA1; }
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container,
       #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container {
         background-color: white;

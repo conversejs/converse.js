@@ -1801,7 +1801,7 @@
                     if (notification.reason) {
                         this.showStatusNotification(__('The reason given is: "%1$s".', notification.reason), true);
                     }
-                    if (notification.messages.length) {
+                    if (_.get(notification.messages, 'length')) {
                         this.scrollDown();
                     }
                 },

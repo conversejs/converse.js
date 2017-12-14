@@ -18,6 +18,7 @@
   See https://xmpp.org/extensions/xep-0313.html#archives_id
 - Fixed error building DOM toggle_chats.html span.unread-message-count class attribute
 - Bugfix. In a MUC the `/help` command didn't render properly.
+- The `/voice` MUC command didn't set the right role in order to grant voice again.
 
 ### New Features
 - #314 Add support for opening chat rooms with a URL fragment such as `#converse/room?jid=room@domain`
@@ -29,6 +30,7 @@
   builds. Instead the `converse.js` build is now used with `view_mode` set to
   `fullscreen` and `mobile` respectively.
 - Fetch VCard when starting a chat with someone not in the user's roster.
+- Show status messages in an MUC room when a user's role changes.
 
 ### API changes
 - New API method `_converse.disco.supports` to check whether a certain

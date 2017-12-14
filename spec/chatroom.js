@@ -1743,7 +1743,7 @@
                     expect(info_messages.pop().textContent).toBe('/me: Write in 3rd person');
                     expect(info_messages.pop().textContent).toBe('/kick: Kick user from room');
                     expect(info_messages.pop().textContent).toBe('/help: Show this menu');
-                    expect(info_messages.pop().textContent).toBe('/deop: Change user role to occupant');
+                    expect(info_messages.pop().textContent).toBe('/deop: Change user role to participant');
                     expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
                     expect(info_messages.pop().textContent).toBe('/ban: Ban user from room');
                     expect(info_messages.pop().textContent).toBe('/admin: Change user\'s affiliation to admin');
@@ -1973,6 +1973,140 @@
                     expect(
                         view.el.querySelectorAll('.chat-info')[2].textContent).toBe(
                         "annoyingGuy has been kicked out");
+                    done();
+                });
+            }));
+
+
+            it("/op and /deop to make a user a moderator or not",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                    var sent_IQ, IQ_id;
+                    var sendIQ = _converse.connection.sendIQ;
+                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                        sent_IQ = iq;
+                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                    });
+                    var view = _converse.chatboxviews.get('lounge@localhost');
+                    spyOn(view, 'onMessageSubmitted').and.callThrough();
+                    spyOn(view, 'modifyRole').and.callThrough();
+                    spyOn(view, 'showStatusNotification').and.callThrough();
+                    spyOn(view, 'validateRoleChangeCommand').and.callThrough();
+
+                    // New user enters the room
+                    /* <presence
+                     *     from='coven@chat.shakespeare.lit/thirdwitch'
+                     *     id='27C55F89-1C6A-459A-9EB5-77690145D624'
+                     *     to='crone1@shakespeare.lit/desktop'>
+                     * <x xmlns='http://jabber.org/protocol/muc#user'>
+                     *     <item affiliation='member' role='moderator'/>
+                     * </x>
+                     * </presence>
+                     */
+                    var presence = $pres({
+                            'from': 'lounge@localhost/trustworthyguy',
+                            'id':'27C55F89-1C6A-459A-9EB5-77690145D624',
+                            'to': 'dummy@localhost/desktop'
+                        })
+                        .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                            .c('item', {
+                                'jid': 'trustworthyguy@localhost',
+                                'affiliation': 'member',
+                                'role': 'participant'
+                            });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    var info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                    expect(info_msgs.pop().textContent).toBe("trustworthyguy has entered the room.");
+
+                    view.$el.find('.chat-textarea').text('/op');
+                    view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                    expect(view.onMessageSubmitted).toHaveBeenCalled();
+                    expect(view.validateRoleChangeCommand).toHaveBeenCalled();
+                    expect(view.showStatusNotification).toHaveBeenCalledWith(
+                        "Error: the \"op\" command takes two arguments, the user's nickname and optionally a reason.",
+                        true
+                    );
+
+                    expect(view.modifyRole).not.toHaveBeenCalled();
+                    // Call now with the correct amount of arguments.
+                    // XXX: Calling onMessageSubmitted directly, trying
+                    // again via triggering Event doesn't work for some weird
+                    // reason.
+                    view.onMessageSubmitted('/op trustworthyguy You\'re trustworthy');
+                    expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
+                    expect(view.showStatusNotification.calls.count()).toBe(1);
+                    expect(view.modifyRole).toHaveBeenCalled();
+                    expect(sent_IQ.toLocaleString()).toBe(
+                        "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                            "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                                "<item nick='trustworthyguy' role='moderator'>"+
+                                    "<reason>You&apos;re trustworthy</reason>"+
+                                "</item>"+
+                            "</query>"+
+                        "</iq>");
+
+                   /* <presence
+                    *     from='coven@chat.shakespeare.lit/thirdwitch'
+                    *     to='crone1@shakespeare.lit/desktop'>
+                    * <x xmlns='http://jabber.org/protocol/muc#user'>
+                    *     <item affiliation='member'
+                    *         jid='hag66@shakespeare.lit/pda'
+                    *         role='moderator'/>
+                    * </x>
+                    * </presence>
+                    */
+                    presence = $pres({
+                            'from': 'lounge@localhost/trustworthyguy',
+                            'to': 'dummy@localhost/desktop'
+                        })
+                        .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                            .c('item', {
+                                'jid': 'trustworthyguy@localhost',
+                                'affiliation': 'member',
+                                'role': 'moderator'
+                            });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                    expect(info_msgs.pop().textContent).toBe("trustworthyguy is now a moderator.");
+
+                    view.onMessageSubmitted('/deop trustworthyguy Perhaps not');
+                    expect(view.validateRoleChangeCommand.calls.count()).toBe(3);
+                    expect(view.showStatusNotification.calls.count()).toBe(2);
+                    expect(view.modifyRole).toHaveBeenCalled();
+                    expect(sent_IQ.toLocaleString()).toBe(
+                        "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                            "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                                "<item nick='trustworthyguy' role='participant'>"+
+                                    "<reason>Perhaps not</reason>"+
+                                "</item>"+
+                            "</query>"+
+                        "</iq>");
+
+                   /* <presence
+                    *     from='coven@chat.shakespeare.lit/thirdwitch'
+                    *     to='crone1@shakespeare.lit/desktop'>
+                    * <x xmlns='http://jabber.org/protocol/muc#user'>
+                    *     <item affiliation='member'
+                    *         jid='hag66@shakespeare.lit/pda'
+                    *         role='participant'/>
+                    * </x>
+                    * </presence>
+                    */
+                    presence = $pres({
+                            'from': 'lounge@localhost/trustworthyguy',
+                            'to': 'dummy@localhost/desktop'
+                        }).c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                            .c('item', {
+                                'jid': 'trustworthyguy@localhost',
+                                'affiliation': 'member',
+                                'role': 'participant'
+                            });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                    expect(info_msgs.pop().textContent).toBe("trustworthyguy is no longer a moderator.");
                     done();
                 });
             }));

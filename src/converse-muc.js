@@ -510,10 +510,28 @@
                     return this;
                 },
 
-                informOfOccupantsRoleChange (occupant) {
+                informOfOccupantsRoleChange (occupant, changed) {
+                    const previous_role = occupant._previousAttributes.role;
+                    if (previous_role === 'moderator') {
+                        this.showStatusNotification(
+                            __("%1$s is no longer a moderator.", occupant.get('nick')),
+                            false, true)
+                    }
+                    if (previous_role === 'visitor') {
+                        this.showStatusNotification(
+                            __("%1$s has been given a voice again.", occupant.get('nick')),
+                            false, true)
+                    }
+
                     if (occupant.get('role') === 'visitor') {
                         this.showStatusNotification(
-                            __("%1$s has been muted.", occupant.get('nick')), false, true)
+                            __("%1$s has been muted.", occupant.get('nick')),
+                            false, true)
+                    }
+                    if (occupant.get('role') === 'moderator') {
+                        this.showStatusNotification(
+                            __("%1$s is now a moderator.", occupant.get('nick')),
+                            false, true)
                     }
                 },
 
@@ -1023,7 +1041,7 @@
                         case 'deop':
                             if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.modifyRole(
-                                    this.model.get('jid'), args[0], 'occupant', args[1],
+                                    this.model.get('jid'), args[0], 'participant', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
                         case 'help':
@@ -1031,7 +1049,7 @@
                                 `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
                                 `<strong>/ban</strong>: ${__('Ban user from room')}`,
                                 `<strong>/clear</strong>: ${__('Remove messages')}`,
-                                `<strong>/deop</strong>: ${__('Change user role to occupant')}`,
+                                `<strong>/deop</strong>: ${__('Change user role to participant')}`,
                                 `<strong>/help</strong>: ${__('Show this menu')}`,
                                 `<strong>/kick</strong>: ${__('Kick user from room')}`,
                                 `<strong>/me</strong>: ${__('Write in 3rd person')}`,
@@ -1105,7 +1123,7 @@
                         case 'voice':
                             if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.modifyRole(
-                                    this.model.get('jid'), args[0], 'occupant', args[1],
+                                    this.model.get('jid'), args[0], 'participant', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
                         default:

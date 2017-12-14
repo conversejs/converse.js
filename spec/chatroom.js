@@ -1977,7 +1977,7 @@
                 });
             }));
 
-            it("/mute to mute a user",
+            it("/mute and /voice to mute and unmute a user",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -2069,6 +2069,43 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                     expect(info_msgs.pop().textContent).toBe("annoyingGuy has been muted.");
+
+                    view.onMessageSubmitted('/voice annoyingGuy Now you can talk again');
+                    expect(view.validateRoleChangeCommand.calls.count()).toBe(3);
+                    expect(view.showStatusNotification.calls.count()).toBe(2);
+                    expect(view.modifyRole).toHaveBeenCalled();
+                    expect(sent_IQ.toLocaleString()).toBe(
+                        "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                            "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                                "<item nick='annoyingGuy' role='participant'>"+
+                                    "<reason>Now you can talk again</reason>"+
+                                "</item>"+
+                            "</query>"+
+                        "</iq>");
+
+                   /* <presence
+                    *     from='coven@chat.shakespeare.lit/thirdwitch'
+                    *     to='crone1@shakespeare.lit/desktop'>
+                    * <x xmlns='http://jabber.org/protocol/muc#user'>
+                    *     <item affiliation='member'
+                    *         jid='hag66@shakespeare.lit/pda'
+                    *         role='visitor'/>
+                    * </x>
+                    * </presence>
+                    */
+                    presence = $pres({
+                            'from': 'lounge@localhost/annoyingGuy',
+                            'to': 'dummy@localhost/desktop'
+                        })
+                        .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                            .c('item', {
+                                'jid': 'annoyingguy@localhost',
+                                'affiliation': 'member',
+                                'role': 'participant'
+                            });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                    expect(info_msgs.pop().textContent).toBe("annoyingGuy has been given a voice again.");
                     done();
                 });
             }));

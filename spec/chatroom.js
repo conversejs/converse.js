@@ -838,12 +838,13 @@
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function() {
                     var name;
                     var view = _converse.chatboxviews.get('lounge@localhost'),
-                        $occupants = view.$('.occupant-list');
-                    var presence, role;
+                        occupants = view.el.querySelector('.occupant-list');
+                    var presence, role, jid, model;
                     for (var i=0; i<mock.chatroom_names.length; i++) {
                         name = mock.chatroom_names[i];
                         role = mock.chatroom_roles[name].role;
                         // See example 21 http://xmpp.org/extensions/xep-0045.html#enter-pres
+                        jid = 
                         presence = $pres({
                                 to:'dummy@localhost/pda',
                                 from:'lounge@localhost/'+name
@@ -855,9 +856,11 @@
                         }).up()
                         .c('status').attrs({code:'110'}).nodeTree;
                         _converse.connection._dataRecv(test_utils.createRequest(presence));
-                        expect($occupants.find('li').length).toBe(2+i);
-                        expect($($occupants.find('li')[i+1]).text()).toBe(mock.chatroom_names[i]);
-                        expect($($occupants.find('li')[i+1]).hasClass('moderator')).toBe(role === "moderator");
+                        expect(occupants.querySelectorAll('li').length).toBe(2+i);
+                        model = view.occupantsview.model.where({'nick': name})[0];
+                        var index = view.occupantsview.model.indexOf(model);
+                        expect(occupants.querySelectorAll('li')[index].textContent).toBe(mock.chatroom_names[i]);
+                        expect($(occupants.querySelectorAll('li')[index]).hasClass('moderator')).toBe(role === "moderator");
                     }
 
                     // Test users leaving the room
@@ -877,7 +880,7 @@
                             role: 'none'
                         }).nodeTree;
                         _converse.connection._dataRecv(test_utils.createRequest(presence));
-                        expect($occupants.find('li').length).toBe(i+1);
+                        expect(occupants.querySelectorAll('li').length).toBe(i+1);
                     }
                     done();
                 });
@@ -907,14 +910,14 @@
 
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     var view = _converse.chatboxviews.get('lounge@localhost');
-                    var occupant = view.$el.find('.occupant-list').find('li');
-                    expect(occupant.length).toBe(2);
-                    expect($(occupant).last().text()).toBe("&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;");
+                    var occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
+                    expect(occupants.length).toBe(2);
+                    expect($(occupants).first().text()).toBe("&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;");
                     done();
                 });
             }));
 
-            it("indicates moderators by means of a special css class and tooltip",
+            it("indicates moderators and visitors by means of a special css class and tooltip",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -934,12 +937,33 @@
                     .c('status').attrs({code:'110'}).nodeTree;
 
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    var occupant = view.$el.find('.occupant-list').find('li');
-                    expect(occupant.length).toBe(2);
-                    expect($(occupant).first().text()).toBe("dummy");
-                    expect($(occupant).last().text()).toBe("moderatorman");
-                    expect($(occupant).last().attr('class').indexOf('moderator')).not.toBe(-1);
-                    expect($(occupant).last().attr('title')).toBe(contact_jid + ' This user is a moderator. Click to mention moderatorman in your message.');
+                    var occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
+                    expect(occupants.length).toBe(2);
+                    expect($(occupants).first().text()).toBe("moderatorman");
+                    expect($(occupants).last().text()).toBe("dummy");
+                    expect($(occupants).first().attr('class').indexOf('moderator')).not.toBe(-1);
+                    expect($(occupants).first().attr('title')).toBe(
+                        contact_jid + ' This user is a moderator. Click to mention moderatorman in your message.'
+                    );
+
+                    contact_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    presence = $pres({
+                        to:'dummy@localhost/pda',
+                        from:'lounge@localhost/visitorwoman'
+                    }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                    .c('item').attrs({
+                        jid: contact_jid,
+                        role: 'visitor',
+                    }).up()
+                    .c('status').attrs({code:'110'}).nodeTree;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+                    occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
+                    expect($(occupants).last().text()).toBe("visitorwoman");
+                    expect($(occupants).last().attr('class').indexOf('visitor')).not.toBe(-1);
+                    expect($(occupants).last().attr('title')).toBe(
+                        contact_jid + ' This user can NOT send messages in this room. Click to mention visitorwoman in your message.'
+                    );
                     done();
                 });
             }));

@@ -47,6 +47,7 @@
 - Consolidate error and validation reporting on the registration form.
 - Don't close the emojis panel after inserting an emoji.
 - Focus the message textarea when the emojis panel is opened or closed.
+- MUC chatroom occupants are now sorted alphabetically and according to their roles.
 
 ### Technical changes
 - Converse.js now includes a [Virtual DOM](https://github.com/snabbdom/snabbdom)

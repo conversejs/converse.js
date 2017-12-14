@@ -70,6 +70,13 @@
     const ROOMS_PANEL_ID = 'chatrooms';
     const CHATROOMS_TYPE = 'chatroom';
 
+    const MUC_ROLE_WEIGHTS = {
+        'moderator':    1,
+        'participant':  2,
+        'visitor':      3,
+        'none':         4,
+    };
+
     const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, _, moment } = converse.env;
 
     // Add Strophe Namespaces
@@ -502,10 +509,6 @@
                     const model = new _converse.ChatRoomOccupants();
                     model.chatroomview = this;
                     this.occupantsview = new _converse.ChatRoomOccupantsView({'model': model});
-                    const id = b64_sha1(`converse.occupants${_converse.bare_jid}${this.model.get('jid')}`);
-                    this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
-                    this.occupantsview.render();
-                    this.occupantsview.model.fetch({add:true});
                     this.occupantsview.model.on('change:role', this.informOfOccupantsRoleChange, this);
                     return this;
                 },
@@ -2096,16 +2099,16 @@
                 }
             });
 
-            _converse.ChatRoomOccupantView = Backbone.View.extend({
+            _converse.ChatRoomOccupantView = Backbone.VDOMView.extend({
                 tagName: 'li',
                 initialize () {
                     this.model.on('change', this.render, this);
                     this.model.on('destroy', this.destroy, this);
                 },
 
-                render () {
+                toHTML () {
                     const show = this.model.get('show') || 'online';
-                    const new_el = tpl_occupant(
+                    return tpl_occupant(
                         _.extend(
                             { 'jid': '',
                               'show': show,
@@ -2114,19 +2117,8 @@
                               'desc_moderator': __('This user is a moderator.'),
                               'desc_occupant': __('This user can send messages in this room.'),
                               'desc_visitor': __('This user can NOT send messages in this room.')
-                            }, this.model.toJSON()
-                        )
+                            }, this.model.toJSON())
                     );
-                    const $parents = this.$el.parents();
-                    if ($parents.length) {
-                        this.$el.replaceWith(new_el);
-                        this.setElement($parents.first().children(`#${this.model.get('id')}`), true);
-                        this.delegateEvents();
-                    } else {
-                        this.$el.replaceWith(new_el);
-                        this.setElement(new_el, true);
-                    }
-                    return this;
                 },
 
                 destroy () {
@@ -2135,7 +2127,19 @@
             });
 
             _converse.ChatRoomOccupants = Backbone.Collection.extend({
-                model: _converse.ChatRoomOccupant
+                model: _converse.ChatRoomOccupant,
+
+                comparator (occupant1, occupant2) {
+                    const role1 = occupant1.get('role') || 'none';
+                    const role2 = occupant2.get('role') || 'none';
+                    if (MUC_ROLE_WEIGHTS[role1] === MUC_ROLE_WEIGHTS[role2]) {
+                        const nick1 = occupant1.get('nick').toLowerCase();
+                        const nick2 = occupant2.get('nick').toLowerCase();
+                        return nick1 < nick2 ? -1 : (nick1 > nick2? 1 : 0);
+                    } else  {
+                        return MUC_ROLE_WEIGHTS[role1] < MUC_ROLE_WEIGHTS[role2] ? -1 : 1;
+                    }
+                },
             });
 
             _converse.ChatRoomOccupantsView = Backbone.Overview.extend({
@@ -2144,6 +2148,11 @@
 
                 initialize () {
                     this.model.on("add", this.onOccupantAdded, this);
+                    this.model.on("change:role", (occupant) => {
+                        this.model.sort();
+                        this.positionOccupant(occupant);
+                    });
+
                     this.chatroomview = this.model.chatroomview;
                     this.chatroomview.model.on('change:open', this.renderInviteWidget, this);
                     this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
@@ -2160,6 +2169,17 @@
                     this.chatroomview.model.on('change:temporary', this.onFeatureChanged, this);
                     this.chatroomview.model.on('change:unmoderated', this.onFeatureChanged, this);
                     this.chatroomview.model.on('change:unsecured', this.onFeatureChanged, this);
+
+                    const id = b64_sha1(`converse.occupants${_converse.bare_jid}${this.chatroomview.model.get('jid')}`);
+                    this.model.browserStorage = new Backbone.BrowserStorage.session(id);
+                    this.render();
+                    this.model.fetch({
+                        'add': true,
+                        'silent': true,
+                        'success': () => {
+                            this.model.each(this.onOccupantAdded.bind(this));
+                        }
+                    });
                 },
 
                 render () {
@@ -2269,6 +2289,36 @@
                         `height: calc(100% - ${el.offsetHeight}px - 5em);`;
                 },
 
+                positionOccupant (occupant) {
+                    /* Positions an occupant correctly in the list of
+                     * occupants.
+                     *
+                     * IMPORTANT: there's an important implicit assumption being
+                     * made here. And that is that initially this method gets called
+                     * for each occupant in the right positional order.
+                     *
+                     * In other words, it gets called for the 0th, then the
+                     * 1st, then the 2nd, 3rd and so on.
+                     *
+                     * That's why we call it in the "success" handler after
+                     * fetching the occupants, so that we know we have ALL of
+                     * them and that they're sorted.
+                     */
+                    const view = this.get(occupant.get('id'));
+                    view.render();
+                    const list = this.el.querySelector('.occupant-list');
+                    const index = this.model.indexOf(view.model);
+                    if (index === 0) {
+                        list.insertAdjacentElement('afterbegin', view.el);
+                    } else if (index === (this.model.length-1)) {
+                        list.insertAdjacentElement('beforeend', view.el);
+                    } else {
+                        const neighbour = list.querySelector('li:nth-child('+index+')');
+                        neighbour.insertAdjacentElement('afterend', view.el);
+                    }
+                    return view;
+                },
+
                 onOccupantAdded (item) {
                     let view = this.get(item.get('id'));
                     if (!view) {
@@ -2277,11 +2327,10 @@
                             new _converse.ChatRoomOccupantView({model: item})
                         );
                     } else {
-                        delete view.model; // Remove ref to old model to help garbage collection
                         view.model = item;
                         view.initialize();
                     }
-                    this.$('.occupant-list').append(view.render().$el);
+                    this.positionOccupant(item);
                 },
 
                 parsePresence (pres) {

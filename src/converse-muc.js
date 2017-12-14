@@ -601,14 +601,6 @@
 
                 setOccupantsVisibility () {
                     if (this.model.get('hidden_occupants')) {
-                        const icon_el = this.el.querySelector('.icon-show-users');
-                        if (!_.isNull(icon_el)) {
-                            icon_el.classList.remove('icon-show-users');
-                            icon_el.classList.add('icon-hide-users');
-                        }
-                        this.el.querySelector('.chat-area').classList.remove('full');
-                        this.el.querySelector('.occupants').classList.remove('hidden');
-                    } else {
                         const icon_el = this.el.querySelector('.icon-hide-users');
                         if (!_.isNull(icon_el)) {
                             icon_el.classList.remove('icon-hide-users');
@@ -616,6 +608,14 @@
                         }
                         this.el.querySelector('.chat-area').classList.add('full');
                         u.hideElement(this.el.querySelector('.occupants'));
+                    } else {
+                        const icon_el = this.el.querySelector('.icon-show-users');
+                        if (!_.isNull(icon_el)) {
+                            icon_el.classList.remove('icon-show-users');
+                            icon_el.classList.add('icon-hide-users');
+                        }
+                        this.el.querySelector('.chat-area').classList.remove('full');
+                        this.el.querySelector('.occupants').classList.remove('hidden');
                     }
                     this.occupantsview.setOccupantsHeight();
                 },
@@ -629,7 +629,7 @@
                         ev.stopPropagation();
                     }
                     if (!preserve_state) {
-                        this.model.set({hidden_occupants: !this.model.get('hidden_occupants')});
+                        this.model.set({'hidden_occupants': !this.model.get('hidden_occupants')});
                     }
                     this.setOccupantsVisibility();
                     this.scrollDown();

@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-23 15:19+0100\n"
-"PO-Revision-Date: 2017-09-30 19:46+0000\n"
+"PO-Revision-Date: 2017-12-15 21:03+0000\n"
 "Last-Translator: Andreas Kleinert <Andy.Kleinert@gmail.com>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
-"translations/de/>\n"
+"Language-Team: German "
+"<https://hosted.weblate.org/projects/conversejs/translations/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.17-dev\n"
+"X-Generator: Weblate 2.18\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -86,14 +86,13 @@ msgid "me"
 msgstr "Ich"
 
 #: dist/converse-no-dependencies.js:13223
-#, fuzzy
 msgid ""
 "A very large message has been received. This might be due to an attack meant "
 "to degrade the chat performance. Output has been shortened."
 msgstr ""
-"Eine sehr lange Nachricht wurde empfangen. Dies könnte auf einen Angriff "
-"zurückzuführen sein, der die Chat-Performance reduzieren soll. Der Ausgabe "
-"wurde gekürzt."
+"Es ist eine sehr große Nachricht eingegangen. Dies kann auf einen Angriff "
+"zurückzuführen sein, der die Chat-Performance herabsetzen soll. Die Ausgabe "
+"wurde verkürzt."
 
 #: dist/converse-no-dependencies.js:13263
 msgid "Typing from another device"
@@ -523,12 +522,12 @@ msgid "%1$s has been removed for not being a member"
 msgstr "%1$s ist kein Mitglied und wurde daher entfernt"
 
 #: dist/converse-no-dependencies.js:20260
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr "Ihr Spitzname wurde automatisiert geändert zu: %1$s"
+msgstr "Ihr Spitzname wurde automatisch geändert zu: %1$s"
 
 #: dist/converse-no-dependencies.js:20261
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Your nickname has been changed to %1$s"
 msgstr "Ihr Spitzname wurde geändert zu: %1$s"
 
@@ -658,15 +657,15 @@ msgid "Password: "
 msgstr "Passwort: "
 
 #: dist/converse-no-dependencies.js:21826
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "This action was done by %1$s."
 msgstr "Diese Aktion wurde durch %1$s ausgeführt."
 
 #: dist/converse-no-dependencies.js:21830
 #: dist/converse-no-dependencies.js:21844
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The reason given is: \"%1$s\"."
-msgstr "Der angegebene Grund lautet: „%1$s”"
+msgstr "Angegebene Grund: „%1$s”"
 
 #: dist/converse-no-dependencies.js:21864
 msgid " has left the room. \""
@@ -1290,7 +1289,7 @@ msgstr ""
 "Zugang beim Provider direkt."
 
 #: dist/converse-no-dependencies.js:25323
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"

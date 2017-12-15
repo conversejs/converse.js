@@ -1799,7 +1799,7 @@
                         return;
                     }
                     _.each(notification.messages, (message) => {
-                        this.$content.append(tpl_info({'message': message}));
+                        this.content.insertAdjacentHTML('beforeend', tpl_info({'message': message, 'data': ''}));
                     });
                     if (notification.reason) {
                         this.showStatusNotification(__('The reason given is: "%1$s".', notification.reason), true);
@@ -1809,30 +1809,83 @@
                     }
                 },
 
-                getJoinLeaveMessages (stanza) {
-                    /* Parse the given stanza and return notification messages
-                     * for join/leave events.
-                     */
-                    // XXX: some mangling required to make the returned
-                    // result look like the structure returned by
-                    // parseXUserElement. Not nice...
+                displayJoinNotification (stanza) {
                     const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
                     const stat = stanza.querySelector('status');
-                    if (stanza.getAttribute('type') === 'unavailable') {
-                        if (!_.isNull(stat) && stat.textContent) {
-                            return [{'messages': [__(nick+' has left the room. "'+stat.textContent+'"')]}];
+                    const last_el = this.content.querySelector(':last-child');
+                    if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
+                            _.get(last_el, 'dataset', {}).leave === `"${nick}"`) {
+                        last_el.outerHTML = 
+                            tpl_info({
+                                'message': __(nick+' has left and re-entered the room.'),
+                                'data': `data-leavejoin="${nick}"`
+                            });
+                    } else {
+                        let  message = __(nick+' has entered the room.');
+                        if (_.get(stat, 'textContent')) {
+                            message = message + ' "' + stat.textContent + '"';
+                        }
+                        const data = {
+                            'message': message,
+                            'data': `data-join="${nick}"`
+                        };
+                        if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
+                            _.get(last_el, 'dataset', {}).joinleave === `"${nick}"`) {
+
+                            last_el.outerHTML = tpl_info(data);
                         } else {
-                            return [{'messages': [__(nick+' has left the room')]}];
+                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
                         }
                     }
-                    if (!this.occupantsview.model.find({'nick': nick})) {
-                        // Only show join message if we don't already have the
-                        // occupant model. Doing so avoids showing duplicate
-                        // join messages.
-                        if (!_.isNull(stat) && stat.textContent) {
-                            return [{'messages': [__(nick+' has entered the room. "'+stat.textContent+'"')]}];
+                    this.scrollDown();
+                },
+
+                displayLeaveNotification (stanza) {
+                    const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
+                    const stat = stanza.querySelector('status');
+                    const last_el = this.content.querySelector(':last-child');
+                    if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
+                            _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
+
+                        let message = __('%1$s has entered and left the room.', nick);
+                        if (_.get(stat, 'textContent')) {
+                            message = message + ' "' + stat.textContent + '"';
+                        }
+                        last_el.outerHTML = 
+                            tpl_info({
+                                'message': message,
+                                'data': `data-joinleave="${nick}"`
+                            });
+                    } else {
+                        let  message = __('%1$s has left the room.', nick);
+                        if (_.get(stat, 'textContent')) {
+                            message = message + ' "' + stat.textContent + '"';
+                        }
+                        const data = {
+                            'message': message,
+                            'data': `data-leave="${nick}"`
+                        }
+                        if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
+                            _.get(last_el, 'dataset', {}).leavejoin === `"${nick}"`) {
+
+                            last_el.outerHTML = tpl_info(data);
                         } else {
-                            return [{'messages': [__(nick+' has entered the room.')]}];
+                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                        }
+                    }
+                    this.scrollDown();
+                },
+
+                displayJoinOrLeaveNotification (stanza) {
+                    if (stanza.getAttribute('type') === 'unavailable') {
+                        this.displayLeaveNotification(stanza);
+                    } else {
+                        const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
+                        if (!this.occupantsview.model.find({'nick': nick})) {
+                            // Only show join message if we don't already have the
+                            // occupant model. Doing so avoids showing duplicate
+                            // join messages.
+                            this.displayJoinNotification(stanza);
                         }
                     }
                 },
@@ -1848,15 +1901,16 @@
                     const elements = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"]`, stanza);
                     const is_self = stanza.querySelectorAll("status[code='110']").length;
                     const iteratee = _.partial(this.parseXUserElement.bind(this), _, stanza, is_self);
-                    let notifications = _.reject(_.map(elements, iteratee), _.isEmpty);
-                    if (_.isEmpty(notifications) &&
-                            _converse.muc_show_join_leave &&
-                            stanza.nodeName === 'presence' &&
-                            this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED
-                        ) {
-                        notifications = this.getJoinLeaveMessages(stanza);
+                    const notifications = _.reject(_.map(elements, iteratee), _.isEmpty);
+                    if (_.isEmpty(notifications)) {
+                        if (_converse.muc_show_join_leave &&
+                                stanza.nodeName === 'presence' &&
+                                this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
+                            this.displayJoinOrLeaveNotification(stanza);
+                        }
+                    } else {
+                        _.each(notifications, this.displayNotificationsforUser.bind(this));
                     }
-                    _.each(notifications, this.displayNotificationsforUser.bind(this));
                     return stanza;
                 },
 
@@ -2003,8 +2057,12 @@
                     // For translators: the %1$s and %2$s parts will get
                     // replaced by the user and topic text respectively
                     // Example: Topic set by JC Brand to: Hello World!
-                    this.$content.append(
-                        tpl_info({'message': __('Topic set by %1$s to: %2$s', sender, subject)}));
+                    this.content.insertAdjacentHTML(
+                        'beforeend',
+                        tpl_info({
+                            'message': __('Topic set by %1$s to: %2$s', sender, subject),
+                            'data': ''
+                        }));
                     this.scrollDown();
                 },
 

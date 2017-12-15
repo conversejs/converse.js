@@ -416,7 +416,7 @@
                         'role': 'participant'
                     });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect($chat_content.find('div.chat-info').length).toBe(0);
+                expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(0);
 
                 /* <presence to="dummy@localhost/_converse.js-29092160"
                  *           from="coven@chat.shakespeare.lit/some1">
@@ -442,15 +442,32 @@
                 presence = $pres({
                         to: 'dummy@localhost/_converse.js-29092160',
                         from: 'coven@chat.shakespeare.lit/newguy'
-                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                    })
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
                     .c('item', {
                         'affiliation': 'none',
                         'jid': 'newguy@localhost/_converse.js-290929789',
                         'role': 'participant'
                     });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect($chat_content.find('div.chat-info').length).toBe(2);
+                expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(2);
                 expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has entered the room.");
+
+                // Add another entrant, otherwise the above message will be
+                // collapsed if "newguy" leaves immediately again
+                presence = $pres({
+                        to: 'dummy@localhost/_converse.js-29092160',
+                        from: 'coven@chat.shakespeare.lit/newgirl'
+                    })
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': 'newgirl@localhost/_converse.js-213098781',
+                        'role': 'participant'
+                    });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(3);
+                expect($chat_content.find('div.chat-info:last').html()).toBe("newgirl has entered the room.");
 
                 // Don't show duplicate join messages
                 presence = $pres({
@@ -463,11 +480,42 @@
                         'role': 'participant'
                     });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect($chat_content.find('div.chat-info').length).toBe(2);
+                expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(3);
 
+                /*  <presence
+                 *      from='coven@chat.shakespeare.lit/thirdwitch'
+                 *      to='crone1@shakespeare.lit/desktop'
+                 *      type='unavailable'>
+                 *  <status>Disconnected: Replaced by new connection</status>
+                 *  <x xmlns='http://jabber.org/protocol/muc#user'>
+                 *      <item affiliation='member'
+                 *          jid='hag66@shakespeare.lit/pda'
+                 *          role='none'/>
+                 *  </x>
+                 *  </presence>
+                 */
                 presence = $pres({
                         to: 'dummy@localhost/_converse.js-29092160',
                         type: 'unavailable',
+                        from: 'coven@chat.shakespeare.lit/newguy'
+                    })
+                    .c('status', 'Disconnected: Replaced by new connection').up()
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'none',
+                            'jid': 'newguy@localhost/_converse.js-290929789',
+                            'role': 'none'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect($chat_content.find('div.chat-info').length).toBe(4);
+                expect($chat_content.find('div.chat-info:last').html()).toBe(
+                    'newguy has left the room. '+
+                    '"Disconnected: Replaced by new connection"');
+
+                // When the user immediately joins again, we collapse the
+                // multiple join/leave messages.
+                presence = $pres({
+                        to: 'dummy@localhost/_converse.js-29092160',
                         from: 'coven@chat.shakespeare.lit/newguy'
                     }).c('x', {xmlns: Strophe.NS.MUC_USER})
                     .c('item', {
@@ -476,8 +524,69 @@
                         'role': 'participant'
                     });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect($chat_content.find('div.chat-info').length).toBe(3);
-                expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has left the room");
+                expect($chat_content.find('div.chat-info').length).toBe(4);
+                var $msg_el = $chat_content.find('div.chat-info:last');
+                expect($msg_el.html()).toBe("newguy has left and re-entered the room.");
+                expect($msg_el.data('leavejoin')).toBe('"newguy"');
+
+                presence = $pres({
+                        to: 'dummy@localhost/_converse.js-29092160',
+                        type: 'unavailable',
+                        from: 'coven@chat.shakespeare.lit/newguy'
+                    })
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'none',
+                            'jid': 'newguy@localhost/_converse.js-290929789',
+                            'role': 'none'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect($chat_content.find('div.chat-info').length).toBe(4);
+                $msg_el = $chat_content.find('div.chat-info:last');
+                expect($msg_el.html()).toBe('newguy has left the room.');
+                expect($msg_el.data('leave')).toBe('"newguy"');
+
+                presence = $pres({
+                        to: 'dummy@localhost/_converse.js-29092160',
+                        from: 'coven@chat.shakespeare.lit/nomorenicks'
+                    })
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': 'nomorenicks@localhost/_converse.js-290929789',
+                        'role': 'participant'
+                    });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(5);
+                expect($chat_content.find('div.chat-info:last').html()).toBe("nomorenicks has entered the room.");
+
+                presence = $pres({
+                        to: 'dummy@localhost/_converse.js-290918392',
+                        type: 'unavailable',
+                        from: 'coven@chat.shakespeare.lit/nomorenicks'
+                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': 'nomorenicks@localhost/_converse.js-290929789',
+                        'role': 'none'
+                    });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(5);
+                expect($chat_content.find('div.chat-info:last').html()).toBe("nomorenicks has entered and left the room.");
+
+                presence = $pres({
+                        to: 'dummy@localhost/_converse.js-29092160',
+                        from: 'coven@chat.shakespeare.lit/nomorenicks'
+                    })
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': 'nomorenicks@localhost/_converse.js-290929789',
+                        'role': 'participant'
+                    });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(5);
+                expect($chat_content.find('div.chat-info:last').html()).toBe("nomorenicks has entered the room.");
                 done();
             }));
 

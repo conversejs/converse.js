@@ -2895,13 +2895,16 @@
 
             _converse.getChatRoom = function (jid, attrs, fetcher) {
                 jid = jid.toLowerCase();
-                return _converse.getViewForChatBox(fetcher(_.extend({
-                    'id': jid,
-                    'jid': jid,
-                    'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                    'type': CHATROOMS_TYPE,
-                    'box_id': b64_sha1(jid)
-                }, attrs)));
+                return _converse.getViewForChatBox(
+                    fetcher(_.extend({
+                            'id': jid,
+                            'jid': jid,
+                            'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
+                            'type': CHATROOMS_TYPE,
+                            'box_id': b64_sha1(jid)
+                        }, attrs),
+                        attrs.bring_to_foreground
+                    ));
             };
 
             /* We extend the default converse.js API to add methods specific to MUC

@@ -987,6 +987,9 @@ Room attributes that may be passed in:
   The values should be named without the ``muc#roomconfig_`` prefix.
 * *maximize*: A boolean, indicating whether minimized rooms should also be
   maximized, when opened. Set to ``false`` by default.
+* *bring_to_foreground*: A boolean indicating whether the room should be
+  brought to the foreground and therefore replace the currently shown chat.
+  If there is no chat currently open, then this option is ineffective.
 
 For example, opening a room with a specific default configuration:
 

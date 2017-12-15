@@ -231,7 +231,7 @@
                      */
                     ev.preventDefault();
                     const jid = ev.target.getAttribute('data-room-jid');
-                    const chatroom = _converse.openChatRoom({'jid': jid}, true);
+                    const chatroom = _converse.api.rooms.open(jid, {'bring_to_foreground': true});
                     _converse.chatboxviews.get(jid).renderBookmarkForm();
                 },
             });

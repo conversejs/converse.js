@@ -97,6 +97,20 @@
         'unmoderated': 'moderated'
     };
 
+    const LIMIT_CONFIG = [
+      "muc#roomconfig_persistentroom",
+      "muc#roomconfig_passwordprotectedroom",
+      "muc#roomconfig_roomsecret",
+      "muc#roomconfig_membersonly",
+      "muc#roomconfig_roomadmins",
+      "muc#roomconfig_roomowners",
+      "muc#roomconfig_enablelogging",
+      "x-muc#roomconfig_registration",
+      "x-muc#roomconfig_reservednick",
+      "muc#roomconfig_whois",
+      "muc#roomconfig_presencebroadcast"
+    ];
+    
     converse.ROOMSTATUS = {
         CONNECTED: 0,
         CONNECTING: 1,
@@ -343,7 +357,9 @@
                 visible_toolbar_buttons: {
                     'toggle_occupants': true
                 },
-                hide_occupants:false
+                hide_occupants:false,
+                limit_room_controls:false
+                
             });
             _converse.api.promises.add('roomsPanelRendered');
 
@@ -1279,7 +1295,9 @@
                         $fieldset.append($('<p class="instructions">').text(instructions));
                     }
                     _.each($fields, function (field) {
+                      if(_converse.limit_room_controls === false ||LIMIT_CONFIG.includes(field.getAttribute('var')) === false){
                         $fieldset.append(utils.xForm2webForm(field, stanza));
+                      }
                     });
                     $form.append('<fieldset></fieldset>');
                     $fieldset = $form.children('fieldset:last');

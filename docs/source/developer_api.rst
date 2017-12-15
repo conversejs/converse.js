@@ -911,17 +911,19 @@ It takes 3 parameters:
 .. code-block:: javascript
 
     converse.plugins.add('myplugin', {
+
         initialize: function () {
-            var nick = 'dread-pirate-roberts';
-            var create_if_not_found = true;
-            this._converse.api.rooms.open(
-                'group@muc.example.com',
-                {'nick': nick},
-                create_if_not_found
-            )
+            var _converse = this._converse;
+            _converse.api.waitUntil('roomsAutoJoined').then(function () {
+                var create_if_not_found = true;
+                this._converse.api.rooms.open(
+                    'group@muc.example.com',
+                    {'nick': 'dread-pirate-roberts'},
+                    create_if_not_found
+                )
+            });
         }
     });
-
 
 open
 ~~~~

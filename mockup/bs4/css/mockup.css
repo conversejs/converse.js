@@ -179,6 +179,7 @@ body .brand-heading .icon-conversejs {
 #conversejs.fullscreen.login {
   width: calc(100vw - 20px);
   height: calc(100vh - 20px);
+  margin: 10px;
 }
 #conversejs.fullscreen.login #controlbox #login-dialog {
   height: 100%;

@@ -1,0 +1,147 @@
+<div id="users" class="controlbox-pane">
+	<div class="userinfo">
+		<div class="d-flex">
+			<canvas height="20" width="20" class="avatar align-self-center"></canvas>
+			<span class="username w-100 align-self-center">Walter White</span>
+			<a class="chatbox-btn fa fa-vcard align-self-center" title="Your profile" data-toggle="modal" data-target="#userProfileModal"></a>
+			<a class="chatbox-btn fa fa-cog align-self-center" title="Change settings" data-toggle="modal" data-target="#settingsModal"></a>
+		</div>
+		<div class="d-flex xmpp-status">
+			<span class="online w-100 align-self-center" data-value="online">
+				<span class="fa fa-circle"></span> Online</span>
+			<a class="chatbox-btn fa fa-pencil" title="Click to change your chat status" data-toggle="modal" data-target="#changeStatusModal"></a>
+		</div>
+	</div>
+
+	<div id="converse-roster">
+		<div id="chatrooms">
+			<div class="d-flex">
+				<span class="w-100">Chatrooms</span>
+				<a class="chatbox-btn fa fa-users" title="Click to change rooms" data-toggle="modal" data-target="#chatroomsModal"></a>
+			</div>
+			<div class="rooms-list-container">
+				<div class="rooms-list">
+					<div class="available-chatroom d-flex flex-row">
+						<a class="open-room available-room w-100" data-room-jid="public@conference.test.com" title="Click to open this room" href="#">public</a>
+						<a href="#" class="fa fa-info-circle align-self-center" data-container="body" data-toggle="popover" title="Room info"
+						 data-html="true" data-content="<b>Room Address (JID): </b><br>public@conference.test.com<br><b>Discussions: </b><br>Public discussions<br><b>Participants: </b>1<br><b>Features: </b><br>Non-anonymous">&nbsp;</a>
+						<a href="#" class="fa fa-bookmark-o align-self-center" title="Click to bookmark this room">&nbsp;</a>
+						<a href="#" class="fa fa-times align-self-center" title="Click to leave this room">&nbsp;</a>
+					</div>
+					<div class="available-chatroom d-flex flex-row">
+						<a class="open-room available-room w-100" data-room-jid="team@conference.test.com" title="Click to open this room" href="#">team</a>
+						<a href="#" class="fa fa-info-circle align-self-center" data-container="body" data-toggle="popover" title="Room info"
+						 data-html="true" data-content="<b>Room Address (JID): </b><br>team@conference.test.com<br><b>Discussions: </b><br>Public discussions<br><b>Participants: </b>1<br><b>Features: </b><br>Non-anonymous">&nbsp;</a>
+					</div>
+					<div class="available-chatroom d-flex flex-row">
+						<a class="open-room available-room w-100" data-room-jid="test@conference.test.com" title="Click to open this room" href="#">test</a>
+						<a href="#" class="fa fa-info-circle align-self-center" data-container="body" data-toggle="popover" title="Room info"
+						 data-html="true" data-content="<b>Room Address (JID): </b><br>test@conference.test.com<br><b>Discussions: </b><br>Public discussions<br><b>Participants: </b>1<br><b>Features: </b><br>Non-anonymous">&nbsp;</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="contacts">
+			<div class="d-flex">
+				<span class="w-100">Contacts</span>
+				<a class="chatbox-btn fa fa-user-plus" title="Click to add new chat contacts" data-toggle="modal" data-target="#addContactModal"></a>
+			</div>
+			<form class="pure-form roster-filter-form input-button-group">
+				<div class="form-group form-inline">
+					<input value="" class="form-control" placeholder="Filter">
+					<div class="filter-by">
+						<span class="fa fa-user" title="Filter by contacts"></span>
+						<span class="fa fa-users" title="Filter by groups"></span>
+						<span class="fa fa-circle" title="Filter by status"></span>
+					</div>
+				</div>
+			</form>
+
+			<dl class="roster-contacts" style="display: block;">
+				<dt class="roster-group" style="display: block;">
+					<a href="#" data-group="Colleagues" class="group-toggle" title="Click to hide these contacts">
+						<span class="fa fa-caret-down"></span> Colleagues</a>
+				</dt>
+				<dd class="online current-xmpp-contact d-flex">
+					<a class="open-chat w-100" title="Click to chat with this contact" href="#">
+						<span class="fa fa-circle" title="This contact is online"></span> Victor Matfield</a>
+					<a class="remove-xmpp-contact fa fa-trash align-self-center" title="Click to remove this contact" href="#"></a>
+				</dd>
+				<dd class="away current-xmpp-contact d-flex">
+					<a class="open-chat w-100" title="Click to chat with this contact" href="#">
+						<span class="fa fa-circle-o" title="this contact is away"></span> William Winterbottom</a>
+					<a class="remove-xmpp-contact fa fa-trash align-self-center" title="Click to remove this contact" href="#"></a>
+				</dd>
+				<dd class="dnd current-xmpp-contact d-flex">
+					<a class="open-chat w-100" title="Click to chat with this contact" href="#">
+						<span class="fa fa-minus-circle" title="This contact is busy"></span> Gary Teichmann</a>
+					<a class="remove-xmpp-contact fa fa-trash align-self-center" title="Click to remove this contact" href="#"></a>
+				</dd>
+				<dt class="roster-group" style="display: block;">
+					<a href="#" data-group="Family" class="group-toggle" title="Click to hide these contacts">
+						<span class="fa fa-caret-down"></span> Family</a>
+				</dt>
+				<dd class="away current-xmpp-contact d-flex">
+					<a class="open-chat w-100" title="Click to chat with this contact" href="#">
+						<span class="fa fa-circle-o" title="this contact is away"></span> Allan Donald</a>
+					<a class="remove-xmpp-contact fa fa-trash align-self-center" title="Click to remove this contact" href="#"></a>
+				</dd>
+				<dd class="offline current-xmpp-contact d-flex">
+					<a class="open-chat w-100" title="Click to chat with this contact" href="#">
+						<span class="fa fa-times-circle" title="This contact is offline"></span> Corné Krige</a>
+					<a class="remove-xmpp-contact fa fa-trash align-self-center" title="Click to remove this contact" href="#"></a>
+				</dd>
+				<dt class="roster-group" style="display: block;">
+					<a href="#" data-group="Friends" class="group-toggle" title="Click to hide these contacts">
+						<span class="fa fa-caret-down"></span> Friends</a>
+				</dt>
+				<dd class="online current-xmpp-contact d-flex">
+					<a class="open-chat w-100" title="Click to chat with this contact" href="#">
+						<span class="fa fa-circle" title="This contact is online"></span> John Smit</a>
+					<a class="remove-xmpp-contact fa fa-trash align-self-center" title="Click to remove this contact" href="#"></a>
+				</dd>
+				<dd class="online current-xmpp-contact d-flex">
+					<a class="open-chat w-100" title="Click to chat with this contact" href="#">
+						<span class="fa fa-circle" title="This contact is online"></span> Bakkies Botha</a>
+					<a class="remove-xmpp-contact fa fa-trash align-self-center" title="Click to remove this contact" href="#"></a>
+				</dd>
+				<dt class="roster-group" style="display: block;">
+					<a href="#" class="group-toggle" title="Click to hide these contacts">
+						<span class="fa fa-caret-down"></span> Ungrouped</a>
+				</dt>
+				<dd class="online current-xmpp-contact d-flex">
+					<a class="open-chat w-100" title="Click to chat with this contact" href="#">
+						<span class="fa fa-circle" title="This contact is online"></span> James Small</a>
+					<a class="remove-xmpp-contact fa fa-trash align-self-center" title="Click to remove this contact" href="#"></a>
+				</dd>
+				<dt class="roster-group" id="xmpp-contact-requests" style="display: block;">
+					<a href="#" class="group-toggle" title="Click to hide these contacts">
+						<span class="fa fa-caret-down"></span> Contact Requests</a>
+				</dt>
+				<dd class="offline requesting-xmpp-contact d-flex">
+					<span class="req-contact-name w-100">Bob Skinstad</span>
+					<a class="accept-xmpp-request fa fa-check align-self-center" title="Click here to accept this contact's request" href="#"></a>
+					<a class="decline-xmpp-request fa fa-times align-self-center" title="Click here to decline this contact's request" href="#"></a>
+				</dd>
+				<dd class="offline requesting-xmpp-contact d-flex">
+					<span class="req-contact-name w-100">André Vos</span>
+					<a class="accept-xmpp-request fa fa-check align-self-center" title="Click here to accept this contact's request" href="#"></a>
+					<a class="decline-xmpp-request fa fa-times align-self-center" title="Click here to decline this contact's request" href="#"></a>
+				</dd>
+				<dt class="roster-group" id="pending-xmpp-contacts" style="display: block;">
+					<a href="#" class="group-toggle" title="Click to hide these contacts">
+						<span class="fa fa-caret-down"></span> Pending Contacts</a>
+				</dt>
+				<dd class="offline pending-xmpp-contact d-flex">
+					<span class="pending-contact-name w-100">Rassie Erasmus</span>
+					<a class="remove-xmpp-contact fa fa-trash align-self-center" title="Click to remove this contact" href="#"></a>
+				</dd>
+				<dd class="offline pending-xmpp-contact d-flex">
+					<span class="pending-contact-name w-100">Victor Matfield</span>
+					<a class="remove-xmpp-contact fa fa-trash align-self-center" title="Click to remove this contact" href="#"></a>
+				</dd>
+			</dl>
+		</div>
+	</div>
+</div>

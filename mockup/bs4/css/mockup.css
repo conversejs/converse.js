@@ -1,0 +1,459 @@
+body {
+  height: 100vh;
+  background-color: #578ea9;
+  color: #212529;
+}
+body .brand-heading {
+  margin: auto;
+  font-size: 6em;
+  font-weight: bold;
+}
+body .brand-heading .icon-conversejs {
+  font-size: 0.88em;
+}
+.converse-bg {
+  position: relative;
+  height: 100vh;
+  text-align: center;
+  color: #fff;
+}
+.converse-bg .brand-heading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+.xmpp-status .online,
+.xmpp-status-menu .online {
+  color: #28a745;
+}
+.xmpp-status .dnd,
+.xmpp-status-menu .dnd {
+  color: #dc3545;
+}
+.xmpp-status .away,
+.xmpp-status-menu .away {
+  color: #17a2b8;
+}
+.xmpp-status .logout,
+.xmpp-status-menu .logout,
+.xmpp-status .offline,
+.xmpp-status-menu .offline {
+  color: #868e96;
+}
+#mockups {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  padding: 7px;
+  z-index: 2000;
+  background-color: #578ea9;
+  -webkit-transform: translate(-50%, 0%);
+      -ms-transform: translate(-50%, 0%);
+          transform: translate(-50%, 0%);
+}
+#mockups a {
+  width: 30px;
+  padding: 4px;
+  background: #aaa;
+  border: 1px solid #000;
+  color: #000;
+  font-size: 0.9em;
+}
+#conversejs {
+  margin: 10px 0 0;
+}
+#conversejs p {
+  margin-bottom: 1rem;
+}
+#conversejs a,
+#conversejs a:visited {
+  color: #007bff;
+}
+#conversejs a:hover {
+  color: #0056b3;
+}
+#conversejs canvas {
+  background: #000;
+  border-radius: 4px;
+  margin: 2px 0;
+}
+#conversejs form.pure-form.converse-form input[type=button],
+#conversejs form.pure-form.converse-form input[type=submit] {
+  margin-right: 0;
+}
+#conversejs .badge {
+  padding: 0.25em 0.4em;
+  line-height: 1;
+  font-weight: 700;
+  font-size: 0.9em;
+}
+#conversejs .btn.btn-primary {
+  color: #fff;
+}
+#conversejs .chat-head .avatar {
+  border-radius: 5px;
+}
+#conversejs .fa {
+  font: normal normal normal 14px/1 FontAwesome;
+  display: inline-block;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+#conversejs #controlbox {
+  margin-right: 0.5em;
+}
+#conversejs #controlbox .controlbox-pane {
+  height: 100%;
+  border-radius: 5px;
+}
+#conversejs #controlbox .controlbox-pane label {
+  margin: 8px;
+}
+#conversejs #controlbox #login-dialog .brand-heading {
+  margin-top: 3.5%;
+  font-size: 2.5em;
+  color: #578ea9;
+}
+#conversejs #controlbox #chatrooms .rooms-list-container {
+  margin: 10px 0;
+}
+#conversejs #converse-roster {
+  height: calc(100% - 70px);
+  margin-top: 0;
+  padding-bottom: 15px;
+  overflow: auto;
+  border-bottom: 1px solid #777;
+}
+#conversejs #converse-roster .roster-filter-form {
+  margin: 5px 0 0;
+}
+#conversejs #converse-roster .roster-filter-form input {
+  width: 56%;
+  margin-right: 5px;
+}
+#conversejs #converse-roster .roster-filter-form span {
+  margin: 0;
+  padding: 0.2em;
+  color: #888;
+  cursor: pointer;
+}
+#conversejs #converse-roster .roster-filter-form span.fa-user {
+  color: #000;
+}
+#conversejs #converse-roster .roster-filter-form .form-group {
+  margin-bottom: 0.5rem;
+}
+#conversejs #converse-roster .roster-contacts {
+  height: auto;
+  font-size: 0.875rem;
+  overflow: hidden;
+}
+#conversejs #converse-roster .roster-contacts dd {
+  height: 28px;
+}
+#conversejs #converse-roster .roster-contacts dd a {
+  text-overflow: initial;
+  overflow: visible;
+}
+#conversejs #converse-roster .roster-contacts dd a.remove-xmpp-contact {
+  font-size: 0.95em;
+}
+#conversejs #minimized-chats .badge {
+  position: absolute;
+  right: 122px;
+  bottom: 8px;
+  border: 1px solid #111;
+}
+#conversejs.fullscreen {
+  width: 100%;
+  height: 100%;
+  right: 0;
+  bottom: 0;
+  color: #212529;
+}
+#conversejs.fullscreen.login {
+  width: calc(100vw - 20px);
+  height: calc(100vh - 20px);
+}
+#conversejs.fullscreen.login #controlbox #login-dialog {
+  height: 100%;
+  border-radius: 5px;
+}
+#conversejs.fullscreen.login #controlbox #login-dialog .brand-heading {
+  font-size: 6em;
+}
+#conversejs.fullscreen.login #controlbox #login-dialog .converse-form {
+  margin: 0;
+  padding: 3em 2em 3em;
+}
+#conversejs.fullscreen.chatbox {
+  margin: 0;
+}
+#conversejs.fullscreen.chatbox .chatbox {
+  width: 100%;
+}
+#conversejs.fullscreen.chatbox .chatbox .box-flyout {
+  width: 100%;
+  height: 100vh;
+}
+#conversejs.fullscreen #controlbox {
+  width: 100%;
+  margin-right: 0;
+}
+#conversejs.fullscreen #controlbox .box-flyout {
+  width: 100%;
+}
+#conversejs.fullscreen #controlbox .controlbox-pane {
+  height: 100vh;
+  border-radius: 0;
+}
+#conversejs.fullscreen .chatroom .box-flyout .chatroom-body .chat-area {
+  height: calc(100vh - 95px);
+}
+#conversejs .sidebar {
+  display: none;
+  position: absolute;
+  width: 50px;
+  height: 100vh;
+  padding: 10px 0;
+  background-color: #578ea9;
+  text-align: center;
+}
+#conversejs .sidebar .chatbox-btn {
+  float: none;
+  margin: 0;
+  font-size: 1.35em;
+}
+#conversejs .sidebar .chatbox-btn.fa-vcard {
+  margin-top: 30px;
+}
+#conversejs .sidebar .bottom {
+  position: absolute;
+  bottom: 10px;
+}
+#conversejs .chatbox .chat-content {
+  padding: 0.5em;
+}
+#conversejs .chatbox .chat-body {
+  background: #fff;
+}
+#conversejs .chatbox .chat-body .chat-message {
+  margin: 0.3em;
+}
+#conversejs .chatbox .chat-body .chat-message canvas {
+  vertical-align: middle;
+  background: #777;
+}
+#conversejs .chatbox .chat-body .chat-message .chat-msg-me canvas {
+  background: #578ea9;
+}
+#conversejs .chatbox .chat-body .chat-message .chat-msg-them canvas {
+  background: #e77051;
+}
+#conversejs .chatbox .chat-body .chat-message .chat-msg-author {
+  float: none;
+}
+#conversejs .chatbox form.sendXMPPMessage textarea {
+  resize: none;
+  border: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+#conversejs .chatbox form.sendXMPPMessage .chat-toolbar a,
+#conversejs .chatbox form.sendXMPPMessage .chat-toolbar li.toggle-toolbar-menu {
+  color: #212529;
+}
+#conversejs .chatroom .box-flyout .chatroom-body .chat-area {
+  min-width: 100%;
+  height: 395px;
+}
+#conversejs .chatroom .box-flyout .chatroom-body .chat-area .chat-content {
+  padding: 0.5em;
+}
+#conversejs .chatroom .box-flyout .chatroom-body .chat-info {
+  color: #fff;
+  line-height: normal;
+}
+#conversejs .chatroom .box-flyout .chatroom-body .occupants .chatroom-features {
+  bottom: 0;
+  width: auto;
+}
+#conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.feature {
+  float: left;
+  margin-right: 0.5em;
+  padding-right: 0;
+  font-size: 1em;
+  cursor: help;
+}
+#conversejs #users {
+  position: relative;
+}
+#conversejs #users #chatrooms {
+  padding-bottom: 5px;
+  border-bottom: 1px solid #aaa;
+}
+#conversejs #users #chatrooms .rooms-list-container dl.rooms-list .available-chatroom,
+#conversejs #users #chatrooms .rooms-list-container dl.rooms-list .open-chatroom {
+  padding: 0.1em 0;
+}
+#conversejs #users #chatrooms .rooms-list-container dl.rooms-list a + a {
+  line-height: 22px;
+}
+#conversejs #users #chatrooms,
+#conversejs #users #contacts {
+  margin-top: 0.75em;
+}
+#conversejs #users .userinfo {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #aaa;
+}
+#conversejs #users .userinfo .username {
+  margin-left: 5px;
+}
+#conversejs #users .userinfo .d-flex {
+  margin-bottom: 2px;
+}
+#conversejs #users.controlbox-pane {
+  height: 450px;
+  text-align: left;
+}
+#conversejs #users .chatbox-btn {
+  margin: 0;
+  color: #007bff;
+}
+@media screen and (max-width: 575px) {
+  body .brand-heading {
+    font-size: 3.75em;
+  }
+  #conversejs.fullscreen.login #controlbox #login-dialog .brand-heading,
+  #conversejs #controlbox #login-dialog .brand-heading {
+    font-size: 3.75em;
+  }
+  #conversejs .chatbox .chat-body {
+    border-radius: 7px;
+  }
+  #conversejs .flyout {
+    border-radius: 4px;
+  }
+}
+@media screen and (max-width: 767px) {
+  #conversejs {
+    left: 0;
+    margin: 0;
+  }
+  #conversejs.fullscreen.chatbox > .chatbox,
+  #conversejs.fullscreen.chatbox .chatroom {
+    width: calc(100% - 50px);
+  }
+  #conversejs.fullscreen.chatbox.sidebar-open #controlbox #users {
+    display: block;
+  }
+  #conversejs.fullscreen.chatbox.sidebar-open > .chatbox:not(#controlbox),
+  #conversejs.fullscreen.chatbox.sidebar-open .chatroom {
+    display: none;
+  }
+  #conversejs.fullscreen.chatbox .chatbox .box-flyout {
+    left: 0;
+  }
+  #conversejs.login {
+    margin: 10px;
+  }
+  #conversejs.login #controlbox {
+    margin: 0;
+  }
+  #conversejs.login #controlbox .controlbox-pane {
+    font-size: 1.15em;
+  }
+  #conversejs.login #controlbox.chatbox {
+    width: 100%;
+  }
+  #conversejs.login .chatbox .box-flyout {
+    height: calc(100vh - 20px);
+    width: 100%;
+    bottom: 0;
+    left: 0;
+  }
+  #conversejs.sidebar-open #controlbox #users {
+    display: block;
+  }
+  #conversejs.sidebar-open > .chatbox:not(#controlbox) {
+    display: none;
+  }
+  #conversejs #controlbox #users {
+    position: absolute;
+    top: 0;
+    left: 50px;
+    display: none;
+    width: calc(100% - 50px);
+  }
+  #conversejs #controlbox .box-flyout {
+    width: 100%;
+    left: 0;
+  }
+  #conversejs #controlbox .sidebar {
+    display: block;
+  }
+  #conversejs #users.controlbox-pane {
+    height: 100vh;
+  }
+  #conversejs #login-dialog .pure-form.converse-form {
+    padding: 3em 2em 3em;
+  }
+  #conversejs > .chatbox {
+    width: calc(100% - 50px);
+  }
+  #conversejs .chatbox .chat-body .chat-message .chat-msg-author {
+    white-space: normal;
+  }
+  #conversejs .chatbox .box-flyout {
+    left: 50px;
+    bottom: 0;
+    width: calc(100% - 50px);
+    height: 100vh;
+    box-shadow: none;
+  }
+  #conversejs .chatbox .box-flyout .chatroom-body .chat-area {
+    height: calc(100vh - 55px);
+  }
+}
+@media screen and (min-width: 576px) {
+  #conversejs .offset-sm-2 {
+    margin-left: 16.666667%;
+  }
+}
+@media screen and (min-width: 768px) {
+  #conversejs .offset-md-2 {
+    margin-left: 16.666667%;
+  }
+  #conversejs .offset-md-3 {
+    margin-left: 25%;
+  }
+}
+@media screen and (min-width: 992px) {
+  #conversejs .offset-lg-2 {
+    margin-left: 16.666667%;
+  }
+  #conversejs .offset-lg-3 {
+    margin-left: 25%;
+  }
+}
+@media screen and (min-width: 1200px) {
+  #conversejs .offset-xl-2 {
+    margin-left: 16.666667%;
+  }
+}
+@media screen and (max-height: 450px) {
+  #conversejs {
+    left: 0;
+  }
+}
+@media screen and (max-width: 480px) {
+  #conversejs {
+    width: auto;
+  }
+}

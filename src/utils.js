@@ -110,10 +110,28 @@
         }
     }
 
+    u.showElement = function (el) {
+        if (!_.isNil(el)) {
+            el.classList.remove('collapsed');
+            el.classList.remove('hidden');
+        }
+    }
+
     u.hideElement = function (el) {
         if (!_.isNil(el)) {
             el.classList.add('hidden');
         }
+    }
+
+    u.nextUntil = function (el, selector, include_self=false) {
+        /* Return the element's siblings until one matches the selector. */
+        const matches = [];
+        let sibling_el = el.nextElementSibling;
+        while (!_.isNil(sibling_el) && !sibling_el.matches(selector)) {
+            matches.push(sibling_el);
+            sibling_el = sibling_el.nextElementSibling;
+        }
+        return matches;
     }
 
     u.addHyperlinks = function (text) {
@@ -148,11 +166,11 @@
         return obj;
     };
 
-    u.slideInAllElements = function (elements) {
+    u.slideInAllElements = function (elements, duration=600) {
         return Promise.all(
             _.map(
                 elements,
-                _.partial(u.slideIn, _, 600)
+                _.partial(u.slideIn, _, duration)
             ));
     };
 
@@ -164,7 +182,11 @@
         }
     };
 
-    u.slideOut = function (el, duration=900) {
+    u.hasClass = function (el, className) {
+        return _.includes(el.classList, className);
+    };
+
+    u.slideOut = function (el, duration=1000) {
         /* Shows/expands an element by sliding it out of itself
          *
          * Parameters:
@@ -190,11 +212,14 @@
                 resolve();
                 return;
             }
+            if (!u.hasClass(el, 'collapsed') && !u.hasClass(el, 'hidden')) {
+                resolve();
+                return;
+            }
 
             const step = calculateSlideStep(end_height),
                   interval = end_height/duration*step;
             let h = 0;
-
             interval_marker = window.setInterval(function () {
                 h += step;
                 if (h < end_height) {
@@ -204,16 +229,22 @@
                     // browser bug where browsers don't know the correct
                     // offsetHeight beforehand.
                     el.style.height = calculateElementHeight(el) + 'px';
+                    el.style.overflow = "";
+                    el.style.height = "";
                     window.clearInterval(interval_marker);
-                    slideOutWrapup(el);
                     resolve();
                 }
             }, interval);
+
+            el.style.height = '0';
+            el.style.overflow = 'hidden';
+            el.classList.remove('hidden');
+            el.classList.remove('collapsed');
             el.setAttribute('data-slider-marker', interval_marker);
         });
     };
 
-    u.slideIn = function (el, duration=600) {
+    u.slideIn = function (el, duration=800) {
         /* Hides/collapses an element by sliding it into itself. */
         return new Promise((resolve, reject) => {
             if (_.isNil(el)) {

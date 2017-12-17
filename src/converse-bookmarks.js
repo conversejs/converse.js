@@ -34,6 +34,9 @@
     const { Backbone, Promise, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
 
     converse.plugins.add('converse-bookmarks', {
+
+        optional_dependencies: ["converse-chatboxes", "converse-muc"],
+
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the

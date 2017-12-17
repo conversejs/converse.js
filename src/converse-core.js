@@ -1109,7 +1109,8 @@
                  */
                 return new Promise((resolve, reject) => {
                     this.fetch({
-                        add: true,
+                        'add': true,
+                        'silent': true,
                         success (collection) {
                             if (collection.length === 0) {
                                 _converse.send_initial_presence = true;
@@ -1429,6 +1430,7 @@
 
 
         this.RosterGroup = Backbone.Model.extend({
+
             initialize (attributes) {
                 this.set(_.assignIn({
                     description: __('Click to hide these contacts'),

@@ -5,21 +5,29 @@
     var $pres = converse.env.$pres;
     var $msg = converse.env.$msg;
     var $iq = converse.env.$iq;
+    var u = converse.env.utils;
 
-    var checkHeaderToggling = function ($header) {
-        var $toggle = $header.find('a.group-toggle');
-        expect($header.css('display')).toEqual('block');
-        expect($header.nextUntil('dt', 'dd').length === $header.nextUntil('dt', 'dd:visible').length).toBeTruthy();
+    var checkHeaderToggling = function ($group) {
+        var $toggle = $group.find('a.group-toggle');
+        expect(u.isVisible($group[0])).toBeTruthy();
+        expect($group.find('ul.collapsed').length).toBe(0);
         expect($toggle.hasClass('icon-closed')).toBeFalsy();
         expect($toggle.hasClass('icon-opened')).toBeTruthy();
         $toggle.click();
-        expect($toggle.hasClass('icon-closed')).toBeTruthy();
-        expect($toggle.hasClass('icon-opened')).toBeFalsy();
-        expect($header.nextUntil('dt', 'dd').length === $header.nextUntil('dt', 'dd:hidden').length).toBeTruthy();
-        $toggle.click();
-        expect($toggle.hasClass('icon-closed')).toBeFalsy();
-        expect($toggle.hasClass('icon-opened')).toBeTruthy();
-        expect($header.nextUntil('dt', 'dd').length === $header.nextUntil('dt', 'dd:visible').length).toBeTruthy();
+
+        return test_utils.waitUntil(function () {
+            return $group.find('ul.collapsed').length === 1;
+        }, 500).then(function () {
+            expect($toggle.hasClass('icon-closed')).toBeTruthy();
+            expect($toggle.hasClass('icon-opened')).toBeFalsy();
+            $toggle.click();
+            return test_utils.waitUntil(function () {
+                return $group.find('li').length === $group.find('li:visible').length
+            }, 500);
+        }).then(function () {
+            expect($toggle.hasClass('icon-closed')).toBeFalsy();
+            expect($toggle.hasClass('icon-opened')).toBeTruthy();
+        });
     };
 
     describe("The Control Box", function () {
@@ -149,7 +157,7 @@
                     };
 
                     return test_utils.waitUntil(function () {
-                        if (_converse.rosterview.$roster.hasScrollBar()) {
+                        if ($(_converse.rosterview.roster_el).hasScrollBar()) {
                             return $filter.is(':visible');
                         } else {
                             return !$filter.is(':visible');
@@ -165,54 +173,64 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                var $filter;
-                var $roster;
                 _converse.roster_groups = true;
                 test_utils.openControlBox();
                 test_utils.createGroupedContacts(_converse);
-                $filter = _converse.rosterview.$('.roster-filter');
-                $roster = _converse.rosterview.$roster;
+                var $filter = _converse.rosterview.$('.roster-filter');
+                var $roster = $(_converse.rosterview.roster_el);
                 _converse.rosterview.filter_view.delegateEvents();
 
                 var promise = test_utils.waitUntil(function () {
-                        return $roster.find('dd:visible').length === 15;
-                    }, 500)
-                .then(function (contacts) {
-                    expect($roster.find('dt:visible').length).toBe(5);
+                    return $roster.find('li:visible').length === 15;
+                }, 500).then(function (contacts) {
+                    expect($roster.find('ul.roster-group-contacts:visible').length).toBe(5);
                     $filter.val("candice");
                     $filter.trigger('keydown');
 
                     return test_utils.waitUntil(function () {
-                        return $roster.find('dd:visible').length === 1;
+                        return $roster.find('li:visible').length === 1;
                     }, 500);
                 }).then(function (contacts) {
-                    expect($roster.find('dd:visible').eq(0).text().trim()).toBe('Candice van der Knijff');
-                    expect($roster.find('dt:visible').length).toBe(1);
-                    expect(_.trim($roster.find('dt:visible').eq(0).text())).toBe('colleagues');
+                    // Only one roster contact is now visible
+                    expect($roster.find('li:visible').length).toBe(1);
+                    expect($roster.find('li:visible').eq(0).text().trim()).toBe('Candice van der Knijff');
+                    // Only one foster group is still visible
+                    expect($roster.find('.roster-group:visible').length).toBe(1);
+                    expect(_.trim($roster.find('.roster-group:visible a.group-toggle').eq(0).text())).toBe('colleagues');
+
                     $filter = _converse.rosterview.$('.roster-filter');
                     $filter.val("an");
                     $filter.trigger('keydown');
                     return test_utils.waitUntil(function () {
-                        return $roster.find('dd:visible').length === 5;
+                        return $roster.find('li:visible').length === 5;
                     }, 500)
                 }).then(function (contacts) {
-                    expect($roster.find('dt:visible').length).toBe(4);
+                    // Five roster contact is now visible
+                    expect($roster.find('li:visible').length).toBe(5);
+                    // Four groups are still visible
+                    var $groups = $roster.find('.roster-group:visible a.group-toggle');
+                    expect($groups.length).toBe(4);
+                    expect(_.trim($groups.eq(0).text())).toBe('colleagues');
+                    expect(_.trim($groups.eq(1).text())).toBe('Family');
+                    expect(_.trim($groups.eq(2).text())).toBe('friends & acquaintences');
+                    expect(_.trim($groups.eq(3).text())).toBe('ænemies');
+
                     $filter = _converse.rosterview.$('.roster-filter');
                     $filter.val("xxx");
                     $filter.trigger('keydown');
                     return test_utils.waitUntil(function () {
-                        return $roster.find('dd:visible').length === 0;
+                        return $roster.find('li:visible').length === 0;
                     }, 500)
                 }).then(function () {
-                    expect($roster.find('dt:visible').length).toBe(0);
+                    expect($roster.find('ul.roster-group-contacts:visible a.group-toggle').length).toBe(0);
                     $filter = _converse.rosterview.$('.roster-filter');
                     $filter.val("");  // Check that contacts are shown again, when the filter string is cleared.
                     $filter.trigger('keydown');
                     return test_utils.waitUntil(function () {
-                        return $roster.find('dd:visible').length === 15;
+                        return $roster.find('li:visible').length === 15;
                     }, 500)
                 }).then(function () {
-                    expect($roster.find('dt:visible').length).toBe(5);
+                    expect($roster.find('ul.roster-group-contacts:visible').length).toBe(5);
                     _converse.roster_groups = false;
                     done();
                 });
@@ -224,46 +242,49 @@
                     function (done, _converse) {
 
                 var $filter;
-                var $roster;
                 var $type;
                 _converse.roster_groups = true;
                 test_utils.openControlBox();
                 test_utils.createGroupedContacts(_converse);
                 _converse.rosterview.filter_view.delegateEvents();
                 $filter = _converse.rosterview.$('.roster-filter');
-                $roster = _converse.rosterview.$roster;
+                var $roster = $(_converse.rosterview.roster_el);
                 $type = _converse.rosterview.$('.filter-type');
                 $type.val('groups');
-                var promise = test_utils.waitUntil(function () {
-                        return $roster.find('dd:visible').length === 15;
-                    }, 500); 
-                promise.then(function () {
-                    expect($roster.find('dt:visible').length).toBe(5);
+                test_utils.waitUntil(function () {
+                    return $roster.find('li:visible').length === 15;
+                }, 500).then(function () {
+                    expect($roster.find('div.roster-group:visible a.group-toggle').length).toBe(5);
+
                     $filter.val("colleagues");
                     $filter.trigger('keydown');
                     return test_utils.waitUntil(function () {
-                        return $roster.find('dt:visible').length === 1;
+                        return $roster.find('div.roster-group:not(.collapsed) a.group-toggle').length === 1;
                     }, 500);
                 }).then(function () {
-                    expect(_.trim($roster.find('dt:visible').eq(0).text())).toBe('colleagues');
-                    expect($roster.find('dd:visible').length).toBe(3);
+                    expect(_.trim($roster.find('div.roster-group:not(.collapsed) a').eq(0).text())).toBe('colleagues');
+                    expect($roster.find('div.roster-group:not(.collapsed) li:visible').length).toBe(3);
+
                     // Check that all contacts under the group are shown
-                    expect($roster.find('dt:visible').nextUntil('dt', 'dd:hidden').length).toBe(0);
+                    expect($roster.find('div.roster-group:not(.collapsed) li:hidden').length).toBe(0);
+
                     $filter = _converse.rosterview.$('.roster-filter');
                     $filter.val("xxx").trigger('keydown');
                     return test_utils.waitUntil(function () {
-                        return $roster.find('dd:visible').length === 0;
+                        return $roster.find('div.roster-group.collapsed a.group-toggle').length === 5;
                     }, 700);
                 }).then(function () {
-                    expect($roster.find('dt:visible').length).toBe(0);
+                    expect($roster.find('div.roster-group:not(.collapsed) a').length).toBe(0);
+
                     $filter = _converse.rosterview.$('.roster-filter');
                     $filter.val(""); // Check that groups are shown again, when the filter string is cleared.
                     $filter.trigger('keydown');
                     return test_utils.waitUntil(function () {
-                        return $roster.find('dd:visible').length === 15;
+                        return $roster.find('div.roster-group.collapsed a.group-toggle').length === 0;
                     }, 500);
                 }).then(function () {
-                    expect($roster.find('dt:visible').length).toBe(5);
+                    expect($roster.find('div.roster-group:not(collapsed)').length).toBe(5);
+                    expect($roster.find('div.roster-group:not(collapsed) li').length).toBe(15);
                     done();
                 });
             }));
@@ -302,7 +323,6 @@
                     function (done, _converse) {
 
                 var $filter;
-                var $roster;
                 _converse.roster_groups = true;
                 test_utils.createGroupedContacts(_converse);
                 var jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -313,21 +333,20 @@
                 var $type = _converse.rosterview.$('.filter-type');
                 $type.val('state').trigger('change');
                 $filter = _converse.rosterview.$('.state-type');
-                $roster = _converse.rosterview.$roster;
+                var $roster = $(_converse.rosterview.roster_el);
 
                 test_utils.waitUntil(function () {
-                        return $roster.find('dd:visible').length === 15;
-                    }, 500)
-                .then(function () {
-                    expect($roster.find('dt:visible').length).toBe(5);
+                        return $roster.find('li:visible').length === 15;
+                }, 500).then(function () {
+                    expect($roster.find('ul.roster-group-contacts:visible').length).toBe(5);
                     $filter.val("online");
                     $filter.trigger('change');
                     return test_utils.waitUntil(function () {
-                        return $roster.find('dd:visible').length === 1;
+                        return $roster.find('li:visible').length === 1;
                     }, 500)
                 }).then(function () {
-                    expect($roster.find('dd:visible').eq(0).text().trim()).toBe('Rinse Sommer');
-                    expect($roster.find('dt:visible').length).toBe(1);
+                    expect($roster.find('li:visible').eq(0).text().trim()).toBe('Rinse Sommer');
+                    expect($roster.find('ul.roster-group-contacts:visible').length).toBe(1);
                     var $type = _converse.rosterview.$('.filter-type');
                     $type.val('contacts').trigger('change');
                     done();
@@ -346,16 +365,19 @@
                 spyOn(_converse, 'emit');
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 _converse.rosterview.render();
+                test_utils.openControlBox();
                 test_utils.createContacts(_converse, 'pending');
                 test_utils.createContacts(_converse, 'requesting');
                 test_utils.createGroupedContacts(_converse);
                 // Check that the groups appear alphabetically and that
                 // requesting and pending contacts are last.
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
-                    }, 500)
-                .then(function () {
-                    var group_titles = $.map(_converse.rosterview.$el.find('dt'), function (o) { return $(o).text().trim(); });
+                    return _converse.rosterview.$el.find('.roster-group:visible a.group-toggle').length;
+                }, 500).then(function () {
+                    var group_titles = $.map(
+                        _converse.rosterview.$el.find('.roster-group:visible a.group-toggle'),
+                        function (o) { return $(o).text().trim(); }
+                    );
                     expect(group_titles).toEqual([
                         "Contact requests",
                         "colleagues",
@@ -367,7 +389,7 @@
                     ]);
                     // Check that usernames appear alphabetically per group
                     _.each(_.keys(mock.groups), function (name) {
-                        var $contacts = _converse.rosterview.$('dt.roster-group[data-group="'+name+'"]').nextUntil('dt', 'dd');
+                        var $contacts = _converse.rosterview.$('.roster-group[data-group="'+name+'"] ul');
                         var names = $.map($contacts, function (o) { return $(o).text().trim(); });
                         expect(names).toEqual(_.clone(names).sort());
                     });
@@ -384,6 +406,7 @@
                 var groups = ['colleagues', 'friends'];
                 spyOn(_converse, 'emit');
                 spyOn(_converse.rosterview, 'update').and.callThrough();
+                test_utils.openControlBox();
                 _converse.rosterview.render();
                 for (var i=0; i<mock.cur_names.length; i++) {
                     _converse.roster.create({
@@ -395,12 +418,12 @@
                     });
                 }
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dd').length;
+                        return _converse.rosterview.$el.find('li:visible').length;
                     }, 500)
                 .then(function () {
                     // Check that usernames appear alphabetically per group
                     _.each(groups, function (name) {
-                        var $contacts = _converse.rosterview.$('dt.roster-group[data-group="'+name+'"]').nextUntil('dt', 'dd');
+                        var $contacts = _converse.rosterview.$('.roster-group[data-group="'+name+'"] li');
                         var names = $.map($contacts, function (o) { return $(o).text().trim(); });
                         expect(names).toEqual(_.clone(names).sort());
                         expect(names.length).toEqual(mock.cur_names.length);
@@ -415,6 +438,8 @@
                     function (done, _converse) {
 
                 _converse.roster_groups = true;
+                test_utils.openControlBox();
+
                 var i=0, j=0;
                 var groups = {
                     'colleagues': 3,
@@ -437,10 +462,16 @@
                 var $toggle = view.$el.find('a.group-toggle');
                 expect(view.model.get('state')).toBe('opened');
                 $toggle.click();
-                expect(view.model.get('state')).toBe('closed');
-                $toggle.click();
-                expect(view.model.get('state')).toBe('opened');
-                done();
+                return test_utils.waitUntil(function () {
+                    return view.model.get('state') === 'closed';
+                }, 500).then(function () {
+                    $toggle.click();
+                    return test_utils.waitUntil(function () {
+                        return view.model.get('state') === 'opened';
+                    }, 500)
+                }).then(function () {
+                    done();
+                });
             }));
         });
 
@@ -448,7 +479,9 @@
 
             function _addContacts (_converse) {
                 // Must be initialized, so that render is called and documentFragment set up.
-                test_utils.createContacts(_converse, 'pending').openControlBox().openContactsPanel(_converse);
+                test_utils.createContacts(_converse, 'pending');
+                test_utils.openControlBox();
+                test_utils.openContactsPanel(_converse);
             }
 
             it("can be collapsed under their own header", 
@@ -458,11 +491,12 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dd').length;
-                    }, 500)
-                .then(function () {
-                    checkHeaderToggling.apply(_converse, [_converse.rosterview.get('Pending contacts').$el]);
-                    done();
+                    return _converse.rosterview.$el.find('li').length;
+                }, 500).then(function () {
+                    checkHeaderToggling.apply(
+                        _converse,
+                        [_converse.rosterview.get('Pending contacts').$el]
+                    ).then(done);
                 });
             }));
 
@@ -490,16 +524,16 @@
                     function (done, _converse) {
 
                 _converse.show_only_online_users = true;
+                test_utils.openControlBox();
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dd').length;
-                    }, 500)
-                .then(function () {
+                    return _converse.rosterview.$el.find('li').length;
+                }, 500).then(function () {
                     expect(_converse.rosterview.$el.is(':visible')).toEqual(true);
                     expect(_converse.rosterview.update).toHaveBeenCalled();
-                    expect(_converse.rosterview.$el.find('dd:visible').length).toBe(3);
-                    expect(_converse.rosterview.$el.find('dt:visible').length).toBe(1);
+                    expect(_converse.rosterview.$el.find('li:visible').length).toBe(3);
+                    expect(_converse.rosterview.$el.find('ul.roster-group-contacts:visible').length).toBe(1);
                     done();
                 });
             }));
@@ -513,13 +547,13 @@
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dd:visible').length;
+                        return _converse.rosterview.$el.find('li:visible').length;
                     }, 500)
                 .then(function () {
                     expect(_converse.rosterview.update).toHaveBeenCalled();
                     expect(_converse.rosterview.$el.is(':visible')).toBe(true);
-                    expect(_converse.rosterview.$el.find('dd:visible').length).toBe(3);
-                    expect(_converse.rosterview.$el.find('dt:visible').length).toBe(1);
+                    expect(_converse.rosterview.$el.find('li:visible').length).toBe(3);
+                    expect(_converse.rosterview.$el.find('ul.roster-group-contacts:visible').length).toBe(1);
                     done();
                 });
             }));
@@ -601,7 +635,7 @@
                     _converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
                         .parent().siblings('.remove-xmpp-contact').click();
                 }
-                expect(_converse.rosterview.$el.find('dt#pending-xmpp-contacts').is(':visible')).toBeFalsy();
+                expect(_converse.rosterview.$el.find('#pending-xmpp-contacts').is(':visible')).toBeFalsy();
                 done();
             }));
 
@@ -623,7 +657,7 @@
                     expect(_converse.rosterview.update).toHaveBeenCalled();
                 }
                 // Check that they are sorted alphabetically
-                t = _.reduce(_converse.rosterview.get('Pending contacts').$el.siblings('dd.pending-xmpp-contact').find('span'), function (result, value) {
+                t = _.reduce(_converse.rosterview.get('Pending contacts').$el.find('.pending-xmpp-contact span'), function (result, value) {
                     return result + _.trim(value.textContent);
                 }, '');
                 expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
@@ -643,11 +677,12 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dd:visible').length;
-                    }, 500)
-                .then(function () {
-                    checkHeaderToggling.apply(_converse, [_converse.rosterview.$el.find('dt.roster-group')]);
-                    done();
+                        return _converse.rosterview.$el.find('li:visible').length;
+                }, 500).then(function () {
+                    checkHeaderToggling.apply(
+                        _converse,
+                        [_converse.rosterview.$el.find('.roster-group')]
+                    ).then(done);
                 });
             }));
 
@@ -659,10 +694,10 @@
                 _converse.roster_groups = false;
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dd:visible').length;
+                        return _converse.rosterview.$el.find('li:visible').length;
                     }, 500)
                 .then(function () {
-                    _converse.rosterview.$el.find('dt.roster-group').find('a.group-toggle').click();
+                    _converse.rosterview.$el.find('.roster-group a.group-toggle').click();
                     var name = "Max Mustermann";
                     var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
                     _converse.roster.create({
@@ -694,10 +729,10 @@
                     expect(_converse.rosterview.update).toHaveBeenCalled();
                 }
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('dd').length;
+                    return _converse.rosterview.$el.find('li').length;
                 }).then(function () {
                     // Check that they are sorted alphabetically
-                    var t = _.reduce(_converse.rosterview.$('dt.roster-group').siblings('dd.current-xmpp-contact.offline').find('a.open-chat'), function (result, value) {
+                    var t = _.reduce(_converse.rosterview.$('.roster-group').find('.current-xmpp-contact.offline a.open-chat'), function (result, value) {
                         return result + _.trim(value.textContent);
                     }, '');
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
@@ -712,9 +747,8 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dd').length;
-                    }, 500)
-                .then(function () {
+                    return _converse.rosterview.$el.find('li').length;
+                }, 500).then(function () {
                     var name = mock.cur_names[0];
                     var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
                     var contact = _converse.roster.get(jid);
@@ -748,7 +782,7 @@
                     fullname: name
                 });
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                        return _converse.rosterview.$el.find('.roster-group').length;
                     }, 500)
                 .then(function () {
                     spyOn(window, 'confirm').and.returnValue(true);
@@ -757,13 +791,13 @@
                         if (typeof callback === "function") { return callback(); }
                     });
 
-                    expect(_converse.rosterview.$el.find('dt.roster-group').css('display')).toEqual('block');
+                    expect(_converse.rosterview.$el.find('.roster-group').css('display')).toEqual('block');
                     _converse.rosterview.$el.find(".open-chat:contains('"+name+"')")
                         .parent().find('.remove-xmpp-contact').click();
                     expect(window.confirm).toHaveBeenCalled();
                     expect(_converse.connection.sendIQ).toHaveBeenCalled();
                     expect(contact.removeFromRoster).toHaveBeenCalled();
-                    expect(_converse.rosterview.$el.find('dt.roster-group').css('display')).toEqual('none');
+                    expect(_converse.rosterview.$el.find('.roster-group').css('display')).toEqual('none');
                     done();
                 });
             }));
@@ -775,7 +809,7 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                        return _converse.rosterview.$el.find('.roster-group').length;
                     }, 500)
                 .then(function () {
                     var jid, t;
@@ -787,7 +821,7 @@
                         _converse.roster.get(jid).set('chat_status', 'online');
                         expect(_converse.rosterview.update).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
-                        t = _.reduce($roster.find('dt.roster-group').siblings('dd.current-xmpp-contact.online').find('a.open-chat'), function (result, value) {
+                        t = _.reduce($roster.find('.roster-group').find('.current-xmpp-contact.online a.open-chat'), function (result, value) {
                             return result + _.trim(value.textContent);
                         }, '');
                         expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
@@ -803,7 +837,7 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                        return _converse.rosterview.$el.find('.roster-group').length;
                     }, 500)
                 .then(function () {
                     var jid, t;
@@ -815,9 +849,10 @@
                         _converse.roster.get(jid).set('chat_status', 'dnd');
                         expect(_converse.rosterview.update).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
-                        t = _.reduce($roster.find('dt.roster-group').siblings('dd.current-xmpp-contact.dnd').find('a.open-chat'), function (result, value) {
-                            return result + _.trim(value.textContent);
-                        }, '');
+                        t = _.reduce($roster.find('.roster-group .current-xmpp-contact.dnd a.open-chat'),
+                            function (result, value) {
+                                return result + _.trim(value.textContent);
+                            }, '');
                         expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                     }
                     done();
@@ -831,7 +866,7 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                        return _converse.rosterview.$el.find('.roster-group').length;
                     }, 500)
                 .then(function () {
                     var jid, t;
@@ -843,9 +878,10 @@
                         _converse.roster.get(jid).set('chat_status', 'away');
                         expect(_converse.rosterview.update).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
-                        t = _.reduce($roster.find('dt.roster-group').siblings('dd.current-xmpp-contact.away').find('a.open-chat'), function (result, value) {
-                            return result + _.trim(value.textContent);
-                        }, '');
+                        t = _.reduce($roster.find('.roster-group .current-xmpp-contact.away a.open-chat'),
+                            function (result, value) {
+                                return result + _.trim(value.textContent);
+                            }, '');
                         expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                     }
                     done();
@@ -859,7 +895,7 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                        return _converse.rosterview.$el.find('.roster-group').length;
                     }, 500)
                 .then(function () {
                     var jid, t;
@@ -871,9 +907,10 @@
                         _converse.roster.get(jid).set('chat_status', 'xa');
                         expect(_converse.rosterview.update).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
-                        t = _.reduce($roster.find('dt.roster-group').siblings('dd.current-xmpp-contact.xa').find('a.open-chat'), function (result, value) {
-                            return result + _.trim(value.textContent);
-                        }, '');
+                        t = _.reduce($roster.find('.roster-group .current-xmpp-contact.xa a.open-chat'),
+                            function (result, value) {
+                                return result + _.trim(value.textContent);
+                            }, '');
                         expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                     }
                     done();
@@ -887,7 +924,7 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                        return _converse.rosterview.$el.find('.roster-group').length;
                     }, 500)
                 .then(function () {
                     var jid, t;
@@ -899,9 +936,10 @@
                         _converse.roster.get(jid).set('chat_status', 'unavailable');
                         expect(_converse.rosterview.update).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
-                        t = _.reduce($roster.find('dt.roster-group').siblings('dd.current-xmpp-contact.unavailable').find('a.open-chat'), function (result, value) {
-                            return result + _.trim(value.textContent);
-                        }, '');
+                        t = _.reduce($roster.find('.roster-group .current-xmpp-contact.unavailable a.open-chat'),
+                            function (result, value) {
+                                return result + _.trim(value.textContent);
+                            }, '');
                         expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                     }
                     done();
@@ -915,7 +953,7 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                        return _converse.rosterview.$el.find('.roster-group').length;
                     }, 500)
                 .then(function () {
                     var i, jid;
@@ -940,7 +978,7 @@
                         _converse.roster.get(jid).set('chat_status', 'unavailable');
                     }
 
-                    var contacts = _converse.rosterview.$el.find('dd.current-xmpp-contact');
+                    var contacts = _converse.rosterview.$el.find('.current-xmpp-contact');
                     for (i=0; i<3; i++) {
                         expect($(contacts[i]).hasClass('online')).toBeTruthy();
                         expect($(contacts[i]).hasClass('both')).toBeTruthy();
@@ -1029,7 +1067,7 @@
                 }
                 expect(_converse.rosterview.update).toHaveBeenCalled();
                 // Check that they are sorted alphabetically
-                children = _converse.rosterview.get('Contact requests').$el.siblings('dd.requesting-xmpp-contact').find('span');
+                children = _converse.rosterview.get('Contact requests').$el.find('.requesting-xmpp-contact span');
                 names = [];
                 children.each(addName);
                 expect(names.join('')).toEqual(mock.req_names.slice(0,mock.req_names.length+1).sort().join(''));
@@ -1052,7 +1090,7 @@
                     fullname: name
                 });
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                        return _converse.rosterview.$el.find('.roster-group').length;
                     }, 500)
                 .then(function () {
                     expect(_converse.rosterview.get('Contact requests').$el.is(':visible')).toEqual(true);
@@ -1072,11 +1110,12 @@
 
                 test_utils.createContacts(_converse, 'requesting').openControlBox();
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
-                    }, 500)
-                .then(function () {
-                    checkHeaderToggling.apply(_converse, [_converse.rosterview.get('Contact requests').$el]);
-                    done();
+                    return _converse.rosterview.$el.find('.roster-group').length;
+                }, 500).then(function () {
+                    checkHeaderToggling.apply(
+                        _converse,
+                        [_converse.rosterview.get('Contact requests').$el]
+                    ).then(done);
                 });
             }));
 
@@ -1087,7 +1126,7 @@
 
                 test_utils.createContacts(_converse, 'requesting').openControlBox();
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                        return _converse.rosterview.$el.find('.roster-group').length;
                     }, 500)
                 .then(function () {
                     // TODO: Testing can be more thorough here, the user is
@@ -1116,7 +1155,7 @@
 
                 test_utils.createContacts(_converse, 'requesting').openControlBox();
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                        return _converse.rosterview.$el.find('.roster-group').length;
                     }, 500)
                 .then(function () {
                     _converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
@@ -1220,14 +1259,14 @@
                 test_utils.createContacts(_converse, 'all').openControlBox();
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                        return _converse.rosterview.$el.find('.roster-group').length;
                     }, 500)
                 .then(function () {
                     var jid, name, i;
                     for (i=0; i<mock.cur_names.length; i++) {
                         name = mock.cur_names[i];
                         jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
-                        var $dd = _converse.rosterview.$el.find("dd:contains('"+name+"')").children().first();
+                        var $dd = _converse.rosterview.$el.find("li:contains('"+name+"')").children().first();
                         var dd_text = $dd.text();
                         var dd_title = $dd.attr('title');
                         expect(_.trim(dd_text)).toBe(name);
@@ -1279,11 +1318,10 @@
                 fullname: mock.pend_names[0]
             });
             test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('dt').length;
-                }, 500)
-            .then(function () {
+                return _converse.rosterview.$el.find('.roster-group').length;
+            }, 500).then(function () {
                 // Checking that only one entry is created because both JID is same (Case sensitive check)
-                expect(_converse.rosterview.$el.find('dd:visible').length).toBe(1);
+                expect(_converse.rosterview.$el.find('li:visible').length).toBe(1);
                 expect(_converse.rosterview.update).toHaveBeenCalled();
                 done();
             });

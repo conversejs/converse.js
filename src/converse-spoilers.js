@@ -22,9 +22,9 @@
     }
 
     function getHint() {
-        let hint = document.querySelector('.chat-textarea-hint').value;
-        return hasHint() ? hint : _('Spoiler');
+        return document.querySelector('.chat-textarea-hint').value;
     }
+    
     // The following line registers your plugin.
     converse.plugins.add("converse-spoilers", {
 
@@ -157,14 +157,15 @@
         'overrides': {
             'ChatBoxView': {
                 'createMessageStanza': function () {
-                    debugger;
                     let messageStanza = this.__super__.createMessageStanza.apply(this, arguments);
                     if (isEditSpoilerMessage()) {
-                        messageStanza.c('spoiler',{'xmlns': 'urn:xmpp:spoiler:0'}, getHint()); //TODO Check for hint or send __('Spoiler');
+                        if (hasHint()){
+                            messageStanza.c('spoiler',{'xmlns': 'urn:xmpp:spoiler:0'}, getHint());
+                        } else {
+                            messageStanza.c('spoiler',{'xmlns': 'urn:xmpp:spoiler:0'});
+                        }
                     }
-                    alert(messageStanza);
                     return messageStanza;
-                
                 }
             }
 

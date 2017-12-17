@@ -16,6 +16,15 @@
     function isEditSpoilerMessage() {
         return document.querySelector('.toggle-spoiler').getAttribute('active') === 'true';
     }
+
+    function hasHint() {
+        return document.querySelector('.chat-textarea-hint').value.length > 0;
+    }
+
+    function getHint() {
+        let hint = document.querySelector('.chat-textarea-hint').value;
+        return hasHint() ? hint : _('Spoiler');
+    }
     // The following line registers your plugin.
     converse.plugins.add("converse-spoilers", {
 
@@ -151,7 +160,7 @@
                     debugger;
                     let messageStanza = this.__super__.createMessageStanza.apply(this, arguments);
                     if (isEditSpoilerMessage()) {
-                        messageStanza.c('spoiler',{'xmlns': 'urn:xmpp:spoiler:0'}, _('Spoiler')); //TODO Check for hint or send __('Spoiler');
+                        messageStanza.c('spoiler',{'xmlns': 'urn:xmpp:spoiler:0'}, getHint()); //TODO Check for hint or send __('Spoiler');
                     }
                     alert(messageStanza);
                     return messageStanza;

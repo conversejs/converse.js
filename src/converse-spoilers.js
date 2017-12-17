@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define(["converse-core", "strophe.vcard"], factory);
+    define(["converse-core", "strophe.vcard", "converse-chatview"], factory);
 }(this, function (converse) {
 
     // Commonly used utilities and variables can be found under the "env"
@@ -13,6 +13,9 @@
         _ = converse.env._,
         moment = converse.env.moment;
 
+    function isEditSpoilerMessage() {
+        return document.querySelector('.toggle-spoiler').getAttribute('active') === 'true';
+    }
     // The following line registers your plugin.
     converse.plugins.add("converse-spoilers", {
 
@@ -125,11 +128,7 @@
                 }
                 
             }
-            
-            function isEditSpoilerMessage() {
-                return document.querySelector('.toggle-spoiler').getAttribute('active') === 'true';
-            }
-            
+               
             function createHintTextArea(){
                 let hintTextArea = document.createElement('input');
                 hintTextArea.setAttribute('type', 'text');
@@ -147,47 +146,19 @@
          * the "overrides" namespace.
          */
         'overrides': {
-            /* For example, the private *_converse* object has a
-             * method "onConnected". You can override that method as follows:
-             */
-            'onConnected': function () {
-                // Overrides the onConnected method in converse.js
-
-                // Top-level functions in "overrides" are bound to the
-                // inner "_converse" object.
-                var _converse = this;
-
-                // Your custom code can come here ...
-
-                // You can access the original function being overridden
-                // via the __super__ attribute.
-                // Make sure to pass on the arguments supplied to this
-                // function and also to apply the proper "this" object.
-                _converse.__super__.onConnected.apply(this, arguments);
-
-                // Your custom code can come here ...
-            },
-
-            /* Override converse.js's XMPPStatus Backbone model so that we can override the
-             * function that sends out the presence stanza.
-             */
-            'XMPPStatus': {
-                'sendPresence': function (type, status_message, jid) {
-                    // The "_converse" object is available via the __super__
-                    // attribute.
-                    var _converse = this.__super__._converse;
-
-                    // Custom code can come here ...
-
-                    // You can call the original overridden method, by
-                    // accessing it via the __super__ attribute.
-                    // When calling it, you need to apply the proper
-                    // context as reference by the "this" variable.
-                    this.__super__.sendPresence.apply(this, arguments);
-
-                    // Custom code can come here ...
+            'ChatBoxView': {
+                'createMessageStanza': function () {
+                    debugger;
+                    let messageStanza = this.__super__.createMessageStanza.apply(this, arguments);
+                    if (isEditSpoilerMessage()) {
+                        messageStanza.c('spoiler',{'xmlns': 'urn:xmpp:spoiler:0'}, _('Spoiler')); //TODO Check for hint or send __('Spoiler');
+                    }
+                    alert(messageStanza);
+                    return messageStanza;
+                
                 }
             }
+
         }
     });
 }));

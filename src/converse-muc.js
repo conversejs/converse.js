@@ -2371,8 +2371,8 @@
                     } else if (index === (this.model.length-1)) {
                         list.insertAdjacentElement('beforeend', view.el);
                     } else {
-                        const neighbour = list.querySelector('li:nth-child('+index+')');
-                        neighbour.insertAdjacentElement('afterend', view.el);
+                        const neighbour_el = list.querySelector('li:nth-child('+index+')');
+                        neighbour_el.insertAdjacentElement('afterend', view.el);
                     }
                     return view;
                 },
@@ -2662,12 +2662,14 @@
                     if (this.rooms.length) {
                         // For translators: %1$s is a variable and will be
                         // replaced with the XMPP server name
-                        available_chatrooms.innerHTML = `<dt>${__('Rooms on %1$s',this.model.get('muc_domain'))}</dt>`;
+                        available_chatrooms.innerHTML =
+                            `<dt>${__('Rooms on %1$s',this.model.get('muc_domain'))}</dt>`;
                         const div = document.createElement('div');
                         const fragment = document.createDocumentFragment();
                         for (let i=0; i<this.rooms.length; i++) {
                             const name = Strophe.unescapeNode(
-                                this.rooms[i].getAttribute('name') || this.rooms[i].getAttribute('jid')
+                                this.rooms[i].getAttribute('name') ||
+                                    this.rooms[i].getAttribute('jid')
                             );
                             div.innerHTML = tpl_room_item({
                                 'name': name,

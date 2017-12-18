@@ -14,7 +14,7 @@
         moment = converse.env.moment;
 
     function isEditSpoilerMessage() {
-        return document.querySelector('.toggle-spoiler').getAttribute('active') === 'true';
+        return document.querySelector('.toggle-spoiler-edit').getAttribute('active') === 'true';
     }
 
     function hasHint() {
@@ -24,7 +24,7 @@
     function getHint() {
         return document.querySelector('.chat-textarea-hint').value;
     }
-    
+
     // The following line registers your plugin.
     converse.plugins.add("converse-spoilers", {
 
@@ -102,19 +102,18 @@
              */
             const initSpoilers = function () {
                 var spoiler_button = document.createElement('li');
-                spoiler_button.classList.add("toggle-spoiler");
+                spoiler_button.classList.add("toggle-spoiler-edit");
                 spoiler_button.setAttribute("active", "false");
-                spoiler_button.onclick = toggleEditSpoilerMessage;
                 spoiler_button.innerHTML = '<a class="icon-eye" title="' + _('Click here to write a message as a spoiler') + '"></a>';
                 document.querySelector('.chat-toolbar').appendChild(spoiler_button);
             };
-            
+
             function toggleEditSpoilerMessage() {
                 let form = document.querySelector('.sendXMPPMessage');
                 let textArea = document.querySelector('.chat-textarea');
                 let hintTextArea = null;
-                let spoiler_button = document.querySelector('.toggle-spoiler');
-                
+                let spoiler_button = document.querySelector('.toggle-spoiler-edit');
+
                 if (!isEditSpoilerMessage()) {
                     textArea.style['background-color'] = '#D5FFD2';
                     textArea.setAttribute('placeholder', _('Write your spoiler\'s content here'));
@@ -132,12 +131,12 @@
                     hintTextArea = document.querySelector('.chat-textarea-hint');
                     if ( hintTextArea ) {
                         hintTextArea.remove();
-                        
+
                     }
                 }
-                
+
             }
-               
+
             function createHintTextArea(){
                 let hintTextArea = document.createElement('input');
                 hintTextArea.setAttribute('type', 'text');
@@ -156,6 +155,10 @@
          */
         'overrides': {
             'ChatBoxView': {
+                'events': {
+                    'click .toggle-spoiler-edit': toggleEditSpoilerMessage
+                },
+                
                 'createMessageStanza': function () {
                     let messageStanza = this.__super__.createMessageStanza.apply(this, arguments);
                     if (isEditSpoilerMessage()) {

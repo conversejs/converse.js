@@ -759,7 +759,10 @@
                     .then(() => {
                         _converse.emit('rosterContactsFetched');
                         _converse.sendInitialPresence();
-                    }).catch(_converse.sendInitialPresence);
+                    }).catch((reason) => {
+                        _converse.log(reason, Strophe.LogLevel.ERROR);
+                        _converse.sendInitialPresence();
+                    });
             } else {
                 _converse.rostergroups.fetchRosterGroups().then(() => {
                     _converse.emit('rosterGroupsFetched');
@@ -767,7 +770,8 @@
                 }).then(() => {
                     _converse.emit('rosterContactsFetched');
                     _converse.sendInitialPresence();
-                }).catch(() => {
+                }).catch((reason) => {
+                    _converse.log(reason, Strophe.LogLevel.ERROR);
                     _converse.sendInitialPresence();
                 });
             }
@@ -1621,7 +1625,7 @@
             } catch (e) {
                 _converse.log(
                     "Could not restore session for jid: "+
-                    this.jid+" Error message: "+e.message);
+                    this.jid+" Error message: "+e.message, Strophe.LogLevel.WARN);
                 this.clearSession(); // If there's a roster, we want to clear it (see #555)
                 return false;
             }

@@ -35,13 +35,6 @@
         'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
     }, console);
 
-    var afterAnimationEnd = function (el, callback) {
-        el.classList.remove('visible');
-        if (_.isFunction(callback)) {
-            callback();
-        }
-    };
-
     var unescapeHTML = function (htmlEscapedText) {
         /* Helper method that replace HTML-escaped symbols with equivalent characters
          * (e.g. transform occurrences of '&amp;' to '&')
@@ -287,25 +280,27 @@
         });
     };
 
+    var afterAnimationEnd = function (el, callback) {
+        el.classList.remove('visible');
+        if (_.isFunction(callback)) {
+            callback();
+        }
+    };
+
     u.fadeIn = function (el, callback) {
         if (_.isNil(el)) {
             logger.warn("Undefined or null element passed into fadeIn");
         }
-        if (window.converse_disable_effects) { // Effects are disabled (for tests)
+        if (window.converse_disable_effects) {
             el.classList.remove('hidden');
-            if (_.isFunction(callback)) {
-                callback();
-            }
-            return;
+            return afterAnimationEnd(el, callback);
         }
         if (_.includes(el.classList, 'hidden')) {
-            /* XXX: This doesn't appear to be working...
-                el.addEventListener("webkitAnimationEnd", _.partial(afterAnimationEnd, el, callback), false);
-                el.addEventListener("animationend", _.partial(afterAnimationEnd, el, callback), false);
-            */
-            setTimeout(_.partial(afterAnimationEnd, el, callback), 351);
             el.classList.add('visible');
             el.classList.remove('hidden');
+            el.addEventListener("webkitAnimationEnd", _.partial(afterAnimationEnd, el, callback));
+            el.addEventListener("animationend", _.partial(afterAnimationEnd, el, callback));
+            el.addEventListener("oanimationend", _.partial(afterAnimationEnd, el, callback));
         } else {
             afterAnimationEnd(el, callback);
         }

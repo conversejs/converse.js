@@ -1569,9 +1569,8 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                                return _converse.rosterview.$el.find('.roster-group').length;
-                            }, 300)
-                        .then(function () {
+                            return _converse.rosterview.$el.find('.roster-group').length;
+                        }, 300).then(function () {
                             var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                             test_utils.openChatBoxFor(_converse, contact_jid);
                             var view = _converse.chatboxviews.get(contact_jid);

@@ -6,6 +6,7 @@
 - #800 Could not register successfully in ejabberd 17.01
 - #949 Don't flash the roster contacts filter (i.e. hide by default)
 - #953 MUC "Features" displayed when exiting configuration
+- #967 Rooms list doesn't show when the server doesn't support bookmarks
 - Don't require `auto_login` to be `true` when using the API to log in.
 - Moment locale wasn't being set to the value passed via the `i18n` option.
 - In the chat heading, two avatars sometimes get rendered.

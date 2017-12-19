@@ -567,6 +567,7 @@
                 afterConnected () {
                     if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                         this.setChatState(_converse.ACTIVE);
+                        this.renderEmojiPicker();
                         this.scrollDown();
                         this.focus();
                     }

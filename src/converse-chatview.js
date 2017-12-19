@@ -275,6 +275,7 @@
                     this.model.on('sendMessage', this.sendMessage, this);
 
                     this.render().renderToolbar().insertHeading().fetchMessages();
+                    this.createEmojiPicker();
                     u.refreshWebkit();
                     _converse.emit('chatBoxOpened', this);
                     _converse.emit('chatBoxInitialized', this);
@@ -906,10 +907,13 @@
                     );
                     this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
 
+                    return this;
+                },
+
+                renderEmojiPicker () {
                     var toggle = this.el.querySelector('.toggle-smiley');
                     toggle.innerHTML = '';
                     toggle.appendChild(this.emoji_picker_view.render().el);
-                    return this;
                 },
 
                 focus () {
@@ -929,15 +933,15 @@
                         this.model.save();
                     }
                     this.setChatState(_converse.ACTIVE);
+                    this.renderEmojiPicker();
                     this.scrollDown();
                     if (focus) {
                         this.focus();
                     }
                 },
 
-                _show (focus) {
-                    /* Inner show method that gets debounced */
-                    if (this.$el.is(':visible') && this.$el.css('opacity') === "1") {
+                show (focus) {
+                    if (u.isVisible(this.el) && this.$el.css('opacity') === "1") {
                         if (focus) { this.focus(); }
                         return;
                     }
@@ -946,18 +950,6 @@
                         that.afterShown();
                         if (focus) { that.focus(); }
                     });
-                },
-
-                show (focus) {
-                    if (_.isUndefined(this.debouncedShow)) {
-                        /* We wrap the method in a debouncer and set it on the
-                         * instance, so that we have it debounced per instance.
-                         * Debouncing it on the class-level is too broad.
-                         */
-                        this.debouncedShow = _.debounce(this._show, 250, {'leading': true});
-                    }
-                    this.debouncedShow.apply(this, arguments);
-                    return this;
                 },
 
                 hideNewMessagesIndicator () {

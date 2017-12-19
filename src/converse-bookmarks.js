@@ -34,6 +34,9 @@
     const { Backbone, Promise, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
 
     converse.plugins.add('converse-bookmarks', {
+
+        optional_dependencies: ["converse-chatboxes", "converse-muc"],
+
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -382,7 +385,7 @@
                     _converse.log('Error while fetching bookmarks', Strophe.LogLevel.WARN);
                     _converse.log(iq.outerHTML, Strophe.LogLevel.DEBUG);
                     if (!_.isNil(deferred)) {
-                        return deferred.reject();
+                        return deferred.reject(new Error("Could not fetch bookmarks"));
                     }
                 }
             });
@@ -514,10 +517,13 @@
                     return;
                 }
                 _converse.bookmarks = new _converse.Bookmarks();
-                _converse.bookmarks.fetchBookmarks().then(function () {
+                _converse.bookmarks.fetchBookmarks().then(() => {
                     _converse.bookmarksview = new _converse.BookmarksView(
                         {'model': _converse.bookmarks}
                     );
+                })
+                .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR))
+                .then(() => {
                     _converse.emit('bookmarksInitialized');
                 });
             };

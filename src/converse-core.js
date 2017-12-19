@@ -170,8 +170,6 @@
         } else if (level === Strophe.LogLevel.WARN) {
             if (_converse.debug) {
                 logger.warn(`${prefix} ${moment().format()} WARNING: ${message}`, style);
-            } else {
-                logger.warn(`${prefix} WARNING: ${message}`, style);
             }
         } else if (level === Strophe.LogLevel.FATAL) {
             if (_converse.debug) {
@@ -249,7 +247,9 @@
             // out or disconnecting in the previous session.
             // This happens in tests. We therefore first clean up.
             Backbone.history.stop();
+            _converse.chatboxviews.closeAllChatBoxes();
             delete _converse.controlboxtoggle;
+            delete _converse.chatboxviews;
             _converse.connection.reset();
             _converse.off();
             _converse.stopListening();
@@ -759,7 +759,10 @@
                     .then(() => {
                         _converse.emit('rosterContactsFetched');
                         _converse.sendInitialPresence();
-                    }).catch(_converse.sendInitialPresence);
+                    }).catch((reason) => {
+                        _converse.log(reason, Strophe.LogLevel.ERROR);
+                        _converse.sendInitialPresence();
+                    });
             } else {
                 _converse.rostergroups.fetchRosterGroups().then(() => {
                     _converse.emit('rosterGroupsFetched');
@@ -767,7 +770,8 @@
                 }).then(() => {
                     _converse.emit('rosterContactsFetched');
                     _converse.sendInitialPresence();
-                }).catch(() => {
+                }).catch((reason) => {
+                    _converse.log(reason, Strophe.LogLevel.ERROR);
                     _converse.sendInitialPresence();
                 });
             }
@@ -1105,7 +1109,8 @@
                  */
                 return new Promise((resolve, reject) => {
                     this.fetch({
-                        add: true,
+                        'add': true,
+                        'silent': true,
                         success (collection) {
                             if (collection.length === 0) {
                                 _converse.send_initial_presence = true;
@@ -1425,6 +1430,7 @@
 
 
         this.RosterGroup = Backbone.Model.extend({
+
             initialize (attributes) {
                 this.set(_.assignIn({
                     description: __('Click to hide these contacts'),
@@ -1621,7 +1627,7 @@
             } catch (e) {
                 _converse.log(
                     "Could not restore session for jid: "+
-                    this.jid+" Error message: "+e.message);
+                    this.jid+" Error message: "+e.message, Strophe.LogLevel.WARN);
                 this.clearSession(); // If there's a roster, we want to clear it (see #555)
                 return false;
             }

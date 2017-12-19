@@ -40,8 +40,8 @@
             tpl_spinner
     ) {
     "use strict";
-    const { $msg, Backbone, Strophe, _, b64_sha1, moment, utils } = converse.env;
-
+    const { $msg, Backbone, Strophe, _, b64_sha1, moment } = converse.env;
+    const u = converse.env.utils;
     const KEY = {
         ENTER: 13,
         FORWARD_SLASH: 47
@@ -64,7 +64,7 @@
                             _.includes(ev.target.classList, 'insert-emoji')) {
                             return;
                         }
-                        utils.slideInAllElements(
+                        u.slideInAllElements(
                             document.querySelectorAll('.toolbar-menu')
                         )
                     }
@@ -147,8 +147,8 @@
                         _.extend(
                             this.model.toJSON(), {
                                 'transform': _converse.use_emojione ? emojione.shortnameToImage : emojione.shortnameToUnicode,
-                                'emojis_by_category': utils.getEmojisByCategory(_converse, emojione),
-                                'toned_emojis': utils.getTonedEmojis(_converse),
+                                'emojis_by_category': u.getEmojisByCategory(_converse, emojione),
+                                'toned_emojis': u.getTonedEmojis(_converse),
                                 'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
                                 'shouldBeHidden': this.shouldBeHidden
                             }
@@ -275,7 +275,7 @@
                     this.model.on('sendMessage', this.sendMessage, this);
 
                     this.render().renderToolbar().insertHeading().fetchMessages();
-                    utils.refreshWebkit();
+                    u.refreshWebkit();
                     _converse.emit('chatBoxOpened', this);
                     _converse.emit('chatBoxInitialized', this);
                 },
@@ -545,10 +545,10 @@
                         })
                     ));
                     const msg_content = $msg[0].querySelector('.chat-msg-content');
-                    msg_content.innerHTML = utils.addEmoji(
-                        _converse, emojione, utils.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))
+                    msg_content.innerHTML = u.addEmoji(
+                        _converse, emojione, u.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))
                     );
-                    utils.renderImageURLs(msg_content);
+                    u.renderImageURLs(msg_content);
                     return $msg;
                 },
 
@@ -577,7 +577,10 @@
                         } else {
                             this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
                         }
-                        this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 30000);
+                        this.clear_status_timeout = window.setTimeout(
+                            this.clearStatusNotification.bind(this),
+                            30000
+                        );
                     } else if (message.get('chat_state') === _converse.PAUSED) {
                         if (message.get('sender') === 'me') {
                             this.showStatusNotification(__('Stopped typing on the other device'));
@@ -597,14 +600,14 @@
 
                 handleTextMessage (message) {
                     this.showMessage(_.clone(message.attributes));
-                    if (utils.isNewMessage(message) && message.get('sender') === 'me') {
+                    if (u.isNewMessage(message) && message.get('sender') === 'me') {
                         // We remove the "scrolled" flag so that the chat area
                         // gets scrolled down. We always want to scroll down
                         // when the user writes a message as opposed to when a
                         // message is received.
                         this.model.set('scrolled', false);
                     } else {
-                        if (utils.isNewMessage(message) && this.model.get('scrolled', true)) {
+                        if (u.isNewMessage(message) && this.model.get('scrolled', true)) {
                             this.$el.find('.new-msgs-indicator').removeClass('hidden');
                         }
                     }
@@ -749,10 +752,16 @@
                     }
                     if (state === _converse.COMPOSING) {
                         this.chat_state_timeout = window.setTimeout(
-                            this.setChatState.bind(this), _converse.TIMEOUTS.PAUSED, _converse.PAUSED);
+                            this.setChatState.bind(this),
+                            _converse.TIMEOUTS.PAUSED,
+                            _converse.PAUSED
+                        );
                     } else if (state === _converse.PAUSED) {
                         this.chat_state_timeout = window.setTimeout(
-                            this.setChatState.bind(this), _converse.TIMEOUTS.INACTIVE, _converse.INACTIVE);
+                            this.setChatState.bind(this),
+                            _converse.TIMEOUTS.INACTIVE,
+                            _converse.INACTIVE
+                        );
                     }
                     if (!no_save && this.model.get('chat_state') !== state) {
                         this.model.set('chat_state', state);
@@ -824,9 +833,9 @@
                         document.querySelectorAll('.toolbar-menu'),
                         [this.emoji_picker_view.el]
                     );
-                    utils.slideInAllElements(elements)
+                    u.slideInAllElements(elements)
                         .then(_.partial(
-                                utils.slideToggleElement,
+                                u.slideToggleElement,
                                 this.emoji_picker_view.el))
                         .then(this.focus.bind(this));
                 },
@@ -864,7 +873,7 @@
                     if (_converse.connection.connected) {
                         // Immediately sending the chat state, because the
                         // model is going to be destroyed afterwards.
-                        this.model.set('chat_state', _converse.INACTIVE);
+                        this.setChatState(_converse.INACTIVE);
                         this.sendChatState();
                     }
                     try {
@@ -911,12 +920,12 @@
 
                 hide () {
                     this.el.classList.add('hidden');
-                    utils.refreshWebkit();
+                    u.refreshWebkit();
                     return this;
                 },
 
                 afterShown (focus) {
-                    if (utils.isPersistableModel(this.model)) {
+                    if (u.isPersistableModel(this.model)) {
                         this.model.save();
                     }
                     this.setChatState(_converse.ACTIVE);
@@ -932,7 +941,11 @@
                         if (focus) { this.focus(); }
                         return;
                     }
-                    utils.fadeIn(this.el, _.bind(this.afterShown, this, focus));
+                    const that = this;
+                    u.fadeIn(this.el, function () {
+                        that.afterShown();
+                        if (focus) { that.focus(); }
+                    });
                 },
 
                 show (focus) {
@@ -978,7 +991,7 @@
                         scrolled = false;
                         this.onScrolledDown();
                     }
-                    utils.safeSave(this.model, {'scrolled': scrolled});
+                    u.safeSave(this.model, {'scrolled': scrolled});
                 },
 
                 viewUnreadMessages () {

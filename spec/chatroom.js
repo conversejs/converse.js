@@ -72,7 +72,7 @@
 
                 test_utils.createContacts(_converse, 'current');
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                        return _converse.rosterview.$el.find('.roster-group .group-toggle').length;
                     }, 300)
                 .then(function () {
                     test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
@@ -129,9 +129,10 @@
                     return deferred.promise();
                 });
 
+                test_utils.openControlBox();
                 test_utils.createContacts(_converse, 'current');
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                    return _converse.rosterview.$el.find('.roster-group .group-toggle').length;
                 }, 300).then(function () {
                     var jid = 'lounge@localhost';
                     var room = _converse.api.rooms.open(jid);
@@ -256,7 +257,7 @@
                        ' </query>'+
                        ' </iq>')[0]));
 
-                    test_utils.waitUntil(function () {
+                    return test_utils.waitUntil(function () {
                         return sent_IQ.toLocaleString() !==
                             "<iq to='room@conference.example.org' type='get' xmlns='jabber:client' id='"+IQ_id+
                             "'><query xmlns='http://jabber.org/protocol/muc#owner'/></iq>";

@@ -161,7 +161,7 @@
                 renderRoomsPanel () {
                     const { _converse } = this.__super__;
                     this.roomspanel = new _converse.RoomsPanel({
-                        '$parent': this.$el.find('.controlbox-panes'),
+                        'parent': this.el.querySelector('.controlbox-panes'),
                         'model': new (_converse.RoomsPanelModel.extend({
                             id: b64_sha1(`converse.roomspanel${_converse.bare_jid}`), // Required by sessionStorage
                             browserStorage: new Backbone.BrowserStorage[_converse.storage](
@@ -2256,21 +2256,21 @@
                 },
 
                 renderInviteWidget () {
-                    let form = this.el.querySelector('form.room-invite');
+                    const form = this.el.querySelector('form.room-invite');
                     if (this.shouldInviteWidgetBeShown()) {
                         if (_.isNull(form)) {
                             const heading = this.el.querySelector('.occupants-heading');
-                            form = tpl_chatroom_invite({
-                                'error_message': null,
-                                'label_invitation': __('Invite'),
-                            });
-                            heading.insertAdjacentHTML('afterend', form);
+                            heading.insertAdjacentHTML(
+                                'afterend',
+                                tpl_chatroom_invite({
+                                    'error_message': null,
+                                    'label_invitation': __('Invite'),
+                                })
+                            );
                             this.initInviteWidget();
                         }
-                    } else {
-                        if (!_.isNull(form)) {
-                            form.remove();
-                        }
+                    } else if (!_.isNull(form)) {
+                        form.remove();
                     }
                     return this;
                 },
@@ -2371,8 +2371,8 @@
                     } else if (index === (this.model.length-1)) {
                         list.insertAdjacentElement('beforeend', view.el);
                     } else {
-                        const neighbour = list.querySelector('li:nth-child('+index+')');
-                        neighbour.insertAdjacentElement('afterend', view.el);
+                        const neighbour_el = list.querySelector('li:nth-child('+index+')');
+                        neighbour_el.insertAdjacentElement('afterend', view.el);
                     }
                     return view;
                 },
@@ -2582,7 +2582,7 @@
 
                 initialize (cfg) {
                     this.join_form = new _converse.MUCJoinForm({'model': this.model});
-                    this.parent_el = cfg.$parent[0];
+                    this.parent_el = cfg.parent;
                     this.tab_el = document.createElement('li');
                     this.model.on('change:muc_domain', this.onDomainChange, this);
                     this.model.on('change:nick', this.onNickChange, this);
@@ -2638,40 +2638,51 @@
                     }
                 },
 
+                removeSpinner () {
+                    _.each(this.el.querySelectorAll('span.spinner'),
+                        (el) => el.parentNode.removeChild(el)
+                    );
+                },
+
                 informNoRoomsFound () {
                     const $available_chatrooms = this.$el.find('#available-chatrooms');
                     // For translators: %1$s is a variable and will be replaced with the XMPP server name
                     $available_chatrooms.html(`<dt>${__('No rooms on %1$s', this.model.get('muc_domain'))}</dt>`);
-                    $('input#show-rooms').show().siblings('span.spinner').remove();
+                    const input_el = this.el.querySelector('input#show-rooms');
+                    input_el.classList.remove('hidden')
+                    this.removeSpinner();
                 },
 
                 onRoomsFound (iq) {
                     /* Handle the IQ stanza returned from the server, containing
                      * all its public rooms.
                      */
-                    const $available_chatrooms = this.$el.find('#available-chatrooms');
-                    this.rooms = $(iq).find('query').find('item');
+                    const available_chatrooms = this.el.querySelector('#available-chatrooms');
+                    this.rooms = iq.querySelectorAll('query item');
                     if (this.rooms.length) {
                         // For translators: %1$s is a variable and will be
                         // replaced with the XMPP server name
-                        $available_chatrooms.html(`<dt>${__('Rooms on %1$s',this.model.get('muc_domain'))}</dt>`);
+                        available_chatrooms.innerHTML =
+                            `<dt>${__('Rooms on %1$s',this.model.get('muc_domain'))}</dt>`;
+                        const div = document.createElement('div');
                         const fragment = document.createDocumentFragment();
                         for (let i=0; i<this.rooms.length; i++) {
                             const name = Strophe.unescapeNode(
-                                $(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid')
+                                this.rooms[i].getAttribute('name') ||
+                                    this.rooms[i].getAttribute('jid')
                             );
-                            const jid = $(this.rooms[i]).attr('jid');
-                            fragment.appendChild($(
-                                tpl_room_item({
-                                    'name':name,
-                                    'jid':jid,
-                                    'open_title': __('Click to open this room'),
-                                    'info_title': __('Show more information on this room')
-                                    })
-                                )[0]);
+                            div.innerHTML = tpl_room_item({
+                                'name': name,
+                                'jid': this.rooms[i].getAttribute('jid'),
+                                'open_title': __('Click to open this room'),
+                                'info_title': __('Show more information on this room')
+                            });
+                            fragment.appendChild(div.firstChild);
                         }
-                        $available_chatrooms.append(fragment);
-                        $('input#show-rooms').show().siblings('span.spinner').remove();
+                        available_chatrooms.appendChild(fragment);
+                        const input_el = this.el.querySelector('input#show-rooms');
+                        input_el.classList.remove('hidden')
+                        this.removeSpinner();
                     } else {
                         this.informNoRoomsFound();
                     }
@@ -2703,7 +2714,11 @@
                     this.$el.find('input.new-chatroom-name').removeClass('error');
                     $server.removeClass('error');
                     $available_chatrooms.empty();
-                    $('input#show-rooms').hide().after(tpl_spinner);
+
+                    const input_el = this.el.querySelector('input#show-rooms');
+                    input_el.classList.add('hidden')
+                    input_el.insertAdjacentHTML('afterend', tpl_spinner());
+
                     this.model.save({muc_domain: server});
                     this.updateRoomsList();
                 },

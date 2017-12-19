@@ -341,8 +341,11 @@
                         _converse.connection.deleteHandler(message_handler);
                         if (_.isFunction(callback)) {
                             const set = iq.querySelector('set');
-                            const rsm = new Strophe.RSM({xml: set});
-                            _.extend(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
+                            let rsm;
+                            if (!_.isUndefined(set)) {
+                                rsm = new Strophe.RSM({xml: set});
+                                _.extend(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
+                            }
                             callback(messages, rsm);
                         }
                     },

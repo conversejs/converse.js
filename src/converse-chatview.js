@@ -577,7 +577,10 @@
                         } else {
                             this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
                         }
-                        this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 30000);
+                        this.clear_status_timeout = window.setTimeout(
+                            this.clearStatusNotification.bind(this),
+                            30000
+                        );
                     } else if (message.get('chat_state') === _converse.PAUSED) {
                         if (message.get('sender') === 'me') {
                             this.showStatusNotification(__('Stopped typing on the other device'));
@@ -749,10 +752,16 @@
                     }
                     if (state === _converse.COMPOSING) {
                         this.chat_state_timeout = window.setTimeout(
-                            this.setChatState.bind(this), _converse.TIMEOUTS.PAUSED, _converse.PAUSED);
+                            this.setChatState.bind(this),
+                            _converse.TIMEOUTS.PAUSED,
+                            _converse.PAUSED
+                        );
                     } else if (state === _converse.PAUSED) {
                         this.chat_state_timeout = window.setTimeout(
-                            this.setChatState.bind(this), _converse.TIMEOUTS.INACTIVE, _converse.INACTIVE);
+                            this.setChatState.bind(this),
+                            _converse.TIMEOUTS.INACTIVE,
+                            _converse.INACTIVE
+                        );
                     }
                     if (!no_save && this.model.get('chat_state') !== state) {
                         this.model.set('chat_state', state);
@@ -864,7 +873,7 @@
                     if (_converse.connection.connected) {
                         // Immediately sending the chat state, because the
                         // model is going to be destroyed afterwards.
-                        this.model.set('chat_state', _converse.INACTIVE);
+                        this.setChatState(_converse.INACTIVE);
                         this.sendChatState();
                     }
                     try {

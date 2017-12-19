@@ -1182,10 +1182,9 @@
                 }));
 
                 it("will indicate when it has a time difference of more than a day between it and its predecessor",
-
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
@@ -1897,8 +1896,8 @@
                             expect($stanza.children().get(0).tagName).toBe('inactive');
                             expect($stanza.children().get(1).tagName).toBe('no-store');
                             expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
-                            done();
-                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+                          .then(done);
                     }));
 
                     it("is sent when the user a minimizes a chat box",

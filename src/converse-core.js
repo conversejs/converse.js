@@ -170,8 +170,6 @@
         } else if (level === Strophe.LogLevel.WARN) {
             if (_converse.debug) {
                 logger.warn(`${prefix} ${moment().format()} WARNING: ${message}`, style);
-            } else {
-                logger.warn(`${prefix} WARNING: ${message}`, style);
             }
         } else if (level === Strophe.LogLevel.FATAL) {
             if (_converse.debug) {
@@ -249,7 +247,9 @@
             // out or disconnecting in the previous session.
             // This happens in tests. We therefore first clean up.
             Backbone.history.stop();
+            _converse.chatboxviews.closeAllChatBoxes();
             delete _converse.controlboxtoggle;
+            delete _converse.chatboxviews;
             _converse.connection.reset();
             _converse.off();
             _converse.stopListening();

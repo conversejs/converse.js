@@ -73,16 +73,6 @@
         });
     };
 
-    function calculateSlideStep (height) {
-        if (height > 100) {
-            return 10;
-        } else if (height > 50) {
-            return 5;
-        } else {
-            return 1;
-        }
-    }
-
     function calculateElementHeight (el) {
         /* Return the height of the passed in DOM element,
          * based on the heights of its children.
@@ -186,7 +176,7 @@
         return _.includes(el.classList, className);
     };
 
-    u.slideOut = function (el, duration=1000) {
+    u.slideOut = function (el, duration=250) {
         /* Shows/expands an element by sliding it out of itself
          *
          * Parameters:
@@ -200,10 +190,10 @@
                 reject(new Error(err));
                 return;
             }
-            let interval_marker = el.getAttribute('data-slider-marker');
-            if (interval_marker) {
+            const marker = el.getAttribute('data-slider-marker');
+            if (marker) {
                 el.removeAttribute('data-slider-marker');
-                window.clearInterval(interval_marker);
+                window.cancelAnimationFrame(marker);
             }
             const end_height = calculateElementHeight(el);
             if (window.converse_disable_effects) { // Effects are disabled (for tests)
@@ -217,34 +207,40 @@
                 return;
             }
 
-            const step = calculateSlideStep(end_height),
-                  interval = end_height/duration*step;
-            let h = 0;
-            interval_marker = window.setInterval(function () {
-                h += step;
-                if (h < end_height) {
-                    el.style.height = h + 'px';
+            const steps = duration/17; // We assume 17ms per animation which is ~60FPS
+            let height = 0;
+
+            function draw () {
+                height += end_height/steps;
+                if (height < end_height) {
+                    el.style.height = height + 'px';
+                    el.setAttribute(
+                        'data-slider-marker',
+                        window.requestAnimationFrame(draw)
+                    );
                 } else {
                     // We recalculate the height to work around an apparent
                     // browser bug where browsers don't know the correct
                     // offsetHeight beforehand.
+                    el.removeAttribute('data-slider-marker');
                     el.style.height = calculateElementHeight(el) + 'px';
                     el.style.overflow = "";
                     el.style.height = "";
-                    window.clearInterval(interval_marker);
                     resolve();
                 }
-            }, interval);
-
+            }
             el.style.height = '0';
             el.style.overflow = 'hidden';
             el.classList.remove('hidden');
             el.classList.remove('collapsed');
-            el.setAttribute('data-slider-marker', interval_marker);
+            el.setAttribute(
+                'data-slider-marker',
+                window.requestAnimationFrame(draw)
+            );
         });
     };
 
-    u.slideIn = function (el, duration=800) {
+    u.slideIn = function (el, duration=250) {
         /* Hides/collapses an element by sliding it into itself. */
         return new Promise((resolve, reject) => {
             if (_.isNil(el)) {
@@ -258,30 +254,36 @@
                 el.style.height = "";
                 return resolve();
             }
-            let interval_marker = el.getAttribute('data-slider-marker');
-            if (interval_marker) {
+            const marker = el.getAttribute('data-slider-marker');
+            if (marker) {
                 el.removeAttribute('data-slider-marker');
-                window.clearInterval(interval_marker);
+                window.cancelAnimationFrame(marker);
             }
-            let h = el.offsetHeight;
-            const step = calculateSlideStep(h),
-                  interval = h/duration*step;
+            const original_height = el.offsetHeight,
+                 steps = duration/17; // We assume 17ms per animation which is ~60FPS
+            let height = original_height;
 
             el.style.overflow = 'hidden';
 
-            interval_marker = window.setInterval(function () {
-                h -= step;
-                if (h > 0) {
-                    el.style.height = h + 'px';
+            function draw () { 
+                height -= original_height/steps;
+                if (height > 0) {
+                    el.style.height = height + 'px';
+                    el.setAttribute(
+                        'data-slider-marker',
+                        window.requestAnimationFrame(draw)
+                    );
                 } else {
                     el.removeAttribute('data-slider-marker');
-                    window.clearInterval(interval_marker);
                     el.classList.add('collapsed');
                     el.style.height = "";
                     resolve();
                 }
-            }, interval);
-            el.setAttribute('data-slider-marker', interval_marker);
+            }
+            el.setAttribute(
+                'data-slider-marker',
+                window.requestAnimationFrame(draw)
+            );
         });
     };
 

@@ -750,7 +750,7 @@ msgstr "Masqué"
 
 #: dist/converse-no-dependencies.js:22263
 msgid "Message archiving"
-msgstr "Archivage du message"
+msgstr "Archivage des messages"
 
 #: dist/converse-no-dependencies.js:22264
 msgid "Members only"

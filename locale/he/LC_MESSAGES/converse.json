@@ -43,7 +43,7 @@
             null,
             "אני"
          ],
-         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+         "A very large message has been received. This might be due to an attack meant to degrade the chat performance. Output has been shortened.": [
             null,
             ""
          ],
@@ -111,17 +111,9 @@
             null,
             ""
          ],
-         "Please enter a valid XMPP address": [
-            null,
-            ""
-         ],
          "Password:": [
             null,
             "סיסמה:"
-         ],
-         "Please enter your password": [
-            null,
-            ""
          ],
          "password": [
             null,
@@ -239,10 +231,6 @@
             null,
             "האם אתה בטוח כי ברצונך לסרב את בקשת איש קשר זה?"
          ],
-         "user@domain": [
-            null,
-            ""
-         ],
          "I am %1$s": [
             null,
             "מצבי כעת הינו %1$s"
@@ -282,6 +270,14 @@
          "offline": [
             null,
             "לא מקוון"
+         ],
+         "user@domain": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            ""
          ],
          "Log out": [
             null,
@@ -451,18 +447,6 @@
             null,
             "סיסמה: "
          ],
-         " has left the room. \"": [
-            null,
-            ""
-         ],
-         " has joined the room. \"": [
-            null,
-            ""
-         ],
-         " has joined the room.": [
-            null,
-            ""
-         ],
          "Topic set by %1$s to: %2$s": [
             null,
             "נושא חדר זה נקבע על ידי %1$s אל: %2$s"
@@ -510,10 +494,6 @@
          "Unmoderated": [
             null,
             "לא מבוקר"
-         ],
-         "Unsecured": [
-            null,
-            ""
          ],
          "Messages are archived on the server": [
             null,

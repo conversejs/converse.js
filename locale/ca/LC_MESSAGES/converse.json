@@ -47,7 +47,7 @@
             null,
             "jo"
          ],
-         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+         "A very large message has been received. This might be due to an attack meant to degrade the chat performance. Output has been shortened.": [
             null,
             ""
          ],
@@ -115,17 +115,9 @@
             null,
             ""
          ],
-         "Please enter a valid XMPP address": [
-            null,
-            ""
-         ],
          "Password:": [
             null,
             "Contrasenya:"
-         ],
-         "Please enter your password": [
-            null,
-            ""
          ],
          "password": [
             null,
@@ -243,10 +235,6 @@
             null,
             "Segur que voleu rebutjar aquesta sol·licitud de contacte?"
          ],
-         "user@domain": [
-            null,
-            ""
-         ],
          "I am %1$s": [
             null,
             "Estic %1$s"
@@ -286,6 +274,14 @@
          "offline": [
             null,
             "desconnectat"
+         ],
+         "user@domain": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            ""
          ],
          "Log out": [
             null,
@@ -399,10 +395,6 @@
             null,
             "Expulsa l'usuari de la sala"
          ],
-         "Change user role to occupant": [
-            null,
-            "Canvia el rol de l'usuari a ocupant"
-         ],
          "Kick user from room": [
             null,
             "Expulsa l'usuari de la sala"
@@ -463,18 +455,6 @@
             null,
             "Contrasenya:"
          ],
-         " has left the room. \"": [
-            null,
-            ""
-         ],
-         " has joined the room. \"": [
-            null,
-            ""
-         ],
-         " has joined the room.": [
-            null,
-            ""
-         ],
          "Topic set by %1$s to: %2$s": [
             null,
             "Tema definit per %1$s en: %2$s"
@@ -518,10 +498,6 @@
          "Unmoderated": [
             null,
             "No moderada"
-         ],
-         "Unsecured": [
-            null,
-            ""
          ],
          "Messages are archived on the server": [
             null,

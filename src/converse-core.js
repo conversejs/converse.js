@@ -16,8 +16,7 @@
             "strophe",
             "pluggable",
             "backbone.noconflict",
-            "backbone.browserStorage",
-            "backbone.overview",
+            "backbone.browserStorage"
     ], factory);
 }(this, function (sizzle, Promise, _, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
 

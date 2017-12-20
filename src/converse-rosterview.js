@@ -285,8 +285,12 @@
                     this.model.on("reset", this.reset, this);
                     _converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
                     _converse.on('rosterContactsFetched', () => {
-                        _converse.roster.each(this.onContactAdded.bind(this));
+                        _converse.roster.each((contact) => {
+                            this.addRosterContact(contact, {'silent': true});
+                        });
                         this.update();
+                        this.updateFilter();
+                        this.trigger('rosterContactsFetchedAndProcessed');
                     });
                     this.createRosterFilter();
                 },
@@ -474,11 +478,11 @@
                     return this.model.create({name, id: b64_sha1(name)});
                 },
 
-                addContactToGroup (contact, name) {
-                    this.getGroup(name).contacts.add(contact);
+                addContactToGroup (contact, name, options) {
+                    this.getGroup(name).contacts.add(contact, options);
                 },
 
-                addExistingContact (contact) {
+                addExistingContact (contact, options) {
                     let groups;
                     if (_converse.roster_groups) {
                         groups = contact.get('groups');
@@ -488,17 +492,17 @@
                     } else {
                         groups = [HEADER_CURRENT_CONTACTS];
                     }
-                    _.each(groups, _.bind(this.addContactToGroup, this, contact));
+                    _.each(groups, _.bind(this.addContactToGroup, this, contact, _, options));
                 },
 
-                addRosterContact (contact) {
+                addRosterContact (contact, options) {
                     if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to') {
-                        this.addExistingContact(contact);
+                        this.addExistingContact(contact, options);
                     } else {
                         if ((contact.get('ask') === 'subscribe') || (contact.get('subscription') === 'from')) {
-                            this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
+                            this.addContactToGroup(contact, HEADER_PENDING_CONTACTS, options);
                         } else if (contact.get('requesting') === true) {
-                            this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
+                            this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS, options);
                         }
                     }
                     return this;
@@ -670,22 +674,34 @@
             });
 
 
-            _converse.RosterGroupView = Backbone.Overview.extend({
+            _converse.RosterGroupView = Backbone.OrderedListView.extend({
                 tagName: 'div',
                 className: 'roster-group',
                 events: {
                     "click a.group-toggle": "toggle"
                 },
+                listItems: 'model.contacts',
+                sortEvent: 'change:chat_status',
+                listSelector: '.roster-group-contacts',
+
+                ItemView: _converse.RosterContactView,
 
                 initialize () {
-                    this.sortEventually = _.debounce(this.sortAndPositionAll, 500);
-                    this.model.contacts.on("add", this.onContactAdded, this);
+                    Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
                     this.model.contacts.on("change:subscription", this.onContactSubscriptionChange, this);
                     this.model.contacts.on("change:requesting", this.onContactRequestChange, this);
-                    this.model.contacts.on("change:chat_status", this.sortEventually, this);
                     this.model.contacts.on("destroy", this.onRemove, this);
                     this.model.contacts.on("remove", this.onRemove, this);
                     _converse.roster.on('change:groups', this.onContactGroupChange, this);
+
+                    // This event gets triggered once *all* contacts (i.e. not
+                    // just this group's) have been fetched from browser
+                    // storage or the XMPP server and once they've been
+                    // assigned to their various groups.
+                    _converse.rosterview.on(
+                        'rosterContactsFetchedAndProcessed',
+                        this.sortAndPositionAllItems.bind(this)
+                    );
                 },
 
                 render () {
@@ -700,47 +716,17 @@
                     return this;
                 },
 
-                createContactView (contact) {
-                    const contact_view = new _converse.RosterContactView({model: contact});
-                    this.add(contact.get('id'), contact_view);
-                    contact_view.render();
-                    return contact_view;
-                },
-
-                onContactAdded (contact) {
-                    const contact_view = this.positionContact(contact);
+                createItemView (contact) {
+                    const contact_view =
+                        Backbone.OrderedListView.prototype.createItemView.apply(this, arguments);
                     if (contact_view.mayBeShown()) {
                         if (this.model.get('state') === _converse.CLOSED) {
                             u.hideElement(contact_view.el);
-                            u.showElement(this.el);
                         } else {
                             u.showElement(contact_view.el);
-                            u.showElement(this.el);
                         }
+                        u.showElement(this.el);
                     }
-                },
-
-                positionContact (contact) {
-                    /* Place the contact's DOM element in the correct alphabetical
-                     * position amongst the other contacts in this group.
-                     */
-                    const view = this.get(contact.get('id')) || this.createContactView(contact);
-                    const list = this.contacts_el;
-                    const index = this.model.contacts.indexOf(contact);
-                    if (index === 0) {
-                        list.insertAdjacentElement('afterbegin', view.el);
-                    } else if (index === (this.model.contacts.length-1)) {
-                        list.insertAdjacentElement('beforeend', view.el);
-                    } else {
-                        const neighbour_el = list.querySelector('li:nth-child('+index+')');
-                        neighbour_el.insertAdjacentElement('afterend', view.el);
-                    }
-                    return view;
-                },
-
-                sortAndPositionAll () {
-                    this.model.contacts.sort();
-                    this.model.contacts.each(this.positionContact.bind(this));
                 },
 
                 show () {
@@ -851,7 +837,7 @@
                     if (in_this_group && !in_this_overview) {
                         this.model.contacts.remove(cid);
                     } else if (!in_this_group && in_this_overview) {
-                        this.onContactAdded(contact);
+                        this.items.trigger('add', contact);
                     }
                 },
 

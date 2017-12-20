@@ -73,21 +73,25 @@
                 spyOn(_converse.chatboxviews, 'trimChats');
                 expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
-                var online_contacts = _converse.rosterview.$el.find('.roster-group .current-xmpp-contact a.open-chat');
-                expect(online_contacts.length).toBe(15);
-                for (i=0; i<online_contacts.length; i++) {
-                    $el = $(online_contacts[i]);
-                    jid = $el.text().trim().replace(/ /g,'.').toLowerCase() + '@localhost';
-                    $el.click();
-                    chatboxview = _converse.chatboxviews.get(jid);
-                    expect(_converse.chatboxes.length).toEqual(i+2);
-                    expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
-                    // Check that new chat boxes are created to the left of the
-                    // controlbox (but to the right of all existing chat boxes)
-                    expect($("#conversejs .chatbox").length).toBe(i+2);
-                    expect($("#conversejs .chatbox")[1].id).toBe(chatboxview.model.get('box_id'));
-                }
-                done();
+                test_utils.waitUntil(function () {
+                    return _converse.rosterview.$el.find('.roster-group li').length;
+                }, 700).then(function () {
+                    var online_contacts = _converse.rosterview.$el.find('.roster-group .current-xmpp-contact a.open-chat');
+                    expect(online_contacts.length).toBe(15);
+                    for (i=0; i<online_contacts.length; i++) {
+                        $el = $(online_contacts[i]);
+                        jid = $el.text().trim().replace(/ /g,'.').toLowerCase() + '@localhost';
+                        $el.click();
+                        chatboxview = _converse.chatboxviews.get(jid);
+                        expect(_converse.chatboxes.length).toEqual(i+2);
+                        expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
+                        // Check that new chat boxes are created to the left of the
+                        // controlbox (but to the right of all existing chat boxes)
+                        expect($("#conversejs .chatbox").length).toBe(i+2);
+                        expect($("#conversejs .chatbox")[1].id).toBe(chatboxview.model.get('box_id'));
+                    }
+                    done();
+                });
             }));
 
             it("can be trimmed to conserve space",
@@ -109,10 +113,10 @@
                 spyOn(trimmed_chatboxes, 'removeChat').and.callThrough();
                 expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
-                _converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
+                _converse.rosterview.update(); // XXX: Hack to make sure $roster element is attached.
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('.roster-group').length;
-                }, 300).then(function () {
+                    return _converse.rosterview.$el.find('.roster-group li').length;
+                }, 700).then(function () {
                     // Test that they can be maximized again
                     var online_contacts = _converse.rosterview.$el.find('.roster-group .current-xmpp-contact a.open-chat');
                     expect(online_contacts.length).toBe(15);
@@ -836,10 +840,9 @@
                                 }).c('body').t('Message: '+i).up()
                                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
                         }
-                        test_utils.waitUntil(function () {
-                                return chatboxview.$content.scrollTop();
-                            }, 1000)
-                        .then(function () {
+                        return test_utils.waitUntil(function () {
+                            return chatboxview.$content.scrollTop();
+                        }, 1000).then(function () {
                             return test_utils.waitUntil(function () {
                                 return !chatboxview.model.get('auto_scrolled');
                             }, 500);
@@ -872,7 +875,7 @@
                             chatboxview.$content.scrollTop(chatboxview.$content[0].scrollHeight);
                             return test_utils.waitUntil(function () {
                                 return !chatboxview.$('.new-msgs-indicator').is(':visible');
-                            }, 500);
+                            }, 700);
                         }).then(done);
                     }));
 
@@ -1541,7 +1544,7 @@
                             view.model.maximize();
                             return test_utils.waitUntil(function () {
                                 return view.model.get('chat_state') === 'active';
-                            }, 500);
+                            }, 700);
                         }).then(function () {
                             expect(_converse.connection.send).toHaveBeenCalled();
                             var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
@@ -1693,9 +1696,8 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                                return _converse.rosterview.$el.find('.roster-group').length;
-                            }, 300)
-                        .then(function () {
+                                return _converse.rosterview.$el.find('.roster-group li').length;
+                        }, 700).then(function () {
                             _converse.TIMEOUTS.PAUSED = 200; // Make the timeout shorter so that we can test
 
                             contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1715,7 +1717,7 @@
                             return test_utils.waitUntil(function () {
                                 return view.model.get('chat_state') === 'paused';
                             }, 500);
-                    }).then(function () {
+                        }).then(function () {
                             expect(_converse.connection.send).toHaveBeenCalled();
                             var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
                                 return call.args[0] instanceof Strophe.Builder;

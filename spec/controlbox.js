@@ -182,14 +182,14 @@
 
                 var promise = test_utils.waitUntil(function () {
                     return $roster.find('li:visible').length === 15;
-                }, 500).then(function (contacts) {
+                }, 600).then(function (contacts) {
                     expect($roster.find('ul.roster-group-contacts:visible').length).toBe(5);
                     $filter.val("candice");
                     $filter.trigger('keydown');
 
                     return test_utils.waitUntil(function () {
                         return $roster.find('li:visible').length === 1;
-                    }, 500);
+                    }, 600);
                 }).then(function (contacts) {
                     // Only one roster contact is now visible
                     expect($roster.find('li:visible').length).toBe(1);
@@ -203,7 +203,7 @@
                     $filter.trigger('keydown');
                     return test_utils.waitUntil(function () {
                         return $roster.find('li:visible').length === 5;
-                    }, 500)
+                    }, 600)
                 }).then(function (contacts) {
                     // Five roster contact is now visible
                     expect($roster.find('li:visible').length).toBe(5);
@@ -220,7 +220,7 @@
                     $filter.trigger('keydown');
                     return test_utils.waitUntil(function () {
                         return $roster.find('li:visible').length === 0;
-                    }, 500)
+                    }, 600)
                 }).then(function () {
                     expect($roster.find('ul.roster-group-contacts:visible a.group-toggle').length).toBe(0);
                     $filter = _converse.rosterview.$('.roster-filter');
@@ -228,7 +228,7 @@
                     $filter.trigger('keydown');
                     return test_utils.waitUntil(function () {
                         return $roster.find('li:visible').length === 15;
-                    }, 500)
+                    }, 600)
                 }).then(function () {
                     expect($roster.find('ul.roster-group-contacts:visible').length).toBe(5);
                     _converse.roster_groups = false;
@@ -253,14 +253,14 @@
                 $type.val('groups');
                 test_utils.waitUntil(function () {
                     return $roster.find('li:visible').length === 15;
-                }, 500).then(function () {
+                }, 600).then(function () {
                     expect($roster.find('div.roster-group:visible a.group-toggle').length).toBe(5);
 
                     $filter.val("colleagues");
                     $filter.trigger('keydown');
                     return test_utils.waitUntil(function () {
                         return $roster.find('div.roster-group:not(.collapsed) a.group-toggle').length === 1;
-                    }, 500);
+                    }, 600);
                 }).then(function () {
                     expect(_.trim($roster.find('div.roster-group:not(.collapsed) a').eq(0).text())).toBe('colleagues');
                     expect($roster.find('div.roster-group:not(.collapsed) li:visible').length).toBe(3);
@@ -281,7 +281,7 @@
                     $filter.trigger('keydown');
                     return test_utils.waitUntil(function () {
                         return $roster.find('div.roster-group.collapsed a.group-toggle').length === 0;
-                    }, 500);
+                    }, 600);
                 }).then(function () {
                     expect($roster.find('div.roster-group:not(collapsed)').length).toBe(5);
                     expect($roster.find('div.roster-group:not(collapsed) li').length).toBe(15);
@@ -418,8 +418,8 @@
                     });
                 }
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('li:visible').length;
-                }, 500).then(function () {
+                    return _converse.rosterview.$el.find('li:visible').length === 30;
+                }, 600).then(function () {
                     // Check that usernames appear alphabetically per group
                     _.each(groups, function (name) {
                         var $contacts = _converse.rosterview.$('.roster-group[data-group="'+name+'"] li');
@@ -528,7 +528,7 @@
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
                     return _converse.rosterview.$el.find('li').length;
-                }, 500).then(function () {
+                }, 700).then(function () {
                     expect(_converse.rosterview.$el.is(':visible')).toEqual(true);
                     expect(_converse.rosterview.update).toHaveBeenCalled();
                     expect(_converse.rosterview.$el.find('li:visible').length).toBe(3);
@@ -575,13 +575,12 @@
                 });
                 test_utils.waitUntil(function () {
                         return _converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')").length;
-                    }, 500)
-                .then(function () {
+                }, 700).then(function () {
                     _converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
                         .parent().siblings('.remove-xmpp-contact').click();
                     return test_utils.waitUntil(function () {
                         return _converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')").length === 0
-                    }, 500)
+                    }, 700)
                 }).then(function () {
                     expect(window.confirm).toHaveBeenCalled();
                     expect(_converse.connection.sendIQ).toHaveBeenCalled();
@@ -609,9 +608,9 @@
                     if (typeof callback === "function") { return callback(); }
                 });
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.get('Pending contacts').$el.is(':visible');
-                    }, 500)
-                .then(function () {
+                        var $pending_contacts = _converse.rosterview.get('Pending contacts').$el;
+                        return $pending_contacts.is(':visible') && $pending_contacts.find('li:visible').length;
+                }, 700).then(function () {
                     _converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
                         .parent().siblings('.remove-xmpp-contact').click();
                     expect(window.confirm).toHaveBeenCalled();
@@ -644,6 +643,7 @@
                     function (done, _converse) {
 
                 var i, t;
+                test_utils.openControlBox();
                 spyOn(_converse, 'emit');
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 for (i=0; i<mock.pend_names.length; i++) {
@@ -655,18 +655,25 @@
                     });
                     expect(_converse.rosterview.update).toHaveBeenCalled();
                 }
-                // Check that they are sorted alphabetically
-                t = _.reduce(_converse.rosterview.get('Pending contacts').$el.find('.pending-xmpp-contact span'), function (result, value) {
-                    return result + _.trim(value.textContent);
-                }, '');
-                expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
-                done();
+                return test_utils.waitUntil(function () {
+                    return _converse.rosterview.get('Pending contacts').$el.find('li:visible').length;
+                }, 700).then(function () {
+                    // Check that they are sorted alphabetically
+                    t = _.reduce(_converse.rosterview.get('Pending contacts').$el.find('.pending-xmpp-contact span'),
+                        function (result, value) {
+                            return result + _.trim(value.textContent);
+                        }, '');
+                    expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
+                    done();
+                });
             }));
         });
 
         describe("Existing Contacts", function () {
             var _addContacts = function (_converse) {
-                test_utils.createContacts(_converse, 'current').openControlBox().openContactsPanel(_converse);
+                test_utils.createContacts(_converse, 'current')
+                    .openControlBox()
+                    .openContactsPanel(_converse);
             };
 
             it("can be collapsed under their own header", 
@@ -717,6 +724,7 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                test_utils.openControlBox();
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 for (var i=0; i<mock.cur_names.length; i++) {
                     _converse.roster.create({
@@ -729,11 +737,13 @@
                 }
                 test_utils.waitUntil(function () {
                     return _converse.rosterview.$el.find('li').length;
-                }).then(function () {
+                }, 600).then(function () {
                     // Check that they are sorted alphabetically
-                    var t = _.reduce(_converse.rosterview.$('.roster-group').find('.current-xmpp-contact.offline a.open-chat'), function (result, value) {
-                        return result + _.trim(value.textContent);
-                    }, '');
+                    var t = _.reduce(_converse.rosterview.$('.roster-group')
+                             .find('.current-xmpp-contact.offline a.open-chat'),
+                        function (result, value) {
+                            return result + _.trim(value.textContent);
+                        }, '');
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                     done();
                 });
@@ -781,9 +791,8 @@
                     fullname: name
                 });
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('.roster-group').length;
-                    }, 500)
-                .then(function () {
+                    return _converse.rosterview.$el.find('.roster-group li').length;
+                }, 700).then(function () {
                     spyOn(window, 'confirm').and.returnValue(true);
                     spyOn(contact, 'removeFromRoster');
                     spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
@@ -808,9 +817,8 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('.roster-group').length;
-                    }, 500)
-                .then(function () {
+                        return _converse.rosterview.$el.find('.roster-group li').length;
+                }, 700).then(function () {
                     var jid, t;
                     spyOn(_converse, 'emit');
                     spyOn(_converse.rosterview, 'update').and.callThrough();
@@ -836,9 +844,8 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('.roster-group').length;
-                    }, 500)
-                .then(function () {
+                    return _converse.rosterview.$el.find('.roster-group li').length;
+                }, 700).then(function () {
                     var jid, t;
                     spyOn(_converse, 'emit');
                     spyOn(_converse.rosterview, 'update').and.callThrough();
@@ -865,9 +872,8 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('.roster-group').length;
-                    }, 500)
-                .then(function () {
+                    return _converse.rosterview.$el.find('.roster-group li').length;
+                }, 700).then(function () {
                     var jid, t;
                     spyOn(_converse, 'emit');
                     spyOn(_converse.rosterview, 'update').and.callThrough();
@@ -894,9 +900,8 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('.roster-group').length;
-                    }, 500)
-                .then(function () {
+                        return _converse.rosterview.$el.find('.roster-group li').length;
+                }, 700).then(function () {
                     var jid, t;
                     spyOn(_converse, 'emit');
                     spyOn(_converse.rosterview, 'update').and.callThrough();
@@ -923,7 +928,7 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('.roster-group').length;
+                        return _converse.rosterview.$el.find('.roster-group li').length;
                     }, 500)
                 .then(function () {
                     var jid, t;
@@ -952,8 +957,8 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('.roster-group').length;
-                }, 500).then(function () {
+                    return _converse.rosterview.$el.find('.roster-group li').length;
+                }, 700).then(function () {
                     var i, jid;
                     for (i=0; i<3; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1071,13 +1076,17 @@
                         fullname: mock.req_names[i]
                     });
                 }
-                expect(_converse.rosterview.update).toHaveBeenCalled();
-                // Check that they are sorted alphabetically
-                children = _converse.rosterview.get('Contact requests').$el.find('.requesting-xmpp-contact span');
-                names = [];
-                children.each(addName);
-                expect(names.join('')).toEqual(mock.req_names.slice(0,mock.req_names.length+1).sort().join(''));
-                done();
+                test_utils.waitUntil(function () {
+                    return _converse.rosterview.get('Contact requests').$el.find('li').length;
+                }, 700).then(function () {
+                    expect(_converse.rosterview.update).toHaveBeenCalled();
+                    // Check that they are sorted alphabetically
+                    children = _converse.rosterview.get('Contact requests').$el.find('.requesting-xmpp-contact span');
+                    names = [];
+                    children.each(addName);
+                    expect(names.join('')).toEqual(mock.req_names.slice(0,mock.req_names.length+1).sort().join(''));
+                    done();
+                });
             }));
 
             it("do not have a header if there aren't any", 
@@ -1096,9 +1105,8 @@
                     fullname: name
                 });
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('.roster-group').length;
-                    }, 500)
-                .then(function () {
+                        return _converse.rosterview.$el.find('.roster-group li').length;
+                }, 700).then(function () {
                     expect(_converse.rosterview.get('Contact requests').$el.is(':visible')).toEqual(true);
                     _converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")
                         .parent().siblings('.request-actions')
@@ -1116,8 +1124,8 @@
 
                 test_utils.createContacts(_converse, 'requesting').openControlBox();
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('.roster-group').length;
-                }, 500).then(function () {
+                    return _converse.rosterview.$el.find('.roster-group li').length;
+                }, 700).then(function () {
                     checkHeaderToggling.apply(
                         _converse,
                         [_converse.rosterview.get('Contact requests').$el]
@@ -1132,9 +1140,8 @@
 
                 test_utils.createContacts(_converse, 'requesting').openControlBox();
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('.roster-group').length;
-                    }, 500)
-                .then(function () {
+                    return _converse.rosterview.$el.find('.roster-group li').length;
+                }, 700).then(function () {
                     // TODO: Testing can be more thorough here, the user is
                     // actually not accepted/authorized because of
                     // mock_connection.
@@ -1161,9 +1168,8 @@
 
                 test_utils.createContacts(_converse, 'requesting').openControlBox();
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('.roster-group').length;
-                    }, 500)
-                .then(function () {
+                    return _converse.rosterview.$el.find('.roster-group li').length;
+                }, 700).then(function () {
                     _converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
                     var name = mock.req_names.sort()[1];
                     var jid =  name.replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1193,7 +1199,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 test_utils.waitUntil(function () {
                     return $('a:contains("Contact requests")').length;
-                }).then(function () {
+                }, 700).then(function () {
                     expect(_converse.roster.pluck('jid').length).toBe(1);
                     expect(_.includes(_converse.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
                     // Taken from the spec
@@ -1265,9 +1271,8 @@
                 test_utils.createContacts(_converse, 'all').openControlBox();
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('.roster-group').length;
-                    }, 500)
-                .then(function () {
+                    return _converse.rosterview.$el.find('.roster-group li').length;
+                }, 700).then(function () {
                     var jid, name, i;
                     for (i=0; i<mock.cur_names.length; i++) {
                         name = mock.cur_names[i];
@@ -1324,8 +1329,8 @@
                 fullname: mock.pend_names[0]
             });
             test_utils.waitUntil(function () {
-                return _converse.rosterview.$el.find('.roster-group').length;
-            }, 500).then(function () {
+                return _converse.rosterview.$el.find('.roster-group li').length;
+            }, 700).then(function () {
                 // Checking that only one entry is created because both JID is same (Case sensitive check)
                 expect(_converse.rosterview.$el.find('li:visible').length).toBe(1);
                 expect(_converse.rosterview.update).toHaveBeenCalled();

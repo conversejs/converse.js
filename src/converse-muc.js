@@ -37,6 +37,8 @@
             "awesomplete",
             "converse-chatview",
             "converse-disco",
+            "backbone.overview",
+            "backbone.orderedlistview",
             "backbone.vdomview"
     ], factory);
 }(this, function (
@@ -2213,16 +2215,17 @@
                 },
             });
 
-            _converse.ChatRoomOccupantsView = Backbone.Overview.extend({
+            _converse.ChatRoomOccupantsView = Backbone.OrderedListView.extend({
                 tagName: 'div',
                 className: 'occupants',
+                listItems: 'model',
+                sortEvent: 'change:role',
+                listSelector: '.occupant-list',
+
+                ItemView: _converse.ChatRoomOccupantView,
 
                 initialize () {
-                    this.model.on("add", this.onOccupantAdded, this);
-                    this.model.on("change:role", (occupant) => {
-                        this.model.sort();
-                        this.positionOccupant(occupant);
-                    });
+                    Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
 
                     this.chatroomview = this.model.chatroomview;
                     this.chatroomview.model.on('change:open', this.renderInviteWidget, this);
@@ -2247,9 +2250,7 @@
                     this.model.fetch({
                         'add': true,
                         'silent': true,
-                        'success': () => {
-                            this.model.each(this.onOccupantAdded.bind(this));
-                        }
+                        'success': this.sortAndPositionAllItems.bind(this)
                     });
                 },
 
@@ -2353,55 +2354,10 @@
                     this.debouncedRenderRoomFeatures();
                 },
 
-
                 setOccupantsHeight () {
                     const el = this.el.querySelector('.chatroom-features');
                     this.el.querySelector('.occupant-list').style.cssText =
                         `height: calc(100% - ${el.offsetHeight}px - 5em);`;
-                },
-
-                positionOccupant (occupant) {
-                    /* Positions an occupant correctly in the list of
-                     * occupants.
-                     *
-                     * IMPORTANT: there's an important implicit assumption being
-                     * made here. And that is that initially this method gets called
-                     * for each occupant in the right positional order.
-                     *
-                     * In other words, it gets called for the 0th, then the
-                     * 1st, then the 2nd, 3rd and so on.
-                     *
-                     * That's why we call it in the "success" handler after
-                     * fetching the occupants, so that we know we have ALL of
-                     * them and that they're sorted.
-                     */
-                    const view = this.get(occupant.get('id'));
-                    view.render();
-                    const list = this.el.querySelector('.occupant-list');
-                    const index = this.model.indexOf(view.model);
-                    if (index === 0) {
-                        list.insertAdjacentElement('afterbegin', view.el);
-                    } else if (index === (this.model.length-1)) {
-                        list.insertAdjacentElement('beforeend', view.el);
-                    } else {
-                        const neighbour_el = list.querySelector('li:nth-child('+index+')');
-                        neighbour_el.insertAdjacentElement('afterend', view.el);
-                    }
-                    return view;
-                },
-
-                onOccupantAdded (item) {
-                    let view = this.get(item.get('id'));
-                    if (!view) {
-                        view = this.add(
-                            item.get('id'),
-                            new _converse.ChatRoomOccupantView({model: item})
-                        );
-                    } else {
-                        view.model = item;
-                        view.initialize();
-                    }
-                    this.positionOccupant(item);
                 },
 
                 parsePresence (pres) {

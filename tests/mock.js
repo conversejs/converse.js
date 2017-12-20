@@ -106,6 +106,7 @@
             'bosh_service_url': 'localhost',
             'connection': connection,
             'animate': false,
+            'use_emojione': false,
             'no_trimming': true,
             'auto_login': true,
             'jid': 'dummy@localhost',

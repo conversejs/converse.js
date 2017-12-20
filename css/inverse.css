@@ -1120,22 +1120,6 @@
     #conversejs {
       width: 100%;
       width: 100vw; } }
-  #converse-embedded-chat .fade-in,
-  #conversejs .fade-in {
-    opacity: 0;
-    /* make things invisible upon start */
-    -webkit-animation-name: fadein;
-    -moz-animation-name: fadein;
-    animation-name: fadein;
-    -webkit-animation-fill-mode: forwards;
-    -moz-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
-    -webkit-animation-duration: 1s;
-    -moz-animation-duration: 1s;
-    animation-duration: 1s;
-    -webkit-animation-timing-function: ease;
-    -moz-animation-timing-function: ease;
-    animation-timing-function: ease; }
   #converse-embedded-chat ::-webkit-input-placeholder,
   #conversejs ::-webkit-input-placeholder {
     /* Chrome/Opera/Safari */
@@ -1181,26 +1165,41 @@
     opacity: 0; }
   100% {
     opacity: 1; } }
-  #converse-embedded-chat .visible,
-  #conversejs .visible {
-    visibility: visible;
-    opacity: 1;
+  #converse-embedded-chat .fade-in,
+  #conversejs .fade-in {
+    opacity: 0;
+    /* make things invisible upon start */
     -webkit-animation-name: fadein;
     -moz-animation-name: fadein;
     animation-name: fadein;
     -webkit-animation-fill-mode: forwards;
     -moz-animation-fill-mode: forwards;
     animation-fill-mode: forwards;
-    -webkit-animation-duration: 350ms;
-    -moz-animation-duration: 350ms;
-    animation-duration: 350ms;
+    -webkit-animation-duration: 750;
+    -moz-animation-duration: 750;
+    animation-duration: 750;
+    -webkit-animation-timing-function: ease;
+    -moz-animation-timing-function: ease;
+    animation-timing-function: ease; }
+  #converse-embedded-chat .visible,
+  #conversejs .visible {
+    opacity: 0;
+    /* make things invisible upon start */
+    -webkit-animation-name: fadein;
+    -moz-animation-name: fadein;
+    animation-name: fadein;
+    -webkit-animation-fill-mode: forwards;
+    -moz-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -webkit-animation-duration: 500ms;
+    -moz-animation-duration: 500ms;
+    animation-duration: 500ms;
     -webkit-animation-timing-function: ease;
     -moz-animation-timing-function: ease;
     animation-timing-function: ease; }
   #converse-embedded-chat .hidden,
   #conversejs .hidden {
-    opacity: 0;
-    display: none; }
+    opacity: 0; }
   #converse-embedded-chat .collapsed,
   #conversejs .collapsed {
     height: 0 !important;
@@ -1425,9 +1424,9 @@ body {
       -webkit-animation-fill-mode: forwards;
       -moz-animation-fill-mode: forwards;
       animation-fill-mode: forwards;
-      -webkit-animation-duration: 1s;
-      -moz-animation-duration: 1s;
-      animation-duration: 1s;
+      -webkit-animation-duration: 750;
+      -moz-animation-duration: 750;
+      animation-duration: 750;
       -webkit-animation-timing-function: ease;
       -moz-animation-timing-function: ease;
       animation-timing-function: ease;
@@ -2021,9 +2020,9 @@ body {
     -webkit-animation-fill-mode: forwards;
     -moz-animation-fill-mode: forwards;
     animation-fill-mode: forwards;
-    -webkit-animation-duration: 1s;
-    -moz-animation-duration: 1s;
-    animation-duration: 1s;
+    -webkit-animation-duration: 750;
+    -moz-animation-duration: 750;
+    animation-duration: 750;
     -webkit-animation-timing-function: ease;
     -moz-animation-timing-function: ease;
     animation-timing-function: ease;
@@ -2418,9 +2417,9 @@ body {
     -webkit-animation-fill-mode: forwards;
     -moz-animation-fill-mode: forwards;
     animation-fill-mode: forwards;
-    -webkit-animation-duration: 1s;
-    -moz-animation-duration: 1s;
-    animation-duration: 1s;
+    -webkit-animation-duration: 750;
+    -moz-animation-duration: 750;
+    animation-duration: 750;
     -webkit-animation-timing-function: ease;
     -moz-animation-timing-function: ease;
     animation-timing-function: ease;

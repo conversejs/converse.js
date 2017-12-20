@@ -564,6 +564,18 @@
                     this.occupantsview.setOccupantsHeight();
                 },
 
+                show (focus) {
+                    if (u.isVisible(this.el)) {
+                        if (focus) { this.focus(); }
+                        return;
+                    }
+                    // Override from converse-chatview in order to not use
+                    // "fadeIn", which causes flashing.
+                    u.showElement(this.el);
+                    this.afterShown();
+                    if (focus) { this.focus(); }
+                },
+
                 afterConnected () {
                     if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                         this.setChatState(_converse.ACTIVE);

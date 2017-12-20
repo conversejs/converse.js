@@ -917,8 +917,11 @@
                 },
 
                 focus () {
-                    this.el.querySelector('.chat-textarea').focus();
-                    _converse.emit('chatBoxFocused', this);
+                    const textarea_el = this.el.querySelector('.chat-textarea');
+                    if (!_.isNull(textarea_el)) {
+                        textarea_el.focus();
+                        _converse.emit('chatBoxFocused', this);
+                    }
                     return this;
                 },
 
@@ -940,8 +943,9 @@
                     }
                 },
 
-                show (focus) {
-                    if (u.isVisible(this.el) && this.$el.css('opacity') === "1") {
+                _show (focus) {
+                    /* Inner show method that gets debounced */
+                    if (u.isVisible(this.el)) {
                         if (focus) { this.focus(); }
                         return;
                     }
@@ -950,6 +954,18 @@
                         that.afterShown();
                         if (focus) { that.focus(); }
                     });
+                },
+
+                show (focus) {
+                    if (_.isUndefined(this.debouncedShow)) {
+                        /* We wrap the method in a debouncer and set it on the
+                         * instance, so that we have it debounced per instance.
+                         * Debouncing it on the class-level is too broad.
+                         */
+                        this.debouncedShow = _.debounce(this._show, 250, {'leading': true});
+                    }
+                    this.debouncedShow.apply(this, arguments);
+                    return this;
                 },
 
                 hideNewMessagesIndicator () {
@@ -993,8 +1009,11 @@
 
                 _scrollDown () {
                     /* Inner method that gets debounced */
-                    if (this.$content.is(':visible') && !this.model.get('scrolled')) {
-                        this.$content.scrollTop(this.$content[0].scrollHeight);
+                    if (_.isUndefined(this.content)) {
+                        return;
+                    }
+                    if (u.isVisible(this.content) && !this.model.get('scrolled')) {
+                        this.content.scrollTop = this.content.scrollHeight;
                         this.onScrolledDown();
                         this.model.save({'auto_scrolled': true});
                     }

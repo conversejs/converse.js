@@ -191,8 +191,8 @@
                     this.model.on('change:connection_status', this.fetchArchivedMessagesIfNecessary, this);
                 },
 
-                render () {
-                    const result = this.__super__.render.apply(this, arguments);
+                renderChatArea () {
+                    const result = this.__super__.renderChatArea.apply(this, arguments);
                     if (!this.disable_mam) {
                         this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                     }

@@ -2309,7 +2309,7 @@
                                 'label_semianonymous': __('Semi-anonymous'),
                                 'label_temporary': __('Temporary'),
                                 'label_unmoderated': __('Unmoderated'),
-                                'label_unsecured': __('Unsecured'),
+                                'label_unsecured': __('No password'),
                                 'tt_hidden': __('This room is not publicly searchable'),
                                 'tt_mam_enabled': __('Messages are archived on the server'),
                                 'tt_membersonly': __('This room is restricted to members only'),

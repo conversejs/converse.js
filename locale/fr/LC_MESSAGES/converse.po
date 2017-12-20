@@ -853,7 +853,7 @@ msgstr "Ce salon n’est pas modéré"
 
 #: dist/converse-no-dependencies.js:22287
 msgid "This room does not require a password upon entry"
-msgstr "Ce salon nécessite un mot de passe pour y accéder"
+msgstr "Ce salon ne nécessite pas de mot de passe pour y accéder"
 
 #: dist/converse-no-dependencies.js:22439
 #, javascript-format

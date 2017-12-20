@@ -678,13 +678,11 @@
                 },
 
                 initialize () {
+                    this.sortEventually = _.debounce(this.sortAndPositionAll, 500);
                     this.model.contacts.on("add", this.onContactAdded, this);
                     this.model.contacts.on("change:subscription", this.onContactSubscriptionChange, this);
                     this.model.contacts.on("change:requesting", this.onContactRequestChange, this);
-                    this.model.contacts.on("change:chat_status", function (contact) {
-                        this.model.contacts.sort();
-                        this.positionContact(contact).render();
-                    }, this);
+                    this.model.contacts.on("change:chat_status", this.sortEventually, this);
                     this.model.contacts.on("destroy", this.onRemove, this);
                     this.model.contacts.on("remove", this.onRemove, this);
                     _converse.roster.on('change:groups', this.onContactGroupChange, this);
@@ -702,10 +700,15 @@
                     return this;
                 },
 
-                onContactAdded (contact) {
-                    let contact_view = new _converse.RosterContactView({model: contact});
+                createContactView (contact) {
+                    const contact_view = new _converse.RosterContactView({model: contact});
                     this.add(contact.get('id'), contact_view);
-                    contact_view = this.positionContact(contact).render();
+                    contact_view.render();
+                    return contact_view;
+                },
+
+                onContactAdded (contact) {
+                    const contact_view = this.positionContact(contact);
                     if (contact_view.mayBeShown()) {
                         if (this.model.get('state') === _converse.CLOSED) {
                             u.hideElement(contact_view.el);
@@ -721,8 +724,7 @@
                     /* Place the contact's DOM element in the correct alphabetical
                      * position amongst the other contacts in this group.
                      */
-                    const view = this.get(contact.get('id'));
-                    view.render();
+                    const view = this.get(contact.get('id')) || this.createContactView(contact);
                     const list = this.contacts_el;
                     const index = this.model.contacts.indexOf(contact);
                     if (index === 0) {
@@ -734,6 +736,11 @@
                         neighbour_el.insertAdjacentElement('afterend', view.el);
                     }
                     return view;
+                },
+
+                sortAndPositionAll () {
+                    this.model.contacts.sort();
+                    this.model.contacts.each(this.positionContact.bind(this));
                 },
 
                 show () {

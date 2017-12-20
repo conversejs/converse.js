@@ -73,10 +73,11 @@
                 spyOn(_converse.chatboxviews, 'trimChats');
                 expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
-                var online_contacts = _converse.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact').find('a.open-chat');
+                var online_contacts = _converse.rosterview.$el.find('.roster-group .current-xmpp-contact a.open-chat');
+                expect(online_contacts.length).toBe(15);
                 for (i=0; i<online_contacts.length; i++) {
                     $el = $(online_contacts[i]);
-                    jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
+                    jid = $el.text().trim().replace(/ /g,'.').toLowerCase() + '@localhost';
                     $el.click();
                     chatboxview = _converse.chatboxviews.get(jid);
                     expect(_converse.chatboxes.length).toEqual(i+2);
@@ -110,14 +111,14 @@
 
                 _converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('.roster-group').length;
-                    }, 300)
-                .then(function () {
+                    return _converse.rosterview.$el.find('.roster-group').length;
+                }, 300).then(function () {
                     // Test that they can be maximized again
-                    var online_contacts = _converse.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact').find('a.open-chat');
+                    var online_contacts = _converse.rosterview.$el.find('.roster-group .current-xmpp-contact a.open-chat');
+                    expect(online_contacts.length).toBe(15);
                     for (i=0; i<online_contacts.length; i++) {
                         $el = $(online_contacts[i]);
-                        jid = _.trim($el.text()).replace(/ /g,'.').toLowerCase() + '@localhost';
+                        jid = _.trim($el.text().trim()).replace(/ /g,'.').toLowerCase() + '@localhost';
                         $el.click();
                         expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
 
@@ -128,8 +129,8 @@
                         expect(chatboxview.minimize).toHaveBeenCalled();
                     }
                     return test_utils.waitUntil(function () {
-                            return _converse.chatboxviews.keys().length > 1;
-                        }, 500);
+                        return _converse.chatboxviews.keys().length > 1;
+                    }, 500);
                 }).then(function () {
                     var key = _converse.chatboxviews.keys()[1];
                     trimmedview = trimmed_chatboxes.get(key);

@@ -418,9 +418,8 @@
                     });
                 }
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('li:visible').length;
-                    }, 500)
-                .then(function () {
+                    return _converse.rosterview.$el.find('li:visible').length;
+                }, 500).then(function () {
                     // Check that usernames appear alphabetically per group
                     _.each(groups, function (name) {
                         var $contacts = _converse.rosterview.$('.roster-group[data-group="'+name+'"] li');
@@ -954,8 +953,7 @@
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
                         return _converse.rosterview.$el.find('.roster-group').length;
-                    }, 500)
-                .then(function () {
+                }, 500).then(function () {
                     var i, jid;
                     for (i=0; i<3; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -977,7 +975,15 @@
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         _converse.roster.get(jid).set('chat_status', 'unavailable');
                     }
-
+                    return test_utils.waitUntil(function () {
+                        return _converse.rosterview.$el.find('li.online').length
+                    })
+                }).then(function () {
+                    return test_utils.waitUntil(function () {
+                        return _converse.rosterview.$el.find('li:first').text().trim() === 'Candice van der Knijff'
+                    }, 900);
+                }).then(function () {
+                    var i;
                     var contacts = _converse.rosterview.$el.find('.current-xmpp-contact');
                     for (i=0; i<3; i++) {
                         expect($(contacts[i]).hasClass('online')).toBeTruthy();

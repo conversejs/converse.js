@@ -87,13 +87,12 @@ msgid "me"
 msgstr "moi"
 
 #: dist/converse-no-dependencies.js:13223
-#, fuzzy
 msgid ""
 "A very large message has been received. This might be due to an attack meant "
 "to degrade the chat performance. Output has been shortened."
 msgstr ""
 "Un message très long a été reçu. Cela pourrait être lié à une attaque visant "
-"à dégrader la performance de la conversation. La sortie a été tronquée."
+"à dégrader les performances de la conversation. L’affichage a été tronqué."
 
 #: dist/converse-no-dependencies.js:13263
 msgid "Typing from another device"
@@ -521,12 +520,12 @@ msgid "%1$s has been removed for not being a member"
 msgstr "%1$s a été supprimé car il n’est pas membre"
 
 #: dist/converse-no-dependencies.js:20260
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr "Votre alias a été automatiquement déterminé en : %1$s"
+msgstr "Votre alias a été automatiquement défini à : %1$s"
 
 #: dist/converse-no-dependencies.js:20261
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Your nickname has been changed to %1$s"
 msgstr "Votre alias a été modifié en : %1$s"
 
@@ -655,13 +654,13 @@ msgid "Password: "
 msgstr "Mot de passe : "
 
 #: dist/converse-no-dependencies.js:21826
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "This action was done by %1$s."
-msgstr "L’action a été réalisée par %1$s."
+msgstr "Cette action a été réalisée par %1$s."
 
 #: dist/converse-no-dependencies.js:21830
 #: dist/converse-no-dependencies.js:21844
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The reason given is: \"%1$s\"."
 msgstr "La raison indiquée est : « %1$s »."
 
@@ -1290,7 +1289,7 @@ msgstr ""
 "ligne. Merci d’essayer avec un autre fournisseur."
 
 #: dist/converse-no-dependencies.js:25323
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"

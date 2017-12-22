@@ -135,7 +135,7 @@
                 fullname: mock.pend_names[0]
             });
             test_utils.waitUntil(function () {
-                return _converse.rosterview.$el.find('.roster-group li').length;
+                return _converse.rosterview.$el.find('.roster-group li:visible').length;
             }, 700).then(function () {
                 // Checking that only one entry is created because both JID is same (Case sensitive check)
                 expect(_converse.rosterview.$el.find('li:visible').length).toBe(1);

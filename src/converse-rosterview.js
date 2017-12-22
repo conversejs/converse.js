@@ -272,7 +272,6 @@
                 }
             });
 
-
             _converse.RosterContactView = Backbone.View.extend({
                 tagName: 'li',
                 className: 'hidden',
@@ -436,18 +435,17 @@
                 }
             });
 
-
             _converse.RosterGroupView = Backbone.OrderedListView.extend({
                 tagName: 'div',
                 className: 'roster-group hidden',
                 events: {
                     "click a.group-toggle": "toggle"
                 },
-                listItems: 'model.contacts',
-                sortEvent: 'change:chat_status',
-                listSelector: '.roster-group-contacts',
 
                 ItemView: _converse.RosterContactView,
+                listItems: 'model.contacts',
+                listSelector: '.roster-group-contacts',
+                sortEvent: 'change:chat_status',
 
                 initialize () {
                     Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
@@ -620,18 +618,33 @@
             });
 
 
-            _converse.RosterView = Backbone.Overview.extend({
+            _converse.RosterView = Backbone.OrderedListView.extend({
                 tagName: 'div',
                 id: 'converse-roster',
 
+                ItemView: _converse.RosterGroupView,
+                listItems: 'model',
+                listSelector: '.roster-contacts',
+                sortEvent: null, // Groups are immutable, so they don't get re-sorted
+                subviewIndex: 'name',
+
                 initialize () {
+                    Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+
                     _converse.roster.on("add", this.onContactAdded, this);
                     _converse.roster.on('change', this.onContactChange, this);
                     _converse.roster.on("destroy", this.update, this);
                     _converse.roster.on("remove", this.update, this);
-                    this.model.on("add", this.onGroupAdded, this);
+
                     this.model.on("reset", this.reset, this);
-                    _converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
+
+                    // This event gets triggered once *all* contacts (i.e. not
+                    // just this group's) have been fetched from browser
+                    // storage or the XMPP server and once they've been
+                    // assigned to their various groups.
+                    _converse.on('rosterGroupsFetched', this.sortAndPositionAllItems.bind(this));
+
+                    // _converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
                     _converse.on('rosterContactsFetched', () => {
                         _converse.roster.each((contact) => {
                             this.addRosterContact(contact, {'silent': true});
@@ -735,12 +748,6 @@
                     return this;
                 },
 
-                onGroupAdded (group) {
-                    const view = new _converse.RosterGroupView({model: group});
-                    this.add(group.get('name'), view);
-                    this.positionGroup(group);
-                },
-
                 onContactAdded (contact) {
                     this.addRosterContact(contact).update();
                     this.updateFilter();
@@ -777,41 +784,6 @@
                         changes.status = contact.get('status');
                     }
                     chatbox.save(changes);
-                    return this;
-                },
-
-                positionFetchedGroups () {
-                    /* Instead of throwing an add event for each group
-                     * fetched, we wait until they're all fetched and then
-                     * we position them.
-                     * Works around the problem of positionGroup not
-                     * working when all groups besides the one being
-                     * positioned aren't already in inserted into the
-                     * roster DOM element.
-                     */
-                    this.model.sort();
-                    this.model.each(this.onGroupAdded.bind(this));
-                },
-
-                positionGroup (group) {
-                    /* Place the group's DOM element in the correct alphabetical
-                     * position amongst the other groups in the roster.
-                     *
-                     * NOTE: relies on the assumption that it will be called in
-                     * the right order of appearance of groups.
-                     */
-                    const view = this.get(group.get('name'));
-                    view.render();
-                    const list = this.roster_el,
-                          index = this.model.indexOf(view.model);
-                    if (index === 0) {
-                        list.insertAdjacentElement('afterbegin', view.el);
-                    } else if (index === (this.model.length-1)) {
-                        list.insertAdjacentElement('beforeend', view.el);
-                    } else {
-                        const neighbour_el = list.querySelector('div:nth-child('+index+')');
-                        neighbour_el.insertAdjacentElement('afterend', view.el);
-                    }
                     return this;
                 },
 

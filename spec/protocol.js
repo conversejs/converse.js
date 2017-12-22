@@ -230,7 +230,7 @@
                     // contact in the roster.
                     return test_utils.waitUntil(function () {
                         var $header = $('a:contains("Pending contacts")');
-                        var $contacts = $header.parent().find('li');
+                        var $contacts = $header.parent().find('li:visible');
                         return $contacts.length;
                     }, 600);
                 }).then(function () {
@@ -299,7 +299,7 @@
                     // contact (but still offline).
                     return test_utils.waitUntil(function () {
                         var $header = $('a:contains("My contacts")');
-                        var $contacts = $header.parent().find('li');
+                        var $contacts = $header.parent().find('li:visible');
                         return $contacts.length;
                     }, 600);
                 }).then(function () {
@@ -557,7 +557,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 return test_utils.waitUntil(function () {
                     var $header = $('a:contains("Contact requests")');
-                    var $contacts = $header.parent().find('li');
+                    var $contacts = $header.parent().find('li:visible');
                     return $contacts.length;
                 }, 600).then(function () {
                     expect(_converse.emit).toHaveBeenCalledWith('contactRequest', jasmine.any(Object));

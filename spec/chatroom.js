@@ -1671,46 +1671,48 @@
 
                 var sent_IQ, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_IQ = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+
+                test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'some1').then(function () {
+                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                        sent_IQ = iq;
+                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                    });
+
+                    // We pretend this is a new room, so no disco info is returned.
+                    var features_stanza = $iq({
+                            from: 'coven@chat.shakespeare.lit',
+                            'id': IQ_id,
+                            'to': 'dummy@localhost/desktop',
+                            'type': 'error'
+                        }).c('error', {'type': 'cancel'})
+                            .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+                    _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
+
+                    var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                    /* <message xmlns="jabber:client"
+                    *              type="groupchat"
+                    *              to="dummy@localhost/_converse.js-27854181"
+                    *              from="coven@chat.shakespeare.lit">
+                    *      <x xmlns="http://jabber.org/protocol/muc#user">
+                    *          <status code="104"/>
+                    *          <status code="172"/>
+                    *      </x>
+                    *  </message>
+                    */
+                    var message = $msg({
+                            type:'groupchat',
+                            to: 'dummy@localhost/_converse.js-27854181',
+                            from: 'coven@chat.shakespeare.lit'
+                        }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('status', {code: '104'}).up()
+                        .c('status', {code: '172'});
+                    _converse.connection._dataRecv(test_utils.createRequest(message));
+                    var $chat_body = view.$('.chatroom-body');
+                    expect($chat_body.html().trim().indexOf(
+                        '<div class="message chat-info">This room is now no longer anonymous</div>'
+                    )).not.toBe(-1);
+                    done();
                 });
-                _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
-
-                // We pretend this is a new room, so no disco info is returned.
-                var features_stanza = $iq({
-                        from: 'coven@chat.shakespeare.lit',
-                        'id': IQ_id,
-                        'to': 'dummy@localhost/desktop',
-                        'type': 'error'
-                    }).c('error', {'type': 'cancel'})
-                        .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
-                _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
-
-                var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                /* <message xmlns="jabber:client"
-                 *              type="groupchat"
-                 *              to="dummy@localhost/_converse.js-27854181"
-                 *              from="coven@chat.shakespeare.lit">
-                 *      <x xmlns="http://jabber.org/protocol/muc#user">
-                 *          <status code="104"/>
-                 *          <status code="172"/>
-                 *      </x>
-                 *  </message>
-                 */
-                var message = $msg({
-                        type:'groupchat',
-                        to: 'dummy@localhost/_converse.js-27854181',
-                        from: 'coven@chat.shakespeare.lit'
-                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
-                      .c('status', {code: '104'}).up()
-                      .c('status', {code: '172'});
-                _converse.connection._dataRecv(test_utils.createRequest(message));
-                var $chat_body = view.$('.chatroom-body');
-                expect($chat_body.html().trim().indexOf(
-                    '<div class="chat-info">This room is now no longer anonymous</div>'
-                )).not.toBe(-1);
-                done();
             }));
 
             it("informs users if they have been kicked out of the chat room",

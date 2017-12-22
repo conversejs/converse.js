@@ -228,7 +228,7 @@
         /* Create grouped contacts
          */
         var i=0, j=0;
-        _.each(_.keys(mock.groups), $.proxy(function (name) {
+        _.each(_.keys(mock.groups), function (name) {
             j = i;
             for (i=j; i<j+mock.groups[name]; i++) {
                 converse.roster.create({
@@ -239,7 +239,7 @@
                     fullname: mock.cur_names[i]
                 });
             }
-        }, converse));
+        });
     };
 
     utils.createChatMessage = function (_converse, sender_jid, message) {

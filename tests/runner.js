@@ -46,6 +46,7 @@ var specs = [
     "spec/mam",
     "spec/otr",
     "spec/controlbox",
+    "spec/roster",
     "spec/chatbox",
     "spec/chatroom",
     "spec/minchats",

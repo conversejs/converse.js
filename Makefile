@@ -171,6 +171,8 @@ transpile: stamp-npm src
 
 BUILDS = dist/converse.js \
 		 dist/converse.min.js \
+         dist/converse-headless.js \
+		 dist/converse-headless.min.js \
 		 dist/converse-muc-embedded.js \
 		 dist/converse-muc-embedded.min.js \
 		 dist/converse-no-jquery.js \
@@ -185,6 +187,10 @@ dist/converse.js: transpile src node_modules
 	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
 dist/converse.min.js: transpile src node_modules
 	$(RJS) -o src/build.js include=converse out=dist/converse.min.js
+dist/converse-headless.js: transpile src node_modules
+	$(RJS) -o src/build.js paths.converse=src/headless include=converse out=dist/converse-headless.js optimize=none 
+dist/converse-headless.min.js: transpile src node_modules
+	$(RJS) -o src/build.js paths.converse=src/headless include=converse out=dist/converse-headless.min.js
 dist/converse-esnext.js: src node_modules
 	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.js optimize=none 
 dist/converse-esnext.min.js: src node_modules

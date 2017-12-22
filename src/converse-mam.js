@@ -13,8 +13,6 @@
             "converse-core",
             "utils",
             "converse-disco",
-            "converse-chatview", // Could be made a soft dependency
-            "converse-muc", // Could be made a soft dependency
             "strophe.rsm"
     ], factory);
 }(this, function (sizzle, converse, utils) {
@@ -28,6 +26,8 @@
 
 
     converse.plugins.add('converse-mam', {
+
+        optional_dependencies: ['converse-chatview', 'converse-muc'],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

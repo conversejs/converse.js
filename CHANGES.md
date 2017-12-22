@@ -33,6 +33,7 @@
 - Fetch VCard when starting a chat with someone not in the user's roster.
 - Show status messages in an MUC room when a user's role changes.
 - In MUC chat rooms, collapse multiple, consecutive join/leave messages.
+- Performance improvements for rendering private chats, rooms and the contacts roster.
 
 ### API changes
 - New API method `_converse.disco.supports` to check whether a certain

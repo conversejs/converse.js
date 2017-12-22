@@ -676,7 +676,7 @@
 
             _converse.RosterGroupView = Backbone.OrderedListView.extend({
                 tagName: 'div',
-                className: 'roster-group',
+                className: 'roster-group hidden',
                 events: {
                     "click a.group-toggle": "toggle"
                 },
@@ -714,19 +714,6 @@
                     });
                     this.contacts_el = this.el.querySelector('.roster-group-contacts');
                     return this;
-                },
-
-                createItemView (contact) {
-                    const contact_view =
-                        Backbone.OrderedListView.prototype.createItemView.apply(this, arguments);
-                    if (contact_view.mayBeShown()) {
-                        if (this.model.get('state') === _converse.CLOSED) {
-                            u.hideElement(contact_view.el);
-                        } else {
-                            u.showElement(contact_view.el);
-                        }
-                        u.showElement(this.el);
-                    }
                 },
 
                 show () {

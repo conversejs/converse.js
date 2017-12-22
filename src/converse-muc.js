@@ -1827,7 +1827,7 @@
                 displayJoinNotification (stanza) {
                     const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
                     const stat = stanza.querySelector('status');
-                    const last_el = this.content.querySelector(':last-child');
+                    const last_el = this.content.querySelector('.message:last-child');
                     if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
                             _.get(last_el, 'dataset', {}).leave === `"${nick}"`) {
                         last_el.outerHTML = 

@@ -169,7 +169,7 @@
         return _.includes(el.classList, className);
     };
 
-    u.slideOut = function (el, duration=250) {
+    u.slideOut = function (el, duration=200) {
         /* Shows/expands an element by sliding it out of itself
          *
          * Parameters:
@@ -233,7 +233,7 @@
         });
     };
 
-    u.slideIn = function (el, duration=250) {
+    u.slideIn = function (el, duration=200) {
         /* Hides/collapses an element by sliding it into itself. */
         return new Promise((resolve, reject) => {
             if (_.isNil(el)) {

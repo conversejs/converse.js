@@ -451,7 +451,6 @@
                     Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
                     this.model.contacts.on("change:subscription", this.onContactSubscriptionChange, this);
                     this.model.contacts.on("change:requesting", this.onContactRequestChange, this);
-                    this.model.contacts.on("destroy", this.onRemove, this);
                     this.model.contacts.on("remove", this.onRemove, this);
                     _converse.roster.on('change:groups', this.onContactGroupChange, this);
 
@@ -583,36 +582,37 @@
                     const cid = contact.get('id');
                     const in_this_overview = !this.get(cid);
                     if (in_this_group && !in_this_overview) {
-                        this.model.contacts.remove(cid);
-                    } else if (!in_this_group && in_this_overview) {
                         this.items.trigger('add', contact);
+                    } else if (!in_this_group) {
+                        this.removeContact(contact);
                     }
                 },
 
                 onContactSubscriptionChange (contact) {
                     if ((this.model.get('name') === HEADER_PENDING_CONTACTS) && contact.get('subscription') !== 'from') {
-                        this.model.contacts.remove(contact.get('id'));
+                        this.removeContact(contact);
                     }
                 },
 
                 onContactRequestChange (contact) {
                     if ((this.model.get('name') === HEADER_REQUESTING_CONTACTS) && !contact.get('requesting')) {
-                        /* We suppress events, otherwise the remove event will
-                         * also cause the contact's view to be removed from the
-                         * "Pending Contacts" group.
-                         */
-                        this.model.contacts.remove(contact.get('id'), {'silent': true});
-                        // Since we suppress events, we make sure the view and
-                        // contact are removed from this group.
-                        this.get(contact.get('id')).remove();
-                        this.onRemove(contact);
+                        this.removeContact(contact);
                     }
                 },
 
+                removeContact (contact) {
+                    // We suppress events, otherwise the remove event will
+                    // also cause the contact's view to be removed from the
+                    // "Pending Contacts" group.
+                    this.model.contacts.remove(contact, {'silent': true});
+                    this.onRemove(contact);
+                },
+
                 onRemove (contact) {
+                    this.get(contact.get('id')).remove();
                     this.remove(contact.get('id'));
                     if (this.model.contacts.length === 0) {
-                        u.hideElement(this.el);
+                        this.el.parentElement.removeChild(this.el);
                     }
                 }
             });
@@ -632,6 +632,7 @@
                     Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
 
                     _converse.roster.on("add", this.onContactAdded, this);
+                    _converse.roster.on('change:groups', this.onContactAdded, this);
                     _converse.roster.on('change', this.onContactChange, this);
                     _converse.roster.on("destroy", this.update, this);
                     _converse.roster.on("remove", this.update, this);

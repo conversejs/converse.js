@@ -358,6 +358,52 @@
                 });
             }));
 
+            it("gets created when a contact's \"groups\" attribute changes",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                _converse.roster_groups = true;
+                spyOn(_converse, 'emit');
+                spyOn(_converse.rosterview, 'update').and.callThrough();
+                _converse.rosterview.render();
+
+                test_utils.openControlBox();
+
+                _converse.roster.create({
+                    jid: 'groupchanger@localhost',
+                    subscription: 'both',
+                    ask: null,
+                    groups: ['firstgroup'],
+                    fullname: 'George Groupchanger'
+                });
+
+                // Check that the groups appear alphabetically and that
+                // requesting and pending contacts are last.
+                test_utils.waitUntil(function () {
+                    return _converse.rosterview.$el.find('.roster-group:visible a.group-toggle').length;
+                }, 500).then(function () {
+                    var group_titles = $.map(
+                        _converse.rosterview.$el.find('.roster-group:visible a.group-toggle'),
+                        function (o) { return $(o).text().trim(); }
+                    );
+                    expect(group_titles).toEqual(['firstgroup']);
+
+                    var contact = _converse.roster.get('groupchanger@localhost');
+                    contact.set({'groups': ['secondgroup']});
+                    return test_utils.waitUntil(function () {
+                        return _converse.rosterview.$el.find('.roster-group[data-group="secondgroup"]:visible a.group-toggle').length;
+                    }, 500);
+                }).then(function () {
+                    var group_titles = $.map(
+                        _converse.rosterview.$el.find('.roster-group:visible a.group-toggle'),
+                        function (o) { return $(o).text().trim(); }
+                    );
+                    expect(group_titles).toEqual(['secondgroup']);
+                    done();
+                });
+            }));
+
             it("can share contacts with other roster groups", 
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
@@ -767,7 +813,7 @@
                     expect(window.confirm).toHaveBeenCalled();
                     expect(_converse.connection.sendIQ).toHaveBeenCalled();
                     expect(contact.removeFromRoster).toHaveBeenCalled();
-                    expect(_converse.rosterview.$el.find('.roster-group').css('display')).toEqual('none');
+                    expect(_converse.rosterview.$el.find('.roster-group').length).toEqual(0);
                     done();
                 });
             }));

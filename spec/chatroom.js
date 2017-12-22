@@ -1156,7 +1156,7 @@
                     .c('item').attrs({
                         affiliation: 'member',
                         jid: 'dummy@localhost/resource',
-                        role: 'occupant'
+                        role: 'participant'
                     }).up()
                     .c('status').attrs({code:'110'}).up()
                     .c('status').attrs({code:'210'}).nodeTree;
@@ -1434,7 +1434,7 @@
                  *      <item affiliation='member'
                  *          jid='hag66@shakespeare.lit/pda'
                  *          nick='oldhag'
-                 *          role='occupant'/>
+                 *          role='participant'/>
                  *      <status code='303'/>
                  *      <status code='110'/>
                  *  </x>
@@ -1447,7 +1447,7 @@
                  *  <x xmlns='http://jabber.org/protocol/muc#user'>
                  *      <item affiliation='member'
                  *          jid='hag66@shakespeare.lit/pda'
-                 *          role='occupant'/>
+                 *          role='participant'/>
                  *      <status code='110'/>
                  *  </x>
                  *  </presence>
@@ -1469,7 +1469,7 @@
                     .c('item').attrs({
                         affiliation: 'member',
                         jid: 'dummy@localhost/pda',
-                        role: 'occupant'
+                        role: 'participant'
                     }).up()
                     .c('status').attrs({code:'110'}).up()
                     .c('status').attrs({code:'210'}).nodeTree;
@@ -1496,7 +1496,7 @@
                             affiliation: 'member',
                             jid: 'dummy@localhost/pda',
                             nick: 'newnick',
-                            role: 'occupant'
+                            role: 'participant'
                         }).up()
                         .c('status').attrs({code:'303'}).up()
                         .c('status').attrs({code:'110'}).nodeTree;
@@ -1519,7 +1519,7 @@
                         .c('item').attrs({
                             affiliation: 'member',
                             jid: 'dummy@localhost/pda',
-                            role: 'occupant'
+                            role: 'participant'
                         }).up()
                         .c('status').attrs({code:'110'}).nodeTree;
 

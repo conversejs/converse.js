@@ -11,12 +11,11 @@
  */
 (function (root, factory) {
 
-    define(["jquery.noconflict",
-            "converse-chatview",
+    define([ "converse-chatview",
             "tpl!toolbar_otr",
             'otr'
     ], factory);
-}(this, function ($, converse, tpl_toolbar_otr, otr) {
+}(this, function (converse, tpl_toolbar_otr, otr) {
     "use strict";
 
     const { Strophe, utils, b64_sha1, _ } = converse.env;
@@ -355,7 +354,7 @@
                 authOTR (ev) {
                     const { _converse } = this.__super__,
                         { __ } = _converse,
-                        { scheme } = $(ev.target).data();
+                        scheme = ev.target.getAttribute('data-scheme');
                     let result, question, answer;
                     if (scheme === 'fingerprint') {
                         result = confirm(__('Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.', [
@@ -437,7 +436,8 @@
                         otr_translated_status: OTR_TRANSLATED_MAPPING[data.otr_status],
                     });
                     this.__super__.renderToolbar.apply(this, arguments);
-                    this.$el.find('.chat-toolbar').append(
+                    this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
+                        'beforeend', 
                         tpl_toolbar_otr(
                             _.extend(this.model.toJSON(), options || {})
                         ));

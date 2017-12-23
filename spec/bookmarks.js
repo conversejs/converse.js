@@ -482,12 +482,14 @@
                 test_utils.waitUntil(function () {
                     return $('#chatrooms dl.bookmarks dd:visible').length;
                 }, 300).then(function () {
+                    expect($('#chatrooms dl.bookmarks').hasClass('collapsed')).toBeFalsy();
                     expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
                     expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
                     $('#chatrooms .bookmarks-toggle').click();
-                    expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(0);
+                    expect($('#chatrooms dl.bookmarks').hasClass('collapsed')).toBeTruthy();
                     expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.CLOSED);
                     $('#chatrooms .bookmarks-toggle').click();
+                    expect($('#chatrooms dl.bookmarks').hasClass('collapsed')).toBeFalsy();
                     expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
                     expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
                     done();

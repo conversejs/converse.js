@@ -8,7 +8,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-20 17:07+0000\n"
 "PO-Revision-Date: 2017-12-23 14:41+0000\n"
-"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
+"Last-Translator: anonymous <>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/conversejs/translations/fr/>\n"
 "Language: fr\n"
@@ -306,7 +306,9 @@ msgstr "Voulez-vous vraiment retirer ce contact ?"
 #: dist/converse-no-dependencies.js:14879
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
-msgstr "Désolé, il y a eu une erreur en tentant de retirer %1$s comme contact."
+msgstr ""
+"Désolé, il y a eu une erreur lors de la tentative de retrait de %1$s comme "
+"contact"
 
 #: dist/converse-no-dependencies.js:14901
 msgid "Are you sure you want to decline this contact request?"

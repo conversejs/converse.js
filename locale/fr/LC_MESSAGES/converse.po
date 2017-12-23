@@ -7,16 +7,16 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-20 17:07+0000\n"
-"PO-Revision-Date: 2017-10-05 10:10+0000\n"
-"Last-Translator: Jean-Baptiste <jean-baptiste@holcroft.fr>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
-"translations/fr/>\n"
+"PO-Revision-Date: 2017-12-23 14:41+0000\n"
+"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/conversejs/translations/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2.17-dev\n"
+"X-Generator: Weblate 2.19-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -534,24 +534,24 @@ msgid "Message"
 msgstr "Message"
 
 #: dist/converse-no-dependencies.js:19036
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a moderator."
-msgstr "Cet utilisateur est un modérateur."
+msgstr "%1$s n’est plus un modérateur."
 
 #: dist/converse-no-dependencies.js:19040
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been given a voice again."
-msgstr "%1$s a été expulsé"
+msgstr "%1$s peut de nouveau parler."
 
 #: dist/converse-no-dependencies.js:19044
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been muted."
-msgstr "%1$s a été banni"
+msgstr "%1$s ne peut plus parler."
 
 #: dist/converse-no-dependencies.js:19048
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a moderator."
-msgstr "Cet utilisateur est un modérateur."
+msgstr "%1$s est désormais un modérateur."
 
 #: dist/converse-no-dependencies.js:19056
 msgid "Close and leave this room"
@@ -591,7 +591,6 @@ msgid "Ban user from room"
 msgstr "Bannir l’utilisateur du salon"
 
 #: dist/converse-no-dependencies.js:19626
-#, fuzzy
 msgid "Change user role to participant"
 msgstr "Changer le rôle de l’utilisateur en participant"
 
@@ -686,24 +685,22 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "La raison indiquée est : « %1$s »."
 
 #: dist/converse-no-dependencies.js:20461
-#, fuzzy
 msgid " has left and re-entered the room."
-msgstr " a quitté le salon"
+msgstr " a quitté puis rejoint le salon."
 
 #: dist/converse-no-dependencies.js:20465
-#, fuzzy
 msgid " has entered the room."
 msgstr " a rejoint le salon."
 
 #: dist/converse-no-dependencies.js:20491
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered and left the room."
-msgstr " a quitté le salon"
+msgstr "%1$s a rejoint puis quitté le salon."
 
 #: dist/converse-no-dependencies.js:20502
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left the room."
-msgstr " a quitté le salon"
+msgstr "%1$s a quitté le salon."
 
 #: dist/converse-no-dependencies.js:20571
 msgid "You are not on the member list of this room."
@@ -823,9 +820,8 @@ msgid "Unmoderated"
 msgstr "Non modéré"
 
 #: dist/converse-no-dependencies.js:20942
-#, fuzzy
 msgid "No password"
-msgstr "Mot de passe"
+msgstr "Pas de mot de passe"
 
 #: dist/converse-no-dependencies.js:20943
 msgid "This room is not publicly searchable"

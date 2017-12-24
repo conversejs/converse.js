@@ -241,11 +241,11 @@
                 logger.warn(err);
                 return reject(new Error(err));
             } else if (_.includes(el.classList, 'collapsed')) {
-                return resolve();
+                return resolve(el);
             } else if (window.converse_disable_effects) { // Effects are disabled (for tests)
                 el.classList.add('collapsed');
                 el.style.height = "";
-                return resolve();
+                return resolve(el);
             }
             const marker = el.getAttribute('data-slider-marker');
             if (marker) {
@@ -270,7 +270,7 @@
                     el.removeAttribute('data-slider-marker');
                     el.classList.add('collapsed');
                     el.style.height = "";
-                    resolve();
+                    resolve(el);
                 }
             }
             el.setAttribute(

@@ -1,2 +1,2 @@
 <a href="#" class="rooms-toggle bookmarks-toggle icon-{{{o.toggle_state}}}" title="{{{o.desc_bookmarks}}}">{{{o.label_bookmarks}}}</a>
-<dl class="bookmarks rooms-list"></dl>
+<dl class="bookmarks rooms-list {[ if (o.toggle_state !== o._converse.OPENED) { ]} hidden {[ } ]}"></dl>

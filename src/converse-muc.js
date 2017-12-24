@@ -690,7 +690,7 @@
                      * objects.
                      */
                     return _.map(
-                        $(iq).find(`query[xmlns="${Strophe.NS.MUC_ADMIN}"] item`),
+                        sizzle(`query[xmlns="${Strophe.NS.MUC_ADMIN}"] item`, iq),
                         (item) => ({
                             'jid': item.getAttribute('jid'),
                             'affiliation': item.getAttribute('affiliation'),
@@ -838,7 +838,7 @@
                      *  Any amount of XMLElement objects, representing the IQ
                      *  stanzas.
                      */
-                    return _.flatMap(arguments, this.parseMemberListIQ);
+                    return _.flatMap(arguments[0], this.parseMemberListIQ);
                 },
 
                 getJidsWithAffiliations (affiliations) {
@@ -1016,7 +1016,7 @@
                     if (!_.isUndefined(ev)) { ev.stopPropagation(); }
                     const result = confirm(__("Are you sure you want to clear the messages from this room?"));
                     if (result === true) {
-                        this.$content.empty();
+                        this.content.innerHTML = '';
                     }
                     return this;
                 },
@@ -1305,31 +1305,38 @@
                     _.each(container_el.children, u.hideElement);
                     container_el.insertAdjacentHTML('beforeend', tpl_chatroom_form());
 
-                    const form = container_el.querySelector('form.chatroom-form');
-                    const $form = $(form);
-                    let $fieldset = $form.children('fieldset:first');
-                    const $stanza = $(stanza),
-                          $fields = $stanza.find('field'),
-                          title = $stanza.find('title').text(),
-                          instructions = $stanza.find('instructions').text();
-                    $fieldset.find('span.spinner').remove();
-                    $fieldset.append($('<legend>').text(title));
+                    const form_el = container_el.querySelector('form.chatroom-form'),
+                          fieldset_el = form_el.querySelector('fieldset:first-child'),
+                          fields = stanza.querySelectorAll('field'),
+                          title = _.get(stanza.querySelector('title'), 'textContent'),
+                          instructions = _.get(stanza.querySelector('instructions'), 'textContent');
+
+                    u.removeElement(fieldset_el.querySelector('span.spinner'));
+                    fieldset_el.insertAdjacentHTML('beforeend', `<legend>${title}</legend>`);
+
                     if (instructions && instructions !== title) {
-                        $fieldset.append($('<p class="instructions">').text(instructions));
+                        fieldset_el.insertAdjacentHTML('beforeend', `<p class="instructions">${instructions}</p>`);
                     }
-                    _.each($fields, function (field) {
-                        $fieldset.append(u.xForm2webForm(field, stanza));
+                    _.each(fields, function (field) {
+                        fieldset_el.insertAdjacentHTML('beforeend', u.xForm2webForm(field, stanza));
                     });
-                    $form.append('<fieldset></fieldset>');
-                    $fieldset = $form.children('fieldset:last');
-                    $fieldset.append(`<input type="submit" class="pure-button button-primary" value="${__('Save')}"/>`);
-                    $fieldset.append(`<input type="button" class="pure-button button-cancel" value="${__('Cancel')}"/>`);
-                    $fieldset.find('input[type=button]').on('click', (ev) => {
+
+                    // Render save/cancel buttons
+                    const last_fieldset_el = document.createElement('fieldset');
+                    last_fieldset_el.insertAdjacentHTML(
+                        'beforeend',
+                        `<input type="submit" class="pure-button button-primary" value="${__('Save')}"/>`);
+                    last_fieldset_el.insertAdjacentHTML(
+                        'beforeend',
+                        `<input type="button" class="pure-button button-cancel" value="${__('Cancel')}"/>`);
+                    form_el.insertAdjacentElement('beforeend', last_fieldset_el);
+
+                    last_fieldset_el.querySelector('input[type=button]').addEventListener('click', (ev) => {
                         ev.preventDefault();
                         this.closeForm();
                     });
 
-                    form.addEventListener('submit', (ev) => {
+                    form_el.addEventListener('submit', (ev) => {
                             ev.preventDefault();
                             this.saveConfiguration(ev.target).then(
                                 this.getRoomFeatures.bind(this)
@@ -1373,11 +1380,8 @@
                      *  (HTMLElement) form: The configuration form DOM element.
                      */
                     return new Promise((resolve, reject) => {
-                        const $inputs = $(form).find(':input:not([type=button]):not([type=submit])'),
-                            configArray = [];
-                        $inputs.each(function () {
-                            configArray.push(u.webForm2xForm(this));
-                        });
+                        const inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
+                              configArray = _.map(inputs, u.webForm2xForm);
                         this.sendConfiguration(configArray, resolve, reject);
                         this.closeForm();
                     });
@@ -1585,9 +1589,8 @@
                      * Parameters:
                      *  (XMLElement) iq: The received IQ stanza
                      */
-                    const nick = $(iq)
-                        .find('query[node="x-roomuser-item"] identity')
-                        .attr('name');
+                    const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
+                          nick = identity_el ? identity_el.getAttribute('name') : null;
                     if (!nick) {
                         this.onNickNameNotFound();
                     } else {
@@ -1673,8 +1676,8 @@
 
                 submitPassword (ev) {
                     ev.preventDefault();
-                    const password = this.$el.find('.chatroom-form').find('input[type=password]').val();
-                    this.el.querySelector('.chatroom-form-container').outerHTML = tpl_spinner();
+                    const password = this.el.querySelector('.chatroom-form input[type=password]').value;
+                    this.showSpinner();
                     this.join(this.model.get('nick'), password);
                 },
 
@@ -2195,7 +2198,7 @@
                 },
 
                 destroy () {
-                    this.$el.remove();
+                    this.el.parentElement.removeChild(this.el);
                 }
             });
 
@@ -2614,9 +2617,9 @@
                 },
 
                 informNoRoomsFound () {
-                    const $available_chatrooms = this.$el.find('#available-chatrooms');
+                    const chatrooms_el = this.el.querySelector('#available-chatrooms');
                     // For translators: %1$s is a variable and will be replaced with the XMPP server name
-                    $available_chatrooms.html(`<dt>${__('No rooms on %1$s', this.model.get('muc_domain'))}</dt>`);
+                    chatrooms_el.innerHTML = `<dt>${__('No rooms on %1$s', this.model.get('muc_domain'))}</dt>`;
                     const input_el = this.el.querySelector('input#show-rooms');
                     input_el.classList.remove('hidden')
                     this.removeSpinner();
@@ -2668,21 +2671,22 @@
                             type: "get"
                         }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS}),
                         this.onRoomsFound.bind(this),
-                        this.informNoRoomsFound.bind(this)
+                        this.informNoRoomsFound.bind(this),
+                        5000
                     );
                 },
 
                 showRooms () {
-                    const $available_chatrooms = this.$el.find('#available-chatrooms');
-                    const $server = this.$el.find('input.new-chatroom-server');
-                    const server = $server.val();
+                    const chatrooms_el = this.el.querySelector('#available-chatrooms');
+                    const server_el = this.el.querySelector('input.new-chatroom-server');
+                    const server = server_el.value;
                     if (!server) {
-                        $server.addClass('error');
+                        server_el.classList.add('error');
                         return;
                     }
-                    this.$el.find('input.new-chatroom-name').removeClass('error');
-                    $server.removeClass('error');
-                    $available_chatrooms.empty();
+                    this.el.querySelector('input.new-chatroom-name').classList.remove('error');
+                    server_el.classList.remove('error');
+                    chatrooms_el.innerHTML = '';
 
                     const input_el = this.el.querySelector('input#show-rooms');
                     input_el.classList.add('hidden')
@@ -2701,24 +2705,23 @@
                      *  (XMLElement) stanza: The IQ stanza containing the room
                      *      info.
                      */
-                    const $stanza = $(stanza);
                     // All MUC features found here: http://xmpp.org/registrar/disco-features.html
                     el.querySelector('span.spinner').outerHTML =
                         tpl_room_description({
                             'jid': stanza.getAttribute('from'),
-                            'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
-                            'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
-                            'hidden': $stanza.find('feature[var="muc_hidden"]').length,
-                            'membersonly': $stanza.find('feature[var="muc_membersonly"]').length,
-                            'moderated': $stanza.find('feature[var="muc_moderated"]').length,
-                            'nonanonymous': $stanza.find('feature[var="muc_nonanonymous"]').length,
-                            'open': $stanza.find('feature[var="muc_open"]').length,
-                            'passwordprotected': $stanza.find('feature[var="muc_passwordprotected"]').length,
-                            'persistent': $stanza.find('feature[var="muc_persistent"]').length,
-                            'publicroom': $stanza.find('feature[var="muc_public"]').length,
-                            'semianonymous': $stanza.find('feature[var="muc_semianonymous"]').length,
-                            'temporary': $stanza.find('feature[var="muc_temporary"]').length,
-                            'unmoderated': $stanza.find('feature[var="muc_unmoderated"]').length,
+                            'desc': _.get(_.head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
+                            'occ': _.get(_.head(sizzle('field[var="muc#roominfo_occupants"] value', stanza)), 'textContent'),
+                            'hidden': sizzle('feature[var="muc_hidden"]', stanza).length,
+                            'membersonly': sizzle('feature[var="muc_membersonly"]', stanza).length,
+                            'moderated': sizzle('feature[var="muc_moderated"]', stanza).length,
+                            'nonanonymous': sizzle('feature[var="muc_nonanonymous"]', stanza).length,
+                            'open': sizzle('feature[var="muc_open"]', stanza).length,
+                            'passwordprotected': sizzle('feature[var="muc_passwordprotected"]', stanza).length,
+                            'persistent': sizzle('feature[var="muc_persistent"]', stanza).length,
+                            'publicroom': sizzle('feature[var="muc_publicroom"]', stanza).length,
+                            'semianonymous': sizzle('feature[var="muc_semianonymous"]', stanza).length,
+                            'temporary': sizzle('feature[var="muc_temporary"]', stanza).length,
+                            'unmoderated': sizzle('feature[var="muc_unmoderated"]', stanza).length,
                             'label_desc': __('Description:'),
                             'label_jid': __('Room Address (JID):'),
                             'label_occ': __('Occupants:'),
@@ -2740,39 +2743,39 @@
                 toggleRoomInfo (ev) {
                     /* Show/hide extra information about a room in the listing.
                      */
-                    const { target } = ev,
-                        $parent = $(target).parent('dd'),
-                        $div = $parent.find('div.room-info');
-                    if ($div.length) {
-                        $div.remove();
+                    const parent_el = ev.target.parentElement,
+                        div_el = parent_el.querySelector('div.room-info');
+                    if (div_el) {
+                        u.slideIn(div_el).then(u.removeElement)
                     } else {
-                        $parent.find('span.spinner').remove();
-                        $parent.append(tpl_spinner);
+                        parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
                         _converse.connection.disco.info(
-                            $(target).attr('data-room-jid'), null, _.partial(this.insertRoomInfo, $parent[0])
+                            ev.target.getAttribute('data-room-jid'),
+                            null,
+                            _.partial(this.insertRoomInfo, parent_el)
                         );
                     }
                 },
 
                 parseRoomDataFromEvent (ev) {
-                    let name, $name, server, $server, jid;
+                    let name, jid;
                     if (ev.type === 'click') {
-                        name = $(ev.target).text();
-                        jid = $(ev.target).attr('data-room-jid');
+                        name = ev.target.textContent;
+                        jid = ev.target.getAttribute('data-room-jid');
                     } else {
-                        const $name = this.$el.find('input.new-chatroom-name');
-                        const $server= this.$el.find('input.new-chatroom-server');
-                        const server = $server.val();
-                        name = $name.val().trim();
-                        $name.val(''); // Clear the input
+                        const name_el = this.el.querySelector('input.new-chatroom-name');
+                        const server_el= this.el.querySelector('input.new-chatroom-server');
+                        const server = server_el.value;
+                        name = name_el.value.trim();
+                        name_el.value = ''; // Clear the input
                         if (name && server) {
                             jid = Strophe.escapeNode(name.toLowerCase()) + '@' + server.toLowerCase();
-                            $name.removeClass('error');
-                            $server.removeClass('error');
+                            name_el.classList.remove('error');
+                            server_el.classList.remove('error');
                             this.model.save({muc_domain: server});
                         } else {
-                            if (!name) { $name.addClass('error'); }
-                            if (!server) { $server.addClass('error'); }
+                            if (!name) { name_el.classList.add('error'); }
+                            if (!server) { server_el.classList.add('error'); }
                             return;
                         }
                     }
@@ -2809,11 +2812,11 @@
                  *  (XMLElement) message: The message stanza containing the
                  *        invitation.
                  */
-                const $message = $(message),
-                    $x = $message.children('x[xmlns="jabber:x:conference"]'),
-                    from = Strophe.getBareJidFromJid($message.attr('from')),
-                    room_jid = $x.attr('jid'),
-                    reason = $x.attr('reason');
+                const x_el = message.querySelector('x[xmlns="jabber:x:conference"]'),
+                    from = Strophe.getBareJidFromJid(message.getAttribute('from')),
+                    room_jid = x_el.getAttribute('jid'),
+                    reason = x_el.getAttribute('reason');
+
                 let contact = _converse.roster.get(from),
                     result;
 
@@ -2836,7 +2839,7 @@
                 if (result === true) {
                     const chatroom = openChatRoom({
                         'jid': room_jid,
-                        'password': $x.attr('password')
+                        'password': x_el.getAttribute('password')
                     });
                     if (chatroom.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
                         _converse.chatboxviews.get(room_jid).join();

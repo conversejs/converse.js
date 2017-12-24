@@ -2417,6 +2417,13 @@
                 expect(view.renderPasswordForm).toHaveBeenCalled();
                 expect($chat_body.find('form.chatroom-form').length).toBe(1);
                 expect($chat_body.find('legend').text()).toBe('This chatroom requires a password');
+
+                // Let's submit the form
+                spyOn(view, 'join');
+                var input_el = view.el.querySelector('[name="password"]');
+                input_el.value = 'secret';
+                view.el.querySelector('input[type=submit]').click();
+                expect(view.join).toHaveBeenCalledWith(undefined, "secret");
                 done();
             }));
 
@@ -2480,6 +2487,10 @@
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 view.onChatRoomPresence(presence);
                 expect(view.$el.find('.chatroom-body form.chatroom-form label:first').text()).toBe('Please choose your nickname');
+
+                var $input = view.$el.find('.chatroom-body form.chatroom-form input:first');
+                $input.val('nicky');
+                view.el.querySelector('input[type=submit]').click();
                 done();
             }));
 

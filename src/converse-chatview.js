@@ -13,15 +13,16 @@
             "converse-chatboxes",
             "emojione",
             "xss",
+            "tpl!action",
             "tpl!chatbox",
             "tpl!chatbox_head",
-            "tpl!new_day",
-            "tpl!action",
             "tpl!emojis",
-            "tpl!message",
             "tpl!help_message",
-            "tpl!toolbar",
-            "tpl!spinner"
+            "tpl!info",
+            "tpl!message",
+            "tpl!new_day",
+            "tpl!spinner",
+            "tpl!toolbar"
     ], factory);
 }(this, function (
             $,
@@ -29,15 +30,16 @@
             dummy,
             emojione,
             xss,
+            tpl_action,
             tpl_chatbox,
             tpl_chatbox_head,
-            tpl_new_day,
-            tpl_action,
             tpl_emojis,
-            tpl_message,
             tpl_help_message,
-            tpl_toolbar,
-            tpl_spinner
+            tpl_info,
+            tpl_message,
+            tpl_new_day,
+            tpl_spinner,
+            tpl_toolbar
     ) {
     "use strict";
     const { $msg, Backbone, Strophe, _, b64_sha1, moment } = converse.env;
@@ -116,7 +118,7 @@
             }
             _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
 
-            _converse.EmojiPicker = Backbone.Model.extend({ 
+            _converse.EmojiPicker = Backbone.Model.extend({
                 defaults: {
                     'current_category': 'people',
                     'current_skintone': '',
@@ -321,9 +323,7 @@
                 afterMessagesFetched () {
                     this.insertIntoDOM();
                     this.scrollDown();
-                    // We only start listening for the scroll event after
-                    // cached messages have been fetched
-                    this.$content.on('scroll', this.markScrolled.bind(this));
+                    this.content.addEventListener('scroll', this.markScrolled.bind(this));
                     _converse.emit('afterMessagesFetched', this);
                 },
 
@@ -349,18 +349,21 @@
                 },
 
                 clearStatusNotification () {
-                    this.$content.find('div.chat-event').remove();
+                    u.removeElement(this.content.querySelector('div.chat-event'));
                 },
 
                 showStatusNotification (message, keep_old, permanent) {
                     if (!keep_old) {
                         this.clearStatusNotification();
                     }
-                    const $el = $('<div class="chat-info"></div>').text(message);
-                    if (!permanent) {
-                        $el.addClass('chat-event');
-                    }
-                    this.content.insertAdjacentElement('beforeend', $el[0]);
+                    this.content.insertAdjacentHTML(
+                        'beforeend',
+                        tpl_info({
+                            'extra_classes': !permanent ? 'chat-event' : '',
+                            'message': message,
+                            'isodate': moment().format(),
+                            'data': ''
+                        }));
                     this.scrollDown();
                 },
 
@@ -382,23 +385,24 @@
                     );
                 },
 
-                insertDayIndicator (date, prepend) {
-                    /* Appends (or prepends if "prepend" is truthy) an indicator
+                insertDayIndicator (date, insert_method) {
+                    /* Inserts an indicator
                      * into the chat area, showing the day as given by the
                      * passed in date.
                      *
                      * Parameters:
                      *  (String) date - An ISO8601 date string.
+                     *  (Function) insert_method - The method to be used to
+                     *      insert the indicator
                      */
                     const day_date = moment(date).startOf('day');
-                    const insert = prepend ? this.$content.prepend: this.$content.append;
-                    insert.call(this.$content, tpl_new_day({
+                    insert_method(tpl_new_day({
                         isodate: day_date.format(),
                         datestring: day_date.format("dddd MMM Do YYYY")
                     }));
                 },
 
-                insertMessage (attrs, prepend) {
+                insertMessage (attrs, insert_method) {
                     /* Helper method which appends a message (or prepends if the
                      * 2nd parameter is set to true) to the end of the chat box's
                      * content area.
@@ -406,13 +410,33 @@
                      * Parameters:
                      *  (Object) attrs: An object containing the message attributes.
                      */
-                    const insert = prepend ? this.$content.prepend : this.$content.append;
                     _.flow(($el) => {
-                            insert.call(this.$content, $el);
+                            insert_method($el[0]);
                             return $el;
                         },
                         this.scrollDown.bind(this)
                     )(this.renderMessage(attrs));
+                },
+
+                getLastMessageDate (cutoff) {
+                    /* Return the ISO8601 format date of the latest message.
+                     *
+                     * Parameters:
+                     *  (Object) cutoff: Moment Date cutoff date. The last
+                     *      message received cutoff this date will be returned.
+                     */
+                    if (!cutoff) {
+                        const last_msg = this.content.lastElementChild;
+                        return last_msg ? last_msg.getAttribute('data-isodate') : null
+                    }
+                    const msg_dates = _.invokeMap(
+                        this.content.querySelector('.message'),
+                        Element.prototype.getAttribute,
+                        'data-isodate'
+                    )
+                    msg_dates.push(cutoff.format());
+                    msg_dates.sort();
+                    return msg_dates[msg_dates.indexOf(cutoff)-1];
                 },
 
                 showMessage (attrs) {
@@ -427,60 +451,52 @@
                      *  (Object) attrs: An object containing the message
                      *      attributes.
                      */
-                    let current_msg_date = moment(attrs.time) || moment;
-                    const $first_msg = this.$content.find('.chat-message:first'),
-                          first_msg_date = $first_msg.data('isodate');
+                    const current_msg_date = moment(attrs.time) || moment,
+                          first_msg_el = this.content.firstElementChild,
+                          first_msg_date = first_msg_el ? first_msg_el.getAttribute('data-isodate') : null,
+                          append_element = _.bind(this.content.insertAdjacentElement, this.content, 'beforeend'),
+                          append_html = _.bind(this.content.insertAdjacentHTML, this.content, 'beforeend');
 
                     if (!first_msg_date) {
                         // This is the first received message, so we insert a
                         // date indicator before it.
-                        this.insertDayIndicator(current_msg_date);
-                        this.insertMessage(attrs);
+                        this.insertDayIndicator(current_msg_date, append_html);
+                        this.insertMessage(attrs, append_element);
                         return;
                     }
 
-                    const last_msg_date = this.$content.find('.chat-message:last').data('isodate');
+                    const last_msg_date = this.getLastMessageDate();
                     if (current_msg_date.isAfter(last_msg_date) ||
                             current_msg_date.isSame(last_msg_date)) {
                         // The new message is after the last message
                         if (current_msg_date.isAfter(last_msg_date, 'day')) {
                             // Append a new day indicator
-                            this.insertDayIndicator(current_msg_date);
+                            this.insertDayIndicator(current_msg_date, append_html);
                         }
-                        this.insertMessage(attrs);
+                        this.insertMessage(attrs, append_element);
                         return;
                     }
+
                     if (current_msg_date.isBefore(first_msg_date) ||
                             current_msg_date.isSame(first_msg_date)) {
                         // The message is before the first, but on the same day.
                         // We need to prepend the message immediately before the
                         // first message (so that it'll still be after the day
                         // indicator).
-                        this.insertMessage(attrs, 'prepend');
+                        const prepend_element = _.bind(this.content.insertAdjacentElement, this.content, 'afterbegin');
+                        this.insertMessage(attrs, prepend_element);
                         if (current_msg_date.isBefore(first_msg_date, 'day')) {
                             // This message is also on a different day, so
                             // we prepend a day indicator.
-                            this.insertDayIndicator(current_msg_date, 'prepend');
+                            this.insertDayIndicator(current_msg_date, append_html);
                         }
                         return;
                     }
-                    // Find the correct place to position the message
-                    current_msg_date = current_msg_date.format();
-                    const msg_dates = _.map(
-                        this.$content.find('.chat-message'),
-                        (el) => $(el).data('isodate')
-                    );
-                    msg_dates.push(current_msg_date);
-                    msg_dates.sort();
-
-                    const idx = msg_dates.indexOf(current_msg_date)-1;
-                    const $latest_message = this.$content.find(`.chat-message[data-isodate="${msg_dates[idx]}"]:last`);
-                    _.flow(($el) => {
-                            $el.insertAfter($latest_message);
-                            return $el;
-                        },
-                        this.scrollDown.bind(this)
-                    )(this.renderMessage(attrs));
+                    const previous_msg_date = this.getLastMessageDate(current_msg_date);
+                    const previous_msg_el = this.content.querySelector(
+                        `.message[data-isodate="${previous_msg_date}"]`);
+                    this.insertMessage(
+                        attrs, _.bind(previous_msg_el.insertAdjacentElement, previous_msg_el, 'afterend'));
                 },
 
                 getExtraMessageTemplateAttributes () {
@@ -524,7 +540,7 @@
                         template = tpl_message;
                         username = attrs.sender === 'me' && __('me') || fullname;
                     }
-                    this.$content.find('div.chat-event').remove();
+                    $(this.content).find('div.chat-event').remove();
 
                     if (text.length > 8000) {
                         text = text.substring(0, 10) + '...';
@@ -564,9 +580,9 @@
                         );
                     });
                     if (spinner === true) {
-                        this.$content.append(tpl_spinner);
+                        $(this.content).append(tpl_spinner);
                     } else if (spinner === false) {
-                        this.$content.find('span.spinner').remove();
+                        $(this.content).find('span.spinner').remove();
                     }
                     return this.scrollDown();
                 },
@@ -589,7 +605,7 @@
                             this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
                         }
                     } else if (_.includes([_converse.INACTIVE, _converse.ACTIVE], message.get('chat_state'))) {
-                        this.$content.find('div.chat-event').remove();
+                        $(this.content).find('div.chat-event').remove();
                     } else if (message.get('chat_state') === _converse.GONE) {
                         this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
                     }
@@ -620,9 +636,16 @@
                 },
 
                 handleErrorMessage (message) {
-                    const $message = $(`[data-msgid=${message.get('msgid')}]`);
-                    if ($message.length) {
-                        $message.after($('<div class="chat-info chat-error"></div>').text(message.get('message')));
+                    const message_el = this.content.querySelector(`[data-msgid="${message.get('msgid')}"]`);
+                    if (!_.isNull(message_el)) {
+                        message_el.insertAdjacentHTML(
+                            'afterend',
+                            tpl_info({
+                                'extra_classes': 'chat-error',
+                                'message': message.get('message'),
+                                'isodate': moment().format(),
+                                'data': ''
+                            }));
                         this.scrollDown();
                     }
                 },
@@ -799,7 +822,7 @@
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     const result = confirm(__("Are you sure you want to clear the messages from this chat box?"));
                     if (result === true) {
-                        this.$content.empty();
+                        this.content.innerHTML = '';
                         this.model.messages.reset();
                         this.model.messages.browserStorage._clear();
                     }
@@ -992,8 +1015,8 @@
                     }
                     let scrolled = true;
                     const is_at_bottom =
-                        (this.$content.scrollTop() + this.$content.innerHeight()) >=
-                            this.$content[0].scrollHeight-10;
+                        ($(this.content).scrollTop() + $(this.content).innerHeight()) >=
+                            $(this.content)[0].scrollHeight-10;
 
                     if (is_at_bottom) {
                         scrolled = false;

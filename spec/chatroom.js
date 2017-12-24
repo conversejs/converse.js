@@ -1708,9 +1708,7 @@
                         .c('status', {code: '172'});
                     _converse.connection._dataRecv(test_utils.createRequest(message));
                     var $chat_body = view.$('.chatroom-body');
-                    expect($chat_body.html().trim().indexOf(
-                        '<div class="message chat-info">This room is now no longer anonymous</div>'
-                    )).not.toBe(-1);
+                    expect($chat_body.find('.message:last').text()).toBe('This room is now no longer anonymous');
                     done();
                 });
             }));

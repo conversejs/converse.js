@@ -186,7 +186,7 @@
                     } else {
                         width = "";
                     }
-                    this.$el[0].style.width = width;
+                    this.el.style.width = width;
                     this.$el.children('.box-flyout')[0].style.width = width;
                 },
 

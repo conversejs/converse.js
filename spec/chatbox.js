@@ -1616,6 +1616,7 @@
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
                         spyOn(_converse, 'emit');
                         var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        test_utils.openChatBoxFor(_converse, sender_jid);
 
                         // <composing> state
                         var msg = $msg({

@@ -1306,7 +1306,7 @@
                     container_el.insertAdjacentHTML('beforeend', tpl_chatroom_form());
 
                     const form_el = container_el.querySelector('form.chatroom-form'),
-                          fieldset_el = form_el.querySelector('fieldset:first-child'),
+                          fieldset_el = form_el.querySelector('fieldset'),
                           fields = stanza.querySelectorAll('field'),
                           title = _.get(stanza.querySelector('title'), 'textContent'),
                           instructions = _.get(stanza.querySelector('instructions'), 'textContent');
@@ -1817,7 +1817,13 @@
                         return;
                     }
                     _.each(notification.messages, (message) => {
-                        this.content.insertAdjacentHTML('beforeend', tpl_info({'message': message, 'data': ''}));
+                        this.content.insertAdjacentHTML(
+                            'beforeend',
+                            tpl_info({
+                                'data': '',
+                                'isodate': moment().format(),
+                                'message': message
+                            }));
                     });
                     if (notification.reason) {
                         this.showStatusNotification(__('The reason given is: "%1$s".', notification.reason), true);
@@ -1830,13 +1836,14 @@
                 displayJoinNotification (stanza) {
                     const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
                     const stat = stanza.querySelector('status');
-                    const last_el = this.content.querySelector('.message:last-child');
+                    const last_el = this.content.lastElementChild;
                     if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
                             _.get(last_el, 'dataset', {}).leave === `"${nick}"`) {
                         last_el.outerHTML = 
                             tpl_info({
-                                'message': __(nick+' has left and re-entered the room.'),
-                                'data': `data-leavejoin="${nick}"`
+                                'data': `data-leavejoin="${nick}"`,
+                                'isodate': moment().format(),
+                                'message': __(nick+' has left and re-entered the room.')
                             });
                     } else {
                         let  message = __(nick+' has entered the room.');
@@ -1844,8 +1851,9 @@
                             message = message + ' "' + stat.textContent + '"';
                         }
                         const data = {
-                            'message': message,
-                            'data': `data-join="${nick}"`
+                            'data': `data-join="${nick}"`,
+                            'isodate': moment().format(),
+                            'message': message
                         };
                         if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
                             _.get(last_el, 'dataset', {}).joinleave === `"${nick}"`) {
@@ -1861,7 +1869,7 @@
                 displayLeaveNotification (stanza) {
                     const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
                     const stat = stanza.querySelector('status');
-                    const last_el = this.content.querySelector(':last-child');
+                    const last_el = this.content.lastElementChild;
                     if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
                             _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
 
@@ -1871,8 +1879,9 @@
                         }
                         last_el.outerHTML = 
                             tpl_info({
-                                'message': message,
-                                'data': `data-joinleave="${nick}"`
+                                'data': `data-joinleave="${nick}"`,
+                                'isodate': moment().format(),
+                                'message': message
                             });
                     } else {
                         let  message = __('%1$s has left the room.', nick);
@@ -2078,8 +2087,9 @@
                     this.content.insertAdjacentHTML(
                         'beforeend',
                         tpl_info({
-                            'message': __('Topic set by %1$s to: %2$s', sender, subject),
-                            'data': ''
+                            'data': '',
+                            'isodate': moment().format(),
+                            'message': __('Topic set by %1$s to: %2$s', sender, subject)
                         }));
                     this.scrollDown();
                 },

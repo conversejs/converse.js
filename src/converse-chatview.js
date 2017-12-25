@@ -265,7 +265,7 @@
                 },
 
                 initialize () {
-                    this.markScrolled = _.debounce(this.markScrolled, 100);
+                    this.markScrolled = _.debounce(this._markScrolled, 100);
                     this.createEmojiPicker();
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
@@ -434,9 +434,13 @@
                         Element.prototype.getAttribute,
                         'data-isodate'
                     )
-                    msg_dates.push(cutoff.format());
+                    if (_.isObject(cutoff)) {
+                        cutoff = cutoff.format();
+                    }
+                    msg_dates.push(cutoff);
                     msg_dates.sort();
-                    return msg_dates[msg_dates.indexOf(cutoff)-1];
+                    const idx = msg_dates.indexOf(cutoff);
+                    return msg_dates[idx === 0 ? idx : idx-1];
                 },
 
                 showMessage (attrs) {
@@ -455,7 +459,8 @@
                           first_msg_el = this.content.firstElementChild,
                           first_msg_date = first_msg_el ? first_msg_el.getAttribute('data-isodate') : null,
                           append_element = _.bind(this.content.insertAdjacentElement, this.content, 'beforeend'),
-                          append_html = _.bind(this.content.insertAdjacentHTML, this.content, 'beforeend');
+                          append_html = _.bind(this.content.insertAdjacentHTML, this.content, 'beforeend'),
+                          prepend_element = _.bind(this.content.insertAdjacentElement, this.content, 'afterbegin');
 
                     if (!first_msg_date) {
                         // This is the first received message, so we insert a
@@ -483,7 +488,6 @@
                         // We need to prepend the message immediately before the
                         // first message (so that it'll still be after the day
                         // indicator).
-                        const prepend_element = _.bind(this.content.insertAdjacentElement, this.content, 'afterbegin');
                         this.insertMessage(attrs, prepend_element);
                         if (current_msg_date.isBefore(first_msg_date, 'day')) {
                             // This message is also on a different day, so
@@ -495,8 +499,12 @@
                     const previous_msg_date = this.getLastMessageDate(current_msg_date);
                     const previous_msg_el = this.content.querySelector(
                         `.message[data-isodate="${previous_msg_date}"]`);
-                    this.insertMessage(
-                        attrs, _.bind(previous_msg_el.insertAdjacentElement, previous_msg_el, 'afterend'));
+                    if (_.isNull(previous_msg_el)) {
+                        this.insertMessage(attrs, prepend_element);
+                    } else {
+                        this.insertMessage(
+                            attrs, _.bind(previous_msg_el.insertAdjacentElement, previous_msg_el, 'afterend'));
+                    }
                 },
 
                 getExtraMessageTemplateAttributes () {
@@ -617,15 +625,15 @@
 
                 handleTextMessage (message) {
                     this.showMessage(_.clone(message.attributes));
-                    if (u.isNewMessage(message) && message.get('sender') === 'me') {
-                        // We remove the "scrolled" flag so that the chat area
-                        // gets scrolled down. We always want to scroll down
-                        // when the user writes a message as opposed to when a
-                        // message is received.
-                        this.model.set('scrolled', false);
-                    } else {
-                        if (u.isNewMessage(message) && this.model.get('scrolled', true)) {
-                            this.$el.find('.new-msgs-indicator').removeClass('hidden');
+                    if (u.isNewMessage(message)) {
+                        if (message.get('sender') === 'me') {
+                            // We remove the "scrolled" flag so that the chat area
+                            // gets scrolled down. We always want to scroll down
+                            // when the user writes a message as opposed to when a
+                            // message is received.
+                            this.model.set('scrolled', false);
+                        } else if (this.model.get('scrolled', true)) {
+                            this.showNewMessagesIndicator();
                         }
                     }
                     if (this.shouldShowOnTextMessage()) {
@@ -991,6 +999,10 @@
                     return this;
                 },
 
+                showNewMessagesIndicator () {
+                    u.showElement(this.el.querySelector('.new-msgs-indicator'));
+                },
+
                 hideNewMessagesIndicator () {
                     const new_msgs_indicator = this.el.querySelector('.new-msgs-indicator');
                     if (!_.isNull(new_msgs_indicator)) {
@@ -998,7 +1010,7 @@
                     }
                 },
 
-                markScrolled: function (ev) {
+                _markScrolled: function (ev) {
                     /* Called when the chat content is scrolled up or down.
                      * We want to record when the user has scrolled away from
                      * the bottom, so that we don't automatically scroll away
@@ -1042,14 +1054,6 @@
                     }
                 },
 
-                onScrolledDown() {
-                    this.hideNewMessagesIndicator();
-                    if (_converse.windowState !== 'hidden') {
-                        this.model.clearUnreadMsgCounter();
-                    }
-                    _converse.emit('chatBoxScrolledDown', {'chatbox': this.model});
-                },
-
                 scrollDown () {
                     if (_.isUndefined(this.debouncedScrollDown)) {
                         /* We wrap the method in a debouncer and set it on the
@@ -1060,6 +1064,14 @@
                     }
                     this.debouncedScrollDown.apply(this, arguments);
                     return this;
+                },
+
+                onScrolledDown() {
+                    this.hideNewMessagesIndicator();
+                    if (_converse.windowState !== 'hidden') {
+                        this.model.clearUnreadMsgCounter();
+                    }
+                    _converse.emit('chatBoxScrolledDown', {'chatbox': this.model});
                 },
 
                 onWindowStateChanged (state) {

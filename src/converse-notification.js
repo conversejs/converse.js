@@ -113,11 +113,13 @@
                 let audio;
                 if (_converse.play_sounds && !_.isUndefined(window.Audio)) {
                     audio = new Audio(_converse.sounds_path+"msg_received.ogg");
-                    if (audio.canPlayType('/audio/ogg')) {
+                    if (audio.canPlayType('audio/ogg')) {
                         audio.play();
                     } else {
                         audio = new Audio(_converse.sounds_path+"msg_received.mp3");
-                        audio.play();
+                        if (audio.canPlayType('audio/mp3')) {
+                            audio.play();
+                        }
                     }
                 }
             };

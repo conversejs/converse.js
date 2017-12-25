@@ -439,6 +439,8 @@
                 },
 
                 initialize () {
+                    this.markScrolled = _.debounce(this._markScrolled, 100);
+
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);

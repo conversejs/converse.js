@@ -430,7 +430,7 @@
                         return last_msg ? last_msg.getAttribute('data-isodate') : null
                     }
                     const msg_dates = _.invokeMap(
-                        this.content.querySelector('.message'),
+                        this.content.querySelectorAll('.message'),
                         Element.prototype.getAttribute,
                         'data-isodate'
                     )

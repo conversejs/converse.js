@@ -87,23 +87,29 @@
 
     var u = {};
 
+    u.removeClass = function (klass, el) {
+        if (!_.isNil(el)) {
+            el.classList.remove(klass);
+        }
+        return el;
+    }
+
     u.removeElement = function (el) {
         if (!_.isNil(el) && !_.isNil(el.parentNode)) {
             el.parentNode.removeChild(el);
         }
     }
 
-    u.showElement = function (el) {
-        if (!_.isNil(el)) {
-            el.classList.remove('collapsed');
-            el.classList.remove('hidden');
-        }
-    }
+    u.showElement = _.flow(
+        _.partial(u.removeClass, 'collapsed'),
+        _.partial(u.removeClass, 'hidden')
+    )
 
     u.hideElement = function (el) {
         if (!_.isNil(el)) {
             el.classList.add('hidden');
         }
+        return el;
     }
 
     u.nextUntil = function (el, selector, include_self=false) {

@@ -92,14 +92,14 @@
             },
 
             ChatBoxView: {
-                _show (focus) {
+                show (focus) {
                     /* We only have one chat visible at any one
                      * time. So before opening a chat, we make sure all other
                      * chats are hidden.
                      */
                     if (!this.model.get('hidden')) {
                         _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
-                        return this.__super__._show.apply(this, arguments);
+                        return this.__super__.show.apply(this, arguments);
                     }
                 }
             },

@@ -109,7 +109,10 @@
                     this.content = this.$content[0];
                     utils.refreshWebkit();
                     return this;
-                }
+                },
+
+                // Override to avoid the method in converse-chatview.js
+                'afterShown': _.noop
             });
 
             function onHeadlineMessage (message) {

@@ -120,9 +120,9 @@
             // We pretend this is a new room, so no disco info is returned.
             var IQ_id = converse.connection.sendIQ.firstCall.returnValue;
             var features_stanza = $iq({
-                    'from': 'lounge@localhost',
+                    'from': room+'@'+server,
                     'id': IQ_id,
-                    'to': 'dummy@localhost/desktop',
+                    'to': nick+'@'+server+'/desktop',
                     'type': 'error'
                 }).c('error', {'type': 'cancel'})
                     .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
@@ -152,7 +152,7 @@
                     .c('item').attrs({
                         affiliation: 'member',
                         jid: converse.bare_jid,
-                        role: 'occupant'
+                        role: 'participant'
                     }).up()
                     .c('status').attrs({code:'110'});
                 converse.connection._dataRecv(utils.createRequest(presence));
@@ -228,7 +228,7 @@
         /* Create grouped contacts
          */
         var i=0, j=0;
-        _.each(_.keys(mock.groups), $.proxy(function (name) {
+        _.each(_.keys(mock.groups), function (name) {
             j = i;
             for (i=j; i<j+mock.groups[name]; i++) {
                 converse.roster.create({
@@ -239,7 +239,7 @@
                     fullname: mock.cur_names[i]
                 });
             }
-        }, converse));
+        });
     };
 
     utils.createChatMessage = function (_converse, sender_jid, message) {

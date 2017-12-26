@@ -443,8 +443,8 @@
 
                 showChat (attrs) {
                     /* Find the chat box and show it (if it may be shown).
-                    * If it doesn't exist, create it.
-                    */
+                     * If it doesn't exist, create it.
+                     */
                     const chatbox = this.getChatBox(attrs, true);
                     if (this.chatBoxMayBeShown(chatbox)) {
                         chatbox.trigger('show', true);

@@ -39,10 +39,6 @@
             null,
             "Klik om hierdie kontakte te verskuil"
          ],
-         "You have unread messages": [
-            null,
-            "U het ongelese boodskappe"
-         ],
          "Close this chat box": [
             null,
             "Sluit hierdie kletskas"
@@ -55,13 +51,13 @@
             null,
             "Stuur"
          ],
+         "You have unread messages": [
+            null,
+            "U het ongelese boodskappe"
+         ],
          "me": [
             null,
             "ek"
-         ],
-         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
-            null,
-            "'n Baie groot boodskap is ontvang. Dit mag dalk 'n aanval wees om werkverrigting te ontwrig. Die boodskap word dus slegs in verkorte weergawe vertoon."
          ],
          "Typing from another device": [
             null,
@@ -127,17 +123,9 @@
             null,
             "Jabber ID:"
          ],
-         "Please enter a valid XMPP address": [
-            null,
-            "Verskaf asseblief 'n geldige XMPP address"
-         ],
          "Password:": [
             null,
             "Wagwoord:"
-         ],
-         "Please enter your password": [
-            null,
-            "Verskaf asseblief u wagwoord"
          ],
          "password": [
             null,
@@ -193,7 +181,7 @@
          ],
          "Contact requests": [
             null,
-            "Kontak versoeke"
+            "Kontakversoeke"
          ],
          "Ungrouped": [
             null,
@@ -271,14 +259,6 @@
             null,
             "Is u seker dat u hierdie persoon se versoek wil afkeur?"
          ],
-         "Username": [
-            null,
-            "Gebruikersnaam"
-         ],
-         "user@domain": [
-            null,
-            "gebruiker@domein"
-         ],
          "I am %1$s": [
             null,
             "Ek is %1$s"
@@ -318,6 +298,18 @@
          "offline": [
             null,
             "afgemeld"
+         ],
+         "Username": [
+            null,
+            "Gebruikersnaam"
+         ],
+         "user@domain": [
+            null,
+            "gebruiker@domein"
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            "Verskaf asseblief 'n geldige XMPP address"
          ],
          "Log out": [
             null,
@@ -439,14 +431,6 @@
             null,
             "%1$s is nie 'n lid nie, en dus verwyder"
          ],
-         "Your nickname has been automatically set to: %1$s": [
-            null,
-            "U bynaam is outomaties gestel na: %1$s"
-         ],
-         "Your nickname has been changed to: %1$s": [
-            null,
-            "U bynaam is verander na: %1$s"
-         ],
          "Message": [
             null,
             "Boodskap"
@@ -482,10 +466,6 @@
          "Ban user from room": [
             null,
             "Verban gebruiker uit hierdie kletskamer"
-         ],
-         "Change user role to occupant": [
-            null,
-            "Verander gebruiker se rol na lid"
          ],
          "Kick user from room": [
             null,
@@ -558,34 +538,6 @@
          "Password: ": [
             null,
             "Wagwoord: "
-         ],
-         "This action was done by %1$s.": [
-            null,
-            "Hierdie aksie is uitgevoer deur: %1$s."
-         ],
-         "The reason given is: \"%1$s\".": [
-            null,
-            "Die gegewe rede is: \"%1$s\"."
-         ],
-         "The reason given is: \"%1$s \"": [
-            null,
-            "Die gegewe rede is: \"%1$s\""
-         ],
-         " has left the room. \"": [
-            null,
-            " het die kamer verlaat.\""
-         ],
-         " has left the room": [
-            null,
-            " het die kletskamer verlaat"
-         ],
-         " has joined the room. \"": [
-            null,
-            " het die kamer binnegekom.\""
-         ],
-         " has joined the room.": [
-            null,
-            " het die kamer bygetree."
          ],
          "You are not on the member list of this room.": [
             null,
@@ -694,10 +646,6 @@
          "Unmoderated": [
             null,
             "Ongemodereer"
-         ],
-         "Unsecured": [
-            null,
-            "Onversekerd"
          ],
          "This room is not publicly searchable": [
             null,
@@ -1091,10 +1039,6 @@
             null,
             "Jammer, die gekose verskaffer ondersteun nie in-band registrasie nie.Probeer weer met 'n ander verskaffer."
          ],
-         "Something went wrong while establishing a connection with \"%1$s\".Are you sure it exists?": [
-            null,
-            "Iets het fout geloop tydens koppeling met \"%1$s\". Is u seker dat dit bestaan?"
-         ],
          "Now logging you in": [
             null,
             "U word nou aangemeld"
@@ -1134,10 +1078,6 @@
          "Minimized": [
             null,
             "Geminimaliseer"
-         ],
-         "Close this box": [
-            null,
-            "Maak hierdie kletskas toe"
          ]
       }
    }

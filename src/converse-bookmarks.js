@@ -10,8 +10,7 @@
  * in XEP-0048.
  */
 (function (root, factory) {
-    define(["jquery.noconflict",
-            "utils",
+    define(["utils",
             "converse-core",
             "converse-muc",
             "tpl!chatroom_bookmark_form",
@@ -21,8 +20,7 @@
         ],
         factory);
 }(this, function (
-        $,
-        utils,
+        u,
         converse,
         muc,
         tpl_chatroom_bookmark_form,
@@ -34,6 +32,9 @@
     const { Backbone, Promise, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
 
     converse.plugins.add('converse-bookmarks', {
+
+        optional_dependencies: ["converse-chatboxes", "converse-muc"],
+
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -132,7 +133,7 @@
                         child.classList.add('hidden');
                     });
                     // Remove any existing forms
-                    _.each(body.querySelectorAll('.chatroom-form-container'), utils.removeElement);
+                    _.each(body.querySelectorAll('.chatroom-form-container'), u.removeElement);
 
                     body.insertAdjacentHTML(
                         'beforeend', 
@@ -160,18 +161,14 @@
                 onBookmarkFormSubmitted (ev) {
                     ev.preventDefault();
                     const { _converse } = this.__super__;
-                    const $form = $(ev.target), that = this;
                     _converse.bookmarks.createBookmark({
                         'jid': this.model.get('jid'),
-                        'autojoin': $form.find('input[name="autojoin"]').prop('checked'),
-                        'name':  $form.find('input[name=name]').val(),
-                        'nick':  $form.find('input[name=nick]').val()
+                        'autojoin': _.get(ev.target.querySelector('input[name="autojoin"]'), 'checked') || false,
+                        'name':  _.get(ev.target.querySelector('input[name=name]'), 'value'),
+                        'nick':  _.get(ev.target.querySelector('input[name=nick]'), 'value')
                     });
-                    this.$el.find('div.chatroom-form-container').hide(
-                        function () {
-                            $(this).remove();
-                            that.renderAfterTransition();
-                        });
+                    u.removeElement(this.el.querySelector('div.chatroom-form-container'));
+                    this.renderAfterTransition();
                 },
 
                 toggleBookmark (ev) {
@@ -231,7 +228,7 @@
                      */
                     ev.preventDefault();
                     const jid = ev.target.getAttribute('data-room-jid');
-                    const chatroom = _converse.openChatRoom({'jid': jid}, true);
+                    const chatroom = _converse.api.rooms.open(jid, {'bring_to_foreground': true});
                     _converse.chatboxviews.get(jid).renderBookmarkForm();
                 },
             });
@@ -246,6 +243,7 @@
 
             _converse.Bookmarks = Backbone.Collection.extend({
                 model: _converse.Bookmark,
+                comparator: 'name',
 
                 initialize () {
                     this.on('add', _.flow(this.openBookmarkedRoom, this.markRoomAsBookmarked));
@@ -267,7 +265,7 @@
                 },
 
                 fetchBookmarks () {
-                    const deferred = utils.getResolveablePromise();
+                    const deferred = u.getResolveablePromise();
                     if (this.browserStorage.records.length > 0) {
                         this.fetch({
                             'success': _.bind(this.onCachedBookmarksFetched, this, deferred),
@@ -360,12 +358,12 @@
                 },
 
                 onBookmarksReceived (deferred, iq) {
-                    const bookmarks = $(iq).find(
-                        'items[node="storage:bookmarks"] item[id="current"] storage conference'
-                    );
-                    const that = this;
-                    _.forEach(bookmarks, function (bookmark) {
-                        that.create({
+                    const bookmarks = sizzle(
+                        'items[node="storage:bookmarks"] item[id="current"] storage conference',
+                        iq
+                    )
+                    _.forEach(bookmarks, (bookmark) => {
+                        this.create({
                             'jid': bookmark.getAttribute('jid'),
                             'name': bookmark.getAttribute('name'),
                             'autojoin': bookmark.getAttribute('autojoin') === 'true',
@@ -382,14 +380,14 @@
                     _converse.log('Error while fetching bookmarks', Strophe.LogLevel.WARN);
                     _converse.log(iq.outerHTML, Strophe.LogLevel.DEBUG);
                     if (!_.isNil(deferred)) {
-                        return deferred.reject();
+                        return deferred.reject(new Error("Could not fetch bookmarks"));
                     }
                 }
             });
 
             _converse.BookmarksView = Backbone.View.extend({
                 tagName: 'div',
-                className: 'bookmarks-list, rooms-list-container',
+                className: 'bookmarks-list rooms-list-container hidden',
                 events: {
                     'click .add-bookmark': 'addBookmark',
                     'click .bookmarks-toggle': 'toggleBookmarksList',
@@ -413,20 +411,19 @@
                 },
 
                 render () {
-                    this.$el.html(tpl_bookmarks_list({
+                    this.el.innerHTML = tpl_bookmarks_list({
                         'toggle_state': this.list_model.get('toggle-state'),
                         'desc_bookmarks': __('Click to toggle the bookmarks list'),
-                        'label_bookmarks': __('Bookmarks')
-                    })).hide();
-                    if (this.list_model.get('toggle-state') !== _converse.OPENED) {
-                        this.$('.bookmarks').hide();
-                    }
+                        'label_bookmarks': __('Bookmarks'),
+                        '_converse': _converse
+                    });
                     this.model.each(this.renderBookmarkListElement.bind(this));
                     const controlboxview = _converse.chatboxviews.get('controlbox');
                     if (!_.isUndefined(controlboxview)) {
-                        this.$el.prependTo(controlboxview.$('#chatrooms'));
+                        const chatrooms_el = controlboxview.el.querySelector('#chatrooms');
+                        chatrooms_el.insertAdjacentElement('afterbegin', this.el);
                     }
-                    return this.$el;
+                    return this;
                 },
 
                 removeBookmark: _converse.removeBookmarkViaEvent,
@@ -474,13 +471,11 @@
                 },
 
                 show () {
-                    if (!this.$el.is(':visible')) {
-                        this.$el.show();
-                    }
+                    u.showElement(this.el);
                 },
 
                 hide () {
-                    this.$el.hide();
+                    u.hideElement(this.el);
                 },
 
                 removeBookmarkListElement (item) {
@@ -496,14 +491,15 @@
 
                 toggleBookmarksList (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const $el = $(ev.target);
-                    if ($el.hasClass("icon-opened")) {
-                        this.$('.bookmarks').slideUp('fast');
+                    if (u.hasClass(ev.target, 'icon-opened')) {
+                        u.slideIn(this.el.querySelector('.bookmarks'));
                         this.list_model.save({'toggle-state': _converse.CLOSED});
-                        $el.removeClass("icon-opened").addClass("icon-closed");
+                        ev.target.classList.remove("icon-opened");
+                        ev.target.classList.add("icon-closed");
                     } else {
-                        $el.removeClass("icon-closed").addClass("icon-opened");
-                        this.$('.bookmarks').slideDown('fast');
+                        ev.target.classList.remove("icon-closed");
+                        ev.target.classList.add("icon-opened");
+                        u.slideOut(this.el.querySelector('.bookmarks'));
                         this.list_model.save({'toggle-state': _converse.OPENED});
                     }
                 }
@@ -514,10 +510,13 @@
                     return;
                 }
                 _converse.bookmarks = new _converse.Bookmarks();
-                _converse.bookmarks.fetchBookmarks().then(function () {
+                _converse.bookmarks.fetchBookmarks().then(() => {
                     _converse.bookmarksview = new _converse.BookmarksView(
                         {'model': _converse.bookmarks}
                     );
+                })
+                .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR))
+                .then(() => {
                     _converse.emit('bookmarksInitialized');
                 });
             };

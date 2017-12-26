@@ -228,16 +228,16 @@
                     expect(_converse.roster.updateContact).toHaveBeenCalled();
                     // Check that the user is now properly shown as a pending
                     // contact in the roster.
-            
                     return test_utils.waitUntil(function () {
-                        return $('a:contains("Pending contacts")').length;
-                    }, 300);
+                        var $header = $('a:contains("Pending contacts")');
+                        var $contacts = $header.parent().find('li:visible');
+                        return $contacts.length;
+                    }, 600);
                 }).then(function () {
                     var $header = $('a:contains("Pending contacts")');
-                    expect($header.length).toBe(1);
-                    expect($header.is(":visible")).toBeTruthy();
-                    var $contacts = $header.parent().nextUntil('dt', 'dd');
+                    var $contacts = $header.parent().find('li');
                     expect($contacts.length).toBe(1);
+                    expect($contacts.is(':visible')).toBeTruthy();
 
                     spyOn(contact, "ackSubscribe").and.callThrough();
                     /* Here we assume the "happy path" that the contact
@@ -297,10 +297,16 @@
 
                     // The contact should now be visible as an existing
                     // contact (but still offline).
-                    $header = $('a:contains("My contacts")');
+                    return test_utils.waitUntil(function () {
+                        var $header = $('a:contains("My contacts")');
+                        var $contacts = $header.parent().find('li:visible');
+                        return $contacts.length;
+                    }, 600);
+                }).then(function () {
+                    var $header = $('a:contains("My contacts")');
                     expect($header.length).toBe(1);
                     expect($header.is(":visible")).toBeTruthy();
-                    $contacts = $header.parent().nextUntil('dt', 'dd');
+                    var $contacts = $header.parent().find('li');
                     expect($contacts.length).toBe(1);
                     // Check that it has the right classes and text
                     expect($contacts.hasClass('to')).toBeTruthy();
@@ -482,13 +488,15 @@
                     sent_IQ = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
+                return test_utils.waitUntil(function () {
+                    var $header = $('a:contains("My contacts")');
+                    var $contacts = $header.parent().find('li');
+                    return $contacts.length;
+                }, 600).then(function () {
 
-                test_utils.waitUntil(function () {
-                    return $('a:contains("My contacts")').length;
-                }).then(function () {
                     var $header = $('a:contains("My contacts")');
                     // remove the first user
-                    $($header.parent().nextUntil('dt', 'dd').find('.remove-xmpp-contact').get(0)).click();
+                    $($header.parent().find('li .remove-xmpp-contact').get(0)).click();
                     expect(window.confirm).toHaveBeenCalled();
 
                     /* Section 8.6 Removing a Roster Item and Cancelling All
@@ -547,14 +555,16 @@
                     'xmlns': Strophe.NS.NICK,
                 }).t('Clint Contact');
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                test_utils.waitUntil(function () {
-                    return $('a:contains("Contact requests")').length;
-                }).then(function () {
+                return test_utils.waitUntil(function () {
+                    var $header = $('a:contains("Contact requests")');
+                    var $contacts = $header.parent().find('li:visible');
+                    return $contacts.length;
+                }, 600).then(function () {
                     expect(_converse.emit).toHaveBeenCalledWith('contactRequest', jasmine.any(Object));
                     var $header = $('a:contains("Contact requests")');
                     expect($header.length).toBe(1);
                     expect($header.is(":visible")).toBeTruthy();
-                    var $contacts = $header.parent().nextUntil('dt', 'dd');
+                    var $contacts = $header.parent().find('li');
                     expect($contacts.length).toBe(1);
                     done();
                 });

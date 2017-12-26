@@ -43,7 +43,7 @@
             null,
             "私"
          ],
-         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+         "A very large message has been received. This might be due to an attack meant to degrade the chat performance. Output has been shortened.": [
             null,
             ""
          ],
@@ -95,17 +95,9 @@
             null,
             ""
          ],
-         "Please enter a valid XMPP address": [
-            null,
-            ""
-         ],
          "Password:": [
             null,
             "パスワード:"
-         ],
-         "Please enter your password": [
-            null,
-            ""
          ],
          "Submit": [
             null,
@@ -207,10 +199,6 @@
             null,
             ""
          ],
-         "user@domain": [
-            null,
-            ""
-         ],
          "I am %1$s": [
             null,
             "私はいま %1$s"
@@ -246,6 +234,14 @@
          "away": [
             null,
             "離席中"
+         ],
+         "user@domain": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            ""
          ],
          "Click to add new chat contacts": [
             null,
@@ -351,7 +347,7 @@
             null,
             ""
          ],
-         "Change user role to occupant": [
+         "Change user role to participant": [
             null,
             ""
          ],
@@ -411,22 +407,6 @@
             null,
             ""
          ],
-         "The reason given is: \"%1$s \"": [
-            null,
-            ""
-         ],
-         " has left the room. \"": [
-            null,
-            ""
-         ],
-         " has joined the room. \"": [
-            null,
-            ""
-         ],
-         " has joined the room.": [
-            null,
-            ""
-         ],
          "Topic set by %1$s to: %2$s": [
             null,
             "%1$s が話題を設定しました: %2$s"
@@ -470,10 +450,6 @@
          "Unmoderated": [
             null,
             "発言制限なし"
-         ],
-         "Unsecured": [
-            null,
-            ""
          ],
          "Messages are archived on the server": [
             null,
@@ -771,7 +747,7 @@
             null,
             ""
          ],
-         "Something went wrong while establishing a connection with \"%1$s\".Are you sure it exists?": [
+         "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
             null,
             ""
          ],

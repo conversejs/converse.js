@@ -13,15 +13,16 @@
             "converse-chatboxes",
             "emojione",
             "xss",
+            "tpl!action",
             "tpl!chatbox",
             "tpl!chatbox_head",
-            "tpl!new_day",
-            "tpl!action",
             "tpl!emojis",
-            "tpl!message",
             "tpl!help_message",
-            "tpl!toolbar",
-            "tpl!spinner"
+            "tpl!info",
+            "tpl!message",
+            "tpl!new_day",
+            "tpl!spinner",
+            "tpl!toolbar"
     ], factory);
 }(this, function (
             $,
@@ -29,19 +30,20 @@
             dummy,
             emojione,
             xss,
+            tpl_action,
             tpl_chatbox,
             tpl_chatbox_head,
-            tpl_new_day,
-            tpl_action,
             tpl_emojis,
-            tpl_message,
             tpl_help_message,
-            tpl_toolbar,
-            tpl_spinner
+            tpl_info,
+            tpl_message,
+            tpl_new_day,
+            tpl_spinner,
+            tpl_toolbar
     ) {
     "use strict";
-    const { $msg, Backbone, Strophe, _, b64_sha1, moment, utils } = converse.env;
-
+    const { $msg, Backbone, Strophe, _, b64_sha1, moment } = converse.env;
+    const u = converse.env.utils;
     const KEY = {
         ENTER: 13,
         FORWARD_SLASH: 47
@@ -64,7 +66,7 @@
                             _.includes(ev.target.classList, 'insert-emoji')) {
                             return;
                         }
-                        utils.slideInAllElements(
+                        u.slideInAllElements(
                             document.querySelectorAll('.toolbar-menu')
                         )
                     }
@@ -116,7 +118,7 @@
             }
             _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
 
-            _converse.EmojiPicker = Backbone.Model.extend({ 
+            _converse.EmojiPicker = Backbone.Model.extend({
                 defaults: {
                     'current_category': 'people',
                     'current_skintone': '',
@@ -147,8 +149,8 @@
                         _.extend(
                             this.model.toJSON(), {
                                 'transform': _converse.use_emojione ? emojione.shortnameToImage : emojione.shortnameToUnicode,
-                                'emojis_by_category': utils.getEmojisByCategory(_converse, emojione),
-                                'toned_emojis': utils.getTonedEmojis(_converse),
+                                'emojis_by_category': u.getEmojisByCategory(_converse, emojione),
+                                'toned_emojis': u.getTonedEmojis(_converse),
                                 'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
                                 'shouldBeHidden': this.shouldBeHidden
                             }
@@ -263,7 +265,7 @@
                 },
 
                 initialize () {
-                    this.markScrolled = _.debounce(this.markScrolled, 100);
+                    this.markScrolled = _.debounce(this._markScrolled, 100);
                     this.createEmojiPicker();
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
@@ -275,7 +277,8 @@
                     this.model.on('sendMessage', this.sendMessage, this);
 
                     this.render().renderToolbar().insertHeading().fetchMessages();
-                    utils.refreshWebkit();
+                    this.createEmojiPicker();
+                    u.refreshWebkit();
                     _converse.emit('chatBoxOpened', this);
                     _converse.emit('chatBoxInitialized', this);
                 },
@@ -320,9 +323,7 @@
                 afterMessagesFetched () {
                     this.insertIntoDOM();
                     this.scrollDown();
-                    // We only start listening for the scroll event after
-                    // cached messages have been fetched
-                    this.$content.on('scroll', this.markScrolled.bind(this));
+                    this.content.addEventListener('scroll', this.markScrolled.bind(this));
                     _converse.emit('afterMessagesFetched', this);
                 },
 
@@ -348,18 +349,21 @@
                 },
 
                 clearStatusNotification () {
-                    this.$content.find('div.chat-event').remove();
+                    u.removeElement(this.content.querySelector('div.chat-event'));
                 },
 
                 showStatusNotification (message, keep_old, permanent) {
                     if (!keep_old) {
                         this.clearStatusNotification();
                     }
-                    const $el = $('<div class="chat-info"></div>').text(message);
-                    if (!permanent) {
-                        $el.addClass('chat-event');
-                    }
-                    this.content.insertAdjacentElement('beforeend', $el[0]);
+                    this.content.insertAdjacentHTML(
+                        'beforeend',
+                        tpl_info({
+                            'extra_classes': !permanent ? 'chat-event' : '',
+                            'message': message,
+                            'isodate': moment().format(),
+                            'data': ''
+                        }));
                     this.scrollDown();
                 },
 
@@ -381,23 +385,24 @@
                     );
                 },
 
-                insertDayIndicator (date, prepend) {
-                    /* Appends (or prepends if "prepend" is truthy) an indicator
+                insertDayIndicator (date, insert_method) {
+                    /* Inserts an indicator
                      * into the chat area, showing the day as given by the
                      * passed in date.
                      *
                      * Parameters:
                      *  (String) date - An ISO8601 date string.
+                     *  (Function) insert_method - The method to be used to
+                     *      insert the indicator
                      */
                     const day_date = moment(date).startOf('day');
-                    const insert = prepend ? this.$content.prepend: this.$content.append;
-                    insert.call(this.$content, tpl_new_day({
+                    insert_method(tpl_new_day({
                         isodate: day_date.format(),
                         datestring: day_date.format("dddd MMM Do YYYY")
                     }));
                 },
 
-                insertMessage (attrs, prepend) {
+                insertMessage (attrs, insert_method) {
                     /* Helper method which appends a message (or prepends if the
                      * 2nd parameter is set to true) to the end of the chat box's
                      * content area.
@@ -405,13 +410,37 @@
                      * Parameters:
                      *  (Object) attrs: An object containing the message attributes.
                      */
-                    const insert = prepend ? this.$content.prepend : this.$content.append;
                     _.flow(($el) => {
-                            insert.call(this.$content, $el);
+                            insert_method($el[0]);
                             return $el;
                         },
                         this.scrollDown.bind(this)
                     )(this.renderMessage(attrs));
+                },
+
+                getLastMessageDate (cutoff) {
+                    /* Return the ISO8601 format date of the latest message.
+                     *
+                     * Parameters:
+                     *  (Object) cutoff: Moment Date cutoff date. The last
+                     *      message received cutoff this date will be returned.
+                     */
+                    if (!cutoff) {
+                        const last_msg = this.content.lastElementChild;
+                        return last_msg ? last_msg.getAttribute('data-isodate') : null
+                    }
+                    const msg_dates = _.invokeMap(
+                        this.content.querySelectorAll('.message'),
+                        Element.prototype.getAttribute,
+                        'data-isodate'
+                    )
+                    if (_.isObject(cutoff)) {
+                        cutoff = cutoff.format();
+                    }
+                    msg_dates.push(cutoff);
+                    msg_dates.sort();
+                    const idx = msg_dates.indexOf(cutoff);
+                    return msg_dates[idx === 0 ? idx : idx-1];
                 },
 
                 showMessage (attrs) {
@@ -426,60 +455,56 @@
                      *  (Object) attrs: An object containing the message
                      *      attributes.
                      */
-                    let current_msg_date = moment(attrs.time) || moment;
-                    const $first_msg = this.$content.find('.chat-message:first'),
-                          first_msg_date = $first_msg.data('isodate');
+                    const current_msg_date = moment(attrs.time) || moment,
+                          first_msg_el = this.content.firstElementChild,
+                          first_msg_date = first_msg_el ? first_msg_el.getAttribute('data-isodate') : null,
+                          append_element = _.bind(this.content.insertAdjacentElement, this.content, 'beforeend'),
+                          append_html = _.bind(this.content.insertAdjacentHTML, this.content, 'beforeend'),
+                          prepend_element = _.bind(this.content.insertAdjacentElement, this.content, 'afterbegin');
 
                     if (!first_msg_date) {
                         // This is the first received message, so we insert a
                         // date indicator before it.
-                        this.insertDayIndicator(current_msg_date);
-                        this.insertMessage(attrs);
+                        this.insertDayIndicator(current_msg_date, append_html);
+                        this.insertMessage(attrs, append_element);
                         return;
                     }
 
-                    const last_msg_date = this.$content.find('.chat-message:last').data('isodate');
+                    const last_msg_date = this.getLastMessageDate();
                     if (current_msg_date.isAfter(last_msg_date) ||
                             current_msg_date.isSame(last_msg_date)) {
                         // The new message is after the last message
                         if (current_msg_date.isAfter(last_msg_date, 'day')) {
                             // Append a new day indicator
-                            this.insertDayIndicator(current_msg_date);
+                            this.insertDayIndicator(current_msg_date, append_html);
                         }
-                        this.insertMessage(attrs);
+                        this.insertMessage(attrs, append_element);
                         return;
                     }
+
                     if (current_msg_date.isBefore(first_msg_date) ||
                             current_msg_date.isSame(first_msg_date)) {
                         // The message is before the first, but on the same day.
                         // We need to prepend the message immediately before the
                         // first message (so that it'll still be after the day
                         // indicator).
-                        this.insertMessage(attrs, 'prepend');
+                        this.insertMessage(attrs, prepend_element);
                         if (current_msg_date.isBefore(first_msg_date, 'day')) {
                             // This message is also on a different day, so
                             // we prepend a day indicator.
-                            this.insertDayIndicator(current_msg_date, 'prepend');
+                            this.insertDayIndicator(current_msg_date, append_html);
                         }
                         return;
                     }
-                    // Find the correct place to position the message
-                    current_msg_date = current_msg_date.format();
-                    const msg_dates = _.map(
-                        this.$content.find('.chat-message'),
-                        (el) => $(el).data('isodate')
-                    );
-                    msg_dates.push(current_msg_date);
-                    msg_dates.sort();
-
-                    const idx = msg_dates.indexOf(current_msg_date)-1;
-                    const $latest_message = this.$content.find(`.chat-message[data-isodate="${msg_dates[idx]}"]:last`);
-                    _.flow(($el) => {
-                            $el.insertAfter($latest_message);
-                            return $el;
-                        },
-                        this.scrollDown.bind(this)
-                    )(this.renderMessage(attrs));
+                    const previous_msg_date = this.getLastMessageDate(current_msg_date);
+                    const previous_msg_el = this.content.querySelector(
+                        `.message[data-isodate="${previous_msg_date}"]`);
+                    if (_.isNull(previous_msg_el)) {
+                        this.insertMessage(attrs, prepend_element);
+                    } else {
+                        this.insertMessage(
+                            attrs, _.bind(previous_msg_el.insertAdjacentElement, previous_msg_el, 'afterend'));
+                    }
                 },
 
                 getExtraMessageTemplateAttributes () {
@@ -523,7 +548,7 @@
                         template = tpl_message;
                         username = attrs.sender === 'me' && __('me') || fullname;
                     }
-                    this.$content.find('div.chat-event').remove();
+                    $(this.content).find('div.chat-event').remove();
 
                     if (text.length > 8000) {
                         text = text.substring(0, 10) + '...';
@@ -545,10 +570,10 @@
                         })
                     ));
                     const msg_content = $msg[0].querySelector('.chat-msg-content');
-                    msg_content.innerHTML = utils.addEmoji(
-                        _converse, emojione, utils.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))
+                    msg_content.innerHTML = u.addEmoji(
+                        _converse, emojione, u.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))
                     );
-                    utils.renderImageURLs(msg_content);
+                    u.renderImageURLs(msg_content);
                     return $msg;
                 },
 
@@ -563,9 +588,9 @@
                         );
                     });
                     if (spinner === true) {
-                        this.$content.append(tpl_spinner);
+                        $(this.content).append(tpl_spinner);
                     } else if (spinner === false) {
-                        this.$content.find('span.spinner').remove();
+                        $(this.content).find('span.spinner').remove();
                     }
                     return this.scrollDown();
                 },
@@ -577,7 +602,10 @@
                         } else {
                             this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
                         }
-                        this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 30000);
+                        this.clear_status_timeout = window.setTimeout(
+                            this.clearStatusNotification.bind(this),
+                            30000
+                        );
                     } else if (message.get('chat_state') === _converse.PAUSED) {
                         if (message.get('sender') === 'me') {
                             this.showStatusNotification(__('Stopped typing on the other device'));
@@ -585,7 +613,7 @@
                             this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
                         }
                     } else if (_.includes([_converse.INACTIVE, _converse.ACTIVE], message.get('chat_state'))) {
-                        this.$content.find('div.chat-event').remove();
+                        $(this.content).find('div.chat-event').remove();
                     } else if (message.get('chat_state') === _converse.GONE) {
                         this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
                     }
@@ -597,15 +625,15 @@
 
                 handleTextMessage (message) {
                     this.showMessage(_.clone(message.attributes));
-                    if (utils.isNewMessage(message) && message.get('sender') === 'me') {
-                        // We remove the "scrolled" flag so that the chat area
-                        // gets scrolled down. We always want to scroll down
-                        // when the user writes a message as opposed to when a
-                        // message is received.
-                        this.model.set('scrolled', false);
-                    } else {
-                        if (utils.isNewMessage(message) && this.model.get('scrolled', true)) {
-                            this.$el.find('.new-msgs-indicator').removeClass('hidden');
+                    if (u.isNewMessage(message)) {
+                        if (message.get('sender') === 'me') {
+                            // We remove the "scrolled" flag so that the chat area
+                            // gets scrolled down. We always want to scroll down
+                            // when the user writes a message as opposed to when a
+                            // message is received.
+                            this.model.set('scrolled', false);
+                        } else if (this.model.get('scrolled', true)) {
+                            this.showNewMessagesIndicator();
                         }
                     }
                     if (this.shouldShowOnTextMessage()) {
@@ -616,9 +644,16 @@
                 },
 
                 handleErrorMessage (message) {
-                    const $message = $(`[data-msgid=${message.get('msgid')}]`);
-                    if ($message.length) {
-                        $message.after($('<div class="chat-info chat-error"></div>').text(message.get('message')));
+                    const message_el = this.content.querySelector(`[data-msgid="${message.get('msgid')}"]`);
+                    if (!_.isNull(message_el)) {
+                        message_el.insertAdjacentHTML(
+                            'afterend',
+                            tpl_info({
+                                'extra_classes': 'chat-error',
+                                'message': message.get('message'),
+                                'isodate': moment().format(),
+                                'data': ''
+                            }));
                         this.scrollDown();
                     }
                 },
@@ -749,10 +784,16 @@
                     }
                     if (state === _converse.COMPOSING) {
                         this.chat_state_timeout = window.setTimeout(
-                            this.setChatState.bind(this), _converse.TIMEOUTS.PAUSED, _converse.PAUSED);
+                            this.setChatState.bind(this),
+                            _converse.TIMEOUTS.PAUSED,
+                            _converse.PAUSED
+                        );
                     } else if (state === _converse.PAUSED) {
                         this.chat_state_timeout = window.setTimeout(
-                            this.setChatState.bind(this), _converse.TIMEOUTS.INACTIVE, _converse.INACTIVE);
+                            this.setChatState.bind(this),
+                            _converse.TIMEOUTS.INACTIVE,
+                            _converse.INACTIVE
+                        );
                     }
                     if (!no_save && this.model.get('chat_state') !== state) {
                         this.model.set('chat_state', state);
@@ -789,7 +830,7 @@
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     const result = confirm(__("Are you sure you want to clear the messages from this chat box?"));
                     if (result === true) {
-                        this.$content.empty();
+                        this.content.innerHTML = '';
                         this.model.messages.reset();
                         this.model.messages.browserStorage._clear();
                     }
@@ -824,9 +865,9 @@
                         document.querySelectorAll('.toolbar-menu'),
                         [this.emoji_picker_view.el]
                     );
-                    utils.slideInAllElements(elements)
+                    u.slideInAllElements(elements)
                         .then(_.partial(
-                                utils.slideToggleElement,
+                                u.slideToggleElement,
                                 this.emoji_picker_view.el))
                         .then(this.focus.bind(this));
                 },
@@ -864,7 +905,7 @@
                     if (_converse.connection.connected) {
                         // Immediately sending the chat state, because the
                         // model is going to be destroyed afterwards.
-                        this.model.set('chat_state', _converse.INACTIVE);
+                        this.setChatState(_converse.INACTIVE);
                         this.sendChatState();
                     }
                     try {
@@ -897,29 +938,36 @@
                     );
                     this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
 
-                    var toggle = this.el.querySelector('.toggle-smiley');
-                    toggle.innerHTML = '';
-                    toggle.appendChild(this.emoji_picker_view.render().el);
                     return this;
                 },
 
+                renderEmojiPicker () {
+                    var toggle = this.el.querySelector('.toggle-smiley');
+                    toggle.innerHTML = '';
+                    toggle.appendChild(this.emoji_picker_view.render().el);
+                },
+
                 focus () {
-                    this.el.querySelector('.chat-textarea').focus();
-                    _converse.emit('chatBoxFocused', this);
+                    const textarea_el = this.el.querySelector('.chat-textarea');
+                    if (!_.isNull(textarea_el)) {
+                        textarea_el.focus();
+                        _converse.emit('chatBoxFocused', this);
+                    }
                     return this;
                 },
 
                 hide () {
                     this.el.classList.add('hidden');
-                    utils.refreshWebkit();
+                    u.refreshWebkit();
                     return this;
                 },
 
                 afterShown (focus) {
-                    if (utils.isPersistableModel(this.model)) {
+                    if (u.isPersistableModel(this.model)) {
                         this.model.save();
                     }
                     this.setChatState(_converse.ACTIVE);
+                    this.renderEmojiPicker();
                     this.scrollDown();
                     if (focus) {
                         this.focus();
@@ -928,11 +976,15 @@
 
                 _show (focus) {
                     /* Inner show method that gets debounced */
-                    if (this.$el.is(':visible') && this.$el.css('opacity') === "1") {
+                    if (u.isVisible(this.el)) {
                         if (focus) { this.focus(); }
                         return;
                     }
-                    utils.fadeIn(this.el, _.bind(this.afterShown, this, focus));
+                    const that = this;
+                    u.fadeIn(this.el, function () {
+                        that.afterShown();
+                        if (focus) { that.focus(); }
+                    });
                 },
 
                 show (focus) {
@@ -947,6 +999,10 @@
                     return this;
                 },
 
+                showNewMessagesIndicator () {
+                    u.showElement(this.el.querySelector('.new-msgs-indicator'));
+                },
+
                 hideNewMessagesIndicator () {
                     const new_msgs_indicator = this.el.querySelector('.new-msgs-indicator');
                     if (!_.isNull(new_msgs_indicator)) {
@@ -954,7 +1010,7 @@
                     }
                 },
 
-                markScrolled: function (ev) {
+                _markScrolled: function (ev) {
                     /* Called when the chat content is scrolled up or down.
                      * We want to record when the user has scrolled away from
                      * the bottom, so that we don't automatically scroll away
@@ -971,14 +1027,14 @@
                     }
                     let scrolled = true;
                     const is_at_bottom =
-                        (this.$content.scrollTop() + this.$content.innerHeight()) >=
-                            this.$content[0].scrollHeight-10;
+                        ($(this.content).scrollTop() + $(this.content).innerHeight()) >=
+                            $(this.content)[0].scrollHeight-10;
 
                     if (is_at_bottom) {
                         scrolled = false;
                         this.onScrolledDown();
                     }
-                    utils.safeSave(this.model, {'scrolled': scrolled});
+                    u.safeSave(this.model, {'scrolled': scrolled});
                 },
 
                 viewUnreadMessages () {
@@ -988,19 +1044,14 @@
 
                 _scrollDown () {
                     /* Inner method that gets debounced */
-                    if (this.$content.is(':visible') && !this.model.get('scrolled')) {
-                        this.$content.scrollTop(this.$content[0].scrollHeight);
+                    if (_.isUndefined(this.content)) {
+                        return;
+                    }
+                    if (u.isVisible(this.content) && !this.model.get('scrolled')) {
+                        this.content.scrollTop = this.content.scrollHeight;
                         this.onScrolledDown();
                         this.model.save({'auto_scrolled': true});
                     }
-                },
-
-                onScrolledDown() {
-                    this.hideNewMessagesIndicator();
-                    if (_converse.windowState !== 'hidden') {
-                        this.model.clearUnreadMsgCounter();
-                    }
-                    _converse.emit('chatBoxScrolledDown', {'chatbox': this.model});
                 },
 
                 scrollDown () {
@@ -1013,6 +1064,14 @@
                     }
                     this.debouncedScrollDown.apply(this, arguments);
                     return this;
+                },
+
+                onScrolledDown() {
+                    this.hideNewMessagesIndicator();
+                    if (_converse.windowState !== 'hidden') {
+                        this.model.clearUnreadMsgCounter();
+                    }
+                    _converse.emit('chatBoxScrolledDown', {'chatbox': this.model});
                 },
 
                 onWindowStateChanged (state) {

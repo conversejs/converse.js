@@ -73,20 +73,25 @@
                 spyOn(_converse.chatboxviews, 'trimChats');
                 expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
-                var online_contacts = _converse.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact').find('a.open-chat');
-                for (i=0; i<online_contacts.length; i++) {
-                    $el = $(online_contacts[i]);
-                    jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
-                    $el.click();
-                    chatboxview = _converse.chatboxviews.get(jid);
-                    expect(_converse.chatboxes.length).toEqual(i+2);
-                    expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
-                    // Check that new chat boxes are created to the left of the
-                    // controlbox (but to the right of all existing chat boxes)
-                    expect($("#conversejs .chatbox").length).toBe(i+2);
-                    expect($("#conversejs .chatbox")[1].id).toBe(chatboxview.model.get('box_id'));
-                }
-                done();
+                test_utils.waitUntil(function () {
+                    return _converse.rosterview.$el.find('.roster-group li').length;
+                }, 700).then(function () {
+                    var online_contacts = _converse.rosterview.$el.find('.roster-group .current-xmpp-contact a.open-chat');
+                    expect(online_contacts.length).toBe(15);
+                    for (i=0; i<online_contacts.length; i++) {
+                        $el = $(online_contacts[i]);
+                        jid = $el.text().trim().replace(/ /g,'.').toLowerCase() + '@localhost';
+                        $el.click();
+                        chatboxview = _converse.chatboxviews.get(jid);
+                        expect(_converse.chatboxes.length).toEqual(i+2);
+                        expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
+                        // Check that new chat boxes are created to the left of the
+                        // controlbox (but to the right of all existing chat boxes)
+                        expect($("#conversejs .chatbox").length).toBe(i+2);
+                        expect($("#conversejs .chatbox")[1].id).toBe(chatboxview.model.get('box_id'));
+                    }
+                    done();
+                });
             }));
 
             it("can be trimmed to conserve space",
@@ -108,16 +113,16 @@
                 spyOn(trimmed_chatboxes, 'removeChat').and.callThrough();
                 expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
-                _converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
+                _converse.rosterview.update(); // XXX: Hack to make sure $roster element is attached.
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
-                    }, 300)
-                .then(function () {
+                    return _converse.rosterview.$el.find('.roster-group li').length;
+                }, 700).then(function () {
                     // Test that they can be maximized again
-                    var online_contacts = _converse.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact').find('a.open-chat');
+                    var online_contacts = _converse.rosterview.$el.find('.roster-group .current-xmpp-contact a.open-chat');
+                    expect(online_contacts.length).toBe(15);
                     for (i=0; i<online_contacts.length; i++) {
                         $el = $(online_contacts[i]);
-                        jid = _.trim($el.text()).replace(/ /g,'.').toLowerCase() + '@localhost';
+                        jid = _.trim($el.text().trim()).replace(/ /g,'.').toLowerCase() + '@localhost';
                         $el.click();
                         expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
 
@@ -128,8 +133,8 @@
                         expect(chatboxview.minimize).toHaveBeenCalled();
                     }
                     return test_utils.waitUntil(function () {
-                            return _converse.chatboxviews.keys().length > 1;
-                        }, 500);
+                        return _converse.chatboxviews.keys().length > 1;
+                    }, 500);
                 }).then(function () {
                     var key = _converse.chatboxviews.keys()[1];
                     trimmedview = trimmed_chatboxes.get(key);
@@ -243,7 +248,7 @@
                 test_utils.openControlBox();
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                        return _converse.rosterview.$el.find('.roster-group').length;
                     }, 300)
                 .then(function () {
                     var chatbox = test_utils.openChatBoxes(_converse, 1)[0],
@@ -281,7 +286,7 @@
                 test_utils.openControlBox();
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                        return _converse.rosterview.$el.find('.roster-group').length;
                     }, 300)
                 .then(function () {
                     var chatbox = test_utils.openChatBoxes(_converse, 1)[0],
@@ -328,7 +333,7 @@
                 test_utils.openControlBox();
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('dt').length;
+                        return _converse.rosterview.$el.find('.roster-group').length;
                     }, 300)
                 .then(function () {
                     spyOn(_converse, 'emit');
@@ -443,7 +448,7 @@
                     test_utils.openContactsPanel(_converse);
 
                     test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('dt').length;
+                            return _converse.rosterview.$el.find('.roster-group').length;
                         }, 300)
                     .then(function () {
                         // TODO: More tests can be added here...
@@ -546,7 +551,7 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                                return _converse.rosterview.$el.find('dt').length;
+                                return _converse.rosterview.$el.find('.roster-group').length;
                             }, 300)
                         .then(function () {
                             spyOn(_converse, 'emit');
@@ -835,10 +840,9 @@
                                 }).c('body').t('Message: '+i).up()
                                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
                         }
-                        test_utils.waitUntil(function () {
-                                return chatboxview.$content.scrollTop();
-                            }, 1000)
-                        .then(function () {
+                        return test_utils.waitUntil(function () {
+                            return chatboxview.$content.scrollTop();
+                        }, 1000).then(function () {
                             return test_utils.waitUntil(function () {
                                 return !chatboxview.model.get('auto_scrolled');
                             }, 500);
@@ -871,7 +875,7 @@
                             chatboxview.$content.scrollTop(chatboxview.$content[0].scrollHeight);
                             return test_utils.waitUntil(function () {
                                 return !chatboxview.$('.new-msgs-indicator').is(':visible');
-                            }, 500);
+                            }, 700);
                         }).then(done);
                     }));
 
@@ -885,7 +889,7 @@
                         test_utils.openContactsPanel(_converse);
 
                         test_utils.waitUntil(function () {
-                                return _converse.rosterview.$el.find('dt').length;
+                                return _converse.rosterview.$el.find('.roster-group').length;
                             }, 300)
                         .then(function () {
                             // Send a message from a different resource
@@ -1130,7 +1134,7 @@
                     test_utils.openControlBox();
                     test_utils.openContactsPanel(_converse);
                     test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('dt').length;
+                            return _converse.rosterview.$el.find('.roster-group').length;
                         }, 300)
                     .then(function () {
                         var contact_name = mock.cur_names[0];
@@ -1182,16 +1186,15 @@
                 }));
 
                 it("will indicate when it has a time difference of more than a day between it and its predecessor",
-
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
                     test_utils.openContactsPanel(_converse);
                     test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('dt').length;
+                            return _converse.rosterview.$el.find('.roster-group').length;
                         }, 300)
                     .then(function () {
                         spyOn(_converse, 'emit');
@@ -1503,7 +1506,7 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('dt').length;
+                            return _converse.rosterview.$el.find('.roster-group').length;
                         }, 300).then(function () {
                             spyOn(_converse.connection, 'send');
                             var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1531,7 +1534,7 @@
                         var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
                         test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('dt').length;
+                            return _converse.rosterview.$el.find('.roster-group').length;
                         }, 500).then(function () {
                             test_utils.openChatBoxFor(_converse, contact_jid);
                             var view = _converse.chatboxviews.get(contact_jid);
@@ -1541,7 +1544,7 @@
                             view.model.maximize();
                             return test_utils.waitUntil(function () {
                                 return view.model.get('chat_state') === 'active';
-                            }, 500);
+                            }, 700);
                         }).then(function () {
                             expect(_converse.connection.send).toHaveBeenCalled();
                             var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
@@ -1570,9 +1573,8 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                                return _converse.rosterview.$el.find('dt').length;
-                            }, 300)
-                        .then(function () {
+                            return _converse.rosterview.$el.find('.roster-group').length;
+                        }, 300).then(function () {
                             var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                             test_utils.openChatBoxFor(_converse, contact_jid);
                             var view = _converse.chatboxviews.get(contact_jid);
@@ -1614,6 +1616,7 @@
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
                         spyOn(_converse, 'emit');
                         var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        test_utils.openChatBoxFor(_converse, sender_jid);
 
                         // <composing> state
                         var msg = $msg({
@@ -1694,9 +1697,8 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                                return _converse.rosterview.$el.find('dt').length;
-                            }, 300)
-                        .then(function () {
+                                return _converse.rosterview.$el.find('.roster-group li').length;
+                        }, 700).then(function () {
                             _converse.TIMEOUTS.PAUSED = 200; // Make the timeout shorter so that we can test
 
                             contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1716,7 +1718,7 @@
                             return test_utils.waitUntil(function () {
                                 return view.model.get('chat_state') === 'paused';
                             }, 500);
-                    }).then(function () {
+                        }).then(function () {
                             expect(_converse.connection.send).toHaveBeenCalled();
                             var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
                                 return call.args[0] instanceof Strophe.Builder;
@@ -1757,7 +1759,7 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                                return _converse.rosterview.$el.find('dt').length;
+                                return _converse.rosterview.$el.find('.roster-group').length;
                             }, 300)
                         .then(function () {
                             // TODO: only show paused state if the previous state was composing
@@ -1842,7 +1844,7 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('dt').length;
+                            return _converse.rosterview.$el.find('.roster-group').length;
                         }, 500).then(function () {
                             // Make the timeouts shorter so that we can test
                             _converse.TIMEOUTS.PAUSED = 200;
@@ -1897,8 +1899,8 @@
                             expect($stanza.children().get(0).tagName).toBe('inactive');
                             expect($stanza.children().get(1).tagName).toBe('no-store');
                             expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
-                            done();
-                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+                          .then(done);
                     }));
 
                     it("is sent when the user a minimizes a chat box",
@@ -1932,7 +1934,7 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('dt').length;
+                            return _converse.rosterview.$el.find('.roster-group').length;
                         }, 300).then(function () {
                             var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                             test_utils.openChatBoxFor(_converse, contact_jid);
@@ -2327,7 +2329,7 @@
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('dt').length;
+                    return _converse.rosterview.$el.find('.roster-group').length;
                 }, 500)
                 .then(function () {
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -2360,7 +2362,7 @@
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('dt').length;
+                    return _converse.rosterview.$el.find('.roster-group').length;
                 }, 500)
                 .then(function () {
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -2394,7 +2396,7 @@
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('dt').length;
+                    return _converse.rosterview.$el.find('.roster-group').length;
                 }, 500)
                 .then(function () {
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -2429,7 +2431,7 @@
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('dt').length;
+                    return _converse.rosterview.$el.find('.roster-group').length;
                 }, 500)
                 .then(function () {
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -2462,7 +2464,7 @@
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('dt').length;
+                    return _converse.rosterview.$el.find('.roster-group').length;
                 }, 500)
                 .then(function () {
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';

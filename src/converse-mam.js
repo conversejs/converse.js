@@ -13,8 +13,6 @@
             "converse-core",
             "utils",
             "converse-disco",
-            "converse-chatview", // Could be made a soft dependency
-            "converse-muc", // Could be made a soft dependency
             "strophe.rsm"
     ], factory);
 }(this, function (sizzle, converse, utils) {
@@ -28,6 +26,8 @@
 
 
     converse.plugins.add('converse-mam', {
+
+        optional_dependencies: ['converse-chatview', 'converse-muc'],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -191,8 +191,8 @@
                     this.model.on('change:connection_status', this.fetchArchivedMessagesIfNecessary, this);
                 },
 
-                render () {
-                    const result = this.__super__.render.apply(this, arguments);
+                renderChatArea () {
+                    const result = this.__super__.renderChatArea.apply(this, arguments);
                     if (!this.disable_mam) {
                         this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                     }
@@ -341,8 +341,11 @@
                         _converse.connection.deleteHandler(message_handler);
                         if (_.isFunction(callback)) {
                             const set = iq.querySelector('set');
-                            const rsm = new Strophe.RSM({xml: set});
-                            _.extend(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
+                            let rsm;
+                            if (!_.isUndefined(set)) {
+                                rsm = new Strophe.RSM({xml: set});
+                                _.extend(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
+                            }
                             callback(messages, rsm);
                         }
                     },

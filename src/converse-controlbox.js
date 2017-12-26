@@ -19,7 +19,6 @@
             "tpl!controlbox_toggle",
             "tpl!login_panel",
             "tpl!search_contact",
-            "tpl!spinner",
             "converse-chatview",
             "converse-rosterview",
             "converse-profile"
@@ -36,8 +35,7 @@
             tpl_controlbox,
             tpl_controlbox_toggle,
             tpl_login_panel,
-            tpl_search_contact,
-            tpl_spinner
+            tpl_search_contact
         ) {
     "use strict";
 
@@ -459,7 +457,7 @@
                     this.listenTo(_converse.connfeedback, 'change', this.render);
                 },
 
-                renderHTML () {
+                toHTML () {
                     const connection_status = _converse.connfeedback.get('connection_status');
                     let feedback_class, pretty_status;
                     if (_.includes(REPORTABLE_STATUSES, connection_status)) {

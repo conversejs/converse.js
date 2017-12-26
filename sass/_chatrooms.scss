@@ -131,7 +131,8 @@
                         }
                     }
                     ul {
-                        padding: 0.3em 0;
+                        padding: 0.5em 0 0 0;
+                        margin-bottom: 0.5em;
                         overflow-x: hidden;
                         overflow-y: auto;
                         list-style: none;
@@ -181,6 +182,9 @@
                             }
                             &.moderator {
                                 color: $moderator-color;
+                            }
+                            &.visitor {
+                                color: $visitor-color;
                             }
                         }
                     }

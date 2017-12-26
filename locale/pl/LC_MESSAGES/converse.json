@@ -31,10 +31,6 @@
             null,
             "Kliknij aby schować te kontakty"
          ],
-         "You have unread messages": [
-            null,
-            "Masz nieprzeczytane wiadomości"
-         ],
          "Close this chat box": [
             null,
             "Zamknij okno rozmowy"
@@ -47,11 +43,15 @@
             null,
             ""
          ],
+         "You have unread messages": [
+            null,
+            "Masz nieprzeczytane wiadomości"
+         ],
          "me": [
             null,
             "ja"
          ],
-         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+         "A very large message has been received. This might be due to an attack meant to degrade the chat performance. Output has been shortened.": [
             null,
             ""
          ],
@@ -119,17 +119,9 @@
             null,
             ""
          ],
-         "Please enter a valid XMPP address": [
-            null,
-            ""
-         ],
          "Password:": [
             null,
             "Hasło:"
-         ],
-         "Please enter your password": [
-            null,
-            ""
          ],
          "password": [
             null,
@@ -247,14 +239,6 @@
             null,
             "Czy potwierdzasz odrzucenie chęci nawiązania kontaktu?"
          ],
-         "Username": [
-            null,
-            "Nazwa użytkownika"
-         ],
-         "user@domain": [
-            null,
-            ""
-         ],
          "I am %1$s": [
             null,
             "Jestem %1$s"
@@ -294,6 +278,18 @@
          "offline": [
             null,
             "rozłączony"
+         ],
+         "Username": [
+            null,
+            "Nazwa użytkownika"
+         ],
+         "user@domain": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            ""
          ],
          "Log out": [
             null,
@@ -411,10 +407,6 @@
             null,
             "Zablokuj dostępu do pokoju"
          ],
-         "Change user role to occupant": [
-            null,
-            "Zmień prawa dostępu na zwykłego uczestnika"
-         ],
          "Kick user from room": [
             null,
             "Wykop z pokoju"
@@ -483,18 +475,6 @@
             null,
             "Hasło:"
          ],
-         " has left the room. \"": [
-            null,
-            ""
-         ],
-         " has joined the room. \"": [
-            null,
-            ""
-         ],
-         " has joined the room.": [
-            null,
-            ""
-         ],
          "Topic set by %1$s to: %2$s": [
             null,
             "Temat ustawiony przez %1$s na: %2$s"
@@ -554,10 +534,6 @@
          "Unmoderated": [
             null,
             "Niemoderowany"
-         ],
-         "Unsecured": [
-            null,
-            ""
          ],
          "Messages are archived on the server": [
             null,
@@ -922,10 +898,6 @@
          "Minimized": [
             null,
             "Zminimalizowany"
-         ],
-         "Close this box": [
-            null,
-            "Zamknij okno"
          ]
       }
    }

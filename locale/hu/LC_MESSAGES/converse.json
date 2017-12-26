@@ -46,7 +46,7 @@
             null,
             "Én"
          ],
-         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+         "A very large message has been received. This might be due to an attack meant to degrade the chat performance. Output has been shortened.": [
             null,
             ""
          ],
@@ -114,17 +114,9 @@
             null,
             ""
          ],
-         "Please enter a valid XMPP address": [
-            null,
-            ""
-         ],
          "Password:": [
             null,
             "Jelszó:"
-         ],
-         "Please enter your password": [
-            null,
-            ""
          ],
          "password": [
             null,
@@ -242,10 +234,6 @@
             null,
             "Valóban elutasítja ezt a partnerkérelmet?"
          ],
-         "user@domain": [
-            null,
-            ""
-         ],
          "I am %1$s": [
             null,
             "%1$s vagyok"
@@ -285,6 +273,14 @@
          "offline": [
             null,
             "nem elérhető"
+         ],
+         "user@domain": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            ""
          ],
          "Log out": [
             null,
@@ -398,10 +394,6 @@
             null,
             "Felhasználó kitíltása a csevegőszobából"
          ],
-         "Change user role to occupant": [
-            null,
-            "A felhasználó taggá tétele"
-         ],
          "Kick user from room": [
             null,
             "Felhasználó kiléptetése a csevegőszobából"
@@ -462,18 +454,6 @@
             null,
             "Jelszó: "
          ],
-         " has left the room. \"": [
-            null,
-            ""
-         ],
-         " has joined the room. \"": [
-            null,
-            ""
-         ],
-         " has joined the room.": [
-            null,
-            ""
-         ],
          "Topic set by %1$s to: %2$s": [
             null,
             "A következő témát állította be %1$s: %2$s"
@@ -521,10 +501,6 @@
          "Unmoderated": [
             null,
             "Moderálatlan"
-         ],
-         "Unsecured": [
-            null,
-            ""
          ],
          "Messages are archived on the server": [
             null,

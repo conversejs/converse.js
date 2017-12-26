@@ -46,7 +46,7 @@
             null,
             "Я"
          ],
-         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+         "A very large message has been received. This might be due to an attack meant to degrade the chat performance. Output has been shortened.": [
             null,
             ""
          ],
@@ -114,17 +114,9 @@
             null,
             ""
          ],
-         "Please enter a valid XMPP address": [
-            null,
-            ""
-         ],
          "Password:": [
             null,
             "Пароль:"
-         ],
-         "Please enter your password": [
-            null,
-            ""
          ],
          "password": [
             null,
@@ -242,10 +234,6 @@
             null,
             "Вы уверены, что хотите отклонить запрос от этого контакта?"
          ],
-         "user@domain": [
-            null,
-            ""
-         ],
          "I am %1$s": [
             null,
             "Я %1$s"
@@ -281,6 +269,14 @@
          "away": [
             null,
             "отошёл"
+         ],
+         "user@domain": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            ""
          ],
          "Log out": [
             null,
@@ -394,10 +390,6 @@
             null,
             "Забанить пользователя в этом чате."
          ],
-         "Change user role to occupant": [
-            null,
-            "Изменить роль пользователя на \"участник\""
-         ],
          "Kick user from room": [
             null,
             "Удалить пользователя из чата."
@@ -454,18 +446,6 @@
             null,
             "Пароль: "
          ],
-         " has left the room. \"": [
-            null,
-            ""
-         ],
-         " has joined the room. \"": [
-            null,
-            ""
-         ],
-         " has joined the room.": [
-            null,
-            ""
-         ],
          "Topic set by %1$s to: %2$s": [
             null,
             "Тема %2$s устатновлена %1$s"
@@ -513,10 +493,6 @@
          "Unmoderated": [
             null,
             "Немодерируемый"
-         ],
-         "Unsecured": [
-            null,
-            ""
          ],
          "Messages are archived on the server": [
             null,

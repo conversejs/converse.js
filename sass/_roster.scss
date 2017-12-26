@@ -83,13 +83,10 @@
         height: 100%;
         overflow-x: hidden;
         overflow-y: auto;
-        display: none;
-        dt.roster-group {
+        .roster-group {
             border: none;
             color: $text-color;
-            display: none;
             font-weight: normal;
-            margin: 1em 0 0.5em 0;
             text-shadow: 0 1px 0 $text-shadow-color;
             .group-toggle {
                 &:hover {
@@ -98,116 +95,117 @@
                 color: $text-color;
                 display: block;
                 width: 100%;
+                margin: 0.5em 0;;
             }
-        }
-        dd {
-            border: none;
-            clear: both;
-            color: $text-color;
-            display: block;
-            height: 24px;
-            overflow-y: hidden;
-            text-shadow: 0 1px 0 $text-shadow-color;
-            line-height: $font-size;
-            width: 100%;
-            height: 30px;
-            margin: 0;
-            padding: 0.5em 0 0 0;
+            li {
+                border: none;
+                clear: both;
+                color: $text-color;
+                display: block;
+                height: 24px;
+                overflow-y: hidden;
+                text-shadow: 0 1px 0 $text-shadow-color;
+                line-height: $font-size;
+                width: 100%;
+                height: 30px;
+                margin: 0;
+                padding: 0.5em 0 0 0;
 
-            a:hover {
-                color: $dark-link-color;
-            }
-
-            .open-chat {
-                margin: auto;
-                padding: 0;
-                width: 85%;
-                &.unread-msgs {
-                    font-weight: bold;
-                    .contact-name {
-                        width: 70%;
-                    }
+                a:hover {
+                    color: $dark-link-color;
                 }
 
-				.msgs-indicator {
-                    background-color: $chat-head-color;
-                    opacity: 1;
-                    border-radius: 10%;
-                    padding: 0 0.2em;
-                    font-size: $font-size-small;
-				}
+                .open-chat {
+                    margin: auto;
+                    padding: 0;
+                    width: 85%;
+                    &.unread-msgs {
+                        font-weight: bold;
+                        .contact-name {
+                            width: 70%;
+                        }
+                    }
 
-                .contact-name {
+                    .msgs-indicator {
+                        background-color: $chat-head-color;
+                        opacity: 1;
+                        border-radius: 10%;
+                        padding: 0 0.2em;
+                        font-size: $font-size-small;
+                    }
+
+                    .contact-name {
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        padding: 0;
+                        margin: 0;
+                        max-width: 80%;
+                        float: none;
+                        height: $roster-item-height;
+                        &.unread-msgs {
+                            max-width: 60%;
+                        }
+                    }
+
+                    .avatar {
+                        float: left;
+                        display: inline-block;
+                        height: $roster-item-height;
+                    }
+                }
+                &.requesting-xmpp-contact {
+                    .request-actions {
+                        padding: 0 0 0 0.3em;
+                        float: right;
+                    }
+                    .open-chat {
+                        max-width: 70%;
+                        .req-contact-name {
+                            width: 100%;
+                        }
+                    }
+                    .req-contact-name {
+                        line-height: $line-height;
+                        width: 69%;
+                        padding: 0;
+                    }
+                }
+                &.current-xmpp-contact span {
+                    font-size: $font-size;
+                    float: left;
+                    margin-right: 0.5em;
+                }
+                &.odd {
+                    background-color: #DCEAC5;
+                    /* Make this difference */
+                }
+                a, span {
+                    display: inline-block;
                     overflow: hidden;
                     white-space: nowrap;
                     text-overflow: ellipsis;
+                }
+                span {
                     padding: 0;
-                    margin: 0;
-                    max-width: 80%;
-                    float: none;
-                    height: $roster-item-height;
-                    &.unread-msgs {
-                        max-width: 60%;
+                    height: 100%;
+                }
+                a {
+                    &.decline-xmpp-request {
+                        margin-left: 5px;
                     }
-                }
-
-                .avatar {
-                    float: left;
-                    display: inline-block;
-                    height: $roster-item-height;
-                }
-            }
-            &.requesting-xmpp-contact {
-                .request-actions {
-                    padding: 0 0 0 0.3em;
-                    float: right;
-                }
-                .open-chat {
-                    max-width: 70%;
-                    .req-contact-name {
-                        width: 100%;
-                    }
-                }
-                .req-contact-name {
-                    line-height: $line-height;
-                    width: 69%;
-                    padding: 0;
-                }
-            }
-            &.current-xmpp-contact span {
-                font-size: $font-size;
-                float: left;
-                margin-right: 0.5em;
-            }
-            &.odd {
-                background-color: #DCEAC5;
-                /* Make this difference */
-            }
-            a, span {
-                display: inline-block;
-                overflow: hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-            }
-            span {
-                padding: 0;
-                height: 100%;
-            }
-            a {
-                &.decline-xmpp-request {
-                    margin-left: 5px;
-                }
-                &.remove-xmpp-contact {
-                    font-size: $font-size-tiny;
-                    float: right;
-                    margin: 0;
-                    padding: 0;
-                    color: $subdued-color;
-                    &:before {
-                        font-size: $font-size;
-                    }
-                    &:hover {
-                        color: $gray-color;
+                    &.remove-xmpp-contact {
+                        font-size: $font-size-tiny;
+                        float: right;
+                        margin: 0;
+                        padding: 0;
+                        color: $subdued-color;
+                        &:before {
+                            font-size: $font-size;
+                        }
+                        &:hover {
+                            color: $gray-color;
+                        }
                     }
                 }
             }

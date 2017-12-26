@@ -17,15 +17,19 @@
          ],
          "Your Jabber ID and/or password is incorrect. Please try again.": [
             null,
-            ""
+            "Votre identifiant Jabber ou votre mot de passe est incorrect. Veuillez réessayer."
          ],
          "Sorry, we could not connect to the XMPP host with domain: ": [
             null,
-            ""
+            "Désolé, nous n’avons pas pu nous connecter à l’hôte XMPP avec le domaine : "
          ],
          "The XMPP server did not offer a supported authentication mechanism": [
             null,
-            ""
+            "Le serveur XMPP n’a pas proposé un mécanisme d’authentification pris en charge"
+         ],
+         "Sorry, there was an error while trying to add %1$s as a contact.": [
+            null,
+            "Désolé, il y a eu une erreur lors de la tentative d’ajout de %1$s comme contact."
          ],
          "This client does not allow presence subscriptions": [
             null,
@@ -34,10 +38,6 @@
          "Click to hide these contacts": [
             null,
             "Cliquez pour cacher ces contacts"
-         ],
-         "You have unread messages": [
-            null,
-            "Vous avez de nouveaux messages"
          ],
          "Close this chat box": [
             null,
@@ -51,13 +51,17 @@
             null,
             "Envoyer"
          ],
+         "You have unread messages": [
+            null,
+            "Vous avez de nouveaux messages"
+         ],
          "me": [
             null,
             "moi"
          ],
-         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+         "A very large message has been received. This might be due to an attack meant to degrade the chat performance. Output has been shortened.": [
             null,
-            "Un message très long a été reçu. Cela pourrait être lié à une attaque visant à dégrader la performance de la conversation. La sortie a été tronquée."
+            "Un message très long a été reçu. Cela pourrait être lié à une attaque visant à dégrader les performances de la conversation. L’affichage a été tronqué."
          ],
          "Typing from another device": [
             null,
@@ -93,7 +97,7 @@
          ],
          "Are you sure you want to clear the messages from this chat box?": [
             null,
-            "Voulez-vous vraiment supprimer les messages de cette conversation ?"
+            "Voulez-vous vraiment supprimer les messages de cette conversation ?"
          ],
          "has gone offline": [
             null,
@@ -117,19 +121,15 @@
          ],
          "Login": [
             null,
-            ""
+            "Connexion"
          ],
          "Jabber ID:": [
             null,
-            ""
+            "Identifiant Jabber :"
          ],
          "Password:": [
             null,
-            "Mot de passe :"
-         ],
-         "Please enter your password": [
-            null,
-            ""
+            "Mot de passe :"
          ],
          "password": [
             null,
@@ -233,15 +233,15 @@
          ],
          "Click to remove %1$s as a contact": [
             null,
-            "Cliquez pour retirer le contact « %1$s »"
+            "Cliquez pour retirer le contact « %1$s »"
          ],
          "Click to accept the contact request from %1$s": [
             null,
-            "Cliquez pour accepter la demande de « %1$s »"
+            "Cliquez pour accepter la demande de « %1$s »"
          ],
          "Click to decline the contact request from %1$s": [
             null,
-            "Cliquez pour décliner la demande de contact de « %1$s »"
+            "Cliquez pour décliner la demande de contact de « %1$s »"
          ],
          "Click to chat with this contact": [
             null,
@@ -253,19 +253,15 @@
          ],
          "Are you sure you want to remove this contact?": [
             null,
-            "Voulez-vous vraiment retirer ce contact ?"
+            "Voulez-vous vraiment retirer ce contact ?"
+         ],
+         "Sorry, there was an error while trying to remove %1$s as a contact.": [
+            null,
+            "Désolé, il y a eu une erreur en tentant de retirer %1$s comme contact."
          ],
          "Are you sure you want to decline this contact request?": [
             null,
-            "Voulez-vous vraiment décliner cette demande de contact ?"
-         ],
-         "Username": [
-            null,
-            "Nom"
-         ],
-         "user@domain": [
-            null,
-            ""
+            "Voulez-vous vraiment décliner cette demande de contact ?"
          ],
          "I am %1$s": [
             null,
@@ -307,6 +303,18 @@
             null,
             "Déconnecté"
          ],
+         "Username": [
+            null,
+            "Nom"
+         ],
+         "user@domain": [
+            null,
+            "utilisateur@domaine"
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            "Veuillez saisir une adresse XMPP valide"
+         ],
          "Log out": [
             null,
             "Se déconnecter"
@@ -345,7 +353,7 @@
          ],
          "Toggle chat": [
             null,
-            "Ouvrir IM"
+            "Ouvrir la discussion"
          ],
          "This room is not anonymous": [
             null,
@@ -403,6 +411,10 @@
             null,
             "Vous avez été retiré de ce salon parce que ce salon est devenu réservé aux membres et vous n’êtes pas membre"
          ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down": [
+            null,
+            "Vous avez été retiré de ce salon parce que le service de chat multi-utilisateur (MUC) est en cours d’extinction"
+         ],
          "%1$s has been banned": [
             null,
             "%1$s a été banni"
@@ -423,13 +435,13 @@
             null,
             "%1$s a été supprimé car il n’est pas membre"
          ],
-         "Your nickname has been automatically set to: %1$s": [
+         "Your nickname has been automatically set to %1$s": [
             null,
-            "Votre alias a été automatiquement déterminé en : %1$s"
+            "Votre alias a été automatiquement défini à : %1$s"
          ],
-         "Your nickname has been changed to: %1$s": [
+         "Your nickname has been changed to %1$s": [
             null,
-            "Votre alias a été modifié en : %1$s"
+            "Votre alias a été modifié en : %1$s"
          ],
          "Message": [
             null,
@@ -449,15 +461,15 @@
          ],
          "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
             null,
-            ""
+            "Erreur : la commande « %1$s » prend deux paramètres, le pseudo de l’utilisateur et une raison optionnelle."
          ],
          "Are you sure you want to clear the messages from this room?": [
             null,
-            "Voulez-vous vraiment supprimer les messages de ce salon ?"
+            "Voulez-vous vraiment supprimer les messages de ce salon ?"
          ],
          "Error: could not execute the command": [
             null,
-            "Erreur : la commande ne peut pas être exécutée"
+            "Erreur : la commande ne peut pas être exécutée"
          ],
          "Change user's affiliation to admin": [
             null,
@@ -466,10 +478,6 @@
          "Ban user from room": [
             null,
             "Bannir l’utilisateur du salon"
-         ],
-         "Change user role to occupant": [
-            null,
-            "Changer le rôle de l’utilisateur en participant"
          ],
          "Kick user from room": [
             null,
@@ -541,31 +549,15 @@
          ],
          "Password: ": [
             null,
-            "Mot de passe : "
+            "Mot de passe : "
          ],
          "This action was done by %1$s.": [
             null,
-            "L’action a été réalisée par %1$s."
+            "Cette action a été réalisée par %1$s."
          ],
          "The reason given is: \"%1$s\".": [
             null,
-            "La raison indiquée est : « %1$s »."
-         ],
-         " has left the room. \"": [
-            null,
-            " a quitté le salon. \""
-         ],
-         " has left the room": [
-            null,
-            " a quitté le salon"
-         ],
-         " has joined the room. \"": [
-            null,
-            " a rejoint le salon. \""
-         ],
-         " has joined the room.": [
-            null,
-            " a rejoint le salon."
+            "La raison indiquée est : « %1$s »."
          ],
          "You are not on the member list of this room.": [
             null,
@@ -597,7 +589,11 @@
          ],
          "Topic set by %1$s to: %2$s": [
             null,
-            "Le sujet « %2$s » a été défini par %1$s"
+            "Le sujet « %2$s » a été défini par %1$s"
+         ],
+         "Click to mention %1$s in your message.": [
+            null,
+            "Cliquer pour citer %1$s dans votre message."
          ],
          "This user is a moderator.": [
             null,
@@ -613,7 +609,7 @@
          ],
          "Occupants": [
             null,
-            "Participants :"
+            "Participants :"
          ],
          "Invite": [
             null,
@@ -629,7 +625,7 @@
          ],
          "Message archiving": [
             null,
-            "Archivage du message"
+            "Archivage des messages"
          ],
          "Members only": [
             null,
@@ -645,7 +641,7 @@
          ],
          "Open": [
             null,
-            "Ouvrir"
+            "Ouvert"
          ],
          "Password protected": [
             null,
@@ -670,10 +666,6 @@
          "Unmoderated": [
             null,
             "Non modéré"
-         ],
-         "Unsecured": [
-            null,
-            "Non sécurisé"
          ],
          "This room is not publicly searchable": [
             null,
@@ -725,11 +717,11 @@
          ],
          "This room does not require a password upon entry": [
             null,
-            "Ce salon nécessite un mot de passe pour y accéder"
+            "Ce salon ne nécessite pas de mot de passe pour y accéder"
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
             null,
-            "Vous vous apprêtez à inviter %1$s dans le salon \"%2$s\". "
+            "Vous vous apprêtez à inviter %1$s dans le salon « %2$s ». "
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
             null,
@@ -777,19 +769,19 @@
          ],
          "Description:": [
             null,
-            "Description :"
+            "Description :"
          ],
          "Room Address (JID):": [
             null,
-            "Adresse du salon (JID) :"
+            "Adresse du salon (JID) :"
          ],
          "Occupants:": [
             null,
-            "Participants :"
+            "Participants :"
          ],
          "Features:": [
             null,
-            "Caractéristiques :"
+            "Caractéristiques :"
          ],
          "Requires authentication": [
             null,
@@ -813,11 +805,11 @@
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,
-            "%1$s vous invite à rejoindre le salon : %2$s"
+            "%1$s vous invite à rejoindre le salon : %2$s"
          ],
          "%1$s has invited you to join a chat room: %2$s, and left the following reason: \"%3$s\"": [
             null,
-            "%1$s vous invite à rejoindre le salon : %2$s, avec le message suivant:\"%3$s\""
+            "%1$s vous invite à rejoindre le salon : %2$s, avec le message suivant: « %3$s »"
          ],
          "Bookmark this room": [
             null,
@@ -825,19 +817,19 @@
          ],
          "The name for this bookmark:": [
             null,
-            "Nom de ce marque-page :"
+            "Nom de ce marque-page :"
          ],
          "Would you like this room to be automatically joined upon startup?": [
             null,
-            "Voulez-vous rejoindre automatiquement ce salon au lancement ?"
+            "Voulez-vous rejoindre automatiquement ce salon au lancement ?"
          ],
          "What should your nickname for this room be?": [
             null,
-            "Quel alias devrait être utilisé pour ce salon ?"
+            "Quel alias devrait être utilisé pour ce salon ?"
          ],
          "Are you sure you want to remove the bookmark \"%1$s\"?": [
             null,
-            "Voulez-vous vraiment retirer le marque-page « %1$s » ?"
+            "Voulez-vous vraiment retirer le marque-page « %1$s » ?"
          ],
          "Sorry, something went wrong while trying to save your bookmark.": [
             null,
@@ -873,7 +865,7 @@
          ],
          "Are you sure you want to leave the room \"%1$s\"?": [
             null,
-            "Voulez-vous vraiment supprimer le marque-page « %1$s » ?"
+            "Voulez-vous vraiment supprimer le marque-page « %1$s » ?"
          ],
          "Re-establishing encrypted session": [
             null,
@@ -929,7 +921,7 @@
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
             null,
-            "Voici les empreintes de sécurité, veuillez les confirmer avec %1$s, en dehors de ce chat.\n\nEmpreinte pour vous, %2$s : %3$s\n\nEmpreinte pour %1$s : %4$s\n\nSi vous avez confirmé que les empreintes correspondent, cliquez OK, sinon cliquez Annuler."
+            "Voici les empreintes de sécurité, veuillez les confirmer avec %1$s, en dehors de ce chat.\n\nEmpreinte pour vous, %2$s : %3$s\n\nEmpreinte pour %1$s : %4$s\n\nSi vous avez confirmé que les empreintes correspondent, cliquez OK, sinon cliquez Annuler."
          ],
          "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
             null,
@@ -937,11 +929,11 @@
          ],
          "What is your security question?": [
             null,
-            "Quelle est votre question de sécurité ?"
+            "Quelle est votre question de sécurité ?"
          ],
          "What is the answer to the security question?": [
             null,
-            "Quelle est la réponse à la question de sécurité ?"
+            "Quelle est la réponse à la question de sécurité ?"
          ],
          "Invalid authentication scheme provided": [
             null,
@@ -985,7 +977,7 @@
          ],
          "What's this?": [
             null,
-            "Qu’est-ce que c’est ?"
+            "Qu’est-ce que c’est ?"
          ],
          "unencrypted": [
             null,
@@ -1005,27 +997,31 @@
          ],
          "Don't have a chat account?": [
             null,
-            ""
+            "Vous n’avez pas de compte ?"
          ],
          "Create an account": [
             null,
-            ""
+            "Créer un compte"
+         ],
+         "Create your account": [
+            null,
+            "Créer votre compte"
          ],
          "Please enter the XMPP provider to register with:": [
             null,
-            ""
+            "Veuillez saisir le fournisseur XMPP auprès duquel s’enregistrer :"
          ],
          "Already have a chat account?": [
             null,
-            ""
+            "Vous avez déjà un compte ?"
          ],
          "Log in here": [
             null,
-            ""
+            "Connectez-vous ici"
          ],
          "Account Registration:": [
             null,
-            ""
+            "Enregistrement de compte :"
          ],
          "Register": [
             null,
@@ -1033,11 +1029,11 @@
          ],
          "Choose a different provider": [
             null,
-            ""
+            "Choisir un autre fournisseur"
          ],
          "Hold tight, we're fetching the registration form…": [
             null,
-            ""
+            "Ne bougez pas, on va chercher le formulaire d’inscription…"
          ],
          " e.g. conversejs.org": [
             null,
@@ -1049,7 +1045,7 @@
          ],
          "Tip: A list of public XMPP providers is available": [
             null,
-            "Astuce : une liste publique de fournisseurs XMPP est disponible"
+            "Astuce : une liste publique de fournisseurs XMPP est disponible"
          ],
          "here": [
             null,
@@ -1057,11 +1053,15 @@
          ],
          "Sorry, we're unable to connect to your chosen provider.": [
             null,
-            ""
+            "Désolé, nous n’avons pas pu nous connecter à votre fournisseur."
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
             null,
             "Désolé, le fournisseur indiqué ne supporte pas l’enregistrement de compte en ligne. Merci d’essayer avec un autre fournisseur."
+         ],
+         "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
+            null,
+            "Quelque chose a échoué lors de l’établissement de la connexion avec « %1$s ». Existe-t-il vraiment ?"
          ],
          "Now logging you in": [
             null,
@@ -1102,10 +1102,6 @@
          "Minimized": [
             null,
             "Réduit(s)"
-         ],
-         "Close this box": [
-            null,
-            "Fermer cette fenêtre"
          ]
       }
    }

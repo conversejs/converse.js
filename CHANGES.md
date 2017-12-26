@@ -6,6 +6,7 @@
 - #800 Could not register successfully in ejabberd 17.01
 - #949 Don't flash the roster contacts filter (i.e. hide by default)
 - #953 MUC "Features" displayed when exiting configuration
+- #967 Rooms list doesn't show when the server doesn't support bookmarks
 - Don't require `auto_login` to be `true` when using the API to log in.
 - Moment locale wasn't being set to the value passed via the `i18n` option.
 - In the chat heading, two avatars sometimes get rendered.
@@ -18,6 +19,7 @@
   See https://xmpp.org/extensions/xep-0313.html#archives_id
 - Fixed error building DOM toggle_chats.html span.unread-message-count class attribute
 - Bugfix. In a MUC the `/help` command didn't render properly.
+- The `/voice` MUC command didn't set the right role in order to grant voice again.
 
 ### New Features
 - #314 Add support for opening chat rooms with a URL fragment such as `#converse/room?jid=room@domain`
@@ -29,6 +31,9 @@
   builds. Instead the `converse.js` build is now used with `view_mode` set to
   `fullscreen` and `mobile` respectively.
 - Fetch VCard when starting a chat with someone not in the user's roster.
+- Show status messages in an MUC room when a user's role changes.
+- In MUC chat rooms, collapse multiple, consecutive join/leave messages.
+- Performance improvements for rendering private chats, rooms and the contacts roster.
 
 ### API changes
 - New API method `_converse.disco.supports` to check whether a certain
@@ -45,10 +50,12 @@
 - Consolidate error and validation reporting on the registration form.
 - Don't close the emojis panel after inserting an emoji.
 - Focus the message textarea when the emojis panel is opened or closed.
+- MUC chatroom occupants are now sorted alphabetically and according to their roles.
 
 ### Technical changes
-- Converse.js now includes a [Virtual DOM](https://github.com/Matt-Esch/virtual-dom)
-  and uses it to render the login form.
+- Converse.js now includes a [Virtual DOM](https://github.com/snabbdom/snabbdom)
+  via [backbone.vdomview](https://github.com/jcbrand/backbone.vdomview) and uses
+  it to render various views.
 - Converse.js no longer includes all the translations in its build. Instead,
   only the currently relevant translation is requested. This results in a much
   smaller filesize but means that the translations you want to provide need to

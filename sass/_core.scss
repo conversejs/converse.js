@@ -2,7 +2,7 @@
     opacity:0;  /* make things invisible upon start */
     @include animation-name(fadein);
     @include animation-fill-mode(forwards);
-    @include animation-duration(1s);
+    @include animation-duration(750);
     @include animation-timing-function(ease);
 }
 
@@ -26,10 +26,6 @@
     @media screen and (max-width: $mobile-portrait-length) {
         width: 100%;
         width: 100vw;
-    }
-
-    .fade-in {
-        @include fade-in;
     }
 
 	::-webkit-input-placeholder { /* Chrome/Opera/Safari */
@@ -73,21 +69,26 @@
         100% { opacity: 1 }
     }
 
+    .fade-in {
+        @include fade-in;
+    }
+
     .visible {
-        visibility: visible;
-        opacity: 1;
+        opacity:0;  /* make things invisible upon start */
         @include animation-name(fadein);
         @include animation-fill-mode(forwards);
-        @include animation-duration(350ms);
+        @include animation-duration(500ms);
         @include animation-timing-function(ease);
     }
+
     .hidden {
         opacity: 0;
         display: none;
     }
     .collapsed {
-        height: 0;
-        overflow: hidden;
+        height: 0 !important;
+        overflow: hidden !important;
+        padding: 0 !important;
     }
 
     .locked {

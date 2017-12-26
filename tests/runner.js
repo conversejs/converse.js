@@ -30,8 +30,8 @@ require.config(config);
 
 var specs = [
     //"spec/transcripts",
-    // "spec/profiling",
     "jasmine",
+    "spec/profiling",
     "spec/utils",
     "spec/converse",
     "spec/bookmarks",
@@ -46,6 +46,7 @@ var specs = [
     "spec/mam",
     "spec/otr",
     "spec/controlbox",
+    "spec/roster",
     "spec/chatbox",
     "spec/chatroom",
     "spec/minchats",

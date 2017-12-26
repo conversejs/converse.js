@@ -1,4 +1,6 @@
 <div class="switch-form">
-    <p>{{{ o.__("Don't have a chat account?") }}}</p>
-    <p><a class="register-account toggle-register-login" href="#converse/register">{{{o.__("Create an account")}}}</a></p>
+    {[ if (!o._converse.auto_login && o._converse.CONNECTION_STATUS[o.connection_status] !== 'CONNECTING') { ]}
+        <p>{{{ o.__("Don't have a chat account?") }}}</p>
+        <p><a class="register-account toggle-register-login" href="#converse/register">{{{o.__("Create an account")}}}</a></p>
+    {[ } ]}
 </div>

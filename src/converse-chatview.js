@@ -748,7 +748,7 @@
                         fullname,
                         sender: 'me',
                         time: moment().format(),
-                        message: text
+                        message: emojione.shortnameToUnicode(text)
                     });
                     this.sendMessage(message);
                 },

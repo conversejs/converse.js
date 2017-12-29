@@ -1,6 +1,6 @@
 (function (root, factory) {
     define(["converse-core", "strophe.vcard", "converse-chatview"], factory);
-}(this, function (converse) {
+}(this, function (converse, tpl_message) {
 
     // Commonly used utilities and variables can be found under the "env"
     // namespace of the "converse" global.
@@ -23,6 +23,52 @@
 
     function getHint() {
         return document.querySelector('.chat-textarea-hint').value;
+    }
+
+    function toggleEditSpoilerMessage() {
+        let form = document.querySelector('.sendXMPPMessage');
+        let textArea = document.querySelector('.chat-textarea');
+        let hintTextArea = null;
+        let spoiler_button = document.querySelector('.toggle-spoiler-edit');
+
+        if (!isEditSpoilerMessage()) {
+            textArea.style['background-color'] = '#D5FFD2';
+            textArea.setAttribute('placeholder', _('Write your spoiler\'s content here'));
+            spoiler_button.setAttribute("active", "true");
+            spoiler_button.innerHTML = '<a class="icon-eye-blocked" title="' + _('Cancel writing spoiler message') + '"></a>'; // better get the element <a></a> and change the class?
+            hintTextArea = createHintTextArea();
+            form.insertBefore(hintTextArea, textArea);
+//                     <textarea type="text" class="chat-textarea-hint " placeholder="Hint (optional)" style="background-color: rgb(188, 203, 209); height:30px;"></textarea>
+
+        } else {
+            textArea.style['background-color'] = '';
+            textArea.setAttribute('placeholder', _('Personal message'));
+            spoiler_button.setAttribute("active", "false");
+            spoiler_button.innerHTML = '<a class="icon-eye" title="' + _('Click here to write a message as a spoiler') + '"></a>'; // better get the element <a></a> and change the class?
+            hintTextArea = document.querySelector('.chat-textarea-hint');
+            if ( hintTextArea ) {
+                hintTextArea.remove();
+
+            }
+        }
+
+    }
+
+    const initSpoilers = function () {
+        var spoiler_button = document.createElement('li');
+        spoiler_button.classList.add("toggle-spoiler-edit");
+        spoiler_button.setAttribute("active", "false");
+        spoiler_button.innerHTML = '<a class="icon-eye" title="' + _('Click here to write a message as a spoiler') + '"></a>';
+        document.querySelector('.chat-toolbar').appendChild(spoiler_button);
+    };
+
+    function createHintTextArea(){
+        let hintTextArea = document.createElement('input');
+        hintTextArea.setAttribute('type', 'text');
+        hintTextArea.setAttribute('placeholder', _('Hint (optional)'));
+        hintTextArea.classList.add('chat-textarea-hint');
+        hintTextArea.style['height'] = '30px';
+        return hintTextArea;
     }
 
     // The following line registers your plugin.
@@ -100,51 +146,7 @@
              *
              *      _converse.api.waitUntil('operationCompleted', function { ... });
              */
-            const initSpoilers = function () {
-                var spoiler_button = document.createElement('li');
-                spoiler_button.classList.add("toggle-spoiler-edit");
-                spoiler_button.setAttribute("active", "false");
-                spoiler_button.innerHTML = '<a class="icon-eye" title="' + _('Click here to write a message as a spoiler') + '"></a>';
-                document.querySelector('.chat-toolbar').appendChild(spoiler_button);
-            };
 
-            function toggleEditSpoilerMessage() {
-                let form = document.querySelector('.sendXMPPMessage');
-                let textArea = document.querySelector('.chat-textarea');
-                let hintTextArea = null;
-                let spoiler_button = document.querySelector('.toggle-spoiler-edit');
-
-                if (!isEditSpoilerMessage()) {
-                    textArea.style['background-color'] = '#D5FFD2';
-                    textArea.setAttribute('placeholder', _('Write your spoiler\'s content here'));
-                    spoiler_button.setAttribute("active", "true");
-                    spoiler_button.innerHTML = '<a class="icon-eye-blocked" title="' + _('Cancel writing spoiler message') + '"></a>'; // better get the element <a></a> and change the class?
-                    hintTextArea = createHintTextArea();
-                    form.insertBefore(hintTextArea, textArea);
-//                     <textarea type="text" class="chat-textarea-hint " placeholder="Hint (optional)" style="background-color: rgb(188, 203, 209); height:30px;"></textarea>
-
-                } else {
-                    textArea.style['background-color'] = '';
-                    textArea.setAttribute('placeholder', _('Personal message'));
-                    spoiler_button.setAttribute("active", "false");
-                    spoiler_button.innerHTML = '<a class="icon-eye" title="' + _('Click here to write a message as a spoiler') + '"></a>'; // better get the element <a></a> and change the class?
-                    hintTextArea = document.querySelector('.chat-textarea-hint');
-                    if ( hintTextArea ) {
-                        hintTextArea.remove();
-
-                    }
-                }
-
-            }
-
-            function createHintTextArea(){
-                let hintTextArea = document.createElement('input');
-                hintTextArea.setAttribute('type', 'text');
-                hintTextArea.setAttribute('placeholder', _('Hint (optional)'));
-                hintTextArea.classList.add('chat-textarea-hint');
-                hintTextArea.style['height'] = '30px';
-                return hintTextArea;
-            }
             _converse.on('chatBoxFocused', function (chatbox) { initSpoilers(); });
 
         },
@@ -158,7 +160,7 @@
                 'events': {
                     'click .toggle-spoiler-edit': toggleEditSpoilerMessage
                 },
-                
+
                 'createMessageStanza': function () {
                     let messageStanza = this.__super__.createMessageStanza.apply(this, arguments);
                     if (isEditSpoilerMessage()) {
@@ -169,6 +171,125 @@
                         }
                     }
                     return messageStanza;
+                },
+
+                'renderMessage': function (attrs) {
+                    /* Renders a chat message based on the passed in attributes.
+                     *
+                     * Parameters:
+                     *  (Object) attrs: An object containing the message attributes.
+                     *
+                     *  Returns:
+                     *      The DOM element representing the message.
+                     */
+                    console.log(attrs);
+                    let text = attrs.message,
+                        fullname = this.model.get('fullname') || attrs.fullname,
+                        template, username;
+
+                    const match = text.match(/^\/(.*?)(?: (.*))?$/);
+                    if ((match) && (match[1] === 'me')) {
+                        text = text.replace(/^\/me/, '');
+                        template = tpl_action;
+                        if (attrs.sender === 'me') {
+                            fullname = _converse.xmppstatus.get('fullname') || attrs.fullname;
+                            username = _.isNil(fullname)? _converse.bare_jid: fullname;
+                        } else {
+                            username = attrs.fullname;
+                        }
+                    } else  {
+                        template = tpl_message;
+                        username = attrs.sender === 'me' && _('me') || fullname;
+                    }
+                    this.$content.find('div.chat-event').remove();
+
+                    if (text.length > 8000) {
+                        text = text.substring(0, 10) + '...';
+                        this.showStatusNotification(
+                            _("A very large message has been received. "+
+                               "This might be due to an attack meant to degrade the chat performance. "+
+                               "Output has been shortened."),
+                            true, true);
+                    }
+                    const msg_time = moment(attrs.time) || moment;
+                    const $msg = $(template(
+                        _.extend(this.getExtraMessageTemplateAttributes(attrs), {
+                            'msgid': attrs.msgid,
+                            'sender': attrs.sender,
+                            'time': msg_time.format(_converse.time_format),
+                            'isodate': msg_time.format(),
+                            'username': username,
+                            'extra_classes': this.getExtraMessageClasses(attrs)
+                        })
+                    ));
+                    const msg_content = $msg[0].querySelector('.chat-msg-content');
+
+                     //Spoiler logic
+                    if ('spoiler' in attrs) {
+                        let button = document.createElement("<button>"),
+                            container = document.createElement("<div>"), 
+                            content = document.createElement( "<div>" ),
+                            hint = document.createElement("<div>"),
+                            contentHidden = document.createElement("<div>");
+
+                            attrs.spoiler = attrs.spoiler == true ? _('Spoiler') : attrs.spoiler;
+                            hint.text(attrs.spoiler);
+
+                            contentHidden.text(text);
+                            contentHidden.addClass("hidden");
+                            contentHidden.addHyperlinks();
+                            contentHidden.addEmoticons(_converse.visible_toolbar_buttons.emoticons);
+
+
+                        container.css("background-color", "Lavender");
+                        container.css("text-align", "center");
+
+
+                        //Spoiler's content
+                        content.addClass("spoiler-content");
+                        content.append(hint);
+                        content.append(contentHidden);
+
+                        //Spoiler's button
+                        button.addClass("spoiler-button icon-eye");
+                        button.attr("type", "button");
+                        button.text(_('Show '));
+                        button.css("width", "100%");
+                        button.attr("closed", "true");
+
+                        container.append(button);
+                        container.append(content);
+
+
+                        msg_content.append(container);
+
+                    } else {
+                        return this.__super__.renderMessage.apply(this, arguments);
+                    }
+
+                    return $msg;
+                }
+            },
+            'ChatBox': {
+                'getMessageAttributes': function () {
+                    let messageAttributes = this.__super__.getMessageAttributes.apply(this, arguments);
+                    console.log(arguments);
+                    //Check if message is spoiler
+                    let spoiler = null, i = 0, found = false;
+
+                    while (i < message.childNodes.length && !found) {
+                        if (message.childNodes[i].nodeName == "spoiler") {
+                            spoiler = message.childNodes[i];
+                            found = true;
+                        }
+
+                        i++;
+                    }
+                    if (spoiler) {
+                        messageAttributes['spoiler'] = spoiler.textContent.length > 0 ? spoiler.textContent : _('Spoiler');
+                    }
+
+                    return messageAttributes;
                 }
             }
 

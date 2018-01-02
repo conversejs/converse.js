@@ -42,7 +42,7 @@
             tpl_toolbar
     ) {
     "use strict";
-    const { $msg, Backbone, Strophe, _, b64_sha1, moment } = converse.env;
+    const { $msg, Backbone, Strophe, _, b64_sha1, sizzle, moment } = converse.env;
     const u = converse.env.utils;
     const KEY = {
         ENTER: 13,
@@ -277,7 +277,6 @@
                     this.model.on('sendMessage', this.sendMessage, this);
 
                     this.render().renderToolbar().insertHeading().fetchMessages();
-                    this.createEmojiPicker();
                     u.refreshWebkit();
                     _converse.emit('chatBoxOpened', this);
                     _converse.emit('chatBoxInitialized', this);
@@ -418,6 +417,26 @@
                     )(this.renderMessage(attrs));
                 },
 
+                getLastMessageElement () {
+                    let last_msg_el = this.content.lastElementChild;
+                    while (!_.isNull(last_msg_el) &&
+                            !u.hasClass(last_msg_el, 'message') &&
+                            !u.hasClass(last_msg_el, 'chat-info')) {
+                        last_msg_el = last_msg_el.previousSibling
+                    }
+                    return last_msg_el;
+                },
+
+                getFirstMessageElement () {
+                    let first_msg_el = this.content.firstElementChild;
+                    while (!_.isNull(first_msg_el) &&
+                            !u.hasClass(first_msg_el, 'message') &&
+                            !u.hasClass(first_msg_el, 'chat-info')) {
+                        first_msg_el = first_msg_el.nextSibling
+                    }
+                    return first_msg_el;
+                },
+
                 getLastMessageDate (cutoff) {
                     /* Return the ISO8601 format date of the latest message.
                      *
@@ -425,22 +444,36 @@
                      *  (Object) cutoff: Moment Date cutoff date. The last
                      *      message received cutoff this date will be returned.
                      */
-                    if (!cutoff) {
-                        const last_msg = this.content.lastElementChild;
-                        return last_msg ? last_msg.getAttribute('data-isodate') : null
+                    const first_msg = this.getFirstMessageElement(),
+                          oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
+                    if (!_.isNull(oldest_date) && moment(oldest_date).isAfter(cutoff)) {
+                        return null;
+                    }
+                    const last_msg = this.getLastMessageElement(),
+                          most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
+                    if (_.isNull(most_recent_date) || moment(most_recent_date).isBefore(cutoff)) {
+                        return most_recent_date;
                     }
                     const msg_dates = _.invokeMap(
-                        this.content.querySelectorAll('.message'),
-                        Element.prototype.getAttribute,
-                        'data-isodate'
+                        sizzle('.message, .chat-info', this.content),
+                        Element.prototype.getAttribute, 'data-isodate'
                     )
                     if (_.isObject(cutoff)) {
                         cutoff = cutoff.format();
                     }
                     msg_dates.push(cutoff);
                     msg_dates.sort();
-                    const idx = msg_dates.indexOf(cutoff);
-                    return msg_dates[idx === 0 ? idx : idx-1];
+                    const idx = msg_dates.lastIndexOf(cutoff);
+                    if (idx === 0) {
+                        return null;
+                    } else {
+                        return msg_dates[idx-1];
+                    }
+                },
+
+                getDayIndicatorElement (date) {
+                    return this.content.querySelector(
+                        `.chat-date[data-isodate="${date.startOf('day').format()}"]`);
                 },
 
                 showMessage (attrs) {
@@ -456,54 +489,37 @@
                      *      attributes.
                      */
                     const current_msg_date = moment(attrs.time) || moment,
-                          first_msg_el = this.content.firstElementChild,
-                          first_msg_date = first_msg_el ? first_msg_el.getAttribute('data-isodate') : null,
-                          append_element = _.bind(this.content.insertAdjacentElement, this.content, 'beforeend'),
-                          append_html = _.bind(this.content.insertAdjacentHTML, this.content, 'beforeend'),
-                          prepend_element = _.bind(this.content.insertAdjacentElement, this.content, 'afterbegin');
+                          prepend_html = _.bind(this.content.insertAdjacentHTML, this.content, 'afterbegin'),
+                          previous_msg_date = this.getLastMessageDate(current_msg_date);
 
-                    if (!first_msg_date) {
-                        // This is the first received message, so we insert a
-                        // date indicator before it.
-                        this.insertDayIndicator(current_msg_date, append_html);
-                        this.insertMessage(attrs, append_element);
-                        return;
-                    }
-
-                    const last_msg_date = this.getLastMessageDate();
-                    if (current_msg_date.isAfter(last_msg_date) ||
-                            current_msg_date.isSame(last_msg_date)) {
-                        // The new message is after the last message
-                        if (current_msg_date.isAfter(last_msg_date, 'day')) {
-                            // Append a new day indicator
-                            this.insertDayIndicator(current_msg_date, append_html);
-                        }
-                        this.insertMessage(attrs, append_element);
-                        return;
-                    }
-
-                    if (current_msg_date.isBefore(first_msg_date) ||
-                            current_msg_date.isSame(first_msg_date)) {
-                        // The message is before the first, but on the same day.
-                        // We need to prepend the message immediately before the
-                        // first message (so that it'll still be after the day
-                        // indicator).
-                        this.insertMessage(attrs, prepend_element);
-                        if (current_msg_date.isBefore(first_msg_date, 'day')) {
-                            // This message is also on a different day, so
-                            // we prepend a day indicator.
-                            this.insertDayIndicator(current_msg_date, append_html);
-                        }
-                        return;
-                    }
-                    const previous_msg_date = this.getLastMessageDate(current_msg_date);
-                    const previous_msg_el = this.content.querySelector(
-                        `.message[data-isodate="${previous_msg_date}"]`);
-                    if (_.isNull(previous_msg_el)) {
-                        this.insertMessage(attrs, prepend_element);
+                    if (_.isNull(previous_msg_date)) {
+                        this.insertMessage(attrs, _.bind(this.content.insertAdjacentElement, this.content, 'afterbegin'));
+                        this.insertDayIndicator(current_msg_date, prepend_html);
                     } else {
-                        this.insertMessage(
-                            attrs, _.bind(previous_msg_el.insertAdjacentElement, previous_msg_el, 'afterend'));
+                        const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date}"]:last`, this.content).pop();
+                        const day_el = this.getDayIndicatorElement(current_msg_date)
+                        if (current_msg_date.isAfter(previous_msg_date, 'day')) {
+                            if (_.isNull(day_el)) {
+                                this.insertMessage(
+                                    attrs,
+                                    _.bind(previous_msg_el.insertAdjacentElement, previous_msg_el, 'afterend')
+                                );
+                                this.insertDayIndicator(
+                                    current_msg_date,
+                                    _.bind(this.content.insertAdjacentHTML, previous_msg_el, 'afterend')
+                                );
+                            } else {
+                                this.insertMessage(
+                                    attrs,
+                                    _.bind(previous_msg_el.insertAdjacentElement, day_el, 'afterend')
+                                );
+                            }
+                        } else {
+                            this.insertMessage(
+                                attrs,
+                                _.bind(previous_msg_el.insertAdjacentElement, previous_msg_el, 'afterend')
+                            );
+                        }
                     }
                 },
 
@@ -590,7 +606,7 @@
                     if (spinner === true) {
                         $(this.content).append(tpl_spinner);
                     } else if (spinner === false) {
-                        $(this.content).find('span.spinner').remove();
+                        this.clearSpinner();
                     }
                     return this.scrollDown();
                 },

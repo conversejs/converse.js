@@ -879,6 +879,144 @@
                         }).then(done);
                     }));
 
+                    it("can be received out of order, and will still be displayed in the right order",
+                        mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
+
+                        test_utils.createContacts(_converse, 'current');
+                        test_utils.openControlBox();
+                        test_utils.openContactsPanel(_converse);
+
+                        test_utils.waitUntil(function () {
+                                return _converse.rosterview.$el.find('.roster-group').length;
+                            }, 300)
+                        .then(function () {
+                            var message, msg;
+                            spyOn(_converse, 'log');
+                            spyOn(_converse.chatboxes, 'getChatBox').and.callThrough();
+                            _converse.filter_by_resource = true;
+                            var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+
+                            /*  <message id='aeb213' to='juliet@capulet.lit/chamber'>
+                             *    <forwarded xmlns='urn:xmpp:forward:0'>
+                             *      <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:08:25Z'/>
+                             *      <message xmlns='jabber:client'
+                             *          to='juliet@capulet.lit/balcony'
+                             *          from='romeo@montague.lit/orchard'
+                             *          type='chat'>
+                             *          <body>Call me but love, and I'll be new baptized; Henceforth I never will be Romeo.</body>
+                             *      </message>
+                             *    </forwarded>
+                             *  </message>
+                             */
+                            msg = $msg({'id': 'aeb213', 'to': _converse.bare_jid})
+                                .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T13:08:25Z'}).up()
+                                    .c('message', {
+                                        'xmlns': 'jabber:client',
+                                        'to': _converse.bare_jid,
+                                        'from': sender_jid,
+                                        'type': 'chat'})
+                                    .c('body').t("message from today")
+                                    .tree();
+                            _converse.chatboxes.onMessage(msg);
+
+                            msg = $msg({'id': 'aeb214', 'to': _converse.bare_jid})
+                                .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2017-12-31T23:08:25Z'}).up()
+                                    .c('message', {
+                                        'xmlns': 'jabber:client',
+                                        'to': _converse.bare_jid,
+                                        'from': sender_jid,
+                                        'type': 'chat'})
+                                    .c('body').t("Older message")
+                                    .tree();
+                            _converse.chatboxes.onMessage(msg);
+
+                            msg = $msg({'id': 'aeb215', 'to': _converse.bare_jid})
+                                .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-01T13:18:23Z'}).up()
+                                    .c('message', {
+                                        'xmlns': 'jabber:client',
+                                        'to': _converse.bare_jid,
+                                        'from': sender_jid,
+                                        'type': 'chat'})
+                                    .c('body').t("Inbetween message")
+                                    .tree();
+                            _converse.chatboxes.onMessage(msg);
+
+                            msg = $msg({'id': 'aeb216', 'to': _converse.bare_jid})
+                                .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-01T13:18:23Z'}).up()
+                                    .c('message', {
+                                        'xmlns': 'jabber:client',
+                                        'to': _converse.bare_jid,
+                                        'from': sender_jid,
+                                        'type': 'chat'})
+                                    .c('body').t("another inbetween message")
+                                    .tree();
+                            _converse.chatboxes.onMessage(msg);
+
+                            msg = $msg({'id': 'aeb217', 'to': _converse.bare_jid})
+                                .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T12:18:23Z'}).up()
+                                    .c('message', {
+                                        'xmlns': 'jabber:client',
+                                        'to': _converse.bare_jid,
+                                        'from': sender_jid,
+                                        'type': 'chat'})
+                                    .c('body').t("An earlier message today")
+                                    .tree();
+                            _converse.chatboxes.onMessage(msg);
+
+                            msg = $msg({'id': 'aeb218', 'to': _converse.bare_jid})
+                                .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T23:28:23Z'}).up()
+                                    .c('message', {
+                                        'xmlns': 'jabber:client',
+                                        'to': _converse.bare_jid,
+                                        'from': sender_jid,
+                                        'type': 'chat'})
+                                    .c('body').t("newer message from today")
+                                    .tree();
+                            _converse.chatboxes.onMessage(msg);
+
+                            var chatboxview = _converse.chatboxviews.get(sender_jid);
+                            var $chat_content = chatboxview.$el.find('.chat-content');
+                            chatboxview.clearSpinner(); //cleanup
+
+                            var $time = $chat_content.find('time');
+                            expect($time.length).toEqual(3);
+                            $time = $chat_content.find('time:first');
+                            expect($time.data('isodate')).toEqual('2017-12-31T00:00:00+00:00');
+
+                            expect($time[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toBe('Older message');
+                            var $el = $chat_content.find('.chat-message:first').find('.chat-msg-content')
+                            expect($el.text()).toEqual('Older message');
+
+                            $time = $chat_content.find('time:eq(1)');
+                            expect($time.data('isodate')).toEqual('2018-01-01T00:00:00+00:00');
+                            expect($time[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toBe('Inbetween message');
+                            $el = $chat_content.find('.chat-message:eq(1)');
+                            expect($el.find('.chat-msg-content').text()).toEqual('Inbetween message');
+                            expect($el[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toEqual('another inbetween message');
+                            $el = $chat_content.find('.chat-message:eq(2)');
+                            expect($el.find('.chat-msg-content').text()).toEqual('another inbetween message');
+
+                            $time = $chat_content.find('time:last');
+                            expect($time.data('isodate')).toEqual('2018-01-02T00:00:00+00:00');
+                            expect($time[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toBe('An earlier message today');
+                            $el = $chat_content.find('.chat-message:eq(3)');
+                            expect($el.find('.chat-msg-content').text()).toEqual('An earlier message today');
+
+                            $el = $chat_content.find('.chat-message:eq(4)');
+                            expect($el.find('.chat-msg-content').text()).toEqual('message from today');
+                            expect($el[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toEqual('newer message from today');
+                            done();
+                        });
+                    }));
+
                     it("is ignored if it's intended for a different resource and filter_by_resource is set to true",
                         mock.initConverseWithPromises(
                             null, ['rosterGroupsFetched'], {},

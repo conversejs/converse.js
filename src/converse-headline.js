@@ -82,6 +82,7 @@
                 },
 
                 initialize () {
+                    this.markScrolled = _.debounce(this._markScrolled, 100);
                     this.disable_mam = true; // Don't do MAM queries for this box
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);

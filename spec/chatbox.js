@@ -827,7 +827,7 @@
                         test_utils.openChatBoxFor(_converse, sender_jid);
 
                         var chatboxview = _converse.chatboxviews.get(sender_jid);
-                        spyOn(chatboxview, 'scrollDown').and.callThrough();
+                        spyOn(chatboxview, 'onScrolledDown').and.callThrough();
 
                         // Create enough messages so that there's a scrollbar.
                         var message = 'This message is received while the chat area is scrolled up';
@@ -841,13 +841,13 @@
                                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
                         }
                         return test_utils.waitUntil(function () {
-                            return chatboxview.$content.scrollTop();
+                            return chatboxview.content.scrollTop;
                         }, 1000).then(function () {
                             return test_utils.waitUntil(function () {
                                 return !chatboxview.model.get('auto_scrolled');
                             }, 500);
                         }).then(function () {
-                            chatboxview.$content.scrollTop(0);
+                            chatboxview.content.scrollTop = 0;
                             return test_utils.waitUntil(function () {
                                 return chatboxview.model.get('scrolled');
                             }, 900);
@@ -869,10 +869,10 @@
                             }, 500);
                         }).then(function () {
                             expect(chatboxview.model.get('scrolled')).toBe(true);
-                            expect(chatboxview.$content.scrollTop()).toBe(0);
+                            expect(chatboxview.content.scrollTop).toBe(0);
                             expect(chatboxview.$('.new-msgs-indicator').is(':visible')).toBeTruthy();
                             // Scroll down again
-                            chatboxview.$content.scrollTop(chatboxview.$content[0].scrollHeight);
+                            chatboxview.content.scrollTop = chatboxview.content.scrollHeight;
                             return test_utils.waitUntil(function () {
                                 return !chatboxview.$('.new-msgs-indicator').is(':visible');
                             }, 700);

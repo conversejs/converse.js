@@ -402,15 +402,30 @@
         }
     };
 
-    u.stringToDOM = function (s) {
-        /* Converts an HTML string into a DOM element.
+    u.stringToNode = function (s) {
+        /* Converts an HTML string into a DOM Node.
+         * Expects that the HTML string has only one top-level element,
+         * i.e. not multiple ones.
          *
          * Parameters:
          *      (String) s - The HTML string
          */
         var div = document.createElement('div');
         div.innerHTML = s;
-        return div.childNodes;
+        return div.firstChild;
+    };
+
+    u.stringToElement = function (s) {
+        /* Converts an HTML string into a DOM element.
+         * Expects that the HTML string has only one top-level element,
+         * i.e. not multiple ones.
+         *
+         * Parameters:
+         *      (String) s - The HTML string
+         */
+        var div = document.createElement('div');
+        div.innerHTML = s;
+        return div.firstElementChild;
     };
 
     u.matchesSelector = function (el, selector) {

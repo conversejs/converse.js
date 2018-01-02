@@ -36,7 +36,7 @@
             //
             // New functions which don't exist yet can also be added.
             ChatBox: {
-                getMessageAttributes ($message, $delay, original_stanza) {
+                getMessageAttributes (message, delay, original_stanza) {
                     const attrs = this.__super__.getMessageAttributes.apply(this, arguments);
                     const result = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, original_stanza).pop();
                     if (!_.isUndefined(result)) {
@@ -50,7 +50,7 @@
                 render () {
                     const result = this.__super__.render.apply(this, arguments);
                     if (!this.disable_mam) {
-                        this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
+                        this.content.addEventListener('scroll', _.debounce(this.onScroll.bind(this), 100));
                     }
                     return result;
                 },
@@ -194,7 +194,7 @@
                 renderChatArea () {
                     const result = this.__super__.renderChatArea.apply(this, arguments);
                     if (!this.disable_mam) {
-                        this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
+                        this.content.addEventListener('scroll', _.debounce(this.onScroll.bind(this), 100));
                     }
                     return result;
                 },

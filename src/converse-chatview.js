@@ -8,7 +8,6 @@
 
 (function (root, factory) {
     define([
-            "jquery.noconflict",
             "converse-core",
             "converse-chatboxes",
             "emojione",
@@ -25,7 +24,6 @@
             "tpl!toolbar"
     ], factory);
 }(this, function (
-            $,
             converse,
             dummy,
             emojione,
@@ -265,6 +263,7 @@
                 },
 
                 initialize () {
+                    this.scrollDown = _.debounce(this._scrollDown, 250);
                     this.markScrolled = _.debounce(this._markScrolled, 100);
                     this.createEmojiPicker();
                     this.model.messages.on('add', this.onMessageAdded, this);
@@ -295,7 +294,6 @@
                             }
                         ));
                     this.content = this.el.querySelector('.chat-content');
-                    this.$content = $(this.content);
                     return this;
                 },
 
@@ -348,7 +346,7 @@
                 },
 
                 clearStatusNotification () {
-                    u.removeElement(this.content.querySelector('div.chat-event'));
+                    u.removeElement(this.content.querySelector('.chat-event'));
                 },
 
                 showStatusNotification (message, keep_old, permanent) {
@@ -409,9 +407,9 @@
                      * Parameters:
                      *  (Object) attrs: An object containing the message attributes.
                      */
-                    _.flow(($el) => {
-                            insert_method($el[0]);
-                            return $el;
+                    _.flow((el) => {
+                            insert_method(el);
+                            return el;
                         },
                         this.scrollDown.bind(this)
                     )(this.renderMessage(attrs));
@@ -564,7 +562,7 @@
                         template = tpl_message;
                         username = attrs.sender === 'me' && __('me') || fullname;
                     }
-                    $(this.content).find('div.chat-event').remove();
+                    this.clearStatusNotification();
 
                     if (text.length > 8000) {
                         text = text.substring(0, 10) + '...';
@@ -575,7 +573,7 @@
                             true, true);
                     }
                     const msg_time = moment(attrs.time) || moment;
-                    const $msg = $(template(
+                    const msg = u.stringToElement(template(
                         _.extend(this.getExtraMessageTemplateAttributes(attrs), {
                             'msgid': attrs.msgid,
                             'sender': attrs.sender,
@@ -585,12 +583,12 @@
                             'extra_classes': this.getExtraMessageClasses(attrs)
                         })
                     ));
-                    const msg_content = $msg[0].querySelector('.chat-msg-content');
+                    const msg_content = msg.querySelector('.chat-msg-content');
                     msg_content.innerHTML = u.addEmoji(
                         _converse, emojione, u.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))
                     );
                     u.renderImageURLs(msg_content);
-                    return $msg;
+                    return msg;
                 },
 
                 showHelpMessages (msgs, type, spinner) {
@@ -604,7 +602,7 @@
                         );
                     });
                     if (spinner === true) {
-                        $(this.content).append(tpl_spinner);
+                        this.addSpinner();
                     } else if (spinner === false) {
                         this.clearSpinner();
                     }
@@ -629,14 +627,14 @@
                             this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
                         }
                     } else if (_.includes([_converse.INACTIVE, _converse.ACTIVE], message.get('chat_state'))) {
-                        $(this.content).find('div.chat-event').remove();
+                        this.clearStatusNotification();
                     } else if (message.get('chat_state') === _converse.GONE) {
                         this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
                     }
                 },
 
                 shouldShowOnTextMessage () {
-                    return !this.$el.is(':visible');
+                    return !u.isVisible(this.el);
                 },
 
                 handleTextMessage (message) {
@@ -854,12 +852,13 @@
                 },
 
                 insertIntoTextArea (value) {
-                    const $textbox = this.$el.find('textarea.chat-textarea');
-                    let existing = $textbox.val();
+                    const textbox_el = this.el.querySelector('.chat-textarea');
+                    let existing = textbox_el.value;
                     if (existing && (existing[existing.length-1] !== ' ')) {
                         existing = existing + ' ';
                     }
-                    $textbox.focus().val(existing+value+' ');
+                    textbox_el.value = existing+value+' ';
+                    textbox_el.focus()
                 },
 
                 insertEmoji (ev) {
@@ -900,7 +899,7 @@
                     const chat_status = item.get('chat_status');
                     let fullname = item.get('fullname');
                     fullname = _.isEmpty(fullname)? item.get('jid'): fullname;
-                    if (this.$el.is(':visible')) {
+                    if (u.isVisible(this.el)) {
                         if (chat_status === 'offline') {
                             this.showStatusNotification(fullname+' '+__('has gone offline'));
                         } else if (chat_status === 'away') {
@@ -908,7 +907,7 @@
                         } else if ((chat_status === 'dnd')) {
                             this.showStatusNotification(fullname+' '+__('is busy'));
                         } else if (chat_status === 'online') {
-                            this.$el.find('div.chat-event').remove();
+                            this.clearStatusNotification();
                         }
                     }
                 },
@@ -1043,8 +1042,8 @@
                     }
                     let scrolled = true;
                     const is_at_bottom =
-                        ($(this.content).scrollTop() + $(this.content).innerHeight()) >=
-                            $(this.content)[0].scrollHeight-10;
+                        (this.content.scrollTop + this.content.clientHeight) >=
+                            this.content.scrollHeight - 62; // sigh...
 
                     if (is_at_bottom) {
                         scrolled = false;
@@ -1068,18 +1067,6 @@
                         this.onScrolledDown();
                         this.model.save({'auto_scrolled': true});
                     }
-                },
-
-                scrollDown () {
-                    if (_.isUndefined(this.debouncedScrollDown)) {
-                        /* We wrap the method in a debouncer and set it on the
-                         * instance, so that we have it debounced per instance.
-                         * Debouncing it on the class-level is too broad.
-                         */
-                        this.debouncedScrollDown = _.debounce(this._scrollDown, 250);
-                    }
-                    this.debouncedScrollDown.apply(this, arguments);
-                    return this;
                 },
 
                 onScrolledDown() {

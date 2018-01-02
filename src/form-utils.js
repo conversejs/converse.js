@@ -63,12 +63,12 @@
         } else {
             value = field.value;
         }
-        return u.stringToDOM(
+        return u.stringToNode(
             tpl_field({
                 name: field.getAttribute('name'),
                 value: value
             })
-        )[0];
+        );
     };
 
     u.xForm2webForm = function (field, stanza, domain) {

@@ -1356,7 +1356,7 @@
                     }
                     // Give enough time for `markScrolled` to have been called
                     setTimeout(function () {
-                        view.$content.scrollTop(0);
+                        view.content.scrollTop = 0;
                         view.handleMUCMessage(
                             $msg({
                                 from: 'lounge@localhost/someone',
@@ -1369,7 +1369,7 @@
                         var $chat_content = view.$el.find('.chat-content');
                         var msg_txt = $chat_content.find('.chat-message:last').find('.chat-msg-content').text();
                         expect(msg_txt).toEqual(message);
-                        expect(view.$content.scrollTop()).toBe(0);
+                        expect(view.content.scrollTop).toBe(0);
                         done();
                     }, 500);
                 });

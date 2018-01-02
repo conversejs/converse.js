@@ -11,7 +11,6 @@
  */
 (function (root, factory) {
     define([
-            "jquery.noconflict",
             "form-utils",
             "converse-core",
             "lodash.fp",
@@ -42,7 +41,6 @@
             "backbone.vdomview"
     ], factory);
 }(this, function (
-            $,
             u,
             converse,
             fp,
@@ -439,6 +437,7 @@
                 },
 
                 initialize () {
+                    this.scrollDown = _.debounce(this._scrollDown, 250);
                     this.markScrolled = _.debounce(this._markScrolled, 100);
 
                     this.model.messages.on('add', this.onMessageAdded, this);
@@ -501,7 +500,6 @@
                         container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
                         this.renderToolbar(tpl_chatroom_toolbar);
                         this.content = this.el.querySelector('.chat-content');
-                        this.$content = $(this.content);
                         this.toggleOccupants(null, true);
                     }
                     return this;

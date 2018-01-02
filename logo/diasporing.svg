@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   width="186"
+   height="28"
+   id="svg3937">
+  <defs id="defs924" />
+  <path
+     d="m 180.10606,12.24 c -0.312,1.5e-5 -0.468,-0.155985 -0.468,-0.468 l 0.036,-3.708 -3.168,1.98 c -0.24,0.168017 -0.444,0.120017 -0.612,-0.144 l -0.18,-0.288 c -0.168,-0.2399824 -0.12,-0.4439822 0.144,-0.612 l 3.276,-1.98 -3.312,-1.98 c -0.24,-0.1439779 -0.288,-0.3479777 -0.144,-0.612 l 0.216,-0.36 c 0.12,-0.1919769 0.312,-0.2159769 0.576,-0.072 l 3.204,1.98 -0.036,-3.708 c 0,-0.311975 0.156,-0.4679748 0.468,-0.468 l 0.288,0 c 0.312,2.52e-5 0.468,0.156025 0.468,0.468 l -0.036,3.708 3.168,-2.016 c 0.21599,-0.1199768 0.41999,-0.071977 0.612,0.144 l 0.18,0.288 c 0.11999,0.2640223 0.072,0.4680221 -0.144,0.612 l -3.312,2.016 3.348,2.016 c 0.23999,0.1440178 0.28799,0.3360176 0.144,0.576 l -0.18,0.324 c -0.16801,0.264017 -0.38401,0.312017 -0.648,0.144 l -3.168,-2.016 0.036,3.708 c 0,0.312015 -0.156,0.468015 -0.468,0.468 l -0.288,0"
+     id="star" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#FFF;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="-0.80694127"
+     y="24.772234"
+     id="text932"><tspan
+       id="tspan930"
+       x="-0.80694127"
+       y="24.772234"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24px;font-family:Avenir;-inkscape-font-specification:'Avenir, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start">DIASPORING.ch</tspan></text>
+</svg>

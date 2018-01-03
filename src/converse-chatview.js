@@ -399,22 +399,6 @@
                     }));
                 },
 
-                insertMessage (attrs, insert_method) {
-                    /* Helper method which appends a message (or prepends if the
-                     * 2nd parameter is set to true) to the end of the chat box's
-                     * content area.
-                     *
-                     * Parameters:
-                     *  (Object) attrs: An object containing the message attributes.
-                     */
-                    _.flow((el) => {
-                            insert_method(el);
-                            return el;
-                        },
-                        this.scrollDown.bind(this)
-                    )(this.renderMessage(attrs));
-                },
-
                 getLastMessageElement () {
                     let last_msg_el = this.content.lastElementChild;
                     while (!_.isNull(last_msg_el) &&
@@ -488,37 +472,25 @@
                      */
                     const current_msg_date = moment(attrs.time) || moment,
                           prepend_html = _.bind(this.content.insertAdjacentHTML, this.content, 'afterbegin'),
-                          previous_msg_date = this.getLastMessageDate(current_msg_date);
+                          previous_msg_date = this.getLastMessageDate(current_msg_date),
+                          message_el = this.renderMessage(attrs);
 
                     if (_.isNull(previous_msg_date)) {
-                        this.insertMessage(attrs, _.bind(this.content.insertAdjacentElement, this.content, 'afterbegin'));
+                        this.content.insertAdjacentElement('afterbegin', message_el);
                         this.insertDayIndicator(current_msg_date, prepend_html);
                     } else {
                         const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date}"]:last`, this.content).pop();
+                        previous_msg_el.insertAdjacentElement('afterend', message_el);
+
                         const day_el = this.getDayIndicatorElement(current_msg_date)
-                        if (current_msg_date.isAfter(previous_msg_date, 'day')) {
-                            if (_.isNull(day_el)) {
-                                this.insertMessage(
-                                    attrs,
-                                    _.bind(previous_msg_el.insertAdjacentElement, previous_msg_el, 'afterend')
-                                );
-                                this.insertDayIndicator(
-                                    current_msg_date,
-                                    _.bind(this.content.insertAdjacentHTML, previous_msg_el, 'afterend')
-                                );
-                            } else {
-                                this.insertMessage(
-                                    attrs,
-                                    _.bind(previous_msg_el.insertAdjacentElement, day_el, 'afterend')
-                                );
-                            }
-                        } else {
-                            this.insertMessage(
-                                attrs,
-                                _.bind(previous_msg_el.insertAdjacentElement, previous_msg_el, 'afterend')
+                        if (current_msg_date.isAfter(previous_msg_date, 'day') && _.isNull(day_el)) {
+                            this.insertDayIndicator(
+                                current_msg_date,
+                                _.bind(this.content.insertAdjacentHTML, previous_msg_el, 'afterend')
                             );
                         }
                     }
+                    this.scrollDown();
                 },
 
                 getExtraMessageTemplateAttributes () {

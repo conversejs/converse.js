@@ -34,6 +34,7 @@
 - Show status messages in an MUC room when a user's role changes.
 - In MUC chat rooms, collapse multiple, consecutive join/leave messages.
 - Performance improvements for rendering private chats, rooms and the contacts roster.
+- MUC Leave/Join messages now also show a new day indicator if applicable.
 
 ### API changes
 - New API method `_converse.disco.supports` to check whether a certain

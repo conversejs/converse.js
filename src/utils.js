@@ -87,15 +87,15 @@
 
     var u = {};
 
-    u.addClass = function (el, className) {
+    u.addClass = function (className, el) {
         if (el instanceof Element) {
             el.classList.add(className);
         }
     }
 
-    u.removeClass = function (klass, el) {
+    u.removeClass = function (className, el) {
         if (el instanceof Element) {
-            el.classList.remove(klass);
+            el.classList.remove(className);
         }
         return el;
     }

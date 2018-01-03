@@ -382,21 +382,25 @@
                     );
                 },
 
-                insertDayIndicator (date, insert_method) {
-                    /* Inserts an indicator
-                     * into the chat area, showing the day as given by the
-                     * passed in date.
+                insertDayIndicator (next_msg_el) {
+                    /* Inserts an indicator into the chat area, showing the
+                     * day as given by the passed in date.
                      *
                      * Parameters:
-                     *  (String) date - An ISO8601 date string.
-                     *  (Function) insert_method - The method to be used to
-                     *      insert the indicator
+                     *  (HTMLElement) next_msg_el - The message element before
+                     *      which the day indicator element must be inserted.
+                     *      This element must have a "data-isodate" attribute
+                     *      which specifies its creation date.
                      */
-                    const day_date = moment(date).startOf('day');
-                    insert_method(tpl_new_day({
-                        isodate: day_date.format(),
-                        datestring: day_date.format("dddd MMM Do YYYY")
-                    }));
+                    const date = next_msg_el.getAttribute('data-isodate'),
+                          day_date = moment(date).startOf('day');
+
+                    next_msg_el.insertAdjacentHTML('beforeBegin',
+                        tpl_new_day({
+                            'isodate': day_date.format(),
+                            'datestring': day_date.format("dddd MMM Do YYYY")
+                        })
+                    );
                 },
 
                 getLastMessageElement () {
@@ -453,11 +457,6 @@
                     }
                 },
 
-                getDayIndicatorElement (date) {
-                    return this.content.querySelector(
-                        `.chat-date[data-isodate="${date.startOf('day').format()}"]`);
-                },
-
                 showMessage (attrs) {
                     /* Inserts a chat message into the content area of the chat box.
                      * Will also insert a new day indicator if the message is on a
@@ -477,17 +476,12 @@
 
                     if (_.isNull(previous_msg_date)) {
                         this.content.insertAdjacentElement('afterbegin', message_el);
-                        this.insertDayIndicator(current_msg_date, prepend_html);
+                        this.insertDayIndicator(message_el);
                     } else {
                         const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date}"]:last`, this.content).pop();
                         previous_msg_el.insertAdjacentElement('afterend', message_el);
-
-                        const day_el = this.getDayIndicatorElement(current_msg_date)
-                        if (current_msg_date.isAfter(previous_msg_date, 'day') && _.isNull(day_el)) {
-                            this.insertDayIndicator(
-                                current_msg_date,
-                                _.bind(this.content.insertAdjacentHTML, previous_msg_el, 'afterend')
-                            );
+                        if (current_msg_date.isAfter(previous_msg_date, 'day')) {
+                            this.insertDayIndicator(message_el);
                         }
                     }
                     this.scrollDown();

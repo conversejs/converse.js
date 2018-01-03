@@ -161,7 +161,7 @@
         return obj;
     };
 
-    u.slideInAllElements = function (elements, duration=600) {
+    u.slideInAllElements = function (elements, duration=300) {
         return Promise.all(
             _.map(
                 elements,
@@ -178,7 +178,7 @@
         }
     };
 
-    u.hasClass = function (el, className) {
+    u.hasClass = function (className, el) {
         return _.includes(el.classList, className);
     };
 
@@ -208,7 +208,7 @@
                 resolve();
                 return;
             }
-            if (!u.hasClass(el, 'collapsed') && !u.hasClass(el, 'hidden')) {
+            if (!u.hasClass('collapsed', el) && !u.hasClass('hidden', el)) {
                 resolve();
                 return;
             }

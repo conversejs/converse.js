@@ -84,7 +84,7 @@
                     expect(_.isNull(form)).toBeTruthy();
 
                     // Click the "Add a contact" link.
-                    panel.$('.toggle-xmpp-contact-form').click();
+                    panel.el.querySelector('.toggle-xmpp-contact-form').click();
 
                     // Check that the form appears
                     form = panel.el.querySelector('form.add-xmpp-contact');
@@ -92,8 +92,8 @@
                     expect(_.includes(form.parentElement.classList, 'collapsed')).toBeFalsy();
 
                     // Fill in the form and submit
-                    $(form).find('input').val('contact@example.org');
-                    $(form).submit();
+                    form.querySelector('input').value = 'contact@example.org';
+                    form.querySelector('[type="submit"]').click();
 
                     /* In preparation for being able to render the contact in the
                     * user's client interface and for the server to keep track of the
@@ -496,7 +496,7 @@
 
                     var $header = $('a:contains("My contacts")');
                     // remove the first user
-                    $($header.parent().find('li .remove-xmpp-contact').get(0)).click();
+                    $header.parent().find('li .remove-xmpp-contact').get(0).click();
                     expect(window.confirm).toHaveBeenCalled();
 
                     /* Section 8.6 Removing a Roster Item and Cancelling All

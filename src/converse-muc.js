@@ -415,7 +415,7 @@
             });
 
             _converse.ChatRoomView = _converse.ChatBoxView.extend({
-                /* Backbone View which renders a chat room, based upon the view
+                /* Backbone.NativeView which renders a chat room, based upon the view
                  * for normal one-on-one chat boxes.
                  */
                 length: 300,
@@ -506,7 +506,7 @@
                 },
 
                 createOccupantsView () {
-                    /* Create the ChatRoomOccupantsView Backbone.View
+                    /* Create the ChatRoomOccupantsView Backbone.NativeView
                      */
                     const model = new _converse.ChatRoomOccupants();
                     model.chatroomview = this;
@@ -2549,8 +2549,8 @@
                 },
             });
 
-            _converse.RoomsPanel = Backbone.View.extend({
-                /* Backbone View which renders the "Rooms" tab and accompanying
+            _converse.RoomsPanel = Backbone.NativeView.extend({
+                /* Backbone.NativeView which renders the "Rooms" tab and accompanying
                  * panel in the control box.
                  *
                  * In this panel, chat rooms can be listed, joined and new rooms

@@ -330,7 +330,7 @@
 
             _converse.api.promises.add('minimizedChatsInitialized');
 
-            _converse.MinimizedChatBoxView = Backbone.View.extend({
+            _converse.MinimizedChatBoxView = Backbone.NativeView.extend({
                 tagName: 'div',
                 className: 'chat-head',
                 events: {
@@ -497,7 +497,7 @@
             });
 
 
-            _converse.MinimizedChatsToggleView = Backbone.View.extend({
+            _converse.MinimizedChatsToggleView = Backbone.NativeView.extend({
                 el: '#toggle-minimized-chats',
 
                 initialize () {

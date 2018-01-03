@@ -6,6 +6,7 @@
     var $pres = converse_api.env.$pres;
     var $iq = converse_api.env.$iq;
     var Strophe = converse_api.env.Strophe;
+    var u = converse_api.env.utils;
     var utils = {};
 
     if (typeof window.Promise === 'undefined') {
@@ -54,21 +55,20 @@
     };
 
     utils.openControlBox = function () {
-        var $toggle = $(".toggle-controlbox");
-        if (!$("#controlbox").is(':visible')) {
-            if (!$toggle.is(':visible')) {
-                $toggle[0].classList.remove('hidden');
-                $toggle.click();
-            } else {
-                $toggle.click();
+        var toggle = document.querySelector(".toggle-controlbox");
+        if (!u.isVisible(document.querySelector("#controlbox"))) {
+            if (!u.isVisible(toggle)) {
+                u.removeClass('hidden', toggle);
             }
+            toggle.click();
         }
         return this;
     };
 
     utils.closeControlBox = function () {
-        if ($("#controlbox").is(':visible')) {
-            $("#controlbox").find(".close-chatbox-button").click();
+        var controlbox = document.querySelector("#controlbox");
+        if (u.isVisible(controlbox)) {
+            controlbox.querySelector(".close-chatbox-button").click();
         }
         return this;
     };
@@ -76,15 +76,15 @@
     utils.openContactsPanel = function (converse) {
         this.openControlBox(converse);
         var cbview = converse.chatboxviews.get('controlbox');
-        var $tabs = cbview.$el.find('#controlbox-tabs');
-        $tabs.find('li').first().find('a').click();
+        var $tabs = $(cbview.el).find('#controlbox-tabs');
+        $tabs.find('li').first().find('a')[0].click();
     };
 
     utils.openRoomsPanel = function (converse) {
         utils.openControlBox();
         var cbview = converse.chatboxviews.get('controlbox');
-        var $tabs = cbview.$el.find('#controlbox-tabs');
-        $tabs.find('li').last().find('a').click();
+        var $tabs = $(cbview.el).find('#controlbox-tabs');
+        $tabs.find('li').last().find('a')[0].click();
     };
 
     utils.openChatBoxes = function (converse, amount) {
@@ -105,9 +105,9 @@
         this.openControlBox(_converse);
         this.openRoomsPanel(_converse);
         var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
-        roomspanel.$el.find('input.new-chatroom-name').val(room);
-        roomspanel.$el.find('input.new-chatroom-server').val(server);
-        roomspanel.$el.find('form').submit();
+        roomspanel.el.querySelector('input.new-chatroom-name').value = room;
+        roomspanel.el.querySelector('input.new-chatroom-server').value = server;
+        roomspanel.el.querySelector('form input[type="submit"]').click();
         this.closeControlBox(_converse);
     };
 
@@ -170,7 +170,7 @@
 
     utils.clearChatBoxMessages = function (converse, jid) {
         var view = converse.chatboxviews.get(jid);
-        view.$el.find('.chat-content').empty();
+        $(view.el).find('.chat-content').empty();
         view.model.messages.reset();
         view.model.messages.browserStorage._clear();
     };
@@ -254,8 +254,12 @@
     }
 
     utils.sendMessage = function (chatboxview, message) {
-        chatboxview.$el.find('.chat-textarea').val(message);
-        chatboxview.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+        chatboxview.el.querySelector('.chat-textarea').value = message;
+        chatboxview.keyPressed({
+            target: chatboxview.el.querySelector('textarea.chat-textarea'),
+            preventDefault: _.noop,
+            keyCode: 13
+        });
     };
     return utils;
 }));

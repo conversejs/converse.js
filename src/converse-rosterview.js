@@ -272,7 +272,7 @@
                 }
             });
 
-            _converse.RosterContactView = Backbone.View.extend({
+            _converse.RosterContactView = Backbone.NativeView.extend({
                 tagName: 'li',
                 className: 'hidden',
 

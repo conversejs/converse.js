@@ -349,10 +349,10 @@
                     );
                     if (this.model.get('type') === 'chatroom') {
                         data.title = this.model.get('name');
-                        u.addClass(this.el, 'chat-head-chatroom');
+                        u.addClass('chat-head-chatroom', this.el);
                     } else {
                         data.title = this.model.get('fullname');
-                        u.addClass(this.el, 'chat-head-chatbox');
+                        u.addClass('chat-head-chatbox', this.el);
                     }
                     this.el.innerHTML = tpl_trimmed_chat(data);
                     return this.el;

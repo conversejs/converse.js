@@ -11,7 +11,6 @@
  */
 (function (root, factory) {
     define([
-            "jquery.noconflict",
             "form-utils",
             "converse-core",
             "lodash.fp",
@@ -42,7 +41,6 @@
             "backbone.vdomview"
     ], factory);
 }(this, function (
-            $,
             u,
             converse,
             fp,
@@ -131,7 +129,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        optional_dependencies: ["converse-controlbox"],
+        optional_dependencies: ["converse-controlbox", "converse-chatview"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -439,6 +437,7 @@
                 },
 
                 initialize () {
+                    this.scrollDown = _.debounce(this._scrollDown, 250);
                     this.markScrolled = _.debounce(this._markScrolled, 100);
 
                     this.model.messages.on('add', this.onMessageAdded, this);
@@ -501,7 +500,6 @@
                         container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
                         this.renderToolbar(tpl_chatroom_toolbar);
                         this.content = this.el.querySelector('.chat-content');
-                        this.$content = $(this.content);
                         this.toggleOccupants(null, true);
                     }
                     return this;
@@ -1839,9 +1837,10 @@
                     const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
                     const stat = stanza.querySelector('status');
                     const last_el = this.content.lastElementChild;
+
                     if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
                             _.get(last_el, 'dataset', {}).leave === `"${nick}"`) {
-                        last_el.outerHTML = 
+                        last_el.outerHTML =
                             tpl_info({
                                 'data': `data-leavejoin="${nick}"`,
                                 'isodate': moment().format(),
@@ -1862,7 +1861,9 @@
 
                             last_el.outerHTML = tpl_info(data);
                         } else {
-                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                            const el = u.stringToElement(tpl_info(data));
+                            this.content.insertAdjacentElement('beforeend', el);
+                            this.insertDayIndicator(el);
                         }
                     }
                     this.scrollDown();
@@ -1879,7 +1880,7 @@
                         if (_.get(stat, 'textContent')) {
                             message = message + ' "' + stat.textContent + '"';
                         }
-                        last_el.outerHTML = 
+                        last_el.outerHTML =
                             tpl_info({
                                 'data': `data-joinleave="${nick}"`,
                                 'isodate': moment().format(),
@@ -1892,6 +1893,7 @@
                         }
                         const data = {
                             'message': message,
+                            'isodate': moment().format(),
                             'data': `data-leave="${nick}"`
                         }
                         if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
@@ -1899,7 +1901,9 @@
 
                             last_el.outerHTML = tpl_info(data);
                         } else {
-                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                            const el = u.stringToElement(tpl_info(data));
+                            this.content.insertAdjacentElement('beforeend', el);
+                            this.insertDayIndicator(el);
                         }
                     }
                     this.scrollDown();

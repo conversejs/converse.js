@@ -63,9 +63,13 @@
             expect(_converse.minimized_chats.$('.minimized-chats-flyout').is(':visible')).toBeTruthy();
             expect(_converse.minimized_chats.toggleview.model.get('collapsed')).toBeFalsy();
             _converse.minimized_chats.$('#toggle-minimized-chats').click();
-            expect(_converse.minimized_chats.$('.minimized-chats-flyout').is(':visible')).toBeFalsy();
-            expect(_converse.minimized_chats.toggleview.model.get('collapsed')).toBeTruthy();
-            done();
+
+            return test_utils.waitUntil(function () {
+                return _converse.minimized_chats.$('.minimized-chats-flyout').is(':visible');
+            }, 500).then(function () {
+                expect(_converse.minimized_chats.toggleview.model.get('collapsed')).toBeTruthy();
+                done();
+            });
         }));
 
         it("shows the number messages received to minimized chats",

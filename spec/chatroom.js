@@ -7,6 +7,7 @@
     var $msg = converse.env.$msg;
     var Strophe = converse.env.Strophe;
     var Promise = converse.env.Promise;
+    var moment = converse.env.moment;
 
     return describe("ChatRooms", function () {
         describe("The \"rooms\" API", function () {
@@ -591,6 +592,147 @@
                 done();
             }));
 
+            it("shows a new day indicator if a join/leave message is received on a new day",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1');
+                var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                var $chat_content = view.$el.find('.chat-content');
+
+                /* <presence to="dummy@localhost/_converse.js-29092160"
+                 *           from="coven@chat.shakespeare.lit/some1">
+                 *      <x xmlns="http://jabber.org/protocol/muc#user">
+                 *          <item affiliation="owner" jid="dummy@localhost/_converse.js-29092160" role="moderator"/>
+                 *          <status code="110"/>
+                 *      </x>
+                 *  </presence></body>
+                 */
+                var presence = $pres({
+                        to: 'dummy@localhost/_converse.js-29092160',
+                        from: 'coven@chat.shakespeare.lit/some1'
+                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'owner',
+                        'jid': 'dummy@localhost/_converse.js-29092160',
+                        'role': 'moderator'
+                    }).up()
+                    .c('status', {code: '110'});
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+                var $time = $chat_content.find('time');
+                expect($time.length).toEqual(1);
+                expect($time.attr('class')).toEqual('chat-info chat-date');
+                expect($time.data('isodate')).toEqual(moment().startOf('day').format());
+                expect($time.text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                expect($chat_content.find('div.chat-info:first').html()).toBe("some1 has entered the room.");
+
+                // XXX: Hack. We clear the chat contents instead of mocking the date
+                $chat_content.html('');
+
+                // Test a user leaving a chat room
+                presence = $pres({
+                        to: 'dummy@localhost/_converse.js-29092160',
+                        type: 'unavailable',
+                        from: 'coven@chat.shakespeare.lit/some1'
+                    })
+                    .c('status', 'Disconnected: Replaced by new connection').up()
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'none',
+                            'jid': 'some1@localhost/_converse.js-290929789',
+                            'role': 'none'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+                $time = $chat_content.find('time');
+                expect($time.length).toEqual(1);
+                expect($time.attr('class')).toEqual('chat-info chat-date');
+                expect($time.data('isodate')).toEqual(moment().startOf('day').format());
+                expect($time.text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                expect($chat_content.find('div.chat-info').length).toBe(1);
+                expect($chat_content.find('div.chat-info:last').html()).toBe(
+                    'some1 has left the room. '+
+                    '"Disconnected: Replaced by new connection"');
+
+                // XXX: Hack. We clear the chat contents instead of mocking the date
+                $chat_content.html('');
+
+                var stanza = Strophe.xmlHtmlNode(
+                    '<message xmlns="jabber:client"' +
+                    '   to="dummy@localhost/_converse.js-290929789"' +
+                    '   type="groupchat"' +
+                    '   from="coven@chat.shakespeare.lit/some1">'+
+                    '       <body>hello world</body>'+
+                    '       <delay xmlns="urn:xmpp:delay" stamp="2018-01-01T09:35:39Z" from="some1@localhost"/>'+
+                    '</message>').firstChild;
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                presence = $pres({
+                        to: 'dummy@localhost/_converse.js-29092160',
+                        from: 'coven@chat.shakespeare.lit/newguy'
+                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': 'newguy@localhost/_converse.js-290929789',
+                        'role': 'participant'
+                    });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+                $time = $chat_content.find('time');
+                expect($time.length).toEqual(2);
+
+                $time = $chat_content.find('time:eq(1)');
+                expect($time.attr('class')).toEqual('chat-info chat-date');
+                expect($time.data('isodate')).toEqual(moment().startOf('day').format());
+                expect($time.text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                expect($chat_content.find('div.chat-info').length).toBe(1);
+                expect($chat_content.find('div.chat-info:first').html()).toBe("newguy has entered the room.");
+
+                // XXX: Hack. We clear the chat contents instead of mocking the date
+                $chat_content.html('');
+
+                stanza = Strophe.xmlHtmlNode(
+                    '<message xmlns="jabber:client"' +
+                    '   to="dummy@localhost/_converse.js-290929789"' +
+                    '   type="groupchat"' +
+                    '   from="coven@chat.shakespeare.lit/some1">'+
+                    '       <body>hello world</body>'+
+                    '       <delay xmlns="urn:xmpp:delay" stamp="2018-01-01T09:35:39Z" from="some1@localhost"/>'+
+                    '</message>').firstChild;
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                // Test a user leaving a chat room
+                presence = $pres({
+                        to: 'dummy@localhost/_converse.js-29092160',
+                        type: 'unavailable',
+                        from: 'coven@chat.shakespeare.lit/some1'
+                    })
+                    .c('status', 'Disconnected: Replaced by new connection').up()
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'none',
+                            'jid': 'some1@localhost/_converse.js-290929789',
+                            'role': 'none'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+                $time = $chat_content.find('time');
+                expect($time.length).toEqual(2);
+
+                $time = $chat_content.find('time:eq(1)');
+                expect($time.attr('class')).toEqual('chat-info chat-date');
+                expect($time.data('isodate')).toEqual(moment().startOf('day').format());
+                expect($time.text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                expect($chat_content.find('div.chat-info').length).toBe(1);
+                expect($chat_content.find('div.chat-info:last').html()).toBe(
+                    'some1 has left the room. '+
+                    '"Disconnected: Replaced by new connection"');
+                done();
+                return;
+            }));
+
             it("shows its description in the chat heading",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
@@ -954,7 +1096,7 @@
                         name = mock.chatroom_names[i];
                         role = mock.chatroom_roles[name].role;
                         // See example 21 http://xmpp.org/extensions/xep-0045.html#enter-pres
-                        jid = 
+                        jid =
                         presence = $pres({
                                 to:'dummy@localhost/pda',
                                 from:'lounge@localhost/'+name
@@ -1356,7 +1498,7 @@
                     }
                     // Give enough time for `markScrolled` to have been called
                     setTimeout(function () {
-                        view.$content.scrollTop(0);
+                        view.content.scrollTop = 0;
                         view.handleMUCMessage(
                             $msg({
                                 from: 'lounge@localhost/someone',
@@ -1369,7 +1511,7 @@
                         var $chat_content = view.$el.find('.chat-content');
                         var msg_txt = $chat_content.find('.chat-message:last').find('.chat-msg-content').text();
                         expect(msg_txt).toEqual(message);
-                        expect(view.$content.scrollTop()).toBe(0);
+                        expect(view.content.scrollTop).toBe(0);
                         done();
                     }, 500);
                 });
@@ -1863,7 +2005,7 @@
                     textarea.textContent = '/help This is the room subject';
                     $(textarea).trigger($.Event('keypress', {keyCode: 13}));
                     expect(view.onMessageSubmitted).toHaveBeenCalled();
-                    const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                    const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info:not(.chat-date)'), 0);
                     expect(info_messages.length).toBe(17);
                     expect(info_messages.pop().textContent).toBe('/voice: Allow muted user to post messages');
                     expect(info_messages.pop().textContent).toBe('/topic: Set room subject (alias for /subject)');
@@ -2105,7 +2247,7 @@
                             .c('status', {'code': '307'});
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(
-                        view.el.querySelectorAll('.chat-info')[2].textContent).toBe(
+                        view.el.querySelectorAll('.chat-info')[3].textContent).toBe(
                         "annoyingGuy has been kicked out");
                     done();
                 });
@@ -2939,7 +3081,7 @@
                 done();
             }));
         });
-            
+
         describe("The \"Rooms\" Panel", function () {
 
             it("shows the number of unread mentions received",

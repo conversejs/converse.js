@@ -82,6 +82,8 @@
                 },
 
                 initialize () {
+                    this.scrollDown = _.debounce(this._scrollDown, 250);
+                    this.markScrolled = _.debounce(this._markScrolled, 100);
                     this.disable_mam = true; // Don't do MAM queries for this box
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
@@ -105,8 +107,7 @@
                                 unread_msgs: ''
                             }
                         ));
-                    this.$content = this.$el.find('.chat-content');
-                    this.content = this.$content[0];
+                    this.content = this.el.querySelector('.chat-content');
                     utils.refreshWebkit();
                     return this;
                 },

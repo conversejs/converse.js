@@ -87,9 +87,15 @@
 
     var u = {};
 
-    u.removeClass = function (klass, el) {
-        if (!_.isNil(el)) {
-            el.classList.remove(klass);
+    u.addClass = function (className, el) {
+        if (el instanceof Element) {
+            el.classList.add(className);
+        }
+    }
+
+    u.removeClass = function (className, el) {
+        if (el instanceof Element) {
+            el.classList.remove(className);
         }
         return el;
     }
@@ -163,11 +169,12 @@
             ));
     };
 
-    u.slideToggleElement = function (el) {
-        if (_.includes(el.classList, 'collapsed')) {
-            return u.slideOut(el);
+    u.slideToggleElement = function (el, duration) {
+        if (_.includes(el.classList, 'collapsed') ||
+                _.includes(el.classList, 'hidden')) {
+            return u.slideOut(el, duration);
         } else {
-            return u.slideIn(el);
+            return u.slideIn(el, duration);
         }
     };
 
@@ -331,9 +338,10 @@
          * message, i.e. not a MAM archived one.
          */
         if (message instanceof Element) {
-            return !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length);
+            return !sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length &&
+                   !sizzle('delay[xmlns="'+Strophe.NS.DELAY+'"]', message).length;
         } else {
-            return !message.get('archive_id');
+            return !message.get('archive_id') && !message.get('delayed');
         }
     };
 
@@ -402,15 +410,40 @@
         }
     };
 
-    u.stringToDOM = function (s) {
-        /* Converts an HTML string into a DOM element.
+    u.stringToNode = function (s) {
+        /* Converts an HTML string into a DOM Node.
+         * Expects that the HTML string has only one top-level element,
+         * i.e. not multiple ones.
          *
          * Parameters:
          *      (String) s - The HTML string
          */
         var div = document.createElement('div');
         div.innerHTML = s;
-        return div.childNodes;
+        return div.firstChild;
+    };
+
+    u.getOuterWidth = function (el, include_margin=false) {
+        var width = el.offsetWidth;
+        if (!include_margin) {
+            return width;
+        }
+        var style = window.getComputedStyle(el);
+        width += parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+        return width;
+    };
+
+    u.stringToElement = function (s) {
+        /* Converts an HTML string into a DOM element.
+         * Expects that the HTML string has only one top-level element,
+         * i.e. not multiple ones.
+         *
+         * Parameters:
+         *      (String) s - The HTML string
+         */
+        var div = document.createElement('div');
+        div.innerHTML = s;
+        return div.firstElementChild;
     };
 
     u.matchesSelector = function (el, selector) {

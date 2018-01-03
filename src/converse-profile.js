@@ -35,7 +35,7 @@
             const { _converse } = this,
                 { __ } = _converse;
 
-            _converse.XMPPStatusView = Backbone.View.extend({
+            _converse.XMPPStatusView = Backbone.NativeView.extend({
                 el: "form#set-xmpp-status",
                 events: {
                     "click a.choose-xmpp-status": "toggleOptions",
@@ -108,7 +108,7 @@
 
                 setStatus (ev) {
                     ev.preventDefault();
-                    const value = ev.currentTarget.getAttribute('data-value');
+                    const value = ev.target.getAttribute('data-value');
                     if (value === 'logout') {
                         _converse.logOut();
                     } else {

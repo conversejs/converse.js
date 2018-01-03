@@ -36,6 +36,7 @@
     "awesomplete-avoid-xss": "^1.1.2",
     "backbone": "1.3.3",
     "backbone.browserStorage": "0.0.3",
+    "backbone.nativeview": "^0.3.3",
     "backbone.overview": "git+https://github.com/jcbrand/Backbone.Overview.git",
     "backbone.vdomview": "git+https://github.com/jcbrand/backbone.vdomview.git",
     "bootstrap": "^3.3.7",

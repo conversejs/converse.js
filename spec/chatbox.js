@@ -15,6 +15,7 @@
     var Strophe = converse.env.Strophe;
     var Promise = converse.env.Promise;
     var moment = converse.env.moment;
+    var u = converse.env.utils;
 
     return describe("Chatboxes", function() {
         describe("A Chatbox", function () {
@@ -46,13 +47,13 @@
 
                     _converse.chatboxes.onMessage(msg);
                     var view = _converse.chatboxviews.get(sender_jid);
-                    expect(_.includes(view.$el.find('.chat-msg-author').text(), '**Max Frankfurter')).toBeTruthy();
-                    expect(view.$el.find('.chat-msg-content').text()).toBe(' is tired');
+                    expect(_.includes($(view.el).find('.chat-msg-author').text(), '**Max Frankfurter')).toBeTruthy();
+                    expect($(view.el).find('.chat-msg-content').text()).toBe(' is tired');
 
                     message = '/me is as well';
                     test_utils.sendMessage(view, message);
-                    expect(_.includes(view.$el.find('.chat-msg-author:last').text(), '**Max Mustermann')).toBeTruthy();
-                    expect(view.$el.find('.chat-msg-content:last').text()).toBe(' is as well');
+                    expect(_.includes($(view.el).find('.chat-msg-author:last').text(), '**Max Mustermann')).toBeTruthy();
+                    expect($(view.el).find('.chat-msg-content:last').text()).toBe(' is as well');
                     done();
                 });
             }));
@@ -74,14 +75,14 @@
                 expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('.roster-group li').length;
+                    return $(_converse.rosterview.el).find('.roster-group li').length;
                 }, 700).then(function () {
-                    var online_contacts = _converse.rosterview.$el.find('.roster-group .current-xmpp-contact a.open-chat');
+                    var online_contacts = $(_converse.rosterview.el).find('.roster-group .current-xmpp-contact a.open-chat');
                     expect(online_contacts.length).toBe(15);
                     for (i=0; i<online_contacts.length; i++) {
                         $el = $(online_contacts[i]);
                         jid = $el.text().trim().replace(/ /g,'.').toLowerCase() + '@localhost';
-                        $el.click();
+                        $el[0].click();
                         chatboxview = _converse.chatboxviews.get(jid);
                         expect(_converse.chatboxes.length).toEqual(i+2);
                         expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
@@ -115,15 +116,15 @@
 
                 _converse.rosterview.update(); // XXX: Hack to make sure $roster element is attached.
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('.roster-group li').length;
+                    return $(_converse.rosterview.el).find('.roster-group li').length;
                 }, 700).then(function () {
                     // Test that they can be maximized again
-                    var online_contacts = _converse.rosterview.$el.find('.roster-group .current-xmpp-contact a.open-chat');
+                    var online_contacts = $(_converse.rosterview.el).find('.roster-group .current-xmpp-contact a.open-chat');
                     expect(online_contacts.length).toBe(15);
                     for (i=0; i<online_contacts.length; i++) {
                         $el = $(online_contacts[i]);
                         jid = _.trim($el.text().trim()).replace(/ /g,'.').toLowerCase() + '@localhost';
-                        $el.click();
+                        $el[0].click();
                         expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
 
                         chatboxview = _converse.chatboxviews.get(jid);
@@ -142,7 +143,7 @@
                     spyOn(chatbox, 'maximize').and.callThrough();
                     spyOn(trimmedview, 'restore').and.callThrough();
                     trimmedview.delegateEvents();
-                    trimmedview.$("a.restore-chat").click();
+                    trimmedview.el.querySelector("a.restore-chat").click();
 
                     expect(trimmedview.restore).toHaveBeenCalled();
                     expect(chatbox.maximize).toHaveBeenCalled();
@@ -165,11 +166,11 @@
                 });
 
                 var chatBoxView = _converse.chatboxviews.get(sender_jid);
-                expect(chatBoxView.$el.is(':visible')).toBeFalsy();
+                expect(u.isVisible(chatBoxView.el)).toBeFalsy();
 
                 var minimized_chat = _converse.minimized_chats.get(sender_jid);
                 expect(minimized_chat).toBeTruthy();
-                expect(minimized_chat.$el.is(':visible')).toBeTruthy();
+                expect($(minimized_chat.el).is(':visible')).toBeTruthy();
                 done();
             }));
 
@@ -193,9 +194,9 @@
                 spyOn(_converse.ChatBoxView.prototype, 'focus');
                 chatbox = test_utils.openChatBoxFor(_converse, contact_jid);
 
-                $el = _converse.rosterview.$el.find('a.open-chat:contains("'+chatbox.get('fullname')+'")');
+                $el = $(_converse.rosterview.el).find('a.open-chat:contains("'+chatbox.get('fullname')+'")');
                 jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
-                $el.click();
+                $el[0].click();
                 expect(_converse.chatboxes.length).toEqual(2);
                 var chatboxview = _converse.chatboxviews.get(contact_jid);
                 expect(chatboxview.focus).toHaveBeenCalled();
@@ -248,7 +249,7 @@
                 test_utils.openControlBox();
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('.roster-group').length;
+                        return $(_converse.rosterview.el).find('.roster-group').length;
                     }, 300)
                 .then(function () {
                     var chatbox = test_utils.openChatBoxes(_converse, 1)[0],
@@ -262,12 +263,12 @@
                     controlview.delegateEvents();
                     chatview.delegateEvents();
 
-                    controlview.$el.find('.close-chatbox-button').click();
+                    controlview.el.querySelector('.close-chatbox-button').click();
 
                     expect(controlview.close).toHaveBeenCalled();
                     expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                     expect(_converse.emit.calls.count(), 1);
-                    chatview.$el.find('.close-chatbox-button').click();
+                    chatview.el.querySelector('.close-chatbox-button').click();
 
                     expect(chatview.close).toHaveBeenCalled();
                     expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
@@ -286,7 +287,7 @@
                 test_utils.openControlBox();
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('.roster-group').length;
+                        return $(_converse.rosterview.el).find('.roster-group').length;
                     }, 300)
                 .then(function () {
                     var chatbox = test_utils.openChatBoxes(_converse, 1)[0],
@@ -298,27 +299,27 @@
                     // We need to rebind all events otherwise our spy won't be called
                     chatview.delegateEvents();
 
-                    chatview.$el.find('.toggle-chatbox-button').click();
+                    chatview.el.querySelector('.toggle-chatbox-button').click();
 
                     expect(chatview.minimize).toHaveBeenCalled();
                     expect(_converse.emit).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
                     expect(_converse.emit.calls.count(), 2);
-                    expect(chatview.$el.is(':visible')).toBeFalsy();
+                    expect(u.isVisible(chatview.el)).toBeFalsy();
                     expect(chatview.model.get('minimized')).toBeTruthy();
-                    chatview.$el.find('.toggle-chatbox-button').click();
+                    chatview.el.querySelector('.toggle-chatbox-button').click();
                     trimmedview = trimmed_chatboxes.get(chatview.model.get('id'));
                     spyOn(trimmedview, 'restore').and.callThrough();
                     trimmedview.delegateEvents();
-                    trimmedview.$("a.restore-chat").click();
+                    trimmedview.el.querySelector("a.restore-chat").click();
 
                     expect(trimmedview.restore).toHaveBeenCalled();
                     expect(_converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
                     return test_utils.waitUntil(function () {
-                        return chatview.$el.find('.chat-body').is(':visible');
+                        return $(chatview.el).find('.chat-body').is(':visible');
                     }, 500);
                 }).then(function () {
-                    expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-minus')).toBeTruthy();
-                    expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-plus')).toBeFalsy();
+                    expect($(chatview.el).find('.toggle-chatbox-button').hasClass('icon-minus')).toBeTruthy();
+                    expect($(chatview.el).find('.toggle-chatbox-button').hasClass('icon-plus')).toBeFalsy();
                     expect(chatview.model.get('minimized')).toBeFalsy();
                     done();
                 });
@@ -333,7 +334,7 @@
                 test_utils.openControlBox();
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                        return _converse.rosterview.$el.find('.roster-group').length;
+                        return $(_converse.rosterview.el).find('.roster-group').length;
                     }, 300)
                 .then(function () {
                     spyOn(_converse, 'emit');
@@ -384,7 +385,7 @@
                     var view = _converse.chatboxviews.get(contact_jid);
                     expect(chatbox).toBeDefined();
                     expect(view).toBeDefined();
-                    var $toolbar = view.$el.find('ul.chat-toolbar');
+                    var $toolbar = $(view.el).find('ul.chat-toolbar');
                     expect($toolbar.length).toBe(1);
                     expect($toolbar.children('li').length).toBe(3);
                     done();
@@ -421,13 +422,13 @@
                         toolbar.querySelector('li.toggle-smiley').click(); // Close the panel again
                         return test_utils.waitUntil(function () {
                             return !view.el.querySelector('.toggle-smiley .toolbar-menu').offsetHeight;
-                        }, 300);
+                        }, 900);
                     }).then(function () {
                         toolbar.querySelector('li.toggle-smiley').click();
                         expect(view.toggleEmojiMenu).toHaveBeenCalled();
                         return test_utils.waitUntil(function () {
-                            var $picker = view.$el.find('.toggle-smiley .emoji-picker-container');
-                            return $picker.is(':visible');
+                            var $picker = $(view.el).find('.toggle-smiley .emoji-picker-container');
+                            return u.isVisible($picker[0]);
                         }, 300);
                     }).then(function () {
                         var nodes = view.el.querySelectorAll('.toggle-smiley ul li');
@@ -448,20 +449,20 @@
                     test_utils.openContactsPanel(_converse);
 
                     test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('.roster-group').length;
+                            return $(_converse.rosterview.el).find('.roster-group').length;
                         }, 300)
                     .then(function () {
                         // TODO: More tests can be added here...
                         var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openChatBoxFor(_converse, contact_jid);
                         var view = _converse.chatboxviews.get(contact_jid);
-                        var $toolbar = view.$el.find('ul.chat-toolbar');
+                        var $toolbar = $(view.el).find('ul.chat-toolbar');
                         expect($toolbar.children('li.toggle-otr').length).toBe(1);
                         // Register spies
                         spyOn(view, 'toggleOTRMenu').and.callThrough();
                         view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
 
-                        $toolbar.children('li.toggle-otr').click();
+                        $toolbar[0].querySelector('li.toggle-otr').click();
                         expect(view.toggleOTRMenu).toHaveBeenCalled();
                         done();
                     });
@@ -476,7 +477,7 @@
                     test_utils.openControlBox();
                     test_utils.openContactsPanel(_converse);
 
-                    var view, callButton, $toolbar;
+                    var view;
                     var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     spyOn(_converse, 'emit');
                     // First check that the button doesn't show if it's not enabled
@@ -484,19 +485,18 @@
                     _converse.visible_toolbar_buttons.call = false;
                     test_utils.openChatBoxFor(_converse, contact_jid);
                     view = _converse.chatboxviews.get(contact_jid);
-                    $toolbar = view.$el.find('ul.chat-toolbar');
-                    callButton = $toolbar.find('.toggle-call');
-                    expect(callButton.length).toBe(0);
+                    var toolbar = view.el.querySelector('ul.chat-toolbar');
+                    var call_button = toolbar.querySelector('.toggle-call');
+                    expect(_.isNull(call_button)).toBeTruthy();
                     view.close();
                     // Now check that it's shown if enabled and that it emits
                     // callButtonClicked
                     _converse.visible_toolbar_buttons.call = true; // enable the button
                     test_utils.openChatBoxFor(_converse, contact_jid);
                     view = _converse.chatboxviews.get(contact_jid);
-                    $toolbar = view.$el.find('ul.chat-toolbar');
-                    callButton = $toolbar.find('.toggle-call');
-                    expect(callButton.length).toBe(1);
-                    callButton.click();
+                    var toolbar = view.el.querySelector('ul.chat-toolbar');
+                    call_button = toolbar.querySelector('.toggle-call');
+                    call_button.click();
                     expect(_converse.emit).toHaveBeenCalledWith('callButtonClicked', jasmine.any(Object));
                     done();
                 }));
@@ -518,7 +518,7 @@
                     test_utils.openChatBoxFor(_converse, contact_jid);
                     view = _converse.chatboxviews.get(contact_jid);
                     view = _converse.chatboxviews.get(contact_jid);
-                    $toolbar = view.$el.find('ul.chat-toolbar');
+                    $toolbar = $(view.el).find('ul.chat-toolbar');
                     clearButton = $toolbar.find('.toggle-clear');
                     expect(clearButton.length).toBe(0);
                     view.close();
@@ -527,12 +527,12 @@
                     _converse.visible_toolbar_buttons.clear = true; // enable the button
                     test_utils.openChatBoxFor(_converse, contact_jid);
                     view = _converse.chatboxviews.get(contact_jid);
-                    $toolbar = view.$el.find('ul.chat-toolbar');
+                    $toolbar = $(view.el).find('ul.chat-toolbar');
                     clearButton = $toolbar.find('.toggle-clear');
                     expect(clearButton.length).toBe(1);
                     spyOn(view, 'clearMessages');
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                    clearButton.click();
+                    clearButton[0].click();
                     expect(view.clearMessages).toHaveBeenCalled();
                     done();
                 }));
@@ -551,7 +551,7 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                                return _converse.rosterview.$el.find('.roster-group').length;
+                                return $(_converse.rosterview.el).find('.roster-group').length;
                             }, 300)
                         .then(function () {
                             spyOn(_converse, 'emit');
@@ -585,7 +585,7 @@
                             expect(msg_obj.get('sender')).toEqual('them');
                             expect(msg_obj.get('delayed')).toEqual(false);
                             // Now check that the message appears inside the chatbox in the DOM
-                            var $chat_content = chatboxview.$el.find('.chat-content');
+                            var $chat_content = $(chatboxview.el).find('.chat-content');
                             var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
                             expect(msg_txt).toEqual(message);
                             var sender_txt = $chat_content.find('span.chat-msg-them').text();
@@ -699,7 +699,7 @@
                             expect(msg_obj.get('sender')).toEqual('them');
                             expect(msg_obj.get('delayed')).toEqual(false);
                             // Now check that the message appears inside the chatbox in the DOM
-                            var $chat_content = chatboxview.$el.find('.chat-content');
+                            var $chat_content = $(chatboxview.el).find('.chat-content');
                             var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
                             expect(msg_txt).toEqual(message);
                             var sender_txt = $chat_content.find('span.chat-msg-them').text();
@@ -748,7 +748,7 @@
                                 'message': msg_text
                             });
                             view.sendMessage(message);
-                            var $chat_content = view.$el.find('.chat-content');
+                            var $chat_content = $(view.el).find('.chat-content');
                             var msg_txt = $chat_content.find('.chat-message:last').find('.chat-msg-content').text();
                             expect(msg_txt).toEqual(msg_text);
 
@@ -861,20 +861,20 @@
                                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
 
                             // Now check that the message appears inside the chatbox in the DOM
-                            var $chat_content = chatboxview.$el.find('.chat-content');
+                            var $chat_content = $(chatboxview.el).find('.chat-content');
                             var msg_txt = $chat_content.find('.chat-message:last').find('.chat-msg-content').text();
                             expect(msg_txt).toEqual(message);
                             return test_utils.waitUntil(function () {
-                                return chatboxview.$('.new-msgs-indicator').is(':visible');
+                                return u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator'));
                             }, 500);
                         }).then(function () {
                             expect(chatboxview.model.get('scrolled')).toBe(true);
                             expect(chatboxview.content.scrollTop).toBe(0);
-                            expect(chatboxview.$('.new-msgs-indicator').is(':visible')).toBeTruthy();
+                            expect(u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator'))).toBeTruthy();
                             // Scroll down again
                             chatboxview.content.scrollTop = chatboxview.content.scrollHeight;
                             return test_utils.waitUntil(function () {
-                                return !chatboxview.$('.new-msgs-indicator').is(':visible');
+                                return !u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator'));
                             }, 700);
                         }).then(done);
                     }));
@@ -889,7 +889,7 @@
                         test_utils.openContactsPanel(_converse);
 
                         test_utils.waitUntil(function () {
-                                return _converse.rosterview.$el.find('.roster-group').length;
+                                return $(_converse.rosterview.el).find('.roster-group').length;
                             }, 300)
                         .then(function () {
                             // Send a message from a different resource
@@ -925,7 +925,7 @@
 
                             expect(_converse.chatboxes.getChatBox).toHaveBeenCalled();
                             var chatboxview = _converse.chatboxviews.get(sender_jid);
-                            var $chat_content = chatboxview.$el.find('.chat-content:last');
+                            var $chat_content = $(chatboxview.el).find('.chat-content:last');
                             var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
                             expect(msg_txt).toEqual(message);
                             done();
@@ -943,7 +943,7 @@
                     test_utils.openContactsPanel(_converse);
 
                     test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('.roster-group').length;
+                            return $(_converse.rosterview.el).find('.roster-group').length;
                         }, 300)
                     .then(function () {
                         var message, msg;
@@ -1037,7 +1037,7 @@
                         _converse.chatboxes.onMessage(msg);
 
                         var chatboxview = _converse.chatboxviews.get(sender_jid);
-                        var $chat_content = chatboxview.$el.find('.chat-content');
+                        var $chat_content = $(chatboxview.el).find('.chat-content');
                         chatboxview.clearSpinner(); //cleanup
 
                         var $time = $chat_content.find('time');
@@ -1150,7 +1150,7 @@
                     expect(msg_obj.get('sender')).toEqual('them');
                     expect(msg_obj.get('delayed')).toEqual(false);
                     // Now check that the message appears inside the chatbox in the DOM
-                    var $chat_content = chatboxview.$el.find('.chat-content');
+                    var $chat_content = $(chatboxview.el).find('.chat-content');
                     var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
                     expect(msg_txt).toEqual(msgtext);
                     var sender_txt = $chat_content.find('span.chat-msg-them').text();
@@ -1207,7 +1207,7 @@
                         expect(msg_obj.get('sender')).toEqual('me');
                         expect(msg_obj.get('delayed')).toEqual(false);
                         // Now check that the message appears inside the chatbox in the DOM
-                        var $chat_content = chatboxview.$el.find('.chat-content');
+                        var $chat_content = $(chatboxview.el).find('.chat-content');
                         var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
                         expect(msg_txt).toEqual(msgtext);
                         done();
@@ -1272,7 +1272,7 @@
                     test_utils.openControlBox();
                     test_utils.openContactsPanel(_converse);
                     test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('.roster-group').length;
+                            return $(_converse.rosterview.el).find('.roster-group').length;
                         }, 300)
                     .then(function () {
                         var contact_name = mock.cur_names[0];
@@ -1281,9 +1281,9 @@
                         spyOn(_converse, 'emit').and.callThrough();
                         test_utils.openChatBoxFor(_converse, contact_jid);
                         var chatview = _converse.chatboxviews.get(contact_jid);
-                        expect(chatview.$el.is(':visible')).toBeTruthy();
+                        expect(u.isVisible(chatview.el)).toBeTruthy();
                         expect(chatview.model.get('minimized')).toBeFalsy();
-                        chatview.$el.find('.toggle-chatbox-button').click();
+                        chatview.el.querySelector('.toggle-chatbox-button').click();
                         expect(chatview.model.get('minimized')).toBeTruthy();
                         var message = 'This message is sent to a minimized chatbox';
                         var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1298,10 +1298,10 @@
                         expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                         var trimmed_chatboxes = _converse.minimized_chats;
                         var trimmedview = trimmed_chatboxes.get(contact_jid);
-                        var $count = trimmedview.$el.find('.chat-head-message-count');
-                        expect(chatview.$el.is(':visible')).toBeFalsy();
+                        var $count = $(trimmedview.el).find('.chat-head-message-count');
+                        expect(u.isVisible(chatview.el)).toBeFalsy();
                         expect(trimmedview.model.get('minimized')).toBeTruthy();
-                        expect($count.is(':visible')).toBeTruthy();
+                        expect(u.isVisible($count[0])).toBeTruthy();
                         expect($count.html()).toBe('1');
                         _converse.chatboxes.onMessage(
                             $msg({
@@ -1312,12 +1312,12 @@
                             }).c('body').t('This message is also sent to a minimized chatbox').up()
                             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
                         );
-                        expect(chatview.$el.is(':visible')).toBeFalsy();
+                        expect(u.isVisible(chatview.el)).toBeFalsy();
                         expect(trimmedview.model.get('minimized')).toBeTruthy();
-                        $count = trimmedview.$el.find('.chat-head-message-count');
-                        expect($count.is(':visible')).toBeTruthy();
+                        $count = $(trimmedview.el).find('.chat-head-message-count');
+                        expect(u.isVisible($count[0])).toBeTruthy();
                         expect($count.html()).toBe('2');
-                        trimmedview.$el.find('.restore-chat').click();
+                        trimmedview.el.querySelector('.restore-chat').click();
                         expect(trimmed_chatboxes.keys().length).toBe(0);
                         done();
                     });
@@ -1332,7 +1332,7 @@
                     test_utils.openControlBox();
                     test_utils.openContactsPanel(_converse);
                     test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('.roster-group').length;
+                            return $(_converse.rosterview.el).find('.roster-group').length;
                         }, 300)
                     .then(function () {
                         spyOn(_converse, 'emit');
@@ -1345,7 +1345,7 @@
                         var message = 'This is a day old message';
                         var chatbox = _converse.chatboxes.get(contact_jid);
                         var chatboxview = _converse.chatboxviews.get(contact_jid);
-                        var $chat_content = chatboxview.$el.find('.chat-content');
+                        var $chat_content = $(chatboxview.el).find('.chat-content');
                         var msg_obj;
                         var msg_txt;
                         var sender_txt;
@@ -1432,7 +1432,7 @@
                     expect(view.sendMessage).toHaveBeenCalled();
                     expect(view.model.messages.length, 2);
                     expect(_converse.emit.calls.mostRecent().args, ['messageSend', message]);
-                    expect(view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content').text()).toEqual(message);
+                    expect($(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content').text()).toEqual(message);
                     done();
                 }));
 
@@ -1452,7 +1452,7 @@
                     spyOn(view, 'sendMessage').and.callThrough();
                     test_utils.sendMessage(view, message);
                     expect(view.sendMessage).toHaveBeenCalled();
-                    var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                    var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('&lt;p&gt;This message contains &lt;em&gt;some&lt;/em&gt; &lt;b&gt;markup&lt;/b&gt;&lt;/p&gt;');
                     done();
@@ -1474,7 +1474,7 @@
                     spyOn(view, 'sendMessage').and.callThrough();
                     test_utils.sendMessage(view, message);
                     expect(view.sendMessage).toHaveBeenCalled();
-                    var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                    var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
                     done();
@@ -1497,7 +1497,7 @@
                     message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
                     test_utils.sendMessage(view, message);
                     expect(view.sendMessage).toHaveBeenCalled();
-                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                    msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%27onmouseover=%27alert%281%29%27whatever">http://www.opkode.com/\'onmouseover=\'alert(1)\'whatever</a>');
 
@@ -1505,7 +1505,7 @@
                     test_utils.sendMessage(view, message);
 
                     expect(view.sendMessage).toHaveBeenCalled();
-                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                    msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%22onmouseover=%22alert%281%29%22whatever">http://www.opkode.com/"onmouseover="alert(1)"whatever</a>');
 
@@ -1513,7 +1513,7 @@
                     test_utils.sendMessage(view, message);
 
                     expect(view.sendMessage).toHaveBeenCalled();
-                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                    msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">https://en.wikipedia.org/wiki/Ender\'s_Game</a>');
 
@@ -1521,7 +1521,7 @@
                     test_utils.sendMessage(view, message);
 
                     expect(view.sendMessage).toHaveBeenCalled();
-                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                    msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">https://en.wikipedia.org/wiki/Ender%27s_Game</a>');
                     done();
@@ -1543,21 +1543,21 @@
                     test_utils.sendMessage(view, message);
 
                     test_utils.waitUntil(function () {
-                        return view.$el.find('.chat-content').find('.chat-message img').length;
+                        return $(view.el).find('.chat-content').find('.chat-message img').length;
                     }, 500).then(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
-                        var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                        var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
                             '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg"><img src="' +
                                 message + '" class="chat-image"></a>');
                         message += "?param1=val1&param2=val2";
                         test_utils.sendMessage(view, message);
                         return test_utils.waitUntil(function () {
-                            return view.$el.find('.chat-content').find('.chat-message img').length === 2;
+                            return $(view.el).find('.chat-content').find('.chat-message img').length === 2;
                         }, 500);
                     }).then(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
-                        var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                        var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
                             '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2"><img src="'+
                                 message.replace(/&/g, '&amp;') +
@@ -1567,11 +1567,11 @@
                         message += ' hello world '+base_url+"/logo/conversejs.svg";
                         test_utils.sendMessage(view, message);
                         return test_utils.waitUntil(function () {
-                            return view.$el.find('.chat-content').find('.chat-message img').length === 4;
+                            return $(view.el).find('.chat-content').find('.chat-message img').length === 4;
                         }, 500);
                     }).then(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
-                        var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                        var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
                             '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2">'+
                             '<img src="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2" class="chat-image"></a> hello world '+
@@ -1599,7 +1599,7 @@
                     var chatbox = _converse.chatboxes.get(contact_jid);
                     expect(chatbox.messages.models.length, 1);
                     var msg_object = chatbox.messages.models[0];
-                    var msg_time_author = view.$el.find('.chat-content').find('.chat-message')
+                    var msg_time_author = $(view.el).find('.chat-content').find('.chat-message')
                                             .last().find('.chat-msg-author.chat-msg-me').text();
                     var msg_time_rendered = msg_time_author.split(" ",1);
                     var msg_time = moment(msg_object.get('time')).format(_converse.time_format);
@@ -1644,7 +1644,7 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('.roster-group').length;
+                            return $(_converse.rosterview.el).find('.roster-group').length;
                         }, 300).then(function () {
                             spyOn(_converse.connection, 'send');
                             var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1672,7 +1672,7 @@
                         var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
                         test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('.roster-group').length;
+                            return $(_converse.rosterview.el).find('.roster-group').length;
                         }, 500).then(function () {
                             test_utils.openChatBoxFor(_converse, contact_jid);
                             var view = _converse.chatboxviews.get(contact_jid);
@@ -1711,7 +1711,7 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('.roster-group').length;
+                            return $(_converse.rosterview.el).find('.roster-group').length;
                         }, 300).then(function () {
                             var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                             test_utils.openChatBoxFor(_converse, contact_jid);
@@ -1720,7 +1720,7 @@
                             spyOn(_converse.connection, 'send');
                             spyOn(_converse, 'emit');
                             view.keyPressed({
-                                target: view.$el.find('textarea.chat-textarea'),
+                                target: $(view.el).find('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
@@ -1733,7 +1733,7 @@
 
                             // The notification is not sent again
                             view.keyPressed({
-                                target: view.$el.find('textarea.chat-textarea'),
+                                target: $(view.el).find('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
@@ -1768,7 +1768,7 @@
                         var chatboxview = _converse.chatboxviews.get(sender_jid);
                         expect(chatboxview).toBeDefined();
                         // Check that the notification appears inside the chatbox in the DOM
-                        var $events = chatboxview.$el.find('.chat-event');
+                        var $events = $(chatboxview.el).find('.chat-event');
                         expect($events.text()).toEqual(mock.cur_names[1] + ' is typing');
                         done();
                     }));
@@ -1815,7 +1815,7 @@
                             expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
                             expect(msg_obj.get('sender')).toEqual('me');
                             expect(msg_obj.get('delayed')).toEqual(false);
-                            var $chat_content = chatboxview.$el.find('.chat-content');
+                            var $chat_content = $(chatboxview.el).find('.chat-content');
                             var status_text = $chat_content.find('.chat-info.chat-event').text();
                             expect(status_text).toBe('Typing from another device');
                             done();
@@ -1835,7 +1835,7 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                                return _converse.rosterview.$el.find('.roster-group li').length;
+                                return $(_converse.rosterview.el).find('.roster-group li').length;
                         }, 700).then(function () {
                             _converse.TIMEOUTS.PAUSED = 200; // Make the timeout shorter so that we can test
 
@@ -1846,7 +1846,7 @@
                             spyOn(view, 'setChatState').and.callThrough();
                             expect(view.model.get('chat_state')).toBe('active');
                             view.keyPressed({
-                                target: view.$el.find('textarea.chat-textarea'),
+                                target: $(view.el).find('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
@@ -1873,14 +1873,14 @@
                             // out if the user simply types longer than the
                             // timeout.
                             view.keyPressed({
-                                target: view.$el.find('textarea.chat-textarea'),
+                                target: $(view.el).find('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.setChatState).toHaveBeenCalled();
                             expect(view.model.get('chat_state')).toBe('composing');
 
                             view.keyPressed({
-                                target: view.$el.find('textarea.chat-textarea'),
+                                target: $(view.el).find('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
@@ -1897,7 +1897,7 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                                return _converse.rosterview.$el.find('.roster-group').length;
+                                return $(_converse.rosterview.el).find('.roster-group').length;
                             }, 300)
                         .then(function () {
                             // TODO: only show paused state if the previous state was composing
@@ -1914,7 +1914,7 @@
                             _converse.chatboxes.onMessage(msg);
                             expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                             var chatboxview = _converse.chatboxviews.get(sender_jid);
-                            var $events = chatboxview.$el.find('.chat-event');
+                            var $events = $(chatboxview.el).find('.chat-event');
                             expect($events.text()).toEqual(mock.cur_names[1] + ' has stopped typing');
                             done();
                         });
@@ -1962,7 +1962,7 @@
                             expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
                             expect(msg_obj.get('sender')).toEqual('me');
                             expect(msg_obj.get('delayed')).toEqual(false);
-                            var $chat_content = chatboxview.$el.find('.chat-content');
+                            var $chat_content = $(chatboxview.el).find('.chat-content');
                             var status_text = $chat_content.find('.chat-info.chat-event').text();
                             expect(status_text).toBe('Stopped typing on the other device');
                             done();
@@ -1982,7 +1982,7 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('.roster-group').length;
+                            return $(_converse.rosterview.el).find('.roster-group').length;
                         }, 500).then(function () {
                             // Make the timeouts shorter so that we can test
                             _converse.TIMEOUTS.PAUSED = 200;
@@ -1998,7 +1998,7 @@
                             view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('active');
                             view.keyPressed({
-                                target: view.$el.find('textarea.chat-textarea'),
+                                target: $(view.el).find('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             return test_utils.waitUntil(function () {
@@ -2072,7 +2072,7 @@
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('.roster-group').length;
+                            return $(_converse.rosterview.el).find('.roster-group').length;
                         }, 300).then(function () {
                             var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                             test_utils.openChatBoxFor(_converse, contact_jid);
@@ -2106,9 +2106,9 @@
                         var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openChatBoxFor(_converse, sender_jid);
                         var view = _converse.chatboxviews.get(sender_jid);
-                        expect(view.$el.find('.chat-event').length).toBe(0);
+                        expect($(view.el).find('.chat-event').length).toBe(0);
                         view.showStatusNotification(sender_jid+' is typing');
-                        expect(view.$el.find('.chat-event').length).toBe(1);
+                        expect($(view.el).find('.chat-event').length).toBe(1);
                         var msg = $msg({
                                 from: sender_jid,
                                 to: _converse.connection.jid,
@@ -2117,7 +2117,7 @@
                             }).c('body').c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         _converse.chatboxes.onMessage(msg);
                         expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-                        expect(view.$el.find('.chat-event').length).toBe(0);
+                        expect($(view.el).find('.chat-event').length).toBe(0);
                         done();
                     }));
                 });
@@ -2145,7 +2145,7 @@
                         _converse.chatboxes.onMessage(msg);
                         expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                         var chatboxview = _converse.chatboxviews.get(sender_jid);
-                        var $events = chatboxview.$el.find('.chat-event');
+                        var $events = $(chatboxview.el).find('.chat-event');
                         expect($events.text()).toEqual(mock.cur_names[1] + ' has gone away');
                         done();
                     }));
@@ -2305,7 +2305,7 @@
                 // come back to converse-chat page
                 _converse.saveWindowState(null, 'focus');
                 var view = _converse.chatboxviews.get(sender_jid);
-                expect(view.$el.is(':visible')).toBeTruthy();
+                expect(u.isVisible(view.el)).toBeTruthy();
                 expect(_converse.msg_counter).toBe(0);
 
                 // close chatbox and leave converse-chat page again
@@ -2315,7 +2315,7 @@
                 // check that msg_counter is incremented from zero again
                 _converse.chatboxes.onMessage(msgFactory());
                 view = _converse.chatboxviews.get(sender_jid);
-                expect(view.$el.is(':visible')).toBeTruthy();
+                expect(u.isVisible(view.el)).toBeTruthy();
                 expect(_converse.msg_counter).toBe(1);
                 done();
             }));
@@ -2467,7 +2467,7 @@
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('.roster-group').length;
+                    return $(_converse.rosterview.el).find('.roster-group').length;
                 }, 500)
                 .then(function () {
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -2479,14 +2479,14 @@
                     _converse.chatboxes.onMessage(msg);
 
                     var msgIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
-                        $msgIndicator = $(_converse.rosterview.$el.find(msgIndicatorSelector));
+                        $msgIndicator = $($(_converse.rosterview.el).find(msgIndicatorSelector));
 
                     expect($msgIndicator.text()).toBe('1');
 
                     msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread too');
                     _converse.chatboxes.onMessage(msg);
 
-                    $msgIndicator = $(_converse.rosterview.$el.find(msgIndicatorSelector));
+                    $msgIndicator = $($(_converse.rosterview.el).find(msgIndicatorSelector));
                     expect($msgIndicator.text()).toBe('2');
                     done();
                 });
@@ -2500,7 +2500,7 @@
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('.roster-group').length;
+                    return $(_converse.rosterview.el).find('.roster-group').length;
                 }, 500)
                 .then(function () {
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -2513,14 +2513,14 @@
                     _converse.chatboxes.onMessage(msg);
 
                     var msgIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
-                        $msgIndicator = $(_converse.rosterview.$el.find(msgIndicatorSelector));
+                        $msgIndicator = $($(_converse.rosterview.el).find(msgIndicatorSelector));
 
                     expect($msgIndicator.text()).toBe('1');
 
                     msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread too');
                     _converse.chatboxes.onMessage(msg);
 
-                    $msgIndicator = $(_converse.rosterview.$el.find(msgIndicatorSelector));
+                    $msgIndicator = $($(_converse.rosterview.el).find(msgIndicatorSelector));
                     expect($msgIndicator.text()).toBe('2');
                     done();
                 });
@@ -2534,7 +2534,7 @@
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('.roster-group').length;
+                    return $(_converse.rosterview.el).find('.roster-group').length;
                 }, 500)
                 .then(function () {
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -2542,7 +2542,7 @@
                     var chatbox = _converse.chatboxes.get(sender_jid);
                     var chatboxview = _converse.chatboxviews.get(sender_jid);
                     var msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator';
-                    var selectMsgsIndicator = function () { return $(_converse.rosterview.$el.find(msgsIndicatorSelector)); };
+                    var selectMsgsIndicator = function () { return $($(_converse.rosterview.el).find(msgsIndicatorSelector)); };
                     var msgFactory = function () {
                         return test_utils.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
                     };
@@ -2569,7 +2569,7 @@
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('.roster-group').length;
+                    return $(_converse.rosterview.el).find('.roster-group').length;
                 }, 500)
                 .then(function () {
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -2580,7 +2580,7 @@
                         return test_utils.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
                     };
                     var msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
-                        selectMsgsIndicator = function () { return $(_converse.rosterview.$el.find(msgsIndicatorSelector)); };
+                        selectMsgsIndicator = function () { return $($(_converse.rosterview.el).find(msgsIndicatorSelector)); };
 
                     chatbox.save('scrolled', true);
 
@@ -2602,7 +2602,7 @@
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
-                    return _converse.rosterview.$el.find('.roster-group').length;
+                    return $(_converse.rosterview.el).find('.roster-group').length;
                 }, 500)
                 .then(function () {
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -2613,7 +2613,7 @@
                         return test_utils.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
                     };
                     var msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
-                        selectMsgsIndicator = function () { return $(_converse.rosterview.$el.find(msgsIndicatorSelector)); };
+                        selectMsgsIndicator = function () { return $($(_converse.rosterview.el).find(msgsIndicatorSelector)); };
 
                     chatbox.save('scrolled', true);
 
@@ -2644,7 +2644,7 @@
                 };
                 var selectUnreadMsgCount = function () {
                     var minimizedChatBoxView = _converse.minimized_chats.get(sender_jid);
-                    return minimizedChatBoxView.$el.find('.chat-head-message-count');
+                    return $(minimizedChatBoxView.el).find('.chat-head-message-count');
                 };
 
                 var chatbox = _converse.chatboxes.get(sender_jid);
@@ -2655,7 +2655,7 @@
                 chatboxview.minimize();
 
                 var $unreadMsgCount = selectUnreadMsgCount();
-                expect($unreadMsgCount.is(':visible')).toBeTruthy();
+                expect(u.isVisible($unreadMsgCount[0])).toBeTruthy();
                 expect($unreadMsgCount.html()).toBe('1');
                 done();
             }));
@@ -2675,7 +2675,7 @@
                 };
                 var selectUnreadMsgCount = function () {
                     var minimizedChatBoxView = _converse.minimized_chats.get(sender_jid);
-                    return minimizedChatBoxView.$el.find('.chat-head-message-count');
+                    return $(minimizedChatBoxView.el).find('.chat-head-message-count');
                 };
 
                 var chatboxview = _converse.chatboxviews.get(sender_jid);
@@ -2684,7 +2684,7 @@
                 _converse.chatboxes.onMessage(msgFactory());
 
                 var $unreadMsgCount = selectUnreadMsgCount();
-                expect($unreadMsgCount.is(':visible')).toBeTruthy();
+                expect(u.isVisible($unreadMsgCount[0])).toBeTruthy();
                 expect($unreadMsgCount.html()).toBe('1');
                 done();
             }));

@@ -96,7 +96,7 @@
                 },
 
                 render () {
-                    this.$el.attr('id', this.model.get('box_id'))
+                    this.el.setAttribute('id', this.model.get('box_id'))
                     this.el.innerHTML = tpl_chatbox(
                         _.extend(this.model.toJSON(), {
                                 info_close: '',

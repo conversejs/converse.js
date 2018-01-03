@@ -1,5 +1,11 @@
 #conversejs {
     #controlbox {
+        #converse-register {
+            .button-cancel {
+                font-size: 90%;
+            }
+        }
+
         .controlbox-pane {
             border-bottom-left-radius: $chatbox-border-radius;
             border-bottom-right-radius: $chatbox-border-radius;

@@ -385,7 +385,7 @@
                 }
             });
 
-            _converse.BookmarksView = Backbone.View.extend({
+            _converse.BookmarksView = Backbone.NativeView.extend({
                 tagName: 'div',
                 className: 'bookmarks-list rooms-list-container hidden',
                 events: {
@@ -491,7 +491,7 @@
 
                 toggleBookmarksList (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    if (u.hasClass(ev.target, 'icon-opened')) {
+                    if (u.hasClass('icon-opened', ev.target)) {
                         u.slideIn(this.el.querySelector('.bookmarks'));
                         this.list_model.save({'toggle-state': _converse.CLOSED});
                         ev.target.classList.remove("icon-opened");

@@ -142,7 +142,7 @@
                 }
             });
 
-            _converse.EmojiPickerView = Backbone.View.extend({
+            _converse.EmojiPickerView = Backbone.NativeView.extend({
                 className: 'emoji-picker-container toolbar-menu collapsed',
                 events: {
                     'click .emoji-category-picker li.emoji-category': 'chooseCategory',
@@ -231,7 +231,7 @@
                 }
             });
 
-            _converse.ChatBoxHeading = Backbone.View.extend({
+            _converse.ChatBoxHeading = Backbone.NativeView.extend({
 
                 initialize () {
                     this.model.on('change:image', this.render, this);
@@ -259,7 +259,7 @@
                 }
             });
 
-            _converse.ChatBoxView = Backbone.View.extend({
+            _converse.ChatBoxView = Backbone.NativeView.extend({
                 length: 200,
                 className: 'chatbox hidden',
                 is_chatroom: false,  // Leaky abstraction from MUC
@@ -425,8 +425,8 @@
                 getPreviousMessageElement (el) {
                     let prev_msg_el = el.previousSibling;
                     while (!_.isNull(prev_msg_el) &&
-                            !u.hasClass(prev_msg_el, 'message') &&
-                            !u.hasClass(prev_msg_el, 'chat-info')) {
+                            !u.hasClass('message', prev_msg_el) &&
+                            !u.hasClass('chat-info', prev_msg_el)) {
                         prev_msg_el = prev_msg_el.previousSibling
                     }
                     return prev_msg_el;
@@ -435,8 +435,8 @@
                 getLastMessageElement () {
                     let last_msg_el = this.content.lastElementChild;
                     while (!_.isNull(last_msg_el) &&
-                            !u.hasClass(last_msg_el, 'message') &&
-                            !u.hasClass(last_msg_el, 'chat-info')) {
+                            !u.hasClass('message', last_msg_el) &&
+                            !u.hasClass('chat-info', last_msg_el)) {
                         last_msg_el = last_msg_el.previousSibling
                     }
                     return last_msg_el;
@@ -445,8 +445,8 @@
                 getFirstMessageElement () {
                     let first_msg_el = this.content.firstElementChild;
                     while (!_.isNull(first_msg_el) &&
-                            !u.hasClass(first_msg_el, 'message') &&
-                            !u.hasClass(first_msg_el, 'chat-info')) {
+                            !u.hasClass('message', first_msg_el) &&
+                            !u.hasClass('chat-info', first_msg_el)) {
                         first_msg_el = first_msg_el.nextSibling
                     }
                     return first_msg_el;
@@ -860,6 +860,9 @@
                 },
 
                 toggleEmojiMenu (ev) {
+                    if (u.hasClass('insert-emoji', ev.target)) {
+                        return;
+                    }
                     if (!_.isUndefined(ev)) {
                         ev.stopPropagation();
                         if (ev.target.classList.contains('emoji-category-picker') ||

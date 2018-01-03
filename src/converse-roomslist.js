@@ -48,7 +48,7 @@
                 }
             });
 
-            _converse.RoomsListView = Backbone.View.extend({
+            _converse.RoomsListView = Backbone.NativeView.extend({
                 tagName: 'div',
                 className: 'open-rooms-list rooms-list-container',
                 events: {

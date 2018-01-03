@@ -1199,7 +1199,8 @@
     animation-timing-function: ease; }
   #converse-embedded-chat .hidden,
   #conversejs .hidden {
-    opacity: 0; }
+    opacity: 0;
+    display: none; }
   #converse-embedded-chat .collapsed,
   #conversejs .collapsed {
     height: 0 !important;

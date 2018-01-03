@@ -34,15 +34,15 @@
             spyOn(view, 'renderBookmarkForm').and.callThrough();
             spyOn(view, 'closeForm').and.callThrough();
 
-            var $bookmark = view.$el.find('.icon-pushpin');
-            $bookmark.click();
+            var $bookmark = $(view.el).find('.icon-pushpin');
+            $bookmark[0].click();
             expect(view.renderBookmarkForm).toHaveBeenCalled();
 
-            view.$el.find('.button-cancel').click();
+            view.el.querySelector('.button-cancel').click();
             expect(view.closeForm).toHaveBeenCalled();
             expect($bookmark.hasClass('on-button'), false);
 
-            $bookmark.click();
+            $bookmark[0].click();
             expect(view.renderBookmarkForm).toHaveBeenCalled();
 
             /* Client uploads data:
@@ -77,11 +77,11 @@
              *  </iq>
              */
             expect(view.model.get('bookmarked')).toBeFalsy();
-            var $form = view.$el.find('.chatroom-form');
+            var $form = $(view.el).find('.chatroom-form');
             $form.find('input[name="name"]').val('Play&apos;s the Thing');
             $form.find('input[name="autojoin"]').prop('checked', true);
             $form.find('input[name="nick"]').val('JC');
-            view.$el.find('.button-primary').click();
+            view.el.querySelector('.button-primary').click();
 
             expect(view.model.get('bookmarked')).toBeTruthy();
             expect($bookmark.hasClass('on-button'), true);
@@ -160,7 +160,7 @@
 
                 test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 var view = _converse.chatboxviews.get('lounge@localhost');
-                var $bookmark_icon = view.$('.icon-pushpin');
+                var $bookmark_icon = $(view.el.querySelector('.icon-pushpin'));
                 expect($bookmark_icon.hasClass('button-on')).toBeFalsy();
                 view.model.set('bookmarked', true);
                 expect($bookmark_icon.hasClass('button-on')).toBeTruthy();
@@ -188,7 +188,7 @@
                 });
                 expect(_converse.bookmarks.length).toBe(1);
                 expect(view.model.get('bookmarked')).toBeTruthy();
-                var $bookmark_icon = view.$('.icon-pushpin');
+                var $bookmark_icon = $(view.el.querySelector('.icon-pushpin'));
                 expect($bookmark_icon.hasClass('button-on')).toBeTruthy();
 
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -196,7 +196,7 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 spyOn(_converse.connection, 'getUniqueId').and.callThrough();
-                $bookmark_icon.click();
+                $bookmark_icon[0].click();
                 expect(view.toggleBookmark).toHaveBeenCalled();
                 expect($bookmark_icon.hasClass('button-on')).toBeFalsy();
                 expect(_converse.bookmarks.length).toBe(0);
@@ -409,7 +409,6 @@
                     }
                 }).length).toBe(1);
 
-                _converse.chatboxviews.get('controlbox').$('#chatrooms dl.bookmarks').html('');
                 var stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':IQ_id})
                     .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                         .c('items', {'node': 'storage:bookmarks'})
@@ -463,7 +462,6 @@
                         return true;
                     }
                 }).length).toBe(1);
-                _converse.chatboxviews.get('controlbox').$('#chatrooms dl.bookmarks').html('');
                 var stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':IQ_id})
                     .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                         .c('items', {'node': 'storage:bookmarks'})
@@ -485,10 +483,10 @@
                     expect($('#chatrooms dl.bookmarks').hasClass('collapsed')).toBeFalsy();
                     expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
                     expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
-                    $('#chatrooms .bookmarks-toggle').click();
+                    $('#chatrooms .bookmarks-toggle')[0].click();
                     expect($('#chatrooms dl.bookmarks').hasClass('collapsed')).toBeTruthy();
                     expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.CLOSED);
-                    $('#chatrooms .bookmarks-toggle').click();
+                    $('#chatrooms .bookmarks-toggle')[0].click();
                     expect($('#chatrooms dl.bookmarks').hasClass('collapsed')).toBeFalsy();
                     expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
                     expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);

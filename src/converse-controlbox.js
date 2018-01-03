@@ -539,7 +539,7 @@
             });
 
 
-            _converse.ContactsPanel = Backbone.View.extend({
+            _converse.ContactsPanel = Backbone.NativeView.extend({
                 tagName: 'div',
                 className: 'controlbox-pane',
                 id: 'users',
@@ -699,7 +699,7 @@
             });
 
 
-            _converse.ControlBoxToggle = Backbone.View.extend({
+            _converse.ControlBoxToggle = Backbone.NativeView.extend({
                 tagName: 'a',
                 className: 'toggle-controlbox hidden',
                 id: 'toggle-controlbox',

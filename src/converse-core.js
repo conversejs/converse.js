@@ -16,6 +16,7 @@
             "strophe",
             "pluggable",
             "backbone.noconflict",
+            "backbone.nativeview",
             "backbone.browserStorage"
     ], factory);
 }(this, function (sizzle, Promise, _, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {

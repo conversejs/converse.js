@@ -1837,9 +1837,10 @@
                     const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
                     const stat = stanza.querySelector('status');
                     const last_el = this.content.lastElementChild;
+
                     if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
                             _.get(last_el, 'dataset', {}).leave === `"${nick}"`) {
-                        last_el.outerHTML = 
+                        last_el.outerHTML =
                             tpl_info({
                                 'data': `data-leavejoin="${nick}"`,
                                 'isodate': moment().format(),
@@ -1860,7 +1861,9 @@
 
                             last_el.outerHTML = tpl_info(data);
                         } else {
-                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                            const el = u.stringToElement(tpl_info(data));
+                            this.content.insertAdjacentElement('beforeend', el);
+                            this.insertDayIndicator(el);
                         }
                     }
                     this.scrollDown();
@@ -1877,7 +1880,7 @@
                         if (_.get(stat, 'textContent')) {
                             message = message + ' "' + stat.textContent + '"';
                         }
-                        last_el.outerHTML = 
+                        last_el.outerHTML =
                             tpl_info({
                                 'data': `data-joinleave="${nick}"`,
                                 'isodate': moment().format(),
@@ -1890,6 +1893,7 @@
                         }
                         const data = {
                             'message': message,
+                            'isodate': moment().format(),
                             'data': `data-leave="${nick}"`
                         }
                         if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
@@ -1897,7 +1901,9 @@
 
                             last_el.outerHTML = tpl_info(data);
                         } else {
-                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                            const el = u.stringToElement(tpl_info(data));
+                            this.content.insertAdjacentElement('beforeend', el);
+                            this.insertDayIndicator(el);
                         }
                     }
                     this.scrollDown();

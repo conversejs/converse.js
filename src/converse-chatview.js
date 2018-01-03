@@ -386,21 +386,37 @@
                     /* Inserts an indicator into the chat area, showing the
                      * day as given by the passed in date.
                      *
+                     * The indicator is only inserted if necessary.
+                     *
                      * Parameters:
                      *  (HTMLElement) next_msg_el - The message element before
                      *      which the day indicator element must be inserted.
                      *      This element must have a "data-isodate" attribute
                      *      which specifies its creation date.
                      */
-                    const date = next_msg_el.getAttribute('data-isodate'),
-                          day_date = moment(date).startOf('day');
+                    const prev_msg_el = this.getPreviousMessageElement(next_msg_el),
+                          prev_msg_date = _.isNull(prev_msg_el) ? null : prev_msg_el.getAttribute('data-isodate'),
+                          next_msg_date = next_msg_el.getAttribute('data-isodate');
 
-                    next_msg_el.insertAdjacentHTML('beforeBegin',
-                        tpl_new_day({
-                            'isodate': day_date.format(),
-                            'datestring': day_date.format("dddd MMM Do YYYY")
-                        })
-                    );
+                    if (_.isNull(prev_msg_date) || moment(next_msg_date).isAfter(prev_msg_date, 'day')) {
+                        const day_date = moment(next_msg_date).startOf('day');
+                        next_msg_el.insertAdjacentHTML('beforeBegin',
+                            tpl_new_day({
+                                'isodate': day_date.format(),
+                                'datestring': day_date.format("dddd MMM Do YYYY")
+                            })
+                        );
+                    }
+                },
+
+                getPreviousMessageElement (el) {
+                    let prev_msg_el = el.previousSibling;
+                    while (!_.isNull(prev_msg_el) &&
+                            !u.hasClass(prev_msg_el, 'message') &&
+                            !u.hasClass(prev_msg_el, 'chat-info')) {
+                        prev_msg_el = prev_msg_el.previousSibling
+                    }
+                    return prev_msg_el;
                 },
 
                 getLastMessageElement () {
@@ -476,14 +492,11 @@
 
                     if (_.isNull(previous_msg_date)) {
                         this.content.insertAdjacentElement('afterbegin', message_el);
-                        this.insertDayIndicator(message_el);
                     } else {
                         const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date}"]:last`, this.content).pop();
                         previous_msg_el.insertAdjacentElement('afterend', message_el);
-                        if (current_msg_date.isAfter(previous_msg_date, 'day')) {
-                            this.insertDayIndicator(message_el);
-                        }
                     }
+                    this.insertDayIndicator(message_el);
                     this.scrollDown();
                 },
 

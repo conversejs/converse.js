@@ -389,10 +389,7 @@
                         [menu]
                     );
                     utils.slideInAllElements(elements).then(
-                        _.partial(
-                            utils.slideToggleElement,
-                            menu
-                        )
+                        _.partial(utils.slideToggleElement, menu)
                     );
                 },
                 

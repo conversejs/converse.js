@@ -16,7 +16,8 @@
         "otr",
         "lodash",
         "lodash.converter",
-        "lodash.noconflict"
+        "lodash.noconflict",
+        "es6-promise"
     ],
     paths: {
         "backbone.vdomview":        "builds/backbone.vdomview",

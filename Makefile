@@ -175,8 +175,6 @@ BUILDS = dist/converse.js \
 		 dist/converse-headless.min.js \
 		 dist/converse-muc-embedded.js \
 		 dist/converse-muc-embedded.min.js \
-		 dist/converse-no-jquery.js \
- 		 dist/converse-no-jquery.min.js \
 		 dist/converse-no-dependencies.min.js \
 		 dist/converse-no-dependencies.js
 
@@ -195,10 +193,6 @@ dist/converse-esnext.js: src node_modules
 	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.js optimize=none 
 dist/converse-esnext.min.js: src node_modules
 	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.min.js
-dist/converse-no-jquery.js: transpile src node_modules
-	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.js optimize=none 
-dist/converse-no-jquery.min.js: transpile src node_modules transpile
-	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.min.js
 dist/converse-no-dependencies.js: transpile src node_modules
 	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
 dist/converse-no-dependencies.min.js: transpile src node_modules

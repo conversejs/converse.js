@@ -13,7 +13,8 @@
     "use strict";
     var $iq = converse.env.$iq,
         Strophe = converse.env.Strophe,
-        _ = converse.env._;
+        _ = converse.env._,
+        u = converse.env.utils;
 
     describe("A chat room", function () {
 
@@ -388,6 +389,7 @@
             it("shows a list of bookmarks", mock.initConverseWithPromises(
                 ['send'], ['rosterGroupsFetched'], {}, function (done, _converse) {
 
+                test_utils.openControlBox().openRoomsPanel(_converse);
                 var IQ_id;
                 expect(_.filter(_converse.connection.send.calls.all(), function (call) {
                     var stanza = call.args[0];
@@ -420,6 +422,11 @@
                                         'jid': 'theplay@conference.shakespeare.lit'
                                     }).c('nick').t('JC').up().up()
                                     .c('conference', {
+                                        'name': '1st Bookmark',
+                                        'autojoin': 'false',
+                                        'jid': 'first@conference.shakespeare.lit'
+                                    }).c('nick').t('JC').up().up()
+                                    .c('conference', {
                                         'name': 'Bookmark with a very very long name that will be shortened',
                                         'autojoin': 'false',
                                         'jid': 'longname@conference.shakespeare.lit'
@@ -434,7 +441,15 @@
                 test_utils.waitUntil(function () {
                     return $('#chatrooms dl.bookmarks dd').length;
                 }, 300).then(function () {
-                    expect($('#chatrooms dl.bookmarks dd').length).toBe(3);
+                    expect($('#chatrooms dl.bookmarks dd').length).toBe(4);
+                    expect($('#chatrooms dl.bookmarks dd a').text().trim()).toBe(
+                        "1st Bookmark  Another room  Bookmark with a very very long name that will be shortened  The Play&apos;s the Thing")
+
+                    spyOn(window, 'confirm').and.returnValue(true);
+                    $('#chatrooms dl.bookmarks dd:nth-child(2) a:nth-child(2)')[0].click();
+                    expect(window.confirm).toHaveBeenCalled();
+                    expect($('#chatrooms dl.bookmarks dd a').text().trim()).toBe(
+                        "1st Bookmark  Bookmark with a very very long name that will be shortened  The Play&apos;s the Thing")
                     done();
                 });
             }));
@@ -527,14 +542,11 @@
             // Check that it disappears once the room is opened
             var bookmark = _converse.bookmarksview.el.querySelector(".open-room");
             bookmark.click();
-            room_els = _converse.bookmarksview.el.querySelectorAll(".open-room");
-            expect(room_els.length).toBe(0);
-
+            expect(u.hasClass('hidden', _converse.bookmarksview.el.querySelector(".available-chatroom"))).toBeTruthy();
             // Check that it reappears once the room is closed
             var view = _converse.chatboxviews.get(jid);
             view.close();
-            room_els = _converse.bookmarksview.el.querySelectorAll(".open-room");
-            expect(room_els.length).toBe(1);
+            expect(u.hasClass('hidden', _converse.bookmarksview.el.querySelector(".available-chatroom"))).toBeFalsy();
             done();
         }));
     });

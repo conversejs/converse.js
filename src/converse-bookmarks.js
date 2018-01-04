@@ -235,12 +235,6 @@
 
             _converse.Bookmark = Backbone.Model;
 
-            _converse.BookmarksList = Backbone.Model.extend({
-                defaults: {
-                    "toggle-state":  _converse.OPENED
-                }
-            });
-
             _converse.Bookmarks = Backbone.Collection.extend({
                 model: _converse.Bookmark,
                 comparator: 'name',
@@ -385,18 +379,50 @@
                 }
             });
 
-            _converse.BookmarksView = Backbone.NativeView.extend({
+            _converse.BookmarksList = Backbone.Model.extend({
+                defaults: {
+                    "toggle-state":  _converse.OPENED
+                }
+            });
+
+            _converse.BookmarkView = Backbone.VDOMView.extend({
+
+                initialize () {
+                    this.model.on('destroy', this.remove.bind(this));
+                },
+
+                toHTML () {
+                    return tpl_bookmark({
+                        'hidden': _converse.hide_open_bookmarks &&
+                                  _converse.chatboxes.where({'jid': this.model.get('jid')}).length,
+                        'bookmarked': true,
+                        'info_leave_room': __('Leave this room'),
+                        'info_remove': __('Remove this bookmark'),
+                        'info_remove_bookmark': __('Unbookmark this room'),
+                        'info_title': __('Show more information on this room'),
+                        'jid': this.model.get('jid'),
+                        'name': this.model.get('name'),
+                        'open_title': __('Click to open this room')
+                    });
+                }
+            });
+
+            _converse.BookmarksView = Backbone.OrderedListView.extend({
                 tagName: 'div',
-                className: 'bookmarks-list rooms-list-container hidden',
+                className: 'bookmarks-list rooms-list-container',
                 events: {
                     'click .add-bookmark': 'addBookmark',
                     'click .bookmarks-toggle': 'toggleBookmarksList',
                     'click .remove-bookmark': 'removeBookmark'
                 },
+                listSelector: '.rooms-list',
+                ItemView: _converse.BookmarkView,
+                subviewIndex: 'jid',
 
                 initialize () {
-                    this.model.on('add', this.renderBookmarkListElement, this);
-                    this.model.on('remove', this.removeBookmarkListElement, this);
+                    Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+
+                    this.model.on('remove', this.hideListIfEmpty, this);
                     _converse.chatboxes.on('add', this.renderBookmarkListElement, this);
                     _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
 
@@ -408,6 +434,7 @@
                     );
                     this.list_model.fetch();
                     this.render();
+                    this.sortAndPositionAllItems();
                 },
 
                 render () {
@@ -417,7 +444,6 @@
                         'label_bookmarks': __('Bookmarks'),
                         '_converse': _converse
                     });
-                    this.model.each(this.renderBookmarkListElement.bind(this));
                     const controlboxview = _converse.chatboxviews.get('controlbox');
                     if (!_.isUndefined(controlboxview)) {
                         const chatrooms_el = controlboxview.el.querySelector('#chatrooms');
@@ -429,63 +455,21 @@
                 removeBookmark: _converse.removeBookmarkViaEvent,
                 addBookmark: _converse.addBookmarkViaEvent,
 
-                renderBookmarkListElement (item) {
-                    if (item instanceof _converse.ChatBox) {
-                        item = _.head(this.model.where({'jid': item.get('jid')}));
-                        if (_.isNil(item)) {
-                            // A chat box has been closed, but we don't have a
-                            // bookmark for it, so nothing further to do here.
-                            return;
-                        }
-                    }
-                    if (_converse.hide_open_bookmarks &&
-                            _converse.chatboxes.where({'jid': item.get('jid')}).length) {
-                        // A chat box has been opened, and we don't show
-                        // bookmarks for open chats, so we remove it.
-                        this.removeBookmarkListElement(item);
+                renderBookmarkListElement (chatbox) {
+                    const bookmarkview = this.get(chatbox.get('jid'));
+                    if (_.isNil(bookmarkview)) {
+                        // A chat box has been closed, but we don't have a
+                        // bookmark for it, so nothing further to do here.
                         return;
                     }
-
-                    const list_el = this.el.querySelector('.bookmarks');
-                    const div = document.createElement('div');
-                    div.innerHTML = tpl_bookmark({
-                        'bookmarked': true,
-                        'info_leave_room': __('Leave this room'),
-                        'info_remove': __('Remove this bookmark'),
-                        'info_remove_bookmark': __('Unbookmark this room'),
-                        'info_title': __('Show more information on this room'),
-                        'jid': item.get('jid'),
-                        'name': item.get('name'),
-                        'open_title': __('Click to open this room')
-                    });
-                    const el = _.head(sizzle(
-                        `.available-chatroom[data-room-jid="${item.get('jid')}"]`,
-                        list_el));
-
-                    if (el) {
-                        el.innerHTML = div.firstChild.innerHTML;
-                    } else {
-                        list_el.appendChild(div.firstChild);
-                    }
-                    this.show();
+                    bookmarkview.render();
+                    this.hideListIfEmpty();
                 },
 
-                show () {
-                    u.showElement(this.el);
-                },
-
-                hide () {
-                    u.hideElement(this.el);
-                },
-
-                removeBookmarkListElement (item) {
-                    const list_el = this.el.querySelector('.bookmarks');
-                    const el = _.head(sizzle(`.available-chatroom[data-room-jid="${item.get('jid')}"]`, list_el));
-                    if (el) {
-                        list_el.removeChild(el);
-                    }
-                    if (list_el.childElementCount === 0) {
-                        this.hide();
+                hideListIfEmpty (item) {
+                    const bookmarks = sizzle('.available-chatroom:not(.hidden)', this.el);
+                    if (!this.model.models.length || !bookmarks.length) {
+                        u.hideElement(this.el);
                     }
                 },
 

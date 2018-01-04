@@ -2123,7 +2123,8 @@ body {
         font-weight: normal;
         padding: 0;
         padding-bottom: 0.5em;
-        text-shadow: 0 1px 0 #FAFAFA; }
+        text-shadow: 0 1px 0 #FAFAFA;
+        word-wrap: break-word; }
       #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom,
       #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom {
         border: none;
@@ -2632,6 +2633,9 @@ body {
   #conversejs #converse-roster span.pending-contact-name {
     line-height: 22px;
     width: 100%; }
+
+#conversejs #converse-roster {
+  padding-bottom: 3em; }
 
 #conversejs #controlbox #chatrooms .bookmarks-list dl.rooms-list.bookmarks dd.available-chatroom a.open-room {
   width: 80%; }

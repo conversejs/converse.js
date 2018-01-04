@@ -605,5 +605,11 @@
         return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
     };
 
+    u.triggerEvent = function (el, name, type="Event", bubbles=true, cancelable=true) {
+        const evt = document.createEvent(type);
+        evt.initEvent(name, bubbles, cancelable);
+        el.dispatchEvent(evt);
+    };
+
     return u;
 }));

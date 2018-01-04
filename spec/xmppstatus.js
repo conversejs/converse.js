@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define(["jquery.noconflict", "jasmine", "mock", "converse-core", "test-utils"], factory);
+    define(["jquery", "jasmine", "mock", "converse-core", "test-utils"], factory);
 } (this, function ($, jasmine, mock, converse, test_utils) {
 
     return describe("The XMPPStatus model", function() {

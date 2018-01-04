@@ -5,8 +5,6 @@
     include: ["converse"],
     exclude: [
         "awesomplete",
-        "jquery",
-        "jquery.noconflict",
         "backbone.browserStorage",
         "backbone.overview",
         "moment",

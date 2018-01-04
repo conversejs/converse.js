@@ -108,7 +108,6 @@
                             }
                         ));
                     this.content = this.el.querySelector('.chat-content');
-                    utils.refreshWebkit();
                     return this;
                 },
 

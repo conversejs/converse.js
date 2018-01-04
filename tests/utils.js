@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(['jquery.noconflict', 'converse', 'es6-promise',  'mock', 'wait-until-promise'], factory);
-}(this, function ($, converse_api, Promise, mock, waitUntilPromise) {
+    define(['converse', 'es6-promise',  'mock', 'wait-until-promise'], factory);
+}(this, function (converse_api, Promise, mock, waitUntilPromise) {
     var _ = converse_api.env._;
     var $msg = converse_api.env.$msg;
     var $pres = converse_api.env.$pres;
@@ -76,15 +76,13 @@
     utils.openContactsPanel = function (converse) {
         this.openControlBox(converse);
         var cbview = converse.chatboxviews.get('controlbox');
-        var $tabs = $(cbview.el).find('#controlbox-tabs');
-        $tabs.find('li').first().find('a')[0].click();
+        cbview.el.querySelector('#controlbox-tabs li:first-child a').click();
     };
 
     utils.openRoomsPanel = function (converse) {
         utils.openControlBox();
         var cbview = converse.chatboxviews.get('controlbox');
-        var $tabs = $(cbview.el).find('#controlbox-tabs');
-        $tabs.find('li').last().find('a')[0].click();
+        cbview.el.querySelector('#controlbox-tabs li:last-child a').click();
     };
 
     utils.openChatBoxes = function (converse, amount) {
@@ -170,7 +168,7 @@
 
     utils.clearChatBoxMessages = function (converse, jid) {
         var view = converse.chatboxviews.get(jid);
-        $(view.el).find('.chat-content').empty();
+        view.el.querySelector('.chat-content').innerHTML = '';
         view.model.messages.reset();
         view.model.messages.browserStorage._clear();
     };

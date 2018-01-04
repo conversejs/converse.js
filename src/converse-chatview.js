@@ -289,7 +289,6 @@
                     this.model.on('sendMessage', this.sendMessage, this);
 
                     this.render().renderToolbar().insertHeading().fetchMessages();
-                    u.refreshWebkit();
                     _converse.emit('chatBoxOpened', this);
                     _converse.emit('chatBoxInitialized', this);
                 },
@@ -968,7 +967,6 @@
 
                 hide () {
                     this.el.classList.add('hidden');
-                    u.refreshWebkit();
                     return this;
                 },
 

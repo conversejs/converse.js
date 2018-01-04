@@ -31,9 +31,7 @@ require.config({
         "form-utils":               "src/form-utils",
         "i18n":                     "src/i18n",
         "jed":                      "node_modules/jed/jed",
-        "jquery":                   "node_modules/jquery/dist/jquery",
-        "jquery.browser":           "node_modules/jquery.browser/dist/jquery.browser",
-        "jquery.noconflict":        "src/jquery.noconflict",
+        "jquery":                   "src/jquery-stub",
         "lodash":                   "node_modules/lodash/lodash",
         "lodash.converter":         "3rdparty/lodash.fp",
         "lodash.fp":                "src/lodash.fp",
@@ -106,7 +104,6 @@ require.config({
         // '*' means all modules will get the '*.noconflict' version
         // as their dependency.
         '*': {
-            'jquery': 'jquery.noconflict',
             'backbone': 'backbone.noconflict',
             'lodash': 'lodash.noconflict'
          },
@@ -114,7 +111,6 @@ require.config({
         // If this line was not here, there would
         // be an unresolvable cyclic dependency.
         'backbone.noconflict': { 'backbone': 'backbone' },
-        'jquery.noconflict': { 'jquery': 'jquery' },
         'lodash.noconflict': { 'lodash': 'lodash' }
     },
 

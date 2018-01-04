@@ -1,6 +1,7 @@
 /*global config */
 
 // Extra test dependencies
+config.paths.jquery = "node_modules/jquery/dist/jquery";
 config.paths.mock = "tests/mock";
 config.paths['wait-until-promise'] = "node_modules/wait-until-promise/index";
 config.paths['test-utils'] = "tests/utils";
@@ -57,7 +58,7 @@ var specs = [
 require(['console-reporter', 'mock', 'sinon', 'wait-until-promise', 'pluggable'],
         function(ConsoleReporter, mock, sinon, waitUntilPromise, pluggable) {
     window.sinon = sinon;
-    window.waitUntilPromise = waitUntilPromise['default'];
+    window.waitUntilPromise = waitUntilPromise.default;
     window.localStorage.clear();
     window.sessionStorage.clear();
     // Load the specs

@@ -1175,9 +1175,9 @@
     -webkit-animation-fill-mode: forwards;
     -moz-animation-fill-mode: forwards;
     animation-fill-mode: forwards;
-    -webkit-animation-duration: 750;
-    -moz-animation-duration: 750;
-    animation-duration: 750;
+    -webkit-animation-duration: 0.75s;
+    -moz-animation-duration: 0.75s;
+    animation-duration: 0.75s;
     -webkit-animation-timing-function: ease;
     -moz-animation-timing-function: ease;
     animation-timing-function: ease; }
@@ -1935,9 +1935,9 @@
     -webkit-animation-fill-mode: forwards;
     -moz-animation-fill-mode: forwards;
     animation-fill-mode: forwards;
-    -webkit-animation-duration: 750;
-    -moz-animation-duration: 750;
-    animation-duration: 750;
+    -webkit-animation-duration: 0.75s;
+    -moz-animation-duration: 0.75s;
+    animation-duration: 0.75s;
     -webkit-animation-timing-function: ease;
     -moz-animation-timing-function: ease;
     animation-timing-function: ease;

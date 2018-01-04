@@ -38,7 +38,7 @@ require.config({
         "lodash.noconflict":        "src/lodash.noconflict",
         "pluggable":                "node_modules/pluggable.js/dist/pluggable",
         "polyfill":                 "src/polyfill",
-        "sizzle":                   "node_modules/jquery/sizzle/dist/sizzle",
+        "sizzle":                   "node_modules/sizzle/dist/sizzle",
         "strophe":                  "node_modules/strophe.js/strophe",
         "strophe.disco":            "node_modules/strophejs-plugin-disco/strophe.disco",
         "strophe.ping":             "node_modules/strophejs-plugin-ping/strophe.ping",

@@ -13,11 +13,6 @@
     <link type="text/css" rel="stylesheet" media="screen" href="../css/theme.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="../css/converse.min.css" />
 
-    <!-- BEGIN JQUERY -->
-    <script type="text/javascript" src="../node_modules/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="../node_modules/jquery.browser/dist/jquery.browser.js"></script>
-    <!-- END JQUERY -->
-
     <!-- BEGIN OTR: Off-the-record encryption stuff. Can be omitted if OTR is not used. -->
     <script type="text/javascript" src="../node_modules/otr/build/dep/crypto.js"></script>
     <script type="text/javascript" src="../node_modules/otr/build/dep/salsa20.js"></script>
@@ -34,23 +29,23 @@
     <script type="text/javascript" src="../node_modules/strophejs-plugin-ping/strophe.ping.js"></script>
     <!-- END STROPHE -->
 
+    <script type="text/javascript" src="../node_modules/snabbdom/dist/snabbdom.js"></script>
+    <script type="text/javascript" src="../node_modules/snabbdom/dist/snabbdom-attributes.js"></script>
+    <script type="text/javascript" src="../node_modules/snabbdom/dist/snabbdom-class.js"></script>
+    <script type="text/javascript" src="../node_modules/snabbdom/dist/snabbdom-dataset.js"></script>
+    <script type="text/javascript" src="../node_modules/snabbdom/dist/snabbdom-eventlisteners.js"></script>
+    <script type="text/javascript" src="../node_modules/snabbdom/dist/snabbdom-props.js"></script>
+    <script type="text/javascript" src="../node_modules/snabbdom/dist/snabbdom-style.js"></script>
+
     <!-- BEGIN BACKBONE -->
     <script type="text/javascript" src="../node_modules/lodash/lodash.js"></script>
-    <script type="text/javascript" src="../node_modules/backbone//backbone.js"></script>
+    <script type="text/javascript" src="../node_modules/backbone/backbone.js"></script>
+    <script type="text/javascript" src="../node_modules/backbone.nativeview/backbone.nativeview.js"></script>
     <script type="text/javascript" src="../node_modules/backbone.browserStorage/backbone.browserStorage.js"></script>
-    <script type="text/javascript" src="../node_modules/backbone.overview/backbone.overview.js"></script>
+    <script type="text/javascript" src="../node_modules/backbone.overview/dist/backbone.overview.js"></script>
+    <script type="text/javascript" src="../node_modules/backbone.overview/dist/backbone.orderedlistview.js"></script>
+    <script type="text/javascript" src="../node_modules/backbone.vdomview/dist/backbone.vdomview.js"></script>
     <!-- END BACKBONE -->
-
-    <!-- BEGIN I18N -->
-    <!-- These files can be removed if you don't want to include any
-        translations for converse.js.
-        If you want to modify which translations are included, you can modify
-        src/locales.js to remove those you don't need, and then run `make
-        build` to generates a new dist/locales.js file.
-    -->
-    <script type="text/javascript" src="../node_modules/jed/jed.js"></script>
-    <script type="text/javascript" src="../dist/locales.js"></script>
-    <!-- END I18N -->
 
     <script type="text/javascript" src="../node_modules/awesomplete-avoid-xss/awesomplete.js"></script>
     <script type="text/javascript" src="../node_modules/moment/min/moment-with-locales.js"></script>
@@ -83,7 +78,6 @@
 <script>
     converse.initialize({
         bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
-        i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
         prebind: false,
         show_controlbox_by_default: true,
         debug: true,

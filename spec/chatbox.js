@@ -494,7 +494,7 @@
                     _converse.visible_toolbar_buttons.call = true; // enable the button
                     test_utils.openChatBoxFor(_converse, contact_jid);
                     view = _converse.chatboxviews.get(contact_jid);
-                    var toolbar = view.el.querySelector('ul.chat-toolbar');
+                    toolbar = view.el.querySelector('ul.chat-toolbar');
                     call_button = toolbar.querySelector('.toggle-call');
                     call_button.click();
                     expect(_converse.emit).toHaveBeenCalledWith('callButtonClicked', jasmine.any(Object));

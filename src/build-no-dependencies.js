@@ -37,6 +37,7 @@
         "converse-notification":    "builds/converse-notification",
         "converse-otr":             "builds/converse-otr",
         "converse-ping":            "builds/converse-ping",
+        "converse-profile":         "builds/converse-profile",
         "converse-register":        "builds/converse-register",
         "converse-roomslist":       "builds/converse-roomslist",
         "converse-rosterview":      "builds/converse-rosterview",

@@ -1,6 +1,6 @@
 (function (root, factory) {
     define([
-        "jquery.noconflict",
+        "jquery",
         "jasmine",
         "converse-core",
         "mock",

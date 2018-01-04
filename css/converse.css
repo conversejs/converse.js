@@ -2037,7 +2037,8 @@
         font-weight: normal;
         padding: 0;
         padding-bottom: 0.5em;
-        text-shadow: 0 1px 0 #FAFAFA; }
+        text-shadow: 0 1px 0 #FAFAFA;
+        word-wrap: break-word; }
       #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom,
       #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom {
         border: none;

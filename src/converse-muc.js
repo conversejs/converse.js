@@ -28,6 +28,7 @@
             "tpl!chatroom_toolbar",
             "tpl!chatrooms_tab",
             "tpl!info",
+            "tpl!no_rooms",
             "tpl!occupant",
             "tpl!room_description",
             "tpl!room_item",
@@ -58,6 +59,7 @@
             tpl_chatroom_toolbar,
             tpl_chatrooms_tab,
             tpl_info,
+            tpl_no_rooms,
             tpl_occupant,
             tpl_room_description,
             tpl_room_item,
@@ -2633,8 +2635,9 @@
 
                 informNoRoomsFound () {
                     const chatrooms_el = this.el.querySelector('#available-chatrooms');
-                    // For translators: %1$s is a variable and will be replaced with the XMPP server name
-                    chatrooms_el.innerHTML = `<dt>${__('No rooms on %1$s', this.model.get('muc_domain'))}</dt>`;
+                    chatrooms_el.innerHTML = tpl_no_rooms({
+                        'no_rooms_text': __('No rooms found')
+                    });
                     const input_el = this.el.querySelector('input#show-rooms');
                     input_el.classList.remove('hidden')
                     this.removeSpinner();
@@ -2677,7 +2680,7 @@
                 },
 
                 updateRoomsList () {
-                    /* Send and IQ stanza to the server asking for all rooms
+                    /* Send an IQ stanza to the server asking for all rooms
                      */
                     _converse.connection.sendIQ(
                         $iq({

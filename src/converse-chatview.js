@@ -710,8 +710,11 @@
                         // Forward the message, so that other connected resources are also aware of it.
                         _converse.connection.send(
                             $msg({ to: _converse.bare_jid, type: 'chat', id: message.get('msgid') })
-                            .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
-                            .c('delay', {xmns:'urn:xmpp:delay',stamp:(new Date()).getTime()}).up()
+                            .c('forwarded', {'xmlns': Strophe.NS.FORWARD})
+                            .c('delay', {
+                                'xmns': Strophe.NS.DELAY,
+                                'stamp': moment.format()
+                            }).up()
                             .cnode(messageStanza.tree())
                         );
                     }

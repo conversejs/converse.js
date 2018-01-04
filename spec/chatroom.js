@@ -8,6 +8,7 @@
     var Strophe = converse.env.Strophe;
     var Promise = converse.env.Promise;
     var moment = converse.env.moment;
+    var sizzle = converse.env.sizzle;
     var u = converse.env.utils;
 
     return describe("ChatRooms", function () {
@@ -150,6 +151,7 @@
                     expect(room.is_chatroom).toBeTruthy();
                     chatroomview = _converse.chatboxviews.get(jid);
                     expect(u.isVisible(chatroomview.el)).toBeTruthy();
+                    chatroomview.close();
 
                     // Test with mixed case in JID
                     jid = 'Leisure@localhost';
@@ -172,10 +174,11 @@
                     chatroomview.close();
 
                     _converse.muc_instant_rooms = false;
-                    var sent_IQ, IQ_id;
+                    var sent_IQ, IQ_id, sent_IQ_els = [];
                     var sendIQ = _converse.connection.sendIQ;
                     spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                         sent_IQ = iq;
+                        sent_IQ_els.push(iq.nodeTree);
                         IQ_id = sendIQ.bind(this)(iq, callback, errback);
                     });
                     // Test with configuration
@@ -191,6 +194,7 @@
                             'whois': 'anyone'
                         }
                     });
+                    chatroomview = _converse.chatboxviews.get('room@conference.example.org');
 
                     // We pretend this is a new room, so no disco info is returned.
                     var features_stanza = $iq({
@@ -228,7 +232,7 @@
                         "<iq to='room@conference.example.org' type='get' xmlns='jabber:client' id='"+IQ_id+
                         "'><query xmlns='http://jabber.org/protocol/muc#owner'/></iq>"
                     );
-                    _converse.connection._dataRecv(test_utils.createRequest($(
+                    var node = Strophe.xmlHtmlNode(
                        '<iq xmlns="jabber:client"'+
                        '     type="result"'+
                        '     to="dummy@localhost/pda"'+
@@ -257,22 +261,27 @@
                        '        <value>20</value></field>'+
                        '     </x>'+
                        ' </query>'+
-                       ' </iq>')[0]));
+                       ' </iq>');
+
+                    spyOn(chatroomview, 'sendConfiguration').and.callThrough();
+                    _converse.connection._dataRecv(test_utils.createRequest(node.firstElementChild));
+
 
                     return test_utils.waitUntil(function () {
-                        return sent_IQ.toLocaleString() !==
-                            "<iq to='room@conference.example.org' type='get' xmlns='jabber:client' id='"+IQ_id+
-                            "'><query xmlns='http://jabber.org/protocol/muc#owner'/></iq>";
+                        return chatroomview.sendConfiguration.calls.count() === 1;
                     }, 300).then(function () {
-                        var $sent_stanza = $(sent_IQ.toLocaleString());
-                        expect($sent_stanza.find('field[var="muc#roomconfig_roomname"] value').text()).toBe('Room');
-                        expect($sent_stanza.find('field[var="muc#roomconfig_roomdesc"] value').text()).toBe('Welcome to this room');
-                        expect($sent_stanza.find('field[var="muc#roomconfig_persistentroom"] value').text()).toBe('1');
-                        expect($sent_stanza.find('field[var="muc#roomconfig_publicroom"] value ').text()).toBe('1');
-                        expect($sent_stanza.find('field[var="muc#roomconfig_changesubject"] value').text()).toBe('0');
-                        expect($sent_stanza.find('field[var="muc#roomconfig_whois"] value ').text()).toBe('anyone');
-                        expect($sent_stanza.find('field[var="muc#roomconfig_membersonly"] value').text()).toBe('1');
-                        expect($sent_stanza.find('field[var="muc#roomconfig_historylength"] value').text()).toBe('20');
+                        var sent_stanza = sent_IQ_els.pop();
+                        while (sent_stanza.getAttribute('type') !== 'set') {
+                            sent_stanza = sent_IQ_els.pop();
+                        }
+                        expect(sizzle('field[var="muc#roomconfig_roomname"] value', sent_stanza).pop().textContent).toBe('Room');
+                        expect(sizzle('field[var="muc#roomconfig_roomdesc"] value', sent_stanza).pop().textContent).toBe('Welcome to this room');
+                        expect(sizzle('field[var="muc#roomconfig_persistentroom"] value', sent_stanza).pop().textContent).toBe('1');
+                        expect(sizzle('field[var="muc#roomconfig_publicroom"] value ', sent_stanza).pop().textContent).toBe('1');
+                        expect(sizzle('field[var="muc#roomconfig_changesubject"] value', sent_stanza).pop().textContent).toBe('0');
+                        expect(sizzle('field[var="muc#roomconfig_whois"] value ', sent_stanza).pop().textContent).toBe('anyone');
+                        expect(sizzle('field[var="muc#roomconfig_membersonly"] value', sent_stanza).pop().textContent).toBe('1');
+                        expect(sizzle('field[var="muc#roomconfig_historylength"] value', sent_stanza).pop().textContent).toBe('20');
                         done();
                     });
                 });
@@ -376,15 +385,15 @@
                     .c('status').attrs({code:'201'}).nodeTree;
 
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    var info_text = $(view.el).find('.chat-content .chat-info').text();
+                    var info_text = view.el.querySelector('.chat-content .chat-info').textContent;
                     expect(info_text).toBe('A new room has been created');
 
                     // An instant room is created by saving the default configuratoin.
                     //
                     /* <iq to="myroom@conference.chat.example.org" type="set" xmlns="jabber:client" id="5025e055-036c-4bc5-a227-706e7e352053:sendIQ">
-                    *   <query xmlns="http://jabber.org/protocol/muc#owner"><x xmlns="jabber:x:data" type="submit"/></query>
-                    * </iq>
-                    */
+                     *   <query xmlns="http://jabber.org/protocol/muc#owner"><x xmlns="jabber:x:data" type="submit"/></query>
+                     * </iq>
+                     */
                     expect(sent_IQ.toLocaleString()).toBe(
                         "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                             "<query xmlns='http://jabber.org/protocol/muc#owner'><x xmlns='jabber:x:data' type='submit'/>"+

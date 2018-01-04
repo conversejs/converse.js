@@ -475,7 +475,6 @@
                     if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                         this.showSpinner();
                     }
-                    u.refreshWebkit();
                     return this;
                 },
 

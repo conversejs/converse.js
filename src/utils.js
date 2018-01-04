@@ -11,14 +11,12 @@
     define([
         "sizzle",
         "es6-promise",
-        "jquery.browser",
         "lodash.noconflict",
         "strophe",
     ], factory);
 }(this, function (
         sizzle,
         Promise,
-        jQBrowser,
         _,
         Strophe
     ) {
@@ -393,20 +391,6 @@
             } else {
                 context[k] = user_settings[k];
             }
-        }
-    };
-
-    u.refreshWebkit = function () {
-        /* This works around a webkit bug. Refreshes the browser's viewport,
-         * otherwise chatboxes are not moved along when one is closed.
-         */
-        if (jQBrowser.webkit && window.requestAnimationFrame) {
-            window.requestAnimationFrame(function () {
-                var conversejs = document.getElementById('conversejs');
-                conversejs.style.display = 'none';
-                var tmp = conversejs.offsetHeight; // jshint ignore:line
-                conversejs.style.display = 'block';
-            });
         }
     };
 

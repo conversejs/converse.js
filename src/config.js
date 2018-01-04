@@ -31,7 +31,7 @@ require.config({
         "form-utils":               "src/form-utils",
         "i18n":                     "src/i18n",
         "jed":                      "node_modules/jed/jed",
-        "jquery.browser":           "node_modules/jquery.browser/dist/jquery.browser",
+        "jquery":                   "src/jquery-stub",
         "lodash":                   "node_modules/lodash/lodash",
         "lodash.converter":         "3rdparty/lodash.fp",
         "lodash.fp":                "src/lodash.fp",

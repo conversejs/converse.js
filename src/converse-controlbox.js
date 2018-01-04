@@ -386,7 +386,6 @@
                         return;
                     }
                     u.addClass('hidden', this.el);
-                    u.refreshWebkit();
                     _converse.emit('chatBoxClosed', this);
                     if (!_converse.connection.connected) {
                         _converse.controlboxtoggle.render();
@@ -396,7 +395,6 @@
                 },
 
                 onControlBoxToggleHidden () {
-                    u.refreshWebkit();
                     this.model.set('closed', false);
                     this.el.classList.remove('hidden');
                     _converse.emit('controlBoxOpened', this);

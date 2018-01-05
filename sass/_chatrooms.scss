@@ -19,17 +19,23 @@
                 color: $chatroom-head-color;
             }
         }
-
-        .chatroom-description {
-            color: white;
-            font-size: 80%;
-            font-style: italic;
-            height: 1.3em;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            margin: 0;
-            margin-top: 0.3em;
+        .chat-title {
+            color: $chatroom-color-lightest;
+            .chatroom-name {
+                color: white;
+            }
+            .chatroom-jid {
+                font-size: $font-size-small;
+            }
+            .chatroom-description {
+                color: white;
+                font-size: 80%;
+                font-style: italic;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                margin: 0.3em 0;
+            }
         }
     }
 
@@ -40,9 +46,6 @@
         }
         @media screen and (max-width: $mobile-portrait-length) {
             width: $mobile-chat-width;
-        }
-
-        .spinner {
         }
 
         .box-flyout {
@@ -65,11 +68,16 @@
                 background-color: white;
                 border-top: 0;
                 width: 100%;
+                .chat-info {
+                    color: $chatroom-head-color;
+                }
                 .mentioned {
                     font-weight: bold;
                 }
-                .chat-msg-room {
-                    color: $message-them-color;
+                .chat-message {
+                    .chat-msg-them {
+                        color: $chatroom-message-them-color;
+                    }
                 }
                 .disconnect-msg {
                     padding: 2em 2em 0 2em;
@@ -111,18 +119,20 @@
                         font-weight: bold;
                     }
                     .chatroom-features {
-                        position: absolute;
                         bottom: 0.5em;
-                        width: 25%;
-                        @include calc(width, '30% - 1em');
+                        width: 100%;
                     }
                     .awesomplete {
                         ul {
-                            padding: 0.2em;
+                            padding: 0;
+                            li {
+                                padding: .5em;
+                            }
                         }
                     }
                     ul {
-                        padding: 0.3em 0;
+                        padding: 0.5em 0 0 0;
+                        margin-bottom: 0.5em;
                         overflow-x: hidden;
                         overflow-y: auto;
                         list-style: none;
@@ -173,6 +183,9 @@
                             &.moderator {
                                 color: $moderator-color;
                             }
+                            &.visitor {
+                                color: $visitor-color;
+                            }
                         }
                     }
                 }
@@ -203,11 +216,17 @@
                     input[type=submit] {
                         margin: 0 0.5em;
                     }
+                    .button-primary {
+                        background-color: $chatroom-head-color;
+                    }
                 }
             }
         }
 
         form.sendXMPPMessage {
+            .chat-toolbar {
+                background-color: $chatroom-toolbar-color;
+            }
             .chat-textarea {
                 border-bottom-right-radius: 0;
             }

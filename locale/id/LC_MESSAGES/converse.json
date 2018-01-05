@@ -4,91 +4,40 @@
       "converse": {
          "": {
             "domain": "converse",
+            "plural_forms": "nplurals=1; plural=0;",
             "lang": "id"
          },
-         "Bookmark this room": [
+         "The connection has dropped, attempting to reconnect.": [
             null,
             ""
          ],
-         "The name for this bookmark:": [
+         "Your Jabber ID and/or password is incorrect. Please try again.": [
             null,
             ""
          ],
-         "Would you like this room to be automatically joined upon startup?": [
+         "Sorry, we could not connect to the XMPP host with domain: ": [
             null,
             ""
          ],
-         "What should your nickname for this room be?": [
-            null,
-            ""
-         ],
-         "Save": [
-            null,
-            "Simpan"
-         ],
-         "Cancel": [
-            null,
-            "Batal"
-         ],
-         "Sorry, something went wrong while trying to save your bookmark.": [
-            null,
-            ""
-         ],
-         "Bookmarked Rooms": [
-            null,
-            ""
-         ],
-         "Click to open this room": [
-            null,
-            "Klik untuk membuka ruangan ini"
-         ],
-         "Show more information on this room": [
-            null,
-            "Tampilkan informasi ruangan ini"
-         ],
-         "Remove this bookmark": [
-            null,
-            ""
-         ],
-         "Personal message": [
-            null,
-            "Pesan pribadi"
-         ],
-         "Send": [
-            null,
-            ""
-         ],
-         "me": [
-            null,
-            "saya"
-         ],
-         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+         "The XMPP server did not offer a supported authentication mechanism": [
             null,
             ""
          ],
          "Typing from another device": [
             null,
-            ""
+            "Mengetik dari perangkat lain"
          ],
          "is typing": [
             null,
-            ""
-         ],
-         "Stopped typing on the other device": [
-            null,
-            ""
+            "sedang menulis"
          ],
          "has stopped typing": [
             null,
-            ""
+            "telah berhenti menulis"
          ],
          "Show this menu": [
             null,
             "Tampilkan menu ini"
-         ],
-         "Write in the third person": [
-            null,
-            "Tulis ini menggunakan bahasa pihak ketiga"
          ],
          "Remove messages": [
             null,
@@ -96,51 +45,123 @@
          ],
          "Are you sure you want to clear the messages from this chat box?": [
             null,
-            ""
+            "Apakah anda yakin ingin menghapus pesan dari kotak obrolan ini?"
          ],
-         "Insert a smiley": [
+         "Clear all messages": [
+            null,
+            "Hapus semua pesan"
+         ],
+         "Login": [
             null,
             ""
          ],
-         "Start a call": [
+         "Jabber ID:": [
             null,
             ""
-         ],
-         "Contacts": [
-            null,
-            "Teman"
          ],
          "Password:": [
             null,
             "Kata sandi:"
          ],
-         "Log In": [
+         "password": [
             null,
-            "Masuk"
+            "kata sandi"
          ],
-         "user@server": [
+         "Submit": [
+            null,
+            "Kirim"
+         ],
+         "This contact is busy": [
+            null,
+            "Kontak ini sedang sibuk"
+         ],
+         "This contact is online": [
+            null,
+            "Kontak ini terhubung"
+         ],
+         "This contact is offline": [
+            null,
+            "Kontak ini tidak terhubung"
+         ],
+         "This contact is unavailable": [
+            null,
+            "Kontak ini tidak tersedia"
+         ],
+         "This contact is away": [
+            null,
+            "Kontak ini sedang pergi"
+         ],
+         "Groups": [
             null,
             ""
          ],
-         "Sign in": [
+         "My contacts": [
             null,
-            "Masuk"
+            "Kontak saya"
+         ],
+         "Pending contacts": [
+            null,
+            "Kontak yang tertunda"
+         ],
+         "Contact requests": [
+            null,
+            "Permintaan pertemanan"
+         ],
+         "Ungrouped": [
+            null,
+            ""
+         ],
+         "Filter": [
+            null,
+            ""
+         ],
+         "State": [
+            null,
+            ""
+         ],
+         "Any": [
+            null,
+            ""
+         ],
+         "Unread": [
+            null,
+            ""
+         ],
+         "Online": [
+            null,
+            "Terhubung"
+         ],
+         "Chatty": [
+            null,
+            ""
+         ],
+         "Busy": [
+            null,
+            "Sibuk"
+         ],
+         "Extended Away": [
+            null,
+            ""
+         ],
+         "Offline": [
+            null,
+            "Tidak Terhubung"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "Klik untuk mulai perbincangan dengan kontak ini"
+         ],
+         "Name": [
+            null,
+            ""
          ],
          "I am %1$s": [
             null,
             "Saya %1$s"
          ],
-         "Click here to write a custom status message": [
-            null,
-            "Klik untuk menulis status kustom"
-         ],
          "Click to change your chat status": [
             null,
-            "Klik untuk mengganti status"
-         ],
-         "Custom status": [
-            null,
-            "Status kustom"
+            "Klik untuk mengganti status obrolan"
          ],
          "online": [
             null,
@@ -150,57 +171,29 @@
             null,
             "sibuk"
          ],
-         "away for long": [
+         "offline": [
             null,
-            "lama tak di tempat"
+            "tidak terhubung"
          ],
-         "away": [
+         "Username": [
             null,
-            "tak di tempat"
+            "Nama pengguna"
          ],
-         "Online": [
+         "user@domain": [
             null,
-            "Terhubung"
+            ""
          ],
-         "Busy": [
+         "Please enter a valid XMPP address": [
             null,
-            "Sibuk"
-         ],
-         "Away": [
-            null,
-            "Pergi"
-         ],
-         "Offline": [
-            null,
-            "Tak Terhubung"
-         ],
-         "Contact name": [
-            null,
-            "Nama teman"
+            ""
          ],
          "Search": [
             null,
             "Cari"
          ],
-         "e.g. user@example.org": [
-            null,
-            ""
-         ],
          "Add": [
             null,
             "Tambah"
-         ],
-         "Click to add new chat contacts": [
-            null,
-            "Klik untuk menambahkan teman baru"
-         ],
-         "Add a contact": [
-            null,
-            "Tambah teman"
-         ],
-         "No users found": [
-            null,
-            "Pengguna tak ditemukan"
          ],
          "Click to add as a chat contact": [
             null,
@@ -210,53 +203,21 @@
             null,
             ""
          ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            ""
-         ],
-         "Connecting": [
-            null,
-            "Menyambung"
-         ],
-         "Authenticating": [
-            null,
-            "Melakukan otentikasi"
-         ],
-         "Authentication Failed": [
-            null,
-            "Otentikasi gagal"
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            ""
-         ],
-         "This client does not allow presence subscriptions": [
-            null,
-            ""
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
-         ],
-         "Minimized": [
-            null,
-            ""
-         ],
          "This room is not anonymous": [
             null,
-            "Ruangan ini tidak anonim"
+            "Ruang ini tidak anonim"
          ],
          "This room now shows unavailable members": [
             null,
-            "Ruangan ini menampilkan anggota yang tak tersedia"
+            "Ruang ini sekarang menampilkan anggota yang tidak tersedia"
          ],
          "This room does not show unavailable members": [
             null,
-            "Ruangan ini tidak menampilkan anggota yang tak tersedia"
+            "Ruang ini tidak menampilkan anggota yang tidak tersedia"
          ],
          "Room logging is now enabled": [
             null,
-            "Pencatatan di ruangan ini sekarang dinyalakan"
+            "Pencatatan di ruang ini sekarang dinyalakan"
          ],
          "Room logging is now disabled": [
             null,
@@ -264,57 +225,37 @@
          ],
          "This room is now semi-anonymous": [
             null,
-            "Ruangan ini sekarang semi-anonim"
+            "Ruang ini sekarang semi-anonim"
          ],
          "This room is now fully-anonymous": [
             null,
-            "Ruangan ini sekarang anonim"
+            "Ruang ini sekarang anonim"
          ],
          "A new room has been created": [
             null,
-            "Ruangan baru telah dibuat"
+            "Ruang baru telah dibuat"
          ],
          "You have been banned from this room": [
             null,
-            "Anda telah dicekal dari ruangan ini"
+            "Anda telah dicekal dari ruang ini"
          ],
          "You have been kicked from this room": [
             null,
-            "Anda telah ditendang dari ruangan ini"
+            "Anda telah ditendang dari ruang ini"
          ],
          "You have been removed from this room because of an affiliation change": [
             null,
-            "Anda telah dihapus dari ruangan ini karena perubahan afiliasi"
+            "Anda telah dihapus dari ruang ini karena perubahan afiliasi"
          ],
          "You have been removed from this room because the room has changed to members-only and you're not a member": [
             null,
-            "Anda telah dihapus dari ruangan ini karena ruangan ini hanya terbuka untuk anggota dan anda bukan anggota"
-         ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "Anda telah dihapus dari ruangan ini karena layanan MUC (Multi-user chat) telah dimatikan."
+            "Anda telah dihapus dari ruang ini karena ruang ini telah diganti menjadi khusus anggota dan anda bukan anggota"
          ],
          "Message": [
             null,
             "Pesan"
          ],
-         "Hide the list of occupants": [
-            null,
-            ""
-         ],
-         "Error: the \"": [
-            null,
-            ""
-         ],
-         "Error: could not execute the command": [
-            null,
-            ""
-         ],
-         "Change user's affiliation to admin": [
-            null,
-            ""
-         ],
-         "Change user role to occupant": [
+         "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
             null,
             ""
          ],
@@ -366,27 +307,7 @@
             null,
             "Kata sandi: "
          ],
-         "Submit": [
-            null,
-            "Kirim"
-         ],
          "The reason given is: \"%1$s\".": [
-            null,
-            ""
-         ],
-         "The reason given is: \"": [
-            null,
-            ""
-         ],
-         " has left the room. \"": [
-            null,
-            ""
-         ],
-         " has joined the room. \"": [
-            null,
-            ""
-         ],
-         " has joined the room.": [
             null,
             ""
          ],
@@ -432,17 +353,13 @@
          ],
          "Unmoderated": [
             null,
-            "Tak dimoderasi"
-         ],
-         "Unsecured": [
-            null,
-            ""
+            "Tidak dimoderasi"
          ],
          "Messages are archived on the server": [
             null,
             ""
          ],
-         "All other room occupants can see your Jabber ID": [
+         "All other room occupants can see your XMPP username": [
             null,
             ""
          ],
@@ -450,7 +367,7 @@
             null,
             ""
          ],
-         "Only moderators can see your Jabber ID": [
+         "Only moderators can see your XMPP username": [
             null,
             ""
          ],
@@ -466,9 +383,13 @@
             null,
             ""
          ],
+         "Please enter a valid XMPP username": [
+            null,
+            ""
+         ],
          "Room name": [
             null,
-            "Nama ruangan"
+            "Nama ruang"
          ],
          "Server": [
             null,
@@ -476,7 +397,7 @@
          ],
          "Show rooms": [
             null,
-            "Perlihatkan ruangan"
+            "Tampilkan ruangan"
          ],
          "Rooms": [
             null,
@@ -492,7 +413,11 @@
          ],
          "Description:": [
             null,
-            "Keterangan:"
+            "Deskripsi:"
+         ],
+         "Room Address (JID):": [
+            null,
+            ""
          ],
          "Occupants:": [
             null,
@@ -512,15 +437,15 @@
          ],
          "Open room": [
             null,
-            "Ruangan terbuka"
+            "Ruang terbuka"
          ],
          "Permanent room": [
             null,
-            "Ruangan permanen"
+            "Ruang permanen"
          ],
          "Temporary room": [
             null,
-            "Ruangan sementara"
+            "Ruang sementara"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,
@@ -530,21 +455,13 @@
             null,
             ""
          ],
-         "Notification from %1$s": [
+         "Bookmark this room": [
             null,
-            ""
+            "Tandai ruang ini"
          ],
-         "%1$s says": [
+         "The name for this bookmark:": [
             null,
-            ""
-         ],
-         "wants to be your contact": [
-            null,
-            ""
-         ],
-         "Re-establishing encrypted session": [
-            null,
-            "Menyambung kembali sesi terenkripsi"
+            "Nama untuk penanda ini:"
          ],
          "Generating private key.": [
             null,
@@ -556,7 +473,7 @@
          ],
          "Could not verify this user's identify.": [
             null,
-            "Tak dapat melakukan verifikasi identitas pengguna ini."
+            "Tidak dapat melakukan verifikasi identitas pengguna ini."
          ],
          "Exchanging private key with contact.": [
             null,
@@ -568,15 +485,11 @@
          ],
          "Your message could not be sent": [
             null,
-            "Pesan anda tak dapat dikirim"
+            "Pesan anda tidak dapat dikirim"
          ],
          "We received an unencrypted message": [
             null,
-            "Kami menerima pesan terenkripsi"
-         ],
-         "We received an unreadable encrypted message": [
-            null,
-            "Kami menerima pesan terenkripsi yang gagal dibaca"
+            "Kami menerima pesan tidak terenkripsi"
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
             null,
@@ -584,7 +497,7 @@
          ],
          "What is your security question?": [
             null,
-            "Apakah pertanyaan keamanan anda?"
+            "Apakah pertanyaan keamanan Anda?"
          ],
          "What is the answer to the security question?": [
             null,
@@ -596,19 +509,19 @@
          ],
          "Your messages are not encrypted. Click here to enable OTR encryption.": [
             null,
-            "Pesan anda tak terenkripsi. Klik di sini untuk menyalakan enkripsi OTR."
+            "Pesan anda tak terenkripsi. Klik di sini untuk mengaktifkan enkripsi OTR."
          ],
          "End encrypted conversation": [
             null,
-            "Sudahi percakapan terenkripsi"
+            "Akhiri percakapan terenkripsi"
          ],
          "Refresh encrypted conversation": [
             null,
-            "Setel ulang percakapan terenkripsi"
+            "Segarkan percakapan terenkripsi"
          ],
          "Start encrypted conversation": [
             null,
-            "Mulai sesi terenkripsi"
+            "Mulai percakapan terenkripsi"
          ],
          "Verify with fingerprints": [
             null,
@@ -624,25 +537,61 @@
          ],
          "unencrypted": [
             null,
-            "tak dienkripsi"
+            "tak terenkripsi"
          ],
          "unverified": [
             null,
-            "tak diverifikasi"
+            "tak terverifikasi"
          ],
          "verified": [
             null,
-            "diverifikasi"
+            "terverifikasi"
          ],
          "finished": [
             null,
             "selesai"
          ],
-         " e.g. conversejs.org": [
+         "Don't have a chat account?": [
             null,
             ""
          ],
-         "Your XMPP provider's domain name:": [
+         "Create an account": [
+            null,
+            ""
+         ],
+         "Create your account": [
+            null,
+            ""
+         ],
+         "Please enter the XMPP provider to register with:": [
+            null,
+            ""
+         ],
+         "Already have a chat account?": [
+            null,
+            ""
+         ],
+         "Log in here": [
+            null,
+            ""
+         ],
+         "Account Registration:": [
+            null,
+            ""
+         ],
+         "Register": [
+            null,
+            ""
+         ],
+         "Choose a different provider": [
+            null,
+            ""
+         ],
+         "Hold tight, we're fetching the registration form…": [
+            null,
+            ""
+         ],
+         " e.g. conversejs.org": [
             null,
             ""
          ],
@@ -658,15 +607,11 @@
             null,
             ""
          ],
-         "Register": [
+         "Sorry, we're unable to connect to your chosen provider.": [
             null,
             ""
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
-            null,
-            ""
-         ],
-         "Requesting a registration form from the XMPP server": [
             null,
             ""
          ],
@@ -682,95 +627,19 @@
             null,
             ""
          ],
-         "Return": [
-            null,
-            ""
-         ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             ""
          ],
-         "Retry": [
+         "Notification from %1$s": [
             null,
             ""
          ],
-         "This contact is busy": [
-            null,
-            "Teman ini sedang sibuk"
-         ],
-         "This contact is online": [
-            null,
-            "Teman ini terhubung"
-         ],
-         "This contact is offline": [
-            null,
-            "Teman ini tidak terhubung"
-         ],
-         "This contact is unavailable": [
-            null,
-            "Teman ini tidak tersedia"
-         ],
-         "This contact is away for an extended period": [
-            null,
-            "Teman ini tidak di tempat untuk waktu yang lama"
-         ],
-         "This contact is away": [
-            null,
-            "Teman ini tidak di tempat"
-         ],
-         "Groups": [
+         "%1$s says": [
             null,
             ""
          ],
-         "My contacts": [
-            null,
-            "Teman saya"
-         ],
-         "Pending contacts": [
-            null,
-            "Teman yang menunggu"
-         ],
-         "Contact requests": [
-            null,
-            "Permintaan pertemanan"
-         ],
-         "Ungrouped": [
-            null,
-            ""
-         ],
-         "Filter": [
-            null,
-            ""
-         ],
-         "State": [
-            null,
-            ""
-         ],
-         "Any": [
-            null,
-            ""
-         ],
-         "Chatty": [
-            null,
-            ""
-         ],
-         "Extended Away": [
-            null,
-            ""
-         ],
-         "Click to remove this contact": [
-            null,
-            "Klik untuk menghapus teman ini"
-         ],
-         "Click to chat with this contact": [
-            null,
-            "Klik untuk mulai perbinjangan dengan teman ini"
-         ],
-         "Name": [
-            null,
-            ""
-         ],
-         "Sorry, there was an error while trying to remove ": [
+         "wants to be your contact": [
             null,
             ""
          ]

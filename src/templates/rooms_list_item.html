@@ -1,0 +1,21 @@
+<dd class="available-chatroom {[ if (o.num_unread_general) { ]} unread-msgs {[ } ]}" data-room-jid="{{{o.jid}}}">
+{[ if (o.num_unread) { ]}
+    <span class="msgs-indicator">{{{ o.num_unread }}}</span>
+{[ } ]}
+<a class="open-room"
+    data-room-jid="{{{o.jid}}}"
+    title="{{{o.open_title}}}" href="#">{{{o.name}}}</a>
+<a class="right close-room icon-leave"
+   data-room-jid="{{{o.jid}}}"
+   data-room-name="{{{o.name}}}"
+   title="{{{o.info_leave_room}}}" href="#">&nbsp;</a>
+
+{[ if (o.allow_bookmarks) { ]}
+<a class="right icon-pushpin {[ if (o.bookmarked) { ]} remove-bookmark button-on {[ } else { ]} add-bookmark {[ } ]}"
+   data-room-jid="{{{o.jid}}}" data-bookmark-name="{{{o.name}}}"
+   title="{[ if (o.bookmarked) { ]} {{{o.info_remove_bookmark}}} {[ } else { ]} {{{o.info_add_bookmark}}} {[ } ]}"
+   href="#">&nbsp;</a>
+{[ } ]}
+<a class="right room-info icon-room-info" data-room-jid="{{{o.jid}}}"
+   title="{{{o.info_title}}}" href="#">&nbsp;</a>
+</dd>

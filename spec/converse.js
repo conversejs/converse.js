@@ -1,12 +1,13 @@
 (function (root, factory) {
     define([
+        "jquery",
+        "jasmine",
         "converse-core",
         "mock",
         "test-utils"], factory);
-} (this, function (converse, mock, test_utils) {
+} (this, function ($, jasmine, converse, mock, test_utils) {
     var b64_sha1 = converse.env.b64_sha1;
     var _ = converse.env._;
-    var $ = converse.env.jQuery;
 
     describe("Converse", function() {
         
@@ -30,7 +31,9 @@
                     _converse.keepalive = true;
                     _converse.authentication = "prebind";
                     expect(_converse.logIn.bind(_converse)).toThrow(
-                        new Error("attemptPreboundSession: when using 'keepalive' with 'prebind, you must supply the JID of the current user."));
+                        new Error(
+                            "restoreBOSHSession: tried to restore a \"keepalive\" session "+
+                            "but we don't have the JID for the user!"));
                     _converse.authentication= authentication;
                     _converse.jid = jid;
                     _converse.keepalive = false;
@@ -51,7 +54,11 @@
 
         describe("A chat state indication", function () {
 
-            it("are sent out when the client becomes or stops being idle", mock.initConverse(function (_converse) {
+            it("are sent out when the client becomes or stops being idle",
+                mock.initConverseWithPromises(
+                    null, ['discoInitialized'], {},
+                    function (done, _converse) {
+
                 spyOn(_converse, 'sendCSI').and.callThrough();
                 var sent_stanza;
                 spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
@@ -59,7 +66,7 @@
                 });
                 var i = 0;
                 _converse.idle_seconds = 0; // Usually initialized by registerIntervalHandler
-                _converse.features['urn:xmpp:csi:0'] = true; // Mock that the server supports CSI
+                _converse.disco_entities.get(_converse.domain).features['urn:xmpp:csi:0'] = true; // Mock that the server supports CSI
 
                 _converse.csi_waiting_time = 3; // The relevant config option
                 while (i <= _converse.csi_waiting_time) {
@@ -76,10 +83,10 @@
                 expect(sent_stanza.toLocaleString()).toBe(
                     "<active xmlns='urn:xmpp:csi:0'/>"
                 );
-
                 // Reset values
                 _converse.csi_waiting_time = 0;
-                _converse.features['urn:xmpp:csi:0'] = false;
+                _converse.disco_entities.get(_converse.domain).features['urn:xmpp:csi:0'] = false;
+                done();
             }));
         });
 
@@ -269,32 +276,38 @@
 
         describe("The \"chats\" API", function() {
 
-            it("has a method 'get' which returns a wrapped chat box", mock.initConverse(function (_converse) {
-                test_utils.createContacts(_converse, 'current');
-                // Test on chat that doesn't exist.
-                expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
-                var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                // Test on chat that's not open
-                var box = _converse.api.chats.get(jid);
-                expect(typeof box === 'undefined').toBeTruthy();
-                var chatboxview = _converse.chatboxviews.get(jid);
-                // Test for single JID
-                test_utils.openChatBoxFor(_converse, jid);
-                box = _converse.api.chats.get(jid);
-                expect(box instanceof Object).toBeTruthy();
-                expect(box.model.get('box_id')).toBe(b64_sha1(jid));
-                chatboxview = _converse.chatboxviews.get(jid);
-                expect(chatboxview.$el.is(':visible')).toBeTruthy();
-                // Test for multiple JIDs
-                var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                test_utils.openChatBoxFor(_converse, jid2);
-                var list = _converse.api.chats.get([jid, jid2]);
-                expect(_.isArray(list)).toBeTruthy();
-                expect(list[0].model.get('box_id')).toBe(b64_sha1(jid));
-                expect(list[1].model.get('box_id')).toBe(b64_sha1(jid2));
+            it("has a method 'get' which returns a wrapped chat box", mock.initConverseWithPromises(
+                null, ['rosterInitialized'], {}, function (done, _converse) {
+                    test_utils.openControlBox();
+                    test_utils.createContacts(_converse, 'current');
+                    // Test on chat that doesn't exist.
+                    expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
+                    var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    // Test on chat that's not open
+                    var box = _converse.api.chats.get(jid);
+                    expect(typeof box === 'undefined').toBeTruthy();
+                    var chatboxview = _converse.chatboxviews.get(jid);
+                    // Test for single JID
+                    test_utils.openChatBoxFor(_converse, jid);
+                    box = _converse.api.chats.get(jid);
+                    expect(box instanceof Object).toBeTruthy();
+                    expect(box.model.get('box_id')).toBe(b64_sha1(jid));
+                    chatboxview = _converse.chatboxviews.get(jid);
+                    expect($(chatboxview.el).is(':visible')).toBeTruthy();
+                    // Test for multiple JIDs
+                    var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    test_utils.openChatBoxFor(_converse, jid2);
+                    var list = _converse.api.chats.get([jid, jid2]);
+                    expect(_.isArray(list)).toBeTruthy();
+                    expect(list[0].model.get('box_id')).toBe(b64_sha1(jid));
+                    expect(list[1].model.get('box_id')).toBe(b64_sha1(jid2));
+                    done();
             }));
 
-            it("has a method 'open' which opens and returns a wrapped chat box", mock.initConverse(function (_converse) {
+            it("has a method 'open' which opens and returns a wrapped chat box", mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {}, function (done, _converse) {
+
+                test_utils.openControlBox();
                 test_utils.createContacts(_converse, 'current');
                 var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var chatboxview;
@@ -308,19 +321,23 @@
                     ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
                 );
                 chatboxview = _converse.chatboxviews.get(jid);
-                expect(chatboxview.$el.is(':visible')).toBeTruthy();
+                expect($(chatboxview.el).is(':visible')).toBeTruthy();
                 // Test for multiple JIDs
                 var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var list = _converse.api.chats.open([jid, jid2]);
                 expect(_.isArray(list)).toBeTruthy();
                 expect(list[0].model.get('box_id')).toBe(b64_sha1(jid));
                 expect(list[1].model.get('box_id')).toBe(b64_sha1(jid2));
+                done();
             }));
         });
 
         describe("The \"settings\" API", function() {
-            it("has methods 'get' and 'set' to set configuration settings", mock.initConverse(function (_converse) {
-                expect(_.keys(_converse.api.settings)).toEqual(["get", "set"]);
+            it("has methods 'get' and 'set' to set configuration settings", mock.initConverse(
+                    {'play_sounds': true}, 
+                    function (_converse) {
+
+                expect(_.keys(_converse.api.settings)).toEqual(["update", "get", "set"]);
                 expect(_converse.api.settings.get("play_sounds")).toBe(true);
                 _converse.api.settings.set("play_sounds", false);
                 expect(_converse.api.settings.get("play_sounds")).toBe(false);

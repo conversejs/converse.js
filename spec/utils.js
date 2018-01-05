@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define(["jasmine-html", "converse-core"], factory);
+    define(["jasmine", "converse-core"], factory);
 } (this, function (jasmine, converse) {
     var utils = converse.env.utils,
         _ = converse.env._;
@@ -14,7 +14,7 @@
                 chatview_avatar_height: 32,
                 auto_join_rooms: [],
                 visible_toolbar_buttons: {
-                    'emoticons': true,
+                    'emojis': true,
                     'call': false,
                     'clear': true,
                     'toggle_occupants': true
@@ -31,7 +31,7 @@
                     'anonymous@conference.nomnom.im',
                 ],
                 visible_toolbar_buttons: {
-                    'emoticons': false,
+                    'emojis': false,
                     'call': false,
                     'toggle_occupants':false,
                     'invalid': false 
@@ -44,7 +44,7 @@
             expect(context.chatview_avatar_width).toBe(32);
             expect(context.chatview_avatar_height).toBe(48);
             expect(_.keys(context.visible_toolbar_buttons)).toEqual(_.keys(settings.visible_toolbar_buttons));
-            expect(context.visible_toolbar_buttons.emoticons).toBeFalsy();
+            expect(context.visible_toolbar_buttons.emojis).toBeFalsy();
             expect(context.visible_toolbar_buttons.call).toBeFalsy();
             expect(context.visible_toolbar_buttons.toggle_occupants).toBeFalsy();
             expect(context.visible_toolbar_buttons.invalid).toBeFalsy();

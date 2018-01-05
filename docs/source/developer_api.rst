@@ -6,10 +6,6 @@
 The converse.js developer API
 =============================
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 .. note:: The API documented here is available in Converse.js 0.8.4 and higher.
         Earlier versions of Converse.js might have different API methods or none at all.
 
@@ -50,10 +46,12 @@ Public API methods
 ==================
 
 Publich API methods are those methods that are accessible on the global
-``window.converse`` object. They are public, because any Javascript in the page
+``window.converse`` object. They are public, because any JavaScript in the page
 can call them. Public methods therefore don't expose any sensitive or closured
 data. To do that, you'll need to create a plugin, which has access to the
 private API method.
+
+.. _`initialize`:
 
 initialize
 ----------
@@ -63,7 +61,7 @@ initialize
 Publich API method which initializes converse.js.
 This method must always be called when using converse.js.
 
-The `initialize` method takes a map of :ref:`configuration-variables`.
+The `initialize` method takes a map of :ref:`configuration-settings`.
 
 Example:
 
@@ -112,15 +110,6 @@ Registers a new plugin.
     }
     converse.plugins.add('myplugin', plugin);
 
-remove
-~~~~~~
-
-Removes a plugin from the registry.
-
-.. code-block:: javascript
-
-    converse.plugins.remove('myplugin');
-
 
 Private API methods
 ===================
@@ -141,6 +130,22 @@ that might be running in the page.
     server (or from the browser's sessionStorage cache). Due to
     time-constriaints these limitations are ignored in the examples below. For
     a fuller picture, refer to the section :ref:`events-API` as well.
+
+emit
+----
+
+This method allows you to emit events, which can be listened to via
+``_converse.api.listen.on`` or ``_converse.api.listen.once``.
+
+For example:
+
+.. code-block:: javascript
+
+    _converse.emit('foo-completed');
+
+Additionally, if a promise has been registered under the same name
+(via ``_converse.api.promises.add``), then that promise will also be resolved
+when calling ``emit``.
 
 send
 ----
@@ -164,7 +169,6 @@ For example, to send a message stanza:
         }
     });
 
-
 .. _`waituntil-grouping`:
 
 waitUntil
@@ -180,15 +184,15 @@ two important ways:
 
 Converse.js has the following promises:
 
-* cachedRoster
-* chatBoxesFetched
-* connected
-* pluginsInitialized
-* roster
-* rosterContactsFetched
-* rosterGroupsFetched
-* rosterInitialized
-* statusInitialized
+* :ref:`cachedRoster`
+* :ref:`chatBoxesFetched`
+* :ref:`pluginsInitialized`
+* :ref:`roster`
+* :ref:`rosterContactsFetched`
+* :ref:`rosterGroupsFetched`
+* :ref:`rosterInitialized`
+* :ref:`statusInitialized`
+* :ref:`roomsPanelRendered` (only via the `converse-muc` plugin)
 
 Below is an example from `converse-muc.js <https://github.com/jcbrand/converse.js/blob/master/src/converse-muc.js>`_
 where the `rosterContactsFetched` promise is waited on. The method
@@ -210,7 +214,7 @@ Converse.js supports the *Message Archive Management*
 (`XEP-0313 <https://xmpp.org/extensions/xep-0313.html>`_) protocol,
 through which it is able to query an XMPP server for archived messages.
 
-See also the **message_archiving** option in the :ref:`configuration-variables` section, which you'll usually
+See also the **message_archiving** option in the :ref:`configuration-settings` section, which you'll usually
 want to  in conjunction with this API.
 
 query
@@ -317,7 +321,7 @@ room under the  ``with`` key.
 
 The ``start`` and ``end`` parameters are used to query for messages
 within a certain timeframe. The passed in date values may either be ISO8601
-formatted date strings, or Javascript Date objects.
+formatted date strings, or JavaScript Date objects.
 
 .. code-block:: javascript
 
@@ -425,6 +429,48 @@ disconnect
 ~~~~~~~~~~
 
 Terminates the connection.
+
+
+The **disco** grouping
+----------------------
+
+This grouping collects API functions related to `service discovery
+<https://xmpp.org/extensions/xep-0030.html>`_.
+
+supports
+~~~~~~~~
+
+Used to determine whether an entity supports a given feature.
+
+Returns a `Promise` which, when resolved, returns a map/object with keys
+`supported` (a boolean) and `feature` which is a `Backbone.Model <http://backbonejs.org/#Model>`_.
+
+.. code-block:: javascript
+
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            _converse.api.disco.supports(_converse.bare_jid, Strophe.NS.MAM).then(
+                function (value) {
+                    // `value` is a map with two keys, `supported` and `feature`.
+
+                    if (value.supported) {
+                        // The feature is supported
+                    } else {
+                        // The feature is not supported
+                    }
+                },
+                function () { // Error
+                    _converse.log(
+                        "Error or timeout while checking for feature support",
+                        Strophe.LogLevel.ERROR
+                    );
+                }
+            ).catch((msg) => {
+                _converse.log(msg, Strophe.LogLevel.FATAL);
+            });
+        }
+    });
 
 
 The **user** grouping
@@ -677,7 +723,7 @@ Note, for MUC chat rooms, you need to use the "rooms" grouping instead.
 get
 ~~~
 
-Returns an object representing a chat box.
+Returns an object representing a chat box. The chat box should already be open.
 
 To return a single chat box, provide the JID of the contact you're chatting
 with in that chat box:
@@ -699,16 +745,36 @@ To return all open chat boxes, call the method without any JIDs::
 open
 ~~~~
 
-Opens a chat box and returns a Backbone.View object representing a chat box.
+Opens a chat box and returns a `Backbone.View <http://backbonejs.org/#View>`_ object
+representing a chat box.
 
-To open a single chat box, provide the JID of the contact:
+Note that converse doesn't allow opening chats with users who aren't in your roster
+(unless you have set :ref:`allow_non_roster_messaging` to ``true``).
+
+Before opening a chat, you should first wait until the roster has been populated.
+This is the :ref:`rosterContactsFetched` event/promise.
+
+Besides that, it's a good idea to also first wait until already opened chat boxes
+(which are cached in sessionStorage) have also been fetched from the cache.
+This is the :ref:`chatBoxesFetched` event/promise.
+
+These two events fire only once per session, so they're also available as promises.
+
+So, to open a single chat box:
 
 .. code-block:: javascript
 
     converse.plugins.add('myplugin', {
-        initialize: function () {
-            this._converse.api.chats.open('buddy@example.com')
-        }
+      initialize: function() {
+        var _converse = this._converse;
+        Promise.all([
+            _converse.api.waitUntil('rosterContactsFetched'),
+            _converse.api.waitUntil('chatBoxesFetched')
+        ]).then(function() {
+            // Note, buddy@example.org must be in your contacts roster!
+            _converse.api.chats.open('buddy@example.com')
+        });
+      }
     });
 
 To return an array of chat boxes, provide an array of JIDs:
@@ -717,7 +783,14 @@ To return an array of chat boxes, provide an array of JIDs:
 
     converse.plugins.add('myplugin', {
         initialize: function () {
-            this._converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com'])
+            var _converse = this._converse;
+            Promise.all([
+                _converse.api.waitUntil('rosterContactsFetched'),
+                _converse.api.waitUntil('chatBoxesFetched')
+            ]).then(function() {
+                // Note, these users must first be in your contacts roster!
+                _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com'])
+            });
         }
     });
 
@@ -756,6 +829,67 @@ To return an array of chat boxes, provide an array of JIDs:
 | url         | The URL of the chat box heading.                    |
 +-------------+-----------------------------------------------------+
 
+.. _`listen-grouping`:
+
+The **listen** grouping
+-----------------------
+
+Converse.js emits events to which you can subscribe from your own JavaScript.
+
+Concerning events, the following methods are available under the "listen"
+grouping:
+
+* **on(eventName, callback, [context])**:
+
+    Calling the ``on`` method allows you to subscribe to an event.
+    Every time the event fires, the callback method specified by ``callback`` will be
+    called.
+
+    Parameters:
+
+    * ``eventName`` is the event name as a string.
+    * ``callback`` is the callback method to be called when the event is emitted.
+    * ``context`` (optional), the value of the `this` parameter for the callback.
+
+    For example:
+
+.. code-block:: javascript
+
+        _converse.api.listen.on('message', function (messageXML) { ... });
+
+* **once(eventName, callback, [context])**:
+
+    Calling the ``once`` method allows you to listen to an event
+    exactly once.
+
+    Parameters:
+
+    * ``eventName`` is the event name as a string.
+    * ``callback`` is the callback method to be called when the event is emitted.
+    * ``context`` (optional), the value of the `this` parameter for the callback.
+
+    For example:
+
+.. code-block:: javascript
+
+        _converse.api.listen.once('message', function (messageXML) { ... });
+
+* **not(eventName, callback)**
+
+    To stop listening to an event, you can use the ``not`` method.
+
+    Parameters:
+
+    * ``eventName`` is the event name as a string.
+    * ``callback`` refers to the function that is to be no longer executed.
+
+    For example:
+
+.. code-block:: javascript
+
+        _converse.api.listen.not('message', function (messageXML) { ... });
+
+
 The **rooms** grouping
 ----------------------
 
@@ -777,17 +911,19 @@ It takes 3 parameters:
 .. code-block:: javascript
 
     converse.plugins.add('myplugin', {
+
         initialize: function () {
-            var nick = 'dread-pirate-roberts';
-            var create_if_not_found = true;
-            this._converse.api.rooms.open(
-                'group@muc.example.com',
-                {'nick': nick},
-                create_if_not_found
-            )
+            var _converse = this._converse;
+            _converse.api.waitUntil('roomsAutoJoined').then(function () {
+                var create_if_not_found = true;
+                this._converse.api.rooms.open(
+                    'group@muc.example.com',
+                    {'nick': 'dread-pirate-roberts'},
+                    create_if_not_found
+                )
+            });
         }
     });
-
 
 open
 ~~~~
@@ -851,6 +987,9 @@ Room attributes that may be passed in:
   The values should be named without the ``muc#roomconfig_`` prefix.
 * *maximize*: A boolean, indicating whether minimized rooms should also be
   maximized, when opened. Set to ``false`` by default.
+* *bring_to_foreground*: A boolean indicating whether the room should be
+  brought to the foreground and therefore replace the currently shown chat.
+  If there is no chat currently open, then this option is ineffective.
 
 For example, opening a room with a specific default configuration:
 
@@ -888,10 +1027,103 @@ Lets you close open chat rooms. You can call this method without any arguments
 to close all open chat rooms, or you can specify a single JID or an array of
 JIDs.
 
+.. _`promises-grouping`:
+
+The **promises** grouping
+-------------------------
+
+Converse.js and its plugins emit various events which you can listen to via the
+:ref:`listen-grouping`.
+
+Some of these events are also available as `ES2015 Promises <http://es6-features.org/#PromiseUsage>`_,
+although not all of them could logically act as promises, since some events
+might be fired multpile times whereas promises are to be resolved (or
+rejected) only once.
+
+The core events, which are also promises are:
+
+* :ref:`cachedRoster`
+* :ref:`chatBoxesFetched`
+* :ref:`pluginsInitialized`
+* :ref:`roster`
+* :ref:`rosterContactsFetched`
+* :ref:`rosterGroupsFetched`
+* :ref:`rosterInitialized`
+* :ref:`statusInitialized`
+* :ref:`roomsPanelRendered` (only via the `converse-muc` plugin)
+
+The various plugins might also provide promises, and they do this by using the
+``promises.add`` api method.
+
+add(promises)
+~~~~~~~~~~~~~
+
+By calling ``promises.add``, a new promise is made available for other code or
+plugins to depend on via the ``_converse.api.waitUntil`` method.
+
+This method accepts either a string or list of strings which specify the
+promise(s) to be added.
+
+For example:
+
+.. code-block:: javascript
+
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+            this._converse.api.promises.add('foo-completed');
+        }
+    });
+
+Generally, it's the responsibility of the plugin which adds the promise to
+also resolve it.
+
+This is done by calling ``_converse.api.emit``, which not only resolve the
+promise, but also emit an event with the same name (which can be listened to
+via ``_converse.api.listen``).
+
+For example:
+
+.. code-block:: javascript
+
+    _converse.api.emit('foo-completed');
+
+
 The **settings** grouping
 -------------------------
 
-This grouping allows you to get or set the configuration settings of converse.js.
+This grouping allows access to the configuration settings of converse.js.
+
+.. _`settings-update`:
+
+update(settings)
+~~~~~~~~~~~~~~~~
+
+Allows new configuration settings to be specified, or new default values for
+existing configuration settings to be specified.
+
+For example:
+
+.. code-block:: javascript
+
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+            this._converse.api.settings.update({
+                'enable_foo': true
+            });
+        }
+    });
+
+The user can then override the default value of the configuration setting when
+calling `converse.initialize`.
+
+For example:
+
+.. code-block:: javascript
+
+    converse.initialize({
+        'enable_foo': false
+    });
+
 
 get(key)
 ~~~~~~~~
@@ -964,63 +1196,28 @@ Example:
     });
 
 
-.. _`listen-grouping`:
-
-The **listen** grouping
+The **vcard** grouping
 -----------------------
 
-Converse.js emits events to which you can subscribe from your own Javascript.
+get
+~~~
 
-Concerning events, the following methods are available under the "listen"
-grouping:
+Returns a Promise which results with the VCard data for a particular JID.
 
-* **on(eventName, callback, [context])**:
-
-    Calling the ``on`` method allows you to subscribe to an event.
-    Every time the event fires, the callback method specified by ``callback`` will be
-    called.
-
-    Parameters:
-
-    * ``eventName`` is the event name as a string.
-    * ``callback`` is the callback method to be called when the event is emitted.
-    * ``context`` (optional), the value of the `this` parameter for the callback.
-
-    For example:
+Example:
 
 .. code-block:: javascript
 
-        _converse.api.listen.on('message', function (messageXML) { ... });
+    converse.plugins.add('myplugin', {
+        initialize: function () {
 
-* **once(eventName, callback, [context])**:
+            _converse.api.waitUntil('rosterContactsFetched').then(() => {
+                this._converse.api.vcard.get('someone@example.org').then(
+                    (vcard) => {
+                        // Do something with the vcard...
+                    }
+                );
+            });
 
-    Calling the ``once`` method allows you to listen to an event
-    exactly once.
-
-    Parameters:
-
-    * ``eventName`` is the event name as a string.
-    * ``callback`` is the callback method to be called when the event is emitted.
-    * ``context`` (optional), the value of the `this` parameter for the callback.
-
-    For example:
-
-.. code-block:: javascript
-
-        _converse.api.listen.once('message', function (messageXML) { ... });
-
-* **not(eventName, callback)**
-
-    To stop listening to an event, you can use the ``not`` method.
-
-    Parameters:
-
-    * ``eventName`` is the event name as a string.
-    * ``callback`` refers to the function that is to be no longer executed.
-
-    For example:
-
-.. code-block:: javascript
-
-        _converse.api.listen.not('message', function (messageXML) { ... });
-
+        }
+    });

@@ -1,29 +1,32 @@
+<span {[ if (!o.visible) { ]} class="hidden" {[ } ]}>
 <form class="pure-form roster-filter-form input-button-group">
-    <input value="{{filter_text}}" class="roster-filter roster-filter-{{filter_type}}"
-           placeholder="{{placeholder}}">
-           <select class="state-type state-type-{{filter_type}}">
-        <option value="">{{label_any}}</option>
-        <option {[ if (chat_state === 'unread_messages') { ]} selected="selected" {[ } ]}
-            value="unread_messages">{{label_unread_messages}}</option>
-        <option {[ if (chat_state === 'online') { ]} selected="selected" {[ } ]}
-            value="online">{{label_online}}</option>
-        <option {[ if (chat_state === 'chat') { ]} selected="selected" {[ } ]}
-            value="chat">{{label_chatty}}</option>
-        <option {[ if (chat_state === 'dnd') { ]} selected="selected" {[ } ]}
-            value="dnd">{{label_busy}}</option>
-        <option {[ if (chat_state === 'away') { ]} selected="selected" {[ } ]}
-            value="away">{{label_away}}</option>
-        <option {[ if (chat_state === 'xa') { ]} selected="selected" {[ } ]}
-            value="xa">{{label_xa}}</option>
-        <option {[ if (chat_state === 'offline') { ]} selected="selected" {[ } ]}
-            value="offline">{{label_offline}}</option>
+    <input value="{{{o.filter_text}}}"
+           class="roster-filter roster-filter-{{{o.filter_type}}}"
+           placeholder="{{{o.placeholder}}}">
+    <select class="state-type state-type-{{{o.filter_type}}}">
+        <option value="">{{{o.label_any}}}</option>
+        <option {[ if (o.chat_state === 'unread_messages') { ]} selected="selected" {[ } ]}
+            value="unread_messages">{{{o.label_unread_messages}}}</option>
+        <option {[ if (o.chat_state === 'online') { ]} selected="selected" {[ } ]}
+            value="online">{{{o.label_online}}}</option>
+        <option {[ if (o.chat_state === 'chat') { ]} selected="selected" {[ } ]}
+            value="chat">{{{o.label_chatty}}}</option>
+        <option {[ if (o.chat_state === 'dnd') { ]} selected="selected" {[ } ]}
+            value="dnd">{{{o.label_busy}}}</option>
+        <option {[ if (o.chat_state === 'away') { ]} selected="selected" {[ } ]}
+            value="away">{{{o.label_away}}}</option>
+        <option {[ if (o.chat_state === 'xa') { ]} selected="selected" {[ } ]}
+            value="xa">{{{o.label_xa}}}</option>
+        <option {[ if (o.chat_state === 'offline') { ]} selected="selected" {[ } ]}
+            value="offline">{{{o.label_offline}}}</option>
     </select>
     <select class="filter-type">
-        <option {[ if (filter_type === 'contacts') { ]} selected="selected" {[ } ]}
-                value="contacts">{{label_contacts}}</option>
-        <option {[ if (filter_type === 'groups') { ]} selected="selected" {[ } ]}
-                value="groups">{{label_groups}}</option>
-        <option {[ if (filter_type === 'state') { ]} selected="selected" {[ } ]}
-                value="state">{{label_state}}</option>
+        <option {[ if (o.filter_type === 'contacts') { ]} selected="selected" {[ } ]}
+                value="contacts">{{{o.label_contacts}}}</option>
+        <option {[ if (o.filter_type === 'groups') { ]} selected="selected" {[ } ]}
+                value="groups">{{{o.label_groups}}}</option>
+        <option {[ if (o.filter_type === 'state') { ]} selected="selected" {[ } ]}
+                value="state">{{{o.label_state}}}</option>
     </select>
 </form>
+</span>

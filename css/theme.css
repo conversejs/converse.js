@@ -20,9 +20,6 @@ h6 {
   font-weight: 700;
   letter-spacing: 1px;
 }
-h1 {
-  text-transform: uppercase;
-}
 p {
   margin: 0 0 25px;
   font-size: 18px;
@@ -343,6 +340,20 @@ ul.features {
 }
 .sponsors {
     clear: both;
-    font-size: 1.1em;
-    padding: 6em 0 7em 0;
+    font-size: 1.4em;
+    padding: 2em 0 6em 0;
+}
+.sponsors h2 {
+    text-align: center;
+}
+.sponsors ul {
+    margin: 0 0 1em 0;
+}
+.sponsors ul li {
+    margin: 1em 0;
+    list-style: none;
+}
+.sponsors-text {
+    text-align: left;
+    padding: 0 0 2em 0;
 }

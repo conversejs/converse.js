@@ -1,20 +1,21 @@
 (function (root, factory) {
-    define(["mock", "converse-core", "test_utils"], factory);
-} (this, function (mock, converse, test_utils) {
+    define(["jasmine", "mock", "converse-core", "test-utils", "utils"], factory);
+} (this, function (jasmine, mock, converse, test_utils, u) {
     var _ = converse.env._;
     var $iq = converse.env.$iq;
 
     describe("Profiling", function() {
-        afterEach(function () {
-            converse.user.logout();
-            test_utils.clearBrowserStorage();
-        });
+        xit("adds hundreds of contacts to the roster",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
 
-        xit("adds hundreds of contacts to the roster", mock.initConverse(function(_converse) {
             _converse.roster_groups = false;
-            expect(this.roster.pluck('jid').length).toBe(0);
+            test_utils.openControlBox();
+
+            expect(_converse.roster.pluck('jid').length).toBe(0);
             var stanza = $iq({
-                to: this.connection.jid,
+                to: _converse.connection.jid,
                 type: 'result',
                 id: 'roster_1'
             }).c('query', {
@@ -29,16 +30,37 @@
                     }).c('group').t(group).up().up();
                 }
             });
-            this.roster.onReceivedFromServer(stanza.tree());
-            // expect(this.roster.pluck('jid').length).toBe(400);
+            _converse.roster.onReceivedFromServer(stanza.tree());
+
+            return test_utils.waitUntil(function () {
+                var $group = _converse.rosterview.$el.find('.roster-group')
+                return $group.length && u.isVisible($group[0]);
+            }).then(function () {
+                var count = 0;
+                _converse.roster.each(function (contact) {
+                    if (count < 10) {
+                        contact.set('chat_status', 'online');
+                        count += 1;
+                    }
+                });
+                return test_utils.waitUntil(function () {
+                    return _converse.rosterview.$el.find('li.online').length
+                })
+            }).then(done);
         }));
 
-        xit("adds hundreds of contacts to the roster, with roster groups", mock.initConverse(function(_converse) {
+        xit("adds hundreds of contacts to the roster, with roster groups",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+            
             // _converse.show_only_online_users = true;
             _converse.roster_groups = true;
-            expect(this.roster.pluck('jid').length).toBe(0);
+            test_utils.openControlBox();
+
+            expect(_converse.roster.pluck('jid').length).toBe(0);
             var stanza = $iq({
-                to: this.connection.jid,
+                to: _converse.connection.jid,
                 type: 'result',
                 id: 'roster_1'
             }).c('query', {
@@ -53,8 +75,27 @@
                     }).c('group').t(group).up().up();
                 }
             });
-            this.roster.onReceivedFromServer(stanza.tree());
-            //expect(this.roster.pluck('jid').length).toBe(400);
+            _converse.roster.onReceivedFromServer(stanza.tree());
+
+            return test_utils.waitUntil(function () {
+                var $group = _converse.rosterview.$el.find('.roster-group')
+                return $group.length && u.isVisible($group[0]);
+            }).then(function () {
+                _.each(['Friends', 'Colleagues', 'Family', 'Acquaintances'], function (group) {
+                    var count = 0;
+                    _converse.roster.each(function (contact) {
+                        if (_.includes(contact.get('groups'), group)) {
+                            if (count < 10) {
+                                contact.set('chat_status', 'online');
+                                count += 1;
+                            }
+                        }
+                    });
+                });
+                return test_utils.waitUntil(function () {
+                    return _converse.rosterview.$el.find('li.online').length
+                })
+            }).then(done);
         }));
     });
 }));

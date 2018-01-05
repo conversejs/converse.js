@@ -1,0 +1,67 @@
+body {
+    width: 100%;
+    height: 100%;
+    font-family: "Lora", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #ffffff;
+    background-color: $global-background-color;
+
+    .brand-heading {
+        font-size: 600%;
+        margin-left: -10%;
+        &.fade-in {
+            @include fade-in;
+            @include animation-delay(2s);
+        }
+        .icon-conversejs {
+            font-size: 88%;
+        }
+    }
+
+    div.content {
+        height: 100vh;
+        width: 100vw;
+        position: fixed;
+        background-color: $global-background-color;
+
+        .inner-content {
+            text-align: center;
+            padding: 7%;
+            @include calc(padding-left, '5% + #{$controlbox-width}');
+
+            p.no-chats {
+                padding-right: 10%;
+                font-size: 120%;
+            }
+        }
+    }
+}
+
+#conversejs {
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+
+    form {
+        &.pure-form.converse-form {
+            margin: 1em;
+            input[type=checkbox] {
+                margin-left: 1em;
+                display: inline;
+                margin-bottom: 2em;
+            }
+            input[type=text],
+            input[type=password],
+            input[type=number],
+            input[type=button],
+            input[type=submit] {
+                height: 2.2em;
+            }
+            input[type=button],
+            input[type=submit] {
+                padding-left: 1em;
+                padding-right: 1em;
+                margin-right: 1em;
+            }
+        }
+    }
+}

@@ -1,3 +1,11 @@
+@mixin fade-in {
+    opacity: 0;  /* make things invisible upon start */
+    @include animation-name(fadein);
+    @include animation-fill-mode(forwards);
+    @include animation-duration(0.75s);
+    @include animation-timing-function(ease);
+}
+
 #converse-embedded-chat,
 #conversejs {
     bottom: 0;
@@ -20,8 +28,20 @@
         width: 100vw;
     }
 
+	::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+        color: $subdued-color;
+	}
+	::-moz-placeholder { /* Firefox 19+ */
+        color: $subdued-color;
+	}
+	:-ms-input-placeholder { /* IE 10+ */
+        color: $subdued-color;
+	}
+	:-moz-placeholder { /* Firefox 18- */
+        color: $subdued-color;
+	}
     ::placeholder {
-        color: #BBB;
+        color: $subdued-color;
     }
 
     .circle {
@@ -39,9 +59,6 @@
         -webkit-touch-callout: none;
         @include user-select(none);
     }
-    .emoticon {
-        font-size: $font-size;
-    }
 
     @keyframes fadein {
         0% { opacity: 0 }
@@ -52,17 +69,26 @@
         100% { opacity: 1 }
     }
 
+    .fade-in {
+        @include fade-in;
+    }
+
     .visible {
-        visibility: visible;
-        opacity: 1;
+        opacity:0;  /* make things invisible upon start */
         @include animation-name(fadein);
         @include animation-fill-mode(forwards);
-        @include animation-duration(350ms);
+        @include animation-duration(500ms);
         @include animation-timing-function(ease);
     }
+
     .hidden {
         opacity: 0;
         display: none;
+    }
+    .collapsed {
+        height: 0 !important;
+        overflow: hidden !important;
+        padding: 0 !important;
     }
 
     .locked {
@@ -76,6 +102,10 @@
         to {
             @include transform(rotate(359deg));
         }
+    }
+
+    .emojione {
+        height: $emoji_height;
     }
 
     .spinner {
@@ -99,7 +129,7 @@
         text-align: center;
         display: block;
         margin: 0;
-        padding: 50% 0;
+        padding: 10% 0;
     }
     .hor_centered {
         text-align: center;
@@ -121,10 +151,14 @@
     }
 
     .error {
-        color: red;
+        color: $error-color;
+    }
+    .info {
+        color: $info-color;
     }
     .reg-feedback {
         font-size: 85%;
+        margin-bottom: 1em;
     }
 
     .reg-feedback,
@@ -151,8 +185,11 @@
     .activated {
         display: block !important;
     }
+    .pure-form-message {
+        padding: 0.5em 0;
+    }
     .pure-button {
-        border-radius: $chatbox-border-radius;
+        border-radius: $button-border-radius;
     }
     .button-primary {
         color: white;
@@ -164,7 +201,7 @@
     }
     .button-cancel {
         color: white;
-        background-color: $warning-color;
+        background-color: $text-color;
     }
 
     form {
@@ -173,9 +210,20 @@
             padding: 1em;
             legend {
                 color: $text-color;
+                font-size: 125%;
+                margin-bottom: 1.5em;
+            }
+            input[type=checkbox] {
+                display: block;
+            }
+            select,
+            input[type=password],
+            input[type=number],
+            input[type=text] {
+                min-width: 50%;
             }
             label {
-                margin-top: 1em;
+                margin: 1em 0;
                 font-size: $font-size-large;
             }
             input[type=text],
@@ -193,7 +241,7 @@
                 border: none;
             }
             input.error {
-                border: 1px solid red;
+                border: 1px solid $error-color;
                 color: $text-color;
             }
             .form-help {
@@ -202,6 +250,9 @@
                 padding-top: 0.5em;
                 &:hover {
                     color: $text-color;
+                }
+                &.error {
+                    color: $error-color;
                 }
             }
         }

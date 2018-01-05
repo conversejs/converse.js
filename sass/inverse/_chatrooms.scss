@@ -1,0 +1,75 @@
+#conversejs {
+    .chat-head-chatroom {
+        height: $chatroom-head-height;
+        font-size: 20px;
+        .close-chatbox-button:before {
+            content: "\e601"; // Leave icon
+        }
+        .chat-title {
+            .chatroom-description {
+                font-size: 65%;
+            }
+        }
+    }
+
+    .chatroom {
+        @include calc(width, '100% - #{$controlbox-width}');
+        .box-flyout {
+            background-color: $chatroom-head-color;
+            border: $flyout-padding solid $chatroom-head-color;
+            border-top: 0.8em solid $chatroom-head-color;
+            @include calc(width, '100% - #{$controlbox-width}');
+            .chatroom-body {
+                @include border-top-radius($chatbox-border-radius);
+                .chatroom-form-container {
+                    border-radius: $chatbox-border-radius;
+                }
+                .chat-area {
+                    border-top-left-radius: $chatbox-border-radius;
+                    min-width: auto;
+                    .chat-content {
+                        border-top-left-radius: $chatbox-border-radius;
+                        padding: 0 $padding $padding $padding;
+                    }
+                    &.full {
+                        max-width: 100%;
+                        .new-msgs-indicator {
+                            max-width: 100%;
+                        }
+                    }
+                }
+                .occupants {
+                    border-top-right-radius: $chatbox-border-radius;;
+                    padding: $padding;
+                    .occupants-heading {
+                        font-size: $font-size-large;
+                    }
+                    .chatroom-features {
+                        bottom: $padding;
+                    }
+                    ul {
+                        &.occupant-list {
+                            @include calc(height, '100% - 212px');
+                            li {
+                                font-size: $font-size-small;
+                                width: 100%;
+                            }
+                        }
+                        li {
+                            &.feature {
+                                font-size: $font-size-small;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .room-invite {
+            span {
+                .invited-contact {
+                    margin: 0 0 0.5em -1px;
+                }
+            }
+        }
+    }
+}

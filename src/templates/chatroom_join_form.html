@@ -1,0 +1,16 @@
+<form class="pure-form pure-form-stacked converse-form add-chatroom" action="" method="post">
+    <fieldset>
+        <label>{{{o.label_room_name}}}</label>
+        <input type="text" name="chatroom" class="new-chatroom-name" placeholder="{{{o.label_room_name}}}"/>
+        {[ if (o.server_input_type != 'hidden') { ]}
+        <label{{{o.server_label_global_attr}}}>{{{o.label_server}}}</label>
+        {[ } ]}
+        <input type="{{{o.server_input_type}}}"
+               name="server"
+               class="new-chatroom-server"
+               placeholder="{{{o.label_server}}}"
+               value="{{{o.muc_domain}}}"/>
+        <input type="submit" class="pure-button button-primary" name="join" value="{{{o.label_join}}}"/>
+        <input type="button" class="pure-button button-secondary" name="show" id="show-rooms" value="{{{o.label_show_rooms}}}"/>
+    </fieldset>
+</form>

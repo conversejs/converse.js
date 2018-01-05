@@ -2,33 +2,6 @@
     #controlbox {
         #chatrooms {
             .bookmarks-list {
-                padding-top: 1em;
-
-                .bookmarks-toggle {
-                    display: block;
-                    font-weight: bold;
-                    color: $text-color;
-                    margin-bottom: 0.5em;
-                }
-                dl.rooms-list.bookmarks {
-                    dd.available-chatroom {
-                        a {
-                            &.room-info {
-                                clear: none;
-                            }
-                            &.open-room {
-                                width: 75%;
-                                overflow: hidden;
-                                text-overflow: ellipsis;
-                                white-space: nowrap;
-                                padding-right: 0.5em;
-                            }
-                        }
-                        .remove-bookmark {
-                            float: right;
-                        }
-                    }
-                }
             }
         }
     }

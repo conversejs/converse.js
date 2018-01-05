@@ -37,7 +37,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-8 col-md-offset-2">
-                        <h1 class="brand-heading"><i class="icon-conversejs"></i>Converse.js</h1>
+                        <h1 class="brand-heading"><i class="icon-conversejs"></i>converse</h1>
                         <p class="intro-text">Developer page.</p>
                         <p class="intro-text">
                             Converse.js will only work on this page if you have 
@@ -54,17 +54,18 @@
     require(['converse'], function (converse) {
         converse.initialize({
             auto_away: 300,
-            i18n: locales['af'],
-            auto_join_rooms: [
-                'discuss@conference.conversejs.org',
-                'prosody@conference.prosody.im',
-                'jdev@conference.jabber.org'
-            ],
+            i18n: 'en',
+            // auto_join_rooms: [
+            //     'discuss@conference.conversejs.org',
+            //     'prosody@conference.prosody.im',
+            //     'jdev@conference.jabber.org'
+            // ],
             notify_all_room_messages: [
                 'discuss@conference.conversejs.org'
             ],
             auto_reconnect: true,
-            bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+            bosh_service_url: 'http://chat.example.org:5280/http-bind/',
+            // bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
             message_archiving: 'always',
             show_controlbox_by_default: true,
             strict_plugin_dependencies: false,

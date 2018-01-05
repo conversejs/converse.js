@@ -1,31 +1,30 @@
-{[ if (allow_otr)  { ]}
-    <li class="toggle-otr {{{otr_status_class}}}" title="{{{otr_tooltip}}}">
-        <span class="chat-toolbar-text">{{{otr_translated_status}}}</span>
-        {[ if (otr_status == UNENCRYPTED) { ]}
+{[ if (o.allow_otr)  { ]}
+    <li class="toggle-toolbar-menu toggle-otr {{{o.otr_status_class}}}" title="{{{o.otr_tooltip}}}">
+        <span class="chat-toolbar-text">{{{o.otr_translated_status}}}</span>
+        {[ if (o.otr_status == o.UNENCRYPTED) { ]}
             <span class="icon-unlocked"></span>
         {[ } ]}
-        {[ if (otr_status == UNVERIFIED) { ]}
+        {[ if (o.otr_status == o.UNVERIFIED) { ]}
             <span class="icon-lock"></span>
         {[ } ]}
-        {[ if (otr_status == VERIFIED) { ]}
+        {[ if (o.otr_status == o.VERIFIED) { ]}
             <span class="icon-lock"></span>
-        {[ } ]}
-        {[ if (otr_status == FINISHED) { ]}
+        {[ } ]} {[ if (o.otr_status == o.FINISHED) { ]}
             <span class="icon-unlocked"></span>
         {[ } ]}
-        <ul>
-            {[ if (otr_status == UNENCRYPTED) { ]}
-               <li><a class="start-otr" href="#">{{{label_start_encrypted_conversation}}}</a></li>
+        <ul class="toolbar-menu collapsed">
+            {[ if (o.otr_status == o.UNENCRYPTED) { ]}
+               <li><a class="start-otr" href="#">{{{o.label_start_encrypted_conversation}}}</a></li>
             {[ } ]}
-            {[ if (otr_status != UNENCRYPTED) { ]}
-               <li><a class="start-otr" href="#">{{{label_refresh_encrypted_conversation}}}</a></li>
-               <li><a class="end-otr" href="#">{{{label_end_encrypted_conversation}}}</a></li>
-               <li><a class="auth-otr" data-scheme="smp" href="#">{{{label_verify_with_smp}}}</a></li>
+            {[ if (o.otr_status != o.UNENCRYPTED) { ]}
+               <li><a class="start-otr" href="#">{{{o.label_refresh_encrypted_conversation}}}</a></li>
+               <li><a class="end-otr" href="#">{{{o.label_end_encrypted_conversation}}}</a></li>
+               <li><a class="auth-otr" data-scheme="smp" href="#">{{{o.label_verify_with_smp}}}</a></li>
             {[ } ]}
-            {[ if (otr_status == UNVERIFIED) { ]}
-               <li><a class="auth-otr" data-scheme="fingerprint" href="#">{{{label_verify_with_fingerprints}}}</a></li>
+            {[ if (o.otr_status == o.UNVERIFIED) { ]}
+               <li><a class="auth-otr" data-scheme="fingerprint" href="#">{{{o.label_verify_with_fingerprints}}}</a></li>
             {[ } ]}
-            <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank" rel="noopener">{{{label_whats_this}}}</a></li>
+            <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank" rel="noopener">{{{o.label_whats_this}}}</a></li>
         </ul>
     </li>
 {[ } ]}

@@ -5,6 +5,21 @@
                 background-color: $headline-head-color;
             }
         }
+        .chat-body {
+            background-color: $headline-head-color;
+            border-radius: $chatbox-border-radius;
+            .chat-message {
+                span {
+                    &.chat-msg-them {
+                        color: $dark-orange;
+                    }
+                }
+            }
+        }
+        .chat-content {
+            height: 100%;
+            border-radius: $chatbox-border-radius;
+        }
     }
 }
 

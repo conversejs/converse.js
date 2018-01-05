@@ -1,0 +1,30 @@
+{[ _.forEach(o.emojis_by_category, function (obj, category) { ]}
+    <ul class="emoji-picker emoji-picker-{{{category}}} {[ if (o.current_category !== category) { ]} hidden {[ } ]}">
+        {[ _.forEach(o.emojis_by_category[category], function (emoji) { ]}
+        <li class="emoji insert-emoji {[ if (o.shouldBeHidden(emoji._shortname, o.current_skintone, o.toned_emojis)) { ]} hidden {[ }; ]}"
+            data-emoji="{{{emoji._shortname}}}">
+                <a href="#" data-emoji="{{{emoji._shortname}}}"> {{ o.transform(emoji._shortname) }}  </a>
+        </li>
+        {[ }); ]}
+    </ul>
+{[ }); ]}
+<ul class="emoji-toolbar">
+    <li class="emoji-category-picker">
+        <ul>
+            {[ _.forEach(o.emojis_by_category, function (obj, category) { ]}
+                <li data-category="{{{category}}}" class="emoji-category {[ if (o.current_category === category) { ]} picked {[ } ]}">
+                    <a class="pick-category" href="#" data-category="{{{category}}}"> {{ o.transform(o.emojis_by_category[category][0]._shortname) }} </a>
+                </li>
+            {[ }); ]}
+        </ul>
+    </li>
+    <li class="emoji-skintone-picker">
+        <ul>
+            {[ _.forEach(o.skintones, function (skintone) { ]}
+                <li data-skintone="{{{skintone}}}" class="emoji-skintone {[ if (o.current_skintone === skintone) { ]} picked {[ } ]}">
+                    <a class="pick-skintone" href="#" data-skintone="{{{skintone}}}"> {{ o.transform(':'+skintone+':') }} </a>
+                </li>
+            {[ }); ]}
+        </ul>
+    </li>
+</ul>

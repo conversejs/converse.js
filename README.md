@@ -12,10 +12,25 @@ It enables you to add chat functionality to your website, independent of
 any specific backend. You will however need an XMPP server to connect
 to, either your own, or a public one.
 
+Please support this project via [Patreon](https://www.patreon.com/jcbrand) or [Liberapay](https://liberapay.com/jcbrand)
+
 ## Demo
 
-- A live demo is available at [https://conversejs.org](https://conversejs.org)
-- A demo showing anonymous login is available at [https://conversejs.org/demo/anonymous.html](https://conversejs.org/demo/anonymous.html)
+Converse.js is hosted and can be used at [https://conversejs.org](https://conversejs.org).
+
+A demo showing anonymous login is available at [https://conversejs.org/demo/anonymous.html](https://conversejs.org/demo/anonymous.html)
+and a demo which shows how you can embed a single chat room into a page is
+avialable at [https://conversejs.org/demo/embedded.html](https://conversejs.org/demo/embedded.html).
+
+### Converse.js: As seen on the conversejs.org website
+
+![Screenshot of Converse.js](https://opkode.com/img/converse-screenshot.png)
+
+### inVerse: a fullscreen version of converse.js
+
+Converse.js is also available in a fullscreen version, called [inVerse](https://inverse.chat)
+
+![Screenshot of inVerse](https://opkode.com/img/inverse-screenshot.png)
 
 ## Documentation
 
@@ -26,6 +41,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 
 ## Features
 
+-   A [plugin architecture](https://conversejs.org/docs/html/plugin_development.html) based on [pluggable.js](https://jcbrand.github.io/pluggable.js/)
 -   Single-user chat
 -   Contacts and groups
 -   Multi-user chat rooms [XEP 45](http://xmpp.org/extensions/xep-0045.html)
@@ -57,6 +73,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   **[Patternslib](http://patternslib.com)**: [patterns.converse](https://github.com/jcbrand/patterns.converse)
 -   **[Alfresco](http://www.alfresco.com)**: [alfresco-js-chat-share](https://github.com/keensoft/alfresco-js-chat-share)
 -   **[Friendica](http://friendica.com)**: [converse](https://github.com/friendica/friendica-addons/tree/master/xmpp/converse)
+-   **[Tiki Wiki CMS Groupware](http://tiki.org)**: [built-in optional feature](https://doc.tiki.org/XMPP)
 
 ## Screencasts
 

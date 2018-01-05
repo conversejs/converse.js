@@ -1,17 +1,31 @@
+SHELL := /bin/bash --login
 # You can set these variables from the command line.
-BUILDDIR        = ./docs
-BUNDLE          ?= ./.bundle/bin/bundle
-GRUNT           ?= ./node_modules/.bin/grunt
-HTTPSERVE       ?= ./node_modules/.bin/http-server
-ESLINT          ?= ./node_modules/.bin/eslint
-PAPER           =
-PHANTOMJS       ?= ./node_modules/.bin/phantomjs
-RJS             ?= ./node_modules/.bin/r.js
-PO2JSON         ?= ./node_modules/.bin/po2json
-SASS            ?= ./.bundle/bin/sass
-CLEANCSS        ?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
-SPHINXBUILD     ?= ./bin/sphinx-build
-SPHINXOPTS      =
+UGLIFYJS		?= node_modules/.bin/uglifyjs
+BABEL			?= node_modules/.bin/babel
+BOURBON_TEMPLATES = ./node_modules/bourbon/app/assets/stylesheets/ 
+BUILDDIR		= ./docs
+BUNDLE		  	?= ./.bundle/bin/bundle
+CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
+CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
+ESLINT		  	?= ./node_modules/.bin/eslint
+HTTPSERVE	   	?= ./node_modules/.bin/http-server
+HTTPSERVE_PORT	        ?= 8000
+PAPER		   	=
+PO2JSON		 	?= ./node_modules/.bin/po2json
+RJS			 	?= ./node_modules/.bin/r.js
+SASS			?= ./.bundle/bin/sass
+SPHINXBUILD	 	?= ./bin/sphinx-build
+SED				?= sed
+SPHINXOPTS	  	=
+
+
+
+# In the case user wishes to use RVM 
+USE_RVM                 ?= false
+RVM_RUBY_VERSION        ?= 2.4.2
+ifeq ($(USE_RVM),true)
+	RVM_USE                 = rvm use $(RVM_RUBY_VERSION)
+endif
 
 # Internal variables.
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
@@ -47,17 +61,21 @@ help:
 ## Miscellaneous
 
 .PHONY: serve
-serve: stamp-npm
-	$(HTTPSERVE) -p 8000 -c -1
+serve: dev 
+	$(HTTPSERVE) -p $(HTTPSERVE_PORT) -c-1
+
+.PHONY: serve_bg
+serve_bg: dev
+	$(HTTPSERVE) -p $(HTTPSERVE_PORT) -c-1 -s &
 
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot src/*.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.0.2 -c
+GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.2.1 -c
 
 .PHONY: pot
-pot:
-	$(GETTEXT) --language="javascript" 2>&1 > /dev/null; test $$? -eq 0 && exit 0 || $(GETTEXT) --language="python" && exit $$?;
+pot: dist/converse-no-dependencies.js
+	$(GETTEXT) 2>&1 > /dev/null; exit $$?;
 
 .PHONY: po
 po:
@@ -72,16 +90,16 @@ po2json:
 
 .PHONY: release
 release:
-	sed -ri s/Version:\ [0-9]\+\.[0-9]\+\.[0-9]\+/Version:\ $(VERSION)/ src/start.frag
-	sed -ri s/Project-Id-Version:\ Converse\.js\ [0-9]\+\.[0-9]\+\.[0-9]\+/Project-Id-Version:\ Converse.js\ $(VERSION)/ locale/converse.pot
-	sed -ri s/\"version\":\ \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\":\ \"$(VERSION)\"/ bower.json
-	sed -ri s/\"version\":\ \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\":\ \"$(VERSION)\"/ package.json
-	sed -ri s/--package-version=[0-9]\+\.[0-9]\+\.[0-9]\+/--package-version=$(VERSION)/ Makefile
-	sed -ri s/v[0-9]\+\.[0-9]\+\.[0-9]\+\.zip/v$(VERSION)\.zip/ index.html
-	sed -ri s/v[0-9]\+\.[0-9]\+\.[0-9]\+\.tar\.gz/v$(VERSION)\.tar\.gz/ index.html
-	sed -ri s/version\ =\ \'[0-9]\+\.[0-9]\+\.[0-9]\+\'/version\ =\ \'$(VERSION)\'/ docs/source/conf.py
-	sed -ri s/release\ =\ \'[0-9]\+\.[0-9]\+\.[0-9]\+\'/release\ =\ \'$(VERSION)\'/ docs/source/conf.py
-	sed -ri "s/(Unreleased)/(`date +%Y-%m-%d`)/" docs/CHANGES.md
+	$(SED) -ri s/Version:\ [0-9]\+\.[0-9]\+\.[0-9]\+/Version:\ $(VERSION)/ COPYRIGHT
+	$(SED) -ri s/Version:\ [0-9]\+\.[0-9]\+\.[0-9]\+/Version:\ $(VERSION)/ src/start.frag
+	$(SED) -ri s/Project-Id-Version:\ Converse\.js\ [0-9]\+\.[0-9]\+\.[0-9]\+/Project-Id-Version:\ Converse.js\ $(VERSION)/ locale/converse.pot
+	$(SED) -ri s/\"version\":\ \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\":\ \"$(VERSION)\"/ package.json
+	$(SED) -ri s/--package-version=[0-9]\+\.[0-9]\+\.[0-9]\+/--package-version=$(VERSION)/ Makefile
+	$(SED) -ri s/v[0-9]\+\.[0-9]\+\.[0-9]\+\.zip/v$(VERSION)\.zip/ index.html
+	$(SED) -ri s/v[0-9]\+\.[0-9]\+\.[0-9]\+\.tar\.gz/v$(VERSION)\.tar\.gz/ index.html
+	$(SED) -ri s/version\ =\ \'[0-9]\+\.[0-9]\+\.[0-9]\+\'/version\ =\ \'$(VERSION)\'/ docs/source/conf.py
+	$(SED) -ri s/release\ =\ \'[0-9]\+\.[0-9]\+\.[0-9]\+\'/release\ =\ \'$(VERSION)\'/ docs/source/conf.py
+	$(SED) -ri "s/(Unreleased)/`date +%Y-%m-%d`/" CHANGES.md
 	make pot
 	make po
 	make po2json
@@ -91,18 +109,18 @@ release:
 ## Install dependencies
 
 stamp-npm: package.json
-	npm install
-	touch stamp-npm
+	npm install && touch stamp-npm
 
 stamp-bundler: Gemfile
 	mkdir -p .bundle
+	$(RVM_USE)
 	gem install --user bundler --bindir .bundle/bin
 	$(BUNDLE) install --path .bundle --binstubs .bundle/bin
 	touch stamp-bundler
 
 .PHONY: clean
 clean:
-	-rm -f stamp-npm stamp-bundler
+	-rm -f stamp-npm stamp-bundler package-lock.json
 	-rm -rf node_modules .bundle
 
 .PHONY: dev
@@ -112,72 +130,83 @@ dev: stamp-bundler stamp-npm
 ## Builds
 
 .PHONY: css
-css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css
+css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css
 
-css/converse-muc-embedded.css:: stamp-bundler sass
-	$(SASS) -I ./node_modules/bourbon/app/assets/stylesheets/ sass/_muc_embedded.scss css/converse-muc-embedded.css
+css/inverse.css:: stamp-bundler sass sass/*
+	$(SASS) -I $(BOURBON_TEMPLATES) sass/inverse/inverse.scss css/inverse.css
+
+css/inverse.min.css:: css/inverse.css
+	$(CLEANCSS) css/inverse.css > css/inverse.min.css
+
+css/converse-muc-embedded.css:: stamp-bundler sass/*
+	$(SASS) -I $(BOURBON_TEMPLATES) sass/_muc_embedded.scss css/converse-muc-embedded.css
 
 css/converse-muc-embedded.min.css:: stamp-bundler sass css/converse-muc-embedded.css
 	$(CLEANCSS) css/converse-muc-embedded.css > css/converse-muc-embedded.min.css
 
-css/converse.css:: stamp-bundler sass
-	$(SASS) -I ./node_modules/bourbon/app/assets/stylesheets/ sass/converse.scss css/converse.css
+css/converse.css:: stamp-bundler sass/*
+	$(SASS) -I $(BOURBON_TEMPLATES) sass/converse/converse.scss css/converse.css
 
-css/converse.min.css:: stamp-npm sass
+css/converse.min.css:: css/converse.css
 	$(CLEANCSS) css/converse.css > css/converse.min.css
 
 css/theme.min.css:: stamp-npm css/theme.css
 	$(CLEANCSS) css/theme.css > css/theme.min.css
 
-css/mobile.min.css:: stamp-npm sass
+css/mobile.min.css:: stamp-npm sass/*
 	$(CLEANCSS) css/mobile.css > css/mobile.min.css
 
 .PHONY: watch
 watch: stamp-bundler
-	$(SASS) --watch -I ./node_modules/bourbon/app/assets/stylesheets/ sass/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css
+	$(SASS) --watch -I ./node_modules/bourbon/app/assets/stylesheets/ sass/converse/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css sass/inverse/inverse.scss:css/inverse.css
+
+.PHONY: watchjs
+watchjs: stamp-npm
+	$(BABEL) --source-maps --watch=./src --out-dir=./builds
+
+transpile: stamp-npm src
+	$(BABEL) --source-maps --out-dir=./builds ./src
+	$(BABEL) --source-maps --out-dir=./builds ./node_modules/backbone.vdomview/backbone.vdomview.js
+	touch transpile
 
 BUILDS = dist/converse.js \
 		 dist/converse.min.js \
-         dist/converse-mobile.js \
-         dist/converse-mobile.min.js \
-         dist/converse-muc-embedded.js \
-         dist/converse-muc-embedded.min.js \
-         dist/converse-no-jquery.js \
- 		 dist/converse-no-jquery.min.js \
+         dist/converse-headless.js \
+		 dist/converse-headless.min.js \
+		 dist/converse-muc-embedded.js \
+		 dist/converse-muc-embedded.min.js \
 		 dist/converse-no-dependencies.min.js \
 		 dist/converse-no-dependencies.js
 
-dist/converse.min.js: src locale node_modules *.js
-	$(RJS) -o src/build.js include=converse out=dist/converse.min.js
-dist/converse.js: src locale node_modules *.js
-	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
-dist/converse-no-jquery.min.js: src locale node_modules *.js
-	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.min.js
-dist/converse-no-jquery.js: src locale node_modules *.js
-	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.js optimize=none 
-dist/converse-no-dependencies.min.js: src locale node_modules *.js
-	$(RJS) -o src/build-no-dependencies.js
-dist/converse-no-dependencies.js: src locale node_modules *.js
-	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
-dist/converse-mobile.min.js: src locale node_modules *.js
-	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.min.js
-dist/converse-mobile.js: src locale node_modules *.js
-	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.js optimize=none 
-dist/converse-muc-embedded.min.js: src locale node_modules *.js
-	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.min.js
-dist/converse-muc-embedded.js: src locale node_modules *.js
-	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.js optimize=none 
+# dist/converse-esnext.js \
+# dist/converse-esnext.min.js \
 
-.PHONY: jsmin
-jsmin: $(BUILDS)
+dist/converse.js: transpile src node_modules
+	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
+dist/converse.min.js: transpile src node_modules
+	$(RJS) -o src/build.js include=converse out=dist/converse.min.js
+dist/converse-headless.js: transpile src node_modules
+	$(RJS) -o src/build.js paths.converse=src/headless include=converse out=dist/converse-headless.js optimize=none 
+dist/converse-headless.min.js: transpile src node_modules
+	$(RJS) -o src/build.js paths.converse=src/headless include=converse out=dist/converse-headless.min.js
+dist/converse-esnext.js: src node_modules
+	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.js optimize=none 
+dist/converse-esnext.min.js: src node_modules
+	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.min.js
+dist/converse-no-dependencies.js: transpile src node_modules
+	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
+dist/converse-no-dependencies.min.js: transpile src node_modules
+	$(RJS) -o src/build-no-dependencies.js out=dist/converse-no-dependencies.min.js
+dist/converse-muc-embedded.js: transpile src node_modules
+	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.js optimize=none 
+dist/converse-muc-embedded.min.js: transpile src node_modules
+	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.min.js
 
 .PHONY: dist
 dist:: build
 
 .PHONY: build
-build:: dev css
-	$(GRUNT) json
-	make jsmin
+build:: dev css transpile $(BUILDS)
 
 ########################################################################
 ## Tests
@@ -189,7 +218,7 @@ eslint: stamp-npm
 
 .PHONY: check
 check: eslint
-	$(PHANTOMJS) tests/run-jasmine2.js tests.html
+	LOG_CR_VERBOSITY=INFO $(CHROMIUM) http://localhost:$(HTTPSERVE_PORT)/tests.html
 
 
 ########################################################################
@@ -201,25 +230,3 @@ html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
-
-.PHONY: html
-doc: html
-
-.PHONY: epub
-epub:
-	$(SPHINXBUILD) -b epub $(ALLSPHINXOPTS) $(BUILDDIR)/epub
-	@echo
-	@echo "Build finished. The epub file is in $(BUILDDIR)/epub."
-
-.PHONY: changes
-changes:
-	$(SPHINXBUILD) -b changes $(ALLSPHINXOPTS) $(BUILDDIR)/changes
-	@echo
-	@echo "The overview file is in $(BUILDDIR)/changes."
-
-.PHONY: linkcheck
-linkcheck:
-	$(SPHINXBUILD) -b linkcheck $(ALLSPHINXOPTS) $(BUILDDIR)/linkcheck
-	@echo
-	@echo "Link check complete; look for any errors in the above output " \
-	      "or in $(BUILDDIR)/linkcheck/output.txt."

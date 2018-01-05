@@ -1,13 +1,4 @@
-<form class="pure-form pure-form-stacked converse-form add-chatroom" action="" method="post">
-    <fieldset>
-        <label>{{label_room_name}}</label>
-        <input type="text" name="chatroom" class="new-chatroom-name" placeholder="{{label_room_name}}"/>
-        {[ if (server_input_type != 'hidden') { ]}
-            <label{{server_label_global_attr}}>{{label_server}}</label>
-        {[ } ]}
-        <input type="{{server_input_type}}" name="server" class="new-chatroom-server" placeholder="{{label_server}}"/>
-        <input type="submit" class="pure-button button-primary" name="join" value="{{label_join}}"/>
-        <input type="button" class="pure-button button-secondary" name="show" id="show-rooms" value="{{label_show_rooms}}"/>
-    </fieldset>
-</form>
-<dl id="available-chatrooms" class="rooms-list"></dl>
+<form class="add-chatroom"></form>
+<div class="rooms-list-container">
+    <dl id="available-chatrooms" class="rooms-list"></dl>
+</div>

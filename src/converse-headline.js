@@ -14,8 +14,8 @@
     ], factory);
 }(this, function (converse, tpl_chatbox) {
     "use strict";
-    var _ = converse.env._,
-        utils = converse.env.utils;
+    const { _, utils } = converse.env;
+    const HEADLINES_TYPE = 'headline';
 
     converse.plugins.add('converse-headline', {
 
@@ -26,10 +26,21 @@
             //
             // New functions which don't exist yet can also be added.
 
+            ChatBoxes: {
+                model (attrs, options) {
+                    const { _converse } = this.__super__;
+                    if (attrs.type == HEADLINES_TYPE) {
+                        return new _converse.HeadlinesBox(attrs, options);
+                    } else {
+                        return this.__super__.model.apply(this, arguments);
+                    }
+                },
+            },
+
             ChatBoxViews: {
-                onChatBoxAdded: function (item) {
-                    var _converse = this.__super__._converse;
-                    var view = this.get(item.get('id'));
+                onChatBoxAdded (item) {
+                    const { _converse } = this.__super__;
+                    let view = this.get(item.get('id'));
                     if (!view && item.get('type') === 'headline') {
                         view = new _converse.HeadlinesBoxView({model: item});
                         this.add(item.get('id'), view);
@@ -41,12 +52,25 @@
             }
         },
 
-        initialize: function () {
+
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
-                __ = _converse.__;
+            const { _converse } = this,
+                { __ } = _converse;
+
+            _converse.HeadlinesBox = _converse.ChatBox.extend({
+                defaults: {
+                    'type': 'headline',
+                    'show_avatar': false,
+                    'bookmarked': false,
+                    'chat_state': undefined,
+                    'num_unread': 0,
+                    'url': ''
+                },
+            });
+
 
             _converse.HeadlinesBoxView = _converse.ChatBoxView.extend({
                 className: 'chatbox headlines',
@@ -57,61 +81,63 @@
                     'keypress textarea.chat-textarea': 'keyPressed'
                 },
 
-                initialize: function () {
+                initialize () {
+                    this.scrollDown = _.debounce(this._scrollDown, 250);
+                    this.markScrolled = _.debounce(this._markScrolled, 100);
                     this.disable_mam = true; // Don't do MAM queries for this box
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('change:minimized', this.onMinimizedChanged, this);
-                    this.render().fetchMessages().insertIntoDOM().hide();
+
+                    this.render().insertHeading().fetchMessages().insertIntoDOM().hide();
+                    _converse.emit('chatBoxOpened', this);
                     _converse.emit('chatBoxInitialized', this);
                 },
 
-                render: function () {
-                    this.$el.attr('id', this.model.get('box_id'))
-                        .html(tpl_chatbox(
-                                _.extend(this.model.toJSON(), {
-                                        show_toolbar: _converse.show_toolbar,
-                                        show_textarea: false,
-                                        show_send_button: _converse.show_send_button,
-                                        title: this.model.get('fullname'),
-                                        unread_msgs: __('You have unread messages'),
-                                        info_close: __('Close this box'),
-                                        label_personal_message: ''
-                                    }
-                                )
-                            )
-                        );
-                    this.$content = this.$el.find('.chat-content');
-                    _converse.emit('chatBoxOpened', this);
-                    utils.refreshWebkit();
+                render () {
+                    this.el.setAttribute('id', this.model.get('box_id'))
+                    this.el.innerHTML = tpl_chatbox(
+                        _.extend(this.model.toJSON(), {
+                                info_close: '',
+                                label_personal_message: '',
+                                show_send_button: false,
+                                show_textarea: false,
+                                show_toolbar: false,
+                                unread_msgs: ''
+                            }
+                        ));
+                    this.content = this.el.querySelector('.chat-content');
                     return this;
-                }
+                },
+
+                // Override to avoid the method in converse-chatview.js
+                'afterShown': _.noop
             });
 
-            var onHeadlineMessage = function (message) {
+            function onHeadlineMessage (message) {
                 /* Handler method for all incoming messages of type "headline". */
-                var from_jid = message.getAttribute('from');
+                const from_jid = message.getAttribute('from');
                 if (utils.isHeadlineMessage(message)) {
                     if (_.includes(from_jid, '@') && !_converse.allow_non_roster_messaging) {
                         return;
                     }
-                    var chatbox = _converse.chatboxes.create({
+                    const chatbox = _converse.chatboxes.create({
                         'id': from_jid,
                         'jid': from_jid,
                         'fullname':  from_jid,
-                        'type': 'headline'
+                        'type': 'headline',
                     });
                     chatbox.createMessage(message, undefined, message);
                     _converse.emit('message', {'chatbox': chatbox, 'stanza': message});
                 }
                 return true;
-            };
+            }
 
-            var registerHeadlineHandler = function () {
+            function registerHeadlineHandler () {
                 _converse.connection.addHandler(
                         onHeadlineMessage, null, 'message');
-            };
+            }
             _converse.on('connected', registerHeadlineHandler);
             _converse.on('reconnected', registerHeadlineHandler);
         }

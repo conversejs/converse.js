@@ -9,13 +9,24 @@
 .svn/
 .project
 .pydevproject
-analytics.js
 .idea
+.su?
+builds/*
+
+analytics.js
+inverse-analytics.js
+
+# python/buildout
 eggs
 .Python
+build
+parts
+*.pyc
+*.egg-info
 
 dev-jc.html
-
+inverse-dev.html
+inverse-dev-jc.html
 converse-logs/*.html
 
 # Ruby/Sass/Bundler
@@ -27,8 +38,8 @@ bourbon
 Backbone.Overview
 tags
 stamp-npm
-stamp-bower
 stamp-bundler
+transpile
 
 # Sphinx
 docs/html
@@ -47,19 +58,5 @@ develop-eggs
 .DS_Store
 
 # Builds
-dist/converse-no-dependencies.min.js
-dist/converse-no-locales-no-otr.js
-dist/converse-no-locales-no-otr.min.js
-dist/converse-no-otr.js
-dist/converse-no-otr.min.js
-dist/converse.min.js
-dist/converse-no-jquery.js
-dist/converse-no-jquery.min.js
-dist/converse-mobile.min.js
-dist/converse-muc-embedded.js
-dist/converse-muc-embedded.min.js
-
-css/*.map
-css/*.min.css
 .sv?
 /vendor/

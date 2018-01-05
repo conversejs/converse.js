@@ -5,11 +5,7 @@
 Developer guidelines
 ====================
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
-If you want to work with the non-minified Javascript and CSS files you'll soon
+If you want to work with the non-minified JavaScript and CSS files you'll soon
 notice that there are references to a missing *node_modules* directory.
 Please follow the instructions below to create these directories and fetch Converse's
 3rd-party dependencies.
@@ -97,7 +93,7 @@ Without AMD and require.js
 Converse.js can also be used without require.js. If you for some reason prefer
 to use it this way, please refer to
 `non_amd.html <https://github.com/jcbrand/converse.js/blob/master/non_amd.html>`_
-for an example of how and in what order all the Javascript files that converse.js
+for an example of how and in what order all the JavaScript files that converse.js
 depends on need to be loaded.
 
 Brief description of converse.js's dependencies

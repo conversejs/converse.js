@@ -1,6 +1,11 @@
-<p class="provider-title">{{{domain}}}</p>
-<a href='https://xmpp.net/result.php?domain={{{domain}}}&amp;type=client'>
-    <img class="provider-score" src='https://xmpp.net/badge.php?domain={{{domain}}}' alt='xmpp.net score' />
-</a>
-<p class="title">{{{title}}}</p>
-<p class="instructions">{{{instructions}}}</p>
+<legend>{{{o.__("Account Registration:")}}} {{{o.domain}}}</legend>
+<p class="title">{{{o.title}}}</p>
+<p class="instructions">{{{o.instructions}}}</p>
+<div class="form-errors hidden"></div>
+
+<fieldset class="buttons">
+    <input type="submit" class="pure-button button-primary" value="{{{o.__('Register')}}}"/>
+    {[ if (!o.registration_domain) { ]}
+        <input type="button" class="pure-button button-cancel" value="{{{o.__('Choose a different provider')}}}"/>
+    {[ } ]}
+</fieldset>

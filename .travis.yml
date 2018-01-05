@@ -1,6 +1,13 @@
+dist: trusty
 language: node_js
+cache:
+    directories:
+        - node_modules
+addons:
+    chrome: stable
 node_js:
  - 6
-before_script: make dev
+install: make stamp-npm
+before_script: make serve_bg
 script: make check
 sudo: false

@@ -1,4 +1,7 @@
 {
+    "parserOptions": {
+        "ecmaVersion": 6
+    },
     "env": {
         "browser": true,
         "jasmine": true
@@ -14,8 +17,8 @@
     "rules": {
         "lodash/prefer-lodash-method": [2, {
             "ignoreMethods": [
-                "find", "endsWith", "startsWith", "filter",
-                "map", "replace", "toLower", "split", "trim"
+                "find", "endsWith", "startsWith", "filter", "reduce",
+                "map", "replace", "toLower", "split", "trim", "forEach", "toUpperCase", "includes"
             ]
         }],
         "lodash/prefer-startswith": "off",
@@ -23,6 +26,7 @@
         "lodash/prefer-noop": "off",
         "lodash/prefer-lodash-typecheck": "off",
         "lodash/preferred-alias": "off",
+        "lodash/prefer-get": "off",
         "accessor-pairs": "error",
         "array-bracket-spacing": "off",
         "array-callback-return": "error",
@@ -55,7 +59,7 @@
         "dot-notation": [
             "error",
             {
-                "allowKeywords": false
+                "allowKeywords": true
             }
         ],
         "eol-last": "error",
@@ -186,7 +190,7 @@
         "no-use-before-define": "off",
         "no-useless-call": "error",
         "no-useless-computed-key": "error",
-        "no-useless-concat": "error",
+        "no-useless-concat": "off",
         "no-useless-constructor": "error",
         "no-useless-escape": "off",
         "no-useless-rename": "error",

@@ -1,12 +1,13 @@
 (function (root, factory) {
     define([
+        "jasmine",
         "jquery",
         "converse-core",
         "utils",
         "mock",
         "test-utils"
         ], factory);
-} (this, function ($, converse, utils, mock, test_utils) {
+} (this, function (jasmine, $, converse, utils, mock, test_utils) {
     "use strict";
     var $msg = converse.env.$msg,
         _ = converse.env._;
@@ -39,7 +40,9 @@
             utils.isHeadlineMessage.restore();
         }));
 
-        it("will open and display headline messages", mock.initConverse(function (_converse) {
+        it("will open and display headline messages", mock.initConverseWithPromises(
+            null, ['rosterGroupsFetched'], {}, function (done, _converse) {
+
             /* <message from='notify.example.com'
              *          to='romeo@im.example.com'
              *          type='headline'
@@ -73,9 +76,16 @@
             expect(utils.isHeadlineMessage.called).toBeTruthy();
             expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
             utils.isHeadlineMessage.restore(); // unwraps
+            // Headlines boxes don't show an avatar
+            var view = _converse.chatboxviews.get('notify.example.com');
+            expect(view.model.get('show_avatar')).toBeFalsy();
+            expect(view.el.querySelector('img.avatar')).toBe(null);
+            done();
         }));
 
-        it("will not show a headline messages from a full JID if allow_non_roster_messaging is false", mock.initConverse(function (_converse) {
+        it("will not show a headline messages from a full JID if allow_non_roster_messaging is false",
+            mock.initConverse(function (_converse) {
+
             _converse.allow_non_roster_messaging = false;
             sinon.spy(utils, 'isHeadlineMessage');
             var stanza = $msg({

@@ -14,18 +14,17 @@
 }(this, function (converse) {
     "use strict";
     // Strophe methods for building stanzas
-    var Strophe = converse.env.Strophe,
-        _ = converse.env._;
+    const { Strophe, _ } = converse.env;
     
     converse.plugins.add('converse-ping', {
 
-        initialize: function () {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse;
+            const { _converse } = this;
 
-            this.updateSettings({
+            _converse.api.settings.update({
                 ping_interval: 180 //in seconds
             });
 
@@ -35,7 +34,7 @@
                 // However, some servers don't advertise while still keeping the
                 // connection option due to pings.
                 //
-                // var feature = _converse.features.findWhere({'var': Strophe.NS.PING});
+                // var feature = _converse.disco_entities[_converse.domain].features.findWhere({'var': Strophe.NS.PING});
                 _converse.lastStanzaDate = new Date();
                 if (_.isNil(jid)) {
                     jid = Strophe.getDomainFromJid(_converse.bare_jid);
@@ -57,7 +56,9 @@
             };
 
             _converse.registerPongHandler = function () {
-                _converse.connection.disco.addFeature(Strophe.NS.PING);
+                if (!_.isUndefined(_converse.connection.disco)) {
+                    _converse.connection.disco.addFeature(Strophe.NS.PING);
+                }
                 _converse.connection.ping.addPingHandler(_converse.pong);
             };
 
@@ -72,7 +73,7 @@
                         return true;
                     });
                     _converse.connection.addTimedHandler(1000, function () {
-                        var now = new Date();
+                        const now = new Date();
                         if (!_converse.lastStanzaDate) {
                             _converse.lastStanzaDate = now;
                         }
@@ -84,7 +85,7 @@
                 }
             };
 
-            var onConnected = function () {
+            const onConnected = function () {
                 // Wrapper so that we can spy on registerPingHandler in tests
                 _converse.registerPingHandler();
             };

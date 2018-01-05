@@ -3,10 +3,6 @@ if (typeof define !== 'undefined') {
     // The section below determines which plugins will be included in a build
     define([
         "converse-core",
-        // PLEASE NOTE: By default all translations are included.
-        // You can modify the file src/locales.js to include only those
-        // translations that you care about.
-
         /* START: Removable components
          * --------------------
          * Any of the following components may be removed if they're not needed.
@@ -14,6 +10,7 @@ if (typeof define !== 'undefined') {
         "converse-chatview",    // Renders standalone chat boxes for single user chat
         "converse-controlbox",  // The control box
         "converse-bookmarks",   // XEP-0048 Bookmarks
+        "converse-roomslist",   // Show currently open chat rooms
         "converse-mam",         // XEP-0313 Message Archive Management
         "converse-muc",         // XEP-0045 Multi-user chat
         "converse-vcard",       // XEP-0054 VCard-temp
@@ -24,6 +21,7 @@ if (typeof define !== 'undefined') {
         "converse-minimize",    // Allows chat boxes to be minimized
         "converse-dragresize",  // Allows chat boxes to be resized by dragging them
         "converse-headline",    // Support for headline messages
+        "converse-fullscreen",
         /* END: Removable components */
     ], function (converse) {
         return converse;

@@ -47,7 +47,6 @@
     "eslint": "^3.19.0",
     "eslint-plugin-lodash": "^2.3.3",
     "font-awesome": "^4.7.0",
-    "greenkeeper": "^4.2.1",
     "http-server": "^0.10.0",
     "install": "^0.9.5",
     "jed": "1.1.1",

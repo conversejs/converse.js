@@ -10,20 +10,33 @@ Writing a plugin
 Introduction
 ------------
 
-Converse.js is exposes a plugin architecture which allows developers to modify
+Converse.js exposes a plugin architecture though which developers can modify
 and extend its functionality.
 
-Specifically, plugins enable developers to extend and override existing objects,
-functions and `Backbone <http://backbonejs.org/>`_ models and views that make up
-Converse.js, and also give them the ability to write new models and views.
+Using plugins is good engineering practice, and using them is the *only* recommended
+way of changing converse.js or adding new features to it.
 
-Various core features of Converse.js, such as
-`Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_ and
-`Group chats <https://xmpp.org/extensions/xep-0045.html>`_ are implemented
-as plugins, thereby showing their power and flexibility.
+In particular, plugins have the following advantages:
 
-Converse.js uses `pluggable.js <https://github.com/jcbrand/pluggable.js/>`_ as
-its plugin architecture.
+The main benefit of plugins is their *isolation of concerns* (and features).
+From this benefit flows various 2nd degree advantages, such as the ability to
+make smaller production builds (by excluding unused plugins) and an easier
+upgrade path by avoiding touching converse.js's internals.
+
+Each plugin comes in its own file, and converse.js's plugin architecture,
+called `pluggable.js <https://github.com/jcbrand/pluggable.js/>`_, provides you
+with the ability to "hook in" to the core code and other plugins.
+
+Converse.js itself is composed out of plugins and uses pluggable.js. Take a look at the
+`src <https://github.com/jcbrand/converse.js/tree/master/src>`_ directory. All
+the files that follow the patter `converse-*.js` are plugins.
+
+Plugins (by way of Pluggable.js) enable developers to extend and override existing objects,
+functions and the `Backbone <http://backbonejs.org/>`_ models and views that make up
+Converse.js.
+
+Besides that, in plugins you can also write new Backbone (or other) models and views,
+in order to add new functionality.
 
 To more deeply understand how this plugin architecture works, please read the
 `pluggable.js documentation <https://jcbrand.github.io/pluggable.js/>`_
@@ -97,6 +110,11 @@ advertising networks) we now require whitelisting.
 
 To whitelist a plugin simply means to specify :ref:`whitelisted_plugins` when
 you call ``converse.initialize``.
+
+If you're adding a "core" plugin, which means a plugin that will be
+included in the default, open-source version of converse.js, then you'll
+instead whitelist the plugin by adding its name to the `core_plugins` array in
+`./src/converse-core.js <https://github.com/jcbrand/converse.js/blob/master/src/converse-core.js>`_.
 
 Security and access to the inner workings
 -----------------------------------------

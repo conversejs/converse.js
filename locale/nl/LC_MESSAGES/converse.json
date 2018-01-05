@@ -8,795 +8,597 @@
             "lang": "nl"
          },
          "The connection has dropped, attempting to reconnect.": [
-            null,
             ""
          ],
          "Your Jabber ID and/or password is incorrect. Please try again.": [
-            null,
             ""
          ],
          "Sorry, we could not connect to the XMPP host with domain: ": [
-            null,
             ""
          ],
          "The XMPP server did not offer a supported authentication mechanism": [
-            null,
             ""
          ],
          "Sorry, there was an error while trying to add %1$s as a contact.": [
-            null,
             ""
          ],
          "This client does not allow presence subscriptions": [
-            null,
             ""
          ],
          "Personal message": [
-            null,
             "Persoonlijk bericht"
          ],
          "Send": [
-            null,
             ""
          ],
          "me": [
-            null,
             "ikzelf"
          ],
          "A very large message has been received. This might be due to an attack meant to degrade the chat performance. Output has been shortened.": [
-            null,
             ""
          ],
          "Typing from another device": [
-            null,
             ""
          ],
          "Stopped typing on the other device": [
-            null,
             ""
          ],
          "Show this menu": [
-            null,
             "Toon dit menu"
          ],
          "Write in the third person": [
-            null,
             "Schrijf in de 3de persoon"
          ],
          "Remove messages": [
-            null,
             "Verwijder bericht"
          ],
          "Are you sure you want to clear the messages from this chat box?": [
-            null,
             ""
          ],
          "Insert a smiley": [
-            null,
             ""
          ],
          "Start a call": [
-            null,
             ""
          ],
          "Login": [
-            null,
             ""
          ],
          "Jabber ID:": [
-            null,
             ""
          ],
          "Password:": [
-            null,
             "Wachtwoord:"
          ],
          "Submit": [
-            null,
             "Indienen"
          ],
          "This contact is busy": [
-            null,
             "Contact is bezet"
          ],
          "This contact is online": [
-            null,
             "Contact is online"
          ],
          "This contact is offline": [
-            null,
             "Contact is offline"
          ],
          "This contact is unavailable": [
-            null,
             "Contact is niet beschikbaar"
          ],
          "This contact is away for an extended period": [
-            null,
             "Contact is afwezig voor lange periode"
          ],
          "This contact is away": [
-            null,
             "Conact is afwezig"
          ],
          "Contacts": [
-            null,
             "Contacten"
          ],
          "Groups": [
-            null,
             ""
          ],
          "My contacts": [
-            null,
             "Mijn contacts"
          ],
          "Pending contacts": [
-            null,
             "Conacten in afwachting van"
          ],
          "Contact requests": [
-            null,
             "Contact uitnodiging"
          ],
          "Ungrouped": [
-            null,
             ""
          ],
          "Filter": [
-            null,
             ""
          ],
          "State": [
-            null,
             ""
          ],
          "Any": [
-            null,
             ""
          ],
          "Unread": [
-            null,
             ""
          ],
          "Online": [
-            null,
             "Online"
          ],
          "Chatty": [
-            null,
             ""
          ],
          "Busy": [
-            null,
             "Bezet"
          ],
          "Away": [
-            null,
             "Afwezig"
          ],
          "Extended Away": [
-            null,
             ""
          ],
          "Offline": [
-            null,
             ""
          ],
          "Click to chat with this contact": [
-            null,
             "Klik om te chatten met contact"
          ],
          "Name": [
-            null,
             ""
          ],
          "I am %1$s": [
-            null,
             "Ik ben %1$s"
          ],
          "Click here to write a custom status message": [
-            null,
             "Klik hier om custom status bericht te maken"
          ],
          "Click to change your chat status": [
-            null,
             "Klik hier om status te wijzigen"
          ],
          "Custom status": [
-            null,
             ""
          ],
          "Save": [
-            null,
             "Opslaan"
          ],
          "online": [
-            null,
             "online"
          ],
          "busy": [
-            null,
             "bezet"
          ],
          "away for long": [
-            null,
             "afwezig lange tijd"
          ],
          "away": [
-            null,
             "afwezig"
          ],
          "user@domain": [
-            null,
             ""
          ],
          "Please enter a valid XMPP address": [
-            null,
             ""
          ],
          "Click to add new chat contacts": [
-            null,
             "Klik om nieuwe contacten toe te voegen"
          ],
          "Add a contact": [
-            null,
             "Voeg contact toe"
          ],
          "Contact name": [
-            null,
             "Contact naam"
          ],
          "Search": [
-            null,
             "Zoeken"
          ],
          "e.g. user@example.org": [
-            null,
             ""
          ],
          "Add": [
-            null,
             "Toevoegen"
          ],
          "Click to add as a chat contact": [
-            null,
             "Klik om contact toe te voegen"
          ],
          "No users found": [
-            null,
             "Geen gebruikers gevonden"
          ],
          "Toggle chat": [
-            null,
             ""
          ],
          "This room is not anonymous": [
-            null,
             "Deze room is niet annoniem"
          ],
          "This room now shows unavailable members": [
-            null,
             ""
          ],
          "This room does not show unavailable members": [
-            null,
             ""
          ],
          "The room configuration has changed": [
-            null,
             ""
          ],
          "Room logging is now enabled": [
-            null,
             ""
          ],
          "Room logging is now disabled": [
-            null,
             ""
          ],
          "This room is now semi-anonymous": [
-            null,
             "Deze room is nu semie annoniem"
          ],
          "This room is now fully-anonymous": [
-            null,
             "Deze room is nu volledig annoniem"
          ],
          "A new room has been created": [
-            null,
             "Een nieuwe room is gemaakt"
          ],
          "You have been banned from this room": [
-            null,
             "Je bent verbannen uit deze room"
          ],
          "You have been kicked from this room": [
-            null,
             "Je bent uit de room gegooid"
          ],
          "You have been removed from this room because of an affiliation change": [
-            null,
             ""
          ],
          "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
             ""
          ],
          "You have been removed from this room because the MUC (Multi-user chat) service is being shut down": [
-            null,
             ""
          ],
          "%1$s has been removed because of an affiliation change": [
-            null,
             ""
          ],
          "%1$s has been removed for not being a member": [
-            null,
             ""
          ],
          "Message": [
-            null,
             "Bericht"
          ],
          "Hide the list of occupants": [
-            null,
             ""
          ],
          "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
-            null,
             ""
          ],
          "Error: could not execute the command": [
-            null,
             ""
          ],
          "Change user's affiliation to admin": [
-            null,
             ""
          ],
          "Change user role to participant": [
-            null,
             ""
          ],
          "Grant membership to a user": [
-            null,
             ""
          ],
          "Remove user's ability to post messages": [
-            null,
             ""
          ],
          "Change your nickname": [
-            null,
             ""
          ],
          "Grant moderator role to user": [
-            null,
             ""
          ],
          "Revoke user's membership": [
-            null,
             ""
          ],
          "Set room subject (alias for /subject)": [
-            null,
             ""
          ],
          "Allow muted user to post messages": [
-            null,
             ""
          ],
          "Cancel": [
-            null,
             "Annuleren"
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
             ""
          ],
          "Please choose your nickname": [
-            null,
             ""
          ],
          "Nickname": [
-            null,
             "Bijnaam"
          ],
          "This chatroom requires a password": [
-            null,
             "Chatroom heeft een wachtwoord"
          ],
          "Password: ": [
-            null,
             "Wachtwoord: "
          ],
          "The reason given is: \"%1$s\".": [
-            null,
             ""
          ],
          "Topic set by %1$s to: %2$s": [
-            null,
             ""
          ],
          "Invite": [
-            null,
             ""
          ],
          "Hidden": [
-            null,
             "Verborgen"
          ],
          "Message archiving": [
-            null,
             ""
          ],
          "Members only": [
-            null,
             ""
          ],
          "Moderated": [
-            null,
             "Gemodereerd"
          ],
          "Non-anonymous": [
-            null,
             "Niet annoniem"
          ],
          "Persistent": [
-            null,
             ""
          ],
          "Public": [
-            null,
             "Publiek"
          ],
          "Semi-anonymous": [
-            null,
             "Semi annoniem"
          ],
          "Unmoderated": [
-            null,
             "Niet gemodereerd"
          ],
          "Messages are archived on the server": [
-            null,
             ""
          ],
          "All other room occupants can see your XMPP username": [
-            null,
             ""
          ],
          "This room persists even if it's unoccupied": [
-            null,
             ""
          ],
          "Only moderators can see your XMPP username": [
-            null,
             ""
          ],
          "This room will disappear once the last person leaves": [
-            null,
             ""
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
-            null,
             ""
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
-            null,
             ""
          ],
          "Please enter a valid XMPP username": [
-            null,
             ""
          ],
          "Room name": [
-            null,
             "Room naam"
          ],
          "Server": [
-            null,
             "Server"
          ],
          "Show rooms": [
-            null,
             "Toon rooms"
          ],
          "Rooms": [
-            null,
             "Rooms"
          ],
          "No rooms on %1$s": [
-            null,
             "Geen room op %1$s"
          ],
          "Rooms on %1$s": [
-            null,
             "Room op %1$s"
          ],
          "Click to open this room": [
-            null,
             "Klik om room te openen"
          ],
          "Show more information on this room": [
-            null,
             "Toon meer informatie over deze room"
          ],
          "Description:": [
-            null,
             "Beschrijving"
          ],
          "Room Address (JID):": [
-            null,
             ""
          ],
          "Occupants:": [
-            null,
             "Deelnemers:"
          ],
          "Features:": [
-            null,
             "Functies:"
          ],
          "Requires authentication": [
-            null,
             "Verificatie vereist"
          ],
          "Requires an invitation": [
-            null,
             "Veriest een uitnodiging"
          ],
          "Open room": [
-            null,
             "Open room"
          ],
          "Permanent room": [
-            null,
             "Blijvend room"
          ],
          "Temporary room": [
-            null,
             "Tijdelijke room"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
-            null,
             ""
          ],
          "%1$s has invited you to join a chat room: %2$s, and left the following reason: \"%3$s\"": [
-            null,
             ""
          ],
          "Bookmark this room": [
-            null,
             ""
          ],
          "The name for this bookmark:": [
-            null,
             ""
          ],
          "Would you like this room to be automatically joined upon startup?": [
-            null,
             ""
          ],
          "What should your nickname for this room be?": [
-            null,
             ""
          ],
          "Sorry, something went wrong while trying to save your bookmark.": [
-            null,
             ""
          ],
          "Bookmarks": [
-            null,
             ""
          ],
          "Remove this bookmark": [
-            null,
             ""
          ],
          "Re-establishing encrypted session": [
-            null,
             "Bezig versleutelde sessie te herstellen"
          ],
          "Generating private key.": [
-            null,
             ""
          ],
          "Your browser might become unresponsive.": [
-            null,
             ""
          ],
          "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
-            null,
             ""
          ],
          "Could not verify this user's identify.": [
-            null,
             "Niet kon de identiteit van deze gebruiker niet identificeren."
          ],
          "Exchanging private key with contact.": [
-            null,
             ""
          ],
          "Your messages are not encrypted anymore": [
-            null,
             "Je berichten zijn niet meer encrypted"
          ],
          "Your message could not be sent": [
-            null,
             "Je bericht kon niet worden verzonden"
          ],
          "We received an unencrypted message": [
-            null,
             "We ontvingen een unencrypted bericht "
          ],
          "We received an unreadable encrypted message": [
-            null,
             "We ontvangen een onleesbaar unencrypted bericht"
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
-            null,
             ""
          ],
          "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
-            null,
             ""
          ],
          "What is your security question?": [
-            null,
             "Wat is jou sericury vraag?"
          ],
          "What is the answer to the security question?": [
-            null,
             "Wat is het antwoord op de security vraag?"
          ],
          "Invalid authentication scheme provided": [
-            null,
             ""
          ],
          "Your messages are not encrypted. Click here to enable OTR encryption.": [
-            null,
             "Jou bericht is niet encrypted. KLik hier om ORC encrytion aan te zetten."
          ],
          "End encrypted conversation": [
-            null,
             "Beeindig encrypted gesprek"
          ],
          "Refresh encrypted conversation": [
-            null,
             "Ververs encrypted gesprek"
          ],
          "Start encrypted conversation": [
-            null,
             "Start encrypted gesprek"
          ],
          "Verify with fingerprints": [
-            null,
             ""
          ],
          "Verify with SMP": [
-            null,
             ""
          ],
          "What's this?": [
-            null,
             "Wat is dit?"
          ],
          "unencrypted": [
-            null,
             "ongecodeerde"
          ],
          "unverified": [
-            null,
             "niet geverifieerd"
          ],
          "verified": [
-            null,
             "geverifieerd"
          ],
          "finished": [
-            null,
             "klaar"
          ],
          "Don't have a chat account?": [
-            null,
             ""
          ],
          "Create an account": [
-            null,
             ""
          ],
          "Create your account": [
-            null,
             ""
          ],
          "Please enter the XMPP provider to register with:": [
-            null,
             ""
          ],
          "Already have a chat account?": [
-            null,
             ""
          ],
          "Log in here": [
-            null,
             ""
          ],
          "Account Registration:": [
-            null,
             ""
          ],
          "Register": [
-            null,
             ""
          ],
          "Choose a different provider": [
-            null,
             ""
          ],
          "Hold tight, we're fetching the registration form…": [
-            null,
             ""
          ],
          " e.g. conversejs.org": [
-            null,
             ""
          ],
          "Fetch registration form": [
-            null,
             ""
          ],
          "Tip: A list of public XMPP providers is available": [
-            null,
             ""
          ],
          "here": [
-            null,
             ""
          ],
          "Sorry, we're unable to connect to your chosen provider.": [
-            null,
             ""
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
-            null,
             ""
          ],
          "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
-            null,
             ""
          ],
          "Now logging you in": [
-            null,
             ""
          ],
          "Registered successfully": [
-            null,
             ""
          ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
-            null,
             ""
          ],
          "Notification from %1$s": [
-            null,
             ""
          ],
          "%1$s says": [
-            null,
             ""
          ],
          "wants to be your contact": [
-            null,
             ""
          ],
          "Minimize this chat box": [
-            null,
             ""
          ],
          "Minimized": [
-            null,
             ""
          ]
       }

@@ -8,767 +8,576 @@
             "lang": "pt_BR"
          },
          "The connection has dropped, attempting to reconnect.": [
-            null,
             ""
          ],
          "Your Jabber ID and/or password is incorrect. Please try again.": [
-            null,
             ""
          ],
          "Sorry, we could not connect to the XMPP host with domain: ": [
-            null,
             ""
          ],
          "The XMPP server did not offer a supported authentication mechanism": [
-            null,
             ""
          ],
          "Sorry, there was an error while trying to add %1$s as a contact.": [
-            null,
             ""
          ],
          "This client does not allow presence subscriptions": [
-            null,
             ""
          ],
          "Personal message": [
-            null,
             "Mensagem pessoal"
          ],
          "Send": [
-            null,
             ""
          ],
          "me": [
-            null,
             "eu"
          ],
          "A very large message has been received. This might be due to an attack meant to degrade the chat performance. Output has been shortened.": [
-            null,
             ""
          ],
          "Typing from another device": [
-            null,
             ""
          ],
          "Stopped typing on the other device": [
-            null,
             ""
          ],
          "Show this menu": [
-            null,
             "Mostrar o menu"
          ],
          "Write in the third person": [
-            null,
             "Escrever em terceira pessoa"
          ],
          "Remove messages": [
-            null,
             "Remover mensagens"
          ],
          "Are you sure you want to clear the messages from this chat box?": [
-            null,
             "Tem certeza que deseja limpar as mensagens dessa caixa?"
          ],
          "Insert a smiley": [
-            null,
             ""
          ],
          "Start a call": [
-            null,
             ""
          ],
          "Login": [
-            null,
             ""
          ],
          "Jabber ID:": [
-            null,
             ""
          ],
          "Password:": [
-            null,
             "Senha:"
          ],
          "Submit": [
-            null,
             "Enviar"
          ],
          "This contact is busy": [
-            null,
             "Este contato está ocupado"
          ],
          "This contact is online": [
-            null,
             "Este contato está online"
          ],
          "This contact is offline": [
-            null,
             "Este contato está offline"
          ],
          "This contact is unavailable": [
-            null,
             "Este contato está indisponível"
          ],
          "This contact is away for an extended period": [
-            null,
             "Este contato está ausente por um longo período"
          ],
          "This contact is away": [
-            null,
             "Este contato está ausente"
          ],
          "Contacts": [
-            null,
             "Contatos"
          ],
          "Groups": [
-            null,
             ""
          ],
          "My contacts": [
-            null,
             "Meus contatos"
          ],
          "Pending contacts": [
-            null,
             "Contados pendentes"
          ],
          "Contact requests": [
-            null,
             "Solicitação de contatos"
          ],
          "Ungrouped": [
-            null,
             ""
          ],
          "Filter": [
-            null,
             ""
          ],
          "State": [
-            null,
             ""
          ],
          "Any": [
-            null,
             ""
          ],
          "Unread": [
-            null,
             ""
          ],
          "Online": [
-            null,
             "Online"
          ],
          "Chatty": [
-            null,
             ""
          ],
          "Busy": [
-            null,
             "Ocupado"
          ],
          "Away": [
-            null,
             "Ausente"
          ],
          "Extended Away": [
-            null,
             ""
          ],
          "Offline": [
-            null,
             "Offline"
          ],
          "Click to chat with this contact": [
-            null,
             "Clique para conversar com o contato"
          ],
          "Name": [
-            null,
             ""
          ],
          "I am %1$s": [
-            null,
             "Estou %1$s"
          ],
          "Click here to write a custom status message": [
-            null,
             "Clique aqui para customizar a mensagem de status"
          ],
          "Click to change your chat status": [
-            null,
             "Clique para mudar seu status no chat"
          ],
          "Custom status": [
-            null,
             "Status customizado"
          ],
          "Save": [
-            null,
             "Salvar"
          ],
          "online": [
-            null,
             "online"
          ],
          "busy": [
-            null,
             "ocupado"
          ],
          "away for long": [
-            null,
             "ausente a bastante tempo"
          ],
          "away": [
-            null,
             "ausente"
          ],
          "user@domain": [
-            null,
             ""
          ],
          "Please enter a valid XMPP address": [
-            null,
             ""
          ],
          "Click to add new chat contacts": [
-            null,
             "Clique para adicionar novos contatos ao chat"
          ],
          "Add a contact": [
-            null,
             "Adicionar contato"
          ],
          "Contact name": [
-            null,
             "Nome do contato"
          ],
          "Search": [
-            null,
             "Procurar"
          ],
          "e.g. user@example.org": [
-            null,
             ""
          ],
          "Add": [
-            null,
             "Adicionar"
          ],
          "Click to add as a chat contact": [
-            null,
             "Clique para adicionar como um contato do chat"
          ],
          "No users found": [
-            null,
             "Não foram encontrados usuários"
          ],
          "Toggle chat": [
-            null,
             "Alternar bate-papo"
          ],
          "This room is not anonymous": [
-            null,
             "Essa sala não é anônima"
          ],
          "This room now shows unavailable members": [
-            null,
             "Agora esta sala mostra membros indisponíveis"
          ],
          "This room does not show unavailable members": [
-            null,
             "Essa sala não mostra membros indisponíveis"
          ],
          "Room logging is now enabled": [
-            null,
             "O log da sala está ativado"
          ],
          "Room logging is now disabled": [
-            null,
             "O log da sala está desativado"
          ],
          "This room is now semi-anonymous": [
-            null,
             "Essa sala agora é semi anônima"
          ],
          "This room is now fully-anonymous": [
-            null,
             "Essa sala agora é totalmente anônima"
          ],
          "A new room has been created": [
-            null,
             "Uma nova sala foi criada"
          ],
          "You have been banned from this room": [
-            null,
             "Você foi banido dessa sala"
          ],
          "You have been kicked from this room": [
-            null,
             "Você foi expulso dessa sala"
          ],
          "You have been removed from this room because of an affiliation change": [
-            null,
             "Você foi removido da sala devido a uma mudança de associação"
          ],
          "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
             "Você foi removido da sala porque ela foi mudada para somente membrose você não é um membro"
          ],
          "Message": [
-            null,
             "Mensagem"
          ],
          "Hide the list of occupants": [
-            null,
             ""
          ],
          "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
-            null,
             ""
          ],
          "Error: could not execute the command": [
-            null,
             ""
          ],
          "Change user's affiliation to admin": [
-            null,
             ""
          ],
          "Change user role to participant": [
-            null,
             ""
          ],
          "Grant membership to a user": [
-            null,
             ""
          ],
          "Remove user's ability to post messages": [
-            null,
             ""
          ],
          "Change your nickname": [
-            null,
             ""
          ],
          "Grant moderator role to user": [
-            null,
             ""
          ],
          "Revoke user's membership": [
-            null,
             ""
          ],
          "Set room subject (alias for /subject)": [
-            null,
             ""
          ],
          "Allow muted user to post messages": [
-            null,
             ""
          ],
          "Cancel": [
-            null,
             "Cancelar"
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
             ""
          ],
          "Please choose your nickname": [
-            null,
             ""
          ],
          "Nickname": [
-            null,
             "Apelido"
          ],
          "This chatroom requires a password": [
-            null,
             "Esse chat precisa de senha"
          ],
          "Password: ": [
-            null,
             "Senha: "
          ],
          "The reason given is: \"%1$s\".": [
-            null,
             ""
          ],
          "Topic set by %1$s to: %2$s": [
-            null,
             "Topico definido por %1$s para: %2$s"
          ],
          "Invite": [
-            null,
             ""
          ],
          "Hidden": [
-            null,
             "Escondido"
          ],
          "Message archiving": [
-            null,
             ""
          ],
          "Members only": [
-            null,
             ""
          ],
          "Moderated": [
-            null,
             "Moderado"
          ],
          "Non-anonymous": [
-            null,
             "Não anônimo"
          ],
          "Persistent": [
-            null,
             ""
          ],
          "Public": [
-            null,
             "Público"
          ],
          "Semi-anonymous": [
-            null,
             "Semi anônimo"
          ],
          "Unmoderated": [
-            null,
             "Sem moderação"
          ],
          "Messages are archived on the server": [
-            null,
             ""
          ],
          "All other room occupants can see your XMPP username": [
-            null,
             ""
          ],
          "This room persists even if it's unoccupied": [
-            null,
             ""
          ],
          "Only moderators can see your XMPP username": [
-            null,
             ""
          ],
          "This room will disappear once the last person leaves": [
-            null,
             ""
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
-            null,
             ""
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
-            null,
             ""
          ],
          "Please enter a valid XMPP username": [
-            null,
             ""
          ],
          "Room name": [
-            null,
             "Nome da sala"
          ],
          "Server": [
-            null,
             "Server"
          ],
          "Show rooms": [
-            null,
             "Mostar salas"
          ],
          "Rooms": [
-            null,
             "Salas"
          ],
          "No rooms on %1$s": [
-            null,
             "Sem salas em %1$s"
          ],
          "Rooms on %1$s": [
-            null,
             "Salas em %1$s"
          ],
          "Click to open this room": [
-            null,
             "CLique para abrir a sala"
          ],
          "Show more information on this room": [
-            null,
             "Mostrar mais informações nessa sala"
          ],
          "Description:": [
-            null,
             "Descrição:"
          ],
          "Room Address (JID):": [
-            null,
             ""
          ],
          "Occupants:": [
-            null,
             "Ocupantes:"
          ],
          "Features:": [
-            null,
             "Recursos:"
          ],
          "Requires authentication": [
-            null,
             "Requer autenticação"
          ],
          "Requires an invitation": [
-            null,
             "Requer um convite"
          ],
          "Open room": [
-            null,
             "Sala aberta"
          ],
          "Permanent room": [
-            null,
             "Sala permanente"
          ],
          "Temporary room": [
-            null,
             "Sala temporária"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
-            null,
             ""
          ],
          "%1$s has invited you to join a chat room: %2$s, and left the following reason: \"%3$s\"": [
-            null,
             ""
          ],
          "Bookmark this room": [
-            null,
             ""
          ],
          "The name for this bookmark:": [
-            null,
             ""
          ],
          "Would you like this room to be automatically joined upon startup?": [
-            null,
             ""
          ],
          "What should your nickname for this room be?": [
-            null,
             ""
          ],
          "Sorry, something went wrong while trying to save your bookmark.": [
-            null,
             ""
          ],
          "Bookmarks": [
-            null,
             ""
          ],
          "Remove this bookmark": [
-            null,
             ""
          ],
          "Re-establishing encrypted session": [
-            null,
             "Reestabelecendo sessão criptografada"
          ],
          "Generating private key.": [
-            null,
             "Gerando chave-privada."
          ],
          "Your browser might become unresponsive.": [
-            null,
             "Seu navegador pode parar de responder."
          ],
          "Could not verify this user's identify.": [
-            null,
             "Não foi possível verificar a identidade deste usuário."
          ],
          "Your messages are not encrypted anymore": [
-            null,
             "Suas mensagens não estão mais criptografadas"
          ],
          "Your message could not be sent": [
-            null,
             "Sua mensagem não pode ser enviada"
          ],
          "We received an unencrypted message": [
-            null,
             "Recebemos uma mensagem não-criptografada"
          ],
          "We received an unreadable encrypted message": [
-            null,
             "Recebemos uma mensagem não-criptografada ilegível"
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
-            null,
             "Aqui estão as assinaturas digitais, por favor confirme elas com %1$s, fora deste chat.\n\nAssinatura para você, %2$s: %3$s\n\nAssinatura para %1$s: %4$s\n\nSe você tiver confirmado que as assinaturas conferem, clique OK, caso contrário, clique Cancelar."
          ],
          "What is your security question?": [
-            null,
             "Qual é a sua pergunta de segurança?"
          ],
          "What is the answer to the security question?": [
-            null,
             "Qual é a resposta para a pergunta de segurança?"
          ],
          "Invalid authentication scheme provided": [
-            null,
             "Schema de autenticação fornecido é inválido"
          ],
          "Your messages are not encrypted. Click here to enable OTR encryption.": [
-            null,
             "Suas mensagens não estão criptografadas. Clique aqui para habilitar criptografia OTR."
          ],
          "End encrypted conversation": [
-            null,
             "Finalizar conversa criptografada"
          ],
          "Refresh encrypted conversation": [
-            null,
             "Atualizar conversa criptografada"
          ],
          "Start encrypted conversation": [
-            null,
             "Iniciar conversa criptografada"
          ],
          "Verify with fingerprints": [
-            null,
             "Verificar com assinatura digital"
          ],
          "Verify with SMP": [
-            null,
             "Verificar com SMP"
          ],
          "What's this?": [
-            null,
             "O que é isso?"
          ],
          "unencrypted": [
-            null,
             "não-criptografado"
          ],
          "unverified": [
-            null,
             "não-verificado"
          ],
          "verified": [
-            null,
             "verificado"
          ],
          "finished": [
-            null,
             "finalizado"
          ],
          "Don't have a chat account?": [
-            null,
             ""
          ],
          "Create an account": [
-            null,
             ""
          ],
          "Create your account": [
-            null,
             ""
          ],
          "Please enter the XMPP provider to register with:": [
-            null,
             ""
          ],
          "Already have a chat account?": [
-            null,
             ""
          ],
          "Log in here": [
-            null,
             ""
          ],
          "Account Registration:": [
-            null,
             ""
          ],
          "Register": [
-            null,
             ""
          ],
          "Choose a different provider": [
-            null,
             ""
          ],
          "Hold tight, we're fetching the registration form…": [
-            null,
             ""
          ],
          " e.g. conversejs.org": [
-            null,
             ""
          ],
          "Fetch registration form": [
-            null,
             ""
          ],
          "Tip: A list of public XMPP providers is available": [
-            null,
             ""
          ],
          "here": [
-            null,
             ""
          ],
          "Sorry, we're unable to connect to your chosen provider.": [
-            null,
             ""
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
-            null,
             ""
          ],
          "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
-            null,
             ""
          ],
          "Now logging you in": [
-            null,
             ""
          ],
          "Registered successfully": [
-            null,
             ""
          ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
-            null,
             ""
          ],
          "Notification from %1$s": [
-            null,
             ""
          ],
          "%1$s says": [
-            null,
             ""
          ],
          "wants to be your contact": [
-            null,
             ""
          ],
          "Minimize this chat box": [
-            null,
             ""
          ],
          "Minimized": [
-            null,
             "Minimizado"
          ]
       }

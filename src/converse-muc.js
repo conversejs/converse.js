@@ -28,11 +28,11 @@
             "tpl!chatroom_toolbar",
             "tpl!chatrooms_tab",
             "tpl!info",
-            "tpl!no_rooms",
             "tpl!occupant",
             "tpl!room_description",
             "tpl!room_item",
             "tpl!room_panel",
+            "tpl!rooms_results",
             "tpl!spinner",
             "awesomplete",
             "converse-chatview",
@@ -59,11 +59,11 @@
             tpl_chatroom_toolbar,
             tpl_chatrooms_tab,
             tpl_info,
-            tpl_no_rooms,
             tpl_occupant,
             tpl_room_description,
             tpl_room_item,
             tpl_room_panel,
+            tpl_rooms_results,
             tpl_spinner,
             Awesomplete
     ) {
@@ -2634,8 +2634,8 @@
 
                 informNoRoomsFound () {
                     const chatrooms_el = this.el.querySelector('#available-chatrooms');
-                    chatrooms_el.innerHTML = tpl_no_rooms({
-                        'no_rooms_text': __('No rooms found')
+                    chatrooms_el.innerHTML = tpl_rooms_results({
+                        'feedback_text': __('No rooms found')
                     });
                     const input_el = this.el.querySelector('input#show-rooms');
                     input_el.classList.remove('hidden')
@@ -2651,8 +2651,9 @@
                     if (this.rooms.length) {
                         // For translators: %1$s is a variable and will be
                         // replaced with the XMPP server name
-                        available_chatrooms.innerHTML =
-                            `<dt>${__('Rooms on %1$s',this.model.get('muc_domain'))}</dt>`;
+                        available_chatrooms.innerHTML = tpl_rooms_results({
+                            'feedback_text': __('Rooms found')
+                        });
                         const div = document.createElement('div');
                         const fragment = document.createDocumentFragment();
                         for (let i=0; i<this.rooms.length; i++) {

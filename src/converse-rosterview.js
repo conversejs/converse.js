@@ -609,8 +609,6 @@
                 },
 
                 onRemove (contact) {
-                    this.get(contact.get('id')).remove();
-                    this.remove(contact.get('id'));
                     if (this.model.contacts.length === 0) {
                         this.el.parentElement.removeChild(this.el);
                     }

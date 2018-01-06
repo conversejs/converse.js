@@ -2196,7 +2196,6 @@
                 tagName: 'li',
                 initialize () {
                     this.model.on('change', this.render, this);
-                    this.model.on('destroy', this.destroy, this);
                 },
 
                 toHTML () {

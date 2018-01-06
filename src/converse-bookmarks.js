@@ -386,10 +386,6 @@
             });
 
             _converse.BookmarkView = Backbone.VDOMView.extend({
-                initialize () {
-                    this.model.on('destroy', this.remove.bind(this));
-                },
-
                 toHTML () {
                     return tpl_bookmark({
                         'hidden': _converse.hide_open_bookmarks &&

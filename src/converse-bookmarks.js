@@ -386,11 +386,6 @@
             });
 
             _converse.BookmarkView = Backbone.VDOMView.extend({
-
-                initialize () {
-                    this.model.on('destroy', this.remove.bind(this));
-                },
-
                 toHTML () {
                     return tpl_bookmark({
                         'hidden': _converse.hide_open_bookmarks &&
@@ -422,7 +417,9 @@
                 initialize () {
                     Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
 
-                    this.model.on('remove', this.hideListIfEmpty, this);
+                    this.model.on('add', this.showOrHide, this);
+                    this.model.on('remove', this.showOrHide, this);
+
                     _converse.chatboxes.on('add', this.renderBookmarkListElement, this);
                     _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
 
@@ -444,12 +441,17 @@
                         'label_bookmarks': __('Bookmarks'),
                         '_converse': _converse
                     });
+                    this.showOrHide();
+                    this.insertIntoControlBox();
+                    return this;
+                },
+
+                insertIntoControlBox () {
                     const controlboxview = _converse.chatboxviews.get('controlbox');
                     if (!_.isUndefined(controlboxview)) {
                         const chatrooms_el = controlboxview.el.querySelector('#chatrooms');
                         chatrooms_el.insertAdjacentElement('afterbegin', this.el);
                     }
-                    return this;
                 },
 
                 removeBookmark: _converse.removeBookmarkViaEvent,
@@ -463,13 +465,20 @@
                         return;
                     }
                     bookmarkview.render();
-                    this.hideListIfEmpty();
+                    this.showOrHide();
                 },
 
-                hideListIfEmpty (item) {
-                    const bookmarks = sizzle('.available-chatroom:not(.hidden)', this.el);
-                    if (!this.model.models.length || !bookmarks.length) {
-                        u.hideElement(this.el);
+                showOrHide (item) {
+                    if (_converse.hide_open_bookmarks) {
+                        const bookmarks = this.model.filter((bookmark) =>
+                                !_converse.chatboxes.get(bookmark.get('jid')));
+                        if (!bookmarks.length) {
+                            u.hideElement(this.el);
+                            return;
+                        }
+                    }
+                    if (this.model.models.length) {
+                        u.showElement(this.el);
                     }
                 },
 

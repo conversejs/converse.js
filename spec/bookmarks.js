@@ -477,6 +477,7 @@
                         return true;
                     }
                 }).length).toBe(1);
+
                 var stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':IQ_id})
                     .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                         .c('items', {'node': 'storage:bookmarks'})

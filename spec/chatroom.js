@@ -3146,7 +3146,7 @@
 
                 panel.onRoomsFound(iq);
                 expect($(panel.el.querySelector('#available-chatrooms')).children('dt').length).toBe(1);
-                expect($(panel.el.querySelector('#available-chatrooms')).children('dt').first().text()).toBe("Rooms on muc.localhost");
+                expect($(panel.el.querySelector('#available-chatrooms')).children('dt').first().text()).toBe("Rooms found");
                 expect($(panel.el.querySelector('#available-chatrooms')).children('dd').length).toBe(4);
                 done();
             }));

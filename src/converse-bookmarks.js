@@ -386,7 +386,6 @@
             });
 
             _converse.BookmarkView = Backbone.VDOMView.extend({
-
                 initialize () {
                     this.model.on('destroy', this.remove.bind(this));
                 },
@@ -422,6 +421,8 @@
                 initialize () {
                     Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
 
+                    this.toggleBookmarksList = _.debounce(this._toggleBookmarksList, 600, {'leading': true});
+
                     this.model.on('remove', this.hideListIfEmpty, this);
                     _converse.chatboxes.on('add', this.renderBookmarkListElement, this);
                     _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
@@ -444,12 +445,17 @@
                         'label_bookmarks': __('Bookmarks'),
                         '_converse': _converse
                     });
+                    this.hideListIfEmpty();
+                    this.insertIntoControlBox();
+                    return this;
+                },
+
+                insertIntoControlBox () {
                     const controlboxview = _converse.chatboxviews.get('controlbox');
                     if (!_.isUndefined(controlboxview)) {
                         const chatrooms_el = controlboxview.el.querySelector('#chatrooms');
                         chatrooms_el.insertAdjacentElement('afterbegin', this.el);
                     }
-                    return this;
                 },
 
                 removeBookmark: _converse.removeBookmarkViaEvent,
@@ -473,7 +479,7 @@
                     }
                 },
 
-                toggleBookmarksList (ev) {
+                _toggleBookmarksList (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     if (u.hasClass('icon-opened', ev.target)) {
                         u.slideIn(this.el.querySelector('.bookmarks'));

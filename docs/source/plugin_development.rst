@@ -10,7 +10,7 @@ Writing a plugin
 Introduction
 ------------
 
-Converse.js exposes a plugin architecture though which developers can modify
+Converse.js exposes a plugin architecture through which developers can modify
 and extend its functionality.
 
 Using plugins is good engineering practice, and using them is the *only* recommended
@@ -29,18 +29,18 @@ with the ability to "hook in" to the core code and other plugins.
 
 Converse.js itself is composed out of plugins and uses pluggable.js. Take a look at the
 `src <https://github.com/jcbrand/converse.js/tree/master/src>`_ directory. All
-the files that follow the patter `converse-*.js` are plugins.
+the files that follow the pattern `converse-*.js` are plugins.
 
 Plugins (by way of Pluggable.js) enable developers to extend and override existing objects,
 functions and the `Backbone <http://backbonejs.org/>`_ models and views that make up
 Converse.js.
 
 Besides that, in plugins you can also write new Backbone (or other) models and views,
-in order to add new functionality.
+in order to add a new functionality.
 
 To more deeply understand how this plugin architecture works, please read the
 `pluggable.js documentation <https://jcbrand.github.io/pluggable.js/>`_
-and to understand its inner workins, please refer to the `annotated source code
+and to understand its inner workings, please refer to the `annotated source code
 <https://jcbrand.github.io/pluggable.js/docs/pluggable.html>`_.
 
 .. note:: **Trying out a plugin in JSFiddle**
@@ -59,7 +59,7 @@ and to understand its inner workins, please refer to the `annotated source code
 
     There is a `Yeoman <http://yeoman.io/>`_ code generator, called
     `generator-conversejs <https://github.com/jcbrand/generator-conversejs>`_, which
-    you can use to generate plugin scaffolding/boilerplate, which you can use as a
+    you can use to generate plugin scaffolding/boilerplate that serves as a
     starting point and basis for writing your plugin.
 
     Please refer to the `generator-conversejs <https://github.com/jcbrand/generator-conversejs>`_

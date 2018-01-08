@@ -305,9 +305,9 @@
                     }
                     if (_converse.connection.connected && !_converse.connection.disconnecting) {
                         this.model.save({'closed': true});
-                        if(_converse.hide_minimized_chats_when_closed){
-                            document.getElementById('minimized-chats').classList.add('hidden');
-                        }
+                       if(_converse.hide_minimized_chats_when_closed){
+                           document.getElementById('minimized-chats').classList.add('hidden');
+                       }
                     } else {
                         this.model.trigger('hide');
                     }
@@ -351,7 +351,9 @@
                     _converse.controlboxtoggle.hide(
                         this.onControlBoxToggleHidden.bind(this)
                     );
-                    if(_converse.hide_minimized_chats_when_closed){
+                    var chatcount =document.getElementsByClassName('chatroom hidden').length;
+                    console.log(chatcount);
+                    if(_converse.hide_minimized_chats_when_closed && chatcount>0){
                         document.getElementById('minimized-chats').classList.remove('hidden');
                     }
                     return this;

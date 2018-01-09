@@ -468,8 +468,14 @@
                     if (_.isNull(most_recent_date) || moment(most_recent_date).isBefore(cutoff)) {
                         return most_recent_date;
                     }
+                    /* XXX: Besides .chat-message and .chat-date elements, there are also
+                     * .chat-event elements. These are however temporary and
+                     * removed once a new element is inserted into the chat
+                     * area, so we don't query for them here, otherwise we get
+                     * a null reference later upon element insertion.
+                     */
                     const msg_dates = _.invokeMap(
-                        sizzle('.message, .chat-info', this.content),
+                        sizzle('.chat-message, .chat-date', this.content),
                         Element.prototype.getAttribute, 'data-isodate'
                     )
                     if (_.isObject(cutoff)) {
@@ -498,9 +504,8 @@
                      *      attributes.
                      */
                     const current_msg_date = moment(attrs.time) || moment,
-                          prepend_html = _.bind(this.content.insertAdjacentHTML, this.content, 'afterbegin'),
-                          previous_msg_date = this.getLastMessageDate(current_msg_date),
-                          message_el = this.renderMessage(attrs);
+                        previous_msg_date = this.getLastMessageDate(current_msg_date),
+                        message_el = this.renderMessage(attrs);
 
                     if (_.isNull(previous_msg_date)) {
                         this.content.insertAdjacentElement('afterbegin', message_el);
@@ -622,6 +627,7 @@
                     } else if (message.get('chat_state') === _converse.GONE) {
                         this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
                     }
+                    return message;
                 },
 
                 shouldShowOnTextMessage () {
@@ -675,10 +681,13 @@
                     }
                     if (message.get('type') === 'error') {
                         this.handleErrorMessage(message);
-                    } else if (!message.get('message')) {
-                        this.handleChatStateMessage(message);
                     } else {
-                        this.handleTextMessage(message);
+                        if (message.get('chat_state')) {
+                            this.handleChatStateMessage(message);
+                        }
+                        if (message.get('message')) {
+                            this.handleTextMessage(message);
+                        }
                     }
                     _converse.emit('messageAdded', {
                         'message': message,

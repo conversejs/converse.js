@@ -30,8 +30,8 @@ config.shim.jasmine = {
 require.config(config);
 
 var specs = [
-    //"spec/transcripts",
     "jasmine",
+    //"spec/transcripts",
     "spec/profiling",
     "spec/utils",
     "spec/converse",

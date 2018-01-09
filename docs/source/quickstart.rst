@@ -68,17 +68,13 @@ Alternative builds of Converse.js
 The minified ``.js`` and ``.css`` files provide the same functionality as is available
 on the `conversejs.org <https://conversejs.org>`_ website. Useful for testing or demoing.
 
-Alternative builds are however also available via the CDN.
+Converse.js is composed out of plugins, and you are able to exclude certain
+plugins (and to include your own new plugins) when creating a build. This
+enables you to create your own custom builds of Converse.js that differ from
+the standard one.
 
-Fullscreen version
-------------------
-
-Converse.js also comes in a fullscreen version (often referred to as Inverse).
-A hosted version is available online at `inverse.chat <https://inverse.chat>`_.
-
-To load the fullscreen version, simply replace
-``converse.min.js`` with ``inverse.min.js`` and ``converse.min.css`` with
-``inverse.min.css``.
+Besides the standard build, the Converse.js repository includes configuration
+for certain other non-standard builds, which we'll now mention below.
 
 Mobile version
 --------------
@@ -92,18 +88,48 @@ for an example of this build being used. There's an additional CSS file called
 When you load `conversejs.org <https://conversejs.org>`_ with a mobile device
 then the mobile JavaScript build and its CSS will be used.
 
-Excluding 3rd party dependencies
---------------------------------
+Excluding all 3rd party dependencies
+------------------------------------
 
 Then there is also a build that contains no 3rd party dependencies, called 
 ``converse-no-dependencies.min.js`` and which is used in the ``non_amd.html``
 page in the repository.
 
-Excluding only jQuery
----------------------
+Headless build
+--------------
 
-Lastly there is a build called ``converse.nojquery.min.js`` which excludes only
-jQuery but still includes all other 3rd party dependencies.
+There is also the option of making a headless build of converse.js.
+This means a build without any UI but still containing core functionality of
+maintaining a roster, chat boxes and messages.
+
+The file `src/headless.js <https://github.com/jcbrand/converse.js/blob/master/src/headless.js>`_
+is used to determine which plugins are included in the build.
+
+Unfortunately it's currently not yet possible to include Multi-user chat (MUC)
+functionality in the headless build. This is because both the UI and core
+functionality is still contained in one plugin and would first need to be
+split up into two parts, with the UI part dropped for this build.
+
+Fullscreen version
+------------------
+
+Converse.js also comes in a fullscreen version (often referred to as Inverse).
+A hosted version is available online at `inverse.chat <https://inverse.chat>`_.
+
+Originally this version was available as a separate build file, but 
+as of version 4.0.0 and higher, the difference between the "overlay" and the
+"fullscreen" versions of converse.js is simply a matter of configuring the 
+:ref:`view_mode` and including the right CSS file.
+
+For the default "overlay" version, ``converse.css`` is used, and for the
+"fullscreen" version ``inverse.css`` is used.
+
+We'd like to eventually not require two different CSS files, and to allow you
+to seamlessly switch between the different view modes.
+
+To generate the headless build, run ``make dist/converse-headless.js`` and/or 
+``make dist/converse-headless.min.js``.
+
 
 Where to go from here?
 ======================

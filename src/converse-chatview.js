@@ -498,9 +498,8 @@
                      *      attributes.
                      */
                     const current_msg_date = moment(attrs.time) || moment,
-                          prepend_html = _.bind(this.content.insertAdjacentHTML, this.content, 'afterbegin'),
-                          previous_msg_date = this.getLastMessageDate(current_msg_date),
-                          message_el = this.renderMessage(attrs);
+                        previous_msg_date = this.getLastMessageDate(current_msg_date),
+                        message_el = this.renderMessage(attrs);
 
                     if (_.isNull(previous_msg_date)) {
                         this.content.insertAdjacentElement('afterbegin', message_el);

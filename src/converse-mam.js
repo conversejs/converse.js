@@ -425,7 +425,7 @@
             });
 
             _converse.on('afterMessagesFetched', (chatboxview) => {
-                chatboxview.fetchArchivedMessagesIfNecessary();
+                chatboxview.fetchNewestMessages();
             });
 
             _converse.on('reconnected', () => {

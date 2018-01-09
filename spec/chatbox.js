@@ -643,7 +643,7 @@
                             .then(function () {
                                 expect(_converse.api.vcard.get).toHaveBeenCalled();
                                 return test_utils.waitUntil(function () {
-                                    return chatbox.get('fullname') === mock.cur_names[0]; 
+                                    return chatbox.get('fullname') === mock.cur_names[0];
                                 }, 100);
                             }).then(function () {
                                 done();
@@ -972,7 +972,7 @@
                                     'to': _converse.bare_jid,
                                     'from': sender_jid,
                                     'type': 'chat'})
-                                .c('body').t("message from today")
+                                .c('body').t("message")
                                 .tree();
                         _converse.chatboxes.onMessage(msg);
 
@@ -996,7 +996,7 @@
                                     'to': _converse.bare_jid,
                                     'from': sender_jid,
                                     'type': 'chat'})
-                                .c('body').t("Inbetween message")
+                                .c('body').t("Inbetween message").up()
                                 .tree();
                         _converse.chatboxes.onMessage(msg);
 
@@ -1020,7 +1020,7 @@
                                     'to': _converse.bare_jid,
                                     'from': sender_jid,
                                     'type': 'chat'})
-                                .c('body').t("An earlier message today")
+                                .c('body').t("An earlier message on the next day")
                                 .tree();
                         _converse.chatboxes.onMessage(msg);
 
@@ -1032,8 +1032,32 @@
                                     'to': _converse.bare_jid,
                                     'from': sender_jid,
                                     'type': 'chat'})
-                                .c('body').t("newer message from today")
+                                .c('body').t("newer message from the next day")
                                 .tree();
+                        _converse.chatboxes.onMessage(msg);
+
+                        // Insert <composing> message, to also check that
+                        // text messages are inserted correctly with
+                        // temporary chat events in the chat contents.
+                        msg = $msg({
+                                'id': 'aeb219',
+                                'to': _converse.bare_jid,
+                                'xmlns': 'jabber:client',
+                                'from': sender_jid,
+                                'type': 'chat'})
+                            .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
+                            .tree();
+                        _converse.chatboxes.onMessage(msg);
+
+                        msg = $msg({
+                                'id': 'aeb220',
+                                'to': _converse.bare_jid,
+                                'xmlns': 'jabber:client',
+                                'from': sender_jid,
+                                'type': 'chat'})
+                            .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
+                            .c('body').t("latest message")
+                            .tree();
                         _converse.chatboxes.onMessage(msg);
 
                         var chatboxview = _converse.chatboxviews.get(sender_jid);
@@ -1041,7 +1065,7 @@
                         chatboxview.clearSpinner(); //cleanup
 
                         var $time = $chat_content.find('time');
-                        expect($time.length).toEqual(3);
+                        expect($time.length).toEqual(4);
                         $time = $chat_content.find('time:first');
                         expect($time.data('isodate')).toEqual('2017-12-31T00:00:00+00:00');
 
@@ -1058,15 +1082,19 @@
                         $el = $chat_content.find('.chat-message:eq(2)');
                         expect($el.find('.chat-msg-content').text()).toEqual('another inbetween message');
 
-                        $time = $chat_content.find('time:last');
+                        $time = $chat_content.find('time:nth(2)');
                         expect($time.data('isodate')).toEqual('2018-01-02T00:00:00+00:00');
-                        expect($time[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toBe('An earlier message today');
+                        expect($time[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toBe('An earlier message on the next day');
                         $el = $chat_content.find('.chat-message:eq(3)');
-                        expect($el.find('.chat-msg-content').text()).toEqual('An earlier message today');
+                        expect($el.find('.chat-msg-content').text()).toEqual('An earlier message on the next day');
 
                         $el = $chat_content.find('.chat-message:eq(4)');
-                        expect($el.find('.chat-msg-content').text()).toEqual('message from today');
-                        expect($el[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toEqual('newer message from today');
+                        expect($el.find('.chat-msg-content').text()).toEqual('message');
+                        expect($el[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toEqual('newer message from the next day');
+
+                        $time = $chat_content.find('time:last');
+                        expect($time.data('isodate')).toEqual(moment().startOf('day').format());
+                        expect($time[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toBe('latest message');
                         done();
                     });
                 }));

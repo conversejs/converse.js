@@ -32385,6 +32385,9 @@ define('text!de',[],function () { return '{\n   "domain": "converse",\n   "local
 define('text!es',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n != 1);",\n            "lang": "es"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Guardar"\n         ],\n         "Cancel": [\n            null,\n            "Cancelar"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            ""\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "Mostrar más información en esta sala"\n         ],\n         "Click to open this room": [\n            null,\n            "Haga click para abrir esta sala"\n         ],\n         "Personal message": [\n            null,\n            "Mensaje personal"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "yo"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            ""\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            ""\n         ],\n         "Show this menu": [\n            null,\n            "Mostrar este menú"\n         ],\n         "Write in the third person": [\n            null,\n            "Escribir en tercera persona"\n         ],\n         "Remove messages": [\n            null,\n            "Eliminar mensajes"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "¿Está seguro de querer limpiar los mensajes de esta conversación?"\n         ],\n         "Insert a smiley": [\n            null,\n            ""\n         ],\n         "Start a call": [\n            null,\n            ""\n         ],\n         "Contacts": [\n            null,\n            "Contactos"\n         ],\n         "Password:": [\n            null,\n            "Contraseña:"\n         ],\n         "Log In": [\n            null,\n            "Iniciar sesión"\n         ],\n         "user@server": [\n            null,\n            ""\n         ],\n         "Sign in": [\n            null,\n            "Registrar"\n         ],\n         "I am %1$s": [\n            null,\n            "Estoy %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Haga click para escribir un mensaje de estatus personalizado"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Haga click para cambiar su estatus de chat"\n         ],\n         "Custom status": [\n            null,\n            "Personalizar estatus"\n         ],\n         "online": [\n            null,\n            "en línea"\n         ],\n         "busy": [\n            null,\n            "ocupado"\n         ],\n         "away for long": [\n            null,\n            "ausente por mucho tiempo"\n         ],\n         "away": [\n            null,\n            "ausente"\n         ],\n         "Online": [\n            null,\n            "En línea"\n         ],\n         "Busy": [\n            null,\n            "Ocupado"\n         ],\n         "Away": [\n            null,\n            "Ausente"\n         ],\n         "Offline": [\n            null,\n            "Desconectado"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Haga click para agregar nuevos contactos al chat"\n         ],\n         "Add a contact": [\n            null,\n            "Agregar un contacto"\n         ],\n         "Contact name": [\n            null,\n            "Nombre de contacto"\n         ],\n         "Search": [\n            null,\n            "Búsqueda"\n         ],\n         "e.g. user@example.org": [\n            null,\n            ""\n         ],\n         "Add": [\n            null,\n            "Agregar"\n         ],\n         "No users found": [\n            null,\n            "Sin usuarios encontrados"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            ""\n         ],\n         "Minimize this chat box": [\n            null,\n            ""\n         ],\n         "Click to restore this chat": [\n            null,\n            "Haga click para eliminar este contacto"\n         ],\n         "Minimized": [\n            null,\n            "Minimizado"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Esta sala no es para usuarios anónimos"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Esta sala ahora muestra los miembros no disponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Esta sala no muestra los miembros no disponibles"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "El registro de la sala ahora está habilitado"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "El registro de la sala ahora está deshabilitado"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Esta sala ahora es semi-anónima"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Esta sala ahora es completamente anónima"\n         ],\n         "A new room has been created": [\n            null,\n            "Una nueva sala ha sido creada"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Usted ha sido bloqueado de esta sala"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Usted ha sido expulsado de esta sala"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Usted ha sido eliminado de esta sala debido a un cambio de afiliación"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Usted ha sido eliminado de esta sala debido a que la sala cambio su configuración a solo-miembros y usted no es un miembro"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Usted ha sido eliminado de esta sala debido a que el servicio MUC (Multi-user chat) está deshabilitado."\n         ],\n         "Message": [\n            null,\n            "Mensaje"\n         ],\n         "Hide the list of occupants": [\n            null,\n            ""\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "¿Está seguro de querer limpiar los mensajes de esta sala?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            ""\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            ""\n         ],\n         "Change user role to occupant": [\n            null,\n            ""\n         ],\n         "Grant membership to a user": [\n            null,\n            ""\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            ""\n         ],\n         "Change your nickname": [\n            null,\n            ""\n         ],\n         "Grant moderator role to user": [\n            null,\n            ""\n         ],\n         "Revoke user\'s membership": [\n            null,\n            ""\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            ""\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Please choose your nickname": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Apodo"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Esta sala de chat requiere una contraseña."\n         ],\n         "Password: ": [\n            null,\n            "Contraseña: "\n         ],\n         "Submit": [\n            null,\n            "Enviar"\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            ""\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Tema fijado por %1$s a: %2$s"\n         ],\n         "Occupants": [\n            null,\n            "Ocupantes"\n         ],\n         "Invite": [\n            null,\n            ""\n         ],\n         "Hidden": [\n            null,\n            "Oculto"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "Moderado"\n         ],\n         "Non-anonymous": [\n            null,\n            "No anónimo"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "Pública"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semi anónimo"\n         ],\n         "Unmoderated": [\n            null,\n            "Sin moderar"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            ""\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            ""\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Nombre de sala"\n         ],\n         "Server": [\n            null,\n            "Servidor"\n         ],\n         "Show rooms": [\n            null,\n            "Mostrar salas"\n         ],\n         "Rooms": [\n            null,\n            "Salas"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Sin salas en %1$s"\n         ],\n         "Description:": [\n            null,\n            "Descripción"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Ocupantes:"\n         ],\n         "Features:": [\n            null,\n            "Características:"\n         ],\n         "Requires authentication": [\n            null,\n            "Autenticación requerida"\n         ],\n         "Requires an invitation": [\n            null,\n            "Requiere una invitación"\n         ],\n         "Open room": [\n            null,\n            "Abrir sala"\n         ],\n         "Permanent room": [\n            null,\n            "Sala permanente"\n         ],\n         "Temporary room": [\n            null,\n            "Sala temporal"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            ""\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            ""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Re-estableciendo sesión cifrada"\n         ],\n         "Generating private key.": [\n            null,\n            "Generando llave privada"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Su navegador podría dejar de responder por un momento"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "No se pudo verificar la identidad de este usuario"\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Sus mensajes han dejado de cifrarse"\n         ],\n         "Your message could not be sent": [\n            null,\n            "Su mensaje no se pudo enviar"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Se recibío un mensaje sin cifrar"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Se recibío un mensaje cifrado corrupto"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Por favor confirme los identificadores de %1$s fuera de este chat.\\n\\nSu identificador es, %2$s: %3$s\\n\\nEl identificador de %1$s es: %4$s\\n\\nDespués de confirmar los identificadores haga click en OK, cancele si no concuerdan."\n         ],\n         "What is your security question?": [\n            null,\n            "Introduzca su pregunta de seguridad"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Introduzca la respuesta a su pregunta de seguridad"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Esquema de autenticación inválido"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Sus mensajes no están cifrados. Haga click aquí para habilitar el cifrado OTR"\n         ],\n         "End encrypted conversation": [\n            null,\n            "Finalizar sesión cifrada"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualizar sesión cifrada"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Iniciar sesión cifrada"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verificar con identificadores"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verificar con SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "¿Qué es esto?"\n         ],\n         "unencrypted": [\n            null,\n            "texto plano"\n         ],\n         "unverified": [\n            null,\n            "sin verificar"\n         ],\n         "verified": [\n            null,\n            "verificado"\n         ],\n         "finished": [\n            null,\n            "finalizado"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            ""\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            ""\n         ],\n         "Fetch registration form": [\n            null,\n            ""\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            ""\n         ],\n         "here": [\n            null,\n            ""\n         ],\n         "Register": [\n            null,\n            ""\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            ""\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            ""\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            ""\n         ],\n         "Now logging you in": [\n            null,\n            ""\n         ],\n         "Registered successfully": [\n            null,\n            ""\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            ""\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Este contacto está ocupado"\n         ],\n         "This contact is online": [\n            null,\n            "Este contacto está en línea"\n         ],\n         "This contact is offline": [\n            null,\n            "Este contacto está desconectado"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Este contacto no está disponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Este contacto está ausente por un largo periodo de tiempo"\n         ],\n         "This contact is away": [\n            null,\n            "Este contacto está ausente"\n         ],\n         "Groups": [\n            null,\n            ""\n         ],\n         "My contacts": [\n            null,\n            "Mis contactos"\n         ],\n         "Pending contacts": [\n            null,\n            "Contactos pendientes"\n         ],\n         "Contact requests": [\n            null,\n            "Solicitudes de contacto"\n         ],\n         "Ungrouped": [\n            null,\n            ""\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Haga click para conversar con este contacto"\n         ],\n         "Name": [\n            null,\n            ""\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "¿Esta seguro de querer eliminar este contacto?"\n         ]\n      }\n   }\n}';});
 
 
+define('text!fi',[],function () { return '{\r\n   "domain": "converse",\r\n   "locale_data": {\r\n      "converse": {\r\n         "": {\r\n            "domain": "converse",\r\n            "plural_forms": "nplurals=2; plural=(n != 1);",\r\n            "lang": "fi"\r\n         },\r\n         "Bookmark this room": [\r\n            null,\r\n            "Lisää huone kirjanmerkkeihin"\r\n         ],\r\n         "The name for this bookmark:": [\r\n            null,\r\n            "Kirjanmerkin nimi:"\r\n         ],\r\n         "Would you like this room to be automatically joined upon startup?": [\r\n            null,\r\n            "Haluatko liittyä automaattisesti tähän huoneeseen?"\r\n         ],\r\n         "What should your nickname for this room be?": [\r\n            null,\r\n            "Millä nimellä haluat näkyä tässä huoneessa?"\r\n         ],\r\n         "Save": [\r\n            null,\r\n            "Tallenna"\r\n         ],\r\n         "Cancel": [\r\n            null,\r\n            "Peruuta"\r\n         ],\r\n         "Sorry, something went wrong while trying to save your bookmark.": [\r\n            null,\r\n            "Kirjanmerkin tallennus epäonnistui."\r\n         ],\r\n         "Bookmarks": [\r\n            null,\r\n            "Kirjanmerkit"\r\n         ],\r\n         "Remove this bookmark": [\r\n            null,\r\n            "Poista tämä kirjanmerkki"\r\n         ],\r\n         "Show more information on this room": [\r\n            null,\r\n            "Näytä lisää tietoa tästä huoneesta"\r\n         ],\r\n         "Click to open this room": [\r\n            null,\r\n            "Avaa tämä huone"\r\n         ],\r\n         "Personal message": [\r\n            null,\r\n            "Yksityinen viesti"\r\n         ],\r\n         "Send": [\r\n            null,\r\n            "Lähetä"\r\n         ],\r\n         "me": [\r\n            null,\r\n            "minä"\r\n         ],\r\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\r\n            null,\r\n            "Isokokoinen viesti vastaanotettu. Tämä voi johtua palvelunestohyökkäyksestä."\r\n         ],\r\n         "Typing from another device": [\r\n            null,\r\n            "Kirjoittaa toisella laitteella"\r\n         ],\r\n         "is typing": [\r\n            null,\r\n            "kirjoittaa"\r\n         ],\r\n         "Stopped typing on the other device": [\r\n            null,\r\n            "Lopetti kirjoittamisen toisella laitteella"\r\n         ],\r\n         "has stopped typing": [\r\n            null,\r\n            "lopetti kirjoittamisen"\r\n         ],\r\n         "Show this menu": [\r\n            null,\r\n            "Näytä tämä valikko"\r\n         ],\r\n         "Write in the third person": [\r\n            null,\r\n            "Kirjoita kolmannessa persoonassa"\r\n         ],\r\n         "Remove messages": [\r\n            null,\r\n            "Poista viestit"\r\n         ],\r\n         "Are you sure you want to clear the messages from this chat box?": [\r\n            null,\r\n            "Haluatko varmasti poistaa tämän huoneen viestit?"\r\n         ],\r\n         "Insert a smiley": [\r\n            null,\r\n            "Lisää emoji"\r\n         ],\r\n         "Start a call": [\r\n            null,\r\n            "Aloita puhelu"\r\n         ],\r\n         "Contacts": [\r\n            null,\r\n            "Kontaktit"\r\n         ],\r\n         "Password:": [\r\n            null,\r\n            "Salasana:"\r\n         ],\r\n         "Log In": [\r\n            null,\r\n            "Kirjaudu sisään"\r\n         ],\r\n         "user@server": [\r\n            null,\r\n            "käyttäjä@palvelin"\r\n         ],\r\n         "Sign in": [\r\n            null,\r\n            "Rekisteröidy"\r\n         ],\r\n         "I am %1$s": [\r\n            null,\r\n            "Olen %1$s"\r\n         ],\r\n         "Click here to write a custom status message": [\r\n            null,\r\n            "Kirjoita oma tilaviesti"\r\n         ],\r\n         "Click to change your chat status": [\r\n            null,\r\n            "Vaihda chat-tilasi"\r\n         ],\r\n         "Custom status": [\r\n            null,\r\n            "Oma tilasi"\r\n         ],\r\n         "online": [\r\n            null,\r\n            "online"\r\n         ],\r\n         "busy": [\r\n            null,\r\n            "varattu"\r\n         ],\r\n         "away for long": [\r\n            null,\r\n            "poissa kauan"\r\n         ],\r\n         "away": [\r\n            null,\r\n            "poissa"\r\n         ],\r\n         "Online": [\r\n            null,\r\n            "Online"\r\n         ],\r\n         "Busy": [\r\n            null,\r\n            "Varattu"\r\n         ],\r\n         "Away": [\r\n            null,\r\n            "Poissa"\r\n         ],\r\n         "Offline": [\r\n            null,\r\n            "Offline"\r\n         ],\r\n         "Click to add new chat contacts": [\r\n            null,\r\n            "Lisää uusia kontakteja"\r\n         ],\r\n         "Add a contact": [\r\n            null,\r\n            "Lisää kontakti"\r\n         ],\r\n         "Contact name": [\r\n            null,\r\n            "Kontaktin nimi"\r\n         ],\r\n         "Search": [\r\n            null,\r\n            "Etsi"\r\n         ],\r\n         "e.g. user@example.org": [\r\n            null,\r\n            "esim. kayttaja@esimerkki.org"\r\n         ],\r\n         "Add": [\r\n            null,\r\n            "Lisää"\r\n         ],\r\n         "No users found": [\r\n            null,\r\n            "Käyttäjiä ei löytynyt"\r\n         ],\r\n         "Sorry, there was an error while trying to add %1$s as a contact.": [\r\n            null,\r\n            "Käyttäjän %1$s lisäys kontaktiksi epäonnistui"\r\n         ],\r\n         "This client does not allow presence subscriptions": [\r\n            null,\r\n            "Käyttäjä ei salli läsnäoloilmoituksia"\r\n         ],\r\n         "Minimize this chat box": [\r\n            null,\r\n            "Pienennä huone"\r\n         ],\r\n         "Click to restore this chat": [\r\n            null,\r\n            "Palauta tämä keskustelu"\r\n         ],\r\n         "Minimized": [\r\n            null,\r\n            "Pienennä"\r\n         ],\r\n         "This room is not anonymous": [\r\n            null,\r\n            "Huoneessa ei voi keskustella anonyymisti"\r\n         ],\r\n         "This room now shows unavailable members": [\r\n            null,\r\n            "Huone näyttää nyt poissa olevat jäsenet"\r\n         ],\r\n         "This room does not show unavailable members": [\r\n            null,\r\n            "Huone ei näytä poissa olevia jäseniä"\r\n         ],\r\n         "Room logging is now enabled": [\r\n            null,\r\n            "Huoneen keskustelut tallennetaan"\r\n         ],\r\n         "Room logging is now disabled": [\r\n            null,\r\n            "Huoneen keskusteluja ei tallenneta"\r\n         ],\r\n         "Message": [\r\n            null,\r\n            "Viesti"\r\n         ],\r\n         "Hide the list of occupants": [\r\n            null,\r\n            "Piilota osallistujalista"\r\n         ],\r\n         "Error: the \\"%1$s\\" command takes two arguments, the user\'s nickname and optionally a reason.": [\r\n            null,\r\n            "Virhe: Komento \\"%1$s\\" ottaa kaksi parametria, käyttäjän nimen ja mahdollisen”\\n“syyn. "\r\n         ],\r\n         "Are you sure you want to clear the messages from this room?": [\r\n            null,\r\n            "Haluatko varmasti poistaa tämän huoneen viestit?"\r\n         ],\r\n         "Error: could not execute the command": [\r\n            null,\r\n            "Virhe: käskyä ei voitu toteuttaa"\r\n         ],\r\n         "Change user\'s affiliation to admin": [\r\n            null,\r\n            "Muuta käyttäjän rooliksi ylläpitäjä"\r\n         ],\r\n         "Change user role to occupant": [\r\n            null,\r\n            "Vaihda käyttäjän rooliksi osallistuja"\r\n         ],\r\n         "Grant membership to a user": [\r\n            null,\r\n            "Tee käyttäjästä jäsen"\r\n         ],\r\n         "Remove user\'s ability to post messages": [\r\n            null,\r\n            "Poista käyttäjältä mahdollisuus kirjoittaa viestejä"\r\n         ],\r\n         "Change your nickname": [\r\n            null,\r\n            "Vaihda nimeäsi"\r\n         ],\r\n         "Grant moderator role to user": [\r\n            null,\r\n            "Tee käyttäjästä moderaattori"\r\n         ],\r\n         "Revoke user\'s membership": [\r\n            null,\r\n            "Peru käyttäjän jäsenyys"\r\n         ],\r\n         "Set room subject (alias for /subject)": [\r\n            null,\r\n            "Anna huoneelle aihe"\r\n         ],\r\n         "Allow muted user to post messages": [\r\n            null,\r\n            "Anna mykistetyn käyttäjän kirjoittaa viestejä"\r\n         ],\r\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\r\n            null,\r\n            "Valitsemasi nimi on käytössä, valitse toinen nimi"\r\n         ],\r\n         "Please choose your nickname": [\r\n            null,\r\n            "Valitse nimi"\r\n         ],\r\n         "Nickname": [\r\n            null,\r\n            "Nimi"\r\n         ],\r\n         "This chatroom requires a password": [\r\n            null,\r\n            "Tähän huoneeseen pääsee vain salasanalla"\r\n         ],\r\n         "Password: ": [\r\n            null,\r\n            "Salasana: "\r\n         ],\r\n         "Submit": [\r\n            null,\r\n            "Lähetä"\r\n         ],\r\n         "The reason given is: \\"%1$s\\".": [\r\n            null,\r\n            "Syy: \\"%1$s\\"."\r\n         ],\r\n         "The reason given is: \\"%1$s \\"": [\r\n            null,\r\n            "Syy: \\"%1$s \\""\r\n         ],\r\n         " has left the room. \\"": [\r\n            null,\r\n            " on poistunut huoneesta. \\""\r\n         ],\r\n         " has joined the room. \\"": [\r\n            null,\r\n            " on tullut huoneeseen. \\""\r\n         ],\r\n         " has joined the room.": [\r\n            null,\r\n            " on tullut huoneeseen."\r\n         ],\r\n         "Topic set by %1$s to: %2$s": [\r\n            null,\r\n            "%1$s on vaihtanut aiheeksi: %2$s"\r\n         ],\r\n         "Occupants": [\r\n            null,\r\n            "Osallistujat"\r\n         ],\r\n         "Invite": [\r\n            null,\r\n            "Kutsu"\r\n         ],\r\n         "Hidden": [\r\n            null,\r\n            "Piilotettu"\r\n         ],\r\n         "Message archiving": [\r\n            null,\r\n            "Viestien arkistointi"\r\n         ],\r\n         "Members only": [\r\n            null,\r\n            "Vain jäsenille"\r\n         ],\r\n         "Moderated": [\r\n            null,\r\n            "Moderoitu"\r\n         ],\r\n         "Non-anonymous": [\r\n            null,\r\n            "Ei-anonyymi"\r\n         ],\r\n         "Persistent": [\r\n            null,\r\n            "Pysyvä"\r\n         ],\r\n         "Public": [\r\n            null,\r\n            "Julkinen"\r\n         ],\r\n         "Semi-anonymous": [\r\n            null,\r\n            "Osittain anonyymi"\r\n         ],\r\n         "Unmoderated": [\r\n            null,\r\n            "Moderoimaton"\r\n         ],\r\n         "Unsecured": [\r\n            null,\r\n            "Suojaamaton"\r\n         ],\r\n         "Messages are archived on the server": [\r\n            null,\r\n            "Viestit on tallennettu palvelimelle"\r\n         ],\r\n         "All other room occupants can see your XMPP username": [\r\n            null,\r\n            "Huoneen osallistujat voivat nähdä XMPP-käyttäjänimesi"\r\n         ],\r\n         "This room persists even if it\'s unoccupied": [\r\n            null,\r\n            "Tämä on pysyvä huone myös tyhjänä"\r\n         ],\r\n         "Only moderators can see your XMPP username": [\r\n            null,\r\n            "Vain moderaattorit voivat nähdä XMPP-käyttäjänimesi"\r\n         ],\r\n         "This room will disappear once the last person leaves": [\r\n            null,\r\n            "Huone katoaa, kun viimeinen henkilö poistuu huoneesta"\r\n         ],\r\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\r\n            null,\r\n            "Olet kutsumassa käyttäjän %1$s huoneeseen \\"%2$s\\". "\r\n         ],\r\n         "You may optionally include a message, explaining the reason for the invitation.": [\r\n            null,\r\n            "Voit halutessasi kirjoittaa viestin, jossa kerrot kutsun syyn."\r\n         ],\r\n         "Please enter a valid XMPP username": [\r\n            null,\r\n            "Syötä käyttänimi oikeassa muodossa"\r\n         ],\r\n         "Room name": [\r\n            null,\r\n            "Luo uusi huone"\r\n         ],\r\n         "Server": [\r\n            null,\r\n            "Palvelin"\r\n         ],\r\n         "Show rooms": [\r\n            null,\r\n            "Näytä huoneet"\r\n         ],\r\n         "Rooms": [\r\n            null,\r\n            "Huoneet"\r\n         ],\r\n         "No rooms on %1$s": [\r\n            null,\r\n            "Ei huoneita palvelimella %1$s"\r\n         ],\r\n         "Description:": [\r\n            null,\r\n            "Kuvaus:"\r\n         ],\r\n         "Room Address (JID):": [\r\n            null,\r\n            "Osoite (JID):"\r\n         ],\r\n         "Occupants:": [\r\n            null,\r\n            "Osallistujat:"\r\n         ],\r\n         "Features:": [\r\n            null,\r\n            "Ominaisuudet:"\r\n         ],\r\n         "Requires authentication": [\r\n            null,\r\n            "Vaatii tunnistautumisen"\r\n         ],\r\n         "Requires an invitation": [\r\n            null,\r\n            "Vaatii kutsun"\r\n         ],\r\n         "Open room": [\r\n            null,\r\n            "Avaa huone"\r\n         ],\r\n         "Permanent room": [\r\n            null,\r\n            "Pysyvä huone"\r\n         ],\r\n         "Temporary room": [\r\n            null,\r\n            "Väliaikainen huone"\r\n         ],\r\n         "%1$s has invited you to join a chat room: %2$s": [\r\n            null,\r\n            "%1$s on kutsunut sinut huoneeseen %2$s"\r\n         ],\r\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\r\n            null,\r\n            "%1$s on kutsunut sinut huoneeseen: %2$s, koska: \\"%3$s\\""\r\n         ],\r\n         "Notification from %1$s": [\r\n            null,\r\n            "Ilmoitus käyttäjältä %1$s"\r\n         ],\r\n         "%1$s says": [\r\n            null,\r\n            "%1$s sanoo"\r\n         ],\r\n         "wants to be your contact": [\r\n            null,\r\n            "haluaa kontakteihisi"\r\n         ],\r\n         "Re-establishing encrypted session": [\r\n            null,\r\n            "Luo uutta salattua istuntoa"\r\n         ],\r\n         "Generating private key.": [\r\n            null,\r\n            "Luo avainkoodia"\r\n         ],\r\n         "Your browser might become unresponsive.": [\r\n            null,\r\n            "Selaimesi saattaa mennä jumiin."\r\n         ],\r\n         "Could not verify this user\'s identify.": [\r\n            null,\r\n            "Käyttäjän henkilöllisyyttä ei voitu varmistaa."\r\n         ],\r\n         "Your messages are not encrypted anymore": [\r\n            null,\r\n            "Viestisi eivät ole enää salattuja"\r\n         ],\r\n         "Your message could not be sent": [\r\n            null,\r\n            "Viestiäsi ei voitu lähettää"\r\n         ],\r\n         "We received an unencrypted message": [\r\n            null,\r\n            "Salaamaton viesti"\r\n         ],\r\n         "We received an unreadable encrypted message": [\r\n            null,\r\n            "Vastaanotettu salaamaton viesti, jota ei voi lukea"\r\n         ],\r\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\r\n            null,\r\n            "Vahvista tunniste käyttäjän %1$s kanssa chatin ulkopuolella.\\n\\nTunnisteesi: %2$s: %3$s\\n\\nKäyttäjän %1$s tunniste: %4$s\\n\\nJos olette vahvistaneet tunnisteet, klikkaa OK, muussa tapauksessaperuuta."\r\n         ],\r\n         "What is your security question?": [\r\n            null,\r\n            "Turvakysymys:"\r\n         ],\r\n         "What is the answer to the security question?": [\r\n            null,\r\n            "Turvakysymyksen vastaus:"\r\n         ],\r\n         "Invalid authentication scheme provided": [\r\n            null,\r\n            "Todentaminen ei onnistu"\r\n         ],\r\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\r\n            null,\r\n            "Viestejäsi ei ole salattu. Klikkaa tästä salliaksesi OTR-salaus."\r\n         ],\r\n         "End encrypted conversation": [\r\n            null,\r\n            "Lopeta salattu keskustelu"\r\n         ],\r\n         "Refresh encrypted conversation": [\r\n            null,\r\n            "Lataa salattu keskustelu uudelleen"\r\n         ],\r\n         "Start encrypted conversation": [\r\n            null,\r\n            "Aloita salattu keskustelu"\r\n         ],\r\n         "Verify with fingerprints": [\r\n            null,\r\n            "Vahvista tunnisteella"\r\n         ],\r\n         "Verify with SMP": [\r\n            null,\r\n            "Vahvista SMP:llä"\r\n         ],\r\n         "What\'s this?": [\r\n            null,\r\n            "Mikä tämä on?"\r\n         ],\r\n         "unencrypted": [\r\n            null,\r\n            "salaamaton"\r\n         ],\r\n         "unverified": [\r\n            null,\r\n            "vahvistamaton"\r\n         ],\r\n         "verified": [\r\n            null,\r\n            "vahvistettu"\r\n         ],\r\n         "finished": [\r\n            null,\r\n            "valmis"\r\n         ],\r\n         " e.g. conversejs.org": [\r\n            null,\r\n            "esim. conversejs.org"\r\n         ],\r\n         "Your XMPP provider\'s domain name:": [\r\n            null,\r\n            "XMPP-palveluntarjoajasi domain-nimi"\r\n         ],\r\n         "Fetch registration form": [\r\n            null,\r\n            "Hae rekisteröintilomake"\r\n         ],\r\n         "Tip: A list of public XMPP providers is available": [\r\n            null,\r\n            "Vihje: Lista julkisista XMPP-palveluntarjoajista on saatavilla"\r\n         ],\r\n         "here": [\r\n            null,\r\n            "tähän"\r\n         ],\r\n         "Register": [\r\n            null,\r\n            "Rekisteröidy"\r\n         ],\r\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\r\n            null,\r\n            "Antamasi palveluntarjoaja ei tue suoraa tilin rekisteröintiä, kokeile toista”\\n“palveluntarjoajaa"\r\n         ],\r\n         "Requesting a registration form from the XMPP server": [\r\n            null,\r\n            "Pyydetään rekisteröintilomaketta XMPP-palvelimelta"\r\n         ],\r\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\r\n            null,\r\n            "Yhteyden luominen huoneeseen \\"%1$s\\" ei onnistunut. Oletko varma, että se on olemassa?"\r\n         ],\r\n         "Now logging you in": [\r\n            null,\r\n            "Kirjaudutaan sisälle"\r\n         ],\r\n         "Registered successfully": [\r\n            null,\r\n            "Rekisteröityminen onnistui"\r\n         ],\r\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\r\n            null,\r\n            "Palveluntarjoaja hylkäsi rekisteröitymisen. Tarkista syöttämäsi tiedot"\r\n         ],\r\n         "Retry": [\r\n            null,\r\n            "Yritä uudelleen"\r\n         ],\r\n         "This contact is busy": [\r\n            null,\r\n            "Tämä kontakti on varattu"\r\n         ],\r\n         "This contact is online": [\r\n            null,\r\n            "Tämä kontakti on online-tilassa"\r\n         ],\r\n         "This contact is offline": [\r\n            null,\r\n            "Tämä kontakti on offline-tilassa"\r\n         ],\r\n         "This contact is unavailable": [\r\n            null,\r\n            "Tämä kontakti ei ole paikalla"\r\n         ],\r\n         "This contact is away for an extended period": [\r\n            null,\r\n            "Tämä kontakti on ollut poissa kauan"\r\n         ],\r\n         "This contact is away": [\r\n            null,\r\n            "Tämä kontakti on poissa"\r\n         ],\r\n         "Groups": [\r\n            null,\r\n            "Ryhmät"\r\n         ],\r\n         "My contacts": [\r\n            null,\r\n            "Omat kontaktit"\r\n         ],\r\n         "Pending contacts": [\r\n            null,\r\n            "Avoimet kontaktipyynnöt"\r\n         ],\r\n         "Contact requests": [\r\n            null,\r\n            "Kontaktipyynnöt"\r\n         ],\r\n         "Ungrouped": [\r\n            null,\r\n            "Ryhmittelemättömät"\r\n         ],\r\n         "Filter": [\r\n            null,\r\n            "Suodata"\r\n         ],\r\n         "State": [\r\n            null,\r\n            "Tila"\r\n         ],\r\n         "Any": [\r\n            null,\r\n            "Kaikki"\r\n         ],\r\n         "Unread": [\r\n            null,\r\n            "Uudet"\r\n         ],\r\n         "Chatty": [\r\n            null,\r\n            "Aktiivisimmat"\r\n         ],\r\n         "Extended Away": [\r\n            null,\r\n            "Kauan poissa olleet"\r\n         ],\r\n         "Click to chat with this contact": [\r\n            null,\r\n            "Keskustele tämän kontaktin kanssa"\r\n         ],\r\n         "Name": [\r\n            null,\r\n            "Nimi"\r\n         ],\r\n         "Are you sure you want to remove this contact?": [\r\n            null,\r\n            "Haluatko varmasti poistaa tämän kontaktin"\r\n         ]\r\n      }\r\n   }\r\n}';});
+
+
 define('text!fr',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=n > 1;",\n            "lang": "fr"\n         },\n         "Bookmark this room": [\n            null,\n            "Marquer ce salon"\n         ],\n         "The name for this bookmark:": [\n            null,\n            "Nom de ce marque-page :"\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            "Voulez-vous rejoindre automatiquement ce salon au lancement ?"\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            "Quel alias devrait être utilisé pour ce salon ?"\n         ],\n         "Save": [\n            null,\n            "Enregistrer"\n         ],\n         "Cancel": [\n            null,\n            "Annuler"\n         ],\n         "Are you sure you want to remove the bookmark \\"%1$s\\"?": [\n            null,\n            "Voulez-vous vraiment retirer le marque-page « %1$s » ?"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            "Désolé, quelque chose s’est mal passé pendant la sauvegarde de ce marque-page."\n         ],\n         "Click to toggle the bookmarks list": [\n            null,\n            "Cliquer pour ouvrir la liste des salons"\n         ],\n         "Bookmarks": [\n            null,\n            "Marques-page"\n         ],\n         "Leave this room": [\n            null,\n            "Quitter ce salon"\n         ],\n         "Remove this bookmark": [\n            null,\n            "Retirer ce marque-page"\n         ],\n         "Unbookmark this room": [\n            null,\n            "Retirer ce salon"\n         ],\n         "Show more information on this room": [\n            null,\n            "Afficher davantage d’informations sur ce salon"\n         ],\n         "Click to open this room": [\n            null,\n            "Cliquer pour ouvrir ce salon"\n         ],\n         "You have unread messages": [\n            null,\n            "Vous avez de nouveaux messages"\n         ],\n         "Close this chat box": [\n            null,\n            "Fermer cette fenêtre de discussion"\n         ],\n         "Personal message": [\n            null,\n            "Message personnel"\n         ],\n         "Send": [\n            null,\n            "Envoyer"\n         ],\n         "me": [\n            null,\n            "moi"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            "Un message très long a été reçu. Cela pourrait être lié à une attaque visant à dégrader la performance de la conversation. La sortie a été tronquée."\n         ],\n         "Typing from another device": [\n            null,\n            "Saisie depuis un autre appareil"\n         ],\n         "is typing": [\n            null,\n            "écrit"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            "Fin de saisie depuis l’autre appareil"\n         ],\n         "has stopped typing": [\n            null,\n            "a arrêté d’écrire"\n         ],\n         "has gone away": [\n            null,\n            "est parti"\n         ],\n         "Show this menu": [\n            null,\n            "Afficher ce menu"\n         ],\n         "Write in the third person": [\n            null,\n            "Écrire à la troisième personne"\n         ],\n         "Remove messages": [\n            null,\n            "Effacer les messages"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Voulez-vous vraiment supprimer les messages de cette conversation ?"\n         ],\n         "has gone offline": [\n            null,\n            "s’est déconnecté"\n         ],\n         "is busy": [\n            null,\n            "est occupé"\n         ],\n         "Clear all messages": [\n            null,\n            "Supprimer tous les messages"\n         ],\n         "Insert a smiley": [\n            null,\n            "Insérer une émoticône"\n         ],\n         "Start a call": [\n            null,\n            "Démarrer un appel"\n         ],\n         "Contacts": [\n            null,\n            "Contacts"\n         ],\n         "XMPP Username:": [\n            null,\n            "Nom d’utilisateur XMPP :"\n         ],\n         "Password:": [\n            null,\n            "Mot de passe :"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Cliquez ici pour se connecter anonymement"\n         ],\n         "Log In": [\n            null,\n            "Se connecter"\n         ],\n         "Username": [\n            null,\n            "Nom"\n         ],\n         "user@server": [\n            null,\n            "utilisateur@serveur"\n         ],\n         "password": [\n            null,\n            "Mot de passe"\n         ],\n         "Sign in": [\n            null,\n            "S’inscrire"\n         ],\n         "I am %1$s": [\n            null,\n            "Je suis %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Cliquez ici pour indiquer votre statut personnel"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Cliquez pour changer votre statut"\n         ],\n         "Custom status": [\n            null,\n            "Statut personnel"\n         ],\n         "online": [\n            null,\n            "en ligne"\n         ],\n         "busy": [\n            null,\n            "occupé"\n         ],\n         "away for long": [\n            null,\n            "absent pour une longue durée"\n         ],\n         "away": [\n            null,\n            "absent"\n         ],\n         "offline": [\n            null,\n            "Déconnecté"\n         ],\n         "Online": [\n            null,\n            "En ligne"\n         ],\n         "Busy": [\n            null,\n            "Occupé"\n         ],\n         "Away": [\n            null,\n            "Absent"\n         ],\n         "Offline": [\n            null,\n            "Déconnecté"\n         ],\n         "Log out": [\n            null,\n            "Se déconnecter"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Cliquez pour ajouter de nouveaux contacts"\n         ],\n         "Add a contact": [\n            null,\n            "Ajouter un contact"\n         ],\n         "Contact name": [\n            null,\n            "Nom du contact"\n         ],\n         "Search": [\n            null,\n            "Rechercher"\n         ],\n         "e.g. user@example.org": [\n            null,\n            "e.g. utilisateur@exemple.org"\n         ],\n         "Add": [\n            null,\n            "Ajouter"\n         ],\n         "No users found": [\n            null,\n            "Aucun utilisateur trouvé"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Ce client ne permet pas les mises à jour de disponibilité"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Cliquez pour cacher ces contacts"\n         ],\n         "Close this box": [\n            null,\n            "Fermer cette fenêtre"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Réduire cette fenêtre de discussion"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Cliquez pour afficher cette discussion"\n         ],\n         "Minimized": [\n            null,\n            "Réduit(s)"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Ce salon n’est pas anonyme"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Ce salon affiche maintenant les membres indisponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Ce salon n’affiche pas les membres indisponibles"\n         ],\n         "The room configuration has changed": [\n            null,\n            "Les paramètres de ce salon ont été modifiés"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Le logging du salon est activé"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Le logging du salon est désactivé"\n         ],\n         "This room is now no longer anonymous": [\n            null,\n            "Ce salon n’est plus anonyme"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Ce salon est maintenant semi-anonyme"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Ce salon est maintenant entièrement anonyme"\n         ],\n         "A new room has been created": [\n            null,\n            "Un nouveau salon a été créé"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Vous avez été banni de ce salon"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Vous avez été expulsé de ce salon"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Vous avez été retiré de ce salon du fait d’un changement d’affiliation"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Vous avez été retiré de ce salon parce que ce salon est devenu réservé aux membres et vous n’êtes pas membre"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Vous avez été retiré de ce salon parce que le service de chat multi-utilisateur a été désactivé."\n         ],\n         "%1$s has been banned": [\n            null,\n            "%1$s a été banni"\n         ],\n         "%1$s\'s nickname has changed": [\n            null,\n            "L’alias de %1$s a changé"\n         ],\n         "%1$s has been kicked out": [\n            null,\n            "%1$s a été expulsé"\n         ],\n         "%1$s has been removed because of an affiliation change": [\n            null,\n            "%1$s a été supprimé à cause d’un changement d’affiliation"\n         ],\n         "%1$s has been removed for not being a member": [\n            null,\n            "%1$s a été supprimé car il n’est pas membre"\n         ],\n         "Your nickname has been automatically set to: %1$s": [\n            null,\n            "Votre alias a été automatiquement déterminé en : %1$s"\n         ],\n         "Your nickname has been changed to: %1$s": [\n            null,\n            "Votre alias a été modifié en : %1$s"\n         ],\n         "Message": [\n            null,\n            "Message"\n         ],\n         "Close and leave this room": [\n            null,\n            "Fermer et quitter ce salon"\n         ],\n         "Configure this room": [\n            null,\n            "Configurer ce salon"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Cacher la liste des participants"\n         ],\n         "${command}": [\n            null,\n            "${command}"\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Voulez-vous vraiment supprimer les messages de ce salon ?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Erreur : la commande ne peut pas être exécutée"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Changer le rôle  de l’utilisateur en administrateur"\n         ],\n         "Ban user from room": [\n            null,\n            "Bannir l’utilisateur du salon"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Changer le rôle de l’utilisateur en participant"\n         ],\n         "Kick user from room": [\n            null,\n            "Expulser l’utilisateur du salon"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Écrire à la troisième personne"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Autoriser l’utilisateur à être membre"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Retirer le droit d’envoyer des messages"\n         ],\n         "Change your nickname": [\n            null,\n            "Changer votre alias"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Changer le rôle de l’utilisateur en modérateur"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Accorder la propriété à ce salon"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Révoquer l’utilisateur des membres"\n         ],\n         "Set room subject": [\n            null,\n            "Indiquer le sujet du salon"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            "Définir le sujet de la salle (alias pour /subject)"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Autoriser les utilisateurs muets à poster des messages"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            "L’alias choisi est réservé ou actuellment utilisé, veuillez en choisir un différent."\n         ],\n         "Please choose your nickname": [\n            null,\n            "Veuillez choisir votre alias"\n         ],\n         "Nickname": [\n            null,\n            "Alias"\n         ],\n         "Enter room": [\n            null,\n            "Entrer dans le salon"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Ce salon nécessite un mot de passe"\n         ],\n         "Password: ": [\n            null,\n            "Mot de passe : "\n         ],\n         "Submit": [\n            null,\n            "Soumettre"\n         ],\n         "This action was done by %1$s.": [\n            null,\n            "L’action a été réalisée par %1$s."\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            "La raison indiquée est : « %1$s »."\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            " a quitté le salon. \\""\n         ],\n         " has left the room": [\n            null,\n            " a quitté le salon"\n         ],\n         " has joined the room. \\"": [\n            null,\n            " a rejoint le salon. \\""\n         ],\n         " has joined the room.": [\n            null,\n            " a rejoint le salon."\n         ],\n         "You are not on the member list of this room.": [\n            null,\n            "Vous n’êtes pas dans la liste des membres de ce salon."\n         ],\n         "You have been banned from this room.": [\n            null,\n            "Vous avez été banni de ce salon."\n         ],\n         "No nickname was specified.": [\n            null,\n            "Aucun alias n’a été indiqué."\n         ],\n         "You are not allowed to create new rooms.": [\n            null,\n            "Vous n’êtes pas autorisé à créer des salons."\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies.": [\n            null,\n            "Votre alias n’est pas conforme à la politique de ce salon."\n         ],\n         "This room does not (yet) exist.": [\n            null,\n            "Ce salon n’existe pas (pour l’instant)."\n         ],\n         "This room has reached its maximum number of occupants.": [\n            null,\n            "Ce salon a atteint sa limite maximale d’occupants."\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Le sujet « %2$s » a été défini par %1$s"\n         ],\n         "This user is a moderator.": [\n            null,\n            "Cet utilisateur est un modérateur."\n         ],\n         "This user can send messages in this room.": [\n            null,\n            "Cet utilisateur peut envoyer des messages dans ce salon."\n         ],\n         "This user can NOT send messages in this room.": [\n            null,\n            "Cet utilisateur ne peut PAS envoyer de messages dans ce salon."\n         ],\n         "Occupants": [\n            null,\n            "Participants :"\n         ],\n         "Invite": [\n            null,\n            "Inviter"\n         ],\n         "Features": [\n            null,\n            "Caractéristiques"\n         ],\n         "Hidden": [\n            null,\n            "Masqué"\n         ],\n         "Message archiving": [\n            null,\n            "Archivage du message"\n         ],\n         "Members only": [\n            null,\n            "Membres uniquement"\n         ],\n         "Moderated": [\n            null,\n            "Modéré"\n         ],\n         "Non-anonymous": [\n            null,\n            "Non-anonyme"\n         ],\n         "Open": [\n            null,\n            "Ouvrir"\n         ],\n         "Password protected": [\n            null,\n            "Protégé par mot de passe"\n         ],\n         "Persistent": [\n            null,\n            "Persistant"\n         ],\n         "Public": [\n            null,\n            "Public"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semi-anonyme"\n         ],\n         "Temporary": [\n            null,\n            "Temporaire"\n         ],\n         "Unmoderated": [\n            null,\n            "Non modéré"\n         ],\n         "Unsecured": [\n            null,\n            "Non sécurisé"\n         ],\n         "This room is not publicly searchable": [\n            null,\n            "Ce salon ne peut pas être recherché publiquement"\n         ],\n         "Messages are archived on the server": [\n            null,\n            "Les messages sont archivés sur le serveur"\n         ],\n         "This room is restricted to members only": [\n            null,\n            "Ce salon est restreint aux membres uniquement"\n         ],\n         "This room is being moderated": [\n            null,\n            "Ce salon est modéré"\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            "Tous les autres occupants de ce salon peuvent voir votre nom d’utilisateur XMPP"\n         ],\n         "Anyone can join this room": [\n            null,\n            "N’importe qui peut rejoindre ce salon"\n         ],\n         "This room requires a password before entry": [\n            null,\n            "Ce salon nécessite un mot de passe pour y accéder"\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            "Ce salon persiste même s\'il est inoccupé"\n         ],\n         "This room is publicly searchable": [\n            null,\n            "Ce salon peut être recherché publiquement"\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            "Seuls les modérateurs peuvent voir votre identifiant XMPP"\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            "Ce salon disparaîtra au départ de la dernière personne"\n         ],\n         "This room is not being moderated": [\n            null,\n            "Ce salon n’est pas modéré"\n         ],\n         "This room does not require a password upon entry": [\n            null,\n            "Ce salon nécessite un mot de passe pour y accéder"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Vous vous apprêtez à inviter %1$s dans le salon \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Vous pouvez facultativement ajouter un message, expliquant la raison de cette invitation."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            "Veuillez saisir un identifiant utilisateur XMPP valide"\n         ],\n         "Room name": [\n            null,\n            "Nom du salon"\n         ],\n         "Server": [\n            null,\n            "Serveur"\n         ],\n         "Join Room": [\n            null,\n            "Rejoindre"\n         ],\n         "Show rooms": [\n            null,\n            "Afficher les salons"\n         ],\n         "Rooms": [\n            null,\n            "Salons"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Aucun salon dans %1$s"\n         ],\n         "Description:": [\n            null,\n            "Description :"\n         ],\n         "Room Address (JID):": [\n            null,\n            "Adresse du salon (JID) :"\n         ],\n         "Occupants:": [\n            null,\n            "Participants :"\n         ],\n         "Features:": [\n            null,\n            "Caractéristiques :"\n         ],\n         "Requires authentication": [\n            null,\n            "Nécessite une authentification"\n         ],\n         "Requires an invitation": [\n            null,\n            "Nécessite une invitation"\n         ],\n         "Open room": [\n            null,\n            "Ouvrir un salon"\n         ],\n         "Permanent room": [\n            null,\n            "Salon permanent"\n         ],\n         "Temporary room": [\n            null,\n            "Salon temporaire"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s vous invite à rejoindre le salon : %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s vous invite à rejoindre le salon : %2$s, avec le message suivant:\\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            "Notification depuis %1$s"\n         ],\n         "%1$s says": [\n            null,\n            "%1$s dit"\n         ],\n         "has come online": [\n            null,\n            "s’est déconnecté"\n         ],\n         "wants to be your contact": [\n            null,\n            "veut être votre contact"\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Rétablissement d’une session chiffrée"\n         ],\n         "Generating private key.": [\n            null,\n            "Génération de la clé privée."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Votre navigateur pourrait ne plus répondre."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Demande d’authentification de %1$s\\n\\nVotre contact tente de vérifier votre identité, en vous posant la question ci-dessous.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "L’identité de cet utilisateur ne peut pas être vérifiée."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Échange de la clef privée avec le contact."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Vos messages ne sont plus chiffrés"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Vos messages sont maintenant chiffrés mais l’identité de votre contact n’a pas encore été vérifiée."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "L’identité de votre contact a été vérifiée."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "Votre contact a arrêté le chiffrement de son côté, vous devriez le faire aussi."\n         ],\n         "Your message could not be sent": [\n            null,\n            "Votre message ne peut pas être envoyé"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Un message non chiffré a été reçu"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Un message chiffré illisible a été reçu"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Voici les empreintes de sécurité, veuillez les confirmer avec %1$s, en dehors de ce chat.\\n\\nEmpreinte pour vous, %2$s : %3$s\\n\\nEmpreinte pour %1$s : %4$s\\n\\nSi vous avez confirmé que les empreintes correspondent, cliquez OK, sinon cliquez Annuler."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Vous allez être invité à fournir une question de sécurité et une réponse à cette question.\\n\\nVotre contact devra répondre à la même question et s’il fournit la même réponse (sensible à la casse), son identité sera vérifiée."\n         ],\n         "What is your security question?": [\n            null,\n            "Quelle est votre question de sécurité ?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Quelle est la réponse à la question de sécurité ?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Schéma d’authentification fourni non valide"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Vos messages ne sont pas chiffrés. Cliquez ici pour activer le chiffrement OTR."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Vos messages sont chiffrés, mais votre contact n’a pas été vérifié."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Vos messages sont chiffrés et votre contact est vérifié."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "Votre contact a fermé la session privée de son côté, vous devriez le faire aussi"\n         ],\n         "End encrypted conversation": [\n            null,\n            "Terminer la conversation chiffrée"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualiser la conversation chiffrée"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Démarrer une conversation chiffrée"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Vérifier par empreintes de sécurité"\n         ],\n         "Verify with SMP": [\n            null,\n            "Vérifier par Question/Réponse"\n         ],\n         "What\'s this?": [\n            null,\n            "Qu’est-ce que c’est ?"\n         ],\n         "unencrypted": [\n            null,\n            "chiffré"\n         ],\n         "unverified": [\n            null,\n            "non vérifié"\n         ],\n         "verified": [\n            null,\n            "vérifié"\n         ],\n         "finished": [\n            null,\n            "terminé"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            " e.g. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Votre domaine XMPP :"\n         ],\n         "Fetch registration form": [\n            null,\n            "Récupération du formulaire d’enregistrement"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Astuce : une liste publique de fournisseurs XMPP est disponible"\n         ],\n         "here": [\n            null,\n            "ici"\n         ],\n         "Register": [\n            null,\n            "S’enregistrer"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "Désolé, le fournisseur indiqué ne supporte pas l’enregistrement de compte en ligne. Merci d’essayer avec un autre fournisseur."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "Demande du formulaire enregistrement au serveur XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Quelque chose a échoué lors de l’établissement de la connexion avec \\"%1$s\\". Existe-t-il vraiment ?"\n         ],\n         "Now logging you in": [\n            null,\n            "En cours de connexion"\n         ],\n         "Registered successfully": [\n            null,\n            "Enregistré avec succès"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "Le fournisseur a rejeté votre demande d’enregistrement."\n         ],\n         "Retry": [\n            null,\n            "Réessayer"\n         ],\n         "Click to toggle the rooms list": [\n            null,\n            "Cliquer pour ouvrir la liste des salons"\n         ],\n         "Open Rooms": [\n            null,\n            "Ouvrir les salons"\n         ],\n         "Are you sure you want to leave the room \\"%1$s\\"?": [\n            null,\n            "Voulez-vous vraiment supprimer le marque-page « %1$s » ?"\n         ],\n         "This contact is busy": [\n            null,\n            "Ce contact est occupé"\n         ],\n         "This contact is online": [\n            null,\n            "Ce contact est connecté"\n         ],\n         "This contact is offline": [\n            null,\n            "Ce contact est déconnecté"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Ce contact est indisponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Ce contact est absent"\n         ],\n         "This contact is away": [\n            null,\n            "Ce contact est absent"\n         ],\n         "Groups": [\n            null,\n            "Groupes"\n         ],\n         "My contacts": [\n            null,\n            "Mes contacts"\n         ],\n         "Pending contacts": [\n            null,\n            "Contacts en attente"\n         ],\n         "Contact requests": [\n            null,\n            "Demandes de contacts"\n         ],\n         "Ungrouped": [\n            null,\n            "Sans groupe"\n         ],\n         "Filter": [\n            null,\n            "Filtrer"\n         ],\n         "State": [\n            null,\n            "Status"\n         ],\n         "Any": [\n            null,\n            "Aucun"\n         ],\n         "Unread": [\n            null,\n            "Non lu"\n         ],\n         "Chatty": [\n            null,\n            "Bavard"\n         ],\n         "Extended Away": [\n            null,\n            "Absence longue durée"\n         ],\n         "Click to remove %1$s as a contact": [\n            null,\n            "Cliquez pour retirer le contact « %1$s »"\n         ],\n         "Click to accept the contact request from %1$s": [\n            null,\n            "Cliquez pour accepter la demande de « %1$s »"\n         ],\n         "Click to decline the contact request from %1$s": [\n            null,\n            "Cliquez pour décliner la demande de contact de « %1$s »"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Cliquez pour discuter avec ce contact"\n         ],\n         "Name": [\n            null,\n            "Nom"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Voulez-vous vraiment retirer ce contact ?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Voulez-vous vraiment décliner cette demande de contact ?"\n         ]\n      }\n   }\n}';});
 
 
@@ -32438,6 +32441,7 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
         'text!ca',
         'text!de',
         'text!es',
+        'text!fi',
         'text!fr',
         'text!he',
         'text!hu',
@@ -32458,19 +32462,20 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                 'ca':     arguments[2],
                 'de':     arguments[3],
                 'es':     arguments[4],
-                'fr':     arguments[5],
-                'he':     arguments[6],
-                'hu':     arguments[7],
-                'id':     arguments[8],
-                'it':     arguments[9],
-                'ja':     arguments[10],
-                'nb':     arguments[11],
-                'nl':     arguments[12],
-                'pl':     arguments[13],
-                'pt-br':  arguments[14],
-                'ru':     arguments[15],
-                'uk':     arguments[16],
-                'zh':     arguments[17]
+                'fi':     arguments[5],
+                'fr':     arguments[6],
+                'he':     arguments[7],
+                'hu':     arguments[8],
+                'id':     arguments[9],
+                'it':     arguments[10],
+                'ja':     arguments[11],
+                'nb':     arguments[12],
+                'nl':     arguments[13],
+                'pl':     arguments[14],
+                'pt-br':  arguments[15],
+                'ru':     arguments[16],
+                'uk':     arguments[17],
+                'zh':     arguments[18]
             };
             return root.locales;
         });
@@ -45296,7 +45301,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return value;
             }));
             var tones = [':tone1:', ':tone2:', ':tone3:', ':tone4:', ':tone5:'];
-            var excluded = [':kiss_ww:', ':kiss_mm:', ':kiss_woman_man:'];
+            var excluded = [':kiss_ww:', ':kiss_mm:', ':kiss_woman_man:', ':middle_finger:'];
             var excluded_substrings = [':woman', ':man', ':women_', ':men_', '_man_', '_woman_', '_woman:', '_man:'];
             var excluded_categories = ['modifier', 'regional'];
             var categories = _.difference(_.uniq(_.map(emojis, _.partial(_.get, _, 'category'))), excluded_categories);
@@ -52685,13 +52690,13 @@ __e(extra_classes) +
 __e(isodate) +
 '" data-msgid="' +
 __e(msgid) +
-'">\n    <div class="chat-msg-author chat-msg-' +
+'">\r\n    <div class="chat-msg-author chat-msg-' +
 __e(sender) +
 '">' +
 __e(time) +
 ' ' +
 __e(username) +
-':&nbsp;</div>\n    <duv class="chat-msg-content"><!-- message gets added here via renderMessage --></div>\n</div>\n';
+':&nbsp;</div>\r\n    <duv class="chat-msg-content"><!-- message gets added here via renderMessage --></div>\r\n</div>\r\n';
 
 }
 return __p
@@ -54731,11 +54736,11 @@ define('tpl!add_contact_dropdown', ['lodash'], function(_) {return function(obj)
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<dl class="add-converse-contact dropdown">\n    <dt id="xmpp-contact-search" class="fancy-dropdown">\n        <a class="toggle-xmpp-contact-form icon-plus" href="#" title="' +
+__p += '<dl class="add-converse-contact dropdown">\r\n    <dt id="xmpp-contact-search" class="fancy-dropdown">\r\n        <a class="toggle-xmpp-contact-form icon-plus" href="#" title="' +
 __e(label_click_to_chat) +
 '"><span class="toggle-xmpp-contact-form-text">' +
 __e(label_add_contact) +
-'</span></a>\n    </dt>\n    <dd class="search-xmpp">\n        <div class="contact-form-container collapsed"></div>\n        <ul></ul>\n    </dd>\n</dl>\n';
+'</span></a>\r\n    </dt>\r\n    <dd class="search-xmpp">\r\n        <div class="contact-form-container collapsed"></div>\r\n        <ul></ul>\r\n    </dd>\r\n</dl>\r\n';
 
 }
 return __p
@@ -54791,7 +54796,7 @@ define('tpl!chat_status', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<div class="xmpp-status">\n    <a class="choose-xmpp-status ' +
+__p += '<div class="xmpp-status">\r\n    <a class="choose-xmpp-status ' +
 __e(chat_status) +
 ' icon-' +
 __e(chat_status) +
@@ -54801,9 +54806,9 @@ __e(status_message) +
 __e(desc_change_status) +
 '"><span class="choose-xmpp-status-text">' +
 __e(status_message) +
-'</span></a>\n    <a class="change-xmpp-status-message icon-pencil" href="#" title="' +
+'</span></a>\r\n    <a class="change-xmpp-status-message icon-pencil" href="#" title="' +
 __e(desc_custom_status) +
-'"></a>\n</div>\n';
+'"></a>\r\n</div>\r\n';
 
 }
 return __p
@@ -54856,23 +54861,23 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<a class="s contacts-tab\n    ';
+__p += '<a class="s contacts-tab\r\n    ';
  if (is_current) { ;
 __p += ' current ';
  } ;
-__p += '\n    ';
+__p += '\r\n    ';
  if (num_unread) { ;
 __p += ' unread-msgs ';
  } ;
-__p += '"\n       data-id="users" href="#users">\n    ' +
+__p += '"\r\n       data-id="users" href="#users">\r\n    ' +
 __e(label_contacts) +
-'\n    ';
+'\r\n    ';
  if (num_unread) { ;
-__p += '\n        <span class="msgs-indicator">' +
+__p += '\r\n        <span class="msgs-indicator">' +
 __e( num_unread ) +
-'</span>\n    ';
+'</span>\r\n    ';
  } ;
-__p += '\n</a>\n';
+__p += '\r\n</a>\r\n';
 
 }
 return __p
@@ -54884,11 +54889,11 @@ obj || (obj = {});
 var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div class="flyout box-flyout">\n    <div class="chat-head controlbox-head">\n        <ul id="controlbox-tabs"></ul>\n        ';
+__p += '<div class="flyout box-flyout">\r\n    <div class="chat-head controlbox-head">\r\n        <ul id="controlbox-tabs"></ul>\r\n        ';
  if (!sticky_controlbox) { ;
-__p += '\n            <a class="chatbox-btn close-chatbox-button icon-close"></a>\n        ';
+__p += '\r\n            <a class="chatbox-btn close-chatbox-button icon-close"></a>\r\n        ';
  } ;
-__p += '\n    </div>\n    <div class="controlbox-panes"></div>\n</div>\n';
+__p += '\r\n    </div>\r\n    <div class="controlbox-panes"></div>\r\n</div>\r\n';
 
 }
 return __p
@@ -55011,7 +55016,7 @@ __e(toggle_state) +
 __e(desc_group_toggle) +
 '"><span class="group-toggle-text">' +
 __e(label_group) +
-'</span></a>\n';
+'</span></a>\r\n';
 
 }
 return __p
@@ -56289,7 +56294,8 @@ return __p
                 show_controlbox_by_default: false,
                 sticky_controlbox: false,
                 xhr_user_search: false,
-                xhr_user_search_url: ''
+                xhr_user_search_url: '',
+                hide_minimized_chats_when_closed: false
             });
 
             var LABEL_CONTACTS = __('Contacts');
@@ -56370,9 +56376,12 @@ return __p
                     this.loginpanel.render();
                     return this;
                 },
-                renderContactsPanel: function renderContactsPanel() {
+                setActivePanel: function setActivePanel(panel) {
+                    this.model.save({ 'active-panel': panel });
+                },
+                renderContactsPanel: function renderContactsPanel(initialPanel) {
                     if (_.isUndefined(this.model.get('active-panel'))) {
-                        this.model.save({ 'active-panel': USERS_PANEL_ID });
+                        this.model.save({ 'active-panel': initialPanel });
                     }
                     this.contactspanel = new _converse.ContactsPanel({
                         '$parent': this.$el.find('.controlbox-panes')
@@ -56393,6 +56402,9 @@ return __p
                     }
                     if (_converse.connection.connected && !_converse.connection.disconnecting) {
                         this.model.save({ 'closed': true });
+                        if (_converse.hide_minimized_chats_when_closed) {
+                            document.getElementById('minimized-chats').classList.add('hidden');
+                        }
                     } else {
                         this.model.trigger('hide');
                     }
@@ -56430,6 +56442,9 @@ return __p
                 },
                 show: function show() {
                     _converse.controlboxtoggle.hide(this.onControlBoxToggleHidden.bind(this));
+                    if (_converse.hide_minimized_chats_when_closed) {
+                        document.getElementById('minimized-chats').classList.remove('hidden');
+                    }
                     return this;
                 },
                 switchTab: function switchTab(ev) {
@@ -56834,12 +56849,14 @@ return __p
                 },
                 showControlBox: function showControlBox() {
                     var controlbox = _converse.chatboxes.get('controlbox');
+
                     if (!controlbox) {
                         controlbox = _converse.addControlBox();
                     }
                     if (_converse.connection.connected) {
                         controlbox.save({ closed: false });
                     } else {
+
                         controlbox.trigger('show');
                     }
                 },
@@ -57557,23 +57574,23 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<a class="s rooms-tab\n    ';
+__p += '<a class="s rooms-tab\r\n    ';
  if (is_current) { ;
 __p += ' current ';
  } ;
-__p += '\n    ';
+__p += '\r\n    ';
  if (num_unread) { ;
 __p += ' unread-msgs ';
  } ;
-__p += '"\n       data-id="chatrooms" href="#chatrooms">\n    ' +
+__p += '"\r\n       data-id="chatrooms" href="#chatrooms">\r\n    ' +
 ((__t = (label_rooms)) == null ? '' : __t) +
-'\n    ';
+'\r\n    ';
  if (num_unread) { ;
-__p += '\n        <span class="msgs-indicator">' +
+__p += '\r\n        <span class="msgs-indicator">' +
 __e( num_unread ) +
-'</span>\n    ';
+'</span>\r\n    ';
  } ;
-__p += '\n</a>\n';
+__p += '\r\n</a>\r\n';
 
 }
 return __p
@@ -58816,6 +58833,8 @@ Strophe.addConnectionPlugin('disco',
         'unmoderated': 'moderated'
     };
 
+    var LIMIT_CONFIG = ["muc#roomconfig_persistentroom", "muc#roomconfig_passwordprotectedroom", "muc#roomconfig_roomsecret", "muc#roomconfig_membersonly", "muc#roomconfig_roomadmins", "muc#roomconfig_roomowners", "muc#roomconfig_enablelogging", "x-muc#roomconfig_registration", "x-muc#roomconfig_reservednick", "muc#roomconfig_whois", "muc#roomconfig_presencebroadcast"];
+
     converse.ROOMSTATUS = {
         CONNECTED: 0,
         CONNECTING: 1,
@@ -58890,6 +58909,7 @@ Strophe.addConnectionPlugin('disco',
                 renderContactsPanel: function renderContactsPanel() {
                     var _converse = this.__super__._converse;
 
+                    this.setActivePanel(ROOMS_PANEL_ID);
                     this.__super__.renderContactsPanel.apply(this, arguments);
                     if (_converse.allow_muc) {
                         this.renderRoomsPanel();
@@ -59061,10 +59081,14 @@ Strophe.addConnectionPlugin('disco',
                 muc_history_max_stanzas: undefined,
                 muc_instant_rooms: true,
                 muc_nickname_from_jid: false,
+                muc_nickname: undefined,
                 muc_show_join_leave: true,
                 visible_toolbar_buttons: {
                     'toggle_occupants': true
-                }
+                },
+                hide_occupants: false,
+                limit_room_controls: false
+
             });
             _converse.api.promises.add('roomsPanelRendered');
 
@@ -59258,6 +59282,7 @@ Strophe.addConnectionPlugin('disco',
                         this.model.save();
                     }
                     this.occupantsview.setOccupantsHeight();
+                    // TODO make configurable
                 },
                 afterConnected: function afterConnected() {
                     if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
@@ -59905,7 +59930,9 @@ Strophe.addConnectionPlugin('disco',
                         $fieldset.append($('<p class="instructions">').text(instructions));
                     }
                     _.each($fields, function (field) {
-                        $fieldset.append(utils.xForm2webForm(field, stanza));
+                        if (_converse.limit_room_controls === false || LIMIT_CONFIG.includes(field.getAttribute('var')) === false) {
+                            $fieldset.append(utils.xForm2webForm(field, stanza));
+                        }
                     });
                     $form.append('<fieldset></fieldset>');
                     $fieldset = $form.children('fieldset:last');
@@ -60166,9 +60193,7 @@ Strophe.addConnectionPlugin('disco',
                     }
                 },
                 onNickNameNotFound: function onNickNameNotFound(message) {
-                    if (_converse.muc_nickname_from_jid) {
-                        // We try to enter the room with the node part of
-                        // the user's JID.
+                    if (_converse.muc_nickname_from_jid || _converse.muc_nickname) {
                         this.join(this.getDefaultNickName());
                     } else {
                         this.renderNicknameForm(message);
@@ -60180,7 +60205,11 @@ Strophe.addConnectionPlugin('disco',
                      * We put this in a separate method so that it can be
                      * overridden by plugins.
                      */
-                    return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+                    if (_converse.muc_nickname) {
+                        return _converse.muc_nickname;
+                    } else {
+                        return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+                    }
                 },
                 onNicknameClash: function onNicknameClash(presence) {
                     /* When the nickname is already taken, we either render a
@@ -60448,10 +60477,17 @@ Strophe.addConnectionPlugin('disco',
                     } else if (this.model.get('connection_status') == converse.ROOMSTATUS.PASSWORD_REQUIRED) {
                         this.renderPasswordForm();
                     } else {
-                        this.$el.find('.chat-area').removeClass('hidden');
-                        this.$el.find('.occupants').removeClass('hidden');
-                        this.occupantsview.setOccupantsHeight();
-                        this.scrollDown();
+                        if (_converse.hide_occupants == true) {
+                            this.model.save({ hidden_occupants: true });
+                            this.$('.icon-hide-users').removeClass('icon-hide-users').addClass('icon-show-users');
+                            this.$('.occupants').addClass('hidden');
+                            this.$('.chat-area').removeClass('hidden').addClass('full');
+                        } else {
+                            this.$el.find('.chat-area').removeClass('hidden');
+                            this.$el.find('.occupants').removeClass('hidden');
+                            this.occupantsview.setOccupantsHeight();
+                            this.scrollDown();
+                        }
                     }
                 },
                 showSpinner: function showSpinner() {
@@ -61408,27 +61444,27 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<dd class="available-chatroom" data-room-jid="' +
 __e(jid) +
-'">\n  <a class="open-room" data-room-jid="' +
+'">\r\n  <a class="open-room" data-room-jid="' +
 __e(jid) +
 '" title="' +
 __e(open_title) +
 '" href="#">' +
 __e(name) +
-'</a>\n  <a class="room-info icon-room-info" data-room-jid="' +
+'</a>\r\n  <a class="room-info icon-room-info" data-room-jid="' +
 __e(jid) +
-'"\n     title="' +
+'"\r\n     title="' +
 __e(info_title) +
-'" href="#">&nbsp;</a>\n  <a class="remove-bookmark icon-pushpin ';
+'" href="#">&nbsp;</a>\r\n  <a class="remove-bookmark icon-pushpin ';
  if (bookmarked) { ;
 __p += ' button-on ';
  } ;
-__p += '"\n     data-room-jid="' +
+__p += '"\r\n     data-room-jid="' +
 __e(jid) +
 '" data-bookmark-name="' +
 __e(name) +
-'"\n     title="' +
+'"\r\n     title="' +
 __e(info_remove_bookmark) +
-'" href="#">&nbsp;</a>\n</dd>\n';
+'" href="#">&nbsp;</a>\r\n</dd>\r\n';
 
 }
 return __p
@@ -61445,7 +61481,7 @@ __e(toggle_state) +
 __e(desc_bookmarks) +
 '"><span class="rooms-toggle-text">' +
 __e(label_bookmarks) +
-'</span></a>\n<dl class="bookmarks rooms-list"></dl>\n';
+'</span></a>\r\n<dl class="bookmarks rooms-list"></dl>\r\n';
 
 }
 return __p
@@ -61943,7 +61979,7 @@ __e(toggle_state) +
 __e(desc_rooms) +
 '"><span class="rooms-toggle-text">' +
 __e(label_rooms) +
-'</span></a>\n<dl class="rooms-list open-rooms-list"></dl>\n';
+'</span></a>\r\n<dl class="rooms-list open-rooms-list"></dl>\r\n';
 
 }
 return __p
@@ -61961,35 +61997,35 @@ __p += ' unread-msgs ';
  } ;
 __p += '" data-room-jid="' +
 __e(jid) +
-'">\n';
+'">\r\n';
  if (num_unread) { ;
-__p += '\n    <span class="msgs-indicator">' +
+__p += '\r\n    <span class="msgs-indicator">' +
 __e( num_unread ) +
-'</span>\n';
+'</span>\r\n';
  } ;
-__p += '\n<a class="open-room"\n    data-room-jid="' +
+__p += '\r\n<a class="open-room"\r\n    data-room-jid="' +
 __e(jid) +
-'"\n    title="' +
+'"\r\n    title="' +
 __e(open_title) +
 '" href="#">' +
 __e(name) +
-'</a>\n\n<a class="room-info icon-room-info" data-room-jid="' +
+'</a>\r\n\r\n<a class="room-info icon-room-info" data-room-jid="' +
 __e(jid) +
-'"\n   title="' +
+'"\r\n   title="' +
 __e(info_title) +
-'" href="#">&nbsp;</a>\n\n';
+'" href="#">&nbsp;</a>\r\n\r\n';
  if (allow_bookmarks) { ;
-__p += '\n<a class="icon-pushpin ';
+__p += '\r\n<a class="icon-pushpin ';
  if (bookmarked) { ;
 __p += ' remove-bookmark button-on ';
  } else { ;
 __p += ' add-bookmark ';
  } ;
-__p += '"\n   data-room-jid="' +
+__p += '"\r\n   data-room-jid="' +
 __e(jid) +
 '" data-bookmark-name="' +
 __e(name) +
-'"\n   title="';
+'"\r\n   title="';
  if (bookmarked) { ;
 __p += ' ' +
 __e(info_remove_bookmark) +
@@ -61999,15 +62035,15 @@ __p += ' ' +
 __e(info_add_bookmark) +
 ' ';
  } ;
-__p += '"\n   href="#">&nbsp;</a>\n';
+__p += '"\r\n   href="#">&nbsp;</a>\r\n';
  } ;
-__p += '\n   \n<a class="close-room icon-leave"\n   data-room-jid="' +
+__p += '\r\n   \r\n<a class="close-room icon-leave"\r\n   data-room-jid="' +
 __e(jid) +
-'"\n   data-room-name="' +
+'"\r\n   data-room-name="' +
 __e(name) +
-'"\n   title="' +
+'"\r\n   title="' +
 __e(info_leave_room) +
-'" href="#">&nbsp;</a>\n</dd>\n';
+'" href="#">&nbsp;</a>\r\n</dd>\r\n';
 
 }
 return __p
@@ -71796,11 +71832,11 @@ __p +=
 __e(Minimized) +
 ' <span id="minimized-count">(' +
 __e(num_minimized) +
-')</span>\n<span class="unread-message-count\n    ';
+')</span>\r\n<span class="unread-message-count\r\n    ';
  if (!num_unread) { ;
 __p += ' unread-message-count-hidden ';
  } ;
-__p += '\n    href="#">' +
+__p += '\r\n    href="#">' +
 __e(num_unread) +
 '</span>';
 
@@ -71902,12 +71938,14 @@ return __p
 
             ChatBox: {
                 initialize: function initialize() {
+                    var _converse = this.__super__._converse;
+
                     this.__super__.initialize.apply(this, arguments);
                     if (this.get('id') === 'controlbox') {
                         return;
                     }
                     this.save({
-                        'minimized': this.get('minimized') || false,
+                        'minimized': this.get('minimized') || _converse.auto_minimize,
                         'time_minimized': this.get('time_minimized') || moment()
                     });
                 },
@@ -72143,7 +72181,9 @@ return __p
             _converse.templates.chats_panel = tpl_chats_panel;
 
             _converse.api.settings.update({
-                no_trimming: false // Set to true for phantomjs tests (where browser apparently has no width)
+                no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
+                auto_minimize: false,
+                hide_minimized_chats_when_closed: false
             });
 
             _converse.api.promises.add('minimizedChatsInitialized');
@@ -72220,7 +72260,7 @@ return __p
                         this.el.innerHTML = tpl_chats_panel();
                         _converse.chatboxviews.el.appendChild(this.el);
                     }
-                    if (this.keys().length === 0) {
+                    if (this.keys().length === 0 || document.getElementById('controlbox').classList.contains('hidden') && _converse.hide_minimized_chats_when_closed) {
                         this.el.classList.add('hidden');
                     } else if (this.keys().length > 0 && !this.$el.is(':visible')) {
                         this.el.classList.remove('hidden');

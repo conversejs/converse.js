@@ -2127,7 +2127,7 @@
                     return false;
                 },
 
-                isDuplicate (message) {
+                isDuplicate (message, original_stanza) {
                     const msgid = message.getAttribute('id'),
                           jid = message.getAttribute('from'),
                           resource = Strophe.getResourceFromJid(jid),
@@ -2162,7 +2162,7 @@
                         sender = resource && Strophe.unescapeNode(resource) || '',
                         subject = _.propertyOf(message.querySelector('subject'))('textContent');
 
-                    if (this.isDuplicate(message)) {
+                    if (this.isDuplicate(message, original_stanza)) {
                         return true;
                     }
                     if (subject) {

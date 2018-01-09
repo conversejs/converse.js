@@ -1350,6 +1350,7 @@ support.
 .. note::
     Converse.js does not yet support "keepalive" with websockets.
 
+.. _`view_mode`:
 
 view_mode
 ---------

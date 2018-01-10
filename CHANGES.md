@@ -5,6 +5,7 @@
 ### Bugfixes
 - #800 Could not register successfully in ejabberd 17.01
 - #949 Don't flash the roster contacts filter (i.e. hide by default)
+- #951 Duplicate messages received in an MUC chat room.
 - #953 MUC "Features" displayed when exiting configuration
 - #967 Rooms list doesn't show when the server doesn't support bookmarks
 - Don't require `auto_login` to be `true` when using the API to log in.

@@ -41,7 +41,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        optional_dependencies: ["converse-headline"],
+        dependencies: ["converse-headline"],
 
         enabled (_converse) {
             return _converse.view_mode == 'overlayed';

@@ -39,7 +39,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        optional_dependencies: ["converse-controlbox", "converse-muc"],
+        dependencies: ["converse-controlbox", "converse-muc"],
 
         enabled (_converse) {
             return _converse.view_mode == 'overlayed';

@@ -75,9 +75,8 @@
 
                 test_utils.createContacts(_converse, 'current');
                 test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('.roster-group .group-toggle').length;
-                    }, 300)
-                .then(function () {
+                    return $(_converse.rosterview.el).find('.roster-group .group-toggle').length;
+                }, 300).then(function () {
                     test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
                         var jid = 'lounge@localhost';
                         var room = _converse.api.rooms.get(jid);
@@ -289,6 +288,7 @@
         });
 
         describe("An instant chat room", function () {
+
             it("will be created when muc_instant_rooms is set to true",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
@@ -297,9 +297,17 @@
                 var sent_IQ, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_IQ = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                    if (iq.nodeTree.getAttribute('to') === 'lounge@localhost') {
+                        sent_IQ = iq;
+                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                    } else {
+                        sendIQ.bind(this)(iq, callback, errback);
+                    }
                 });
+                test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+
+                // We pretend this is a new room, so no disco info is returned.
+                //
                 /* <iq from="jordie.langen@chat.example.org/converse.js-11659299" to="myroom@conference.chat.example.org" type="get">
                  *     <query xmlns="http://jabber.org/protocol/disco#info"/>
                  * </iq>
@@ -309,10 +317,8 @@
                  *     </error>
                  * </iq>
                  */
-                test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                // We pretend this is a new room, so no disco info is returned.
                 var features_stanza = $iq({
-                        from: 'lounge@localhost',
+                        'from': 'lounge@localhost',
                         'id': IQ_id,
                         'to': 'dummy@localhost/desktop',
                         'type': 'error'
@@ -337,7 +343,7 @@
                             "type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
                                 "<query xmlns='http://jabber.org/protocol/disco#info' node='x-roomuser-item'/></iq>"
                 }, 300).then(function () {
-                    /* *  <iq xmlns="jabber:client" type="error" to="jordie.langen@chat.example.org/converse.js-11659299" from="myroom@conference.chat.example.org">
+                    /* <iq xmlns="jabber:client" type="error" to="jordie.langen@chat.example.org/converse.js-11659299" from="myroom@conference.chat.example.org">
                      *      <error type="cancel">
                      *          <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
                      *      </error>
@@ -1238,8 +1244,12 @@
                 var sent_IQ, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_IQ = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                    if (iq.nodeTree.getAttribute('to') === 'lounge@localhost') {
+                        sent_IQ = iq;
+                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                    } else {
+                        sendIQ.bind(this)(iq, callback, errback);
+                    }
                 });
 
                 test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');

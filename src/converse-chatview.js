@@ -468,14 +468,14 @@
                     if (_.isNull(most_recent_date) || moment(most_recent_date).isBefore(cutoff)) {
                         return most_recent_date;
                     }
-                    /* XXX: Besides .chat-message and .chat-date elements, there are also
-                     * .chat-event elements. These are however temporary and
-                     * removed once a new element is inserted into the chat
-                     * area, so we don't query for them here, otherwise we get
-                     * a null reference later upon element insertion.
+                    /* XXX: We avoid .chat-event messages, since they are
+                     * temporary and get removed once a new element is
+                     * inserted into the chat area, so we don't query for
+                     * them here, otherwise we get a null reference later
+                     * upon element insertion.
                      */
                     const msg_dates = _.invokeMap(
-                        sizzle('.chat-message, .chat-date', this.content),
+                        sizzle('.message:not(.chat-event)', this.content),
                         Element.prototype.getAttribute, 'data-isodate'
                     )
                     if (_.isObject(cutoff)) {

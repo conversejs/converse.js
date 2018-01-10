@@ -1401,7 +1401,7 @@
 
                         var $time = $chat_content.find('time');
                         expect($time.length).toEqual(1);
-                        expect($time.attr('class')).toEqual('chat-info chat-date');
+                        expect($time.attr('class')).toEqual('message chat-info chat-date');
                         expect($time.data('isodate')).toEqual(moment(one_day_ago.startOf('day')).format());
                         expect($time.text()).toEqual(moment(one_day_ago.startOf('day')).format("dddd MMM Do YYYY"));
 
@@ -1421,7 +1421,7 @@
                         expect($time.length).toEqual(2); // There are now two time elements
                         $time = $chat_content.find('time:last'); // We check the last one
                         var message_date = new Date();
-                        expect($time.attr('class')).toEqual('chat-info chat-date');
+                        expect($time.attr('class')).toEqual('message chat-info chat-date');
                         expect($time.data('isodate')).toEqual(moment(message_date).startOf('day').format());
                         expect($time.text()).toEqual(moment(message_date).startOf('day').format("dddd MMM Do YYYY"));
 

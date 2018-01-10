@@ -639,7 +639,7 @@
 
                 var $time = $chat_content.find('time');
                 expect($time.length).toEqual(1);
-                expect($time.attr('class')).toEqual('chat-info chat-date');
+                expect($time.attr('class')).toEqual('message chat-info chat-date');
                 expect($time.data('isodate')).toEqual(moment().startOf('day').format());
                 expect($time.text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                 expect($chat_content.find('div.chat-info:first').html()).toBe("some1 has entered the room.");
@@ -664,7 +664,7 @@
 
                 $time = $chat_content.find('time');
                 expect($time.length).toEqual(1);
-                expect($time.attr('class')).toEqual('chat-info chat-date');
+                expect($time.attr('class')).toEqual('message chat-info chat-date');
                 expect($time.data('isodate')).toEqual(moment().startOf('day').format());
                 expect($time.text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                 expect($chat_content.find('div.chat-info').length).toBe(1);
@@ -700,7 +700,7 @@
                 expect($time.length).toEqual(2);
 
                 $time = $chat_content.find('time:eq(1)');
-                expect($time.attr('class')).toEqual('chat-info chat-date');
+                expect($time.attr('class')).toEqual('message chat-info chat-date');
                 expect($time.data('isodate')).toEqual(moment().startOf('day').format());
                 expect($time.text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                 expect($chat_content.find('div.chat-info').length).toBe(1);
@@ -738,7 +738,7 @@
                 expect($time.length).toEqual(2);
 
                 $time = $chat_content.find('time:eq(1)');
-                expect($time.attr('class')).toEqual('chat-info chat-date');
+                expect($time.attr('class')).toEqual('message chat-info chat-date');
                 expect($time.data('isodate')).toEqual(moment().startOf('day').format());
                 expect($time.text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                 expect($chat_content.find('div.chat-info').length).toBe(1);

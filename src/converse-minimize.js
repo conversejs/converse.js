@@ -39,7 +39,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-controlbox", "converse-muc"],
+        dependencies: ["converse-chatview", "converse-controlbox", "converse-muc", "converse-headline"],
 
         enabled (_converse) {
             return _converse.view_mode == 'overlayed';

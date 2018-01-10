@@ -43,6 +43,9 @@
 - New API method `_converse.api.vcard.get` which fetches the VCard for a
   particular JID.
 
+### Configuration changes
+- `hide_open_bookmarks` is now by default `true`.
+
 ### UX/UI changes
 - Use CSS3 fade transitions to render various elements.
 - Remove `Login` and `Registration` tabs and consolidate into one panel.

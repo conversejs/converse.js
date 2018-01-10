@@ -10,8 +10,7 @@
  * in XEP-0048.
  */
 (function (root, factory) {
-    define(["utils",
-            "converse-core",
+    define(["converse-core",
             "converse-muc",
             "tpl!chatroom_bookmark_form",
             "tpl!chatroom_bookmark_toggle",
@@ -20,7 +19,6 @@
         ],
         factory);
 }(this, function (
-        u,
         converse,
         muc,
         tpl_chatroom_bookmark_form,
@@ -30,9 +28,20 @@
     ) {
 
     const { Backbone, Promise, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
+    const u = converse.env.utils;
 
     converse.plugins.add('converse-bookmarks', {
 
+        /* Plugin dependencies are other plugins which might be
+         * overridden or relied upon, and therefore need to be loaded before
+         * this plugin.
+         *
+         * If the setting "strict_plugin_dependencies" is set to true,
+         * an error will be raised if the plugin is not found. By default it's
+         * false, which means these plugins are only loaded opportunistically.
+         *
+         * NB: These plugins need to have already been loaded via require.js.
+         */
         dependencies: ["converse-chatboxes", "converse-muc"],
 
         overrides: {
@@ -203,7 +212,7 @@
             // configuration settings.
             _converse.api.settings.update({
                 allow_bookmarks: true,
-                hide_open_bookmarks: false
+                hide_open_bookmarks: true 
             });
             // Promises exposed by this plugin
             _converse.api.promises.add('bookmarksInitialized');

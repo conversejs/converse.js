@@ -34,7 +34,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        optional_dependencies: ["converse-controlbox", "converse-muc", "converse-bookmarks"],
+        dependencies: ["converse-controlbox", "converse-muc", "converse-bookmarks"],
 
         initialize () {
             /* The initialize function gets called as soon as the plugin is

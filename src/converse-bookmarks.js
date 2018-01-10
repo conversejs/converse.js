@@ -33,7 +33,7 @@
 
     converse.plugins.add('converse-bookmarks', {
 
-        optional_dependencies: ["converse-chatboxes", "converse-muc"],
+        dependencies: ["converse-chatboxes", "converse-muc"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

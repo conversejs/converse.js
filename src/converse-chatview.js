@@ -60,7 +60,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        optional_dependencies: ["converse-chatboxes"],
+        dependencies: ["converse-chatboxes"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

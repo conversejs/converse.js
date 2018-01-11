@@ -419,11 +419,13 @@
                     }
                 },
 
+                isNotPermanentMessage (el) {
+                    return !_.isNull(el) && (u.hasClass('chat-event', el) || !u.hasClass('message', el));
+                },
+
                 getPreviousMessageElement (el) {
                     let prev_msg_el = el.previousSibling;
-                    while (!_.isNull(prev_msg_el) &&
-                            !u.hasClass('message', prev_msg_el) &&
-                            !u.hasClass('chat-info', prev_msg_el)) {
+                    while (this.isNotPermanentMessage(prev_msg_el)) {
                         prev_msg_el = prev_msg_el.previousSibling
                     }
                     return prev_msg_el;
@@ -431,9 +433,7 @@
 
                 getLastMessageElement () {
                     let last_msg_el = this.content.lastElementChild;
-                    while (!_.isNull(last_msg_el) &&
-                            !u.hasClass('message', last_msg_el) &&
-                            !u.hasClass('chat-info', last_msg_el)) {
+                    while (this.isNotPermanentMessage(last_msg_el)) {
                         last_msg_el = last_msg_el.previousSibling
                     }
                     return last_msg_el;
@@ -441,9 +441,7 @@
 
                 getFirstMessageElement () {
                     let first_msg_el = this.content.firstElementChild;
-                    while (!_.isNull(first_msg_el) &&
-                            !u.hasClass('message', first_msg_el) &&
-                            !u.hasClass('chat-info', first_msg_el)) {
+                    while (this.isNotPermanentMessage(first_msg_el)) {
                         first_msg_el = first_msg_el.nextSibling
                     }
                     return first_msg_el;
@@ -512,6 +510,7 @@
                         previous_msg_el.insertAdjacentElement('afterend', message_el);
                     }
                     this.insertDayIndicator(message_el);
+                    this.clearStatusNotification();
                     this.scrollDown();
                 },
 
@@ -556,16 +555,7 @@
                         template = tpl_message;
                         username = attrs.sender === 'me' && __('me') || fullname;
                     }
-                    this.clearStatusNotification();
 
-                    if (text.length > 8000) {
-                        text = text.substring(0, 10) + '...';
-                        this.showStatusNotification(
-                            __("A very large message has been received. "+
-                               "This might be due to an attack meant to degrade the chat performance. "+
-                               "Output has been shortened."),
-                            true, true);
-                    }
                     const msg_time = moment(attrs.time) || moment;
                     const msg = u.stringToElement(template(
                         _.extend(this.getExtraMessageTemplateAttributes(attrs), {

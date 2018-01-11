@@ -1845,12 +1845,14 @@
                             tpl_info({
                                 'data': `data-leavejoin="${nick}"`,
                                 'isodate': moment().format(),
-                                'message': __(nick+' has left and re-entered the room.')
+                                'message': __('%1$s has left and re-entered the room.', nick)
                             });
                     } else {
-                        let  message = __(nick+' has entered the room.');
+                        let  message;
                         if (_.get(stat, 'textContent')) {
-                            message = message + ' "' + stat.textContent + '"';
+                            message = __('%1$s has entered the room. "%2$s"', nick, stat.textContent);
+                        } else {
+                            message = __('%1$s has entered the room.', nick);
                         }
                         const data = {
                             'data': `data-join="${nick}"`,
@@ -1877,9 +1879,11 @@
                     if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
                             _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
 
-                        let message = __('%1$s has entered and left the room.', nick);
+                        let message;
                         if (_.get(stat, 'textContent')) {
-                            message = message + ' "' + stat.textContent + '"';
+                            message = __('%1$s has entered and left the room. "%2$s"', nick, stat.textContent);
+                        } else {
+                            message = __('%1$s has entered and left the room.', nick);
                         }
                         last_el.outerHTML =
                             tpl_info({
@@ -1888,9 +1892,11 @@
                                 'message': message
                             });
                     } else {
-                        let  message = __('%1$s has left the room.', nick);
+                        let message;
                         if (_.get(stat, 'textContent')) {
-                            message = message + ' "' + stat.textContent + '"';
+                            message = __('%1$s has left the room. "%2$s"', nick, stat.textContent);
+                        } else {
+                            message = __('%1$s has left the room.', nick);
                         }
                         const data = {
                             'message': message,
@@ -2462,8 +2468,9 @@
 
                 promptForInvite (suggestion) {
                     const reason = prompt(
-                        __('You are about to invite %1$s to the chat room "%2$s". ', suggestion.text.label, this.model.get('id')) +
-                        __("You may optionally include a message, explaining the reason for the invitation.")
+                        __('You are about to invite %1$s to the chat room "%2$s". '+
+                           'You may optionally include a message, explaining the reason for the invitation.',
+                           suggestion.text.label, this.model.get('id'))
                     );
                     if (reason !== null) {
                         this.chatroomview.directInvite(suggestion.text.value, reason);

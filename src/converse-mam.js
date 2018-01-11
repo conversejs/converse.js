@@ -78,15 +78,19 @@
                         (result) => { // Success
                             if (result.supported) {
                                 const most_recent_msg = utils.getMostRecentMessage(this.model);
-                                const archive_id = most_recent_msg.get('archive_id');
-                                if (archive_id) {
-                                    this.fetchArchivedMessages({
-                                        'after': most_recent_msg.get('archive_id')
-                                    });
+                                if (_.isNil(most_recent_msg)) {
+                                    this.fetchArchivedMessages();
                                 } else {
-                                    this.fetchArchivedMessages({
-                                        'start': most_recent_msg.get('time')
-                                    });
+                                    const archive_id = most_recent_msg.get('archive_id');
+                                    if (archive_id) {
+                                        this.fetchArchivedMessages({
+                                            'after': most_recent_msg.get('archive_id')
+                                        });
+                                    } else {
+                                        this.fetchArchivedMessages({
+                                            'start': most_recent_msg.get('time')
+                                        });
+                                    }
                                 }
                             } else {
                                 this.clearSpinner();

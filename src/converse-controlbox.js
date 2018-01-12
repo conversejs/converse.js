@@ -7,8 +7,7 @@
 /*global define */
 
 (function (root, factory) {
-    define(["jquery.noconflict",
-            "converse-core",
+    define(["converse-core",
             "lodash.fp",
             "tpl!add_contact_dropdown",
             "tpl!add_contact_form",
@@ -24,7 +23,6 @@
             "converse-profile"
     ], factory);
 }(this, function (
-            $,
             converse,
             fp,
             tpl_add_contact_dropdown,
@@ -41,7 +39,8 @@
 
     const USERS_PANEL_ID = 'users';
     const CHATBOX_TYPE = 'chatbox';
-    const { Strophe, Backbone, Promise, utils, _, moment } = converse.env;
+    const { Strophe, Backbone, Promise, _, moment } = converse.env;
+    const u = converse.env.utils;
 
     const CONNECTION_STATUS_CSS_CLASS = {
        'Error': 'error',
@@ -82,6 +81,17 @@
     ];
 
     converse.plugins.add('converse-controlbox', {
+        /* Plugin dependencies are other plugins which might be
+         * overridden or relied upon, and therefore need to be loaded before
+         * this plugin.
+         *
+         * If the setting "strict_plugin_dependencies" is set to true,
+         * an error will be raised if the plugin is not found. By default it's
+         * false, which means these plugins are only loaded opportunistically.
+         *
+         * NB: These plugins need to have already been loaded via require.js.
+         */
+        dependencies: ["converse-chatboxes"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -166,10 +176,10 @@
                         /* We return the width of the controlbox or its toggle,
                          * depending on which is visible.
                          */
-                        if (!controlbox || !controlbox.$el.is(':visible')) {
-                            return _converse.controlboxtoggle.$el.outerWidth(true);
+                        if (!controlbox || !u.isVisible(controlbox.el)) {
+                            return u.getOuterWidth(_converse.controlboxtoggle.el, true);
                         } else {
-                            return controlbox.$el.outerWidth(true);
+                            return u.getOuterWidth(controlbox.el, true);
                         }
                     } else {
                         return this.__super__.getChatBoxWidth.apply(this, arguments);
@@ -242,7 +252,7 @@
                 initialize () {
                     if (_.isUndefined(_converse.controlboxtoggle)) {
                         _converse.controlboxtoggle = new _converse.ControlBoxToggle();
-                        this.$el.insertAfter(_converse.controlboxtoggle.$el);
+                        _converse.controlboxtoggle.el.insertAdjacentElement('afterend', this.el);
                     }
                     this.model.on('change:connected', this.onConnected, this);
                     this.model.on('destroy', this.hide, this);
@@ -279,7 +289,7 @@
                             _converse.connection.disconnecting) {
                         this.renderLoginPanel();
                     } else if (this.model.get('connected') &&
-                            (!this.contactspanel || !this.contactspanel.$el.is(':visible'))) {
+                            (!this.contactspanel || !u.isVisible(this.contactspanel.el))) {
                         this.renderContactsPanel();
                     }
                     return this;
@@ -350,7 +360,7 @@
                         this.model.save({'active-panel': USERS_PANEL_ID});
                     }
                     this.contactspanel = new _converse.ContactsPanel({
-                        '$parent': this.$el.find('.controlbox-panes')
+                        'parent_el': this.el.querySelector('.controlbox-panes')
                     });
                     this.contactspanel.insertIntoDOM();
 
@@ -386,8 +396,7 @@
                     if (_converse.sticky_controlbox) {
                         return;
                     }
-                    this.$el.addClass('hidden');
-                    utils.refreshWebkit();
+                    u.addClass('hidden', this.el);
                     _converse.emit('chatBoxClosed', this);
                     if (!_converse.connection.connected) {
                         _converse.controlboxtoggle.render();
@@ -397,8 +406,6 @@
                 },
 
                 onControlBoxToggleHidden () {
-                    _converse.controlboxtoggle.updateOnlineCount();
-                    utils.refreshWebkit();
                     this.model.set('closed', false);
                     this.el.classList.remove('hidden');
                     _converse.emit('controlBoxOpened', this);
@@ -412,17 +419,19 @@
                 },
 
                 switchTab (ev) {
-                    // TODO: automatically focus the relevant input
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const $tab = $(ev.target),
-                        $sibling = $tab.parent().siblings('li').children('a'),
-                        $tab_panel = $($tab.attr('href'));
-                    $($sibling.attr('href')).addClass('hidden');
-                    $sibling.removeClass('current');
-                    $tab.addClass('current');
-                    $tab_panel.removeClass('hidden');
+                    const tab = ev.target,
+                        sibling_li = tab.parentNode.nextElementSibling || tab.parentNode.previousElementSibling,
+                        sibling = sibling_li.firstChild,
+                        sibling_panel = document.querySelector(sibling.getAttribute('href')),
+                        tab_panel = document.querySelector(tab.getAttribute('href'));
+
+                    u.hideElement(sibling_panel);
+                    u.removeClass('current', sibling);
+                    u.addClass('current', tab);
+                    u.removeClass('hidden', tab_panel);
                     if (!_.isUndefined(_converse.chatboxes.browserStorage)) {
-                        this.model.save({'active-panel': $tab.data('id')});
+                        this.model.save({'active-panel': tab.getAttribute('data-id')});
                     }
                     return this;
                 },
@@ -490,7 +499,7 @@
                     if (jid_element.value &&
                             !_converse.locked_domain &&
                             !_converse.default_domain &&
-                            !utils.isValidJID(jid_element.value)) {
+                            !u.isValidJID(jid_element.value)) {
                         jid_element.setCustomValidity(__('Please enter a valid XMPP address'));
                         return false;
                     }
@@ -539,7 +548,7 @@
             });
 
 
-            _converse.ContactsPanel = Backbone.View.extend({
+            _converse.ContactsPanel = Backbone.NativeView.extend({
                 tagName: 'div',
                 className: 'controlbox-pane',
                 id: 'users',
@@ -551,7 +560,7 @@
                 },
 
                 initialize (cfg) {
-                    this.parent_el = cfg.$parent[0];
+                    this.parent_el = cfg.parent_el;
                     this.tab_el = document.createElement('li');
                     _converse.chatboxes.on('change:num_unread', this.renderTab, this);
                     _converse.chatboxes.on('add', _.debounce(this.renderTab, 100), this);
@@ -585,11 +594,11 @@
 
                 renderTab () {
                     const controlbox = _converse.chatboxes.get('controlbox');
-                    const chats = fp.filter(_.partial(utils.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
+                    const chats = fp.filter(_.partial(u.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
                     this.tab_el.innerHTML = tpl_contacts_tab({
                         'label_contacts': LABEL_CONTACTS,
                         'is_current': controlbox.get('active-panel') === USERS_PANEL_ID,
-                        'num_unread': fp.sum(fp.map(fp.curry(utils.getAttribute)('num_unread'), chats))
+                        'num_unread': fp.sum(fp.map(fp.curry(u.getAttribute)('num_unread'), chats))
                     });
                 },
 
@@ -620,8 +629,8 @@
                     ev.preventDefault();
                     this.el.querySelector('.search-xmpp div').innerHTML = this.generateAddContactHTML();
                     var dropdown = this.el.querySelector('.contact-form-container');
-                    utils.slideToggleElement(dropdown).then(() => {
-                        if (utils.isVisible(dropdown)) {
+                    u.slideToggleElement(dropdown).then(() => {
+                        if (u.isVisible(dropdown)) {
                             dropdown.querySelector('input.username').focus();
                         }
                     });
@@ -629,26 +638,44 @@
 
                 searchContacts (ev) {
                     ev.preventDefault();
-                    $.getJSON(_converse.xhr_user_search_url+ "?q=" + $(ev.target).find('input.username').val(), function (data) {
-                        const title_subscribe = __('Click to add as a chat contact');
-                        const no_users_text = __('No users found');
-                        const $ul= $('.search-xmpp ul');
-                        $ul.find('li.found-user').remove();
-                        $ul.find('li.chat-info').remove();
-                        if (!data.length) {
-                            $ul.append(`<li class="chat-info">${no_users_text}</li>`);
+                    const search_query= ev.target.querySelector('input.username').value,
+                          url = _converse.xhr_user_search_url+ "?q=" + search_query,
+                          xhr = new XMLHttpRequest();
+
+                    xhr.open('GET', url, true);
+                    xhr.setRequestHeader('Accept', "application/json, text/javascript");
+
+                    xhr.onload = function () {
+                        if (xhr.status >= 200 && xhr.status < 400) {
+                            const data = JSON.parse(xhr.responseText),
+                                  ul = document.querySelector('.search-xmpp ul');
+                            u.removeElement(ul.querySelector('li.found-user'));
+                            u.removeElement(ul.querySelector('li.chat-info'));
+                            if (!data.length) {
+                                const no_users_text = __('No users found');
+                                ul.insertAdjacentHTML('beforeEnd', `<li class="chat-info">${no_users_text}</li>`);
+                            }
+                            else {
+                                const title_subscribe = __('Click to add as a chat contact');
+                                _.each(data, function (obj) {
+                                    const li = u.stringToElement('<li class="found-user"></li>'),
+                                          a = u.stringToElement(`<a class="subscribe-to-user" href="#" title="${title_subscribe}"></a>`),
+                                          jid = Strophe.getNodeFromJid(obj.id)+"@"+Strophe.getDomainFromJid(obj.id);
+
+                                    a.setAttribute('data-recipient', jid);
+                                    a.textContent = obj.fullname;
+                                    li.appendChild(a);
+                                    u.appendChild(li)
+                                });
+                            }
+                        } else {
+                            xhr.onerror();
                         }
-                        $(data).each(function (idx, obj) {
-                            $ul.append(
-                                $('<li class="found-user"></li>')
-                                .append(
-                                    $(`<a class="subscribe-to-user" href="#" title="${title_subscribe}"></a>`)
-                                    .attr('data-recipient', Strophe.getNodeFromJid(obj.id)+"@"+Strophe.getDomainFromJid(obj.id))
-                                    .text(obj.fullname)
-                                )
-                            );
-                        });
-                    });
+                    };
+                    xhr.onerror = function () {
+                        _converse.log('Could not fetch contacts via XHR', Strophe.LogLevel.ERROR);
+                    };
+                    xhr.send();
                 },
 
                 addContactFromForm (ev) {
@@ -666,7 +693,7 @@
                         return;
                     }
                     _converse.roster.addAndSubscribe(jid);
-                    utils.slideIn(this.el.querySelector('.contact-form-container'));
+                    u.slideIn(this.el.querySelector('.contact-form-container'));
                 },
 
                 addContactFromList (ev) {
@@ -676,12 +703,12 @@
                     _converse.roster.addAndSubscribe(jid, name);
                     const parent = ev.target.parentNode;
                     parent.parentNode.removeChild(parent);
-                    utils.slideIn(this.el.querySelector('.contact-form-container'));
+                    u.slideIn(this.el.querySelector('.contact-form-container'));
                 }
             });
 
 
-            _converse.ControlBoxToggle = Backbone.View.extend({
+            _converse.ControlBoxToggle = Backbone.NativeView.extend({
                 tagName: 'a',
                 className: 'toggle-controlbox hidden',
                 id: 'toggle-controlbox',
@@ -693,15 +720,10 @@
                 },
 
                 initialize () {
-                    _converse.chatboxviews.$el.prepend(this.render().el);
-                    this.updateOnlineCount();
+                    _converse.chatboxviews.el.insertAdjacentElement('afterBegin', this.render().el);
                     const that = this;
                     _converse.api.waitUntil('initialized').then(() => {
                         this.render();
-                        _converse.roster.on("add", that.updateOnlineCount, that);
-                        _converse.roster.on('change', that.updateOnlineCount, that);
-                        _converse.roster.on("destroy", that.updateOnlineCount, that);
-                        _converse.roster.on("remove", that.updateOnlineCount, that);
                     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
@@ -716,24 +738,13 @@
                     return this;
                 },
 
-                updateOnlineCount: _.debounce(function () {
-                    if (_.isUndefined(_converse.roster)) {
-                        return;
-                    }
-                    const $count = this.$('#online-count');
-                    $count.text(`(${_converse.roster.getNumOnlineContacts()})`);
-                    if (!$count.is(':visible')) {
-                        $count.show();
-                    }
-                }, _converse.animate ? 100 : 0),
-
                 hide (callback) {
-                    this.el.classList.add('hidden');
+                    u.hideElement(this.el);
                     callback();
                 },
 
                 show (callback) {
-                    utils.fadeIn(this.el, callback);
+                    u.fadeIn(this.el, callback);
                 },
 
                 showControlBox () {
@@ -750,7 +761,7 @@
 
                 onClick (e) {
                     e.preventDefault();
-                    if (utils.isVisible(document.querySelector("#controlbox"))) {
+                    if (u.isVisible(document.querySelector("#controlbox"))) {
                         const controlbox = _converse.chatboxes.get('controlbox');
                         if (_converse.connection.connected) {
                             controlbox.save({closed: true});
@@ -777,7 +788,7 @@
                  */
                 const view = _converse.chatboxviews.get('controlbox');
                 view.model.set({connected:false});
-                view.$('#controlbox-tabs').empty();
+                view.el.querySelector('#controlbox-tabs').innerHTML = '';
                 view.renderLoginPanel();
             };
             _converse.on('disconnected', disconnect);

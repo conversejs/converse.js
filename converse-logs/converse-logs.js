@@ -1,5 +1,5 @@
 define("transcripts", [
-    "tpl!converse-logs/double_logins",
+    "tpl!../../converse-logs/missing_messages",
 ], function () {
     return arguments;
 });

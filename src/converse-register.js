@@ -167,7 +167,7 @@
                 }
             });
 
-            _converse.RegisterPanel = Backbone.View.extend({
+            _converse.RegisterPanel = Backbone.NativeView.extend({
                 tagName: 'div',
                 id: "converse-register-panel",
                 className: 'controlbox-pane fade-in',

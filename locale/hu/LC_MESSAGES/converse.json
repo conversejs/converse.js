@@ -7,863 +7,648 @@
             "lang": "hu"
          },
          "The connection has dropped, attempting to reconnect.": [
-            null,
             ""
          ],
          "Your Jabber ID and/or password is incorrect. Please try again.": [
-            null,
             ""
          ],
          "Sorry, we could not connect to the XMPP host with domain: ": [
-            null,
             ""
          ],
          "The XMPP server did not offer a supported authentication mechanism": [
-            null,
             ""
          ],
          "This client does not allow presence subscriptions": [
-            null,
             "Ez a kliens nem engedélyezi a jelenlét követését"
          ],
          "Click to hide these contacts": [
-            null,
             "A csevegő partnerek elrejtése"
          ],
          "Close this chat box": [
-            null,
             "A csevegés bezárása"
          ],
          "Personal message": [
-            null,
             "Személyes üzenet"
          ],
          "Send": [
-            null,
             ""
          ],
          "me": [
-            null,
             "Én"
          ],
          "A very large message has been received. This might be due to an attack meant to degrade the chat performance. Output has been shortened.": [
-            null,
             ""
          ],
          "Typing from another device": [
-            null,
             ""
          ],
          "is typing": [
-            null,
             "gépel..."
          ],
          "Stopped typing on the other device": [
-            null,
             ""
          ],
          "has stopped typing": [
-            null,
             "már nem gépel"
          ],
          "has gone away": [
-            null,
             "távol van"
          ],
          "Show this menu": [
-            null,
             "Mutasd a menüt"
          ],
          "Write in the third person": [
-            null,
             "Írjon egyes szám harmadik személyben"
          ],
          "Remove messages": [
-            null,
             "Üzenetek törlése"
          ],
          "Are you sure you want to clear the messages from this chat box?": [
-            null,
             "Törölni szeretné az eddigi üzeneteket?"
          ],
          "has gone offline": [
-            null,
             "kijelentkezett"
          ],
          "is busy": [
-            null,
             "elfoglalt"
          ],
          "Clear all messages": [
-            null,
             "Üzenetek törlése"
          ],
          "Insert a smiley": [
-            null,
             "Hangulatjel beszúrása"
          ],
          "Start a call": [
-            null,
             "Hívás indítása"
          ],
          "Login": [
-            null,
             ""
          ],
          "Jabber ID:": [
-            null,
             ""
          ],
          "Password:": [
-            null,
             "Jelszó:"
          ],
          "password": [
-            null,
             "jelszó"
          ],
          "Submit": [
-            null,
             "Küldés"
          ],
          "Click here to log in anonymously": [
-            null,
             "Kattintson ide a névtelen bejelentkezéshez"
          ],
          "This contact is busy": [
-            null,
             "Elfoglalt"
          ],
          "This contact is online": [
-            null,
             "Elérhető"
          ],
          "This contact is offline": [
-            null,
             "Nincs bejelentkezve"
          ],
          "This contact is unavailable": [
-            null,
             "Elérhetetlen"
          ],
          "This contact is away for an extended period": [
-            null,
             "Hosszabb ideje távol"
          ],
          "This contact is away": [
-            null,
             "Távol"
          ],
          "Contacts": [
-            null,
             "Kapcsolatok"
          ],
          "Groups": [
-            null,
             "Csoportok"
          ],
          "My contacts": [
-            null,
             "Kapcsolataim"
          ],
          "Pending contacts": [
-            null,
             "Függőben levő kapcsolatok"
          ],
          "Contact requests": [
-            null,
             "Kapcsolatnak jelölés"
          ],
          "Ungrouped": [
-            null,
             "Nincs csoportosítva"
          ],
          "Filter": [
-            null,
             ""
          ],
          "State": [
-            null,
             ""
          ],
          "Any": [
-            null,
             ""
          ],
          "Unread": [
-            null,
             ""
          ],
          "Online": [
-            null,
             "Elérhető"
          ],
          "Chatty": [
-            null,
             ""
          ],
          "Busy": [
-            null,
             "Foglalt"
          ],
          "Away": [
-            null,
             "Távol"
          ],
          "Extended Away": [
-            null,
             ""
          ],
          "Offline": [
-            null,
             "Nem elérhető"
          ],
          "Click to chat with this contact": [
-            null,
             "Csevegés indítása ezzel a partnerünkkel"
          ],
          "Name": [
-            null,
             "Név"
          ],
          "Are you sure you want to remove this contact?": [
-            null,
             "Valóban törölni szeretné a csevegőpartnerét?"
          ],
          "Are you sure you want to decline this contact request?": [
-            null,
             "Valóban elutasítja ezt a partnerkérelmet?"
          ],
          "I am %1$s": [
-            null,
             "%1$s vagyok"
          ],
          "Click here to write a custom status message": [
-            null,
             "Egyedi státusz üzenet írása"
          ],
          "Click to change your chat status": [
-            null,
             "Saját státusz beállítása"
          ],
          "Custom status": [
-            null,
             "Egyedi státusz"
          ],
          "Save": [
-            null,
             "Ment"
          ],
          "online": [
-            null,
             "elérhető"
          ],
          "busy": [
-            null,
             "elfoglalt"
          ],
          "away for long": [
-            null,
             "hosszú ideje távol"
          ],
          "away": [
-            null,
             "távol"
          ],
          "offline": [
-            null,
             "nem elérhető"
          ],
          "user@domain": [
-            null,
             ""
          ],
          "Please enter a valid XMPP address": [
-            null,
             ""
          ],
          "Log out": [
-            null,
             "Kilépés"
          ],
          "Click to add new chat contacts": [
-            null,
             "Új csevegőpartner hozzáadása"
          ],
          "Add a contact": [
-            null,
             "Új partner felvétele"
          ],
          "Contact name": [
-            null,
             "Partner neve"
          ],
          "Search": [
-            null,
             "Keresés"
          ],
          "Add": [
-            null,
             "Hozzáad"
          ],
          "Click to add as a chat contact": [
-            null,
             "Felvétel a csevegőpartnerek közé"
          ],
          "No users found": [
-            null,
             "Nincs felhasználó"
          ],
          "Toggle chat": [
-            null,
             "Csevegőablak"
          ],
          "This room is not anonymous": [
-            null,
             "Ez a szoba NEM névtelen"
          ],
          "This room now shows unavailable members": [
-            null,
             "Ez a szoba mutatja az elérhetetlen tagokat"
          ],
          "This room does not show unavailable members": [
-            null,
             "Ez a szoba nem mutatja az elérhetetlen tagokat"
          ],
          "Room logging is now enabled": [
-            null,
             "A szobába a belépés lehetséges"
          ],
          "Room logging is now disabled": [
-            null,
             "A szobába a belépés szünetel"
          ],
          "This room is now semi-anonymous": [
-            null,
             "Ez a szoba most félig névtelen"
          ],
          "This room is now fully-anonymous": [
-            null,
             "Ez a szoba most teljesen névtelen"
          ],
          "A new room has been created": [
-            null,
             "Létrejött egy új csevegőszoba"
          ],
          "You have been banned from this room": [
-            null,
             "Ki lettél tíltva ebből a szobából"
          ],
          "You have been kicked from this room": [
-            null,
             "Ki lettél dobva ebből a szobából"
          ],
          "You have been removed from this room because of an affiliation change": [
-            null,
             "Taglista módosítás miatt kiléptettünk a csevegőszobából"
          ],
          "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
             "Kiléptettünk a csevegőszobából, mert mostantól csak a taglistán szereplők lehetnek jelen"
          ],
          "Message": [
-            null,
             "Üzenet"
          ],
          "Hide the list of occupants": [
-            null,
             "A résztvevők listájának elrejtése"
          ],
          "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
-            null,
             ""
          ],
          "Are you sure you want to clear the messages from this room?": [
-            null,
             "Törölni szeretné az üzeneteket ebből a szobából?"
          ],
          "Error: could not execute the command": [
-            null,
             "Hiba: A parancs nem értelmezett"
          ],
          "Change user's affiliation to admin": [
-            null,
             "A felhasználó adminisztrátorrá tétele"
          ],
          "Ban user from room": [
-            null,
             "Felhasználó kitíltása a csevegőszobából"
          ],
          "Kick user from room": [
-            null,
             "Felhasználó kiléptetése a csevegőszobából"
          ],
          "Write in 3rd person": [
-            null,
             "Írjon egyes szám harmadik személyben"
          ],
          "Grant membership to a user": [
-            null,
             "Tagság megadása a felhasználónak"
          ],
          "Remove user's ability to post messages": [
-            null,
             "A felhasználó nem küldhet üzeneteket"
          ],
          "Change your nickname": [
-            null,
             "Becenév módosítása"
          ],
          "Grant moderator role to user": [
-            null,
             "Moderátori jog adása a felhasználónak"
          ],
          "Grant ownership of this room": [
-            null,
             "A szoba tulajdonjogának megadása"
          ],
          "Revoke user's membership": [
-            null,
             "Tagság megvonása a felhasználótól"
          ],
          "Set room subject (alias for /subject)": [
-            null,
             ""
          ],
          "Allow muted user to post messages": [
-            null,
             "Elnémított felhasználók is küldhetnek üzeneteket"
          ],
          "Cancel": [
-            null,
             "Mégsem"
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
             ""
          ],
          "Nickname": [
-            null,
             "Becenév"
          ],
          "This chatroom requires a password": [
-            null,
             "A csevegőszobába belépéshez jelszó szükséges"
          ],
          "Password: ": [
-            null,
             "Jelszó: "
          ],
          "Topic set by %1$s to: %2$s": [
-            null,
             "A következő témát állította be %1$s: %2$s"
          ],
          "Occupants": [
-            null,
             "Jelenlevők"
          ],
          "Invite": [
-            null,
             "Meghívás"
          ],
          "Hidden": [
-            null,
             "Rejtett"
          ],
          "Message archiving": [
-            null,
             ""
          ],
          "Members only": [
-            null,
             ""
          ],
          "Moderated": [
-            null,
             "Moderált"
          ],
          "Non-anonymous": [
-            null,
             "NEM névtelen"
          ],
          "Persistent": [
-            null,
             ""
          ],
          "Public": [
-            null,
             "Nyílvános"
          ],
          "Semi-anonymous": [
-            null,
             "Félig névtelen"
          ],
          "Unmoderated": [
-            null,
             "Moderálatlan"
          ],
          "Messages are archived on the server": [
-            null,
             ""
          ],
          "All other room occupants can see your XMPP username": [
-            null,
             ""
          ],
          "This room persists even if it's unoccupied": [
-            null,
             ""
          ],
          "Only moderators can see your XMPP username": [
-            null,
             ""
          ],
          "This room will disappear once the last person leaves": [
-            null,
             ""
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
-            null,
             "%1$s meghívott a(z) \"%2$s\" csevegőszobába. "
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
-            null,
             "Megadhat egy üzenet a meghívás okaként."
          ],
          "Please enter a valid XMPP username": [
-            null,
             ""
          ],
          "Room name": [
-            null,
             "Szoba neve"
          ],
          "Server": [
-            null,
             "Szerver"
          ],
          "Join Room": [
-            null,
             "Csatlakozás"
          ],
          "Show rooms": [
-            null,
             "Létező szobák"
          ],
          "Rooms": [
-            null,
             "Szobák"
          ],
          "No rooms on %1$s": [
-            null,
             "Nincs csevegőszoba a(z) %1$s szerveren"
          ],
          "Rooms on %1$s": [
-            null,
             "Csevegőszobák a(z) %1$s szerveren:"
          ],
          "Click to open this room": [
-            null,
             "Belépés a csevegőszobába"
          ],
          "Show more information on this room": [
-            null,
             "További információk a csevegőszobáról"
          ],
          "Description:": [
-            null,
             "Leírás:"
          ],
          "Room Address (JID):": [
-            null,
             ""
          ],
          "Occupants:": [
-            null,
             "Jelenlevők:"
          ],
          "Features:": [
-            null,
             "Tulajdonságok:"
          ],
          "Requires authentication": [
-            null,
             "Azonosítás szükséges"
          ],
          "Requires an invitation": [
-            null,
             "Meghívás szükséges"
          ],
          "Open room": [
-            null,
             "Nyitott szoba"
          ],
          "Permanent room": [
-            null,
             "Állandó szoba"
          ],
          "Temporary room": [
-            null,
             "Ideiglenes szoba"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
-            null,
             "%1$s meghívott a(z) %2$s csevegőszobába"
          ],
          "%1$s has invited you to join a chat room: %2$s, and left the following reason: \"%3$s\"": [
-            null,
             "%1$s meghívott a(z) %2$s csevegőszobába. Indok: \"%3$s\""
          ],
          "Bookmark this room": [
-            null,
             ""
          ],
          "The name for this bookmark:": [
-            null,
             ""
          ],
          "Would you like this room to be automatically joined upon startup?": [
-            null,
             ""
          ],
          "What should your nickname for this room be?": [
-            null,
             ""
          ],
          "Bookmarks": [
-            null,
             ""
          ],
          "Remove this bookmark": [
-            null,
             ""
          ],
          "Re-establishing encrypted session": [
-            null,
             "Titkosított kapcsolat újraépítése"
          ],
          "Generating private key.": [
-            null,
             "Privát kulcs generálása"
          ],
          "Your browser might become unresponsive.": [
-            null,
             "Előfordulhat, hogy a böngésző futása megáll."
          ],
          "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
-            null,
             "Azonosítási kérés érkezett: %1$s\n\nA csevegő partnere hitelesítést kér a következő kérdés megválaszolásával:\n\n%2$s"
          ],
          "Could not verify this user's identify.": [
-            null,
             "A felhasználó ellenőrzése sikertelen."
          ],
          "Exchanging private key with contact.": [
-            null,
             "Privát kulcs cseréje..."
          ],
          "Your messages are not encrypted anymore": [
-            null,
             "Az üzenetek mostantól már nem titkosítottak"
          ],
          "Your messages are now encrypted but your contact's identity has not been verified.": [
-            null,
             "Az üzenetek titikosítva vannak, de a csevegőpartnerét még nem hitelesítette."
          ],
          "Your contact's identify has been verified.": [
-            null,
             "A csevegőpartnere hitelesítve lett."
          ],
          "Your contact has ended encryption on their end, you should do the same.": [
-            null,
             "A csevegőpartnere kikapcsolta a titkosítást, így Önnek is ezt kellene tennie."
          ],
          "Your message could not be sent": [
-            null,
             "Az üzenet elküldése nem sikerült"
          ],
          "We received an unencrypted message": [
-            null,
             "Titkosítatlan üzenet érkezett"
          ],
          "We received an unreadable encrypted message": [
-            null,
             "Visszafejthetetlen titkosított üzenet érkezett"
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
-            null,
             "Ujjlenyomatok megerősítése.\n\nAz Ön ujjlenyomata,  %2$s: %3$s\n\nA csevegőpartnere ujjlenyomata, %1$s: %4$s\n\nAmennyiben az ujjlenyomatok biztosan egyeznek, klikkeljen az OK, ellenkező esetben a Mégse gombra."
          ],
          "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
-            null,
             "Elsőként egy biztonsági kérdést kell majd feltennie és megválaszolnia.\n\nMajd a csevegőpartnerének is megjelenik ez a kérdés. Végül ha a válaszok azonosak lesznek (kis- nagybetű érzékeny), a partner hitelesítetté válik."
          ],
          "What is your security question?": [
-            null,
             "Mi legyen a biztonsági kérdés?"
          ],
          "What is the answer to the security question?": [
-            null,
             "Mi a válasz a biztonsági kérdésre?"
          ],
          "Invalid authentication scheme provided": [
-            null,
             "Érvénytelen hitelesítési séma."
          ],
          "Your messages are not encrypted. Click here to enable OTR encryption.": [
-            null,
             "Az üzenetek titkosítatlanok. OTR titkosítás aktiválása."
          ],
          "Your messages are encrypted, but your contact has not been verified.": [
-            null,
             "Az üzenetek titikosítottak, de a csevegőpartnere még nem hitelesített."
          ],
          "Your messages are encrypted and your contact verified.": [
-            null,
             "Az üzenetek titikosítottak és a csevegőpartnere hitelesített."
          ],
          "Your contact has closed their end of the private session, you should do the same": [
-            null,
             "A csevegőpartnere lezárta a magán beszélgetést"
          ],
          "End encrypted conversation": [
-            null,
             "Titkosított kapcsolat vége"
          ],
          "Refresh encrypted conversation": [
-            null,
             "A titkosított kapcsolat frissítése"
          ],
          "Start encrypted conversation": [
-            null,
             "Titkosított beszélgetés indítása"
          ],
          "Verify with fingerprints": [
-            null,
             "Ellenőrzés újjlenyomattal"
          ],
          "Verify with SMP": [
-            null,
             "Ellenőrzés SMP-vel"
          ],
          "What's this?": [
-            null,
             "Mi ez?"
          ],
          "unencrypted": [
-            null,
             "titkosítatlan"
          ],
          "unverified": [
-            null,
             "nem hitelesített"
          ],
          "verified": [
-            null,
             "hitelesített"
          ],
          "finished": [
-            null,
             "befejezett"
          ],
          "Don't have a chat account?": [
-            null,
             ""
          ],
          "Create an account": [
-            null,
             ""
          ],
          "Create your account": [
-            null,
             ""
          ],
          "Please enter the XMPP provider to register with:": [
-            null,
             ""
          ],
          "Already have a chat account?": [
-            null,
             ""
          ],
          "Log in here": [
-            null,
             ""
          ],
          "Account Registration:": [
-            null,
             ""
          ],
          "Register": [
-            null,
             "Regisztráció"
          ],
          "Choose a different provider": [
-            null,
             ""
          ],
          "Hold tight, we're fetching the registration form…": [
-            null,
             ""
          ],
          " e.g. conversejs.org": [
-            null,
             "pl. conversejs.org"
          ],
          "Fetch registration form": [
-            null,
             "Regisztrációs űrlap"
          ],
          "Tip: A list of public XMPP providers is available": [
-            null,
             "Tipp: A nyílvános XMPP szolgáltatókról egy lista elérhető"
          ],
          "here": [
-            null,
             "itt"
          ],
          "Sorry, we're unable to connect to your chosen provider.": [
-            null,
             ""
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
-            null,
             "A megadott szolgáltató nem támogatja a csevegőn keresztüli regisztrációt. Próbáljon meg egy másikat."
          ],
          "Now logging you in": [
-            null,
             "Belépés..."
          ],
          "Registered successfully": [
-            null,
             "Sikeres regisztráció"
          ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
-            null,
             "A szolgáltató visszautasította a regisztrációs kérelmet. Kérem ellenőrízze a bevitt adatok pontosságát."
          ],
          "Notification from %1$s": [
-            null,
             ""
          ],
          "%1$s says": [
-            null,
             ""
          ],
          "wants to be your contact": [
-            null,
             ""
          ],
          "Minimize this chat box": [
-            null,
             "A csevegés minimalizálása"
          ],
          "Click to restore this chat": [
-            null,
             "A csevegés visszaállítása"
          ],
          "Minimized": [
-            null,
             "Minimalizálva"
          ]
       }

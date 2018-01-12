@@ -8,1075 +8,807 @@
             "lang": "af"
          },
          "The connection has dropped, attempting to reconnect.": [
-            null,
             "Die konneksie is onderbreek, probeer tans tans om te herkonnekteer."
          ],
          "An error occurred while connecting to the chat server.": [
-            null,
             "A fout het voorgekom tydens verbinding met die kletsbediener."
          ],
          "Your Jabber ID and/or password is incorrect. Please try again.": [
-            null,
             "U Jabber ID en/of wagwoord is verkeerd. Probeer asseblief weer."
          ],
          "Sorry, we could not connect to the XMPP host with domain: ": [
-            null,
             "Jammer, ons kon nie 'n verbinding met hierdie XMPP domein opstel nie: "
          ],
          "The XMPP server did not offer a supported authentication mechanism": [
-            null,
             "Die XMPP bediener het nie 'n bruikbare verifikasiemeganisme aangebied nie"
          ],
          "Sorry, there was an error while trying to add %1$s as a contact.": [
-            null,
             "Jammer, 'n fout het voorgekom tydens die byvoeging van %1$s as 'n kontak."
          ],
          "This client does not allow presence subscriptions": [
-            null,
             "Hierdie klient laat nie beskikbaarheidsinskrywings toe nie"
          ],
          "Click to hide these contacts": [
-            null,
             "Klik om hierdie kontakte te verskuil"
          ],
          "Close this chat box": [
-            null,
             "Sluit hierdie kletskas"
          ],
          "Personal message": [
-            null,
             "Persoonlike boodskap"
          ],
          "Send": [
-            null,
             "Stuur"
          ],
          "You have unread messages": [
-            null,
             "U het ongelese boodskappe"
          ],
          "me": [
-            null,
             "ek"
          ],
          "Typing from another device": [
-            null,
             "Tik tans op 'n ander toestel"
          ],
          "is typing": [
-            null,
             "tik tans"
          ],
          "Stopped typing on the other device": [
-            null,
             "Het opgehou tik op 'n ander toestel"
          ],
          "has stopped typing": [
-            null,
             "het opgehou tik"
          ],
          "has gone away": [
-            null,
             "het weggegaan"
          ],
          "Show this menu": [
-            null,
             "Vertoon hierdie keuselys"
          ],
          "Write in the third person": [
-            null,
             "Skryf in die derde persoon"
          ],
          "Remove messages": [
-            null,
             "Verwyder boodskappe"
          ],
          "Are you sure you want to clear the messages from this chat box?": [
-            null,
             "Is u seker u wil die boodskappe in hierdie kletskas uitvee?"
          ],
          "has gone offline": [
-            null,
             "is nou aflyn"
          ],
          "is busy": [
-            null,
             "is besig"
          ],
          "Clear all messages": [
-            null,
             "Vee alle boodskappe uit"
          ],
          "Insert a smiley": [
-            null,
             "Voeg 'n emotikon by"
          ],
          "Start a call": [
-            null,
             "Begin 'n oproep"
          ],
          "Login": [
-            null,
             "Aanmelding"
          ],
          "Jabber ID:": [
-            null,
             "Jabber ID:"
          ],
          "Password:": [
-            null,
             "Wagwoord:"
          ],
          "password": [
-            null,
             "wagwoord"
          ],
          "Submit": [
-            null,
             "Dien in"
          ],
          "Click here to log in anonymously": [
-            null,
             "Klik hier om anoniem aan te meld"
          ],
          "This contact is busy": [
-            null,
             "Hierdie persoon is besig"
          ],
          "This contact is online": [
-            null,
             "Hierdie persoon is aanlyn"
          ],
          "This contact is offline": [
-            null,
             "Hierdie persoon is aflyn"
          ],
          "This contact is unavailable": [
-            null,
             "Hierdie persoon is onbeskikbaar"
          ],
          "This contact is away for an extended period": [
-            null,
             "Hierdie persoon is vir lank afwesig"
          ],
          "This contact is away": [
-            null,
             "Hierdie persoon is afwesig"
          ],
          "Contacts": [
-            null,
             "Kontakte"
          ],
          "Groups": [
-            null,
             "Groepe"
          ],
          "My contacts": [
-            null,
             "My kontakte"
          ],
          "Pending contacts": [
-            null,
             "Hangende kontakte"
          ],
          "Contact requests": [
-            null,
             "Kontakversoeke"
          ],
          "Ungrouped": [
-            null,
             "Ongegroepeer"
          ],
          "Filter": [
-            null,
             "Filtreer"
          ],
          "State": [
-            null,
             "Kletsstand"
          ],
          "Any": [
-            null,
             "Enige"
          ],
          "Unread": [
-            null,
             "Ongelees"
          ],
          "Online": [
-            null,
             "Aangemeld"
          ],
          "Chatty": [
-            null,
             "Geselserig"
          ],
          "Busy": [
-            null,
             "Besig"
          ],
          "Away": [
-            null,
             "Afwesig"
          ],
          "Extended Away": [
-            null,
             "Weg vir langer"
          ],
          "Offline": [
-            null,
             "Afgemeld"
          ],
          "Click to remove %1$s as a contact": [
-            null,
             "Klik om %1$s as 'n kontak te verwyder"
          ],
          "Click to accept the contact request from %1$s": [
-            null,
             "Klik om die kontakversoek van %1$s te aanvaar"
          ],
          "Click to decline the contact request from %1$s": [
-            null,
             "Klik om kontakversoek van %1$s te weier"
          ],
          "Click to chat with this contact": [
-            null,
             "Klik om met hierdie kontak te klets"
          ],
          "Name": [
-            null,
             "Naam"
          ],
          "Are you sure you want to remove this contact?": [
-            null,
             "Is u seker u wil hierdie gespreksmaat verwyder?"
          ],
          "Sorry, there was an error while trying to remove %1$s as a contact.": [
-            null,
             "Jammer, 'n fout het voorgekom tydens die verwydering van %1$s as 'n kontak."
          ],
          "Are you sure you want to decline this contact request?": [
-            null,
             "Is u seker dat u hierdie persoon se versoek wil afkeur?"
          ],
          "I am %1$s": [
-            null,
             "Ek is %1$s"
          ],
          "Click here to write a custom status message": [
-            null,
             "Klik hier om jou eie statusboodskap te skryf"
          ],
          "Click to change your chat status": [
-            null,
             "Klik om jou klets-status te verander"
          ],
          "Custom status": [
-            null,
             "Doelgemaakte status"
          ],
          "Save": [
-            null,
             "Stoor"
          ],
          "online": [
-            null,
             "aangemeld"
          ],
          "busy": [
-            null,
             "besig"
          ],
          "away for long": [
-            null,
             "vir lank afwesig"
          ],
          "away": [
-            null,
             "afwesig"
          ],
          "offline": [
-            null,
             "afgemeld"
          ],
          "Username": [
-            null,
             "Gebruikersnaam"
          ],
          "user@domain": [
-            null,
             "gebruiker@domein"
          ],
          "Please enter a valid XMPP address": [
-            null,
             "Verskaf asseblief 'n geldige XMPP address"
          ],
          "Log out": [
-            null,
             "Meld af"
          ],
          "Click to add new chat contacts": [
-            null,
             "Klik om nuwe kletskontakte by te voeg"
          ],
          "Add a contact": [
-            null,
             "Voeg 'n kontak by"
          ],
          "Contact name": [
-            null,
             "Kontaknaam"
          ],
          "Search": [
-            null,
             "Soek"
          ],
          "e.g. user@example.org": [
-            null,
             "bv. gebruiker@voorbeeld.org"
          ],
          "Add": [
-            null,
             "Voeg by"
          ],
          "Click to add as a chat contact": [
-            null,
             "Klik om as kletskontak by te voeg"
          ],
          "No users found": [
-            null,
             "Geen gebruikers gevind"
          ],
          "Toggle chat": [
-            null,
             "Klets"
          ],
          "This room is not anonymous": [
-            null,
             "Hierdie vertrek is nie anoniem nie"
          ],
          "This room now shows unavailable members": [
-            null,
             "Hierdie vertrek wys nou onbeskikbare lede"
          ],
          "This room does not show unavailable members": [
-            null,
             "Hierdie vertrek wys nie onbeskikbare lede nie"
          ],
          "The room configuration has changed": [
-            null,
             "Die kamer instellings het verander"
          ],
          "Room logging is now enabled": [
-            null,
             "Kamer log is nou aangeskakel"
          ],
          "Room logging is now disabled": [
-            null,
             "Kamer log is nou afgeskakel"
          ],
          "This room is now no longer anonymous": [
-            null,
             "Hiedie kamer is nie meer anoniem nie"
          ],
          "This room is now semi-anonymous": [
-            null,
             "Hierdie kamer is nou gedeeltelik anoniem"
          ],
          "This room is now fully-anonymous": [
-            null,
             "Hierdie kamer is nou ten volle anoniem"
          ],
          "A new room has been created": [
-            null,
             "'n Nuwe kamer is geskep"
          ],
          "You have been banned from this room": [
-            null,
             "Jy is uit die kamer verban"
          ],
          "You have been kicked from this room": [
-            null,
             "Jy is uit die kamer geskop"
          ],
          "You have been removed from this room because of an affiliation change": [
-            null,
             "Jy is vanuit die kamer verwyder a.g.v 'n verandering van affiliasie"
          ],
          "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
             "Jy is vanuit die kamer verwyder omdat die kamer nou slegs tot lede beperk word en jy nie 'n lid is nie"
          ],
          "You have been removed from this room because the MUC (Multi-user chat) service is being shut down": [
-            null,
             "U is van hierdie kamer verwyder aangesien die MUC (Multi-user chat) diens nou afgeskakel word."
          ],
          "%1$s has been banned": [
-            null,
             "%1$s is verban"
          ],
          "%1$s's nickname has changed": [
-            null,
             "%1$s se bynaam het verander"
          ],
          "%1$s has been kicked out": [
-            null,
             "%1$s is uitgeskop"
          ],
          "%1$s has been removed because of an affiliation change": [
-            null,
             "%1$s is verwyder a.g.v 'n verandering van affiliasie"
          ],
          "%1$s has been removed for not being a member": [
-            null,
             "%1$s is nie 'n lid nie, en dus verwyder"
          ],
          "Message": [
-            null,
             "Boodskap"
          ],
          "Close and leave this room": [
-            null,
             "Sluit en verlaat hierdie kletskamer"
          ],
          "Configure this room": [
-            null,
             "Konfigureer hierdie kletskamer"
          ],
          "Hide the list of occupants": [
-            null,
             "Verskuil die lys van deelnemers"
          ],
          "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
-            null,
             "Fout: die \"%1$s\" opdrag neem twee argumente, die gebruiker se bynaam en opsioneel daarby 'n rede."
          ],
          "Are you sure you want to clear the messages from this room?": [
-            null,
             "Is u seker dat u die boodskappe in hierdie kamer wil verwyder?"
          ],
          "Error: could not execute the command": [
-            null,
             "Fout: kon nie die opdrag uitvoer nie"
          ],
          "Change user's affiliation to admin": [
-            null,
             "Verander die gebruiker se affiliasie na admin"
          ],
          "Ban user from room": [
-            null,
             "Verban gebruiker uit hierdie kletskamer"
          ],
          "Kick user from room": [
-            null,
             "Skop gebruiker uit hierdie kletskamer"
          ],
          "Write in 3rd person": [
-            null,
             "Skryf in die derde persoon"
          ],
          "Grant membership to a user": [
-            null,
             "Verleen lidmaatskap aan 'n gebruiker"
          ],
          "Remove user's ability to post messages": [
-            null,
             "Verwyder gebruiker se vermoë om boodskappe te plaas"
          ],
          "Change your nickname": [
-            null,
             "Verander u bynaam"
          ],
          "Grant moderator role to user": [
-            null,
             "Verleen moderator rol aan gebruiker"
          ],
          "Grant ownership of this room": [
-            null,
             "Verleen eienaarskap van hierdie kamer"
          ],
          "Revoke user's membership": [
-            null,
             "Herroep gebruiker se lidmaatskap"
          ],
          "Set room subject": [
-            null,
             "Stel onderwerp vir kletskamer"
          ],
          "Set room subject (alias for /subject)": [
-            null,
             "Verskaf kamer onderwerp (alias vir /subject)"
          ],
          "Allow muted user to post messages": [
-            null,
             "Laat stilgemaakte gebruiker toe om weer boodskappe te plaas"
          ],
          "Cancel": [
-            null,
             "Kanseleer"
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
             "Die bynaam wat u gekies het is gereserveer of tans in gebruik, kies asb. 'n ander een."
          ],
          "Please choose your nickname": [
-            null,
             "Kies asb. u bynaam"
          ],
          "Nickname": [
-            null,
             "Bynaam"
          ],
          "Enter room": [
-            null,
             "Betree kletskamer"
          ],
          "This chatroom requires a password": [
-            null,
             "Hiedie kletskamer benodig 'n wagwoord"
          ],
          "Password: ": [
-            null,
             "Wagwoord: "
          ],
          "You are not on the member list of this room.": [
-            null,
             "Jy is nie op die ledelys van hierdie kamer nie."
          ],
          "You have been banned from this room.": [
-            null,
             "Jy is uit die kamer verban."
          ],
          "No nickname was specified.": [
-            null,
             "Geen bynaam verskaf nie."
          ],
          "You are not allowed to create new rooms.": [
-            null,
             "Jy word nie toegelaat om nog kletskamers te skep nie."
          ],
          "Your nickname doesn't conform to this room's policies.": [
-            null,
             "Jou bynaam voldoen nie aan die kamer se beleid nie."
          ],
          "This room does not (yet) exist.": [
-            null,
             "Hierdie kamer bestaan tans (nog) nie."
          ],
          "This room has reached its maximum number of occupants.": [
-            null,
             "Hierdie kletskamer het sy maksimum aantal deelnemers bereik."
          ],
          "Topic set by %1$s to: %2$s": [
-            null,
             "Onderwerp deur %1$s bygewerk na: %2$s"
          ],
          "Click to mention %1$s in your message.": [
-            null,
             "Klik om %1$s in u boodskap te noem "
          ],
          "This user is a moderator.": [
-            null,
             "Hierdie gebruiker is 'n moderator."
          ],
          "This user can send messages in this room.": [
-            null,
             "Hierdie gebruiker kan boodskappe na die kamer stuur."
          ],
          "This user can NOT send messages in this room.": [
-            null,
             "Hierdie gebruiker kan NIE boodskappe na die kamer stuur nie."
          ],
          "Occupants": [
-            null,
             "Deelnemers"
          ],
          "Invite": [
-            null,
             "Nooi uit"
          ],
          "Features": [
-            null,
             "Eienskappe"
          ],
          "Hidden": [
-            null,
             "Verskuil"
          ],
          "Message archiving": [
-            null,
             "Boodskap-argivering"
          ],
          "Members only": [
-            null,
             "Slegs lede"
          ],
          "Moderated": [
-            null,
             "Gemodereer"
          ],
          "Non-anonymous": [
-            null,
             "Nie-anoniem"
          ],
          "Open": [
-            null,
             "Oop kletskamer"
          ],
          "Password protected": [
-            null,
             "Wagwoord"
          ],
          "Persistent": [
-            null,
             "Blywend"
          ],
          "Public": [
-            null,
             "Publiek"
          ],
          "Semi-anonymous": [
-            null,
             "Deels anoniem"
          ],
          "Temporary": [
-            null,
             "Tydelike kamer"
          ],
          "Unmoderated": [
-            null,
             "Ongemodereer"
          ],
          "This room is not publicly searchable": [
-            null,
             "Hierdie kletskamer is nie publiek opspoorbaar nie"
          ],
          "Messages are archived on the server": [
-            null,
             "Boodskappe word op die bediener gestoor"
          ],
          "This room is restricted to members only": [
-            null,
             "Hierdie kletskamer is slegs tot lede beperk"
          ],
          "This room is being moderated": [
-            null,
             "Hierdie kletskamer word gemodereer"
          ],
          "All other room occupants can see your XMPP username": [
-            null,
             "Alle ander deelnemers can u Jabber ID sien"
          ],
          "Anyone can join this room": [
-            null,
             "Enige iemand kan hierdie kletskamer binnekom"
          ],
          "This room requires a password before entry": [
-            null,
             "Hierdie kletskamer benodig 'n wagwoord"
          ],
          "This room persists even if it's unoccupied": [
-            null,
             "Hierdie kletskamer bestaan voort selfs al is dit leeg"
          ],
          "This room is publicly searchable": [
-            null,
             "Hierdie kletskamer is publiek opspoorbaar"
          ],
          "Only moderators can see your XMPP username": [
-            null,
             "Slegs moderators kan u Jabber ID sien"
          ],
          "This room will disappear once the last person leaves": [
-            null,
             "Hierdie kletskamer sal verdwyn sodra die laaste persoon dit verlaat"
          ],
          "This room is not being moderated": [
-            null,
             "Hierdie kletskamer word nie gemodereer nie"
          ],
          "This room does not require a password upon entry": [
-            null,
             "Hiedie kletskamer benodig nie 'n wagwoord nie"
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
-            null,
             "U is op die punt om %1$s na die kletskamer \"%2$s\" uit te nooi. "
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
-            null,
             "U mag na keuse 'n boodskap insluit, om bv. die rede vir die uitnodiging te staaf."
          ],
          "Please enter a valid XMPP username": [
-            null,
             "Verskaf asseblief 'n geldige XMPP adres"
          ],
          "Room name": [
-            null,
             "Kamer naam"
          ],
          "Server": [
-            null,
             "Bediener"
          ],
          "Join Room": [
-            null,
             "Betree kletskamer"
          ],
          "Show rooms": [
-            null,
             "Wys kletskamers"
          ],
          "Rooms": [
-            null,
             "Kletskamers"
          ],
          "No rooms on %1$s": [
-            null,
             "Geen kletskamers op %1$s"
          ],
          "Rooms on %1$s": [
-            null,
             "Kletskamers op %1$s"
          ],
          "Click to open this room": [
-            null,
             "Klik om hierdie kletskamer te open"
          ],
          "Show more information on this room": [
-            null,
             "Wys meer inligting aangaande hierdie kletskamer"
          ],
          "Description:": [
-            null,
             "Beskrywing:"
          ],
          "Room Address (JID):": [
-            null,
             "Kletskameradres (JID):"
          ],
          "Occupants:": [
-            null,
             "Deelnemers:"
          ],
          "Features:": [
-            null,
             "Eienskappe:"
          ],
          "Requires authentication": [
-            null,
             "Benodig magtiging"
          ],
          "Requires an invitation": [
-            null,
             "Benodig 'n uitnodiging"
          ],
          "Open room": [
-            null,
             "Oop kletskamer"
          ],
          "Permanent room": [
-            null,
             "Permanente kamer"
          ],
          "Temporary room": [
-            null,
             "Tydelike kamer"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
-            null,
             "%1$s het u uitgenooi om die kletskamer %2$s te besoek"
          ],
          "%1$s has invited you to join a chat room: %2$s, and left the following reason: \"%3$s\"": [
-            null,
             "%1$s het u uitgenooi om die kletskamer %2$s te besoek, en het die volgende rede verskaf: \"%3$s\""
          ],
          "Bookmark this room": [
-            null,
             "Boekmerk hierdie kletskamer"
          ],
          "The name for this bookmark:": [
-            null,
             "Die naam vir hierdie boekmerk:"
          ],
          "Would you like this room to be automatically joined upon startup?": [
-            null,
             "Moet hierdie kletskamer outomaties betree word tydens aanmelding?"
          ],
          "What should your nickname for this room be?": [
-            null,
             "Wat sal u bynaam vir hierdie kletskamer wees?"
          ],
          "Are you sure you want to remove the bookmark \"%1$s\"?": [
-            null,
             "Is u seker u wil die boekmerk \"%1$s\" verwyder?"
          ],
          "Sorry, something went wrong while trying to save your bookmark.": [
-            null,
             "Jammer, 'n fout het voorgekom tydens storing van u boekmerk."
          ],
          "Click to toggle the bookmarks list": [
-            null,
             "Klik om die boekmerklys te skakel"
          ],
          "Bookmarks": [
-            null,
             "Kletskamerboekmerke"
          ],
          "Leave this room": [
-            null,
             "Verlaat hierdie kletskamer"
          ],
          "Remove this bookmark": [
-            null,
             "Verwyder hierdie boekmerk"
          ],
          "Unbookmark this room": [
-            null,
             "Verwyder die boekmerk"
          ],
          "Click to toggle the rooms list": [
-            null,
             "Klik om die boekmerklys te skakel"
          ],
          "Open Rooms": [
-            null,
             "Oop kletskamers"
          ],
          "Are you sure you want to leave the room \"%1$s\"?": [
-            null,
             "Is u seker u wil die kletskaner \"%1$s\" verlaat?"
          ],
          "Re-establishing encrypted session": [
-            null,
             "Herstel versleutelde sessie"
          ],
          "Generating private key.": [
-            null,
             "Genereer private sleutel."
          ],
          "Your browser might become unresponsive.": [
-            null,
             "U webblaaier mag tydelik onreageerbaar word."
          ],
          "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
-            null,
             "Identiteitbevestigingsversoek van  %1$s\n\nU gespreksmaat probeer om u identiteit te bevestig, deur die volgende vraag te vra \n\n%2$s"
          ],
          "Could not verify this user's identify.": [
-            null,
             "Kon nie hierdie gebruiker se identitied bevestig nie."
          ],
          "Exchanging private key with contact.": [
-            null,
             "Sleutels word met gespreksmaat uitgeruil."
          ],
          "Your messages are not encrypted anymore": [
-            null,
             "U boodskappe is nie meer versleutel nie"
          ],
          "Your messages are now encrypted but your contact's identity has not been verified.": [
-            null,
             "U boodskappe is nou versleutel maar u gespreksmaat se identiteit is nog onseker."
          ],
          "Your contact's identify has been verified.": [
-            null,
             "U gespreksmaat se identiteit is bevestig."
          ],
          "Your contact has ended encryption on their end, you should do the same.": [
-            null,
             "U gespreksmaat het versleuteling gestaak, u behoort nou dieselfde te doen."
          ],
          "Your message could not be sent": [
-            null,
             "U boodskap kon nie gestuur word nie"
          ],
          "We received an unencrypted message": [
-            null,
             "Ons het 'n onversleutelde boodskap ontvang"
          ],
          "We received an unreadable encrypted message": [
-            null,
             "Ons het 'n onleesbare versleutelde boodskap ontvang"
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
-            null,
             "Hier is die vingerafdrukke, bevestig hulle met %1$s, buite hierdie kletskanaal \n\nU vingerafdruk, %2$s: %3$s\n\nVingerafdruk vir %1$s: %4$s\n\nIndien u die vingerafdrukke bevestig het, klik OK, andersinds klik Kanselleer."
          ],
          "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
-            null,
             "Daar sal van u verwag word om 'n sekuriteitsvraag te stel, en dan ook die antwoord tot daardie vraag te verskaf.\n\nU gespreksmaat sal dan daardie vraag gestel word, en indien hulle presies dieselfde antwoord (lw. hoofletters tel) verskaf, sal hul identiteit bevestig wees."
          ],
          "What is your security question?": [
-            null,
             "Wat is u sekuriteitsvraag?"
          ],
          "What is the answer to the security question?": [
-            null,
             "Wat is die antwoord tot die sekuriteitsvraag?"
          ],
          "Invalid authentication scheme provided": [
-            null,
             "Ongeldige verifikasiemetode verskaf"
          ],
          "Your messages are not encrypted. Click here to enable OTR encryption.": [
-            null,
             "U boodskappe is nie versleutel nie. Klik hier om OTR versleuteling te aktiveer."
          ],
          "Your messages are encrypted, but your contact has not been verified.": [
-            null,
             "U boodskappe is versleutel, maar u gespreksmaat se identiteit is not onseker."
          ],
          "Your messages are encrypted and your contact verified.": [
-            null,
             "U boodskappe is versleutel en u gespreksmaat se identiteit bevestig."
          ],
          "Your contact has closed their end of the private session, you should do the same": [
-            null,
             "U gespreksmaat het die private sessie gestaak. U behoort dieselfde te doen"
          ],
          "End encrypted conversation": [
-            null,
             "Beëindig versleutelde gesprek"
          ],
          "Refresh encrypted conversation": [
-            null,
             "Verfris versleutelde gesprek"
          ],
          "Start encrypted conversation": [
-            null,
             "Begin versleutelde gesprek"
          ],
          "Verify with fingerprints": [
-            null,
             "Bevestig met vingerafdrukke"
          ],
          "Verify with SMP": [
-            null,
             "Bevestig met SMP"
          ],
          "What's this?": [
-            null,
             "Wat is hierdie?"
          ],
          "unencrypted": [
-            null,
             "nie-privaat"
          ],
          "unverified": [
-            null,
             "onbevestig"
          ],
          "verified": [
-            null,
             "privaat"
          ],
          "finished": [
-            null,
             "afgesluit"
          ],
          "Don't have a chat account?": [
-            null,
             "Geen kletsrekening nie?"
          ],
          "Create an account": [
-            null,
             "Skep 'n rekening"
          ],
          "Create your account": [
-            null,
             "Skep u rekening"
          ],
          "Please enter the XMPP provider to register with:": [
-            null,
             "Verskaf asseblief die XMPP verskaffer om mee te registreer:"
          ],
          "Already have a chat account?": [
-            null,
             "Het u reeds 'n kletsrekening?"
          ],
          "Log in here": [
-            null,
             "Meld hier aan"
          ],
          "Account Registration:": [
-            null,
             "Registreer 'n rekening:"
          ],
          "Register": [
-            null,
             "Registreer"
          ],
          "Choose a different provider": [
-            null,
             "Kies 'n ander verskaffer"
          ],
          "Hold tight, we're fetching the registration form…": [
-            null,
             "Wag 'n bietjie, ons gaan haal die registrasievorm"
          ],
          " e.g. conversejs.org": [
-            null,
             " bv. conversejs.org"
          ],
          "Fetch registration form": [
-            null,
             "Laai die registrasie form"
          ],
          "Tip: A list of public XMPP providers is available": [
-            null,
             "Wenk: A lys van publieke XMPP-verskaffers is beskikbaar"
          ],
          "here": [
-            null,
             "hier"
          ],
          "Sorry, we're unable to connect to your chosen provider.": [
-            null,
             "Jammer, ons kon nie 'n verbinding met die gekose verskaffer opstel nie."
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
-            null,
             "Jammer, die gekose verskaffer ondersteun nie in-band registrasie nie.Probeer weer met 'n ander verskaffer."
          ],
          "Now logging you in": [
-            null,
             "U word nou aangemeld"
          ],
          "Registered successfully": [
-            null,
             "Suksesvol geregistreer"
          ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
-            null,
             "Die verskaffer het u registrasieversoek verwerp. Kontrolleer asb. jou gegewe waardes vir korrektheid."
          ],
          "Notification from %1$s": [
-            null,
             "Kennisgewing van %1$s"
          ],
          "%1$s says": [
-            null,
             "%1$s sê"
          ],
          "has come online": [
-            null,
             "het aanlyn gekom"
          ],
          "wants to be your contact": [
-            null,
             "wil jou kontak wees"
          ],
          "Minimize this chat box": [
-            null,
             "Minimeer hierdie kletskas"
          ],
          "Click to restore this chat": [
-            null,
             "Klik om hierdie klets te herstel"
          ],
          "Minimized": [
-            null,
             "Geminimaliseer"
          ]
       }

@@ -10,8 +10,7 @@
  * in XEP-0048.
  */
 (function (root, factory) {
-    define(["utils",
-            "converse-core",
+    define(["converse-core",
             "converse-muc",
             "tpl!chatroom_bookmark_form",
             "tpl!chatroom_bookmark_toggle",
@@ -20,7 +19,6 @@
         ],
         factory);
 }(this, function (
-        u,
         converse,
         muc,
         tpl_chatroom_bookmark_form,
@@ -30,10 +28,21 @@
     ) {
 
     const { Backbone, Promise, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
+    const u = converse.env.utils;
 
     converse.plugins.add('converse-bookmarks', {
 
-        optional_dependencies: ["converse-chatboxes", "converse-muc"],
+        /* Plugin dependencies are other plugins which might be
+         * overridden or relied upon, and therefore need to be loaded before
+         * this plugin.
+         *
+         * If the setting "strict_plugin_dependencies" is set to true,
+         * an error will be raised if the plugin is not found. By default it's
+         * false, which means these plugins are only loaded opportunistically.
+         *
+         * NB: These plugins need to have already been loaded via require.js.
+         */
+        dependencies: ["converse-chatboxes", "converse-muc"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -203,7 +212,7 @@
             // configuration settings.
             _converse.api.settings.update({
                 allow_bookmarks: true,
-                hide_open_bookmarks: false
+                hide_open_bookmarks: true 
             });
             // Promises exposed by this plugin
             _converse.api.promises.add('bookmarksInitialized');
@@ -234,12 +243,6 @@
             });
 
             _converse.Bookmark = Backbone.Model;
-
-            _converse.BookmarksList = Backbone.Model.extend({
-                defaults: {
-                    "toggle-state":  _converse.OPENED
-                }
-            });
 
             _converse.Bookmarks = Backbone.Collection.extend({
                 model: _converse.Bookmark,
@@ -385,18 +388,47 @@
                 }
             });
 
-            _converse.BookmarksView = Backbone.View.extend({
+            _converse.BookmarksList = Backbone.Model.extend({
+                defaults: {
+                    "toggle-state":  _converse.OPENED
+                }
+            });
+
+            _converse.BookmarkView = Backbone.VDOMView.extend({
+                toHTML () {
+                    return tpl_bookmark({
+                        'hidden': _converse.hide_open_bookmarks &&
+                                  _converse.chatboxes.where({'jid': this.model.get('jid')}).length,
+                        'bookmarked': true,
+                        'info_leave_room': __('Leave this room'),
+                        'info_remove': __('Remove this bookmark'),
+                        'info_remove_bookmark': __('Unbookmark this room'),
+                        'info_title': __('Show more information on this room'),
+                        'jid': this.model.get('jid'),
+                        'name': this.model.get('name'),
+                        'open_title': __('Click to open this room')
+                    });
+                }
+            });
+
+            _converse.BookmarksView = Backbone.OrderedListView.extend({
                 tagName: 'div',
-                className: 'bookmarks-list rooms-list-container hidden',
+                className: 'bookmarks-list rooms-list-container',
                 events: {
                     'click .add-bookmark': 'addBookmark',
                     'click .bookmarks-toggle': 'toggleBookmarksList',
                     'click .remove-bookmark': 'removeBookmark'
                 },
+                listSelector: '.rooms-list',
+                ItemView: _converse.BookmarkView,
+                subviewIndex: 'jid',
 
                 initialize () {
-                    this.model.on('add', this.renderBookmarkListElement, this);
-                    this.model.on('remove', this.removeBookmarkListElement, this);
+                    Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+
+                    this.model.on('add', this.showOrHide, this);
+                    this.model.on('remove', this.showOrHide, this);
+
                     _converse.chatboxes.on('add', this.renderBookmarkListElement, this);
                     _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
 
@@ -408,6 +440,7 @@
                     );
                     this.list_model.fetch();
                     this.render();
+                    this.sortAndPositionAllItems();
                 },
 
                 render () {
@@ -417,81 +450,50 @@
                         'label_bookmarks': __('Bookmarks'),
                         '_converse': _converse
                     });
-                    this.model.each(this.renderBookmarkListElement.bind(this));
+                    this.showOrHide();
+                    this.insertIntoControlBox();
+                    return this;
+                },
+
+                insertIntoControlBox () {
                     const controlboxview = _converse.chatboxviews.get('controlbox');
                     if (!_.isUndefined(controlboxview)) {
                         const chatrooms_el = controlboxview.el.querySelector('#chatrooms');
                         chatrooms_el.insertAdjacentElement('afterbegin', this.el);
                     }
-                    return this;
                 },
 
                 removeBookmark: _converse.removeBookmarkViaEvent,
                 addBookmark: _converse.addBookmarkViaEvent,
 
-                renderBookmarkListElement (item) {
-                    if (item instanceof _converse.ChatBox) {
-                        item = _.head(this.model.where({'jid': item.get('jid')}));
-                        if (_.isNil(item)) {
-                            // A chat box has been closed, but we don't have a
-                            // bookmark for it, so nothing further to do here.
+                renderBookmarkListElement (chatbox) {
+                    const bookmarkview = this.get(chatbox.get('jid'));
+                    if (_.isNil(bookmarkview)) {
+                        // A chat box has been closed, but we don't have a
+                        // bookmark for it, so nothing further to do here.
+                        return;
+                    }
+                    bookmarkview.render();
+                    this.showOrHide();
+                },
+
+                showOrHide (item) {
+                    if (_converse.hide_open_bookmarks) {
+                        const bookmarks = this.model.filter((bookmark) =>
+                                !_converse.chatboxes.get(bookmark.get('jid')));
+                        if (!bookmarks.length) {
+                            u.hideElement(this.el);
                             return;
                         }
                     }
-                    if (_converse.hide_open_bookmarks &&
-                            _converse.chatboxes.where({'jid': item.get('jid')}).length) {
-                        // A chat box has been opened, and we don't show
-                        // bookmarks for open chats, so we remove it.
-                        this.removeBookmarkListElement(item);
-                        return;
-                    }
-
-                    const list_el = this.el.querySelector('.bookmarks');
-                    const div = document.createElement('div');
-                    div.innerHTML = tpl_bookmark({
-                        'bookmarked': true,
-                        'info_leave_room': __('Leave this room'),
-                        'info_remove': __('Remove this bookmark'),
-                        'info_remove_bookmark': __('Unbookmark this room'),
-                        'info_title': __('Show more information on this room'),
-                        'jid': item.get('jid'),
-                        'name': item.get('name'),
-                        'open_title': __('Click to open this room')
-                    });
-                    const el = _.head(sizzle(
-                        `.available-chatroom[data-room-jid="${item.get('jid')}"]`,
-                        list_el));
-
-                    if (el) {
-                        el.innerHTML = div.firstChild.innerHTML;
-                    } else {
-                        list_el.appendChild(div.firstChild);
-                    }
-                    this.show();
-                },
-
-                show () {
-                    u.showElement(this.el);
-                },
-
-                hide () {
-                    u.hideElement(this.el);
-                },
-
-                removeBookmarkListElement (item) {
-                    const list_el = this.el.querySelector('.bookmarks');
-                    const el = _.head(sizzle(`.available-chatroom[data-room-jid="${item.get('jid')}"]`, list_el));
-                    if (el) {
-                        list_el.removeChild(el);
-                    }
-                    if (list_el.childElementCount === 0) {
-                        this.hide();
+                    if (this.model.models.length) {
+                        u.showElement(this.el);
                     }
                 },
 
                 toggleBookmarksList (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    if (u.hasClass(ev.target, 'icon-opened')) {
+                    if (u.hasClass('icon-opened', ev.target)) {
                         u.slideIn(this.el.querySelector('.bookmarks'));
                         this.list_model.save({'toggle-state': _converse.CLOSED});
                         ev.target.classList.remove("icon-opened");

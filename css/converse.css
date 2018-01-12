@@ -1175,9 +1175,9 @@
     -webkit-animation-fill-mode: forwards;
     -moz-animation-fill-mode: forwards;
     animation-fill-mode: forwards;
-    -webkit-animation-duration: 750;
-    -moz-animation-duration: 750;
-    animation-duration: 750;
+    -webkit-animation-duration: 0.75s;
+    -moz-animation-duration: 0.75s;
+    animation-duration: 0.75s;
     -webkit-animation-timing-function: ease;
     -moz-animation-timing-function: ease;
     animation-timing-function: ease; }
@@ -1199,7 +1199,8 @@
     animation-timing-function: ease; }
   #converse-embedded-chat .hidden,
   #conversejs .hidden {
-    opacity: 0; }
+    opacity: 0;
+    display: none; }
   #converse-embedded-chat .collapsed,
   #conversejs .collapsed {
     height: 0 !important;
@@ -1934,9 +1935,9 @@
     -webkit-animation-fill-mode: forwards;
     -moz-animation-fill-mode: forwards;
     animation-fill-mode: forwards;
-    -webkit-animation-duration: 750;
-    -moz-animation-duration: 750;
-    animation-duration: 750;
+    -webkit-animation-duration: 0.75s;
+    -moz-animation-duration: 0.75s;
+    animation-duration: 0.75s;
     -webkit-animation-timing-function: ease;
     -moz-animation-timing-function: ease;
     animation-timing-function: ease;
@@ -2036,7 +2037,8 @@
         font-weight: normal;
         padding: 0;
         padding-bottom: 0.5em;
-        text-shadow: 0 1px 0 #FAFAFA; }
+        text-shadow: 0 1px 0 #FAFAFA;
+        word-wrap: break-word; }
       #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom,
       #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom {
         border: none;
@@ -2297,6 +2299,8 @@
   #conversejs .toggle-controlbox span {
     color: white; }
 
+#conversejs #controlbox #converse-register .button-cancel {
+  font-size: 90%; }
 #conversejs #controlbox .controlbox-pane {
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;

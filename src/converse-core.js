@@ -16,6 +16,7 @@
             "strophe",
             "pluggable",
             "backbone.noconflict",
+            "backbone.nativeview",
             "backbone.browserStorage"
     ], factory);
 }(this, function (sizzle, Promise, _, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
@@ -35,13 +36,14 @@
     Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
     Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
     Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
+    Strophe.addNamespace('FORWARD', 'urn:xmpp:forward:0');
     Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
     Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
-    Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
     Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
     Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
     Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
     Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
+    Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
     Strophe.addNamespace('XFORM', 'jabber:x:data');
 
     // Use Mustache style syntax for variable interpolation

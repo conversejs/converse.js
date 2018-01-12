@@ -20,9 +20,10 @@ require.config({
         "babel":                    "node_modules/requirejs-babel/babel-5.8.34.min",
         "backbone":                 "node_modules/backbone/backbone",
         "backbone.browserStorage":  "node_modules/backbone.browserStorage/backbone.browserStorage",
+        "backbone.nativeview":      "node_modules/backbone.nativeview/backbone.nativeview",
         "backbone.noconflict":      "src/backbone.noconflict",
-        "backbone.overview":        "node_modules/backbone.overview/dist/backbone.overview",
         "backbone.orderedlistview": "node_modules/backbone.overview/dist/backbone.orderedlistview",
+        "backbone.overview":        "node_modules/backbone.overview/dist/backbone.overview",
         "backbone.vdomview":        "node_modules/backbone.vdomview/dist/backbone.vdomview",
         "emojione":                 "node_modules/emojione/lib/js/emojione",
         "es6-promise":              "node_modules/es6-promise/dist/es6-promise.auto",
@@ -30,16 +31,14 @@ require.config({
         "form-utils":               "src/form-utils",
         "i18n":                     "src/i18n",
         "jed":                      "node_modules/jed/jed",
-        "jquery":                   "node_modules/jquery/dist/jquery",
-        "jquery.browser":           "node_modules/jquery.browser/dist/jquery.browser",
-        "jquery.noconflict":        "src/jquery.noconflict",
+        "jquery":                   "src/jquery-stub",
         "lodash":                   "node_modules/lodash/lodash",
         "lodash.converter":         "3rdparty/lodash.fp",
         "lodash.fp":                "src/lodash.fp",
         "lodash.noconflict":        "src/lodash.noconflict",
         "pluggable":                "node_modules/pluggable.js/dist/pluggable",
         "polyfill":                 "src/polyfill",
-        "sizzle":                   "node_modules/jquery/sizzle/dist/sizzle",
+        "sizzle":                   "node_modules/sizzle/dist/sizzle",
         "strophe":                  "node_modules/strophe.js/strophe",
         "strophe.disco":            "node_modules/strophejs-plugin-disco/strophe.disco",
         "strophe.ping":             "node_modules/strophejs-plugin-ping/strophe.ping",
@@ -105,7 +104,6 @@ require.config({
         // '*' means all modules will get the '*.noconflict' version
         // as their dependency.
         '*': {
-            'jquery': 'jquery.noconflict',
             'backbone': 'backbone.noconflict',
             'lodash': 'lodash.noconflict'
          },
@@ -113,7 +111,6 @@ require.config({
         // If this line was not here, there would
         // be an unresolvable cyclic dependency.
         'backbone.noconflict': { 'backbone': 'backbone' },
-        'jquery.noconflict': { 'jquery': 'jquery' },
         'lodash.noconflict': { 'lodash': 'lodash' }
     },
 

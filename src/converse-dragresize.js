@@ -7,14 +7,13 @@
 /*global define, window */
 
 (function (root, factory) {
-    define(["jquery.noconflict",
-            "converse-core",
+    define(["converse-core",
             "tpl!dragresize",
             "converse-chatview",
             "converse-muc", // XXX: would like to remove this
             "converse-controlbox"
     ], factory);
-}(this, function ($, converse, tpl_dragresize) {
+}(this, function (converse, tpl_dragresize) {
     "use strict";
     const { _ } = converse.env;
 
@@ -30,19 +29,17 @@
 
 
     converse.plugins.add('converse-dragresize', {
-        /* Optional dependencies are other plugins which might be
+        /* Plugin dependencies are other plugins which might be
          * overridden or relied upon, and therefore need to be loaded before
-         * this plugin. They are called "optional" because they might not be
-         * available, in which case any overrides applicable to them will be
-         * ignored.
+         * this plugin.
          *
-         * It's possible however to make optional dependencies non-optional.
          * If the setting "strict_plugin_dependencies" is set to true,
-         * an error will be raised if the plugin is not found.
+         * an error will be raised if the plugin is not found. By default it's
+         * false, which means these plugins are only loaded opportunistically.
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        optional_dependencies: ["converse-headline"],
+        dependencies: ["converse-chatview", "converse-headline"],
 
         enabled (_converse) {
             return _converse.view_mode == 'overlayed';
@@ -58,13 +55,13 @@
             registerGlobalEventHandlers () {
                 const that = this;
 
-                $(document).on('mousemove', function (ev) {
+                document.addEventListener('mousemove', function (ev) {
                     if (!that.resizing || !that.allow_dragresize) { return true; }
                     ev.preventDefault();
                     that.resizing.chatbox.resizeChatBox(ev);
                 });
 
-                $(document).on('mouseup', function (ev) {
+                document.addEventListener('mouseup', function (ev) {
                     if (!that.resizing || !that.allow_dragresize) { return true; }
                     ev.preventDefault();
                     const height = that.applyDragResistance(
@@ -110,7 +107,7 @@
                 },
 
                 initialize () {
-                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+                    window.addEventListener('resize', _.debounce(this.setDimensions.bind(this), 100));
                     this.__super__.initialize.apply(this, arguments);
                 },
 
@@ -125,7 +122,7 @@
                     // If a custom width is applied (due to drag-resizing),
                     // then we need to set the width of the .chatbox element as well.
                     if (this.model.get('width')) {
-                        this.$el.css('width', this.model.get('width'));
+                        this.el.style.width = this.model.get('width');
                     }
                 },
 
@@ -138,18 +135,20 @@
                     /* Determine and store the default box size.
                      * We need this information for the drag-resizing feature.
                      */
-                    const { _converse } = this.__super__;
-                    const $flyout = this.$el.find('.box-flyout');
+                    const { _converse } = this.__super__,
+                          flyout = this.el.querySelector('.box-flyout'),
+                          style = window.getComputedStyle(flyout);
+
                     if (_.isUndefined(this.model.get('height'))) {
-                        const height = $flyout.height();
-                        const width = $flyout.width();
+                        const height = parseInt(style.height.replace(/px$/, ''), 10),
+                              width = parseInt(style.width.replace(/px$/, ''), 10);
                         this.model.set('height', height);
                         this.model.set('default_height', height);
                         this.model.set('width', width);
                         this.model.set('default_width', width);
                     }
-                    const min_width = $flyout.css('min-width');
-                    const min_height = $flyout.css('min-height');
+                    const min_width = style['min-width'];
+                    const min_height = style['min-height'];
                     this.model.set('min_width', min_width.endsWith('px') ? Number(min_width.replace(/px$/, '')) :0);
                     this.model.set('min_height', min_height.endsWith('px') ? Number(min_height.replace(/px$/, '')) :0);
                     // Initialize last known mouse position
@@ -176,7 +175,7 @@
                     } else {
                         height = "";
                     }
-                    this.$el.children('.box-flyout')[0].style.height = height;
+                    this.el.querySelector('.box-flyout').style.height = height;
                 },
 
                 setChatBoxWidth (width) {
@@ -187,7 +186,7 @@
                         width = "";
                     }
                     this.el.style.width = width;
-                    this.$el.children('.box-flyout')[0].style.width = width;
+                    this.el.querySelector('.box-flyout').style.width = width;
                 },
 
 
@@ -211,7 +210,9 @@
                     const { _converse } = this.__super__;
                     if (!_converse.allow_dragresize) { return true; }
                     // Record element attributes for mouseMove().
-                    this.height = this.$el.children('.box-flyout').height();
+                    const flyout = this.el.querySelector('.box-flyout'),
+                          style = window.getComputedStyle(flyout);
+                    this.height = parseInt(style.height.replace(/px$/, ''), 10);
                     _converse.resizing = {
                         'chatbox': this,
                         'direction': 'top'
@@ -222,7 +223,9 @@
                 onStartHorizontalResize (ev) {
                     const { _converse } = this.__super__;
                     if (!_converse.allow_dragresize) { return true; }
-                    this.width = this.$el.children('.box-flyout').width();
+                    const flyout = this.el.querySelector('.box-flyout'),
+                          style = window.getComputedStyle(flyout);
+                    this.width = parseInt(style.width.replace(/px$/, ''), 10);
                     _converse.resizing = {
                         'chatbox': this,
                         'direction': 'left'
@@ -267,7 +270,7 @@
                 },
 
                 initialize () {
-                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+                    window.addEventListener('resize', _.debounce(this.setDimensions.bind(this), 100));
                     return this.__super__.initialize.apply(this, arguments);
                 },
 
@@ -287,7 +290,7 @@
                 },
 
                 initialize () {
-                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+                    window.addEventListener('resize', _.debounce(this.setDimensions.bind(this), 100));
                     this.__super__.initialize.apply(this, arguments);
                 },
 
@@ -319,7 +322,7 @@
                 },
 
                 initialize () {
-                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+                    window.addEventListener('resize', _.debounce(this.setDimensions.bind(this), 100));
                     this.__super__.initialize.apply(this, arguments);
                 },
 

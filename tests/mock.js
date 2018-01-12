@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define("mock", ['jquery.noconflict', 'converse'], factory);
-}(this, function ($, converse) {
+    define("mock", ['converse'], factory);
+}(this, function (converse) {
     var _ = converse.env._;
     var Promise = converse.env.Promise;
     var Strophe = converse.env.Strophe;
@@ -115,7 +115,6 @@
         }, settings || {}));
         _converse.ChatBoxViews.prototype.trimChat = function () {};
         window.converse_disable_effects = true;
-        $.fx.off = true;
         return _converse;
     }
 

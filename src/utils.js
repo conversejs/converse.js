@@ -11,14 +11,12 @@
     define([
         "sizzle",
         "es6-promise",
-        "jquery.browser",
         "lodash.noconflict",
         "strophe",
     ], factory);
 }(this, function (
         sizzle,
         Promise,
-        jQBrowser,
         _,
         Strophe
     ) {
@@ -87,9 +85,15 @@
 
     var u = {};
 
-    u.removeClass = function (klass, el) {
-        if (!_.isNil(el)) {
-            el.classList.remove(klass);
+    u.addClass = function (className, el) {
+        if (el instanceof Element) {
+            el.classList.add(className);
+        }
+    }
+
+    u.removeClass = function (className, el) {
+        if (el instanceof Element) {
+            el.classList.remove(className);
         }
         return el;
     }
@@ -155,7 +159,7 @@
         return obj;
     };
 
-    u.slideInAllElements = function (elements, duration=600) {
+    u.slideInAllElements = function (elements, duration=300) {
         return Promise.all(
             _.map(
                 elements,
@@ -163,15 +167,16 @@
             ));
     };
 
-    u.slideToggleElement = function (el) {
-        if (_.includes(el.classList, 'collapsed')) {
-            return u.slideOut(el);
+    u.slideToggleElement = function (el, duration) {
+        if (_.includes(el.classList, 'collapsed') ||
+                _.includes(el.classList, 'hidden')) {
+            return u.slideOut(el, duration);
         } else {
-            return u.slideIn(el);
+            return u.slideIn(el, duration);
         }
     };
 
-    u.hasClass = function (el, className) {
+    u.hasClass = function (className, el) {
         return _.includes(el.classList, className);
     };
 
@@ -201,7 +206,7 @@
                 resolve();
                 return;
             }
-            if (!u.hasClass(el, 'collapsed') && !u.hasClass(el, 'hidden')) {
+            if (!u.hasClass('collapsed', el) && !u.hasClass('hidden', el)) {
                 resolve();
                 return;
             }
@@ -331,9 +336,10 @@
          * message, i.e. not a MAM archived one.
          */
         if (message instanceof Element) {
-            return !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length);
+            return !sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length &&
+                   !sizzle('delay[xmlns="'+Strophe.NS.DELAY+'"]', message).length;
         } else {
-            return !message.get('archive_id');
+            return !message.get('archive_id') && !message.get('delayed');
         }
     };
 
@@ -388,29 +394,40 @@
         }
     };
 
-    u.refreshWebkit = function () {
-        /* This works around a webkit bug. Refreshes the browser's viewport,
-         * otherwise chatboxes are not moved along when one is closed.
-         */
-        if (jQBrowser.webkit && window.requestAnimationFrame) {
-            window.requestAnimationFrame(function () {
-                var conversejs = document.getElementById('conversejs');
-                conversejs.style.display = 'none';
-                var tmp = conversejs.offsetHeight; // jshint ignore:line
-                conversejs.style.display = 'block';
-            });
-        }
-    };
-
-    u.stringToDOM = function (s) {
-        /* Converts an HTML string into a DOM element.
+    u.stringToNode = function (s) {
+        /* Converts an HTML string into a DOM Node.
+         * Expects that the HTML string has only one top-level element,
+         * i.e. not multiple ones.
          *
          * Parameters:
          *      (String) s - The HTML string
          */
         var div = document.createElement('div');
         div.innerHTML = s;
-        return div.childNodes;
+        return div.firstChild;
+    };
+
+    u.getOuterWidth = function (el, include_margin=false) {
+        var width = el.offsetWidth;
+        if (!include_margin) {
+            return width;
+        }
+        var style = window.getComputedStyle(el);
+        width += parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+        return width;
+    };
+
+    u.stringToElement = function (s) {
+        /* Converts an HTML string into a DOM element.
+         * Expects that the HTML string has only one top-level element,
+         * i.e. not multiple ones.
+         *
+         * Parameters:
+         *      (String) s - The HTML string
+         */
+        var div = document.createElement('div');
+        div.innerHTML = s;
+        return div.firstElementChild;
     };
 
     u.matchesSelector = function (el, selector) {
@@ -586,6 +603,12 @@
     u.isVisible = function (el) {
         // XXX: Taken from jQuery's "visible" implementation
         return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
+    };
+
+    u.triggerEvent = function (el, name, type="Event", bubbles=true, cancelable=true) {
+        const evt = document.createEvent(type);
+        evt.initEvent(name, bubbles, cancelable);
+        el.dispatchEvent(evt);
     };
 
     return u;

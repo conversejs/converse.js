@@ -1,8 +1,8 @@
-<dd class="available-chatroom" data-room-jid="{{{o.jid}}}">
-<a class="open-room" data-room-jid="{{{o.jid}}}" title="{{{o.open_title}}}" href="#">{{{o.name}}}</a>
-<a class="right remove-bookmark icon-pushpin {[ if (o.bookmarked) { ]} button-on {[ } ]}"
-   data-room-jid="{{{o.jid}}}" data-bookmark-name="{{{o.name}}}"
-   title="{{{o.jinfo_remove_bookmark}}}" href="#">&nbsp;</a>
-<a class="right room-info icon-room-info" data-room-jid="{{{o.jid}}}"
-   title="{{{o.info_title}}}" href="#">&nbsp;</a>
+<dd class="available-chatroom {[ if (o.hidden) { ]} hidden {[ } ]}" data-room-jid="{{{o.jid}}}">
+    <a class="open-room" data-room-jid="{{{o.jid}}}" title="{{{o.open_title}}}" href="#">{{{o.name}}}</a>
+    <a class="right remove-bookmark icon-pushpin {[ if (o.bookmarked) { ]} button-on {[ } ]}"
+       data-room-jid="{{{o.jid}}}" data-bookmark-name="{{{o.name}}}"
+       title="{{{o.info_remove_bookmark}}}" href="#">&nbsp;</a>
+    <a class="right room-info icon-room-info" data-room-jid="{{{o.jid}}}"
+       title="{{{o.info_title}}}" href="#">&nbsp;</a>
 </dd>

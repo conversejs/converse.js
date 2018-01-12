@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define(["jquery.noconflict", "jasmine", "mock", "converse-core", "test-utils"], factory);
+    define(["jquery", "jasmine", "mock", "converse-core", "test-utils"], factory);
 } (this, function ($, jasmine, mock, converse, test_utils) {
     var Strophe = converse.env.Strophe;
     var $iq = converse.env.$iq;
@@ -21,7 +21,7 @@
 
             test_utils.openControlBox();
             var cbview = _converse.chatboxviews.get('controlbox');
-            expect(cbview.$('a.register-account').length).toBe(0);
+            expect($(cbview.el.querySelector('a.register-account')).length).toBe(0);
             done();
             });
         }));
@@ -39,7 +39,7 @@
             .then(function () {
             var cbview = _converse.chatboxviews.get('controlbox');
             test_utils.openControlBox();
-            var $panels = cbview.$('.controlbox-panes');
+            var $panels = $(cbview.el.querySelector('.controlbox-panes'));
             var $login = $panels.children().first();
             var $registration = $panels.children().last();
 
@@ -78,17 +78,17 @@
             cbview.el.querySelector('.toggle-register-login').click();
 
             // Check the form layout
-            var $form = cbview.$('#converse-register');
+            var $form = $(cbview.el.querySelector('#converse-register'));
             expect($form.find('input').length).toEqual(2);
             expect($form.find('input').first().attr('name')).toEqual('domain');
             expect($form.find('input').last().attr('type')).toEqual('submit');
             // Check that the input[type=domain] input is required
-            $form.find('input[type=submit]').click();
+            $form.find('input[type=submit]')[0].click();
             expect(registerview.onProviderChosen).not.toHaveBeenCalled();
 
             // Check that the form is accepted if input[type=domain] has a value
             $form.find('input[name=domain]').val('conversejs.org');
-            $form.find('input[type=submit]').click();
+            $form.find('input[type=submit]')[0].click();
             expect(registerview.onProviderChosen).toHaveBeenCalled();
             expect(_converse.connection.connect).toHaveBeenCalled();
             done();
@@ -104,53 +104,53 @@
 
             test_utils.waitUntil(function () {
                     return _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel');
-                }, 300)
-            .then(function () {
+            }, 300).then(function () {
+                test_utils.openControlBox();
+                var cbview = _converse.chatboxviews.get('controlbox');
+                cbview.el.querySelector('.toggle-register-login').click();
 
-            var cbview = _converse.chatboxviews.get('controlbox');
-            cbview.$('#controlbox-tabs').find('li').last().find('a').click(); // Click the Register tab
-            var registerview = _converse.chatboxviews.get('controlbox').registerpanel;
-            spyOn(registerview, 'onProviderChosen').and.callThrough();
-            spyOn(registerview, 'getRegistrationFields').and.callThrough();
-            spyOn(registerview, 'onRegistrationFields').and.callThrough();
-            spyOn(registerview, 'renderRegistrationForm').and.callThrough();
-            registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
-            spyOn(_converse.connection, 'connect').and.callThrough();
+                var registerview = _converse.chatboxviews.get('controlbox').registerpanel;
+                spyOn(registerview, 'onProviderChosen').and.callThrough();
+                spyOn(registerview, 'getRegistrationFields').and.callThrough();
+                spyOn(registerview, 'onRegistrationFields').and.callThrough();
+                spyOn(registerview, 'renderRegistrationForm').and.callThrough();
+                registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
+                spyOn(_converse.connection, 'connect').and.callThrough();
 
-            expect(registerview._registering).toBeFalsy();
-            expect(_converse.connection.connected).toBeFalsy();
-            registerview.$('input[name=domain]').val('conversejs.org');
-            registerview.$('input[type=submit]').click();
-            expect(registerview.onProviderChosen).toHaveBeenCalled();
-            expect(registerview._registering).toBeTruthy();
-            expect(_converse.connection.connect).toHaveBeenCalled();
+                expect(registerview._registering).toBeFalsy();
+                expect(_converse.connection.connected).toBeFalsy();
+                registerview.el.querySelector('input[name=domain]').value  = 'conversejs.org';
+                registerview.el.querySelector('input[type=submit]').click();
+                expect(registerview.onProviderChosen).toHaveBeenCalled();
+                expect(registerview._registering).toBeTruthy();
+                expect(_converse.connection.connect).toHaveBeenCalled();
 
-            var stanza = new Strophe.Builder("stream:features", {
-                        'xmlns:stream': "http://etherx.jabber.org/streams",
-                        'xmlns': "jabber:client"
-                    })
-                .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
-                .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-            _converse.connection._connect_cb(test_utils.createRequest(stanza));
+                var stanza = new Strophe.Builder("stream:features", {
+                            'xmlns:stream': "http://etherx.jabber.org/streams",
+                            'xmlns': "jabber:client"
+                        })
+                    .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
+                    .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
+                _converse.connection._connect_cb(test_utils.createRequest(stanza));
 
-            expect(registerview.getRegistrationFields).toHaveBeenCalled();
+                expect(registerview.getRegistrationFields).toHaveBeenCalled();
 
-            stanza = $iq({
-                    'type': 'result',
-                    'id': 'reg1'
-                }).c('query', {'xmlns': 'jabber:iq:register'})
-                    .c('instructions')
-                        .t('Please choose a username, password and provide your email address').up()
-                    .c('username').up()
-                    .c('password').up()
-                    .c('email');
-            _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            expect(registerview.onRegistrationFields).toHaveBeenCalled();
-            expect(registerview.renderRegistrationForm).toHaveBeenCalled();
-            expect(registerview.$('input').length).toBe(5);
-            expect(registerview.$('input[type=submit]').length).toBe(1);
-            expect(registerview.$('input[type=button]').length).toBe(1);
-            done();
+                stanza = $iq({
+                        'type': 'result',
+                        'id': 'reg1'
+                    }).c('query', {'xmlns': 'jabber:iq:register'})
+                        .c('instructions')
+                            .t('Please choose a username, password and provide your email address').up()
+                        .c('username').up()
+                        .c('password').up()
+                        .c('email');
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                expect(registerview.onRegistrationFields).toHaveBeenCalled();
+                expect(registerview.renderRegistrationForm).toHaveBeenCalled();
+                expect(registerview.el.querySelectorAll('input').length).toBe(5);
+                expect(registerview.el.querySelectorAll('input[type=submit]').length).toBe(1);
+                expect(registerview.el.querySelectorAll('input[type=button]').length).toBe(1);
+                done();
             });
         }));
 
@@ -165,52 +165,53 @@
                     return _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel');
                 }, 300)
             .then(function () {
+                test_utils.openControlBox();
+                var cbview = _converse.chatboxviews.get('controlbox');
+                cbview.el.querySelector('.toggle-register-login').click();
 
-            var cbview = _converse.chatboxviews.get('controlbox');
-            cbview.$('#controlbox-tabs').find('li').last().find('a').click(); // Click the Register tab
-            var registerview = cbview.registerpanel;
-            spyOn(registerview, 'onProviderChosen').and.callThrough();
-            spyOn(registerview, 'getRegistrationFields').and.callThrough();
-            spyOn(registerview, 'onRegistrationFields').and.callThrough();
-            spyOn(registerview, 'renderRegistrationForm').and.callThrough();
-            registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
-            spyOn(_converse.connection, 'connect').and.callThrough();
+                var registerview = cbview.registerpanel;
+                spyOn(registerview, 'onProviderChosen').and.callThrough();
+                spyOn(registerview, 'getRegistrationFields').and.callThrough();
+                spyOn(registerview, 'onRegistrationFields').and.callThrough();
+                spyOn(registerview, 'renderRegistrationForm').and.callThrough();
+                registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
+                spyOn(_converse.connection, 'connect').and.callThrough();
 
-            registerview.$('input[name=domain]').val('conversejs.org');
-            registerview.$('input[type=submit]').click();
+                registerview.el.querySelector('input[name=domain]').value = 'conversejs.org';
+                registerview.el.querySelector('input[type=submit]').click();
 
-            var stanza = new Strophe.Builder("stream:features", {
-                        'xmlns:stream': "http://etherx.jabber.org/streams",
-                        'xmlns': "jabber:client"
-                    })
-                .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
-                .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-            _converse.connection._connect_cb(test_utils.createRequest(stanza));
-            stanza = $iq({
-                    'type': 'result',
-                    'id': 'reg1'
-                }).c('query', {'xmlns': 'jabber:iq:register'})
-                    .c('instructions')
-                        .t('Please choose a username, password and provide your email address').up()
-                    .c('username').up()
-                    .c('password').up()
-                    .c('email');
-            _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            expect(registerview.form_type).toBe('legacy');
+                var stanza = new Strophe.Builder("stream:features", {
+                            'xmlns:stream': "http://etherx.jabber.org/streams",
+                            'xmlns': "jabber:client"
+                        })
+                    .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
+                    .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
+                _converse.connection._connect_cb(test_utils.createRequest(stanza));
+                stanza = $iq({
+                        'type': 'result',
+                        'id': 'reg1'
+                    }).c('query', {'xmlns': 'jabber:iq:register'})
+                        .c('instructions')
+                            .t('Please choose a username, password and provide your email address').up()
+                        .c('username').up()
+                        .c('password').up()
+                        .c('email');
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                expect(registerview.form_type).toBe('legacy');
 
-            registerview.$('input[name=username]').val('testusername');
-            registerview.$('input[name=password]').val('testpassword');
-            registerview.$('input[name=email]').val('test@email.local');
+                $(registerview.el.querySelector('input[name=username]')).val('testusername');
+                $(registerview.el.querySelector('input[name=password]')).val('testpassword');
+                $(registerview.el.querySelector('input[name=email]')).val('test@email.local');
 
-            spyOn(_converse.connection, 'send');
+                spyOn(_converse.connection, 'send');
 
-            registerview.$('input[type=submit]').click();
+                registerview.el.querySelector('input[type=submit]').click();
 
-            expect(_converse.connection.send).toHaveBeenCalled();
-            var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
-            expect($stanza.children('query').children().length).toBe(3);
-            expect($stanza.children('query').children()[0].tagName).toBe('username');
-            done();
+                expect(_converse.connection.send).toHaveBeenCalled();
+                var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
+                expect($stanza.children('query').children().length).toBe(3);
+                expect($stanza.children('query').children()[0].tagName).toBe('username');
+                done();
             });
         }));
 
@@ -223,57 +224,56 @@
 
             test_utils.waitUntil(function () {
                     return _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel');
-                }, 300)
-            .then(function () {
+            }, 300).then(function () {
+                test_utils.openControlBox();
+                var cbview = _converse.chatboxviews.get('controlbox');
+                cbview.el.querySelector('.toggle-register-login').click();
+                var registerview = _converse.chatboxviews.get('controlbox').registerpanel;
+                spyOn(registerview, 'onProviderChosen').and.callThrough();
+                spyOn(registerview, 'getRegistrationFields').and.callThrough();
+                spyOn(registerview, 'onRegistrationFields').and.callThrough();
+                spyOn(registerview, 'renderRegistrationForm').and.callThrough();
+                registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
+                spyOn(_converse.connection, 'connect').and.callThrough();
 
-            var cbview = _converse.chatboxviews.get('controlbox');
-            cbview.$('#controlbox-tabs').find('li').last().find('a').click(); // Click the Register tab
-            var registerview = _converse.chatboxviews.get('controlbox').registerpanel;
-            spyOn(registerview, 'onProviderChosen').and.callThrough();
-            spyOn(registerview, 'getRegistrationFields').and.callThrough();
-            spyOn(registerview, 'onRegistrationFields').and.callThrough();
-            spyOn(registerview, 'renderRegistrationForm').and.callThrough();
-            registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
-            spyOn(_converse.connection, 'connect').and.callThrough();
+                registerview.el.querySelector('input[name=domain]').value = 'conversejs.org';
+                registerview.el.querySelector('input[type=submit]').click();
 
-            registerview.$('input[name=domain]').val('conversejs.org');
-            registerview.$('input[type=submit]').click();
+                var stanza = new Strophe.Builder("stream:features", {
+                            'xmlns:stream': "http://etherx.jabber.org/streams",
+                            'xmlns': "jabber:client"
+                        })
+                    .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
+                    .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
+                _converse.connection._connect_cb(test_utils.createRequest(stanza));
+                stanza = $iq({
+                        'type': 'result',
+                        'id': 'reg1'
+                    }).c('query', {'xmlns': 'jabber:iq:register'})
+                        .c('instructions')
+                            .t('Using xform data').up()
+                        .c('x', { 'xmlns': 'jabber:x:data', 'type': 'form' })
+                            .c('instructions').t('xform instructions').up()
+                            .c('field', {'type': 'text-single', 'var': 'username'}).c('required').up().up()
+                            .c('field', {'type': 'text-private', 'var': 'password'}).c('required').up().up()
+                            .c('field', {'type': 'text-single', 'var': 'email'}).c('required').up().up();
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                expect(registerview.form_type).toBe('xform');
 
-            var stanza = new Strophe.Builder("stream:features", {
-                        'xmlns:stream': "http://etherx.jabber.org/streams",
-                        'xmlns': "jabber:client"
-                    })
-                .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
-                .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
-            _converse.connection._connect_cb(test_utils.createRequest(stanza));
-            stanza = $iq({
-                    'type': 'result',
-                    'id': 'reg1'
-                }).c('query', {'xmlns': 'jabber:iq:register'})
-                    .c('instructions')
-                        .t('Using xform data').up()
-                    .c('x', { 'xmlns': 'jabber:x:data', 'type': 'form' })
-                        .c('instructions').t('xform instructions').up()
-                        .c('field', {'type': 'text-single', 'var': 'username'}).c('required').up().up()
-                        .c('field', {'type': 'text-private', 'var': 'password'}).c('required').up().up()
-                        .c('field', {'type': 'text-single', 'var': 'email'}).c('required').up().up();
-            _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            expect(registerview.form_type).toBe('xform');
+                $(registerview.el.querySelector('input[name=username]')).val('testusername');
+                $(registerview.el.querySelector('input[name=password]')).val('testpassword');
+                $(registerview.el.querySelector('input[name=email]')).val('test@email.local');
 
-            registerview.$('input[name=username]').val('testusername');
-            registerview.$('input[name=password]').val('testpassword');
-            registerview.$('input[name=email]').val('test@email.local');
+                spyOn(_converse.connection, 'send');
 
-            spyOn(_converse.connection, 'send');
+                registerview.el.querySelector('input[type=submit]').click();
 
-            registerview.$('input[type=submit]').click();
-
-            expect(_converse.connection.send).toHaveBeenCalled();
-            var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
-            expect($stanza.children('query').children().length).toBe(1);
-            expect($stanza.children('query').children().children().length).toBe(3);
-            expect($stanza.children('query').children().children()[0].tagName).toBe('field');
-            done();
+                expect(_converse.connection.send).toHaveBeenCalled();
+                var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
+                expect($stanza.children('query').children().length).toBe(1);
+                expect($stanza.children('query').children().children().length).toBe(3);
+                expect($stanza.children('query').children().children()[0].tagName).toBe('field');
+                done();
             });
         }));
     });

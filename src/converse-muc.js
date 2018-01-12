@@ -11,7 +11,6 @@
  */
 (function (root, factory) {
     define([
-            "jquery.noconflict",
             "form-utils",
             "converse-core",
             "lodash.fp",
@@ -33,6 +32,7 @@
             "tpl!room_description",
             "tpl!room_item",
             "tpl!room_panel",
+            "tpl!rooms_results",
             "tpl!spinner",
             "awesomplete",
             "converse-chatview",
@@ -42,7 +42,6 @@
             "backbone.vdomview"
     ], factory);
 }(this, function (
-            $,
             u,
             converse,
             fp,
@@ -64,6 +63,7 @@
             tpl_room_description,
             tpl_room_item,
             tpl_room_panel,
+            tpl_rooms_results,
             tpl_spinner,
             Awesomplete
     ) {
@@ -131,7 +131,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        optional_dependencies: ["converse-controlbox"],
+        dependencies: ["converse-controlbox", "converse-chatview"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -417,7 +417,7 @@
             });
 
             _converse.ChatRoomView = _converse.ChatBoxView.extend({
-                /* Backbone View which renders a chat room, based upon the view
+                /* Backbone.NativeView which renders a chat room, based upon the view
                  * for normal one-on-one chat boxes.
                  */
                 length: 300,
@@ -439,6 +439,7 @@
                 },
 
                 initialize () {
+                    this.scrollDown = _.debounce(this._scrollDown, 250);
                     this.markScrolled = _.debounce(this._markScrolled, 100);
 
                     this.model.messages.on('add', this.onMessageAdded, this);
@@ -476,7 +477,6 @@
                     if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                         this.showSpinner();
                     }
-                    u.refreshWebkit();
                     return this;
                 },
 
@@ -501,14 +501,13 @@
                         container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
                         this.renderToolbar(tpl_chatroom_toolbar);
                         this.content = this.el.querySelector('.chat-content');
-                        this.$content = $(this.content);
                         this.toggleOccupants(null, true);
                     }
                     return this;
                 },
 
                 createOccupantsView () {
-                    /* Create the ChatRoomOccupantsView Backbone.View
+                    /* Create the ChatRoomOccupantsView Backbone.NativeView
                      */
                     const model = new _converse.ChatRoomOccupants();
                     model.chatroomview = this;
@@ -1839,9 +1838,10 @@
                     const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
                     const stat = stanza.querySelector('status');
                     const last_el = this.content.lastElementChild;
+
                     if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
                             _.get(last_el, 'dataset', {}).leave === `"${nick}"`) {
-                        last_el.outerHTML = 
+                        last_el.outerHTML =
                             tpl_info({
                                 'data': `data-leavejoin="${nick}"`,
                                 'isodate': moment().format(),
@@ -1862,7 +1862,9 @@
 
                             last_el.outerHTML = tpl_info(data);
                         } else {
-                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                            const el = u.stringToElement(tpl_info(data));
+                            this.content.insertAdjacentElement('beforeend', el);
+                            this.insertDayIndicator(el);
                         }
                     }
                     this.scrollDown();
@@ -1879,7 +1881,7 @@
                         if (_.get(stat, 'textContent')) {
                             message = message + ' "' + stat.textContent + '"';
                         }
-                        last_el.outerHTML = 
+                        last_el.outerHTML =
                             tpl_info({
                                 'data': `data-joinleave="${nick}"`,
                                 'isodate': moment().format(),
@@ -1892,6 +1894,7 @@
                         }
                         const data = {
                             'message': message,
+                            'isodate': moment().format(),
                             'data': `data-leave="${nick}"`
                         }
                         if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
@@ -1899,7 +1902,9 @@
 
                             last_el.outerHTML = tpl_info(data);
                         } else {
-                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                            const el = u.stringToElement(tpl_info(data));
+                            this.content.insertAdjacentElement('beforeend', el);
+                            this.insertDayIndicator(el);
                         }
                     }
                     this.scrollDown();
@@ -2122,7 +2127,7 @@
                     return false;
                 },
 
-                isDuplicate (message) {
+                isDuplicate (message, original_stanza) {
                     const msgid = message.getAttribute('id'),
                           jid = message.getAttribute('from'),
                           resource = Strophe.getResourceFromJid(jid),
@@ -2157,7 +2162,7 @@
                         sender = resource && Strophe.unescapeNode(resource) || '',
                         subject = _.propertyOf(message.querySelector('subject'))('textContent');
 
-                    if (this.isDuplicate(message)) {
+                    if (this.isDuplicate(message, original_stanza)) {
                         return true;
                     }
                     if (subject) {
@@ -2191,7 +2196,6 @@
                 tagName: 'li',
                 initialize () {
                     this.model.on('change', this.render, this);
-                    this.model.on('destroy', this.destroy, this);
                 },
 
                 toHTML () {
@@ -2545,8 +2549,8 @@
                 },
             });
 
-            _converse.RoomsPanel = Backbone.View.extend({
-                /* Backbone View which renders the "Rooms" tab and accompanying
+            _converse.RoomsPanel = Backbone.NativeView.extend({
+                /* Backbone.NativeView which renders the "Rooms" tab and accompanying
                  * panel in the control box.
                  *
                  * In this panel, chat rooms can be listed, joined and new rooms
@@ -2630,8 +2634,9 @@
 
                 informNoRoomsFound () {
                     const chatrooms_el = this.el.querySelector('#available-chatrooms');
-                    // For translators: %1$s is a variable and will be replaced with the XMPP server name
-                    chatrooms_el.innerHTML = `<dt>${__('No rooms on %1$s', this.model.get('muc_domain'))}</dt>`;
+                    chatrooms_el.innerHTML = tpl_rooms_results({
+                        'feedback_text': __('No rooms found')
+                    });
                     const input_el = this.el.querySelector('input#show-rooms');
                     input_el.classList.remove('hidden')
                     this.removeSpinner();
@@ -2646,8 +2651,9 @@
                     if (this.rooms.length) {
                         // For translators: %1$s is a variable and will be
                         // replaced with the XMPP server name
-                        available_chatrooms.innerHTML =
-                            `<dt>${__('Rooms on %1$s',this.model.get('muc_domain'))}</dt>`;
+                        available_chatrooms.innerHTML = tpl_rooms_results({
+                            'feedback_text': __('Rooms found')
+                        });
                         const div = document.createElement('div');
                         const fragment = document.createDocumentFragment();
                         for (let i=0; i<this.rooms.length; i++) {
@@ -2674,7 +2680,7 @@
                 },
 
                 updateRoomsList () {
-                    /* Send and IQ stanza to the server asking for all rooms
+                    /* Send an IQ stanza to the server asking for all rooms
                      */
                     _converse.connection.sendIQ(
                         $iq({

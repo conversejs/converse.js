@@ -1,8 +1,8 @@
 @mixin fade-in {
-    opacity:0;  /* make things invisible upon start */
+    opacity: 0;  /* make things invisible upon start */
     @include animation-name(fadein);
     @include animation-fill-mode(forwards);
-    @include animation-duration(750);
+    @include animation-duration(0.75s);
     @include animation-timing-function(ease);
 }
 

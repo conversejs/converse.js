@@ -458,14 +458,14 @@ var requirejs, require, define;
 define("almond", function(){});
 
 /*!
- * Sizzle CSS Selector Engine v2.2.1
- * http://sizzlejs.com/
+ * Sizzle CSS Selector Engine v2.3.3
+ * https://sizzlejs.com/
  *
  * Copyright jQuery Foundation and other contributors
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2015-10-17
+ * Date: 2016-08-08
  */
 (function( window ) {
 
@@ -506,9 +506,6 @@ var i,
 		return 0;
 	},
 
-	// General-purpose constants
-	MAX_NEGATIVE = 1 << 31,
-
 	// Instance methods
 	hasOwn = ({}).hasOwnProperty,
 	arr = [],
@@ -517,7 +514,7 @@ var i,
 	push = arr.push,
 	slice = arr.slice,
 	// Use a stripped-down indexOf as it's faster than native
-	// http://jsperf.com/thor-indexof-vs-for/5
+	// https://jsperf.com/thor-indexof-vs-for/5
 	indexOf = function( list, elem ) {
 		var i = 0,
 			len = list.length;
@@ -537,7 +534,7 @@ var i,
 	whitespace = "[\\x20\\t\\r\\n\\f]",
 
 	// http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
-	identifier = "(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+",
+	identifier = "(?:\\\\.|[\\w-]|[^\0-\\xa0])+",
 
 	// Attribute selectors: http://www.w3.org/TR/selectors/#attribute-selectors
 	attributes = "\\[" + whitespace + "*(" + identifier + ")(?:" + whitespace +
@@ -594,9 +591,9 @@ var i,
 	rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
 
 	rsibling = /[+~]/,
-	rescape = /'|\\/g,
 
-	// CSS escapes http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
+	// CSS escapes
+	// http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
 	runescape = new RegExp( "\\\\([\\da-f]{1,6}" + whitespace + "?|(" + whitespace + ")|.)", "ig" ),
 	funescape = function( _, escaped, escapedWhitespace ) {
 		var high = "0x" + escaped - 0x10000;
@@ -612,13 +609,39 @@ var i,
 				String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
 	},
 
+	// CSS string/identifier serialization
+	// https://drafts.csswg.org/cssom/#common-serializing-idioms
+	rcssescape = /([\0-\x1f\x7f]|^-?\d)|^-$|[^\0-\x1f\x7f-\uFFFF\w-]/g,
+	fcssescape = function( ch, asCodePoint ) {
+		if ( asCodePoint ) {
+
+			// U+0000 NULL becomes U+FFFD REPLACEMENT CHARACTER
+			if ( ch === "\0" ) {
+				return "\uFFFD";
+			}
+
+			// Control characters and (dependent upon position) numbers get escaped as code points
+			return ch.slice( 0, -1 ) + "\\" + ch.charCodeAt( ch.length - 1 ).toString( 16 ) + " ";
+		}
+
+		// Other potentially-special ASCII characters get backslash-escaped
+		return "\\" + ch;
+	},
+
 	// Used for iframes
 	// See setDocument()
 	// Removing the function wrapper causes a "Permission Denied"
 	// error in IE
 	unloadHandler = function() {
 		setDocument();
-	};
+	},
+
+	disabledAncestor = addCombinator(
+		function( elem ) {
+			return elem.disabled === true && ("form" in elem || "label" in elem);
+		},
+		{ dir: "parentNode", next: "legend" }
+	);
 
 // Optimize for push.apply( _, NodeList )
 try {
@@ -650,7 +673,7 @@ try {
 }
 
 function Sizzle( selector, context, results, seed ) {
-	var m, i, elem, nid, nidselect, match, groups, newSelector,
+	var m, i, elem, nid, match, groups, newSelector,
 		newContext = context && context.ownerDocument,
 
 		// nodeType defaults to 9, since context defaults to document
@@ -743,7 +766,7 @@ function Sizzle( selector, context, results, seed ) {
 
 					// Capture the context ID, setting it first if necessary
 					if ( (nid = context.getAttribute( "id" )) ) {
-						nid = nid.replace( rescape, "\\$&" );
+						nid = nid.replace( rcssescape, fcssescape );
 					} else {
 						context.setAttribute( "id", (nid = expando) );
 					}
@@ -751,9 +774,8 @@ function Sizzle( selector, context, results, seed ) {
 					// Prefix every selector in the list
 					groups = tokenize( selector );
 					i = groups.length;
-					nidselect = ridentifier.test( nid ) ? "#" + nid : "[id='" + nid + "']";
 					while ( i-- ) {
-						groups[i] = nidselect + " " + toSelector( groups[i] );
+						groups[i] = "#" + nid + " " + toSelector( groups[i] );
 					}
 					newSelector = groups.join( "," );
 
@@ -814,22 +836,22 @@ function markFunction( fn ) {
 
 /**
  * Support testing using an element
- * @param {Function} fn Passed the created div and expects a boolean result
+ * @param {Function} fn Passed the created element and returns a boolean result
  */
 function assert( fn ) {
-	var div = document.createElement("div");
+	var el = document.createElement("fieldset");
 
 	try {
-		return !!fn( div );
+		return !!fn( el );
 	} catch (e) {
 		return false;
 	} finally {
 		// Remove from its parent by default
-		if ( div.parentNode ) {
-			div.parentNode.removeChild( div );
+		if ( el.parentNode ) {
+			el.parentNode.removeChild( el );
 		}
 		// release memory in IE
-		div = null;
+		el = null;
 	}
 }
 
@@ -856,8 +878,7 @@ function addHandle( attrs, handler ) {
 function siblingCheck( a, b ) {
 	var cur = b && a,
 		diff = cur && a.nodeType === 1 && b.nodeType === 1 &&
-			( ~b.sourceIndex || MAX_NEGATIVE ) -
-			( ~a.sourceIndex || MAX_NEGATIVE );
+			a.sourceIndex - b.sourceIndex;
 
 	// Use IE sourceIndex if available on both nodes
 	if ( diff ) {
@@ -895,6 +916,62 @@ function createButtonPseudo( type ) {
 	return function( elem ) {
 		var name = elem.nodeName.toLowerCase();
 		return (name === "input" || name === "button") && elem.type === type;
+	};
+}
+
+/**
+ * Returns a function to use in pseudos for :enabled/:disabled
+ * @param {Boolean} disabled true for :disabled; false for :enabled
+ */
+function createDisabledPseudo( disabled ) {
+
+	// Known :disabled false positives: fieldset[disabled] > legend:nth-of-type(n+2) :can-disable
+	return function( elem ) {
+
+		// Only certain elements can match :enabled or :disabled
+		// https://html.spec.whatwg.org/multipage/scripting.html#selector-enabled
+		// https://html.spec.whatwg.org/multipage/scripting.html#selector-disabled
+		if ( "form" in elem ) {
+
+			// Check for inherited disabledness on relevant non-disabled elements:
+			// * listed form-associated elements in a disabled fieldset
+			//   https://html.spec.whatwg.org/multipage/forms.html#category-listed
+			//   https://html.spec.whatwg.org/multipage/forms.html#concept-fe-disabled
+			// * option elements in a disabled optgroup
+			//   https://html.spec.whatwg.org/multipage/forms.html#concept-option-disabled
+			// All such elements have a "form" property.
+			if ( elem.parentNode && elem.disabled === false ) {
+
+				// Option elements defer to a parent optgroup if present
+				if ( "label" in elem ) {
+					if ( "label" in elem.parentNode ) {
+						return elem.parentNode.disabled === disabled;
+					} else {
+						return elem.disabled === disabled;
+					}
+				}
+
+				// Support: IE 6 - 11
+				// Use the isDisabled shortcut property to check for disabled fieldset ancestors
+				return elem.isDisabled === disabled ||
+
+					// Where there is no isDisabled, check manually
+					/* jshint -W018 */
+					elem.isDisabled !== !disabled &&
+						disabledAncestor( elem ) === disabled;
+			}
+
+			return elem.disabled === disabled;
+
+		// Try to winnow out elements that can't be disabled before trusting the disabled property.
+		// Some victims get caught in our net (label, legend, menu, track), but it shouldn't
+		// even exist on them, let alone have a boolean value.
+		} else if ( "label" in elem ) {
+			return elem.disabled === disabled;
+		}
+
+		// Remaining elements are neither :enabled nor :disabled
+		return false;
 	};
 }
 
@@ -950,7 +1027,7 @@ isXML = Sizzle.isXML = function( elem ) {
  * @returns {Object} Returns the current document
  */
 setDocument = Sizzle.setDocument = function( node ) {
-	var hasCompare, parent,
+	var hasCompare, subWindow,
 		doc = node ? node.ownerDocument || node : preferredDoc;
 
 	// Return early if doc is invalid or already selected
@@ -965,14 +1042,16 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 	// Support: IE 9-11, Edge
 	// Accessing iframe documents after unload throws "permission denied" errors (jQuery #13936)
-	if ( (parent = document.defaultView) && parent.top !== parent ) {
-		// Support: IE 11
-		if ( parent.addEventListener ) {
-			parent.addEventListener( "unload", unloadHandler, false );
+	if ( preferredDoc !== document &&
+		(subWindow = document.defaultView) && subWindow.top !== subWindow ) {
+
+		// Support: IE 11, Edge
+		if ( subWindow.addEventListener ) {
+			subWindow.addEventListener( "unload", unloadHandler, false );
 
 		// Support: IE 9 - 10 only
-		} else if ( parent.attachEvent ) {
-			parent.attachEvent( "onunload", unloadHandler );
+		} else if ( subWindow.attachEvent ) {
+			subWindow.attachEvent( "onunload", unloadHandler );
 		}
 	}
 
@@ -982,18 +1061,18 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Support: IE<8
 	// Verify that getAttribute really returns attributes and not properties
 	// (excepting IE8 booleans)
-	support.attributes = assert(function( div ) {
-		div.className = "i";
-		return !div.getAttribute("className");
+	support.attributes = assert(function( el ) {
+		el.className = "i";
+		return !el.getAttribute("className");
 	});
 
 	/* getElement(s)By*
 	---------------------------------------------------------------------- */
 
 	// Check if getElementsByTagName("*") returns only elements
-	support.getElementsByTagName = assert(function( div ) {
-		div.appendChild( document.createComment("") );
-		return !div.getElementsByTagName("*").length;
+	support.getElementsByTagName = assert(function( el ) {
+		el.appendChild( document.createComment("") );
+		return !el.getElementsByTagName("*").length;
 	});
 
 	// Support: IE<9
@@ -1001,32 +1080,28 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 	// Support: IE<10
 	// Check if getElementById returns elements by name
-	// The broken getElementById methods don't pick up programatically-set names,
+	// The broken getElementById methods don't pick up programmatically-set names,
 	// so use a roundabout getElementsByName test
-	support.getById = assert(function( div ) {
-		docElem.appendChild( div ).id = expando;
+	support.getById = assert(function( el ) {
+		docElem.appendChild( el ).id = expando;
 		return !document.getElementsByName || !document.getElementsByName( expando ).length;
 	});
 
-	// ID find and filter
+	// ID filter and find
 	if ( support.getById ) {
-		Expr.find["ID"] = function( id, context ) {
-			if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
-				var m = context.getElementById( id );
-				return m ? [ m ] : [];
-			}
-		};
 		Expr.filter["ID"] = function( id ) {
 			var attrId = id.replace( runescape, funescape );
 			return function( elem ) {
 				return elem.getAttribute("id") === attrId;
 			};
 		};
+		Expr.find["ID"] = function( id, context ) {
+			if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
+				var elem = context.getElementById( id );
+				return elem ? [ elem ] : [];
+			}
+		};
 	} else {
-		// Support: IE6/7
-		// getElementById is not reliable as a find shortcut
-		delete Expr.find["ID"];
-
 		Expr.filter["ID"] =  function( id ) {
 			var attrId = id.replace( runescape, funescape );
 			return function( elem ) {
@@ -1034,6 +1109,36 @@ setDocument = Sizzle.setDocument = function( node ) {
 					elem.getAttributeNode("id");
 				return node && node.value === attrId;
 			};
+		};
+
+		// Support: IE 6 - 7 only
+		// getElementById is not reliable as a find shortcut
+		Expr.find["ID"] = function( id, context ) {
+			if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
+				var node, i, elems,
+					elem = context.getElementById( id );
+
+				if ( elem ) {
+
+					// Verify the id attribute
+					node = elem.getAttributeNode("id");
+					if ( node && node.value === id ) {
+						return [ elem ];
+					}
+
+					// Fall back on getElementsByName
+					elems = context.getElementsByName( id );
+					i = 0;
+					while ( (elem = elems[i++]) ) {
+						node = elem.getAttributeNode("id");
+						if ( node && node.value === id ) {
+							return [ elem ];
+						}
+					}
+				}
+
+				return [];
+			}
 		};
 	}
 
@@ -1088,77 +1193,87 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// We allow this because of a bug in IE8/9 that throws an error
 	// whenever `document.activeElement` is accessed on an iframe
 	// So, we allow :focus to pass through QSA all the time to avoid the IE error
-	// See http://bugs.jquery.com/ticket/13378
+	// See https://bugs.jquery.com/ticket/13378
 	rbuggyQSA = [];
 
 	if ( (support.qsa = rnative.test( document.querySelectorAll )) ) {
 		// Build QSA regex
 		// Regex strategy adopted from Diego Perini
-		assert(function( div ) {
+		assert(function( el ) {
 			// Select is set to empty string on purpose
 			// This is to test IE's treatment of not explicitly
 			// setting a boolean content attribute,
 			// since its presence should be enough
-			// http://bugs.jquery.com/ticket/12359
-			docElem.appendChild( div ).innerHTML = "<a id='" + expando + "'></a>" +
+			// https://bugs.jquery.com/ticket/12359
+			docElem.appendChild( el ).innerHTML = "<a id='" + expando + "'></a>" +
 				"<select id='" + expando + "-\r\\' msallowcapture=''>" +
 				"<option selected=''></option></select>";
 
 			// Support: IE8, Opera 11-12.16
 			// Nothing should be selected when empty strings follow ^= or $= or *=
 			// The test attribute must be unknown in Opera but "safe" for WinRT
-			// http://msdn.microsoft.com/en-us/library/ie/hh465388.aspx#attribute_section
-			if ( div.querySelectorAll("[msallowcapture^='']").length ) {
+			// https://msdn.microsoft.com/en-us/library/ie/hh465388.aspx#attribute_section
+			if ( el.querySelectorAll("[msallowcapture^='']").length ) {
 				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:''|\"\")" );
 			}
 
 			// Support: IE8
 			// Boolean attributes and "value" are not treated correctly
-			if ( !div.querySelectorAll("[selected]").length ) {
+			if ( !el.querySelectorAll("[selected]").length ) {
 				rbuggyQSA.push( "\\[" + whitespace + "*(?:value|" + booleans + ")" );
 			}
 
 			// Support: Chrome<29, Android<4.4, Safari<7.0+, iOS<7.0+, PhantomJS<1.9.8+
-			if ( !div.querySelectorAll( "[id~=" + expando + "-]" ).length ) {
+			if ( !el.querySelectorAll( "[id~=" + expando + "-]" ).length ) {
 				rbuggyQSA.push("~=");
 			}
 
 			// Webkit/Opera - :checked should return selected option elements
 			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
 			// IE8 throws error here and will not see later tests
-			if ( !div.querySelectorAll(":checked").length ) {
+			if ( !el.querySelectorAll(":checked").length ) {
 				rbuggyQSA.push(":checked");
 			}
 
 			// Support: Safari 8+, iOS 8+
 			// https://bugs.webkit.org/show_bug.cgi?id=136851
-			// In-page `selector#id sibing-combinator selector` fails
-			if ( !div.querySelectorAll( "a#" + expando + "+*" ).length ) {
+			// In-page `selector#id sibling-combinator selector` fails
+			if ( !el.querySelectorAll( "a#" + expando + "+*" ).length ) {
 				rbuggyQSA.push(".#.+[+~]");
 			}
 		});
 
-		assert(function( div ) {
+		assert(function( el ) {
+			el.innerHTML = "<a href='' disabled='disabled'></a>" +
+				"<select disabled='disabled'><option/></select>";
+
 			// Support: Windows 8 Native Apps
 			// The type and name attributes are restricted during .innerHTML assignment
 			var input = document.createElement("input");
 			input.setAttribute( "type", "hidden" );
-			div.appendChild( input ).setAttribute( "name", "D" );
+			el.appendChild( input ).setAttribute( "name", "D" );
 
 			// Support: IE8
 			// Enforce case-sensitivity of name attribute
-			if ( div.querySelectorAll("[name=d]").length ) {
+			if ( el.querySelectorAll("[name=d]").length ) {
 				rbuggyQSA.push( "name" + whitespace + "*[*^$|!~]?=" );
 			}
 
 			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
 			// IE8 throws error here and will not see later tests
-			if ( !div.querySelectorAll(":enabled").length ) {
+			if ( el.querySelectorAll(":enabled").length !== 2 ) {
+				rbuggyQSA.push( ":enabled", ":disabled" );
+			}
+
+			// Support: IE9-11+
+			// IE's :disabled selector does not pick up the children of disabled fieldsets
+			docElem.appendChild( el ).disabled = true;
+			if ( el.querySelectorAll(":disabled").length !== 2 ) {
 				rbuggyQSA.push( ":enabled", ":disabled" );
 			}
 
 			// Opera 10-11 does not throw on post-comma invalid pseudos
-			div.querySelectorAll("*,:x");
+			el.querySelectorAll("*,:x");
 			rbuggyQSA.push(",.*:");
 		});
 	}
@@ -1169,14 +1284,14 @@ setDocument = Sizzle.setDocument = function( node ) {
 		docElem.oMatchesSelector ||
 		docElem.msMatchesSelector) )) ) {
 
-		assert(function( div ) {
+		assert(function( el ) {
 			// Check to see if it's possible to do matchesSelector
 			// on a disconnected node (IE 9)
-			support.disconnectedMatch = matches.call( div, "div" );
+			support.disconnectedMatch = matches.call( el, "*" );
 
 			// This should fail with an exception
 			// Gecko does not error, returns false instead
-			matches.call( div, "[s!='']:x" );
+			matches.call( el, "[s!='']:x" );
 			rbuggyMatches.push( "!=", pseudos );
 		});
 	}
@@ -1376,6 +1491,10 @@ Sizzle.attr = function( elem, name ) {
 			(val = elem.getAttributeNode(name)) && val.specified ?
 				val.value :
 				null;
+};
+
+Sizzle.escape = function( sel ) {
+	return (sel + "").replace( rcssescape, fcssescape );
 };
 
 Sizzle.error = function( msg ) {
@@ -1845,13 +1964,8 @@ Expr = Sizzle.selectors = {
 		},
 
 		// Boolean properties
-		"enabled": function( elem ) {
-			return elem.disabled === false;
-		},
-
-		"disabled": function( elem ) {
-			return elem.disabled === true;
-		},
+		"enabled": createDisabledPseudo( false ),
+		"disabled": createDisabledPseudo( true ),
 
 		"checked": function( elem ) {
 			// In CSS3, :checked should return both checked and selected elements
@@ -2053,7 +2167,9 @@ function toSelector( tokens ) {
 
 function addCombinator( matcher, combinator, base ) {
 	var dir = combinator.dir,
-		checkNonElements = base && dir === "parentNode",
+		skip = combinator.next,
+		key = skip || dir,
+		checkNonElements = base && key === "parentNode",
 		doneName = done++;
 
 	return combinator.first ?
@@ -2064,6 +2180,7 @@ function addCombinator( matcher, combinator, base ) {
 					return matcher( elem, context, xml );
 				}
 			}
+			return false;
 		} :
 
 		// Check against all ancestor/preceding elements
@@ -2089,14 +2206,16 @@ function addCombinator( matcher, combinator, base ) {
 						// Defend against cloned attroperties (jQuery gh-1709)
 						uniqueCache = outerCache[ elem.uniqueID ] || (outerCache[ elem.uniqueID ] = {});
 
-						if ( (oldCache = uniqueCache[ dir ]) &&
+						if ( skip && skip === elem.nodeName.toLowerCase() ) {
+							elem = elem[ dir ] || elem;
+						} else if ( (oldCache = uniqueCache[ key ]) &&
 							oldCache[ 0 ] === dirruns && oldCache[ 1 ] === doneName ) {
 
 							// Assign to newCache so results back-propagate to previous elements
 							return (newCache[ 2 ] = oldCache[ 2 ]);
 						} else {
 							// Reuse newcache so results back-propagate to previous elements
-							uniqueCache[ dir ] = newCache;
+							uniqueCache[ key ] = newCache;
 
 							// A match means we're done; a fail means we have to keep checking
 							if ( (newCache[ 2 ] = matcher( elem, context, xml )) ) {
@@ -2106,6 +2225,7 @@ function addCombinator( matcher, combinator, base ) {
 					}
 				}
 			}
+			return false;
 		};
 }
 
@@ -2468,8 +2588,7 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 		// Reduce context if the leading compound selector is an ID
 		tokens = match[0] = match[0].slice( 0 );
 		if ( tokens.length > 2 && (token = tokens[0]).type === "ID" &&
-				support.getById && context.nodeType === 9 && documentIsHTML &&
-				Expr.relative[ tokens[1].type ] ) {
+				context.nodeType === 9 && documentIsHTML && Expr.relative[ tokens[1].type ] ) {
 
 			context = ( Expr.find["ID"]( token.matches[0].replace(runescape, funescape), context ) || [] )[0];
 			if ( !context ) {
@@ -2539,17 +2658,17 @@ setDocument();
 
 // Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
 // Detached nodes confoundingly follow *each other*
-support.sortDetached = assert(function( div1 ) {
+support.sortDetached = assert(function( el ) {
 	// Should return 1, but returns 4 (following)
-	return div1.compareDocumentPosition( document.createElement("div") ) & 1;
+	return el.compareDocumentPosition( document.createElement("fieldset") ) & 1;
 });
 
 // Support: IE<8
 // Prevent attribute/property "interpolation"
-// http://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
-if ( !assert(function( div ) {
-	div.innerHTML = "<a href='#'></a>";
-	return div.firstChild.getAttribute("href") === "#" ;
+// https://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
+if ( !assert(function( el ) {
+	el.innerHTML = "<a href='#'></a>";
+	return el.firstChild.getAttribute("href") === "#" ;
 }) ) {
 	addHandle( "type|href|height|width", function( elem, name, isXML ) {
 		if ( !isXML ) {
@@ -2560,10 +2679,10 @@ if ( !assert(function( div ) {
 
 // Support: IE<9
 // Use defaultValue in place of getAttribute("value")
-if ( !support.attributes || !assert(function( div ) {
-	div.innerHTML = "<input/>";
-	div.firstChild.setAttribute( "value", "" );
-	return div.firstChild.getAttribute( "value" ) === "";
+if ( !support.attributes || !assert(function( el ) {
+	el.innerHTML = "<input/>";
+	el.firstChild.setAttribute( "value", "" );
+	return el.firstChild.getAttribute( "value" ) === "";
 }) ) {
 	addHandle( "value", function( elem, name, isXML ) {
 		if ( !isXML && elem.nodeName.toLowerCase() === "input" ) {
@@ -2574,8 +2693,8 @@ if ( !support.attributes || !assert(function( div ) {
 
 // Support: IE<9
 // Use getAttributeNode to fetch booleans when getAttribute lies
-if ( !assert(function( div ) {
-	return div.getAttribute("disabled") == null;
+if ( !assert(function( el ) {
+	return el.getAttribute("disabled") == null;
 }) ) {
 	addHandle( booleans, function( elem, name, isXML ) {
 		var val;
@@ -2589,6 +2708,16 @@ if ( !assert(function( div ) {
 }
 
 // EXPOSE
+var _sizzle = window.Sizzle;
+
+Sizzle.noConflict = function() {
+	if ( window.Sizzle === Sizzle ) {
+		window.Sizzle = _sizzle;
+	}
+
+	return Sizzle;
+};
+
 if ( typeof define === "function" && define.amd ) {
 	define('sizzle',[],function() { return Sizzle; });
 // Sizzle requires that there be a global window in Common-JS like environments
@@ -2601,1166 +2730,6 @@ if ( typeof define === "function" && define.amd ) {
 
 })( window );
 
-/*!
- * @overview es6-promise - a tiny implementation of Promises/A+.
- * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
- * @license   Licensed under MIT license
- *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
- * @version   4.1.1
- */
-
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define('es6-promise',factory) :
-	(global.ES6Promise = factory());
-}(this, (function () { 'use strict';
-
-function objectOrFunction(x) {
-  var type = typeof x;
-  return x !== null && (type === 'object' || type === 'function');
-}
-
-function isFunction(x) {
-  return typeof x === 'function';
-}
-
-var _isArray = undefined;
-if (Array.isArray) {
-  _isArray = Array.isArray;
-} else {
-  _isArray = function (x) {
-    return Object.prototype.toString.call(x) === '[object Array]';
-  };
-}
-
-var isArray = _isArray;
-
-var len = 0;
-var vertxNext = undefined;
-var customSchedulerFn = undefined;
-
-var asap = function asap(callback, arg) {
-  queue[len] = callback;
-  queue[len + 1] = arg;
-  len += 2;
-  if (len === 2) {
-    // If len is 2, that means that we need to schedule an async flush.
-    // If additional callbacks are queued before the queue is flushed, they
-    // will be processed by this flush that we are scheduling.
-    if (customSchedulerFn) {
-      customSchedulerFn(flush);
-    } else {
-      scheduleFlush();
-    }
-  }
-};
-
-function setScheduler(scheduleFn) {
-  customSchedulerFn = scheduleFn;
-}
-
-function setAsap(asapFn) {
-  asap = asapFn;
-}
-
-var browserWindow = typeof window !== 'undefined' ? window : undefined;
-var browserGlobal = browserWindow || {};
-var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-var isNode = typeof self === 'undefined' && typeof process !== 'undefined' && ({}).toString.call(process) === '[object process]';
-
-// test for web worker but not in IE10
-var isWorker = typeof Uint8ClampedArray !== 'undefined' && typeof importScripts !== 'undefined' && typeof MessageChannel !== 'undefined';
-
-// node
-function useNextTick() {
-  // node version 0.10.x displays a deprecation warning when nextTick is used recursively
-  // see https://github.com/cujojs/when/issues/410 for details
-  return function () {
-    return process.nextTick(flush);
-  };
-}
-
-// vertx
-function useVertxTimer() {
-  if (typeof vertxNext !== 'undefined') {
-    return function () {
-      vertxNext(flush);
-    };
-  }
-
-  return useSetTimeout();
-}
-
-function useMutationObserver() {
-  var iterations = 0;
-  var observer = new BrowserMutationObserver(flush);
-  var node = document.createTextNode('');
-  observer.observe(node, { characterData: true });
-
-  return function () {
-    node.data = iterations = ++iterations % 2;
-  };
-}
-
-// web worker
-function useMessageChannel() {
-  var channel = new MessageChannel();
-  channel.port1.onmessage = flush;
-  return function () {
-    return channel.port2.postMessage(0);
-  };
-}
-
-function useSetTimeout() {
-  // Store setTimeout reference so es6-promise will be unaffected by
-  // other code modifying setTimeout (like sinon.useFakeTimers())
-  var globalSetTimeout = setTimeout;
-  return function () {
-    return globalSetTimeout(flush, 1);
-  };
-}
-
-var queue = new Array(1000);
-function flush() {
-  for (var i = 0; i < len; i += 2) {
-    var callback = queue[i];
-    var arg = queue[i + 1];
-
-    callback(arg);
-
-    queue[i] = undefined;
-    queue[i + 1] = undefined;
-  }
-
-  len = 0;
-}
-
-function attemptVertx() {
-  try {
-    var r = require;
-    var vertx = r('vertx');
-    vertxNext = vertx.runOnLoop || vertx.runOnContext;
-    return useVertxTimer();
-  } catch (e) {
-    return useSetTimeout();
-  }
-}
-
-var scheduleFlush = undefined;
-// Decide what async method to use to triggering processing of queued callbacks:
-if (isNode) {
-  scheduleFlush = useNextTick();
-} else if (BrowserMutationObserver) {
-  scheduleFlush = useMutationObserver();
-} else if (isWorker) {
-  scheduleFlush = useMessageChannel();
-} else if (browserWindow === undefined && typeof require === 'function') {
-  scheduleFlush = attemptVertx();
-} else {
-  scheduleFlush = useSetTimeout();
-}
-
-function then(onFulfillment, onRejection) {
-  var _arguments = arguments;
-
-  var parent = this;
-
-  var child = new this.constructor(noop);
-
-  if (child[PROMISE_ID] === undefined) {
-    makePromise(child);
-  }
-
-  var _state = parent._state;
-
-  if (_state) {
-    (function () {
-      var callback = _arguments[_state - 1];
-      asap(function () {
-        return invokeCallback(_state, child, callback, parent._result);
-      });
-    })();
-  } else {
-    subscribe(parent, child, onFulfillment, onRejection);
-  }
-
-  return child;
-}
-
-/**
-  `Promise.resolve` returns a promise that will become resolved with the
-  passed `value`. It is shorthand for the following:
-
-  ```javascript
-  let promise = new Promise(function(resolve, reject){
-    resolve(1);
-  });
-
-  promise.then(function(value){
-    // value === 1
-  });
-  ```
-
-  Instead of writing the above, your code now simply becomes the following:
-
-  ```javascript
-  let promise = Promise.resolve(1);
-
-  promise.then(function(value){
-    // value === 1
-  });
-  ```
-
-  @method resolve
-  @static
-  @param {Any} value value that the returned promise will be resolved with
-  Useful for tooling.
-  @return {Promise} a promise that will become fulfilled with the given
-  `value`
-*/
-function resolve$1(object) {
-  /*jshint validthis:true */
-  var Constructor = this;
-
-  if (object && typeof object === 'object' && object.constructor === Constructor) {
-    return object;
-  }
-
-  var promise = new Constructor(noop);
-  resolve(promise, object);
-  return promise;
-}
-
-var PROMISE_ID = Math.random().toString(36).substring(16);
-
-function noop() {}
-
-var PENDING = void 0;
-var FULFILLED = 1;
-var REJECTED = 2;
-
-var GET_THEN_ERROR = new ErrorObject();
-
-function selfFulfillment() {
-  return new TypeError("You cannot resolve a promise with itself");
-}
-
-function cannotReturnOwn() {
-  return new TypeError('A promises callback cannot return that same promise.');
-}
-
-function getThen(promise) {
-  try {
-    return promise.then;
-  } catch (error) {
-    GET_THEN_ERROR.error = error;
-    return GET_THEN_ERROR;
-  }
-}
-
-function tryThen(then$$1, value, fulfillmentHandler, rejectionHandler) {
-  try {
-    then$$1.call(value, fulfillmentHandler, rejectionHandler);
-  } catch (e) {
-    return e;
-  }
-}
-
-function handleForeignThenable(promise, thenable, then$$1) {
-  asap(function (promise) {
-    var sealed = false;
-    var error = tryThen(then$$1, thenable, function (value) {
-      if (sealed) {
-        return;
-      }
-      sealed = true;
-      if (thenable !== value) {
-        resolve(promise, value);
-      } else {
-        fulfill(promise, value);
-      }
-    }, function (reason) {
-      if (sealed) {
-        return;
-      }
-      sealed = true;
-
-      reject(promise, reason);
-    }, 'Settle: ' + (promise._label || ' unknown promise'));
-
-    if (!sealed && error) {
-      sealed = true;
-      reject(promise, error);
-    }
-  }, promise);
-}
-
-function handleOwnThenable(promise, thenable) {
-  if (thenable._state === FULFILLED) {
-    fulfill(promise, thenable._result);
-  } else if (thenable._state === REJECTED) {
-    reject(promise, thenable._result);
-  } else {
-    subscribe(thenable, undefined, function (value) {
-      return resolve(promise, value);
-    }, function (reason) {
-      return reject(promise, reason);
-    });
-  }
-}
-
-function handleMaybeThenable(promise, maybeThenable, then$$1) {
-  if (maybeThenable.constructor === promise.constructor && then$$1 === then && maybeThenable.constructor.resolve === resolve$1) {
-    handleOwnThenable(promise, maybeThenable);
-  } else {
-    if (then$$1 === GET_THEN_ERROR) {
-      reject(promise, GET_THEN_ERROR.error);
-      GET_THEN_ERROR.error = null;
-    } else if (then$$1 === undefined) {
-      fulfill(promise, maybeThenable);
-    } else if (isFunction(then$$1)) {
-      handleForeignThenable(promise, maybeThenable, then$$1);
-    } else {
-      fulfill(promise, maybeThenable);
-    }
-  }
-}
-
-function resolve(promise, value) {
-  if (promise === value) {
-    reject(promise, selfFulfillment());
-  } else if (objectOrFunction(value)) {
-    handleMaybeThenable(promise, value, getThen(value));
-  } else {
-    fulfill(promise, value);
-  }
-}
-
-function publishRejection(promise) {
-  if (promise._onerror) {
-    promise._onerror(promise._result);
-  }
-
-  publish(promise);
-}
-
-function fulfill(promise, value) {
-  if (promise._state !== PENDING) {
-    return;
-  }
-
-  promise._result = value;
-  promise._state = FULFILLED;
-
-  if (promise._subscribers.length !== 0) {
-    asap(publish, promise);
-  }
-}
-
-function reject(promise, reason) {
-  if (promise._state !== PENDING) {
-    return;
-  }
-  promise._state = REJECTED;
-  promise._result = reason;
-
-  asap(publishRejection, promise);
-}
-
-function subscribe(parent, child, onFulfillment, onRejection) {
-  var _subscribers = parent._subscribers;
-  var length = _subscribers.length;
-
-  parent._onerror = null;
-
-  _subscribers[length] = child;
-  _subscribers[length + FULFILLED] = onFulfillment;
-  _subscribers[length + REJECTED] = onRejection;
-
-  if (length === 0 && parent._state) {
-    asap(publish, parent);
-  }
-}
-
-function publish(promise) {
-  var subscribers = promise._subscribers;
-  var settled = promise._state;
-
-  if (subscribers.length === 0) {
-    return;
-  }
-
-  var child = undefined,
-      callback = undefined,
-      detail = promise._result;
-
-  for (var i = 0; i < subscribers.length; i += 3) {
-    child = subscribers[i];
-    callback = subscribers[i + settled];
-
-    if (child) {
-      invokeCallback(settled, child, callback, detail);
-    } else {
-      callback(detail);
-    }
-  }
-
-  promise._subscribers.length = 0;
-}
-
-function ErrorObject() {
-  this.error = null;
-}
-
-var TRY_CATCH_ERROR = new ErrorObject();
-
-function tryCatch(callback, detail) {
-  try {
-    return callback(detail);
-  } catch (e) {
-    TRY_CATCH_ERROR.error = e;
-    return TRY_CATCH_ERROR;
-  }
-}
-
-function invokeCallback(settled, promise, callback, detail) {
-  var hasCallback = isFunction(callback),
-      value = undefined,
-      error = undefined,
-      succeeded = undefined,
-      failed = undefined;
-
-  if (hasCallback) {
-    value = tryCatch(callback, detail);
-
-    if (value === TRY_CATCH_ERROR) {
-      failed = true;
-      error = value.error;
-      value.error = null;
-    } else {
-      succeeded = true;
-    }
-
-    if (promise === value) {
-      reject(promise, cannotReturnOwn());
-      return;
-    }
-  } else {
-    value = detail;
-    succeeded = true;
-  }
-
-  if (promise._state !== PENDING) {
-    // noop
-  } else if (hasCallback && succeeded) {
-      resolve(promise, value);
-    } else if (failed) {
-      reject(promise, error);
-    } else if (settled === FULFILLED) {
-      fulfill(promise, value);
-    } else if (settled === REJECTED) {
-      reject(promise, value);
-    }
-}
-
-function initializePromise(promise, resolver) {
-  try {
-    resolver(function resolvePromise(value) {
-      resolve(promise, value);
-    }, function rejectPromise(reason) {
-      reject(promise, reason);
-    });
-  } catch (e) {
-    reject(promise, e);
-  }
-}
-
-var id = 0;
-function nextId() {
-  return id++;
-}
-
-function makePromise(promise) {
-  promise[PROMISE_ID] = id++;
-  promise._state = undefined;
-  promise._result = undefined;
-  promise._subscribers = [];
-}
-
-function Enumerator$1(Constructor, input) {
-  this._instanceConstructor = Constructor;
-  this.promise = new Constructor(noop);
-
-  if (!this.promise[PROMISE_ID]) {
-    makePromise(this.promise);
-  }
-
-  if (isArray(input)) {
-    this.length = input.length;
-    this._remaining = input.length;
-
-    this._result = new Array(this.length);
-
-    if (this.length === 0) {
-      fulfill(this.promise, this._result);
-    } else {
-      this.length = this.length || 0;
-      this._enumerate(input);
-      if (this._remaining === 0) {
-        fulfill(this.promise, this._result);
-      }
-    }
-  } else {
-    reject(this.promise, validationError());
-  }
-}
-
-function validationError() {
-  return new Error('Array Methods must be provided an Array');
-}
-
-Enumerator$1.prototype._enumerate = function (input) {
-  for (var i = 0; this._state === PENDING && i < input.length; i++) {
-    this._eachEntry(input[i], i);
-  }
-};
-
-Enumerator$1.prototype._eachEntry = function (entry, i) {
-  var c = this._instanceConstructor;
-  var resolve$$1 = c.resolve;
-
-  if (resolve$$1 === resolve$1) {
-    var _then = getThen(entry);
-
-    if (_then === then && entry._state !== PENDING) {
-      this._settledAt(entry._state, i, entry._result);
-    } else if (typeof _then !== 'function') {
-      this._remaining--;
-      this._result[i] = entry;
-    } else if (c === Promise$3) {
-      var promise = new c(noop);
-      handleMaybeThenable(promise, entry, _then);
-      this._willSettleAt(promise, i);
-    } else {
-      this._willSettleAt(new c(function (resolve$$1) {
-        return resolve$$1(entry);
-      }), i);
-    }
-  } else {
-    this._willSettleAt(resolve$$1(entry), i);
-  }
-};
-
-Enumerator$1.prototype._settledAt = function (state, i, value) {
-  var promise = this.promise;
-
-  if (promise._state === PENDING) {
-    this._remaining--;
-
-    if (state === REJECTED) {
-      reject(promise, value);
-    } else {
-      this._result[i] = value;
-    }
-  }
-
-  if (this._remaining === 0) {
-    fulfill(promise, this._result);
-  }
-};
-
-Enumerator$1.prototype._willSettleAt = function (promise, i) {
-  var enumerator = this;
-
-  subscribe(promise, undefined, function (value) {
-    return enumerator._settledAt(FULFILLED, i, value);
-  }, function (reason) {
-    return enumerator._settledAt(REJECTED, i, reason);
-  });
-};
-
-/**
-  `Promise.all` accepts an array of promises, and returns a new promise which
-  is fulfilled with an array of fulfillment values for the passed promises, or
-  rejected with the reason of the first passed promise to be rejected. It casts all
-  elements of the passed iterable to promises as it runs this algorithm.
-
-  Example:
-
-  ```javascript
-  let promise1 = resolve(1);
-  let promise2 = resolve(2);
-  let promise3 = resolve(3);
-  let promises = [ promise1, promise2, promise3 ];
-
-  Promise.all(promises).then(function(array){
-    // The array here would be [ 1, 2, 3 ];
-  });
-  ```
-
-  If any of the `promises` given to `all` are rejected, the first promise
-  that is rejected will be given as an argument to the returned promises's
-  rejection handler. For example:
-
-  Example:
-
-  ```javascript
-  let promise1 = resolve(1);
-  let promise2 = reject(new Error("2"));
-  let promise3 = reject(new Error("3"));
-  let promises = [ promise1, promise2, promise3 ];
-
-  Promise.all(promises).then(function(array){
-    // Code here never runs because there are rejected promises!
-  }, function(error) {
-    // error.message === "2"
-  });
-  ```
-
-  @method all
-  @static
-  @param {Array} entries array of promises
-  @param {String} label optional string for labeling the promise.
-  Useful for tooling.
-  @return {Promise} promise that is fulfilled when all `promises` have been
-  fulfilled, or rejected if any of them become rejected.
-  @static
-*/
-function all$1(entries) {
-  return new Enumerator$1(this, entries).promise;
-}
-
-/**
-  `Promise.race` returns a new promise which is settled in the same way as the
-  first passed promise to settle.
-
-  Example:
-
-  ```javascript
-  let promise1 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      resolve('promise 1');
-    }, 200);
-  });
-
-  let promise2 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      resolve('promise 2');
-    }, 100);
-  });
-
-  Promise.race([promise1, promise2]).then(function(result){
-    // result === 'promise 2' because it was resolved before promise1
-    // was resolved.
-  });
-  ```
-
-  `Promise.race` is deterministic in that only the state of the first
-  settled promise matters. For example, even if other promises given to the
-  `promises` array argument are resolved, but the first settled promise has
-  become rejected before the other promises became fulfilled, the returned
-  promise will become rejected:
-
-  ```javascript
-  let promise1 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      resolve('promise 1');
-    }, 200);
-  });
-
-  let promise2 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      reject(new Error('promise 2'));
-    }, 100);
-  });
-
-  Promise.race([promise1, promise2]).then(function(result){
-    // Code here never runs
-  }, function(reason){
-    // reason.message === 'promise 2' because promise 2 became rejected before
-    // promise 1 became fulfilled
-  });
-  ```
-
-  An example real-world use case is implementing timeouts:
-
-  ```javascript
-  Promise.race([ajax('foo.json'), timeout(5000)])
-  ```
-
-  @method race
-  @static
-  @param {Array} promises array of promises to observe
-  Useful for tooling.
-  @return {Promise} a promise which settles in the same way as the first passed
-  promise to settle.
-*/
-function race$1(entries) {
-  /*jshint validthis:true */
-  var Constructor = this;
-
-  if (!isArray(entries)) {
-    return new Constructor(function (_, reject) {
-      return reject(new TypeError('You must pass an array to race.'));
-    });
-  } else {
-    return new Constructor(function (resolve, reject) {
-      var length = entries.length;
-      for (var i = 0; i < length; i++) {
-        Constructor.resolve(entries[i]).then(resolve, reject);
-      }
-    });
-  }
-}
-
-/**
-  `Promise.reject` returns a promise rejected with the passed `reason`.
-  It is shorthand for the following:
-
-  ```javascript
-  let promise = new Promise(function(resolve, reject){
-    reject(new Error('WHOOPS'));
-  });
-
-  promise.then(function(value){
-    // Code here doesn't run because the promise is rejected!
-  }, function(reason){
-    // reason.message === 'WHOOPS'
-  });
-  ```
-
-  Instead of writing the above, your code now simply becomes the following:
-
-  ```javascript
-  let promise = Promise.reject(new Error('WHOOPS'));
-
-  promise.then(function(value){
-    // Code here doesn't run because the promise is rejected!
-  }, function(reason){
-    // reason.message === 'WHOOPS'
-  });
-  ```
-
-  @method reject
-  @static
-  @param {Any} reason value that the returned promise will be rejected with.
-  Useful for tooling.
-  @return {Promise} a promise rejected with the given `reason`.
-*/
-function reject$1(reason) {
-  /*jshint validthis:true */
-  var Constructor = this;
-  var promise = new Constructor(noop);
-  reject(promise, reason);
-  return promise;
-}
-
-function needsResolver() {
-  throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
-}
-
-function needsNew() {
-  throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
-}
-
-/**
-  Promise objects represent the eventual result of an asynchronous operation. The
-  primary way of interacting with a promise is through its `then` method, which
-  registers callbacks to receive either a promise's eventual value or the reason
-  why the promise cannot be fulfilled.
-
-  Terminology
-  -----------
-
-  - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
-  - `thenable` is an object or function that defines a `then` method.
-  - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
-  - `exception` is a value that is thrown using the throw statement.
-  - `reason` is a value that indicates why a promise was rejected.
-  - `settled` the final resting state of a promise, fulfilled or rejected.
-
-  A promise can be in one of three states: pending, fulfilled, or rejected.
-
-  Promises that are fulfilled have a fulfillment value and are in the fulfilled
-  state.  Promises that are rejected have a rejection reason and are in the
-  rejected state.  A fulfillment value is never a thenable.
-
-  Promises can also be said to *resolve* a value.  If this value is also a
-  promise, then the original promise's settled state will match the value's
-  settled state.  So a promise that *resolves* a promise that rejects will
-  itself reject, and a promise that *resolves* a promise that fulfills will
-  itself fulfill.
-
-
-  Basic Usage:
-  ------------
-
-  ```js
-  let promise = new Promise(function(resolve, reject) {
-    // on success
-    resolve(value);
-
-    // on failure
-    reject(reason);
-  });
-
-  promise.then(function(value) {
-    // on fulfillment
-  }, function(reason) {
-    // on rejection
-  });
-  ```
-
-  Advanced Usage:
-  ---------------
-
-  Promises shine when abstracting away asynchronous interactions such as
-  `XMLHttpRequest`s.
-
-  ```js
-  function getJSON(url) {
-    return new Promise(function(resolve, reject){
-      let xhr = new XMLHttpRequest();
-
-      xhr.open('GET', url);
-      xhr.onreadystatechange = handler;
-      xhr.responseType = 'json';
-      xhr.setRequestHeader('Accept', 'application/json');
-      xhr.send();
-
-      function handler() {
-        if (this.readyState === this.DONE) {
-          if (this.status === 200) {
-            resolve(this.response);
-          } else {
-            reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
-          }
-        }
-      };
-    });
-  }
-
-  getJSON('/posts.json').then(function(json) {
-    // on fulfillment
-  }, function(reason) {
-    // on rejection
-  });
-  ```
-
-  Unlike callbacks, promises are great composable primitives.
-
-  ```js
-  Promise.all([
-    getJSON('/posts'),
-    getJSON('/comments')
-  ]).then(function(values){
-    values[0] // => postsJSON
-    values[1] // => commentsJSON
-
-    return values;
-  });
-  ```
-
-  @class Promise
-  @param {function} resolver
-  Useful for tooling.
-  @constructor
-*/
-function Promise$3(resolver) {
-  this[PROMISE_ID] = nextId();
-  this._result = this._state = undefined;
-  this._subscribers = [];
-
-  if (noop !== resolver) {
-    typeof resolver !== 'function' && needsResolver();
-    this instanceof Promise$3 ? initializePromise(this, resolver) : needsNew();
-  }
-}
-
-Promise$3.all = all$1;
-Promise$3.race = race$1;
-Promise$3.resolve = resolve$1;
-Promise$3.reject = reject$1;
-Promise$3._setScheduler = setScheduler;
-Promise$3._setAsap = setAsap;
-Promise$3._asap = asap;
-
-Promise$3.prototype = {
-  constructor: Promise$3,
-
-  /**
-    The primary way of interacting with a promise is through its `then` method,
-    which registers callbacks to receive either a promise's eventual value or the
-    reason why the promise cannot be fulfilled.
-  
-    ```js
-    findUser().then(function(user){
-      // user is available
-    }, function(reason){
-      // user is unavailable, and you are given the reason why
-    });
-    ```
-  
-    Chaining
-    --------
-  
-    The return value of `then` is itself a promise.  This second, 'downstream'
-    promise is resolved with the return value of the first promise's fulfillment
-    or rejection handler, or rejected if the handler throws an exception.
-  
-    ```js
-    findUser().then(function (user) {
-      return user.name;
-    }, function (reason) {
-      return 'default name';
-    }).then(function (userName) {
-      // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
-      // will be `'default name'`
-    });
-  
-    findUser().then(function (user) {
-      throw new Error('Found user, but still unhappy');
-    }, function (reason) {
-      throw new Error('`findUser` rejected and we're unhappy');
-    }).then(function (value) {
-      // never reached
-    }, function (reason) {
-      // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
-      // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
-    });
-    ```
-    If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
-  
-    ```js
-    findUser().then(function (user) {
-      throw new PedagogicalException('Upstream error');
-    }).then(function (value) {
-      // never reached
-    }).then(function (value) {
-      // never reached
-    }, function (reason) {
-      // The `PedgagocialException` is propagated all the way down to here
-    });
-    ```
-  
-    Assimilation
-    ------------
-  
-    Sometimes the value you want to propagate to a downstream promise can only be
-    retrieved asynchronously. This can be achieved by returning a promise in the
-    fulfillment or rejection handler. The downstream promise will then be pending
-    until the returned promise is settled. This is called *assimilation*.
-  
-    ```js
-    findUser().then(function (user) {
-      return findCommentsByAuthor(user);
-    }).then(function (comments) {
-      // The user's comments are now available
-    });
-    ```
-  
-    If the assimliated promise rejects, then the downstream promise will also reject.
-  
-    ```js
-    findUser().then(function (user) {
-      return findCommentsByAuthor(user);
-    }).then(function (comments) {
-      // If `findCommentsByAuthor` fulfills, we'll have the value here
-    }, function (reason) {
-      // If `findCommentsByAuthor` rejects, we'll have the reason here
-    });
-    ```
-  
-    Simple Example
-    --------------
-  
-    Synchronous Example
-  
-    ```javascript
-    let result;
-  
-    try {
-      result = findResult();
-      // success
-    } catch(reason) {
-      // failure
-    }
-    ```
-  
-    Errback Example
-  
-    ```js
-    findResult(function(result, err){
-      if (err) {
-        // failure
-      } else {
-        // success
-      }
-    });
-    ```
-  
-    Promise Example;
-  
-    ```javascript
-    findResult().then(function(result){
-      // success
-    }, function(reason){
-      // failure
-    });
-    ```
-  
-    Advanced Example
-    --------------
-  
-    Synchronous Example
-  
-    ```javascript
-    let author, books;
-  
-    try {
-      author = findAuthor();
-      books  = findBooksByAuthor(author);
-      // success
-    } catch(reason) {
-      // failure
-    }
-    ```
-  
-    Errback Example
-  
-    ```js
-  
-    function foundBooks(books) {
-  
-    }
-  
-    function failure(reason) {
-  
-    }
-  
-    findAuthor(function(author, err){
-      if (err) {
-        failure(err);
-        // failure
-      } else {
-        try {
-          findBoooksByAuthor(author, function(books, err) {
-            if (err) {
-              failure(err);
-            } else {
-              try {
-                foundBooks(books);
-              } catch(reason) {
-                failure(reason);
-              }
-            }
-          });
-        } catch(error) {
-          failure(err);
-        }
-        // success
-      }
-    });
-    ```
-  
-    Promise Example;
-  
-    ```javascript
-    findAuthor().
-      then(findBooksByAuthor).
-      then(function(books){
-        // found books
-    }).catch(function(reason){
-      // something went wrong
-    });
-    ```
-  
-    @method then
-    @param {Function} onFulfilled
-    @param {Function} onRejected
-    Useful for tooling.
-    @return {Promise}
-  */
-  then: then,
-
-  /**
-    `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
-    as the catch block of a try/catch statement.
-  
-    ```js
-    function findAuthor(){
-      throw new Error('couldn't find that author');
-    }
-  
-    // synchronous
-    try {
-      findAuthor();
-    } catch(reason) {
-      // something went wrong
-    }
-  
-    // async with promises
-    findAuthor().catch(function(reason){
-      // something went wrong
-    });
-    ```
-  
-    @method catch
-    @param {Function} onRejection
-    Useful for tooling.
-    @return {Promise}
-  */
-  'catch': function _catch(onRejection) {
-    return this.then(null, onRejection);
-  }
-};
-
-/*global self*/
-function polyfill$1() {
-    var local = undefined;
-
-    if (typeof global !== 'undefined') {
-        local = global;
-    } else if (typeof self !== 'undefined') {
-        local = self;
-    } else {
-        try {
-            local = Function('return this')();
-        } catch (e) {
-            throw new Error('polyfill failed because global object is unavailable in this environment');
-        }
-    }
-
-    var P = local.Promise;
-
-    if (P) {
-        var promiseToString = null;
-        try {
-            promiseToString = Object.prototype.toString.call(P.resolve());
-        } catch (e) {
-            // silently ignored
-        }
-
-        if (promiseToString === '[object Promise]' && !P.cast) {
-            return;
-        }
-    }
-
-    local.Promise = Promise$3;
-}
-
-// Strange compat..
-Promise$3.polyfill = polyfill$1;
-Promise$3.Promise = Promise$3;
-
-Promise$3.polyfill();
-
-return Promise$3;
-
-})));
-
-//# sourceMappingURL=es6-promise.auto.map
-;
 if (!String.prototype.includes) {
   String.prototype.includes = function(search, start) {
         'use strict';
@@ -6475,200 +5444,6 @@ return uk;
   };
 });
 //# sourceMappingURL=i18n.js.map;
-/*!
- * jQuery Browser Plugin 0.1.0
- * https://github.com/gabceb/jquery-browser-plugin
- *
- * Original jquery-browser code Copyright 2005, 2015 jQuery Foundation, Inc. and other contributors
- * http://jquery.org/license
- *
- * Modifications Copyright 2015 Gabriel Cebrian
- * https://github.com/gabceb
- *
- * Released under the MIT license
- *
- * Date: 05-07-2015
- */
-/*global window: false */
-
-(function (factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define('jquery.browser',['jquery'], function ($) {
-      return factory($);
-    });
-  } else if (typeof module === 'object' && typeof module.exports === 'object') {
-    // Node-like environment
-    module.exports = factory(require('jquery'));
-  } else {
-    // Browser globals
-    factory(window.jQuery);
-  }
-}(function(jQuery) {
-  "use strict";
-
-  function uaMatch( ua ) {
-    // If an UA is not provided, default to the current browser UA.
-    if ( ua === undefined ) {
-      ua = window.navigator.userAgent;
-    }
-    ua = ua.toLowerCase();
-
-    var match = /(edge)\/([\w.]+)/.exec( ua ) ||
-        /(opr)[\/]([\w.]+)/.exec( ua ) ||
-        /(chrome)[ \/]([\w.]+)/.exec( ua ) ||
-        /(iemobile)[\/]([\w.]+)/.exec( ua ) ||
-        /(version)(applewebkit)[ \/]([\w.]+).*(safari)[ \/]([\w.]+)/.exec( ua ) ||
-        /(webkit)[ \/]([\w.]+).*(version)[ \/]([\w.]+).*(safari)[ \/]([\w.]+)/.exec( ua ) ||
-        /(webkit)[ \/]([\w.]+)/.exec( ua ) ||
-        /(opera)(?:.*version|)[ \/]([\w.]+)/.exec( ua ) ||
-        /(msie) ([\w.]+)/.exec( ua ) ||
-        ua.indexOf("trident") >= 0 && /(rv)(?::| )([\w.]+)/.exec( ua ) ||
-        ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec( ua ) ||
-        [];
-
-    var platform_match = /(ipad)/.exec( ua ) ||
-        /(ipod)/.exec( ua ) ||
-        /(windows phone)/.exec( ua ) ||
-        /(iphone)/.exec( ua ) ||
-        /(kindle)/.exec( ua ) ||
-        /(silk)/.exec( ua ) ||
-        /(android)/.exec( ua ) ||
-        /(win)/.exec( ua ) ||
-        /(mac)/.exec( ua ) ||
-        /(linux)/.exec( ua ) ||
-        /(cros)/.exec( ua ) ||
-        /(playbook)/.exec( ua ) ||
-        /(bb)/.exec( ua ) ||
-        /(blackberry)/.exec( ua ) ||
-        [];
-
-    var browser = {},
-        matched = {
-          browser: match[ 5 ] || match[ 3 ] || match[ 1 ] || "",
-          version: match[ 2 ] || match[ 4 ] || "0",
-          versionNumber: match[ 4 ] || match[ 2 ] || "0",
-          platform: platform_match[ 0 ] || ""
-        };
-
-    if ( matched.browser ) {
-      browser[ matched.browser ] = true;
-      browser.version = matched.version;
-      browser.versionNumber = parseInt(matched.versionNumber, 10);
-    }
-
-    if ( matched.platform ) {
-      browser[ matched.platform ] = true;
-    }
-
-    // These are all considered mobile platforms, meaning they run a mobile browser
-    if ( browser.android || browser.bb || browser.blackberry || browser.ipad || browser.iphone ||
-      browser.ipod || browser.kindle || browser.playbook || browser.silk || browser[ "windows phone" ]) {
-      browser.mobile = true;
-    }
-
-    // These are all considered desktop platforms, meaning they run a desktop browser
-    if ( browser.cros || browser.mac || browser.linux || browser.win ) {
-      browser.desktop = true;
-    }
-
-    // Chrome, Opera 15+ and Safari are webkit based browsers
-    if ( browser.chrome || browser.opr || browser.safari ) {
-      browser.webkit = true;
-    }
-
-    // IE11 has a new token so we will assign it msie to avoid breaking changes
-    if ( browser.rv || browser.iemobile) {
-      var ie = "msie";
-
-      matched.browser = ie;
-      browser[ie] = true;
-    }
-
-    // Edge is officially known as Microsoft Edge, so rewrite the key to match
-    if ( browser.edge ) {
-      delete browser.edge;
-      var msedge = "msedge";
-
-      matched.browser = msedge;
-      browser[msedge] = true;
-    }
-
-    // Blackberry browsers are marked as Safari on BlackBerry
-    if ( browser.safari && browser.blackberry ) {
-      var blackberry = "blackberry";
-
-      matched.browser = blackberry;
-      browser[blackberry] = true;
-    }
-
-    // Playbook browsers are marked as Safari on Playbook
-    if ( browser.safari && browser.playbook ) {
-      var playbook = "playbook";
-
-      matched.browser = playbook;
-      browser[playbook] = true;
-    }
-
-    // BB10 is a newer OS version of BlackBerry
-    if ( browser.bb ) {
-      var bb = "blackberry";
-
-      matched.browser = bb;
-      browser[bb] = true;
-    }
-
-    // Opera 15+ are identified as opr
-    if ( browser.opr ) {
-      var opera = "opera";
-
-      matched.browser = opera;
-      browser[opera] = true;
-    }
-
-    // Stock Android browsers are marked as Safari on Android.
-    if ( browser.safari && browser.android ) {
-      var android = "android";
-
-      matched.browser = android;
-      browser[android] = true;
-    }
-
-    // Kindle browsers are marked as Safari on Kindle
-    if ( browser.safari && browser.kindle ) {
-      var kindle = "kindle";
-
-      matched.browser = kindle;
-      browser[kindle] = true;
-    }
-
-     // Kindle Silk browsers are marked as Safari on Kindle
-    if ( browser.safari && browser.silk ) {
-      var silk = "silk";
-
-      matched.browser = silk;
-      browser[silk] = true;
-    }
-
-    // Assign the name and platform variable
-    browser.name = matched.browser;
-    browser.platform = matched.platform;
-    return browser;
-  }
-
-  // Run the matching process, also assign the function to the returned object
-  // for manual, jQuery-free use if desired
-  window.jQBrowser = uaMatch( window.navigator.userAgent );
-  window.jQBrowser.uaMatch = uaMatch;
-
-  // Only assign to jQuery.browser if jQuery is loaded
-  if ( jQuery ) {
-    jQuery.browser = window.jQBrowser;
-  }
-
-  return window.jQBrowser;
-}));
-
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 // Converse.js (A browser based XMPP chat client)
@@ -6682,8 +5457,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 /*global define, escape, window */
 (function (root, factory) {
-  define('utils',["sizzle", "es6-promise", "jquery.browser", "lodash.noconflict", "strophe"], factory);
-})(this, function (sizzle, Promise, jQBrowser, _, Strophe) {
+  define('utils',["sizzle", "es6-promise", "lodash.noconflict", "strophe"], factory);
+})(this, function (sizzle, Promise, _, Strophe) {
   "use strict";
 
   var b64_sha1 = Strophe.SHA1.b64_sha1;
@@ -6750,23 +5525,34 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   var u = {};
 
+  u.addClass = function (className, el) {
+    if (el instanceof Element) {
+      el.classList.add(className);
+    }
+  };
+
+  u.removeClass = function (className, el) {
+    if (el instanceof Element) {
+      el.classList.remove(className);
+    }
+
+    return el;
+  };
+
   u.removeElement = function (el) {
     if (!_.isNil(el) && !_.isNil(el.parentNode)) {
       el.parentNode.removeChild(el);
     }
   };
 
-  u.showElement = function (el) {
-    if (!_.isNil(el)) {
-      el.classList.remove('collapsed');
-      el.classList.remove('hidden');
-    }
-  };
+  u.showElement = _.flow(_.partial(u.removeClass, 'collapsed'), _.partial(u.removeClass, 'hidden'));
 
   u.hideElement = function (el) {
     if (!_.isNil(el)) {
       el.classList.add('hidden');
     }
+
+    return el;
   };
 
   u.nextUntil = function (el, selector) {
@@ -6825,24 +5611,24 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   };
 
   u.slideInAllElements = function (elements) {
-    var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 600;
+    var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 300;
     return Promise.all(_.map(elements, _.partial(u.slideIn, _, duration)));
   };
 
-  u.slideToggleElement = function (el) {
-    if (_.includes(el.classList, 'collapsed')) {
-      return u.slideOut(el);
+  u.slideToggleElement = function (el, duration) {
+    if (_.includes(el.classList, 'collapsed') || _.includes(el.classList, 'hidden')) {
+      return u.slideOut(el, duration);
     } else {
-      return u.slideIn(el);
+      return u.slideIn(el, duration);
     }
   };
 
-  u.hasClass = function (el, className) {
+  u.hasClass = function (className, el) {
     return _.includes(el.classList, className);
   };
 
   u.slideOut = function (el) {
-    var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 250;
+    var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 200;
 
     /* Shows/expands an element by sliding it out of itself
      *
@@ -6875,7 +5661,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         return;
       }
 
-      if (!u.hasClass(el, 'collapsed') && !u.hasClass(el, 'hidden')) {
+      if (!u.hasClass('collapsed', el) && !u.hasClass('hidden', el)) {
         resolve();
         return;
       }
@@ -6911,7 +5697,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   };
 
   u.slideIn = function (el) {
-    var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 250;
+    var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 200;
 
     /* Hides/collapses an element by sliding it into itself. */
     return new Promise(function (resolve, reject) {
@@ -6920,12 +5706,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         logger.warn(err);
         return reject(new Error(err));
       } else if (_.includes(el.classList, 'collapsed')) {
-        return resolve();
+        return resolve(el);
       } else if (window.converse_disable_effects) {
         // Effects are disabled (for tests)
         el.classList.add('collapsed');
         el.style.height = "";
-        return resolve();
+        return resolve(el);
       }
 
       var marker = el.getAttribute('data-slider-marker');
@@ -6951,7 +5737,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           el.removeAttribute('data-slider-marker');
           el.classList.add('collapsed');
           el.style.height = "";
-          resolve();
+          resolve(el);
         }
       }
 
@@ -7006,9 +5792,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
      * message, i.e. not a MAM archived one.
      */
     if (message instanceof Element) {
-      return !sizzle('result[xmlns="' + Strophe.NS.MAM + '"]', message).length;
+      return !sizzle('result[xmlns="' + Strophe.NS.MAM + '"]', message).length && !sizzle('delay[xmlns="' + Strophe.NS.DELAY + '"]', message).length;
     } else {
-      return !message.get('archive_id');
+      return !message.get('archive_id') && !message.get('delayed');
     }
   };
 
@@ -7065,30 +5851,43 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     }
   };
 
-  u.refreshWebkit = function () {
-    /* This works around a webkit bug. Refreshes the browser's viewport,
-     * otherwise chatboxes are not moved along when one is closed.
-     */
-    if (jQBrowser.webkit && window.requestAnimationFrame) {
-      window.requestAnimationFrame(function () {
-        var conversejs = document.getElementById('conversejs');
-        conversejs.style.display = 'none';
-        var tmp = conversejs.offsetHeight; // jshint ignore:line
-
-        conversejs.style.display = 'block';
-      });
-    }
-  };
-
-  u.stringToDOM = function (s) {
-    /* Converts an HTML string into a DOM element.
+  u.stringToNode = function (s) {
+    /* Converts an HTML string into a DOM Node.
+     * Expects that the HTML string has only one top-level element,
+     * i.e. not multiple ones.
      *
      * Parameters:
      *      (String) s - The HTML string
      */
     var div = document.createElement('div');
     div.innerHTML = s;
-    return div.childNodes;
+    return div.firstChild;
+  };
+
+  u.getOuterWidth = function (el) {
+    var include_margin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    var width = el.offsetWidth;
+
+    if (!include_margin) {
+      return width;
+    }
+
+    var style = window.getComputedStyle(el);
+    width += parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+    return width;
+  };
+
+  u.stringToElement = function (s) {
+    /* Converts an HTML string into a DOM element.
+     * Expects that the HTML string has only one top-level element,
+     * i.e. not multiple ones.
+     *
+     * Parameters:
+     *      (String) s - The HTML string
+     */
+    var div = document.createElement('div');
+    div.innerHTML = s;
+    return div.firstElementChild;
   };
 
   u.matchesSelector = function (el, selector) {
@@ -7264,6 +6063,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   u.isVisible = function (el) {
     // XXX: Taken from jQuery's "visible" implementation
     return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
+  };
+
+  u.triggerEvent = function (el, name) {
+    var type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "Event";
+    var bubbles = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+    var cancelable = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
+    var evt = document.createEvent(type);
+    evt.initEvent(name, bubbles, cancelable);
+    el.dispatchEvent(evt);
   };
 
   return u;
@@ -7555,6 +6363,176 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 });
 
 //# sourceMappingURL=pluggable.js.map;
+// Backbone.NativeView.js 0.3.3
+// ---------------
+
+//     (c) 2015 Adam Krebs, Jimmy Yuen Ho Wong
+//     Backbone.NativeView may be freely distributed under the MIT license.
+//     For all details and documentation:
+//     https://github.com/akre54/Backbone.NativeView
+
+(function (factory) {
+  if (typeof define === 'function' && define.amd) { define('backbone.nativeview',['backbone'], factory);
+  } else if (typeof module === 'object') { module.exports = factory(require('backbone'));
+  } else { factory(Backbone); }
+}(function (Backbone) {
+  // Cached regex to match an opening '<' of an HTML tag, possibly left-padded
+  // with whitespace.
+  var paddedLt = /^\s*</;
+
+  // Caches a local reference to `Element.prototype` for faster access.
+  var ElementProto = (typeof Element !== 'undefined' && Element.prototype) || {};
+
+  // Cross-browser event listener shims
+  var elementAddEventListener = ElementProto.addEventListener || function(eventName, listener) {
+    return this.attachEvent('on' + eventName, listener);
+  }
+  var elementRemoveEventListener = ElementProto.removeEventListener || function(eventName, listener) {
+    return this.detachEvent('on' + eventName, listener);
+  }
+
+  var indexOf = function(array, item) {
+    for (var i = 0, len = array.length; i < len; i++) if (array[i] === item) return i;
+    return -1;
+  }
+
+  // Find the right `Element#matches` for IE>=9 and modern browsers.
+  var matchesSelector = ElementProto.matches ||
+      ElementProto.webkitMatchesSelector ||
+      ElementProto.mozMatchesSelector ||
+      ElementProto.msMatchesSelector ||
+      ElementProto.oMatchesSelector ||
+      // Make our own `Element#matches` for IE8
+      function(selector) {
+        // Use querySelectorAll to find all elements matching the selector,
+        // then check if the given element is included in that list.
+        // Executing the query on the parentNode reduces the resulting nodeList,
+        // (document doesn't have a parentNode).
+        var nodeList = (this.parentNode || document).querySelectorAll(selector) || [];
+        return ~indexOf(nodeList, this);
+      };
+
+  // Cache Backbone.View for later access in constructor
+  var BBView = Backbone.View;
+
+  // To extend an existing view to use native methods, extend the View prototype
+  // with the mixin: _.extend(MyView.prototype, Backbone.NativeViewMixin);
+  Backbone.NativeViewMixin = {
+
+    _domEvents: null,
+
+    constructor: function() {
+      this._domEvents = [];
+      return BBView.apply(this, arguments);
+    },
+
+    $: function(selector) {
+      return this.el.querySelectorAll(selector);
+    },
+
+    _removeElement: function() {
+      this.undelegateEvents();
+      if (this.el.parentNode) this.el.parentNode.removeChild(this.el);
+    },
+
+    // Apply the `element` to the view. `element` can be a CSS selector,
+    // a string of HTML, or an Element node.
+    _setElement: function(element) {
+      if (typeof element == 'string') {
+        if (paddedLt.test(element)) {
+          var el = document.createElement('div');
+          el.innerHTML = element;
+          this.el = el.firstChild;
+        } else {
+          this.el = document.querySelector(element);
+        }
+      } else {
+        this.el = element;
+      }
+    },
+
+    // Set a hash of attributes to the view's `el`. We use the "prop" version
+    // if available, falling back to `setAttribute` for the catch-all.
+    _setAttributes: function(attrs) {
+      for (var attr in attrs) {
+        attr in this.el ? this.el[attr] = attrs[attr] : this.el.setAttribute(attr, attrs[attr]);
+      }
+    },
+
+    // Make a event delegation handler for the given `eventName` and `selector`
+    // and attach it to `this.el`.
+    // If selector is empty, the listener will be bound to `this.el`. If not, a
+    // new handler that will recursively traverse up the event target's DOM
+    // hierarchy looking for a node that matches the selector. If one is found,
+    // the event's `delegateTarget` property is set to it and the return the
+    // result of calling bound `listener` with the parameters given to the
+    // handler.
+    delegate: function(eventName, selector, listener) {
+      if (typeof selector === 'function') {
+        listener = selector;
+        selector = null;
+      }
+
+      var root = this.el;
+      var handler = selector ? function (e) {
+        var node = e.target || e.srcElement;
+        for (; node && node != root; node = node.parentNode) {
+          if (matchesSelector.call(node, selector)) {
+            e.delegateTarget = node;
+            listener(e);
+          }
+        }
+      } : listener;
+
+      elementAddEventListener.call(this.el, eventName, handler, false);
+      this._domEvents.push({eventName: eventName, handler: handler, listener: listener, selector: selector});
+      return handler;
+    },
+
+    // Remove a single delegated event. Either `eventName` or `selector` must
+    // be included, `selector` and `listener` are optional.
+    undelegate: function(eventName, selector, listener) {
+      if (typeof selector === 'function') {
+        listener = selector;
+        selector = null;
+      }
+
+      if (this.el) {
+        var handlers = this._domEvents.slice();
+        for (var i = 0, len = handlers.length; i < len; i++) {
+          var item = handlers[i];
+
+          var match = item.eventName === eventName &&
+              (listener ? item.listener === listener : true) &&
+              (selector ? item.selector === selector : true);
+
+          if (!match) continue;
+
+          elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
+          this._domEvents.splice(indexOf(handlers, item), 1);
+        }
+      }
+      return this;
+    },
+
+    // Remove all events created with `delegate` from `el`
+    undelegateEvents: function() {
+      if (this.el) {
+        for (var i = 0, len = this._domEvents.length; i < len; i++) {
+          var item = this._domEvents[i];
+          elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
+        };
+        this._domEvents.length = 0;
+      }
+      return this;
+    }
+  };
+
+  Backbone.NativeView = Backbone.View.extend(Backbone.NativeViewMixin);
+
+  return Backbone.NativeView;
+}));
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -7564,7 +6542,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 /*global Backbone, define, window, document, JSON */
 (function (root, factory) {
-  define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "polyfill", "i18n", "utils", "moment", "strophe", "pluggable", "backbone.noconflict", "backbone.browserStorage", "backbone.overview"], factory);
+  define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "polyfill", "i18n", "utils", "moment", "strophe", "pluggable", "backbone.noconflict", "backbone.nativeview", "backbone.browserStorage"], factory);
 })(this, function (sizzle, Promise, _, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
   /* Cannot use this due to Safari bug.
    * See https://github.com/jcbrand/converse.js/issues/196
@@ -7583,13 +6561,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
   Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
   Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
+  Strophe.addNamespace('FORWARD', 'urn:xmpp:forward:0');
   Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
   Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
-  Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
   Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
   Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
   Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
   Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
+  Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
   Strophe.addNamespace('XFORM', 'jabber:x:data'); // Use Mustache style syntax for variable interpolation
 
   /* Configuration of Lodash templates (this config is distinct to the
@@ -12569,6 +11548,23 @@ define('tpl',['require','exports','module','lodash'],function(require, exports) 
 })(typeof global === "object" ? global : this);
 
 
+define('tpl!action', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<div class="message chat-message ' +
+__e(o.extra_classes) +
+'" data-isodate="' +
+__e(o.isodate) +
+'">\n    <span class="chat-msg-author chat-msg-' +
+__e(o.sender) +
+'">' +
+__e(o.time) +
+' **' +
+__e(o.username) +
+'&nbsp;</span>\n    <span class="chat-msg-content chat-action"><!-- message gets added here via renderMessage --></span>\n</div>\n';
+return __p
+};});
+
+
 define('tpl!chatbox', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -12639,34 +11635,6 @@ return __p
 };});
 
 
-define('tpl!new_day', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<time class="chat-info chat-date" data-isodate="' +
-__e(o.isodate) +
-'">' +
-__e(o.datestring) +
-'</time>\n';
-return __p
-};});
-
-
-define('tpl!action', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<div class="chat-message ' +
-__e(o.extra_classes) +
-'" data-isodate="' +
-__e(o.isodate) +
-'">\n    <span class="chat-msg-author chat-msg-' +
-__e(o.sender) +
-'">' +
-__e(o.time) +
-' **' +
-__e(o.username) +
-'&nbsp;</span>\n    <span class="chat-msg-content chat-action"><!-- message gets added here via renderMessage --></span>\n</div>\n';
-return __p
-};});
-
-
 define('tpl!emojis', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -12727,9 +11695,35 @@ return __p
 };});
 
 
+define('tpl!help_message', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<div class="chat-' +
+__e(o.type) +
+'">' +
+((__t = (o.message)) == null ? '' : __t) +
+'</div>\n';
+return __p
+};});
+
+
+define('tpl!info', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<div class="message chat-info ' +
+__e(o.extra_classes) +
+'" data-isodate="' +
+__e(o.isodate) +
+'" ' +
+__e(o.data) +
+'>' +
+__e(o.message) +
+'</div>\n';
+return __p
+};});
+
+
 define('tpl!message', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<div class="chat-message ' +
+__p += '<div class="message chat-message ' +
 __e(o.extra_classes) +
 '" data-isodate="' +
 __e(o.isodate) +
@@ -12746,13 +11740,20 @@ return __p
 };});
 
 
-define('tpl!help_message', ['lodash'], function(_) {return function(o) {
+define('tpl!new_day', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<div class="chat-' +
-__e(o.type) +
+__p += '<time class="chat-info chat-date" data-isodate="' +
+__e(o.isodate) +
 '">' +
-((__t = (o.message)) == null ? '' : __t) +
-'</div>\n';
+__e(o.datestring) +
+'</time>\n';
+return __p
+};});
+
+
+define('tpl!spinner', ['lodash'], function(_) {return function(o) {
+var __t, __p = '';
+__p += '<span class="spinner centered"/>\n';
 return __p
 };});
 
@@ -12782,13 +11783,6 @@ __p += '\n';
 return __p
 };});
 
-
-define('tpl!spinner', ['lodash'], function(_) {return function(o) {
-var __t, __p = '';
-__p += '<span class="spinner centered"/>\n';
-return __p
-};});
-
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -12798,8 +11792,8 @@ return __p
 
 /*global define */
 (function (root, factory) {
-  define('converse-chatview',["jquery.noconflict", "converse-core", "converse-chatboxes", "emojione", "xss", "tpl!chatbox", "tpl!chatbox_head", "tpl!new_day", "tpl!action", "tpl!emojis", "tpl!message", "tpl!help_message", "tpl!toolbar", "tpl!spinner"], factory);
-})(this, function ($, converse, dummy, emojione, xss, tpl_chatbox, tpl_chatbox_head, tpl_new_day, tpl_action, tpl_emojis, tpl_message, tpl_help_message, tpl_toolbar, tpl_spinner) {
+  define('converse-chatview',["converse-core", "converse-chatboxes", "emojione", "xss", "tpl!action", "tpl!chatbox", "tpl!chatbox_head", "tpl!emojis", "tpl!help_message", "tpl!info", "tpl!message", "tpl!new_day", "tpl!spinner", "tpl!toolbar"], factory);
+})(this, function (converse, dummy, emojione, xss, tpl_action, tpl_chatbox, tpl_chatbox_head, tpl_emojis, tpl_help_message, tpl_info, tpl_message, tpl_new_day, tpl_spinner, tpl_toolbar) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -12808,6 +11802,7 @@ return __p
       Strophe = _converse$env.Strophe,
       _ = _converse$env._,
       b64_sha1 = _converse$env.b64_sha1,
+      sizzle = _converse$env.sizzle,
       moment = _converse$env.moment;
   var u = converse.env.utils;
   var KEY = {
@@ -12815,6 +11810,19 @@ return __p
     FORWARD_SLASH: 47
   };
   converse.plugins.add('converse-chatview', {
+    /* Optional dependencies are other plugins which might be
+     * overridden or relied upon, and therefore need to be loaded before
+     * this plugin. They are called "optional" because they might not be
+     * available, in which case any overrides applicable to them will be
+     * ignored.
+     *
+     * It's possible however to make optional dependencies non-optional.
+     * If the setting "strict_plugin_dependencies" is set to true,
+     * an error will be raised if the plugin is not found.
+     *
+     * NB: These plugins need to have already been loaded via require.js.
+     */
+    optional_dependencies: ["converse-chatboxes"],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -12894,7 +11902,7 @@ return __p
           this.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
         }
       });
-      _converse.EmojiPickerView = Backbone.View.extend({
+      _converse.EmojiPickerView = Backbone.NativeView.extend({
         className: 'emoji-picker-container toolbar-menu collapsed',
         events: {
           'click .emoji-category-picker li.emoji-category': 'chooseCategory',
@@ -12978,7 +11986,7 @@ return __p
           });
         }
       });
-      _converse.ChatBoxHeading = Backbone.View.extend({
+      _converse.ChatBoxHeading = Backbone.NativeView.extend({
         initialize: function initialize() {
           this.model.on('change:image', this.render, this);
           this.model.on('change:status', this.onStatusMessageChanged, this);
@@ -13001,7 +12009,7 @@ return __p
           });
         }
       });
-      _converse.ChatBoxView = Backbone.View.extend({
+      _converse.ChatBoxView = Backbone.NativeView.extend({
         length: 200,
         className: 'chatbox hidden',
         is_chatroom: false,
@@ -13017,7 +12025,8 @@ return __p
           'click .new-msgs-indicator': 'viewUnreadMessages'
         },
         initialize: function initialize() {
-          this.markScrolled = _.debounce(this.markScrolled, 100);
+          this.scrollDown = _.debounce(this._scrollDown, 250);
+          this.markScrolled = _.debounce(this._markScrolled, 100);
           this.createEmojiPicker();
           this.model.messages.on('add', this.onMessageAdded, this);
           this.model.on('show', this.show, this);
@@ -13028,8 +12037,6 @@ return __p
           this.model.on('showHelpMessages', this.showHelpMessages, this);
           this.model.on('sendMessage', this.sendMessage, this);
           this.render().renderToolbar().insertHeading().fetchMessages();
-          this.createEmojiPicker();
-          u.refreshWebkit();
 
           _converse.emit('chatBoxOpened', this);
 
@@ -13046,7 +12053,6 @@ return __p
             unread_msgs: __('You have unread messages')
           }));
           this.content = this.el.querySelector('.chat-content');
-          this.$content = $(this.content);
           return this;
         },
         insertHeading: function insertHeading() {
@@ -13072,10 +12078,8 @@ return __p
         },
         afterMessagesFetched: function afterMessagesFetched() {
           this.insertIntoDOM();
-          this.scrollDown(); // We only start listening for the scroll event after
-          // cached messages have been fetched
-
-          this.$content.on('scroll', this.markScrolled.bind(this));
+          this.scrollDown();
+          this.content.addEventListener('scroll', this.markScrolled.bind(this));
 
           _converse.emit('afterMessagesFetched', this);
         },
@@ -13101,20 +12105,19 @@ return __p
           return this;
         },
         clearStatusNotification: function clearStatusNotification() {
-          this.$content.find('div.chat-event').remove();
+          u.removeElement(this.content.querySelector('.chat-event'));
         },
         showStatusNotification: function showStatusNotification(message, keep_old, permanent) {
           if (!keep_old) {
             this.clearStatusNotification();
           }
 
-          var $el = $('<div class="chat-info"></div>').text(message);
-
-          if (!permanent) {
-            $el.addClass('chat-event');
-          }
-
-          this.content.insertAdjacentElement('beforeend', $el[0]);
+          this.content.insertAdjacentHTML('beforeend', tpl_info({
+            'extra_classes': !permanent ? 'chat-event' : '',
+            'message': message,
+            'isodate': moment().format(),
+            'data': ''
+          }));
           this.scrollDown();
         },
         addSpinner: function addSpinner() {
@@ -13134,37 +12137,93 @@ return __p
             return el.parentNode.removeChild(el);
           });
         },
-        insertDayIndicator: function insertDayIndicator(date, prepend) {
-          /* Appends (or prepends if "prepend" is truthy) an indicator
-           * into the chat area, showing the day as given by the
-           * passed in date.
+        insertDayIndicator: function insertDayIndicator(next_msg_el) {
+          /* Inserts an indicator into the chat area, showing the
+           * day as given by the passed in date.
+           *
+           * The indicator is only inserted if necessary.
            *
            * Parameters:
-           *  (String) date - An ISO8601 date string.
+           *  (HTMLElement) next_msg_el - The message element before
+           *      which the day indicator element must be inserted.
+           *      This element must have a "data-isodate" attribute
+           *      which specifies its creation date.
            */
-          var day_date = moment(date).startOf('day');
-          var insert = prepend ? this.$content.prepend : this.$content.append;
-          insert.call(this.$content, tpl_new_day({
-            isodate: day_date.format(),
-            datestring: day_date.format("dddd MMM Do YYYY")
-          }));
+          var prev_msg_el = this.getPreviousMessageElement(next_msg_el),
+              prev_msg_date = _.isNull(prev_msg_el) ? null : prev_msg_el.getAttribute('data-isodate'),
+              next_msg_date = next_msg_el.getAttribute('data-isodate');
+
+          if (_.isNull(prev_msg_date) || moment(next_msg_date).isAfter(prev_msg_date, 'day')) {
+            var day_date = moment(next_msg_date).startOf('day');
+            next_msg_el.insertAdjacentHTML('beforeBegin', tpl_new_day({
+              'isodate': day_date.format(),
+              'datestring': day_date.format("dddd MMM Do YYYY")
+            }));
+          }
         },
-        insertMessage: function insertMessage(attrs, prepend) {
-          var _this2 = this;
+        getPreviousMessageElement: function getPreviousMessageElement(el) {
+          var prev_msg_el = el.previousSibling;
 
-          /* Helper method which appends a message (or prepends if the
-           * 2nd parameter is set to true) to the end of the chat box's
-           * content area.
+          while (!_.isNull(prev_msg_el) && !u.hasClass('message', prev_msg_el) && !u.hasClass('chat-info', prev_msg_el)) {
+            prev_msg_el = prev_msg_el.previousSibling;
+          }
+
+          return prev_msg_el;
+        },
+        getLastMessageElement: function getLastMessageElement() {
+          var last_msg_el = this.content.lastElementChild;
+
+          while (!_.isNull(last_msg_el) && !u.hasClass('message', last_msg_el) && !u.hasClass('chat-info', last_msg_el)) {
+            last_msg_el = last_msg_el.previousSibling;
+          }
+
+          return last_msg_el;
+        },
+        getFirstMessageElement: function getFirstMessageElement() {
+          var first_msg_el = this.content.firstElementChild;
+
+          while (!_.isNull(first_msg_el) && !u.hasClass('message', first_msg_el) && !u.hasClass('chat-info', first_msg_el)) {
+            first_msg_el = first_msg_el.nextSibling;
+          }
+
+          return first_msg_el;
+        },
+        getLastMessageDate: function getLastMessageDate(cutoff) {
+          /* Return the ISO8601 format date of the latest message.
            *
            * Parameters:
-           *  (Object) attrs: An object containing the message attributes.
+           *  (Object) cutoff: Moment Date cutoff date. The last
+           *      message received cutoff this date will be returned.
            */
-          var insert = prepend ? this.$content.prepend : this.$content.append;
+          var first_msg = this.getFirstMessageElement(),
+              oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
 
-          _.flow(function ($el) {
-            insert.call(_this2.$content, $el);
-            return $el;
-          }, this.scrollDown.bind(this))(this.renderMessage(attrs));
+          if (!_.isNull(oldest_date) && moment(oldest_date).isAfter(cutoff)) {
+            return null;
+          }
+
+          var last_msg = this.getLastMessageElement(),
+              most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
+
+          if (_.isNull(most_recent_date) || moment(most_recent_date).isBefore(cutoff)) {
+            return most_recent_date;
+          }
+
+          var msg_dates = _.invokeMap(sizzle('.message, .chat-info', this.content), Element.prototype.getAttribute, 'data-isodate');
+
+          if (_.isObject(cutoff)) {
+            cutoff = cutoff.format();
+          }
+
+          msg_dates.push(cutoff);
+          msg_dates.sort();
+          var idx = msg_dates.lastIndexOf(cutoff);
+
+          if (idx === 0) {
+            return null;
+          } else {
+            return msg_dates[idx - 1];
+          }
         },
         showMessage: function showMessage(attrs) {
           /* Inserts a chat message into the content area of the chat box.
@@ -13178,63 +12237,20 @@ return __p
            *  (Object) attrs: An object containing the message
            *      attributes.
            */
-          var current_msg_date = moment(attrs.time) || moment;
-          var $first_msg = this.$content.find('.chat-message:first'),
-              first_msg_date = $first_msg.data('isodate');
+          var current_msg_date = moment(attrs.time) || moment,
+              prepend_html = _.bind(this.content.insertAdjacentHTML, this.content, 'afterbegin'),
+              previous_msg_date = this.getLastMessageDate(current_msg_date),
+              message_el = this.renderMessage(attrs);
 
-          if (!first_msg_date) {
-            // This is the first received message, so we insert a
-            // date indicator before it.
-            this.insertDayIndicator(current_msg_date);
-            this.insertMessage(attrs);
-            return;
+          if (_.isNull(previous_msg_date)) {
+            this.content.insertAdjacentElement('afterbegin', message_el);
+          } else {
+            var previous_msg_el = sizzle("[data-isodate=\"".concat(previous_msg_date, "\"]:last"), this.content).pop();
+            previous_msg_el.insertAdjacentElement('afterend', message_el);
           }
 
-          var last_msg_date = this.$content.find('.chat-message:last').data('isodate');
-
-          if (current_msg_date.isAfter(last_msg_date) || current_msg_date.isSame(last_msg_date)) {
-            // The new message is after the last message
-            if (current_msg_date.isAfter(last_msg_date, 'day')) {
-              // Append a new day indicator
-              this.insertDayIndicator(current_msg_date);
-            }
-
-            this.insertMessage(attrs);
-            return;
-          }
-
-          if (current_msg_date.isBefore(first_msg_date) || current_msg_date.isSame(first_msg_date)) {
-            // The message is before the first, but on the same day.
-            // We need to prepend the message immediately before the
-            // first message (so that it'll still be after the day
-            // indicator).
-            this.insertMessage(attrs, 'prepend');
-
-            if (current_msg_date.isBefore(first_msg_date, 'day')) {
-              // This message is also on a different day, so
-              // we prepend a day indicator.
-              this.insertDayIndicator(current_msg_date, 'prepend');
-            }
-
-            return;
-          } // Find the correct place to position the message
-
-
-          current_msg_date = current_msg_date.format();
-
-          var msg_dates = _.map(this.$content.find('.chat-message'), function (el) {
-            return $(el).data('isodate');
-          });
-
-          msg_dates.push(current_msg_date);
-          msg_dates.sort();
-          var idx = msg_dates.indexOf(current_msg_date) - 1;
-          var $latest_message = this.$content.find(".chat-message[data-isodate=\"".concat(msg_dates[idx], "\"]:last"));
-
-          _.flow(function ($el) {
-            $el.insertAfter($latest_message);
-            return $el;
-          }, this.scrollDown.bind(this))(this.renderMessage(attrs));
+          this.insertDayIndicator(message_el);
+          this.scrollDown();
         },
         getExtraMessageTemplateAttributes: function getExtraMessageTemplateAttributes() {
           /* Provides a hook for sending more attributes to the
@@ -13278,7 +12294,7 @@ return __p
             username = attrs.sender === 'me' && __('me') || fullname;
           }
 
-          this.$content.find('div.chat-event').remove();
+          this.clearStatusNotification();
 
           if (text.length > 8000) {
             text = text.substring(0, 10) + '...';
@@ -13286,7 +12302,7 @@ return __p
           }
 
           var msg_time = moment(attrs.time) || moment;
-          var $msg = $(template(_.extend(this.getExtraMessageTemplateAttributes(attrs), {
+          var msg = u.stringToElement(template(_.extend(this.getExtraMessageTemplateAttributes(attrs), {
             'msgid': attrs.msgid,
             'sender': attrs.sender,
             'time': msg_time.format(_converse.time_format),
@@ -13294,18 +12310,18 @@ return __p
             'username': username,
             'extra_classes': this.getExtraMessageClasses(attrs)
           })));
-          var msg_content = $msg[0].querySelector('.chat-msg-content');
+          var msg_content = msg.querySelector('.chat-msg-content');
           msg_content.innerHTML = u.addEmoji(_converse, emojione, u.addHyperlinks(xss.filterXSS(text, {
             'whiteList': {}
           })));
           u.renderImageURLs(msg_content);
-          return $msg;
+          return msg;
         },
         showHelpMessages: function showHelpMessages(msgs, type, spinner) {
-          var _this3 = this;
+          var _this2 = this;
 
           _.each(msgs, function (msg) {
-            _this3.content.insertAdjacentHTML('beforeend', tpl_help_message({
+            _this2.content.insertAdjacentHTML('beforeend', tpl_help_message({
               'type': type || 'info',
               'message': xss.filterXSS(msg, {
                 'whiteList': {
@@ -13316,9 +12332,9 @@ return __p
           });
 
           if (spinner === true) {
-            this.$content.append(tpl_spinner);
+            this.addSpinner();
           } else if (spinner === false) {
-            this.$content.find('span.spinner').remove();
+            this.clearSpinner();
           }
 
           return this.scrollDown();
@@ -13339,26 +12355,26 @@ return __p
               this.showStatusNotification(message.get('fullname') + ' ' + __('has stopped typing'));
             }
           } else if (_.includes([_converse.INACTIVE, _converse.ACTIVE], message.get('chat_state'))) {
-            this.$content.find('div.chat-event').remove();
+            this.clearStatusNotification();
           } else if (message.get('chat_state') === _converse.GONE) {
             this.showStatusNotification(message.get('fullname') + ' ' + __('has gone away'));
           }
         },
         shouldShowOnTextMessage: function shouldShowOnTextMessage() {
-          return !this.$el.is(':visible');
+          return !u.isVisible(this.el);
         },
         handleTextMessage: function handleTextMessage(message) {
           this.showMessage(_.clone(message.attributes));
 
-          if (u.isNewMessage(message) && message.get('sender') === 'me') {
-            // We remove the "scrolled" flag so that the chat area
-            // gets scrolled down. We always want to scroll down
-            // when the user writes a message as opposed to when a
-            // message is received.
-            this.model.set('scrolled', false);
-          } else {
-            if (u.isNewMessage(message) && this.model.get('scrolled', true)) {
-              this.$el.find('.new-msgs-indicator').removeClass('hidden');
+          if (u.isNewMessage(message)) {
+            if (message.get('sender') === 'me') {
+              // We remove the "scrolled" flag so that the chat area
+              // gets scrolled down. We always want to scroll down
+              // when the user writes a message as opposed to when a
+              // message is received.
+              this.model.set('scrolled', false);
+            } else if (this.model.get('scrolled', true)) {
+              this.showNewMessagesIndicator();
             }
           }
 
@@ -13369,10 +12385,15 @@ return __p
           }
         },
         handleErrorMessage: function handleErrorMessage(message) {
-          var $message = $("[data-msgid=".concat(message.get('msgid'), "]"));
+          var message_el = this.content.querySelector("[data-msgid=\"".concat(message.get('msgid'), "\"]"));
 
-          if ($message.length) {
-            $message.after($('<div class="chat-info chat-error"></div>').text(message.get('message')));
+          if (!_.isNull(message_el)) {
+            message_el.insertAdjacentHTML('afterend', tpl_info({
+              'extra_classes': 'chat-error',
+              'message': message.get('message'),
+              'isodate': moment().format(),
+              'data': ''
+            }));
             this.scrollDown();
           }
         },
@@ -13429,10 +12450,10 @@ return __p
               type: 'chat',
               id: message.get('msgid')
             }).c('forwarded', {
-              xmlns: 'urn:xmpp:forward:0'
+              'xmlns': Strophe.NS.FORWARD
             }).c('delay', {
-              xmns: 'urn:xmpp:delay',
-              stamp: new Date().getTime()
+              'xmns': Strophe.NS.DELAY,
+              'stamp': moment.format()
             }).up().cnode(messageStanza.tree()));
           }
         },
@@ -13549,7 +12570,7 @@ return __p
           var result = confirm(__("Are you sure you want to clear the messages from this chat box?"));
 
           if (result === true) {
-            this.$content.empty();
+            this.content.innerHTML = '';
             this.model.messages.reset();
 
             this.model.messages.browserStorage._clear();
@@ -13558,14 +12579,15 @@ return __p
           return this;
         },
         insertIntoTextArea: function insertIntoTextArea(value) {
-          var $textbox = this.$el.find('textarea.chat-textarea');
-          var existing = $textbox.val();
+          var textbox_el = this.el.querySelector('.chat-textarea');
+          var existing = textbox_el.value;
 
           if (existing && existing[existing.length - 1] !== ' ') {
             existing = existing + ' ';
           }
 
-          $textbox.focus().val(existing + value + ' ');
+          textbox_el.value = existing + value + ' ';
+          textbox_el.focus();
         },
         insertEmoji: function insertEmoji(ev) {
           ev.stopPropagation();
@@ -13573,6 +12595,10 @@ return __p
           this.insertIntoTextArea(target.getAttribute('data-emoji'));
         },
         toggleEmojiMenu: function toggleEmojiMenu(ev) {
+          if (u.hasClass('insert-emoji', ev.target)) {
+            return;
+          }
+
           if (!_.isUndefined(ev)) {
             ev.stopPropagation();
 
@@ -13598,7 +12624,7 @@ return __p
           var fullname = item.get('fullname');
           fullname = _.isEmpty(fullname) ? item.get('jid') : fullname;
 
-          if (this.$el.is(':visible')) {
+          if (u.isVisible(this.el)) {
             if (chat_status === 'offline') {
               this.showStatusNotification(fullname + ' ' + __('has gone offline'));
             } else if (chat_status === 'away') {
@@ -13606,7 +12632,7 @@ return __p
             } else if (chat_status === 'dnd') {
               this.showStatusNotification(fullname + ' ' + __('is busy'));
             } else if (chat_status === 'online') {
-              this.$el.find('div.chat-event').remove();
+              this.clearStatusNotification();
             }
           }
         },
@@ -13676,7 +12702,6 @@ return __p
         },
         hide: function hide() {
           this.el.classList.add('hidden');
-          u.refreshWebkit();
           return this;
         },
         afterShown: function afterShown(focus) {
@@ -13725,6 +12750,9 @@ return __p
           this.debouncedShow.apply(this, arguments);
           return this;
         },
+        showNewMessagesIndicator: function showNewMessagesIndicator() {
+          u.showElement(this.el.querySelector('.new-msgs-indicator'));
+        },
         hideNewMessagesIndicator: function hideNewMessagesIndicator() {
           var new_msgs_indicator = this.el.querySelector('.new-msgs-indicator');
 
@@ -13732,7 +12760,7 @@ return __p
             new_msgs_indicator.classList.add('hidden');
           }
         },
-        markScrolled: function markScrolled(ev) {
+        _markScrolled: function _markScrolled(ev) {
           /* Called when the chat content is scrolled up or down.
            * We want to record when the user has scrolled away from
            * the bottom, so that we don't automatically scroll away
@@ -13752,7 +12780,7 @@ return __p
           }
 
           var scrolled = true;
-          var is_at_bottom = this.$content.scrollTop() + this.$content.innerHeight() >= this.$content[0].scrollHeight - 10;
+          var is_at_bottom = this.content.scrollTop + this.content.clientHeight >= this.content.scrollHeight - 62; // sigh...
 
           if (is_at_bottom) {
             scrolled = false;
@@ -13791,18 +12819,6 @@ return __p
           _converse.emit('chatBoxScrolledDown', {
             'chatbox': this.model
           });
-        },
-        scrollDown: function scrollDown() {
-          if (_.isUndefined(this.debouncedScrollDown)) {
-            /* We wrap the method in a debouncer and set it on the
-             * instance, so that we have it debounced per instance.
-             * Debouncing it on the class-level is too broad.
-             */
-            this.debouncedScrollDown = _.debounce(this._scrollDown, 250);
-          }
-
-          this.debouncedScrollDown.apply(this, arguments);
-          return this;
         },
         onWindowStateChanged: function onWindowStateChanged(state) {
           if (this.model.get('num_unread', 0) && !this.model.newMessageWillBeHidden()) {
@@ -14484,261 +13500,7 @@ return __p
           });
         }
       });
-      _converse.RosterView = Backbone.Overview.extend({
-        tagName: 'div',
-        id: 'converse-roster',
-        initialize: function initialize() {
-          var _this = this;
-
-          _converse.roster.on("add", this.onContactAdded, this);
-
-          _converse.roster.on('change', this.onContactChange, this);
-
-          _converse.roster.on("destroy", this.update, this);
-
-          _converse.roster.on("remove", this.update, this);
-
-          this.model.on("add", this.onGroupAdded, this);
-          this.model.on("reset", this.reset, this);
-
-          _converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
-
-          _converse.on('rosterContactsFetched', function () {
-            _converse.roster.each(_this.onContactAdded.bind(_this));
-
-            _this.update();
-          });
-
-          this.createRosterFilter();
-        },
-        render: function render() {
-          this.el.innerHTML = "";
-          this.el.appendChild(this.filter_view.render().el);
-          this.renderRoster();
-
-          if (!_converse.allow_contact_requests) {
-            // XXX: if we ever support live editing of config then
-            // we'll need to be able to remove this class on the fly.
-            this.el.classList.add('no-contact-requests');
-          }
-
-          return this;
-        },
-        renderRoster: function renderRoster() {
-          var div = document.createElement('div');
-          div.insertAdjacentHTML('beforeend', tpl_roster());
-          this.roster_el = div.firstChild;
-          this.el.insertAdjacentElement('beforeend', this.roster_el);
-        },
-        createRosterFilter: function createRosterFilter() {
-          // Create a model on which we can store filter properties
-          var model = new _converse.RosterFilter();
-          model.id = b64_sha1("_converse.rosterfilter".concat(_converse.bare_jid));
-          model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
-          this.filter_view = new _converse.RosterFilterView({
-            'model': model
-          });
-          this.filter_view.model.on('change', this.updateFilter, this);
-          this.filter_view.model.fetch();
-        },
-        updateFilter: _.debounce(function () {
-          /* Filter the roster again.
-           * Called whenever the filter settings have been changed or
-           * when contacts have been added, removed or changed.
-           *
-           * Debounced so that it doesn't get called for every
-           * contact fetched from browser storage.
-           */
-          var type = this.filter_view.model.get('filter_type');
-
-          if (type === 'state') {
-            this.filter(this.filter_view.model.get('chat_state'), type);
-          } else {
-            this.filter(this.filter_view.model.get('filter_text'), type);
-          }
-        }, 100),
-        update: _.debounce(function () {
-          if (!u.isVisible(this.roster_el)) {
-            u.showElement(this.roster_el);
-          }
-
-          return this.showHideFilter();
-        }, _converse.animate ? 100 : 0),
-        showHideFilter: function showHideFilter() {
-          if (!u.isVisible(this.el)) {
-            return;
-          }
-
-          this.filter_view.showOrHide();
-          return this;
-        },
-        filter: function filter(query, type) {
-          // First we make sure the filter is restored to its
-          // original state
-          _.each(this.getAll(), function (view) {
-            if (view.model.contacts.length > 0) {
-              view.show().filter('');
-            }
-          }); // Now we can filter
-
-
-          query = query.toLowerCase();
-
-          if (type === 'groups') {
-            _.each(this.getAll(), function (view, idx) {
-              if (!_.includes(view.model.get('name').toLowerCase(), query.toLowerCase())) {
-                u.slideIn(view.el);
-              } else if (view.model.contacts.length > 0) {
-                u.slideOut(view.el);
-              }
-            });
-          } else {
-            _.each(this.getAll(), function (view) {
-              view.filter(query, type);
-            });
-          }
-        },
-        reset: function reset() {
-          _converse.roster.reset();
-
-          this.removeAll();
-          this.render().update();
-          return this;
-        },
-        onGroupAdded: function onGroupAdded(group) {
-          var view = new _converse.RosterGroupView({
-            model: group
-          });
-          this.add(group.get('name'), view);
-          this.positionGroup(group);
-        },
-        onContactAdded: function onContactAdded(contact) {
-          this.addRosterContact(contact).update();
-          this.updateFilter();
-        },
-        onContactChange: function onContactChange(contact) {
-          this.updateChatBox(contact).update();
-
-          if (_.has(contact.changed, 'subscription')) {
-            if (contact.changed.subscription === 'from') {
-              this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
-            } else if (_.includes(['both', 'to'], contact.get('subscription'))) {
-              this.addExistingContact(contact);
-            }
-          }
-
-          if (_.has(contact.changed, 'ask') && contact.changed.ask === 'subscribe') {
-            this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
-          }
-
-          if (_.has(contact.changed, 'subscription') && contact.changed.requesting === 'true') {
-            this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
-          }
-
-          this.updateFilter();
-        },
-        updateChatBox: function updateChatBox(contact) {
-          var chatbox = _converse.chatboxes.get(contact.get('jid')),
-              changes = {};
-
-          if (!chatbox) {
-            return this;
-          }
-
-          if (_.has(contact.changed, 'chat_status')) {
-            changes.chat_status = contact.get('chat_status');
-          }
-
-          if (_.has(contact.changed, 'status')) {
-            changes.status = contact.get('status');
-          }
-
-          chatbox.save(changes);
-          return this;
-        },
-        positionFetchedGroups: function positionFetchedGroups() {
-          /* Instead of throwing an add event for each group
-           * fetched, we wait until they're all fetched and then
-           * we position them.
-           * Works around the problem of positionGroup not
-           * working when all groups besides the one being
-           * positioned aren't already in inserted into the
-           * roster DOM element.
-           */
-          this.model.sort();
-          this.model.each(this.onGroupAdded.bind(this));
-        },
-        positionGroup: function positionGroup(group) {
-          /* Place the group's DOM element in the correct alphabetical
-           * position amongst the other groups in the roster.
-           *
-           * NOTE: relies on the assumption that it will be called in
-           * the right order of appearance of groups.
-           */
-          var view = this.get(group.get('name'));
-          view.render();
-          var list = this.roster_el,
-              index = this.model.indexOf(view.model);
-
-          if (index === 0) {
-            list.insertAdjacentElement('afterbegin', view.el);
-          } else if (index === this.model.length - 1) {
-            list.insertAdjacentElement('beforeend', view.el);
-          } else {
-            var neighbour_el = list.querySelector('div:nth-child(' + index + ')');
-            neighbour_el.insertAdjacentElement('afterend', view.el);
-          }
-
-          return this;
-        },
-        getGroup: function getGroup(name) {
-          /* Returns the group as specified by name.
-           * Creates the group if it doesn't exist.
-           */
-          var view = this.get(name);
-
-          if (view) {
-            return view.model;
-          }
-
-          return this.model.create({
-            name: name,
-            id: b64_sha1(name)
-          });
-        },
-        addContactToGroup: function addContactToGroup(contact, name) {
-          this.getGroup(name).contacts.add(contact);
-        },
-        addExistingContact: function addExistingContact(contact) {
-          var groups;
-
-          if (_converse.roster_groups) {
-            groups = contact.get('groups');
-
-            if (groups.length === 0) {
-              groups = [HEADER_UNGROUPED];
-            }
-          } else {
-            groups = [HEADER_CURRENT_CONTACTS];
-          }
-
-          _.each(groups, _.bind(this.addContactToGroup, this, contact));
-        },
-        addRosterContact: function addRosterContact(contact) {
-          if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to') {
-            this.addExistingContact(contact);
-          } else {
-            if (contact.get('ask') === 'subscribe' || contact.get('subscription') === 'from') {
-              this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
-            } else if (contact.get('requesting') === true) {
-              this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
-            }
-          }
-
-          return this;
-        }
-      });
-      _converse.RosterContactView = Backbone.View.extend({
+      _converse.RosterContactView = Backbone.NativeView.extend({
         tagName: 'li',
         className: 'hidden',
         events: {
@@ -14849,7 +13611,7 @@ return __p
           return _converse.chatboxviews.showChat(this.model.attributes, true);
         },
         removeContact: function removeContact(ev) {
-          var _this2 = this;
+          var _this = this;
 
           if (ev && ev.preventDefault) {
             ev.preventDefault();
@@ -14872,9 +13634,9 @@ return __p
             });
 
             _converse.connection.sendIQ(iq, function (iq) {
-              _this2.model.destroy();
+              _this.model.destroy();
 
-              _this2.remove();
+              _this.remove();
             }, function (err) {
               alert(__('Sorry, there was an error while trying to remove %1$s as a contact.', name));
 
@@ -14883,14 +13645,14 @@ return __p
           }
         },
         acceptRequest: function acceptRequest(ev) {
-          var _this3 = this;
+          var _this2 = this;
 
           if (ev && ev.preventDefault) {
             ev.preventDefault();
           }
 
           _converse.roster.sendContactAddIQ(this.model.get('jid'), this.model.get('fullname'), [], function () {
-            _this3.model.authorize().subscribe();
+            _this2.model.authorize().subscribe();
           });
         },
         declineRequest: function declineRequest(ev) {
@@ -14907,22 +13669,29 @@ return __p
           return this;
         }
       });
-      _converse.RosterGroupView = Backbone.Overview.extend({
+      _converse.RosterGroupView = Backbone.OrderedListView.extend({
         tagName: 'div',
-        className: 'roster-group',
+        className: 'roster-group hidden',
         events: {
           "click a.group-toggle": "toggle"
         },
+        ItemView: _converse.RosterContactView,
+        listItems: 'model.contacts',
+        listSelector: '.roster-group-contacts',
+        sortEvent: 'change:chat_status',
         initialize: function initialize() {
-          this.sortEventually = _.debounce(this.sortAndPositionAll, 500);
-          this.model.contacts.on("add", this.onContactAdded, this);
+          Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
           this.model.contacts.on("change:subscription", this.onContactSubscriptionChange, this);
           this.model.contacts.on("change:requesting", this.onContactRequestChange, this);
-          this.model.contacts.on("change:chat_status", this.sortEventually, this);
-          this.model.contacts.on("destroy", this.onRemove, this);
           this.model.contacts.on("remove", this.onRemove, this);
 
-          _converse.roster.on('change:groups', this.onContactGroupChange, this);
+          _converse.roster.on('change:groups', this.onContactGroupChange, this); // This event gets triggered once *all* contacts (i.e. not
+          // just this group's) have been fetched from browser
+          // storage or the XMPP server and once they've been
+          // assigned to their various groups.
+
+
+          _converse.rosterview.on('rosterContactsFetchedAndProcessed', this.sortAndPositionAllItems.bind(this));
         },
         render: function render() {
           this.el.setAttribute('data-group', this.model.get('name'));
@@ -14935,57 +13704,13 @@ return __p
           this.contacts_el = this.el.querySelector('.roster-group-contacts');
           return this;
         },
-        createContactView: function createContactView(contact) {
-          var contact_view = new _converse.RosterContactView({
-            model: contact
-          });
-          this.add(contact.get('id'), contact_view);
-          contact_view.render();
-          return contact_view;
-        },
-        onContactAdded: function onContactAdded(contact) {
-          var contact_view = this.positionContact(contact);
-
-          if (contact_view.mayBeShown()) {
-            if (this.model.get('state') === _converse.CLOSED) {
-              u.hideElement(contact_view.el);
-              u.showElement(this.el);
-            } else {
-              u.showElement(contact_view.el);
-              u.showElement(this.el);
-            }
-          }
-        },
-        positionContact: function positionContact(contact) {
-          /* Place the contact's DOM element in the correct alphabetical
-           * position amongst the other contacts in this group.
-           */
-          var view = this.get(contact.get('id')) || this.createContactView(contact);
-          var list = this.contacts_el;
-          var index = this.model.contacts.indexOf(contact);
-
-          if (index === 0) {
-            list.insertAdjacentElement('afterbegin', view.el);
-          } else if (index === this.model.contacts.length - 1) {
-            list.insertAdjacentElement('beforeend', view.el);
-          } else {
-            var neighbour_el = list.querySelector('li:nth-child(' + index + ')');
-            neighbour_el.insertAdjacentElement('afterend', view.el);
-          }
-
-          return view;
-        },
-        sortAndPositionAll: function sortAndPositionAll() {
-          this.model.contacts.sort();
-          this.model.contacts.each(this.positionContact.bind(this));
-        },
         show: function show() {
-          var _this4 = this;
+          var _this3 = this;
 
           u.showElement(this.el);
 
           _.each(this.getAll(), function (contact_view) {
-            if (contact_view.mayBeShown() && _this4.model.get('state') === _converse.OPENED) {
+            if (contact_view.mayBeShown() && _this3.model.get('state') === _converse.OPENED) {
               u.showElement(contact_view.el);
             }
           });
@@ -14996,7 +13721,7 @@ return __p
           return u.slideIn(this.contacts_el);
         },
         filterOutContacts: function filterOutContacts() {
-          var _this5 = this;
+          var _this4 = this;
 
           var contacts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
@@ -15010,7 +13735,7 @@ return __p
           var all_contact_views = this.getAll();
 
           _.each(this.model.contacts.models, function (contact) {
-            var contact_view = _this5.get(contact.get('id'));
+            var contact_view = _this4.get(contact.get('id'));
 
             if (_.includes(contacts, contact)) {
               u.hideElement(contact_view.el);
@@ -15097,37 +13822,270 @@ return __p
           var in_this_overview = !this.get(cid);
 
           if (in_this_group && !in_this_overview) {
-            this.model.contacts.remove(cid);
-          } else if (!in_this_group && in_this_overview) {
-            this.onContactAdded(contact);
+            this.items.trigger('add', contact);
+          } else if (!in_this_group) {
+            this.removeContact(contact);
           }
         },
         onContactSubscriptionChange: function onContactSubscriptionChange(contact) {
           if (this.model.get('name') === HEADER_PENDING_CONTACTS && contact.get('subscription') !== 'from') {
-            this.model.contacts.remove(contact.get('id'));
+            this.removeContact(contact);
           }
         },
         onContactRequestChange: function onContactRequestChange(contact) {
           if (this.model.get('name') === HEADER_REQUESTING_CONTACTS && !contact.get('requesting')) {
-            /* We suppress events, otherwise the remove event will
-             * also cause the contact's view to be removed from the
-             * "Pending Contacts" group.
-             */
-            this.model.contacts.remove(contact.get('id'), {
-              'silent': true
-            }); // Since we suppress events, we make sure the view and
-            // contact are removed from this group.
-
-            this.get(contact.get('id')).remove();
-            this.onRemove(contact);
+            this.removeContact(contact);
           }
         },
+        removeContact: function removeContact(contact) {
+          // We suppress events, otherwise the remove event will
+          // also cause the contact's view to be removed from the
+          // "Pending Contacts" group.
+          this.model.contacts.remove(contact, {
+            'silent': true
+          });
+          this.onRemove(contact);
+        },
         onRemove: function onRemove(contact) {
+          this.get(contact.get('id')).remove();
           this.remove(contact.get('id'));
 
           if (this.model.contacts.length === 0) {
-            u.hideElement(this.el);
+            this.el.parentElement.removeChild(this.el);
           }
+        }
+      });
+      _converse.RosterView = Backbone.OrderedListView.extend({
+        tagName: 'div',
+        id: 'converse-roster',
+        ItemView: _converse.RosterGroupView,
+        listItems: 'model',
+        listSelector: '.roster-contacts',
+        sortEvent: null,
+        // Groups are immutable, so they don't get re-sorted
+        subviewIndex: 'name',
+        initialize: function initialize() {
+          var _this5 = this;
+
+          Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+
+          _converse.roster.on("add", this.onContactAdded, this);
+
+          _converse.roster.on('change:groups', this.onContactAdded, this);
+
+          _converse.roster.on('change', this.onContactChange, this);
+
+          _converse.roster.on("destroy", this.update, this);
+
+          _converse.roster.on("remove", this.update, this);
+
+          this.model.on("reset", this.reset, this); // This event gets triggered once *all* contacts (i.e. not
+          // just this group's) have been fetched from browser
+          // storage or the XMPP server and once they've been
+          // assigned to their various groups.
+
+          _converse.on('rosterGroupsFetched', this.sortAndPositionAllItems.bind(this)); // _converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
+
+
+          _converse.on('rosterContactsFetched', function () {
+            _converse.roster.each(function (contact) {
+              _this5.addRosterContact(contact, {
+                'silent': true
+              });
+            });
+
+            _this5.update();
+
+            _this5.updateFilter();
+
+            _this5.trigger('rosterContactsFetchedAndProcessed');
+          });
+
+          this.createRosterFilter();
+        },
+        render: function render() {
+          this.el.innerHTML = "";
+          this.el.appendChild(this.filter_view.render().el);
+          this.renderRoster();
+
+          if (!_converse.allow_contact_requests) {
+            // XXX: if we ever support live editing of config then
+            // we'll need to be able to remove this class on the fly.
+            this.el.classList.add('no-contact-requests');
+          }
+
+          return this;
+        },
+        renderRoster: function renderRoster() {
+          var div = document.createElement('div');
+          div.insertAdjacentHTML('beforeend', tpl_roster());
+          this.roster_el = div.firstChild;
+          this.el.insertAdjacentElement('beforeend', this.roster_el);
+        },
+        createRosterFilter: function createRosterFilter() {
+          // Create a model on which we can store filter properties
+          var model = new _converse.RosterFilter();
+          model.id = b64_sha1("_converse.rosterfilter".concat(_converse.bare_jid));
+          model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
+          this.filter_view = new _converse.RosterFilterView({
+            'model': model
+          });
+          this.filter_view.model.on('change', this.updateFilter, this);
+          this.filter_view.model.fetch();
+        },
+        updateFilter: _.debounce(function () {
+          /* Filter the roster again.
+           * Called whenever the filter settings have been changed or
+           * when contacts have been added, removed or changed.
+           *
+           * Debounced so that it doesn't get called for every
+           * contact fetched from browser storage.
+           */
+          var type = this.filter_view.model.get('filter_type');
+
+          if (type === 'state') {
+            this.filter(this.filter_view.model.get('chat_state'), type);
+          } else {
+            this.filter(this.filter_view.model.get('filter_text'), type);
+          }
+        }, 100),
+        update: _.debounce(function () {
+          if (!u.isVisible(this.roster_el)) {
+            u.showElement(this.roster_el);
+          }
+
+          return this.showHideFilter();
+        }, _converse.animate ? 100 : 0),
+        showHideFilter: function showHideFilter() {
+          if (!u.isVisible(this.el)) {
+            return;
+          }
+
+          this.filter_view.showOrHide();
+          return this;
+        },
+        filter: function filter(query, type) {
+          // First we make sure the filter is restored to its
+          // original state
+          _.each(this.getAll(), function (view) {
+            if (view.model.contacts.length > 0) {
+              view.show().filter('');
+            }
+          }); // Now we can filter
+
+
+          query = query.toLowerCase();
+
+          if (type === 'groups') {
+            _.each(this.getAll(), function (view, idx) {
+              if (!_.includes(view.model.get('name').toLowerCase(), query.toLowerCase())) {
+                u.slideIn(view.el);
+              } else if (view.model.contacts.length > 0) {
+                u.slideOut(view.el);
+              }
+            });
+          } else {
+            _.each(this.getAll(), function (view) {
+              view.filter(query, type);
+            });
+          }
+        },
+        reset: function reset() {
+          _converse.roster.reset();
+
+          this.removeAll();
+          this.render().update();
+          return this;
+        },
+        onContactAdded: function onContactAdded(contact) {
+          this.addRosterContact(contact).update();
+          this.updateFilter();
+        },
+        onContactChange: function onContactChange(contact) {
+          this.updateChatBox(contact).update();
+
+          if (_.has(contact.changed, 'subscription')) {
+            if (contact.changed.subscription === 'from') {
+              this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
+            } else if (_.includes(['both', 'to'], contact.get('subscription'))) {
+              this.addExistingContact(contact);
+            }
+          }
+
+          if (_.has(contact.changed, 'ask') && contact.changed.ask === 'subscribe') {
+            this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
+          }
+
+          if (_.has(contact.changed, 'subscription') && contact.changed.requesting === 'true') {
+            this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
+          }
+
+          this.updateFilter();
+        },
+        updateChatBox: function updateChatBox(contact) {
+          var chatbox = _converse.chatboxes.get(contact.get('jid')),
+              changes = {};
+
+          if (!chatbox) {
+            return this;
+          }
+
+          if (_.has(contact.changed, 'chat_status')) {
+            changes.chat_status = contact.get('chat_status');
+          }
+
+          if (_.has(contact.changed, 'status')) {
+            changes.status = contact.get('status');
+          }
+
+          chatbox.save(changes);
+          return this;
+        },
+        getGroup: function getGroup(name) {
+          /* Returns the group as specified by name.
+           * Creates the group if it doesn't exist.
+           */
+          var view = this.get(name);
+
+          if (view) {
+            return view.model;
+          }
+
+          return this.model.create({
+            name: name,
+            id: b64_sha1(name)
+          });
+        },
+        addContactToGroup: function addContactToGroup(contact, name, options) {
+          this.getGroup(name).contacts.add(contact, options);
+        },
+        addExistingContact: function addExistingContact(contact, options) {
+          var groups;
+
+          if (_converse.roster_groups) {
+            groups = contact.get('groups');
+
+            if (groups.length === 0) {
+              groups = [HEADER_UNGROUPED];
+            }
+          } else {
+            groups = [HEADER_CURRENT_CONTACTS];
+          }
+
+          _.each(groups, _.bind(this.addContactToGroup, this, contact, _, options));
+        },
+        addRosterContact: function addRosterContact(contact, options) {
+          if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to') {
+            this.addExistingContact(contact, options);
+          } else {
+            if (contact.get('ask') === 'subscribe' || contact.get('subscription') === 'from') {
+              this.addContactToGroup(contact, HEADER_PENDING_CONTACTS, options);
+            } else if (contact.get('requesting') === true) {
+              this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS, options);
+            }
+          }
+
+          return this;
         }
       });
       /* -------- Event Handlers ----------- */
@@ -15533,7 +14491,7 @@ return __p
             const { _converse } = this,
                 { __ } = _converse;
 
-            _converse.XMPPStatusView = Backbone.View.extend({
+            _converse.XMPPStatusView = Backbone.NativeView.extend({
                 el: "form#set-xmpp-status",
                 events: {
                     "click a.choose-xmpp-status": "toggleOptions",
@@ -15606,7 +14564,7 @@ return __p
 
                 setStatus (ev) {
                     ev.preventDefault();
-                    const value = ev.currentTarget.getAttribute('data-value');
+                    const value = ev.target.getAttribute('data-value');
                     if (value === 'logout') {
                         _converse.logOut();
                     } else {
@@ -15659,8 +14617,8 @@ return __p
 
 /*global define */
 (function (root, factory) {
-  define('converse-controlbox',["jquery.noconflict", "converse-core", "lodash.fp", "tpl!add_contact_dropdown", "tpl!add_contact_form", "tpl!converse_brand_heading", "tpl!contacts_panel", "tpl!contacts_tab", "tpl!controlbox", "tpl!controlbox_toggle", "tpl!login_panel", "tpl!search_contact", "converse-chatview", "converse-rosterview", "converse-profile"], factory);
-})(this, function ($, converse, fp, tpl_add_contact_dropdown, tpl_add_contact_form, tpl_brand_heading, tpl_contacts_panel, tpl_contacts_tab, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel, tpl_search_contact) {
+  define('converse-controlbox',["converse-core", "lodash.fp", "tpl!add_contact_dropdown", "tpl!add_contact_form", "tpl!converse_brand_heading", "tpl!contacts_panel", "tpl!contacts_tab", "tpl!controlbox", "tpl!controlbox_toggle", "tpl!login_panel", "tpl!search_contact", "converse-chatview", "converse-rosterview", "converse-profile"], factory);
+})(this, function (converse, fp, tpl_add_contact_dropdown, tpl_add_contact_form, tpl_brand_heading, tpl_contacts_panel, tpl_contacts_tab, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel, tpl_search_contact) {
   "use strict";
 
   var USERS_PANEL_ID = 'users';
@@ -15669,9 +14627,9 @@ return __p
       Strophe = _converse$env.Strophe,
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
-      utils = _converse$env.utils,
       _ = _converse$env._,
       moment = _converse$env.moment;
+  var u = converse.env.utils;
   var CONNECTION_STATUS_CSS_CLASS = {
     'Error': 'error',
     'Connecting': 'info',
@@ -15795,10 +14753,10 @@ return __p
             /* We return the width of the controlbox or its toggle,
              * depending on which is visible.
              */
-            if (!controlbox || !controlbox.$el.is(':visible')) {
-              return _converse.controlboxtoggle.$el.outerWidth(true);
+            if (!controlbox || !u.isVisible(controlbox.el)) {
+              return u.getOuterWidth(_converse.controlboxtoggle.el, true);
             } else {
-              return controlbox.$el.outerWidth(true);
+              return u.getOuterWidth(controlbox.el, true);
             }
           } else {
             return this.__super__.getChatBoxWidth.apply(this, arguments);
@@ -15871,7 +14829,8 @@ return __p
         initialize: function initialize() {
           if (_.isUndefined(_converse.controlboxtoggle)) {
             _converse.controlboxtoggle = new _converse.ControlBoxToggle();
-            this.$el.insertAfter(_converse.controlboxtoggle.$el);
+
+            _converse.controlboxtoggle.el.insertAdjacentElement('afterend', this.el);
           }
 
           this.model.on('change:connected', this.onConnected, this);
@@ -15906,7 +14865,7 @@ return __p
 
           if (!_converse.connection.connected || !_converse.connection.authenticated || _converse.connection.disconnecting) {
             this.renderLoginPanel();
-          } else if (this.model.get('connected') && (!this.contactspanel || !this.contactspanel.$el.is(':visible'))) {
+          } else if (this.model.get('connected') && (!this.contactspanel || !u.isVisible(this.contactspanel.el))) {
             this.renderContactsPanel();
           }
 
@@ -15976,7 +14935,7 @@ return __p
           }
 
           this.contactspanel = new _converse.ContactsPanel({
-            '$parent': this.$el.find('.controlbox-panes')
+            'parent_el': this.el.querySelector('.controlbox-panes')
           });
           this.contactspanel.insertIntoDOM();
           _converse.xmppstatusview = new _converse.XMPPStatusView({
@@ -16018,8 +14977,7 @@ return __p
             return;
           }
 
-          this.$el.addClass('hidden');
-          utils.refreshWebkit();
+          u.addClass('hidden', this.el);
 
           _converse.emit('chatBoxClosed', this);
 
@@ -16032,9 +14990,6 @@ return __p
           return this;
         },
         onControlBoxToggleHidden: function onControlBoxToggleHidden() {
-          _converse.controlboxtoggle.updateOnlineCount();
-
-          utils.refreshWebkit();
           this.model.set('closed', false);
           this.el.classList.remove('hidden');
 
@@ -16046,22 +15001,23 @@ return __p
           return this;
         },
         switchTab: function switchTab(ev) {
-          // TODO: automatically focus the relevant input
           if (ev && ev.preventDefault) {
             ev.preventDefault();
           }
 
-          var $tab = $(ev.target),
-              $sibling = $tab.parent().siblings('li').children('a'),
-              $tab_panel = $($tab.attr('href'));
-          $($sibling.attr('href')).addClass('hidden');
-          $sibling.removeClass('current');
-          $tab.addClass('current');
-          $tab_panel.removeClass('hidden');
+          var tab = ev.target,
+              sibling_li = tab.parentNode.nextElementSibling || tab.parentNode.previousElementSibling,
+              sibling = sibling_li.firstChild,
+              sibling_panel = document.querySelector(sibling.getAttribute('href')),
+              tab_panel = document.querySelector(tab.getAttribute('href'));
+          u.hideElement(sibling_panel);
+          u.removeClass('current', sibling);
+          u.addClass('current', tab);
+          u.removeClass('hidden', tab_panel);
 
           if (!_.isUndefined(_converse.chatboxes.browserStorage)) {
             this.model.save({
-              'active-panel': $tab.data('id')
+              'active-panel': tab.getAttribute('data-id')
             });
           }
 
@@ -16123,7 +15079,7 @@ return __p
           var form = this.el.querySelector('form');
           var jid_element = form.querySelector('input[name=jid]');
 
-          if (jid_element.value && !_converse.locked_domain && !_converse.default_domain && !utils.isValidJID(jid_element.value)) {
+          if (jid_element.value && !_converse.locked_domain && !_converse.default_domain && !u.isValidJID(jid_element.value)) {
             jid_element.setCustomValidity(__('Please enter a valid XMPP address'));
             return false;
           }
@@ -16179,7 +15135,7 @@ return __p
           _converse.connection.connect(jid, password, _converse.onConnectStatusChanged);
         }
       });
-      _converse.ContactsPanel = Backbone.View.extend({
+      _converse.ContactsPanel = Backbone.NativeView.extend({
         tagName: 'div',
         className: 'controlbox-pane',
         id: 'users',
@@ -16190,7 +15146,7 @@ return __p
           'click a.subscribe-to-user': 'addContactFromList'
         },
         initialize: function initialize(cfg) {
-          this.parent_el = cfg.$parent[0];
+          this.parent_el = cfg.parent_el;
           this.tab_el = document.createElement('li');
 
           _converse.chatboxes.on('change:num_unread', this.renderTab, this);
@@ -16229,11 +15185,11 @@ return __p
         renderTab: function renderTab() {
           var controlbox = _converse.chatboxes.get('controlbox');
 
-          var chats = fp.filter(_.partial(utils.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
+          var chats = fp.filter(_.partial(u.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
           this.tab_el.innerHTML = tpl_contacts_tab({
             'label_contacts': LABEL_CONTACTS,
             'is_current': controlbox.get('active-panel') === USERS_PANEL_ID,
-            'num_unread': fp.sum(fp.map(fp.curry(utils.getAttribute)('num_unread'), chats))
+            'num_unread': fp.sum(fp.map(fp.curry(u.getAttribute)('num_unread'), chats))
           });
         },
         insertIntoDOM: function insertIntoDOM() {
@@ -16263,31 +15219,54 @@ return __p
           ev.preventDefault();
           this.el.querySelector('.search-xmpp div').innerHTML = this.generateAddContactHTML();
           var dropdown = this.el.querySelector('.contact-form-container');
-          utils.slideToggleElement(dropdown).then(function () {
-            if (utils.isVisible(dropdown)) {
+          u.slideToggleElement(dropdown).then(function () {
+            if (u.isVisible(dropdown)) {
               dropdown.querySelector('input.username').focus();
             }
           });
         },
         searchContacts: function searchContacts(ev) {
           ev.preventDefault();
-          $.getJSON(_converse.xhr_user_search_url + "?q=" + $(ev.target).find('input.username').val(), function (data) {
-            var title_subscribe = __('Click to add as a chat contact');
+          var search_query = ev.target.querySelector('input.username').value,
+              url = _converse.xhr_user_search_url + "?q=" + search_query,
+              xhr = new XMLHttpRequest();
+          xhr.open('GET', url, true);
+          xhr.setRequestHeader('Accept', "application/json, text/javascript");
 
-            var no_users_text = __('No users found');
+          xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 400) {
+              var data = JSON.parse(xhr.responseText),
+                  ul = document.querySelector('.search-xmpp ul');
+              u.removeElement(ul.querySelector('li.found-user'));
+              u.removeElement(ul.querySelector('li.chat-info'));
 
-            var $ul = $('.search-xmpp ul');
-            $ul.find('li.found-user').remove();
-            $ul.find('li.chat-info').remove();
+              if (!data.length) {
+                var no_users_text = __('No users found');
 
-            if (!data.length) {
-              $ul.append("<li class=\"chat-info\">".concat(no_users_text, "</li>"));
+                ul.insertAdjacentHTML('beforeEnd', "<li class=\"chat-info\">".concat(no_users_text, "</li>"));
+              } else {
+                var title_subscribe = __('Click to add as a chat contact');
+
+                _.each(data, function (obj) {
+                  var li = u.stringToElement('<li class="found-user"></li>'),
+                      a = u.stringToElement("<a class=\"subscribe-to-user\" href=\"#\" title=\"".concat(title_subscribe, "\"></a>")),
+                      jid = Strophe.getNodeFromJid(obj.id) + "@" + Strophe.getDomainFromJid(obj.id);
+                  a.setAttribute('data-recipient', jid);
+                  a.textContent = obj.fullname;
+                  li.appendChild(a);
+                  u.appendChild(li);
+                });
+              }
+            } else {
+              xhr.onerror();
             }
+          };
 
-            $(data).each(function (idx, obj) {
-              $ul.append($('<li class="found-user"></li>').append($("<a class=\"subscribe-to-user\" href=\"#\" title=\"".concat(title_subscribe, "\"></a>")).attr('data-recipient', Strophe.getNodeFromJid(obj.id) + "@" + Strophe.getDomainFromJid(obj.id)).text(obj.fullname)));
-            });
-          });
+          xhr.onerror = function () {
+            _converse.log('Could not fetch contacts via XHR', Strophe.LogLevel.ERROR);
+          };
+
+          xhr.send();
         },
         addContactFromForm: function addContactFromForm(ev) {
           ev.preventDefault();
@@ -16306,7 +15285,7 @@ return __p
 
           _converse.roster.addAndSubscribe(jid);
 
-          utils.slideIn(this.el.querySelector('.contact-form-container'));
+          u.slideIn(this.el.querySelector('.contact-form-container'));
         },
         addContactFromList: function addContactFromList(ev) {
           ev.preventDefault();
@@ -16317,10 +15296,10 @@ return __p
 
           var parent = ev.target.parentNode;
           parent.parentNode.removeChild(parent);
-          utils.slideIn(this.el.querySelector('.contact-form-container'));
+          u.slideIn(this.el.querySelector('.contact-form-container'));
         }
       });
-      _converse.ControlBoxToggle = Backbone.View.extend({
+      _converse.ControlBoxToggle = Backbone.NativeView.extend({
         tagName: 'a',
         className: 'toggle-controlbox hidden',
         id: 'toggle-controlbox',
@@ -16333,21 +15312,12 @@ return __p
         initialize: function initialize() {
           var _this = this;
 
-          _converse.chatboxviews.$el.prepend(this.render().el);
+          _converse.chatboxviews.el.insertAdjacentElement('afterBegin', this.render().el);
 
-          this.updateOnlineCount();
           var that = this;
 
           _converse.api.waitUntil('initialized').then(function () {
             _this.render();
-
-            _converse.roster.on("add", that.updateOnlineCount, that);
-
-            _converse.roster.on('change', that.updateOnlineCount, that);
-
-            _converse.roster.on("destroy", that.updateOnlineCount, that);
-
-            _converse.roster.on("remove", that.updateOnlineCount, that);
           }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         },
         render: function render() {
@@ -16360,24 +15330,12 @@ return __p
           });
           return this;
         },
-        updateOnlineCount: _.debounce(function () {
-          if (_.isUndefined(_converse.roster)) {
-            return;
-          }
-
-          var $count = this.$('#online-count');
-          $count.text("(".concat(_converse.roster.getNumOnlineContacts(), ")"));
-
-          if (!$count.is(':visible')) {
-            $count.show();
-          }
-        }, _converse.animate ? 100 : 0),
         hide: function hide(callback) {
-          this.el.classList.add('hidden');
+          u.hideElement(this.el);
           callback();
         },
         show: function show(callback) {
-          utils.fadeIn(this.el, callback);
+          u.fadeIn(this.el, callback);
         },
         showControlBox: function showControlBox() {
           var controlbox = _converse.chatboxes.get('controlbox');
@@ -16397,7 +15355,7 @@ return __p
         onClick: function onClick(e) {
           e.preventDefault();
 
-          if (utils.isVisible(document.querySelector("#controlbox"))) {
+          if (u.isVisible(document.querySelector("#controlbox"))) {
             var controlbox = _converse.chatboxes.get('controlbox');
 
             if (_converse.connection.connected) {
@@ -16425,7 +15383,7 @@ return __p
         view.model.set({
           connected: false
         });
-        view.$('#controlbox-tabs').empty();
+        view.el.querySelector('#controlbox-tabs').innerHTML = '';
         view.renderLoginPanel();
       };
 
@@ -16679,10 +15637,10 @@ return __p
       value = field.value;
     }
 
-    return u.stringToDOM(tpl_field({
+    return u.stringToNode(tpl_field({
       name: field.getAttribute('name'),
       value: value
-    }))[0];
+    }));
   };
 
   u.xForm2webForm = function (field, stanza, domain) {
@@ -17122,13 +16080,11 @@ return __p
 };});
 
 
-define('tpl!info', ['lodash'], function(_) {return function(o) {
+define('tpl!no_rooms', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<div class="chat-info" ' +
-__e(o.data) +
-'>' +
-__e(o.message) +
-'</div>\n';
+__p += '<dt class="centered">' +
+__e( o.no_rooms_text ) +
+'</dt>\n';
 return __p
 };});
 
@@ -17578,6 +16534,97 @@ return __p
   });
 });
 //# sourceMappingURL=converse-disco.js.map;
+/*!
+ * Backbone.OrderedListView
+ *
+ * Copyright (c) 2017, JC Brand <jc@opkode.com>
+ * Licensed under the Mozilla Public License (MPL) 
+ */
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define('backbone.orderedlistview',["underscore", "backbone", "backbone.overview"], factory);
+  } else {
+    // RequireJS isn't being used.
+    // Assume underscore and backbone are loaded in <script> tags
+    factory(_ || root._, Backbone || root.Backbone);
+  }
+})(this, function (_, Backbone) {
+  "use strict";
+
+  Backbone.OrderedListView = Backbone.Overview.extend({
+    /* An OrderedListView is a special type of Overview which adds some
+     * methods and conventions for rendering an ordered list of elements.
+     */
+    // The `listItems` attribute denotes the path (from this View) to the
+    // list of items.
+    listItems: 'model',
+    // The `sortEvent` attribute specifies the event which should cause the
+    // ordered list to be sorted.
+    sortEvent: 'change',
+    // The `listSelector` is the selector used to query for the DOM list
+    // element which contains the ordered items.
+    listSelector: '.ordered-items',
+    // The `itemView` is constructor which should be called to create a
+    // View for a new item.
+    ItemView: undefined,
+    // The `subviewIndex` is the attribute of the list element model which
+    // acts as the index of the subview in the overview.
+    // An overview is a "Collection" of views, and they can be retrieved
+    // via an index. By default this is the 'id' attribute, but it could be
+    // set to something else.
+    subviewIndex: 'id',
+    initialize: function initialize() {
+      this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
+      this.items = _.get(this, this.listItems);
+      this.items.on('add', this.sortAndPositionAllItems, this);
+
+      if (!_.isNil(this.sortEvent)) {
+        this.items.on(this.sortEvent, this.sortEventually, this);
+      }
+    },
+    createItemView: function createItemView(item) {
+      var item_view = this.get(item.get(this.subviewIndex));
+
+      if (!item_view) {
+        item_view = new this.ItemView({
+          model: item
+        });
+        this.add(item.get(this.subviewIndex), item_view);
+      } else {
+        item_view.model = item;
+        item_view.initialize();
+      }
+
+      item_view.render();
+      return item_view;
+    },
+    sortAndPositionAllItems: function sortAndPositionAllItems() {
+      var _this = this;
+
+      if (!this.items.length) {
+        return;
+      }
+
+      this.items.sort();
+      var list_el = this.el.querySelector(this.listSelector);
+      var div = document.createElement('div');
+      list_el.replaceWith(div);
+      this.items.each(function (item) {
+        var view = _this.get(item.get(_this.subviewIndex));
+
+        if (_.isUndefined(view)) {
+          view = _this.createItemView(item);
+        }
+
+        list_el.insertAdjacentElement('beforeend', view.el);
+      });
+      div.replaceWith(list_el);
+    }
+  });
+  return Backbone.OrderedListView;
+});
+
+//# sourceMappingURL=backbone.orderedlistview.js.map;
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define('snabbdom',[],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.snabbdom = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -18498,6 +17545,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   var domParser = new DOMParser();
   var patch = snabbdom.init([snabbdom_attributes.default, snabbdom_class.default, snabbdom_dataset.default, snabbdom_props.default, snabbdom_style.default]);
+  var View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
 
   function parseHTMLToDOM(html_str) {
     /* Parses a string with HTML and returns a DOM element.
@@ -18531,7 +17579,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     }
   }
 
-  Backbone.VDOMView = Backbone.View.extend({
+  Backbone.VDOMView = View.extend({
     updateEventListeners: function updateEventListeners(old_vnode, new_vnode) {
       this.setElement(new_vnode.elm);
     },
@@ -18574,8 +17622,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  * specified in XEP-0045 Multi-user chat.
  */
 (function (root, factory) {
-  define('converse-muc',["jquery.noconflict", "form-utils", "converse-core", "lodash.fp", "tpl!chatarea", "tpl!chatroom", "tpl!chatroom_disconnect", "tpl!chatroom_features", "tpl!chatroom_form", "tpl!chatroom_head", "tpl!chatroom_invite", "tpl!chatroom_join_form", "tpl!chatroom_nickname_form", "tpl!chatroom_password_form", "tpl!chatroom_sidebar", "tpl!chatroom_toolbar", "tpl!chatrooms_tab", "tpl!info", "tpl!occupant", "tpl!room_description", "tpl!room_item", "tpl!room_panel", "tpl!spinner", "awesomplete", "converse-chatview", "converse-disco", "backbone.vdomview"], factory);
-})(this, function ($, u, converse, fp, tpl_chatarea, tpl_chatroom, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_join_form, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_chatrooms_tab, tpl_info, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_spinner, Awesomplete) {
+  define('converse-muc',["form-utils", "converse-core", "lodash.fp", "tpl!chatarea", "tpl!chatroom", "tpl!chatroom_disconnect", "tpl!chatroom_features", "tpl!chatroom_form", "tpl!chatroom_head", "tpl!chatroom_invite", "tpl!chatroom_join_form", "tpl!chatroom_nickname_form", "tpl!chatroom_password_form", "tpl!chatroom_sidebar", "tpl!chatroom_toolbar", "tpl!chatrooms_tab", "tpl!info", "tpl!no_rooms", "tpl!occupant", "tpl!room_description", "tpl!room_item", "tpl!room_panel", "tpl!spinner", "awesomplete", "converse-chatview", "converse-disco", "backbone.overview", "backbone.orderedlistview", "backbone.vdomview"], factory);
+})(this, function (u, converse, fp, tpl_chatarea, tpl_chatroom, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_join_form, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_chatrooms_tab, tpl_info, tpl_no_rooms, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_spinner, Awesomplete) {
   "use strict";
 
   var ROOMS_PANEL_ID = 'chatrooms';
@@ -18640,7 +17688,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    optional_dependencies: ["converse-controlbox"],
+    optional_dependencies: ["converse-controlbox", "converse-chatview"],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -18927,7 +17975,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }
       });
       _converse.ChatRoomView = _converse.ChatBoxView.extend({
-        /* Backbone View which renders a chat room, based upon the view
+        /* Backbone.NativeView which renders a chat room, based upon the view
          * for normal one-on-one chat boxes.
          */
         length: 300,
@@ -18950,6 +17998,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         initialize: function initialize() {
           var _this = this;
 
+          this.scrollDown = _.debounce(this._scrollDown, 250);
+          this.markScrolled = _.debounce(this._markScrolled, 100);
           this.model.messages.on('add', this.onMessageAdded, this);
           this.model.on('show', this.show, this);
           this.model.on('destroy', this.hide, this);
@@ -18989,7 +18039,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             this.showSpinner();
           }
 
-          u.refreshWebkit();
           return this;
         },
         renderHeading: function renderHeading() {
@@ -19012,14 +18061,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
             this.renderToolbar(tpl_chatroom_toolbar);
             this.content = this.el.querySelector('.chat-content');
-            this.$content = $(this.content);
             this.toggleOccupants(null, true);
           }
 
           return this;
         },
         createOccupantsView: function createOccupantsView() {
-          /* Create the ChatRoomOccupantsView Backbone.View
+          /* Create the ChatRoomOccupantsView Backbone.NativeView
            */
           var model = new _converse.ChatRoomOccupants();
           model.chatroomview = this;
@@ -19205,7 +18253,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           /* Given an IQ stanza with a member list, create an array of member
            * objects.
            */
-          return _.map($(iq).find("query[xmlns=\"".concat(Strophe.NS.MUC_ADMIN, "\"] item")), function (item) {
+          return _.map(sizzle("query[xmlns=\"".concat(Strophe.NS.MUC_ADMIN, "\"] item"), iq), function (item) {
             return {
               'jid': item.getAttribute('jid'),
               'affiliation': item.getAttribute('affiliation')
@@ -19358,7 +18406,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
            *  Any amount of XMLElement objects, representing the IQ
            *  stanzas.
            */
-          return _.flatMap(arguments, this.parseMemberListIQ);
+          return _.flatMap(arguments[0], this.parseMemberListIQ);
         },
         getJidsWithAffiliations: function getJidsWithAffiliations(affiliations) {
           var _this2 = this;
@@ -19564,7 +18612,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           var result = confirm(__("Are you sure you want to clear the messages from this room?"));
 
           if (result === true) {
-            this.$content.empty();
+            this.content.innerHTML = '';
           }
 
           return this;
@@ -19892,34 +18940,35 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           _.each(container_el.children, u.hideElement);
 
           container_el.insertAdjacentHTML('beforeend', tpl_chatroom_form());
-          var form = container_el.querySelector('form.chatroom-form');
-          var $form = $(form);
-          var $fieldset = $form.children('fieldset:first');
-          var $stanza = $(stanza),
-              $fields = $stanza.find('field'),
-              title = $stanza.find('title').text(),
-              instructions = $stanza.find('instructions').text();
-          $fieldset.find('span.spinner').remove();
-          $fieldset.append($('<legend>').text(title));
+
+          var form_el = container_el.querySelector('form.chatroom-form'),
+              fieldset_el = form_el.querySelector('fieldset'),
+              fields = stanza.querySelectorAll('field'),
+              title = _.get(stanza.querySelector('title'), 'textContent'),
+              instructions = _.get(stanza.querySelector('instructions'), 'textContent');
+
+          u.removeElement(fieldset_el.querySelector('span.spinner'));
+          fieldset_el.insertAdjacentHTML('beforeend', "<legend>".concat(title, "</legend>"));
 
           if (instructions && instructions !== title) {
-            $fieldset.append($('<p class="instructions">').text(instructions));
+            fieldset_el.insertAdjacentHTML('beforeend', "<p class=\"instructions\">".concat(instructions, "</p>"));
           }
 
-          _.each($fields, function (field) {
-            $fieldset.append(u.xForm2webForm(field, stanza));
-          });
+          _.each(fields, function (field) {
+            fieldset_el.insertAdjacentHTML('beforeend', u.xForm2webForm(field, stanza));
+          }); // Render save/cancel buttons
 
-          $form.append('<fieldset></fieldset>');
-          $fieldset = $form.children('fieldset:last');
-          $fieldset.append("<input type=\"submit\" class=\"pure-button button-primary\" value=\"".concat(__('Save'), "\"/>"));
-          $fieldset.append("<input type=\"button\" class=\"pure-button button-cancel\" value=\"".concat(__('Cancel'), "\"/>"));
-          $fieldset.find('input[type=button]').on('click', function (ev) {
+
+          var last_fieldset_el = document.createElement('fieldset');
+          last_fieldset_el.insertAdjacentHTML('beforeend', "<input type=\"submit\" class=\"pure-button button-primary\" value=\"".concat(__('Save'), "\"/>"));
+          last_fieldset_el.insertAdjacentHTML('beforeend', "<input type=\"button\" class=\"pure-button button-cancel\" value=\"".concat(__('Cancel'), "\"/>"));
+          form_el.insertAdjacentElement('beforeend', last_fieldset_el);
+          last_fieldset_el.querySelector('input[type=button]').addEventListener('click', function (ev) {
             ev.preventDefault();
 
             _this4.closeForm();
           });
-          form.addEventListener('submit', function (ev) {
+          form_el.addEventListener('submit', function (ev) {
             ev.preventDefault();
 
             _this4.saveConfiguration(ev.target).then(_this4.getRoomFeatures.bind(_this4));
@@ -19970,11 +19019,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
            *  (HTMLElement) form: The configuration form DOM element.
            */
           return new Promise(function (resolve, reject) {
-            var $inputs = $(form).find(':input:not([type=button]):not([type=submit])'),
-                configArray = [];
-            $inputs.each(function () {
-              configArray.push(u.webForm2xForm(this));
-            });
+            var inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
+                configArray = _.map(inputs, u.webForm2xForm);
 
             _this5.sendConfiguration(configArray, resolve, reject);
 
@@ -20188,7 +19234,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
            * Parameters:
            *  (XMLElement) iq: The received IQ stanza
            */
-          var nick = $(iq).find('query[node="x-roomuser-item"] identity').attr('name');
+          var identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
+              nick = identity_el ? identity_el.getAttribute('name') : null;
 
           if (!nick) {
             this.onNickNameNotFound();
@@ -20270,8 +19317,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         },
         submitPassword: function submitPassword(ev) {
           ev.preventDefault();
-          var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
-          this.el.querySelector('.chatroom-form-container').outerHTML = tpl_spinner();
+          var password = this.el.querySelector('.chatroom-form input[type=password]').value;
+          this.showSpinner();
           this.join(this.model.get('nick'), password);
         },
         renderPasswordForm: function renderPasswordForm() {
@@ -20438,8 +19485,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
           _.each(notification.messages, function (message) {
             _this9.content.insertAdjacentHTML('beforeend', tpl_info({
-              'message': message,
-              'data': ''
+              'data': '',
+              'isodate': moment().format(),
+              'message': message
             }));
           });
 
@@ -20454,12 +19502,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         displayJoinNotification: function displayJoinNotification(stanza) {
           var nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
           var stat = stanza.querySelector('status');
-          var last_el = this.content.querySelector(':last-child');
+          var last_el = this.content.lastElementChild;
 
           if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).leave === "\"".concat(nick, "\"")) {
             last_el.outerHTML = tpl_info({
-              'message': __(nick + ' has left and re-entered the room.'),
-              'data': "data-leavejoin=\"".concat(nick, "\"")
+              'data': "data-leavejoin=\"".concat(nick, "\""),
+              'isodate': moment().format(),
+              'message': __(nick + ' has left and re-entered the room.')
             });
           } else {
             var message = __(nick + ' has entered the room.');
@@ -20469,14 +19518,17 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }
 
             var data = {
-              'message': message,
-              'data': "data-join=\"".concat(nick, "\"")
+              'data': "data-join=\"".concat(nick, "\""),
+              'isodate': moment().format(),
+              'message': message
             };
 
             if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).joinleave === "\"".concat(nick, "\"")) {
               last_el.outerHTML = tpl_info(data);
             } else {
-              this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+              var el = u.stringToElement(tpl_info(data));
+              this.content.insertAdjacentElement('beforeend', el);
+              this.insertDayIndicator(el);
             }
           }
 
@@ -20485,7 +19537,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         displayLeaveNotification: function displayLeaveNotification(stanza) {
           var nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
           var stat = stanza.querySelector('status');
-          var last_el = this.content.querySelector(':last-child');
+          var last_el = this.content.lastElementChild;
 
           if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).join === "\"".concat(nick, "\"")) {
             var message = __('%1$s has entered and left the room.', nick);
@@ -20495,8 +19547,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }
 
             last_el.outerHTML = tpl_info({
-              'message': message,
-              'data': "data-joinleave=\"".concat(nick, "\"")
+              'data': "data-joinleave=\"".concat(nick, "\""),
+              'isodate': moment().format(),
+              'message': message
             });
           } else {
             var _message = __('%1$s has left the room.', nick);
@@ -20507,13 +19560,16 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
             var data = {
               'message': _message,
+              'isodate': moment().format(),
               'data': "data-leave=\"".concat(nick, "\"")
             };
 
             if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).leavejoin === "\"".concat(nick, "\"")) {
               last_el.outerHTML = tpl_info(data);
             } else {
-              this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+              var el = u.stringToElement(tpl_info(data));
+              this.content.insertAdjacentElement('beforeend', el);
+              this.insertDayIndicator(el);
             }
           }
 
@@ -20705,8 +19761,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           // replaced by the user and topic text respectively
           // Example: Topic set by JC Brand to: Hello World!
           this.content.insertAdjacentHTML('beforeend', tpl_info({
-            'message': __('Topic set by %1$s to: %2$s', sender, subject),
-            'data': ''
+            'data': '',
+            'isodate': moment().format(),
+            'message': __('Topic set by %1$s to: %2$s', sender, subject)
           }));
           this.scrollDown();
         },
@@ -20830,7 +19887,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           }, this.model.toJSON()));
         },
         destroy: function destroy() {
-          this.$el.remove();
+          this.el.parentElement.removeChild(this.el);
         }
       });
       _converse.ChatRoomOccupants = Backbone.Collection.extend({
@@ -20848,18 +19905,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           }
         }
       });
-      _converse.ChatRoomOccupantsView = Backbone.Overview.extend({
+      _converse.ChatRoomOccupantsView = Backbone.OrderedListView.extend({
         tagName: 'div',
         className: 'occupants',
+        listItems: 'model',
+        sortEvent: 'change:role',
+        listSelector: '.occupant-list',
+        ItemView: _converse.ChatRoomOccupantView,
         initialize: function initialize() {
-          var _this10 = this;
-
-          this.model.on("add", this.onOccupantAdded, this);
-          this.model.on("change:role", function (occupant) {
-            _this10.model.sort();
-
-            _this10.positionOccupant(occupant);
-          });
+          Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
           this.chatroomview = this.model.chatroomview;
           this.chatroomview.model.on('change:open', this.renderInviteWidget, this);
           this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
@@ -20882,9 +19936,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           this.model.fetch({
             'add': true,
             'silent': true,
-            'success': function success() {
-              _this10.model.each(_this10.onOccupantAdded.bind(_this10));
-            }
+            'success': this.sortAndPositionAllItems.bind(this)
           });
         },
         render: function render() {
@@ -20989,51 +20041,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         setOccupantsHeight: function setOccupantsHeight() {
           var el = this.el.querySelector('.chatroom-features');
           this.el.querySelector('.occupant-list').style.cssText = "height: calc(100% - ".concat(el.offsetHeight, "px - 5em);");
-        },
-        positionOccupant: function positionOccupant(occupant) {
-          /* Positions an occupant correctly in the list of
-           * occupants.
-           *
-           * IMPORTANT: there's an important implicit assumption being
-           * made here. And that is that initially this method gets called
-           * for each occupant in the right positional order.
-           *
-           * In other words, it gets called for the 0th, then the
-           * 1st, then the 2nd, 3rd and so on.
-           *
-           * That's why we call it in the "success" handler after
-           * fetching the occupants, so that we know we have ALL of
-           * them and that they're sorted.
-           */
-          var view = this.get(occupant.get('id'));
-          view.render();
-          var list = this.el.querySelector('.occupant-list');
-          var index = this.model.indexOf(view.model);
-
-          if (index === 0) {
-            list.insertAdjacentElement('afterbegin', view.el);
-          } else if (index === this.model.length - 1) {
-            list.insertAdjacentElement('beforeend', view.el);
-          } else {
-            var neighbour_el = list.querySelector('li:nth-child(' + index + ')');
-            neighbour_el.insertAdjacentElement('afterend', view.el);
-          }
-
-          return view;
-        },
-        onOccupantAdded: function onOccupantAdded(item) {
-          var view = this.get(item.get('id'));
-
-          if (!view) {
-            view = this.add(item.get('id'), new _converse.ChatRoomOccupantView({
-              model: item
-            }));
-          } else {
-            view.model = item;
-            view.initialize();
-          }
-
-          this.positionOccupant(item);
         },
         parsePresence: function parsePresence(pres) {
           var id = Strophe.getResourceFromJid(pres.getAttribute("from"));
@@ -21219,8 +20226,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           'muc_domain': ''
         }
       });
-      _converse.RoomsPanel = Backbone.View.extend({
-        /* Backbone View which renders the "Rooms" tab and accompanying
+      _converse.RoomsPanel = Backbone.NativeView.extend({
+        /* Backbone.NativeView which renders the "Rooms" tab and accompanying
          * panel in the control box.
          *
          * In this panel, chat rooms can be listed, joined and new rooms
@@ -21300,9 +20307,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           });
         },
         informNoRoomsFound: function informNoRoomsFound() {
-          var $available_chatrooms = this.$el.find('#available-chatrooms'); // For translators: %1$s is a variable and will be replaced with the XMPP server name
-
-          $available_chatrooms.html("<dt>".concat(__('No rooms on %1$s', this.model.get('muc_domain')), "</dt>"));
+          var chatrooms_el = this.el.querySelector('#available-chatrooms');
+          chatrooms_el.innerHTML = tpl_no_rooms({
+            'no_rooms_text': __('No rooms found')
+          });
           var input_el = this.el.querySelector('input#show-rooms');
           input_el.classList.remove('hidden');
           this.removeSpinner();
@@ -21343,7 +20351,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           return true;
         },
         updateRoomsList: function updateRoomsList() {
-          /* Send and IQ stanza to the server asking for all rooms
+          /* Send an IQ stanza to the server asking for all rooms
            */
           _converse.connection.sendIQ($iq({
             to: this.model.get('muc_domain'),
@@ -21351,21 +20359,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             type: "get"
           }).c("query", {
             xmlns: Strophe.NS.DISCO_ITEMS
-          }), this.onRoomsFound.bind(this), this.informNoRoomsFound.bind(this));
+          }), this.onRoomsFound.bind(this), this.informNoRoomsFound.bind(this), 5000);
         },
         showRooms: function showRooms() {
-          var $available_chatrooms = this.$el.find('#available-chatrooms');
-          var $server = this.$el.find('input.new-chatroom-server');
-          var server = $server.val();
+          var chatrooms_el = this.el.querySelector('#available-chatrooms');
+          var server_el = this.el.querySelector('input.new-chatroom-server');
+          var server = server_el.value;
 
           if (!server) {
-            $server.addClass('error');
+            server_el.classList.add('error');
             return;
           }
 
-          this.$el.find('input.new-chatroom-name').removeClass('error');
-          $server.removeClass('error');
-          $available_chatrooms.empty();
+          this.el.querySelector('input.new-chatroom-name').classList.remove('error');
+          server_el.classList.remove('error');
+          chatrooms_el.innerHTML = '';
           var input_el = this.el.querySelector('input#show-rooms');
           input_el.classList.add('hidden');
           input_el.insertAdjacentHTML('afterend', tpl_spinner());
@@ -21383,23 +20391,22 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
            *  (XMLElement) stanza: The IQ stanza containing the room
            *      info.
            */
-          var $stanza = $(stanza); // All MUC features found here: http://xmpp.org/registrar/disco-features.html
-
+          // All MUC features found here: http://xmpp.org/registrar/disco-features.html
           el.querySelector('span.spinner').outerHTML = tpl_room_description({
             'jid': stanza.getAttribute('from'),
-            'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
-            'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
-            'hidden': $stanza.find('feature[var="muc_hidden"]').length,
-            'membersonly': $stanza.find('feature[var="muc_membersonly"]').length,
-            'moderated': $stanza.find('feature[var="muc_moderated"]').length,
-            'nonanonymous': $stanza.find('feature[var="muc_nonanonymous"]').length,
-            'open': $stanza.find('feature[var="muc_open"]').length,
-            'passwordprotected': $stanza.find('feature[var="muc_passwordprotected"]').length,
-            'persistent': $stanza.find('feature[var="muc_persistent"]').length,
-            'publicroom': $stanza.find('feature[var="muc_public"]').length,
-            'semianonymous': $stanza.find('feature[var="muc_semianonymous"]').length,
-            'temporary': $stanza.find('feature[var="muc_temporary"]').length,
-            'unmoderated': $stanza.find('feature[var="muc_unmoderated"]').length,
+            'desc': _.get(_.head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
+            'occ': _.get(_.head(sizzle('field[var="muc#roominfo_occupants"] value', stanza)), 'textContent'),
+            'hidden': sizzle('feature[var="muc_hidden"]', stanza).length,
+            'membersonly': sizzle('feature[var="muc_membersonly"]', stanza).length,
+            'moderated': sizzle('feature[var="muc_moderated"]', stanza).length,
+            'nonanonymous': sizzle('feature[var="muc_nonanonymous"]', stanza).length,
+            'open': sizzle('feature[var="muc_open"]', stanza).length,
+            'passwordprotected': sizzle('feature[var="muc_passwordprotected"]', stanza).length,
+            'persistent': sizzle('feature[var="muc_persistent"]', stanza).length,
+            'publicroom': sizzle('feature[var="muc_publicroom"]', stanza).length,
+            'semianonymous': sizzle('feature[var="muc_semianonymous"]', stanza).length,
+            'temporary': sizzle('feature[var="muc_temporary"]', stanza).length,
+            'unmoderated': sizzle('feature[var="muc_unmoderated"]', stanza).length,
             'label_desc': __('Description:'),
             'label_jid': __('Room Address (JID):'),
             'label_occ': __('Occupants:'),
@@ -21420,54 +20427,44 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         toggleRoomInfo: function toggleRoomInfo(ev) {
           /* Show/hide extra information about a room in the listing.
            */
-          var target = ev.target,
-              $parent = $(target).parent('dd'),
-              $div = $parent.find('div.room-info');
+          var parent_el = ev.target.parentElement,
+              div_el = parent_el.querySelector('div.room-info');
 
-          if ($div.length) {
-            $div.remove();
+          if (div_el) {
+            u.slideIn(div_el).then(u.removeElement);
           } else {
-            $parent.find('span.spinner').remove();
-            $parent.append(tpl_spinner);
+            parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
 
-            _converse.connection.disco.info($(target).attr('data-room-jid'), null, _.partial(this.insertRoomInfo, $parent[0]));
+            _converse.connection.disco.info(ev.target.getAttribute('data-room-jid'), null, _.partial(this.insertRoomInfo, parent_el));
           }
         },
         parseRoomDataFromEvent: function parseRoomDataFromEvent(ev) {
-          var name, $name, server, $server, jid;
+          var name, jid;
 
           if (ev.type === 'click') {
-            name = $(ev.target).text();
-            jid = $(ev.target).attr('data-room-jid');
+            name = ev.target.textContent;
+            jid = ev.target.getAttribute('data-room-jid');
           } else {
-            var _$name = this.$el.find('input.new-chatroom-name');
+            var name_el = this.el.querySelector('input.new-chatroom-name');
+            var server_el = this.el.querySelector('input.new-chatroom-server');
+            var server = server_el.value;
+            name = name_el.value.trim();
+            name_el.value = ''; // Clear the input
 
-            var _$server = this.$el.find('input.new-chatroom-server');
-
-            var _server = _$server.val();
-
-            name = _$name.val().trim();
-
-            _$name.val(''); // Clear the input
-
-
-            if (name && _server) {
-              jid = Strophe.escapeNode(name.toLowerCase()) + '@' + _server.toLowerCase();
-
-              _$name.removeClass('error');
-
-              _$server.removeClass('error');
-
+            if (name && server) {
+              jid = Strophe.escapeNode(name.toLowerCase()) + '@' + server.toLowerCase();
+              name_el.classList.remove('error');
+              server_el.classList.remove('error');
               this.model.save({
-                muc_domain: _server
+                muc_domain: server
               });
             } else {
               if (!name) {
-                _$name.addClass('error');
+                name_el.classList.add('error');
               }
 
-              if (!_server) {
-                _$server.addClass('error');
+              if (!server) {
+                server_el.classList.add('error');
               }
 
               return;
@@ -21508,11 +20505,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
          *  (XMLElement) message: The message stanza containing the
          *        invitation.
          */
-        var $message = $(message),
-            $x = $message.children('x[xmlns="jabber:x:conference"]'),
-            from = Strophe.getBareJidFromJid($message.attr('from')),
-            room_jid = $x.attr('jid'),
-            reason = $x.attr('reason');
+        var x_el = message.querySelector('x[xmlns="jabber:x:conference"]'),
+            from = Strophe.getBareJidFromJid(message.getAttribute('from')),
+            room_jid = x_el.getAttribute('jid'),
+            reason = x_el.getAttribute('reason');
 
         var contact = _converse.roster.get(from),
             result;
@@ -21533,7 +20529,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         if (result === true) {
           var chatroom = _openChatRoom({
             'jid': room_jid,
-            'password': $x.attr('password')
+            'password': x_el.getAttribute('password')
           });
 
           if (chatroom.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
@@ -21847,14 +20843,19 @@ return __p
 
 
 define('tpl!bookmarks_list', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 __p += '<a href="#" class="rooms-toggle bookmarks-toggle icon-' +
 __e(o.toggle_state) +
 '" title="' +
 __e(o.desc_bookmarks) +
 '">' +
 __e(o.label_bookmarks) +
-'</a>\n<dl class="bookmarks rooms-list"></dl>\n';
+'</a>\n<dl class="bookmarks rooms-list ';
+ if (o.toggle_state !== o._converse.OPENED) { ;
+__p += ' hidden ';
+ } ;
+__p += '"></dl>\n';
 return __p
 };});
 
@@ -21871,8 +20872,8 @@ return __p
  * in XEP-0048.
  */
 (function (root, factory) {
-  define('converse-bookmarks',["jquery.noconflict", "utils", "converse-core", "converse-muc", "tpl!chatroom_bookmark_form", "tpl!chatroom_bookmark_toggle", "tpl!bookmark", "tpl!bookmarks_list"], factory);
-})(this, function ($, utils, converse, muc, tpl_chatroom_bookmark_form, tpl_chatroom_bookmark_toggle, tpl_bookmark, tpl_bookmarks_list) {
+  define('converse-bookmarks',["utils", "converse-core", "converse-muc", "tpl!chatroom_bookmark_form", "tpl!chatroom_bookmark_toggle", "tpl!bookmark", "tpl!bookmarks_list"], factory);
+})(this, function (u, converse, muc, tpl_chatroom_bookmark_form, tpl_chatroom_bookmark_toggle, tpl_bookmark, tpl_bookmarks_list) {
   var _converse$env = converse.env,
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
@@ -21986,7 +20987,7 @@ return __p
           }); // Remove any existing forms
 
 
-          _.each(body.querySelectorAll('.chatroom-form-container'), utils.removeElement);
+          _.each(body.querySelectorAll('.chatroom-form-container'), u.removeElement);
 
           body.insertAdjacentHTML('beforeend', tpl_chatroom_bookmark_form({
             heading: __('Bookmark this room'),
@@ -22004,20 +21005,16 @@ return __p
         onBookmarkFormSubmitted: function onBookmarkFormSubmitted(ev) {
           ev.preventDefault();
           var _converse = this.__super__._converse;
-          var $form = $(ev.target),
-              that = this;
 
           _converse.bookmarks.createBookmark({
             'jid': this.model.get('jid'),
-            'autojoin': $form.find('input[name="autojoin"]').prop('checked'),
-            'name': $form.find('input[name=name]').val(),
-            'nick': $form.find('input[name=nick]').val()
+            'autojoin': _.get(ev.target.querySelector('input[name="autojoin"]'), 'checked') || false,
+            'name': _.get(ev.target.querySelector('input[name=name]'), 'value'),
+            'nick': _.get(ev.target.querySelector('input[name=nick]'), 'value')
           });
 
-          this.$el.find('div.chatroom-form-container').hide(function () {
-            $(this).remove();
-            that.renderAfterTransition();
-          });
+          u.removeElement(this.el.querySelector('div.chatroom-form-container'));
+          this.renderAfterTransition();
         },
         toggleBookmark: function toggleBookmark(ev) {
           if (ev) {
@@ -22100,6 +21097,7 @@ return __p
       });
       _converse.Bookmarks = Backbone.Collection.extend({
         model: _converse.Bookmark,
+        comparator: 'name',
         initialize: function initialize() {
           this.on('add', _.flow(this.openBookmarkedRoom, this.markRoomAsBookmarked));
           this.on('remove', this.markRoomAsUnbookmarked, this);
@@ -22116,7 +21114,7 @@ return __p
           return bookmark;
         },
         fetchBookmarks: function fetchBookmarks() {
-          var deferred = utils.getResolveablePromise();
+          var deferred = u.getResolveablePromise();
 
           if (this.browserStorage.records.length > 0) {
             this.fetch({
@@ -22216,11 +21214,12 @@ return __p
           }
         },
         onBookmarksReceived: function onBookmarksReceived(deferred, iq) {
-          var bookmarks = $(iq).find('items[node="storage:bookmarks"] item[id="current"] storage conference');
-          var that = this;
+          var _this = this;
+
+          var bookmarks = sizzle('items[node="storage:bookmarks"] item[id="current"] storage conference', iq);
 
           _.forEach(bookmarks, function (bookmark) {
-            that.create({
+            _this.create({
               'jid': bookmark.getAttribute('jid'),
               'name': bookmark.getAttribute('name'),
               'autojoin': bookmark.getAttribute('autojoin') === 'true',
@@ -22244,9 +21243,9 @@ return __p
           }
         }
       });
-      _converse.BookmarksView = Backbone.View.extend({
+      _converse.BookmarksView = Backbone.NativeView.extend({
         tagName: 'div',
-        className: 'bookmarks-list, rooms-list-container',
+        className: 'bookmarks-list rooms-list-container hidden',
         events: {
           'click .add-bookmark': 'addBookmark',
           'click .bookmarks-toggle': 'toggleBookmarksList',
@@ -22268,25 +21267,22 @@ return __p
           this.render();
         },
         render: function render() {
-          this.$el.html(tpl_bookmarks_list({
+          this.el.innerHTML = tpl_bookmarks_list({
             'toggle_state': this.list_model.get('toggle-state'),
             'desc_bookmarks': __('Click to toggle the bookmarks list'),
-            'label_bookmarks': __('Bookmarks')
-          })).hide();
-
-          if (this.list_model.get('toggle-state') !== _converse.OPENED) {
-            this.$('.bookmarks').hide();
-          }
-
+            'label_bookmarks': __('Bookmarks'),
+            '_converse': _converse
+          });
           this.model.each(this.renderBookmarkListElement.bind(this));
 
           var controlboxview = _converse.chatboxviews.get('controlbox');
 
           if (!_.isUndefined(controlboxview)) {
-            this.$el.prependTo(controlboxview.$('#chatrooms'));
+            var chatrooms_el = controlboxview.el.querySelector('#chatrooms');
+            chatrooms_el.insertAdjacentElement('afterbegin', this.el);
           }
 
-          return this.$el;
+          return this;
         },
         removeBookmark: _converse.removeBookmarkViaEvent,
         addBookmark: _converse.addBookmarkViaEvent,
@@ -22336,12 +21332,10 @@ return __p
           this.show();
         },
         show: function show() {
-          if (!this.$el.is(':visible')) {
-            this.$el.show();
-          }
+          u.showElement(this.el);
         },
         hide: function hide() {
-          this.$el.hide();
+          u.hideElement(this.el);
         },
         removeBookmarkListElement: function removeBookmarkListElement(item) {
           var list_el = this.el.querySelector('.bookmarks');
@@ -22361,17 +21355,17 @@ return __p
             ev.preventDefault();
           }
 
-          var $el = $(ev.target);
-
-          if ($el.hasClass("icon-opened")) {
-            this.$('.bookmarks').slideUp('fast');
+          if (u.hasClass('icon-opened', ev.target)) {
+            u.slideIn(this.el.querySelector('.bookmarks'));
             this.list_model.save({
               'toggle-state': _converse.CLOSED
             });
-            $el.removeClass("icon-opened").addClass("icon-closed");
+            ev.target.classList.remove("icon-opened");
+            ev.target.classList.add("icon-closed");
           } else {
-            $el.removeClass("icon-closed").addClass("icon-opened");
-            this.$('.bookmarks').slideDown('fast');
+            ev.target.classList.remove("icon-closed");
+            ev.target.classList.add("icon-opened");
+            u.slideOut(this.el.querySelector('.bookmarks'));
             this.list_model.save({
               'toggle-state': _converse.OPENED
             });
@@ -22533,7 +21527,7 @@ return __p
           "toggle-state": _converse.OPENED
         }
       });
-      _converse.RoomsListView = Backbone.View.extend({
+      _converse.RoomsListView = Backbone.NativeView.extend({
         tagName: 'div',
         className: 'open-rooms-list rooms-list-container',
         events: {
@@ -22713,9 +21707,7 @@ return __p
 /*global define */
 // XEP-0059 Result Set Management
 (function (root, factory) {
-  define('converse-mam',["sizzle", "converse-core", "utils", "converse-disco", "converse-chatview", // Could be made a soft dependency
-  "converse-muc", // Could be made a soft dependency
-  "strophe.rsm"], factory);
+  define('converse-mam',["sizzle", "converse-core", "utils", "converse-disco", "strophe.rsm"], factory);
 })(this, function (sizzle, converse, utils) {
   "use strict";
 
@@ -22730,6 +21722,7 @@ return __p
 
   var MAM_ATTRIBUTES = ['with', 'start', 'end'];
   converse.plugins.add('converse-mam', {
+    optional_dependencies: ['converse-chatview', 'converse-muc'],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -22737,7 +21730,7 @@ return __p
       //
       // New functions which don't exist yet can also be added.
       ChatBox: {
-        getMessageAttributes: function getMessageAttributes($message, $delay, original_stanza) {
+        getMessageAttributes: function getMessageAttributes(message, delay, original_stanza) {
           var attrs = this.__super__.getMessageAttributes.apply(this, arguments);
 
           var result = sizzle("stanza-id[xmlns=\"".concat(Strophe.NS.SID, "\"]"), original_stanza).pop();
@@ -22754,7 +21747,7 @@ return __p
           var result = this.__super__.render.apply(this, arguments);
 
           if (!this.disable_mam) {
-            this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
+            this.content.addEventListener('scroll', _.debounce(this.onScroll.bind(this), 100));
           }
 
           return result;
@@ -22909,7 +21902,7 @@ return __p
           var result = this.__super__.renderChatArea.apply(this, arguments);
 
           if (!this.disable_mam) {
-            this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
+            this.content.addEventListener('scroll', _.debounce(this.onScroll.bind(this), 100));
           }
 
           return result;
@@ -23277,8 +22270,8 @@ return __p
  * encryption of one-on-one chat messages.
  */
 (function (root, factory) {
-  define('converse-otr',["jquery.noconflict", "converse-chatview", "tpl!toolbar_otr", 'otr'], factory);
-})(this, function ($, converse, tpl_toolbar_otr, otr) {
+  define('converse-otr',["converse-chatview", "tpl!toolbar_otr", 'otr'], factory);
+})(this, function (converse, tpl_toolbar_otr, otr) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -23638,9 +22631,7 @@ return __p
         authOTR: function authOTR(ev) {
           var _converse = this.__super__._converse,
               __ = _converse.__,
-              _$$data = $(ev.target).data(),
-              scheme = _$$data.scheme;
-
+              scheme = ev.target.getAttribute('data-scheme');
           var result, question, answer;
 
           if (scheme === 'fingerprint') {
@@ -23719,7 +22710,7 @@ return __p
 
           this.__super__.renderToolbar.apply(this, arguments);
 
-          this.$el.find('.chat-toolbar').append(tpl_toolbar_otr(_.extend(this.model.toJSON(), options || {})));
+          this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', tpl_toolbar_otr(_.extend(this.model.toJSON(), options || {})));
           return this;
         }
       }
@@ -24000,7 +22991,7 @@ return __p
           }));
         }
       });
-      _converse.RegisterPanel = Backbone.View.extend({
+      _converse.RegisterPanel = Backbone.NativeView.extend({
         tagName: 'div',
         id: "converse-register-panel",
         className: 'controlbox-pane fade-in',
@@ -24802,11 +23793,14 @@ return __p
         if (_converse.play_sounds && !_.isUndefined(window.Audio)) {
           audio = new Audio(_converse.sounds_path + "msg_received.ogg");
 
-          if (audio.canPlayType('/audio/ogg')) {
+          if (audio.canPlayType('audio/ogg')) {
             audio.play();
           } else {
             audio = new Audio(_converse.sounds_path + "msg_received.mp3");
-            audio.play();
+
+            if (audio.canPlayType('audio/mp3')) {
+              audio.play();
+            }
           }
         }
       };
@@ -25041,18 +24035,18 @@ return __p
 
 /*global define, window */
 (function (root, factory) {
-  define('converse-minimize',["jquery.noconflict", "converse-core", "tpl!chatbox_minimize", "tpl!toggle_chats", "tpl!trimmed_chat", "tpl!chats_panel", "converse-chatview"], factory);
-})(this, function ($, converse, tpl_chatbox_minimize, tpl_toggle_chats, tpl_trimmed_chat, tpl_chats_panel) {
+  define('converse-minimize',["converse-core", "tpl!chatbox_minimize", "tpl!toggle_chats", "tpl!trimmed_chat", "tpl!chats_panel", "converse-chatview"], factory);
+})(this, function (converse, tpl_chatbox_minimize, tpl_toggle_chats, tpl_trimmed_chat, tpl_chats_panel) {
   "use strict";
 
   var _converse$env = converse.env,
       _ = _converse$env._,
-      utils = _converse$env.utils,
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
       b64_sha1 = _converse$env.b64_sha1,
       moment = _converse$env.moment;
+  var u = converse.env.utils;
   converse.plugins.add('converse-minimize', {
     /* Optional dependencies are other plugins which might be
      * overridden or relied upon, and therefore need to be loaded before
@@ -25078,7 +24072,7 @@ return __p
       // New functions which don't exist yet can also be added.
       registerGlobalEventHandlers: function registerGlobalEventHandlers() {
         var _converse = this.__super__._converse;
-        $(window).on("resize", _.debounce(function (ev) {
+        window.addEventListener("resize", _.debounce(function (ev) {
           if (_converse.connection.connected) {
             _converse.chatboxviews.trimChats();
           }
@@ -25099,13 +24093,13 @@ return __p
           });
         },
         maximize: function maximize() {
-          utils.safeSave(this, {
+          u.safeSave(this, {
             'minimized': false,
             'time_opened': moment().valueOf()
           });
         },
         minimize: function minimize() {
-          utils.safeSave(this, {
+          u.safeSave(this, {
             'minimized': true,
             'time_minimized': moment().format()
           });
@@ -25178,11 +24172,11 @@ return __p
 
           if (this.model.collection && this.model.collection.browserStorage) {
             this.model.save({
-              'scroll': this.$content.scrollTop()
+              'scroll': this.content.scrollTop
             });
           } else {
             this.model.set({
-              'scroll': this.$content.scrollTop()
+              'scroll': this.content.scrollTop
             });
           }
 
@@ -25248,8 +24242,8 @@ return __p
           return chatbox;
         },
         getChatBoxWidth: function getChatBoxWidth(view) {
-          if (!view.model.get('minimized') && view.$el.is(':visible')) {
-            return view.$el.outerWidth(true);
+          if (!view.model.get('minimized') && u.isVisible(view.el)) {
+            return u.getOuterWidth(view.el, true);
           }
 
           return 0;
@@ -25259,7 +24253,7 @@ return __p
             return (// The controlbox can take a while to close,
               // so we need to check its state. That's why we checked
               // the 'closed' state.
-              !view.model.get('minimized') && !view.model.get('closed') && view.$el.is(':visible')
+              !view.model.get('minimized') && !view.model.get('closed') && u.isVisible(view.el)
             );
           });
         },
@@ -25273,14 +24267,15 @@ return __p
            * another chat box. Otherwise it minimizes the oldest chat box
            * to create space.
            */
-          var _converse = this.__super__._converse;
-          var shown_chats = this.getShownChats();
+          var _converse = this.__super__._converse,
+              shown_chats = this.getShownChats(),
+              body_width = u.getOuterWidth(document.querySelector('body'), true);
 
           if (_converse.no_trimming || shown_chats.length <= 1) {
             return;
           }
 
-          if (this.getChatBoxWidth(shown_chats[0]) === $('body').outerWidth(true)) {
+          if (this.getChatBoxWidth(shown_chats[0]) === body_width) {
             // If the chats shown are the same width as the body,
             // then we're in responsive mode and the chats are
             // fullscreen. In this case we don't trim.
@@ -25288,29 +24283,32 @@ return __p
           }
 
           _converse.api.waitUntil('minimizedChatsInitialized').then(function () {
-            var $minimized = _.get(_converse.minimized_chats, '$el'),
-                minimized_width = _.includes(_this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
+            var minimized_el = _.get(_converse.minimized_chats, 'el'),
                 new_id = newchat ? newchat.model.get('id') : null;
 
-            var boxes_width = _.reduce(_this.xget(new_id), function (memo, view) {
-              return memo + _this.getChatBoxWidth(view);
-            }, newchat ? newchat.$el.outerWidth(true) : 0);
+            if (minimized_el) {
+              var minimized_width = _.includes(_this.model.pluck('minimized'), true) ? u.getOuterWidth(minimized_el, true) : 0;
 
-            if (minimized_width + boxes_width > $('body').outerWidth(true)) {
-              var oldest_chat = _this.getOldestMaximizedChat([new_id]);
+              var boxes_width = _.reduce(_this.xget(new_id), function (memo, view) {
+                return memo + _this.getChatBoxWidth(view);
+              }, newchat ? u.getOuterWidth(newchat.el, true) : 0);
 
-              if (oldest_chat) {
-                // We hide the chat immediately, because waiting
-                // for the event to fire (and letting the
-                // ChatBoxView hide it then) causes race
-                // conditions.
-                var view = _this.get(oldest_chat.get('id'));
+              if (minimized_width + boxes_width > body_width) {
+                var oldest_chat = _this.getOldestMaximizedChat([new_id]);
 
-                if (view) {
-                  view.hide();
+                if (oldest_chat) {
+                  // We hide the chat immediately, because waiting
+                  // for the event to fire (and letting the
+                  // ChatBoxView hide it then) causes race
+                  // conditions.
+                  var view = _this.get(oldest_chat.get('id'));
+
+                  if (view) {
+                    view.hide();
+                  }
+
+                  oldest_chat.minimize();
                 }
-
-                oldest_chat.minimize();
               }
             }
           }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
@@ -25353,7 +24351,7 @@ return __p
 
       _converse.api.promises.add('minimizedChatsInitialized');
 
-      _converse.MinimizedChatBoxView = Backbone.View.extend({
+      _converse.MinimizedChatBoxView = Backbone.NativeView.extend({
         tagName: 'div',
         className: 'chat-head',
         events: {
@@ -25370,13 +24368,14 @@ return __p
 
           if (this.model.get('type') === 'chatroom') {
             data.title = this.model.get('name');
-            this.$el.addClass('chat-head-chatroom');
+            u.addClass('chat-head-chatroom', this.el);
           } else {
             data.title = this.model.get('fullname');
-            this.$el.addClass('chat-head-chatbox');
+            u.addClass('chat-head-chatbox', this.el);
           }
 
-          return this.$el.html(tpl_trimmed_chat(data));
+          this.el.innerHTML = tpl_trimmed_chat(data);
+          return this.el;
         },
         close: function close(ev) {
           if (ev && ev.preventDefault) {
@@ -25438,13 +24437,13 @@ return __p
 
           if (this.keys().length === 0) {
             this.el.classList.add('hidden');
-          } else if (this.keys().length > 0 && !this.$el.is(':visible')) {
+          } else if (this.keys().length > 0 && !u.isVisible(this.el)) {
             this.el.classList.remove('hidden');
 
             _converse.chatboxviews.trimChats();
           }
 
-          return this.$el;
+          return this.el;
         },
         tearDown: function tearDown() {
           this.model.off("add", this.onChanged);
@@ -25471,7 +24470,7 @@ return __p
           this.toggleview.model.save({
             'collapsed': !this.toggleview.model.get('collapsed')
           });
-          this.$('.minimized-chats-flyout').toggle();
+          u.slideToggleElement(this.el.querySelector('.minimized-chats-flyout'), 200);
         },
         onChanged: function onChanged(item) {
           if (item.get('id') === 'controlbox') {
@@ -25485,24 +24484,21 @@ return __p
             this.removeChat(item);
           }
         },
-        addMultipleChats: function addMultipleChats(items) {
-          var _this2 = this;
+        addChatView: function addChatView(item) {
+          var existing = this.get(item.get('id'));
 
-          _.each(items, function (item) {
-            var existing = _this2.get(item.get('id'));
+          if (existing && existing.el.parentNode) {
+            return;
+          }
 
-            if (existing && existing.$el.parent().length !== 0) {
-              return;
-            }
-
-            var view = new _converse.MinimizedChatBoxView({
-              model: item
-            });
-
-            _this2.$('.minimized-chats-flyout').append(view.render());
-
-            _this2.add(item.get('id'), view);
+          var view = new _converse.MinimizedChatBoxView({
+            model: item
           });
+          this.el.querySelector('.minimized-chats-flyout').insertAdjacentElement('beforeEnd', view.render());
+          this.add(item.get('id'), view);
+        },
+        addMultipleChats: function addMultipleChats(items) {
+          _.each(items, this.addChatView.bind(this));
 
           this.toggleview.model.set({
             'num_minimized': this.keys().length
@@ -25510,17 +24506,7 @@ return __p
           this.render();
         },
         addChat: function addChat(item) {
-          var existing = this.get(item.get('id'));
-
-          if (existing && existing.$el.parent().length !== 0) {
-            return;
-          }
-
-          var view = new _converse.MinimizedChatBoxView({
-            model: item
-          });
-          this.$('.minimized-chats-flyout').append(view.render());
-          this.add(item.get('id'), view);
+          this.addChatView(item);
           this.toggleview.model.set({
             'num_minimized': this.keys().length
           });
@@ -25555,25 +24541,25 @@ return __p
           'num_unread': 0
         }
       });
-      _converse.MinimizedChatsToggleView = Backbone.View.extend({
+      _converse.MinimizedChatsToggleView = Backbone.NativeView.extend({
         el: '#toggle-minimized-chats',
         initialize: function initialize() {
           this.model.on('change:num_minimized', this.render, this);
           this.model.on('change:num_unread', this.render, this);
-          this.$flyout = this.$el.siblings('.minimized-chats-flyout');
+          this.flyout = this.el.parentElement.querySelector('.minimized-chats-flyout');
         },
         render: function render() {
-          this.$el.html(tpl_toggle_chats(_.extend(this.model.toJSON(), {
+          this.el.innerHTML = tpl_toggle_chats(_.extend(this.model.toJSON(), {
             'Minimized': __('Minimized')
-          })));
+          }));
 
           if (this.model.get('collapsed')) {
-            this.$flyout.hide();
+            u.hideElement(this.flyout);
           } else {
-            this.$flyout.show();
+            u.showElement(this.flyout);
           }
 
-          return this.$el;
+          return this.el;
         }
       });
       Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxesInitialized')]).then(function () {
@@ -25586,15 +24572,16 @@ return __p
 
       _converse.on('chatBoxOpened', function renderMinimizeButton(view) {
         // Inserts a "minimize" button in the chatview's header
-        var $el = view.$el.find('.toggle-chatbox-button');
-        var $new_el = tpl_chatbox_minimize({
+        var new_html = tpl_chatbox_minimize({
           info_minimize: __('Minimize this chat box')
         });
+        var el = view.el.querySelector('.toggle-chatbox-button');
 
-        if ($el.length) {
-          $el.replaceWith($new_el);
+        if (el) {
+          el.outerHTML = new_html;
         } else {
-          view.$el.find('.close-chatbox-button').after($new_el);
+          var button = view.el.querySelector('.close-chatbox-button');
+          button.insertAdjacentHTML('afterEnd', new_html);
         }
       });
 
@@ -25631,9 +24618,9 @@ return __p
 
 /*global define, window */
 (function (root, factory) {
-  define('converse-dragresize',["jquery.noconflict", "converse-core", "tpl!dragresize", "converse-chatview", "converse-muc", // XXX: would like to remove this
+  define('converse-dragresize',["converse-core", "tpl!dragresize", "converse-chatview", "converse-muc", // XXX: would like to remove this
   "converse-controlbox"], factory);
-})(this, function ($, converse, tpl_dragresize) {
+})(this, function (converse, tpl_dragresize) {
   "use strict";
 
   var _ = converse.env._;
@@ -25670,7 +24657,7 @@ return __p
       // New functions which don't exist yet can also be added.
       registerGlobalEventHandlers: function registerGlobalEventHandlers() {
         var that = this;
-        $(document).on('mousemove', function (ev) {
+        document.addEventListener('mousemove', function (ev) {
           if (!that.resizing || !that.allow_dragresize) {
             return true;
           }
@@ -25678,7 +24665,7 @@ return __p
           ev.preventDefault();
           that.resizing.chatbox.resizeChatBox(ev);
         });
-        $(document).on('mouseup', function (ev) {
+        document.addEventListener('mouseup', function (ev) {
           if (!that.resizing || !that.allow_dragresize) {
             return true;
           }
@@ -25730,7 +24717,7 @@ return __p
           'mousedown .dragresize-topleft': 'onStartDiagonalResize'
         },
         initialize: function initialize() {
-          $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+          window.addEventListener('resize', _.debounce(this.setDimensions.bind(this), 100));
 
           this.__super__.initialize.apply(this, arguments);
         },
@@ -25745,7 +24732,7 @@ return __p
           // If a custom width is applied (due to drag-resizing),
           // then we need to set the width of the .chatbox element as well.
           if (this.model.get('width')) {
-            this.$el.css('width', this.model.get('width'));
+            this.el.style.width = this.model.get('width');
           }
         },
         _show: function _show() {
@@ -25757,20 +24744,21 @@ return __p
           /* Determine and store the default box size.
            * We need this information for the drag-resizing feature.
            */
-          var _converse = this.__super__._converse;
-          var $flyout = this.$el.find('.box-flyout');
+          var _converse = this.__super__._converse,
+              flyout = this.el.querySelector('.box-flyout'),
+              style = window.getComputedStyle(flyout);
 
           if (_.isUndefined(this.model.get('height'))) {
-            var height = $flyout.height();
-            var width = $flyout.width();
+            var height = parseInt(style.height.replace(/px$/, ''), 10),
+                width = parseInt(style.width.replace(/px$/, ''), 10);
             this.model.set('height', height);
             this.model.set('default_height', height);
             this.model.set('width', width);
             this.model.set('default_width', width);
           }
 
-          var min_width = $flyout.css('min-width');
-          var min_height = $flyout.css('min-height');
+          var min_width = style['min-width'];
+          var min_height = style['min-height'];
           this.model.set('min_width', min_width.endsWith('px') ? Number(min_width.replace(/px$/, '')) : 0);
           this.model.set('min_height', min_height.endsWith('px') ? Number(min_height.replace(/px$/, '')) : 0); // Initialize last known mouse position
 
@@ -25799,7 +24787,7 @@ return __p
             height = "";
           }
 
-          this.$el.children('.box-flyout')[0].style.height = height;
+          this.el.querySelector('.box-flyout').style.height = height;
         },
         setChatBoxWidth: function setChatBoxWidth(width) {
           var _converse = this.__super__._converse;
@@ -25810,8 +24798,8 @@ return __p
             width = "";
           }
 
-          this.$el[0].style.width = width;
-          this.$el.children('.box-flyout')[0].style.width = width;
+          this.el.style.width = width;
+          this.el.querySelector('.box-flyout').style.width = width;
         },
         adjustToViewport: function adjustToViewport() {
           /* Event handler called when viewport gets resized. We remove
@@ -25837,7 +24825,9 @@ return __p
           } // Record element attributes for mouseMove().
 
 
-          this.height = this.$el.children('.box-flyout').height();
+          var flyout = this.el.querySelector('.box-flyout'),
+              style = window.getComputedStyle(flyout);
+          this.height = parseInt(style.height.replace(/px$/, ''), 10);
           _converse.resizing = {
             'chatbox': this,
             'direction': 'top'
@@ -25851,7 +24841,9 @@ return __p
             return true;
           }
 
-          this.width = this.$el.children('.box-flyout').width();
+          var flyout = this.el.querySelector('.box-flyout'),
+              style = window.getComputedStyle(flyout);
+          this.width = parseInt(style.width.replace(/px$/, ''), 10);
           _converse.resizing = {
             'chatbox': this,
             'direction': 'left'
@@ -25896,7 +24888,7 @@ return __p
           'mousedown .dragresize-topleft': 'onStartDiagonalResize'
         },
         initialize: function initialize() {
-          $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+          window.addEventListener('resize', _.debounce(this.setDimensions.bind(this), 100));
           return this.__super__.initialize.apply(this, arguments);
         },
         render: function render() {
@@ -25914,7 +24906,7 @@ return __p
           'mousedown .dragresize-topleft': 'onStartDiagonalResize'
         },
         initialize: function initialize() {
-          $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+          window.addEventListener('resize', _.debounce(this.setDimensions.bind(this), 100));
 
           this.__super__.initialize.apply(this, arguments);
         },
@@ -25945,7 +24937,7 @@ return __p
           'mousedown .dragresize-topleft': 'onStartDiagonalResize'
         },
         initialize: function initialize() {
-          $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+          window.addEventListener('resize', _.debounce(this.setDimensions.bind(this), 100));
 
           this.__super__.initialize.apply(this, arguments);
         },
@@ -26067,6 +25059,8 @@ return __p
           'keypress textarea.chat-textarea': 'keyPressed'
         },
         initialize: function initialize() {
+          this.scrollDown = _.debounce(this._scrollDown, 250);
+          this.markScrolled = _.debounce(this._markScrolled, 100);
           this.disable_mam = true; // Don't do MAM queries for this box
 
           this.model.messages.on('add', this.onMessageAdded, this);
@@ -26080,7 +25074,7 @@ return __p
           _converse.emit('chatBoxInitialized', this);
         },
         render: function render() {
-          this.$el.attr('id', this.model.get('box_id'));
+          this.el.setAttribute('id', this.model.get('box_id'));
           this.el.innerHTML = tpl_chatbox(_.extend(this.model.toJSON(), {
             info_close: '',
             label_personal_message: '',
@@ -26089,9 +25083,7 @@ return __p
             show_toolbar: false,
             unread_msgs: ''
           }));
-          this.$content = this.$el.find('.chat-content');
-          this.content = this.$content[0];
-          utils.refreshWebkit();
+          this.content = this.el.querySelector('.chat-content');
           return this;
         },
         // Override to avoid the method in converse-chatview.js
@@ -26367,13 +25359,32 @@ if (typeof define !== 'undefined') {
 }
 ;
     
-    define('jquery', [], function () { return jQuery; });
-    define('jquery.noconflict', [], function () { return jQuery; });
-    define('jquery.browser', [], function () { return jQuery; });
-    define('awesomplete', [], function () { return jQuery; });
+    define('awesomplete', [], function () { return Awesomplete; });
     define('lodash', [], function () { return _; });
+    define('underscore', [], function () { return _; });
     define('lodash.converter', [], function () { return fp; });
     define('lodash.noconflict', [], function () { return _; });
+    define('moment', [], function () { return moment; });
+    define('moment/locale/af', [], function () { return moment; });
+    define('moment/locale/ca', [], function () { return moment; });
+    define('moment/locale/de', [], function () { return moment; });
+    define('moment/locale/es', [], function () { return moment; });
+    define('moment/locale/fr', [], function () { return moment; });
+    define('moment/locale/he', [], function () { return moment; });
+    define('moment/locale/hu', [], function () { return moment; });
+    define('moment/locale/id', [], function () { return moment; });
+    define('moment/locale/it', [], function () { return moment; });
+    define('moment/locale/ja', [], function () { return moment; });
+    define('moment/locale/nb', [], function () { return moment; });
+    define('moment/locale/nl', [], function () { return moment; });
+    define('moment/locale/pl', [], function () { return moment; });
+    define('moment/locale/pt-br', [], function () { return moment; });
+    define('moment/locale/ru', [], function () { return moment; });
+    define('moment/locale/uk', [], function () { return moment; });
+    define('moment/moment', [], function () { return moment; });
+    define('i18n', [], function () { return; });
+    define('es6-promise', [], function () { return Promise; });
+
     define('strophe', [], function () {
         return {
             'Strophe':         Strophe,

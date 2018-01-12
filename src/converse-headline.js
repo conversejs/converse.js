@@ -18,6 +18,17 @@
     const HEADLINES_TYPE = 'headline';
 
     converse.plugins.add('converse-headline', {
+        /* Plugin dependencies are other plugins which might be
+         * overridden or relied upon, and therefore need to be loaded before
+         * this plugin.
+         *
+         * If the setting "strict_plugin_dependencies" is set to true,
+         * an error will be raised if the plugin is not found. By default it's
+         * false, which means these plugins are only loaded opportunistically.
+         *
+         * NB: These plugins need to have already been loaded via require.js.
+         */
+        dependencies: ["converse-chatview"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -82,6 +93,8 @@
                 },
 
                 initialize () {
+                    this.scrollDown = _.debounce(this._scrollDown, 250);
+                    this.markScrolled = _.debounce(this._markScrolled, 100);
                     this.disable_mam = true; // Don't do MAM queries for this box
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
@@ -94,7 +107,7 @@
                 },
 
                 render () {
-                    this.$el.attr('id', this.model.get('box_id'))
+                    this.el.setAttribute('id', this.model.get('box_id'))
                     this.el.innerHTML = tpl_chatbox(
                         _.extend(this.model.toJSON(), {
                                 info_close: '',
@@ -105,9 +118,7 @@
                                 unread_msgs: ''
                             }
                         ));
-                    this.$content = this.$el.find('.chat-content');
-                    this.content = this.$content[0];
-                    utils.refreshWebkit();
+                    this.content = this.el.querySelector('.chat-content');
                     return this;
                 },
 

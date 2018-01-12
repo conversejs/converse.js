@@ -25,9 +25,21 @@
     const MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
 
+    function getMessageArchiveID (stanza) {
+        const result = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
+        if (!_.isUndefined(result)) {
+            return result.getAttribute('id');
+        }
+        const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+        if (!_.isUndefined(stanza_id)) {
+            return stanza_id.getAttribute('id');
+        }
+    }
+
+
     converse.plugins.add('converse-mam', {
 
-        optional_dependencies: ['converse-chatview', 'converse-muc'],
+        dependencies: ['converse-chatview', 'converse-muc'],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -36,11 +48,11 @@
             //
             // New functions which don't exist yet can also be added.
             ChatBox: {
-                getMessageAttributes ($message, $delay, original_stanza) {
+                getMessageAttributes (message, delay, original_stanza) {
                     const attrs = this.__super__.getMessageAttributes.apply(this, arguments);
-                    const result = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, original_stanza).pop();
-                    if (!_.isUndefined(result)) {
-                        attrs.archive_id =  result.getAttribute('id');
+                    const archive_id = getMessageArchiveID(original_stanza);
+                    if (archive_id) {
+                        attrs.archive_id = archive_id;
                     }
                     return attrs;
                 }
@@ -50,7 +62,7 @@
                 render () {
                     const result = this.__super__.render.apply(this, arguments);
                     if (!this.disable_mam) {
-                        this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
+                        this.content.addEventListener('scroll', _.debounce(this.onScroll.bind(this), 100));
                     }
                     return result;
                 },
@@ -66,15 +78,19 @@
                         (result) => { // Success
                             if (result.supported) {
                                 const most_recent_msg = utils.getMostRecentMessage(this.model);
-                                const archive_id = most_recent_msg.get('archive_id');
-                                if (archive_id) {
-                                    this.fetchArchivedMessages({
-                                        'after': most_recent_msg.get('archive_id')
-                                    });
+                                if (_.isNil(most_recent_msg)) {
+                                    this.fetchArchivedMessages();
                                 } else {
-                                    this.fetchArchivedMessages({
-                                        'start': most_recent_msg.get('time')
-                                    });
+                                    const archive_id = most_recent_msg.get('archive_id');
+                                    if (archive_id) {
+                                        this.fetchArchivedMessages({
+                                            'after': most_recent_msg.get('archive_id')
+                                        });
+                                    } else {
+                                        this.fetchArchivedMessages({
+                                            'start': most_recent_msg.get('time')
+                                        });
+                                    }
                                 }
                             } else {
                                 this.clearSpinner();
@@ -191,10 +207,21 @@
                     this.model.on('change:connection_status', this.fetchArchivedMessagesIfNecessary, this);
                 },
 
+                isDuplicate (message, original_stanza) {
+                    const result = this.__super__.isDuplicate.apply(this, arguments);
+                    if (result) {
+                        return result;
+                    }
+                    const archive_id = getMessageArchiveID(original_stanza);
+                    if (archive_id) {
+                        return this.model.messages.filter({'archive_id': archive_id}).length > 0;
+                    }
+                },
+
                 renderChatArea () {
                     const result = this.__super__.renderChatArea.apply(this, arguments);
                     if (!this.disable_mam) {
-                        this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
+                        this.content.addEventListener('scroll', _.debounce(this.onScroll.bind(this), 100));
                     }
                     return result;
                 },
@@ -425,7 +452,7 @@
             });
 
             _converse.on('afterMessagesFetched', (chatboxview) => {
-                chatboxview.fetchArchivedMessagesIfNecessary();
+                chatboxview.fetchNewestMessages();
             });
 
             _converse.on('reconnected', () => {

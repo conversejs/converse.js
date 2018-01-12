@@ -5,6 +5,7 @@
 ### Bugfixes
 - #800 Could not register successfully in ejabberd 17.01
 - #949 Don't flash the roster contacts filter (i.e. hide by default)
+- #951 Duplicate messages received in an MUC chat room.
 - #953 MUC "Features" displayed when exiting configuration
 - #967 Rooms list doesn't show when the server doesn't support bookmarks
 - Don't require `auto_login` to be `true` when using the API to log in.
@@ -35,12 +36,16 @@
 - Show status messages in an MUC room when a user's role changes.
 - In MUC chat rooms, collapse multiple, consecutive join/leave messages.
 - Performance improvements for rendering private chats, rooms and the contacts roster.
+- MUC Leave/Join messages now also show a new day indicator if applicable.
 
 ### API changes
 - New API method `_converse.disco.supports` to check whether a certain
   service discovery feature is supported by an entity.
 - New API method `_converse.api.vcard.get` which fetches the VCard for a
   particular JID.
+
+### Configuration changes
+- `hide_open_bookmarks` is now by default `true`.
 
 ### UX/UI changes
 - Use CSS3 fade transitions to render various elements.
@@ -63,6 +68,7 @@
   be available. See the [locales_url](https://conversejs.org/docs/html/configurations.html#locales-url)
   configuration setting for more info.
 - The translation machinery has now been moved to a separate module in `src/i18n.js`.
+- jQuery has been completely removed as a dependency (still used in tests though).
 
 ## 3.2.1 (2017-08-29)
 

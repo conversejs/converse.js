@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define(["jquery.noconflict", "jasmine", "mock", "converse-core", "test-utils"], factory);
+    define(["jquery", "jasmine", "mock", "converse-core", "test-utils"], factory);
 } (this, function ($, jasmine, mock, converse, test_utils) {
     var _ = converse.env._;
     var $pres = converse.env.$pres;
@@ -23,7 +23,7 @@
             spyOn(_converse, 'emit');
             // Redelegate so that the spies are now registered as the event handlers (specifically for 'onClick')
             _converse.controlboxtoggle.delegateEvents();
-            $('.toggle-controlbox').click();
+            document.querySelector('.toggle-controlbox').click();
             expect(_converse.controlboxtoggle.onClick).toHaveBeenCalled();
             expect(_converse.controlboxtoggle.showControlBox).toHaveBeenCalled();
             expect(_converse.emit).toHaveBeenCalledWith('controlBoxOpened', jasmine.any(Object));
@@ -40,8 +40,8 @@
 
                 test_utils.openControlBox();
                 var view = _converse.xmppstatusview;
-                expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
-                expect(view.$el.find('a.choose-xmpp-status').attr('data-value')).toBe('I am online');
+                expect($(view.el).find('a.choose-xmpp-status').hasClass('online')).toBe(true);
+                expect($(view.el).find('a.choose-xmpp-status').attr('data-value')).toBe('I am online');
                 done();
             }));
 
@@ -56,17 +56,17 @@
                 spyOn(view, 'setStatus').and.callThrough();
                 spyOn(_converse, 'emit');
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                view.$el.find('a.choose-xmpp-status').click();
+                view.el.querySelector('a.choose-xmpp-status').click();
                 expect(view.toggleOptions).toHaveBeenCalled();
                 spyOn(view, 'updateStatusUI').and.callThrough();
                 view.initialize(); // Rebind events for spy
-                $(view.$el.find('.dropdown dd ul li a')[1]).click(); // Change status to "dnd"
+                $(view.el).find('.dropdown dd ul li a')[1].click(); // Change status to "dnd"
                 expect(view.setStatus).toHaveBeenCalled();
                 expect(_converse.emit).toHaveBeenCalledWith('statusChanged', 'dnd');
                 expect(view.updateStatusUI).toHaveBeenCalled();
-                expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(false);
-                expect(view.$el.find('a.choose-xmpp-status').hasClass('dnd')).toBe(true);
-                expect(view.$el.find('a.choose-xmpp-status').attr('data-value')).toBe('I am busy');
+                expect($(view.el).find('a.choose-xmpp-status').hasClass('online')).toBe(false);
+                expect($(view.el).find('a.choose-xmpp-status').hasClass('dnd')).toBe(true);
+                expect($(view.el).find('a.choose-xmpp-status').attr('data-value')).toBe('I am busy');
                 done();
             }));
 
@@ -82,15 +82,15 @@
                 spyOn(view, 'renderStatusChangeForm').and.callThrough();
                 spyOn(_converse, 'emit');
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                view.$el.find('a.change-xmpp-status-message').click();
+                view.el.querySelector('a.change-xmpp-status-message').click();
                 expect(view.renderStatusChangeForm).toHaveBeenCalled();
                 var msg = 'I am happy';
-                view.$el.find('input.custom-xmpp-status').val(msg);
-                view.$el.submit();
+                view.el.querySelector('input.custom-xmpp-status').value = msg;
+                view.el.querySelector('[type="submit"]').click();
                 expect(view.setStatusMessage).toHaveBeenCalled();
                 expect(_converse.emit).toHaveBeenCalledWith('statusMessageChanged', msg);
-                expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
-                expect(view.$el.find('a.choose-xmpp-status').attr('data-value')).toBe(msg);
+                expect($(view.el).find('a.choose-xmpp-status').hasClass('online')).toBe(true);
+                expect($(view.el).find('a.choose-xmpp-status').attr('data-value')).toBe(msg);
                 done();
             }));
         });
@@ -106,10 +106,10 @@
             var panel = _converse.chatboxviews.get('controlbox').contactspanel;
             spyOn(panel, 'toggleContactForm').and.callThrough();
             panel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-            panel.$el.find('a.toggle-xmpp-contact-form').click();
+            panel.el.querySelector('a.toggle-xmpp-contact-form').click();
             expect(panel.toggleContactForm).toHaveBeenCalled();
             // XXX: Awaiting more tests, close it again for now...
-            panel.$el.find('a.toggle-xmpp-contact-form').click();
+            panel.el.querySelector('a.toggle-xmpp-contact-form').click();
             done();
         }));
 
@@ -135,10 +135,10 @@
                 fullname: mock.pend_names[0]
             });
             test_utils.waitUntil(function () {
-                return _converse.rosterview.$el.find('.roster-group li:visible').length;
+                return $(_converse.rosterview.el).find('.roster-group li:visible').length;
             }, 700).then(function () {
                 // Checking that only one entry is created because both JID is same (Case sensitive check)
-                expect(_converse.rosterview.$el.find('li:visible').length).toBe(1);
+                expect($(_converse.rosterview.el).find('li:visible').length).toBe(1);
                 expect(_converse.rosterview.update).toHaveBeenCalled();
                 done();
             });
@@ -154,7 +154,7 @@
 
             test_utils.openControlBox();
             var cbview = _converse.chatboxviews.get('controlbox');
-            var $panels = cbview.$el.find('.controlbox-panes');
+            var $panels = $(cbview.el).find('.controlbox-panes');
             expect($panels.children().length).toBe(2);
             expect($panels.children().first().attr('id')).toBe('users');
             expect($panels.children().first().is(':visible')).toBe(true);
@@ -170,11 +170,11 @@
 
             test_utils.openControlBox();
             var cbview = _converse.chatboxviews.get('controlbox');
-            var $tabs = cbview.$el.find('#controlbox-tabs');
+            var $tabs = $(cbview.el).find('#controlbox-tabs');
             expect(cbview.model.get('active-panel')).toBe('users');
-            $tabs.find('li').last().find('a').click();
+            $tabs.find('li').last().find('a')[0].click();
             expect(cbview.model.get('active-panel')).toBe('chatrooms');
-            $tabs.find('li').first().find('a').click();
+            $tabs.find('li').first().find('a')[0].click();
             expect(cbview.model.get('active-panel')).toBe('users');
             done();
         }));

@@ -1,10 +1,11 @@
 (function (root, factory) {
     define([
+        "jquery",
         "jasmine",
         "converse-core",
         "mock",
         "test-utils"], factory);
-} (this, function (jasmine, converse, mock, test_utils) {
+} (this, function ($, jasmine, converse, mock, test_utils) {
     var b64_sha1 = converse.env.b64_sha1;
     var _ = converse.env._;
 
@@ -292,7 +293,7 @@
                     expect(box instanceof Object).toBeTruthy();
                     expect(box.model.get('box_id')).toBe(b64_sha1(jid));
                     chatboxview = _converse.chatboxviews.get(jid);
-                    expect(chatboxview.$el.is(':visible')).toBeTruthy();
+                    expect($(chatboxview.el).is(':visible')).toBeTruthy();
                     // Test for multiple JIDs
                     var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.openChatBoxFor(_converse, jid2);
@@ -320,7 +321,7 @@
                     ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
                 );
                 chatboxview = _converse.chatboxviews.get(jid);
-                expect(chatboxview.$el.is(':visible')).toBeTruthy();
+                expect($(chatboxview.el).is(':visible')).toBeTruthy();
                 // Test for multiple JIDs
                 var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var list = _converse.api.chats.open([jid, jid2]);

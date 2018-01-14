@@ -5,8 +5,6 @@
     include: ["converse"],
     exclude: [
         "awesomplete",
-        "jquery",
-        "jquery.noconflict",
         "backbone.browserStorage",
         "backbone.overview",
         "moment",
@@ -18,7 +16,8 @@
         "otr",
         "lodash",
         "lodash.converter",
-        "lodash.noconflict"
+        "lodash.noconflict",
+        "es6-promise"
     ],
     paths: {
         "backbone.vdomview":        "builds/backbone.vdomview",
@@ -38,6 +37,7 @@
         "converse-notification":    "builds/converse-notification",
         "converse-otr":             "builds/converse-otr",
         "converse-ping":            "builds/converse-ping",
+        "converse-profile":         "builds/converse-profile",
         "converse-register":        "builds/converse-register",
         "converse-roomslist":       "builds/converse-roomslist",
         "converse-rosterview":      "builds/converse-rosterview",

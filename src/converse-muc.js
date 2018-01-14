@@ -32,6 +32,7 @@
             "tpl!room_description",
             "tpl!room_item",
             "tpl!room_panel",
+            "tpl!rooms_results",
             "tpl!spinner",
             "awesomplete",
             "converse-chatview",
@@ -62,6 +63,7 @@
             tpl_room_description,
             tpl_room_item,
             tpl_room_panel,
+            tpl_rooms_results,
             tpl_spinner,
             Awesomplete
     ) {
@@ -129,7 +131,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        optional_dependencies: ["converse-controlbox", "converse-chatview"],
+        dependencies: ["converse-controlbox", "converse-chatview"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -415,7 +417,7 @@
             });
 
             _converse.ChatRoomView = _converse.ChatBoxView.extend({
-                /* Backbone View which renders a chat room, based upon the view
+                /* Backbone.NativeView which renders a chat room, based upon the view
                  * for normal one-on-one chat boxes.
                  */
                 length: 300,
@@ -475,7 +477,6 @@
                     if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                         this.showSpinner();
                     }
-                    u.refreshWebkit();
                     return this;
                 },
 
@@ -506,7 +507,7 @@
                 },
 
                 createOccupantsView () {
-                    /* Create the ChatRoomOccupantsView Backbone.View
+                    /* Create the ChatRoomOccupantsView Backbone.NativeView
                      */
                     const model = new _converse.ChatRoomOccupants();
                     model.chatroomview = this;
@@ -2126,7 +2127,7 @@
                     return false;
                 },
 
-                isDuplicate (message) {
+                isDuplicate (message, original_stanza) {
                     const msgid = message.getAttribute('id'),
                           jid = message.getAttribute('from'),
                           resource = Strophe.getResourceFromJid(jid),
@@ -2161,7 +2162,7 @@
                         sender = resource && Strophe.unescapeNode(resource) || '',
                         subject = _.propertyOf(message.querySelector('subject'))('textContent');
 
-                    if (this.isDuplicate(message)) {
+                    if (this.isDuplicate(message, original_stanza)) {
                         return true;
                     }
                     if (subject) {
@@ -2195,7 +2196,6 @@
                 tagName: 'li',
                 initialize () {
                     this.model.on('change', this.render, this);
-                    this.model.on('destroy', this.destroy, this);
                 },
 
                 toHTML () {
@@ -2549,8 +2549,8 @@
                 },
             });
 
-            _converse.RoomsPanel = Backbone.View.extend({
-                /* Backbone View which renders the "Rooms" tab and accompanying
+            _converse.RoomsPanel = Backbone.NativeView.extend({
+                /* Backbone.NativeView which renders the "Rooms" tab and accompanying
                  * panel in the control box.
                  *
                  * In this panel, chat rooms can be listed, joined and new rooms
@@ -2634,8 +2634,9 @@
 
                 informNoRoomsFound () {
                     const chatrooms_el = this.el.querySelector('#available-chatrooms');
-                    // For translators: %1$s is a variable and will be replaced with the XMPP server name
-                    chatrooms_el.innerHTML = `<dt>${__('No rooms on %1$s', this.model.get('muc_domain'))}</dt>`;
+                    chatrooms_el.innerHTML = tpl_rooms_results({
+                        'feedback_text': __('No rooms found')
+                    });
                     const input_el = this.el.querySelector('input#show-rooms');
                     input_el.classList.remove('hidden')
                     this.removeSpinner();
@@ -2650,8 +2651,9 @@
                     if (this.rooms.length) {
                         // For translators: %1$s is a variable and will be
                         // replaced with the XMPP server name
-                        available_chatrooms.innerHTML =
-                            `<dt>${__('Rooms on %1$s',this.model.get('muc_domain'))}</dt>`;
+                        available_chatrooms.innerHTML = tpl_rooms_results({
+                            'feedback_text': __('Rooms found')
+                        });
                         const div = document.createElement('div');
                         const fragment = document.createDocumentFragment();
                         for (let i=0; i<this.rooms.length; i++) {
@@ -2678,7 +2680,7 @@
                 },
 
                 updateRoomsList () {
-                    /* Send and IQ stanza to the server asking for all rooms
+                    /* Send an IQ stanza to the server asking for all rooms
                      */
                     _converse.connection.sendIQ(
                         $iq({

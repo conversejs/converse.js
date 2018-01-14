@@ -11,14 +11,12 @@
     define([
         "sizzle",
         "es6-promise",
-        "jquery.browser",
         "lodash.noconflict",
         "strophe",
     ], factory);
 }(this, function (
         sizzle,
         Promise,
-        jQBrowser,
         _,
         Strophe
     ) {
@@ -161,7 +159,7 @@
         return obj;
     };
 
-    u.slideInAllElements = function (elements, duration=600) {
+    u.slideInAllElements = function (elements, duration=300) {
         return Promise.all(
             _.map(
                 elements,
@@ -178,7 +176,7 @@
         }
     };
 
-    u.hasClass = function (el, className) {
+    u.hasClass = function (className, el) {
         return _.includes(el.classList, className);
     };
 
@@ -208,7 +206,7 @@
                 resolve();
                 return;
             }
-            if (!u.hasClass(el, 'collapsed') && !u.hasClass(el, 'hidden')) {
+            if (!u.hasClass('collapsed', el) && !u.hasClass('hidden', el)) {
                 resolve();
                 return;
             }
@@ -393,20 +391,6 @@
             } else {
                 context[k] = user_settings[k];
             }
-        }
-    };
-
-    u.refreshWebkit = function () {
-        /* This works around a webkit bug. Refreshes the browser's viewport,
-         * otherwise chatboxes are not moved along when one is closed.
-         */
-        if (jQBrowser.webkit && window.requestAnimationFrame) {
-            window.requestAnimationFrame(function () {
-                var conversejs = document.getElementById('conversejs');
-                conversejs.style.display = 'none';
-                var tmp = conversejs.offsetHeight; // jshint ignore:line
-                conversejs.style.display = 'block';
-            });
         }
     };
 
@@ -619,6 +603,12 @@
     u.isVisible = function (el) {
         // XXX: Taken from jQuery's "visible" implementation
         return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
+    };
+
+    u.triggerEvent = function (el, name, type="Event", bubbles=true, cancelable=true) {
+        const evt = document.createEvent(type);
+        evt.initEvent(name, bubbles, cancelable);
+        el.dispatchEvent(evt);
     };
 
     return u;

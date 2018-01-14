@@ -7,775 +7,582 @@
             "lang": "zh"
          },
          "The connection has dropped, attempting to reconnect.": [
-            null,
             ""
          ],
          "Your Jabber ID and/or password is incorrect. Please try again.": [
-            null,
             ""
          ],
          "Sorry, we could not connect to the XMPP host with domain: ": [
-            null,
             ""
          ],
          "The XMPP server did not offer a supported authentication mechanism": [
-            null,
             ""
          ],
          "Sorry, there was an error while trying to add %1$s as a contact.": [
-            null,
             ""
          ],
          "This client does not allow presence subscriptions": [
-            null,
             ""
          ],
          "Personal message": [
-            null,
             "私信"
          ],
          "Send": [
-            null,
             ""
          ],
          "me": [
-            null,
             "我"
          ],
          "A very large message has been received. This might be due to an attack meant to degrade the chat performance. Output has been shortened.": [
-            null,
             ""
          ],
          "Typing from another device": [
-            null,
             ""
          ],
          "is typing": [
-            null,
             ""
          ],
          "Stopped typing on the other device": [
-            null,
             ""
          ],
          "has stopped typing": [
-            null,
             ""
          ],
          "Show this menu": [
-            null,
             "显示此项菜单"
          ],
          "Write in the third person": [
-            null,
             "以第三者身份写"
          ],
          "Remove messages": [
-            null,
             "移除消息"
          ],
          "Are you sure you want to clear the messages from this chat box?": [
-            null,
             "你确定清除此次的聊天记录吗？"
          ],
          "Insert a smiley": [
-            null,
             ""
          ],
          "Start a call": [
-            null,
             ""
          ],
          "Login": [
-            null,
             ""
          ],
          "Jabber ID:": [
-            null,
             ""
          ],
          "Password:": [
-            null,
             "密码:"
          ],
          "Submit": [
-            null,
             "发送"
          ],
          "This contact is busy": [
-            null,
             "对方忙碌中"
          ],
          "This contact is online": [
-            null,
             "对方在线中"
          ],
          "This contact is offline": [
-            null,
             "对方已下线"
          ],
          "This contact is unavailable": [
-            null,
             "对方免打扰"
          ],
          "This contact is away for an extended period": [
-            null,
             "对方暂时离开"
          ],
          "This contact is away": [
-            null,
             "对方离开"
          ],
          "Contacts": [
-            null,
             "联系人"
          ],
          "Groups": [
-            null,
             ""
          ],
          "My contacts": [
-            null,
             "我的好友列表"
          ],
          "Pending contacts": [
-            null,
             "保留中的联系人"
          ],
          "Contact requests": [
-            null,
             "来自好友的请求"
          ],
          "Ungrouped": [
-            null,
             ""
          ],
          "Filter": [
-            null,
             ""
          ],
          "State": [
-            null,
             ""
          ],
          "Any": [
-            null,
             ""
          ],
          "Unread": [
-            null,
             ""
          ],
          "Online": [
-            null,
             "在线"
          ],
          "Chatty": [
-            null,
             ""
          ],
          "Busy": [
-            null,
             "忙碌中"
          ],
          "Away": [
-            null,
             "离开"
          ],
          "Extended Away": [
-            null,
             ""
          ],
          "Offline": [
-            null,
             "离线"
          ],
          "Click to chat with this contact": [
-            null,
             "点击与对方交谈"
          ],
          "Name": [
-            null,
             ""
          ],
          "I am %1$s": [
-            null,
             "我现在%1$s"
          ],
          "Click here to write a custom status message": [
-            null,
             "点击这里，填写状态信息"
          ],
          "Click to change your chat status": [
-            null,
             "点击这里改变聊天状态"
          ],
          "Custom status": [
-            null,
             "DIY状态"
          ],
          "Save": [
-            null,
             "保存"
          ],
          "online": [
-            null,
             "在线"
          ],
          "busy": [
-            null,
             "忙碌"
          ],
          "away for long": [
-            null,
             "长时间离开"
          ],
          "away": [
-            null,
             "离开"
          ],
          "user@domain": [
-            null,
             ""
          ],
          "Please enter a valid XMPP address": [
-            null,
             ""
          ],
          "Click to add new chat contacts": [
-            null,
             "点击添加新联系人"
          ],
          "Add a contact": [
-            null,
             "添加联系人"
          ],
          "Contact name": [
-            null,
             "联系人名称"
          ],
          "Search": [
-            null,
             "搜索"
          ],
          "e.g. user@example.org": [
-            null,
             ""
          ],
          "Add": [
-            null,
             "添加"
          ],
          "Click to add as a chat contact": [
-            null,
             "点击添加为好友"
          ],
          "No users found": [
-            null,
             "未找到用户"
          ],
          "Toggle chat": [
-            null,
             "折叠聊天窗口"
          ],
          "This room is not anonymous": [
-            null,
             "此为非匿名聊天室"
          ],
          "This room now shows unavailable members": [
-            null,
             "此聊天室显示不可用用户"
          ],
          "This room does not show unavailable members": [
-            null,
             "此聊天室不显示不可用用户"
          ],
          "Room logging is now enabled": [
-            null,
             "聊天室聊天记录已启用"
          ],
          "Room logging is now disabled": [
-            null,
             "聊天室聊天记录已禁用"
          ],
          "This room is now semi-anonymous": [
-            null,
             "此聊天室半匿名"
          ],
          "This room is now fully-anonymous": [
-            null,
             "此聊天室完全匿名"
          ],
          "A new room has been created": [
-            null,
             "新聊天室已创建"
          ],
          "You have been banned from this room": [
-            null,
             "您已被此聊天室禁止入内"
          ],
          "You have been kicked from this room": [
-            null,
             "您已被踢出次房间"
          ],
          "You have been removed from this room because of an affiliation change": [
-            null,
             "由于关系变化，您已被移除此房间"
          ],
          "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
             "您已被移除此房间因为此房间更改为只允许成员加入，而您非成员"
          ],
          "Message": [
-            null,
             "信息"
          ],
          "Hide the list of occupants": [
-            null,
             ""
          ],
          "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
-            null,
             ""
          ],
          "Error: could not execute the command": [
-            null,
             ""
          ],
          "Change user's affiliation to admin": [
-            null,
             ""
          ],
          "Change user role to participant": [
-            null,
             ""
          ],
          "Grant membership to a user": [
-            null,
             ""
          ],
          "Remove user's ability to post messages": [
-            null,
             ""
          ],
          "Change your nickname": [
-            null,
             ""
          ],
          "Grant moderator role to user": [
-            null,
             ""
          ],
          "Revoke user's membership": [
-            null,
             ""
          ],
          "Set room subject (alias for /subject)": [
-            null,
             ""
          ],
          "Allow muted user to post messages": [
-            null,
             ""
          ],
          "Cancel": [
-            null,
             "取消"
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
             ""
          ],
          "Please choose your nickname": [
-            null,
             ""
          ],
          "Nickname": [
-            null,
             "昵称"
          ],
          "This chatroom requires a password": [
-            null,
             "此聊天室需要密码"
          ],
          "Password: ": [
-            null,
             "密码:"
          ],
          "The reason given is: \"%1$s\".": [
-            null,
             ""
          ],
          "Topic set by %1$s to: %2$s": [
-            null,
             "%1$s 设置话题为: %2$s"
          ],
          "Invite": [
-            null,
             ""
          ],
          "Hidden": [
-            null,
             "隐藏的"
          ],
          "Message archiving": [
-            null,
             ""
          ],
          "Members only": [
-            null,
             ""
          ],
          "Moderated": [
-            null,
             "发言受限"
          ],
          "Non-anonymous": [
-            null,
             "非匿名"
          ],
          "Persistent": [
-            null,
             ""
          ],
          "Public": [
-            null,
             "公开的"
          ],
          "Semi-anonymous": [
-            null,
             "半匿名"
          ],
          "Unmoderated": [
-            null,
             "无发言限制"
          ],
          "Messages are archived on the server": [
-            null,
             ""
          ],
          "All other room occupants can see your XMPP username": [
-            null,
             ""
          ],
          "This room persists even if it's unoccupied": [
-            null,
             ""
          ],
          "Only moderators can see your XMPP username": [
-            null,
             ""
          ],
          "This room will disappear once the last person leaves": [
-            null,
             ""
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
-            null,
             ""
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
-            null,
             ""
          ],
          "Please enter a valid XMPP username": [
-            null,
             ""
          ],
          "Room name": [
-            null,
             "聊天室名称"
          ],
          "Server": [
-            null,
             "服务器"
          ],
          "Show rooms": [
-            null,
             "显示所有聊天室"
          ],
          "Rooms": [
-            null,
             "聊天室"
          ],
          "No rooms on %1$s": [
-            null,
             "%1$s 上没有聊天室"
          ],
          "Rooms on %1$s": [
-            null,
             "%1$s 上的聊天室"
          ],
          "Click to open this room": [
-            null,
             "打开聊天室"
          ],
          "Show more information on this room": [
-            null,
             "显示次聊天室的更多信息"
          ],
          "Description:": [
-            null,
             "描述: "
          ],
          "Room Address (JID):": [
-            null,
             ""
          ],
          "Occupants:": [
-            null,
             "成员:"
          ],
          "Features:": [
-            null,
             "特性:"
          ],
          "Requires authentication": [
-            null,
             "需要验证"
          ],
          "Requires an invitation": [
-            null,
             "需要被邀请"
          ],
          "Open room": [
-            null,
             "打开聊天室"
          ],
          "Permanent room": [
-            null,
             "永久聊天室"
          ],
          "Temporary room": [
-            null,
             "临时聊天室"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
-            null,
             ""
          ],
          "%1$s has invited you to join a chat room: %2$s, and left the following reason: \"%3$s\"": [
-            null,
             ""
          ],
          "Bookmark this room": [
-            null,
             ""
          ],
          "The name for this bookmark:": [
-            null,
             ""
          ],
          "Would you like this room to be automatically joined upon startup?": [
-            null,
             ""
          ],
          "What should your nickname for this room be?": [
-            null,
             ""
          ],
          "Sorry, something went wrong while trying to save your bookmark.": [
-            null,
             ""
          ],
          "Bookmarks": [
-            null,
             ""
          ],
          "Remove this bookmark": [
-            null,
             ""
          ],
          "Re-establishing encrypted session": [
-            null,
             "重新建立加密会话"
          ],
          "Generating private key.": [
-            null,
             "正在生成私钥"
          ],
          "Your browser might become unresponsive.": [
-            null,
             "您的浏览器可能会暂时无响应"
          ],
          "Could not verify this user's identify.": [
-            null,
             "无法验证对方信息。"
          ],
          "Your messages are not encrypted anymore": [
-            null,
             "您的消息将不再被加密"
          ],
          "Your message could not be sent": [
-            null,
             "您的消息无法送出"
          ],
          "We received an unencrypted message": [
-            null,
             "我们收到了一条未加密的信息"
          ],
          "We received an unreadable encrypted message": [
-            null,
             "我们收到一条无法读取的信息"
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
-            null,
             "这里是指纹。请与 %1$s 确认。\n\n您的 %2$s 指纹: %3$s\n\n%1$s 的指纹: %4$s\n\n如果确认符合，请点击OK，否则点击取消"
          ],
          "What is your security question?": [
-            null,
             "您的安全问题是?"
          ],
          "What is the answer to the security question?": [
-            null,
             "此安全问题的答案是?"
          ],
          "Invalid authentication scheme provided": [
-            null,
             "非法的认证方式"
          ],
          "Your messages are not encrypted. Click here to enable OTR encryption.": [
-            null,
             "您的消息未加密。点击这里来启用OTR加密"
          ],
          "End encrypted conversation": [
-            null,
             "结束加密的会话"
          ],
          "Refresh encrypted conversation": [
-            null,
             "刷新加密的会话"
          ],
          "Start encrypted conversation": [
-            null,
             "开始加密的会话"
          ],
          "Verify with fingerprints": [
-            null,
             "验证指纹"
          ],
          "Verify with SMP": [
-            null,
             "验证SMP"
          ],
          "What's this?": [
-            null,
             "这是什么?"
          ],
          "unencrypted": [
-            null,
             "未加密"
          ],
          "unverified": [
-            null,
             "未验证"
          ],
          "verified": [
-            null,
             "已验证"
          ],
          "finished": [
-            null,
             "结束了"
          ],
          "Don't have a chat account?": [
-            null,
             ""
          ],
          "Create an account": [
-            null,
             ""
          ],
          "Create your account": [
-            null,
             ""
          ],
          "Please enter the XMPP provider to register with:": [
-            null,
             ""
          ],
          "Already have a chat account?": [
-            null,
             ""
          ],
          "Log in here": [
-            null,
             ""
          ],
          "Account Registration:": [
-            null,
             ""
          ],
          "Register": [
-            null,
             ""
          ],
          "Choose a different provider": [
-            null,
             ""
          ],
          "Hold tight, we're fetching the registration form…": [
-            null,
             ""
          ],
          " e.g. conversejs.org": [
-            null,
             ""
          ],
          "Fetch registration form": [
-            null,
             ""
          ],
          "Tip: A list of public XMPP providers is available": [
-            null,
             ""
          ],
          "here": [
-            null,
             ""
          ],
          "Sorry, we're unable to connect to your chosen provider.": [
-            null,
             ""
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
-            null,
             ""
          ],
          "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
-            null,
             ""
          ],
          "Now logging you in": [
-            null,
             ""
          ],
          "Registered successfully": [
-            null,
             ""
          ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
-            null,
             ""
          ],
          "Notification from %1$s": [
-            null,
             ""
          ],
          "%1$s says": [
-            null,
             ""
          ],
          "wants to be your contact": [
-            null,
             ""
          ],
          "Minimize this chat box": [
-            null,
             ""
          ],
          "Minimized": [
-            null,
             "最小化的"
          ]
       }

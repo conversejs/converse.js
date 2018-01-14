@@ -48,19 +48,17 @@
     };
 
     converse.plugins.add('converse-chatview', {
-        /* Optional dependencies are other plugins which might be
+        /* Plugin dependencies are other plugins which might be
          * overridden or relied upon, and therefore need to be loaded before
-         * this plugin. They are called "optional" because they might not be
-         * available, in which case any overrides applicable to them will be
-         * ignored.
+         * this plugin.
          *
-         * It's possible however to make optional dependencies non-optional.
          * If the setting "strict_plugin_dependencies" is set to true,
-         * an error will be raised if the plugin is not found.
+         * an error will be raised if the plugin is not found. By default it's
+         * false, which means these plugins are only loaded opportunistically.
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        optional_dependencies: ["converse-chatboxes"],
+        dependencies: ["converse-chatboxes"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -142,7 +140,7 @@
                 }
             });
 
-            _converse.EmojiPickerView = Backbone.View.extend({
+            _converse.EmojiPickerView = Backbone.NativeView.extend({
                 className: 'emoji-picker-container toolbar-menu collapsed',
                 events: {
                     'click .emoji-category-picker li.emoji-category': 'chooseCategory',
@@ -231,7 +229,7 @@
                 }
             });
 
-            _converse.ChatBoxHeading = Backbone.View.extend({
+            _converse.ChatBoxHeading = Backbone.NativeView.extend({
 
                 initialize () {
                     this.model.on('change:image', this.render, this);
@@ -259,7 +257,7 @@
                 }
             });
 
-            _converse.ChatBoxView = Backbone.View.extend({
+            _converse.ChatBoxView = Backbone.NativeView.extend({
                 length: 200,
                 className: 'chatbox hidden',
                 is_chatroom: false,  // Leaky abstraction from MUC
@@ -289,7 +287,6 @@
                     this.model.on('sendMessage', this.sendMessage, this);
 
                     this.render().renderToolbar().insertHeading().fetchMessages();
-                    u.refreshWebkit();
                     _converse.emit('chatBoxOpened', this);
                     _converse.emit('chatBoxInitialized', this);
                 },
@@ -422,11 +419,13 @@
                     }
                 },
 
+                isNotPermanentMessage (el) {
+                    return !_.isNull(el) && (u.hasClass('chat-event', el) || !u.hasClass('message', el));
+                },
+
                 getPreviousMessageElement (el) {
                     let prev_msg_el = el.previousSibling;
-                    while (!_.isNull(prev_msg_el) &&
-                            !u.hasClass(prev_msg_el, 'message') &&
-                            !u.hasClass(prev_msg_el, 'chat-info')) {
+                    while (this.isNotPermanentMessage(prev_msg_el)) {
                         prev_msg_el = prev_msg_el.previousSibling
                     }
                     return prev_msg_el;
@@ -434,9 +433,7 @@
 
                 getLastMessageElement () {
                     let last_msg_el = this.content.lastElementChild;
-                    while (!_.isNull(last_msg_el) &&
-                            !u.hasClass(last_msg_el, 'message') &&
-                            !u.hasClass(last_msg_el, 'chat-info')) {
+                    while (this.isNotPermanentMessage(last_msg_el)) {
                         last_msg_el = last_msg_el.previousSibling
                     }
                     return last_msg_el;
@@ -444,9 +441,7 @@
 
                 getFirstMessageElement () {
                     let first_msg_el = this.content.firstElementChild;
-                    while (!_.isNull(first_msg_el) &&
-                            !u.hasClass(first_msg_el, 'message') &&
-                            !u.hasClass(first_msg_el, 'chat-info')) {
+                    while (this.isNotPermanentMessage(first_msg_el)) {
                         first_msg_el = first_msg_el.nextSibling
                     }
                     return first_msg_el;
@@ -469,8 +464,14 @@
                     if (_.isNull(most_recent_date) || moment(most_recent_date).isBefore(cutoff)) {
                         return most_recent_date;
                     }
+                    /* XXX: We avoid .chat-event messages, since they are
+                     * temporary and get removed once a new element is
+                     * inserted into the chat area, so we don't query for
+                     * them here, otherwise we get a null reference later
+                     * upon element insertion.
+                     */
                     const msg_dates = _.invokeMap(
-                        sizzle('.message, .chat-info', this.content),
+                        sizzle('.message:not(.chat-event)', this.content),
                         Element.prototype.getAttribute, 'data-isodate'
                     )
                     if (_.isObject(cutoff)) {
@@ -499,9 +500,8 @@
                      *      attributes.
                      */
                     const current_msg_date = moment(attrs.time) || moment,
-                          prepend_html = _.bind(this.content.insertAdjacentHTML, this.content, 'afterbegin'),
-                          previous_msg_date = this.getLastMessageDate(current_msg_date),
-                          message_el = this.renderMessage(attrs);
+                        previous_msg_date = this.getLastMessageDate(current_msg_date),
+                        message_el = this.renderMessage(attrs);
 
                     if (_.isNull(previous_msg_date)) {
                         this.content.insertAdjacentElement('afterbegin', message_el);
@@ -510,6 +510,7 @@
                         previous_msg_el.insertAdjacentElement('afterend', message_el);
                     }
                     this.insertDayIndicator(message_el);
+                    this.clearStatusNotification();
                     this.scrollDown();
                 },
 
@@ -554,16 +555,7 @@
                         template = tpl_message;
                         username = attrs.sender === 'me' && __('me') || fullname;
                     }
-                    this.clearStatusNotification();
 
-                    if (text.length > 8000) {
-                        text = text.substring(0, 10) + '...';
-                        this.showStatusNotification(
-                            __("A very large message has been received. "+
-                               "This might be due to an attack meant to degrade the chat performance. "+
-                               "Output has been shortened."),
-                            true, true);
-                    }
                     const msg_time = moment(attrs.time) || moment;
                     const msg = u.stringToElement(template(
                         _.extend(this.getExtraMessageTemplateAttributes(attrs), {
@@ -623,6 +615,7 @@
                     } else if (message.get('chat_state') === _converse.GONE) {
                         this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
                     }
+                    return message;
                 },
 
                 shouldShowOnTextMessage () {
@@ -676,10 +669,13 @@
                     }
                     if (message.get('type') === 'error') {
                         this.handleErrorMessage(message);
-                    } else if (!message.get('message')) {
-                        this.handleChatStateMessage(message);
                     } else {
-                        this.handleTextMessage(message);
+                        if (message.get('chat_state')) {
+                            this.handleChatStateMessage(message);
+                        }
+                        if (message.get('message')) {
+                            this.handleTextMessage(message);
+                        }
                     }
                     _converse.emit('messageAdded', {
                         'message': message,
@@ -711,8 +707,11 @@
                         // Forward the message, so that other connected resources are also aware of it.
                         _converse.connection.send(
                             $msg({ to: _converse.bare_jid, type: 'chat', id: message.get('msgid') })
-                            .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
-                            .c('delay', {xmns:'urn:xmpp:delay',stamp:(new Date()).getTime()}).up()
+                            .c('forwarded', {'xmlns': Strophe.NS.FORWARD})
+                            .c('delay', {
+                                'xmns': Strophe.NS.DELAY,
+                                'stamp': moment.format()
+                            }).up()
                             .cnode(messageStanza.tree())
                         );
                     }
@@ -860,6 +859,9 @@
                 },
 
                 toggleEmojiMenu (ev) {
+                    if (u.hasClass('insert-emoji', ev.target)) {
+                        return;
+                    }
                     if (!_.isUndefined(ev)) {
                         ev.stopPropagation();
                         if (ev.target.classList.contains('emoji-category-picker') ||
@@ -965,7 +967,6 @@
 
                 hide () {
                     this.el.classList.add('hidden');
-                    u.refreshWebkit();
                     return this;
                 },
 

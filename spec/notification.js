@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["jasmine", "mock", "converse-core", "test-utils", "utils"], factory);
-} (this, function (jasmine, mock, converse, test_utils, utils) {
+    define(["jquery", "jasmine", "mock", "converse-core", "test-utils", "utils"], factory);
+} (this, function ($, jasmine, mock, converse, test_utils, utils) {
     "use strict";
     var _ = converse.env._;
     var $msg = converse.env.$msg;
@@ -46,7 +46,7 @@
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
                             var view = _converse.chatboxviews.get('lounge@localhost');
-                            if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
+                            if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
                             var no_notification = false;
                             if (typeof window.Notification === 'undefined') {
                                 no_notification = true;
@@ -165,7 +165,7 @@
                         _converse.play_sounds = true;
                         spyOn(_converse, 'playSoundNotification');
                         var view = _converse.chatboxviews.get('lounge@localhost');
-                        if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
+                        if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
                         var text = 'This message will play a sound because it mentions dummy';
                         var message = $msg({
                             from: 'lounge@localhost/otheruser',

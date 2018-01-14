@@ -10,24 +10,37 @@ Writing a plugin
 Introduction
 ------------
 
-Converse.js is exposes a plugin architecture which allows developers to modify
+Converse.js exposes a plugin architecture through which developers can modify
 and extend its functionality.
 
-Specifically, plugins enable developers to extend and override existing objects,
-functions and `Backbone <http://backbonejs.org/>`_ models and views that make up
-Converse.js, and also give them the ability to write new models and views.
+Using plugins is good engineering practice, and using them is the *only* recommended
+way of changing converse.js or adding new features to it.
 
-Various core features of Converse.js, such as
-`Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_ and
-`Group chats <https://xmpp.org/extensions/xep-0045.html>`_ are implemented
-as plugins, thereby showing their power and flexibility.
+In particular, plugins have the following advantages:
 
-Converse.js uses `pluggable.js <https://github.com/jcbrand/pluggable.js/>`_ as
-its plugin architecture.
+The main benefit of plugins is their *isolation of concerns* (and features).
+From this benefit flows various 2nd degree advantages, such as the ability to
+make smaller production builds (by excluding unused plugins) and an easier
+upgrade path by avoiding touching converse.js's internals.
+
+Each plugin comes in its own file, and converse.js's plugin architecture,
+called `pluggable.js <https://github.com/jcbrand/pluggable.js/>`_, provides you
+with the ability to "hook in" to the core code and other plugins.
+
+Converse.js itself is composed out of plugins and uses pluggable.js. Take a look at the
+`src <https://github.com/jcbrand/converse.js/tree/master/src>`_ directory. All
+the files that follow the pattern `converse-*.js` are plugins.
+
+Plugins (by way of Pluggable.js) enable developers to extend and override existing objects,
+functions and the `Backbone <http://backbonejs.org/>`_ models and views that make up
+Converse.js.
+
+Besides that, in plugins you can also write new Backbone (or other) models and views,
+in order to add a new functionality.
 
 To more deeply understand how this plugin architecture works, please read the
 `pluggable.js documentation <https://jcbrand.github.io/pluggable.js/>`_
-and to understand its inner workins, please refer to the `annotated source code
+and to understand its inner workings, please refer to the `annotated source code
 <https://jcbrand.github.io/pluggable.js/docs/pluggable.html>`_.
 
 .. note:: **Trying out a plugin in JSFiddle**
@@ -46,7 +59,7 @@ and to understand its inner workins, please refer to the `annotated source code
 
     There is a `Yeoman <http://yeoman.io/>`_ code generator, called
     `generator-conversejs <https://github.com/jcbrand/generator-conversejs>`_, which
-    you can use to generate plugin scaffolding/boilerplate, which you can use as a
+    you can use to generate plugin scaffolding/boilerplate that serves as a
     starting point and basis for writing your plugin.
 
     Please refer to the `generator-conversejs <https://github.com/jcbrand/generator-conversejs>`_
@@ -97,6 +110,11 @@ advertising networks) we now require whitelisting.
 
 To whitelist a plugin simply means to specify :ref:`whitelisted_plugins` when
 you call ``converse.initialize``.
+
+If you're adding a "core" plugin, which means a plugin that will be
+included in the default, open-source version of converse.js, then you'll
+instead whitelist the plugin by adding its name to the `core_plugins` array in
+`./src/converse-core.js <https://github.com/jcbrand/converse.js/blob/master/src/converse-core.js>`_.
 
 Security and access to the inner workings
 -----------------------------------------
@@ -194,60 +212,59 @@ A better approach is to listen to the events emitted by Converse.js, and to add
 your code in event handlers. This is however not always possible, in which case
 the overrides are a powerful tool.
 
-.. _`optional_dependencies`:
+.. _`dependencies`:
 
-Optional plugin dependencies
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Plugin dependencies
+~~~~~~~~~~~~~~~~~~~
 
 When using ``overrides``, the code that you want to override (which is either
-in ``converse-core`` or in other plugins), needs to be loaded already by the
-type the ``overrides`` object is being parsed.
+in ``converse-core`` or in other plugins), needs to be parsed already by the
+time your ``overrides`` are being parsed.
 
-So it's important to include overridden plugins in the AMD ``define`` statement
-at the top of the plugin module.
+Additionally, when you register event or promise handlers in your plugin for
+events/promises that fire in other plugins, then you want those plugins to have
+been loaded before your plugin gets loaded.
 
-However, sometimes you want to override parts of another plugin if it exists, but you
-don't want anything to break if it doesn't exist (for example when using a
-custom build which excludes that plugin). An example is the
-`converse-dragresize <https://github.com/jcbrand/converse.js/blob/master/src/converse-dragresize.js>`_
+To resolve this problem we have the ``dependencies`` Array attribute.
+With this you can specify those dependencies which need to be loaded before
+your plugin is loaded.
+
+In some cases, you might want to depend on another plugin if it's available,
+but don't care when it's not available.
+An example is the `converse-dragresize <https://github.com/jcbrand/converse.js/blob/master/src/converse-dragresize.js>`_
 plugin, which will add drag-resize handles to the headlines box (which shows
-messages of type ``headline``) but doesn't care if that particular plugin isn't
-actually loaded.
+messages of type ``headline``) but doesn't care when that particular plugin is
+not available.
+
+If the :ref:`strict_plugin_dependencies` setting is set to ``false`` (which is
+its default value), then no error will be raised if the plugin is not found.
 
 In this case, you can't specify the plugin as a dependency in the ``define``
 statement at the top of the plugin, since it might not always be available,
 which would cause ``require.js`` to throw an error.
 
-To resolve this problem we have the ``optional_dependencies`` Array attribute.
-With this you can specify those dependencies which need to be loaded before
-your plugin, if they exist. If they don't exist, they won't be ignored.
-
-If the setting :ref:`strict_plugin_dependencies` is set to true,
-an error will be raised if the plugin is not found, thereby making them
-non-optional.
-
 Extending converse.js's configuration settings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Converse.js comes with various :ref:`configuration-settings`_ that can be used to
+Converse.js comes with various :ref:`configuration-settings` that can be used to
 modify its functionality and behavior.
 
 All configuration settings have default values which can be overridden when
-`converse.initialize` (see :ref:`initialize`_) gets called.
+`converse.initialize` (see :ref:`initialize`) gets called.
 
 Plugins often need their own additional configuration settings and you can add
 these settings with the `_converse.api.settings.update` method (see
-:ref:`settings-update`_).
+:ref:`settings-update`).
 
 Exposing promises
 ~~~~~~~~~~~~~~~~~
 
-Converse.js has a ``waitUntil`` API method (see :ref:`waituntil-grouping`_)
+Converse.js has a ``waitUntil`` API method (see :ref:`waituntil-grouping`)
 which allows you to wait for various promises to resolve before executing a
 piece of code.
 
 You can add new promises for your plugin by calling
-``_converse.api.promises.add`` (see :ref:`promises-grouping`_).
+``_converse.api.promises.add`` (see :ref:`promises-grouping`).
 
 Generally, your plugin will then also be responsible for making sure these
 promises are resolved. You do this by calling ``_converse.api.emit``, which not
@@ -380,7 +397,7 @@ generated by `generator-conversejs <https://github.com/jcbrand/generator-convers
                * If the setting "strict_plugin_dependencies" is set to true,
                * an error will be raised if the plugin is not found.
                */
-            'optional_dependencies': [],
+            'dependencies': [],
 
             /* Converse.js's plugin mechanism will call the initialize
              * method on any plugin (if it exists) as soon as the plugin has

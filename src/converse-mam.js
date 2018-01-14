@@ -25,9 +25,21 @@
     const MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
 
+    function getMessageArchiveID (stanza) {
+        const result = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
+        if (!_.isUndefined(result)) {
+            return result.getAttribute('id');
+        }
+        const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+        if (!_.isUndefined(stanza_id)) {
+            return stanza_id.getAttribute('id');
+        }
+    }
+
+
     converse.plugins.add('converse-mam', {
 
-        optional_dependencies: ['converse-chatview', 'converse-muc'],
+        dependencies: ['converse-chatview', 'converse-muc'],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -38,9 +50,9 @@
             ChatBox: {
                 getMessageAttributes (message, delay, original_stanza) {
                     const attrs = this.__super__.getMessageAttributes.apply(this, arguments);
-                    const result = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, original_stanza).pop();
-                    if (!_.isUndefined(result)) {
-                        attrs.archive_id =  result.getAttribute('id');
+                    const archive_id = getMessageArchiveID(original_stanza);
+                    if (archive_id) {
+                        attrs.archive_id = archive_id;
                     }
                     return attrs;
                 }
@@ -66,15 +78,19 @@
                         (result) => { // Success
                             if (result.supported) {
                                 const most_recent_msg = utils.getMostRecentMessage(this.model);
-                                const archive_id = most_recent_msg.get('archive_id');
-                                if (archive_id) {
-                                    this.fetchArchivedMessages({
-                                        'after': most_recent_msg.get('archive_id')
-                                    });
+                                if (_.isNil(most_recent_msg)) {
+                                    this.fetchArchivedMessages();
                                 } else {
-                                    this.fetchArchivedMessages({
-                                        'start': most_recent_msg.get('time')
-                                    });
+                                    const archive_id = most_recent_msg.get('archive_id');
+                                    if (archive_id) {
+                                        this.fetchArchivedMessages({
+                                            'after': most_recent_msg.get('archive_id')
+                                        });
+                                    } else {
+                                        this.fetchArchivedMessages({
+                                            'start': most_recent_msg.get('time')
+                                        });
+                                    }
                                 }
                             } else {
                                 this.clearSpinner();
@@ -189,6 +205,17 @@
                     this.__super__.initialize.apply(this, arguments);
                     this.model.on('change:mam_enabled', this.fetchArchivedMessagesIfNecessary, this);
                     this.model.on('change:connection_status', this.fetchArchivedMessagesIfNecessary, this);
+                },
+
+                isDuplicate (message, original_stanza) {
+                    const result = this.__super__.isDuplicate.apply(this, arguments);
+                    if (result) {
+                        return result;
+                    }
+                    const archive_id = getMessageArchiveID(original_stanza);
+                    if (archive_id) {
+                        return this.model.messages.filter({'archive_id': archive_id}).length > 0;
+                    }
                 },
 
                 renderChatArea () {
@@ -425,7 +452,7 @@
             });
 
             _converse.on('afterMessagesFetched', (chatboxview) => {
-                chatboxview.fetchArchivedMessagesIfNecessary();
+                chatboxview.fetchNewestMessages();
             });
 
             _converse.on('reconnected', () => {

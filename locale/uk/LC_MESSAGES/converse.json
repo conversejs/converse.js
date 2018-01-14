@@ -8,851 +8,639 @@
             "lang": "uk"
          },
          "The connection has dropped, attempting to reconnect.": [
-            null,
             ""
          ],
          "Your Jabber ID and/or password is incorrect. Please try again.": [
-            null,
             ""
          ],
          "Sorry, we could not connect to the XMPP host with domain: ": [
-            null,
             ""
          ],
          "The XMPP server did not offer a supported authentication mechanism": [
-            null,
             ""
          ],
          "Sorry, there was an error while trying to add %1$s as a contact.": [
-            null,
             ""
          ],
          "This client does not allow presence subscriptions": [
-            null,
             ""
          ],
          "Click to hide these contacts": [
-            null,
             "Клацніть, щоб приховати ці контакти"
          ],
          "Personal message": [
-            null,
             "Персональна вісточка"
          ],
          "Send": [
-            null,
             ""
          ],
          "me": [
-            null,
             "я"
          ],
          "A very large message has been received. This might be due to an attack meant to degrade the chat performance. Output has been shortened.": [
-            null,
             ""
          ],
          "Typing from another device": [
-            null,
             ""
          ],
          "is typing": [
-            null,
             "друкує"
          ],
          "Stopped typing on the other device": [
-            null,
             ""
          ],
          "has stopped typing": [
-            null,
             "припинив друкувати"
          ],
          "has gone away": [
-            null,
             "пішов геть"
          ],
          "Show this menu": [
-            null,
             "Показати це меню"
          ],
          "Write in the third person": [
-            null,
             "Писати від третьої особи"
          ],
          "Remove messages": [
-            null,
             "Видалити повідомлення"
          ],
          "Are you sure you want to clear the messages from this chat box?": [
-            null,
             "Ви впевнені, що хочете очистити повідомлення з цього вікна чату?"
          ],
          "has gone offline": [
-            null,
             "тепер поза мережею"
          ],
          "is busy": [
-            null,
             "зайнятий"
          ],
          "Clear all messages": [
-            null,
             "Очистити всі повідомлення"
          ],
          "Insert a smiley": [
-            null,
             ""
          ],
          "Start a call": [
-            null,
             "Почати виклик"
          ],
          "Login": [
-            null,
             ""
          ],
          "Jabber ID:": [
-            null,
             ""
          ],
          "Password:": [
-            null,
             "Пароль:"
          ],
          "Submit": [
-            null,
             "Надіслати"
          ],
          "This contact is busy": [
-            null,
             "Цей контакт зайнятий"
          ],
          "This contact is online": [
-            null,
             "Цей контакт на зв'язку"
          ],
          "This contact is offline": [
-            null,
             "Цей контакт поза мережею"
          ],
          "This contact is unavailable": [
-            null,
             "Цей контакт недоступний"
          ],
          "This contact is away for an extended period": [
-            null,
             "Цей контакт відсутній тривалий час"
          ],
          "This contact is away": [
-            null,
             "Цей контакт відсутній"
          ],
          "Contacts": [
-            null,
             "Контакти"
          ],
          "Groups": [
-            null,
             "Групи"
          ],
          "My contacts": [
-            null,
             "Мої контакти"
          ],
          "Pending contacts": [
-            null,
             "Контакти в очікуванні"
          ],
          "Contact requests": [
-            null,
             "Запити контакту"
          ],
          "Ungrouped": [
-            null,
             "Негруповані"
          ],
          "Filter": [
-            null,
             ""
          ],
          "State": [
-            null,
             ""
          ],
          "Any": [
-            null,
             ""
          ],
          "Unread": [
-            null,
             ""
          ],
          "Online": [
-            null,
             "На зв'язку"
          ],
          "Chatty": [
-            null,
             ""
          ],
          "Busy": [
-            null,
             "Зайнятий"
          ],
          "Away": [
-            null,
             "Далеко"
          ],
          "Extended Away": [
-            null,
             ""
          ],
          "Offline": [
-            null,
             "Поза мережею"
          ],
          "Click to chat with this contact": [
-            null,
             "Клацніть, щоб почати розмову з цим контактом"
          ],
          "Name": [
-            null,
             ""
          ],
          "Are you sure you want to remove this contact?": [
-            null,
             "Ви впевнені, що хочете видалити цей контакт?"
          ],
          "Are you sure you want to decline this contact request?": [
-            null,
             "Ви впевнені, що хочете відхилити цей запит контакту?"
          ],
          "I am %1$s": [
-            null,
             "Я %1$s"
          ],
          "Click here to write a custom status message": [
-            null,
             "Клацніть тут, щоб створити власний статус"
          ],
          "Click to change your chat status": [
-            null,
             "Клацніть, щоб змінити статус в чаті"
          ],
          "Custom status": [
-            null,
             "Власний статус"
          ],
          "Save": [
-            null,
             "Зберегти"
          ],
          "online": [
-            null,
             "на зв'язку"
          ],
          "busy": [
-            null,
             "зайнятий"
          ],
          "away for long": [
-            null,
             "давно відсутній"
          ],
          "away": [
-            null,
             "відсутній"
          ],
          "user@domain": [
-            null,
             ""
          ],
          "Please enter a valid XMPP address": [
-            null,
             ""
          ],
          "Log out": [
-            null,
             "Вийти"
          ],
          "Click to add new chat contacts": [
-            null,
             "Клацніть, щоб додати нові контакти до чату"
          ],
          "Add a contact": [
-            null,
             "Додати контакт"
          ],
          "Contact name": [
-            null,
             "Назва контакту"
          ],
          "Search": [
-            null,
             "Пошук"
          ],
          "e.g. user@example.org": [
-            null,
             ""
          ],
          "Add": [
-            null,
             "Додати"
          ],
          "Click to add as a chat contact": [
-            null,
             "Клацніть, щоб додати як чат-контакт"
          ],
          "No users found": [
-            null,
             "Жодного користувача не знайдено"
          ],
          "Toggle chat": [
-            null,
             "Включити чат"
          ],
          "This room is not anonymous": [
-            null,
             "Ця кімната не є анонімною"
          ],
          "This room now shows unavailable members": [
-            null,
             "Ця кімната вже показує недоступних учасників"
          ],
          "This room does not show unavailable members": [
-            null,
             "Ця кімната не показує недоступних учасників"
          ],
          "Room logging is now enabled": [
-            null,
             "Журналювання кімнати тепер ввімкнено"
          ],
          "Room logging is now disabled": [
-            null,
             "Журналювання кімнати тепер вимкнено"
          ],
          "This room is now semi-anonymous": [
-            null,
             "Ця кімната тепер напів-анонімна"
          ],
          "This room is now fully-anonymous": [
-            null,
             "Ця кімната тепер повністю анонімна"
          ],
          "A new room has been created": [
-            null,
             "Створено нову кімнату"
          ],
          "You have been banned from this room": [
-            null,
             "Вам заблокували доступ до цієї кімнати"
          ],
          "You have been kicked from this room": [
-            null,
             "Вас викинули з цієї кімнати"
          ],
          "You have been removed from this room because of an affiliation change": [
-            null,
             "Вас видалено з кімнати у зв'язку зі змінами власності кімнати"
          ],
          "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
             "Вас видалено з цієї кімнати, оскільки вона тепер вимагає членства, а Ви ним не є її членом"
          ],
          "Message": [
-            null,
             "Повідомлення"
          ],
          "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
-            null,
             ""
          ],
          "Are you sure you want to clear the messages from this room?": [
-            null,
             "Ви впевнені, що хочете очистити повідомлення з цієї кімнати?"
          ],
          "Error: could not execute the command": [
-            null,
             "Помилка: Не можу виконати команду"
          ],
          "Change user's affiliation to admin": [
-            null,
             "Призначити користувача адміністратором"
          ],
          "Ban user from room": [
-            null,
             "Заблокувати і викинути з кімнати"
          ],
          "Kick user from room": [
-            null,
             "Викинути з кімнати"
          ],
          "Write in 3rd person": [
-            null,
             "Писати в 3-й особі"
          ],
          "Grant membership to a user": [
-            null,
             "Надати членство користувачу"
          ],
          "Remove user's ability to post messages": [
-            null,
             "Забрати можливість слати повідомлення"
          ],
          "Change your nickname": [
-            null,
             "Змінити Ваше прізвисько"
          ],
          "Grant moderator role to user": [
-            null,
             "Надати права модератора"
          ],
          "Grant ownership of this room": [
-            null,
             "Передати у власність цю кімнату"
          ],
          "Revoke user's membership": [
-            null,
             "Забрати членство в користувача"
          ],
          "Set room subject (alias for /subject)": [
-            null,
             ""
          ],
          "Allow muted user to post messages": [
-            null,
             "Дозволити безголосому користувачу слати повідомлення"
          ],
          "Cancel": [
-            null,
             "Відміна"
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
             ""
          ],
          "Nickname": [
-            null,
             "Прізвисько"
          ],
          "This chatroom requires a password": [
-            null,
             "Ця кімната вимагає пароль"
          ],
          "Password: ": [
-            null,
             "Пароль:"
          ],
          "Topic set by %1$s to: %2$s": [
-            null,
             "Тема встановлена %1$s: %2$s"
          ],
          "Occupants": [
-            null,
             "Учасники"
          ],
          "Invite": [
-            null,
             "Запросіть"
          ],
          "Hidden": [
-            null,
             "Прихована"
          ],
          "Message archiving": [
-            null,
             ""
          ],
          "Members only": [
-            null,
             ""
          ],
          "Moderated": [
-            null,
             "Модерована"
          ],
          "Non-anonymous": [
-            null,
             "Не-анонімні"
          ],
          "Persistent": [
-            null,
             ""
          ],
          "Public": [
-            null,
             "Публічна"
          ],
          "Semi-anonymous": [
-            null,
             "Напів-анонімна"
          ],
          "Unmoderated": [
-            null,
             "Немодерована"
          ],
          "Messages are archived on the server": [
-            null,
             ""
          ],
          "All other room occupants can see your XMPP username": [
-            null,
             ""
          ],
          "This room persists even if it's unoccupied": [
-            null,
             ""
          ],
          "Only moderators can see your XMPP username": [
-            null,
             ""
          ],
          "This room will disappear once the last person leaves": [
-            null,
             ""
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
-            null,
             "Ви запрошуєте %1$s до чату \"%2$s\". "
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
-            null,
             "Ви можете опціонально додати повідомлення, щоб пояснити причину запрошення."
          ],
          "Please enter a valid XMPP username": [
-            null,
             ""
          ],
          "Room name": [
-            null,
             "Назва кімнати"
          ],
          "Server": [
-            null,
             "Сервер"
          ],
          "Join Room": [
-            null,
             "Приєднатися до кімнати"
          ],
          "Show rooms": [
-            null,
             "Показати кімнати"
          ],
          "Rooms": [
-            null,
             "Кімнати"
          ],
          "No rooms on %1$s": [
-            null,
             "Жодної кімнати на %1$s"
          ],
          "Rooms on %1$s": [
-            null,
             "Кімнати на %1$s"
          ],
          "Click to open this room": [
-            null,
             "Клацніть, щоб увійти в цю кімнату"
          ],
          "Show more information on this room": [
-            null,
             "Показати більше інформації про цю кімату"
          ],
          "Description:": [
-            null,
             "Опис:"
          ],
          "Room Address (JID):": [
-            null,
             ""
          ],
          "Occupants:": [
-            null,
             "Присутні:"
          ],
          "Features:": [
-            null,
             "Особливості:"
          ],
          "Requires authentication": [
-            null,
             "Вимагає автентикації"
          ],
          "Requires an invitation": [
-            null,
             "Вимагає запрошення"
          ],
          "Open room": [
-            null,
             "Увійти в кімнату"
          ],
          "Permanent room": [
-            null,
             "Постійна кімната"
          ],
          "Temporary room": [
-            null,
             "Тимчасова кімната"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
-            null,
             "%1$s запрошує вас приєднатись до чату: %2$s"
          ],
          "%1$s has invited you to join a chat room: %2$s, and left the following reason: \"%3$s\"": [
-            null,
             "%1$s запрошує Вас приєднатись до чату: %2$s, аргументує ось як: \"%3$s\""
          ],
          "Bookmark this room": [
-            null,
             ""
          ],
          "The name for this bookmark:": [
-            null,
             ""
          ],
          "Would you like this room to be automatically joined upon startup?": [
-            null,
             ""
          ],
          "What should your nickname for this room be?": [
-            null,
             ""
          ],
          "Sorry, something went wrong while trying to save your bookmark.": [
-            null,
             ""
          ],
          "Bookmarks": [
-            null,
             ""
          ],
          "Remove this bookmark": [
-            null,
             ""
          ],
          "Re-establishing encrypted session": [
-            null,
             "Перевстановлюю криптований сеанс"
          ],
          "Generating private key.": [
-            null,
             "Генерація приватного ключа."
          ],
          "Your browser might become unresponsive.": [
-            null,
             "Ваш браузер може підвиснути."
          ],
          "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
-            null,
             "Запит автентикації від %1$s\n\nВаш контакт в чаті намагається встановити Вашу особу і просить відповісти на питання нижче.\n\n%2$s"
          ],
          "Could not verify this user's identify.": [
-            null,
             "Не можу перевірити автентичність цього користувача."
          ],
          "Exchanging private key with contact.": [
-            null,
             "Обмін приватним ключем з контактом."
          ],
          "Your messages are not encrypted anymore": [
-            null,
             "Ваші повідомлення більше не криптуються"
          ],
          "Your messages are now encrypted but your contact's identity has not been verified.": [
-            null,
             "Ваші повідомлення вже криптуються, але особа Вашого контакту не перевірена."
          ],
          "Your contact's identify has been verified.": [
-            null,
             "Особу Вашого контакту перевірено."
          ],
          "Your contact has ended encryption on their end, you should do the same.": [
-            null,
             "Ваш контакт припинив криптування зі свого боку, Вам слід зробити те саме."
          ],
          "Your message could not be sent": [
-            null,
             "Ваше повідомлення не може бути надіслане"
          ],
          "We received an unencrypted message": [
-            null,
             "Ми отримали некриптоване повідомлення"
          ],
          "We received an unreadable encrypted message": [
-            null,
             "Ми отримали нечитабельне криптоване повідомлення"
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
-            null,
             "Ось відбитки, будь-ласка, підтвердіть їх з %1$s, за межами цього чату.\n\nВідбиток для Вас, %2$s: %3$s\n\nВідбиток для %1$s: %4$s\n\nЯкщо Ви підтверджуєте відповідність відбитка, клацніть Гаразд, інакше клацніть Відміна."
          ],
          "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
-            null,
             "Вас запитають таємне питання і відповідь на нього.\n\nПотім Вашого контакта запитають те саме питання, і якщо вони введуть ту саму відповідь (враховуючи регістр), їх особи будуть перевірені."
          ],
          "What is your security question?": [
-            null,
             "Яке Ваше таємне питання?"
          ],
          "What is the answer to the security question?": [
-            null,
             "Яка відповідь на таємне питання?"
          ],
          "Invalid authentication scheme provided": [
-            null,
             "Надана некоректна схема автентикації"
          ],
          "Your messages are not encrypted. Click here to enable OTR encryption.": [
-            null,
             "Ваші повідомлення не криптуються. Клацніть тут, щоб увімкнути OTR-криптування."
          ],
          "Your messages are encrypted, but your contact has not been verified.": [
-            null,
             "Ваші повідомлення криптуються, але Ваш контакт не був перевірений."
          ],
          "Your messages are encrypted and your contact verified.": [
-            null,
             "Ваші повідомлення криптуються і Ваш контакт перевірено."
          ],
          "Your contact has closed their end of the private session, you should do the same": [
-            null,
             "Ваш контакт закрив зі свого боку приватну сесію, Вам слід зробити те ж саме"
          ],
          "End encrypted conversation": [
-            null,
             "Завершити криптовану розмову"
          ],
          "Refresh encrypted conversation": [
-            null,
             "Оновити криптовану розмову"
          ],
          "Start encrypted conversation": [
-            null,
             "Почати криптовану розмову"
          ],
          "Verify with fingerprints": [
-            null,
             "Перевірити за відбитками"
          ],
          "Verify with SMP": [
-            null,
             "Перевірити за SMP"
          ],
          "What's this?": [
-            null,
             "Що це?"
          ],
          "unencrypted": [
-            null,
             "некриптовано"
          ],
          "unverified": [
-            null,
             "неперевірено"
          ],
          "verified": [
-            null,
             "перевірено"
          ],
          "finished": [
-            null,
             "завершено"
          ],
          "Don't have a chat account?": [
-            null,
             ""
          ],
          "Create an account": [
-            null,
             ""
          ],
          "Create your account": [
-            null,
             ""
          ],
          "Please enter the XMPP provider to register with:": [
-            null,
             ""
          ],
          "Already have a chat account?": [
-            null,
             ""
          ],
          "Log in here": [
-            null,
             ""
          ],
          "Account Registration:": [
-            null,
             ""
          ],
          "Register": [
-            null,
             "Реєстрація"
          ],
          "Choose a different provider": [
-            null,
             ""
          ],
          "Hold tight, we're fetching the registration form…": [
-            null,
             ""
          ],
          " e.g. conversejs.org": [
-            null,
             " напр. conversejs.org"
          ],
          "Fetch registration form": [
-            null,
             "Отримати форму реєстрації"
          ],
          "Tip: A list of public XMPP providers is available": [
-            null,
             "Порада: доступний перелік публічних XMPP-провайдерів"
          ],
          "here": [
-            null,
             "тут"
          ],
          "Sorry, we're unable to connect to your chosen provider.": [
-            null,
             ""
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
-            null,
             "Вибачте, вказаний провайдер не підтримує реєстрації онлайн. Спробуйте іншого провайдера."
          ],
          "Now logging you in": [
-            null,
             "Входимо"
          ],
          "Registered successfully": [
-            null,
             "Успішно зареєстровано"
          ],
          "Notification from %1$s": [
-            null,
             ""
          ],
          "%1$s says": [
-            null,
             ""
          ],
          "wants to be your contact": [
-            null,
             ""
          ],
          "Minimize this chat box": [
-            null,
             ""
          ],
          "Click to restore this chat": [
-            null,
             "Клацніть, щоб відновити цей чат"
          ],
          "Minimized": [
-            null,
             "Мінімізовано"
          ]
       }

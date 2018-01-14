@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define(["jquery.noconflict", "jasmine", "mock", "converse-core", "test-utils"], factory);
+    define(["jquery", "jasmine", "mock", "converse-core", "test-utils"], factory);
 } (this, function ($, jasmine, mock, converse, test_utils) {
     var Strophe = converse.env.Strophe;
     var b64_sha1 = converse.env.b64_sha1;

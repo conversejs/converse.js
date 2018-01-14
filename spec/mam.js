@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define(["jquery.noconflict", "jasmine", "mock", "converse-core", "test-utils"], factory);
+    define(["jquery", "jasmine", "mock", "converse-core", "test-utils"], factory);
 } (this, function ($, jasmine, mock, converse, test_utils) {
     "use strict";
     var _ = converse.env._;
@@ -12,6 +12,39 @@
 
     describe("Message Archive Management", function () {
         // Implement the protocol defined in https://xmpp.org/extensions/xep-0313.html#config
+
+        describe("Archived Messages", function () {
+
+           it("aren't shown as duplicates", 
+                mock.initConverseWithPromises(
+                    null, ['discoInitialized'], {},
+                    function (done, _converse) {
+
+                test_utils.openAndEnterChatRoom(_converse, 'trek-radio', 'conference.lightwitch.org', 'jcbrand').then(function () {
+                    var chatroomview = _converse.chatboxviews.get('trek-radio@conference.lightwitch.org');
+                    var stanza = Strophe.xmlHtmlNode(
+                        `<message xmlns="jabber:client" to="jcbrand@lightwitch.org/converse.js-73057452" type="groupchat" from="trek-radio@conference.lightwitch.org/comndrdukath#0805 (STO)">
+                            <body>negan</body>
+                            <stanza-id xmlns="urn:xmpp:sid:0" id="45fbbf2a-1059-479d-9283-c8effaf05621" by="trek-radio@conference.lightwitch.org"/>
+                         </message>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                    stanza = Strophe.xmlHtmlNode(
+                        `<message xmlns="jabber:client" to="jcbrand@lightwitch.org/converse.js-73057452">
+                            <result xmlns="urn:xmpp:mam:2" queryid="82d9db27-6cf8-4787-8c2c-5a560263d823" id="45fbbf2a-1059-479d-9283-c8effaf05621">
+                                <forwarded xmlns="urn:xmpp:forward:0"><delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:17:23Z"/>
+                                    <message from="trek-radio@conference.lightwitch.org/comndrdukath#0805 (STO)" type="groupchat">
+                                        <body>negan</body>
+                                    </message>
+                                </forwarded>
+                            </result>
+                        </message>`).firstElementChild;
+                    chatroomview.onChatRoomMessage(stanza);
+                    expect(chatroomview.content.querySelectorAll('.chat-message').length).toBe(1);
+                    done();
+                });
+            }))
+        });
 
         describe("The archive.query API", function () {
 

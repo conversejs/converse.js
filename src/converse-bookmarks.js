@@ -383,7 +383,13 @@
                     _converse.log('Error while fetching bookmarks', Strophe.LogLevel.WARN);
                     _converse.log(iq.outerHTML, Strophe.LogLevel.DEBUG);
                     if (!_.isNil(deferred)) {
-                        return deferred.reject(new Error("Could not fetch bookmarks"));
+                        if (iq.querySelector('error[type="cancel"] item-not-found')) {
+                            // Not an exception, the user simply doesn't have
+                            // any bookmarks.
+                            return deferred.resolve();
+                        } else {
+                            return deferred.reject(new Error("Could not fetch bookmarks"));
+                        }
                     }
                 }
             });
@@ -457,9 +463,12 @@
 
                 insertIntoControlBox () {
                     const controlboxview = _converse.chatboxviews.get('controlbox');
-                    if (!_.isUndefined(controlboxview)) {
-                        const chatrooms_el = controlboxview.el.querySelector('#chatrooms');
-                        chatrooms_el.insertAdjacentElement('afterbegin', this.el);
+                    if (!_.isUndefined(controlboxview) &&
+                            !document.body.contains(this.el)) {
+                        const container = controlboxview.el.querySelector('#chatrooms');
+                        if (!_.isNull(container)) {
+                            container.insertBefore(this.el, container.firstChild);
+                        }
                     }
                 },
 
@@ -533,11 +542,7 @@
                 if (!_converse.allow_bookmarks) {
                     return;
                 }
-                if (_.isUndefined(_converse.bookmarksview)) {
-                    initBookmarks();
-                } else {
-                    _converse.bookmarksview.render();
-                }
+                initBookmarks();
             };
             _converse.on('reconnected', afterReconnection);
         }

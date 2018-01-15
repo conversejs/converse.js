@@ -107,7 +107,7 @@
                 },
 
                 getRoomsListElementName () {
-                    if (this.model.get('bookmarked')) {
+                    if (this.model.get('bookmarked') && _converse.bookmarksview) {
                         const bookmark = _.head(_converse.bookmarksview.model.where({'jid': this.model.get('jid')}));
                         return bookmark.get('name');
                     } else {
@@ -160,8 +160,7 @@
                 },
 
                 render () {
-                    this.el.innerHTML =
-                        tpl_rooms_list({
+                    this.el.innerHTML = tpl_rooms_list({
                         'toggle_state': this.list_model.get('toggle-state'),
                         'desc_rooms': __('Click to toggle the rooms list'),
                         'label_rooms': __('Open Rooms')
@@ -251,14 +250,7 @@
                 }
             });
 
-            const afterReconnection = function () {
-                if (_.isUndefined(_converse.rooms_list_view)) {
-                    initRoomsListView();
-                } else {
-                    _converse.rooms_list_view.render();
-                }
-            };
-            _converse.api.listen.on('reconnected', afterReconnection);
+            _converse.api.listen.on('reconnected', initRoomsListView);
         }
     });
 }));

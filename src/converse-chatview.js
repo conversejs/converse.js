@@ -580,6 +580,7 @@
                         this.content.insertAdjacentHTML(
                             'beforeend',
                             tpl_help_message({
+                                'isodate': moment().format(),
                                 'type': type||'info',
                                 'message': xss.filterXSS(msg, {'whiteList': {'strong': []}})
                             })

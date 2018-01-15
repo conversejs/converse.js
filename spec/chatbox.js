@@ -39,6 +39,15 @@
                 expect(info_messages.pop().textContent).toBe('/help: Show this menu');
                 expect(info_messages.pop().textContent).toBe('/me: Write in the third person');
                 expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
+
+                var msg = $msg({
+                        from: contact_jid,
+                        to: _converse.connection.jid,
+                        type: 'chat',
+                        id: (new Date()).getTime()
+                    }).c('body').t('hello world').tree();
+                _converse.chatboxes.onMessage(msg);
+                expect(view.content.lastElementChild.textContent.trim().indexOf('hello world')).not.toBe(-1);
                 done();
             }));
 

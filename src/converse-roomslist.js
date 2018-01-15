@@ -202,33 +202,6 @@
                     }
                 },
 
-                renderRoomsListElement (item) {
-                    if (item.get('type') !== 'chatroom') {
-                        return;
-                    }
-                    this.removeRoomsListElement(item);
-
-                    let name, bookmark;
-                    if (item.get('bookmarked')) {
-                        bookmark = _.head(_converse.bookmarksview.model.where({'jid': item.get('jid')}));
-                        name = bookmark.get('name');
-                    } else {
-                        name = item.get('name');
-                    }
-                    const div = document.createElement('div');
-                    div.innerHTML = tpl_rooms_list_item(_.extend(item.toJSON(), {
-                        'allow_bookmarks': _converse.allow_bookmarks,
-                        'info_leave_room': __('Leave this room'),
-                        'info_remove_bookmark': __('Unbookmark this room'),
-                        'info_add_bookmark': __('Bookmark this room'),
-                        'info_title': __('Show more information on this room'),
-                        'name': name,
-                        'open_title': __('Click to open this room')
-                    }));
-                    this.el.querySelector('.open-rooms-list').appendChild(div.firstChild);
-                    this.show();
-                },
-
                 showOrHide (item) {
                     if (!this.model.models.length) {
                         u.hideElement(this.el);
@@ -239,17 +212,6 @@
 
                 removeBookmark: _converse.removeBookmarkViaEvent,
                 addBookmark: _converse.addBookmarkViaEvent,
-
-                removeRoomsListElement (item) {
-                    const list_el = this.el.querySelector('.open-rooms-list');
-                    const el = _.head(sizzle(`.available-chatroom[data-room-jid="${item.get('jid')}"]`, list_el));
-                    if (el) {
-                        list_el.removeChild(el);
-                    }
-                    if (list_el.childElementCount === 0) {
-                        this.hide();
-                    }
-                },
 
                 toggleRoomsList (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }

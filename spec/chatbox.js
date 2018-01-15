@@ -20,6 +20,29 @@
     return describe("Chatboxes", function() {
         describe("A Chatbox", function () {
 
+            it("has a /help command to show the available commands",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.createContacts(_converse, 'current');
+                test_utils.openControlBox();
+                test_utils.openContactsPanel(_converse);
+
+                var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                test_utils.openChatBoxFor(_converse, contact_jid);
+                var view = _converse.chatboxviews.get(contact_jid);
+                test_utils.sendMessage(view, '/help');
+
+                const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info:not(.chat-date)'), 0);
+                expect(info_messages.length).toBe(3);
+                expect(info_messages.pop().textContent).toBe('/help: Show this menu');
+                expect(info_messages.pop().textContent).toBe('/me: Write in the third person');
+                expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
+                done();
+            }));
+
+
             it("supports the /me command",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},

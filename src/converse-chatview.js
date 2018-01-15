@@ -738,9 +738,9 @@
                         }
                         else if (match[1] === "help") {
                             const msgs = [
-                                `<strong>/help</strong>:${__('Show this menu')}`,
-                                `<strong>/me</strong>:${__('Write in the third person')}`,
-                                `<strong>/clear</strong>:${__('Remove messages')}`
+                                `<strong>/clear</strong>: ${__('Remove messages')}`,
+                                `<strong>/me</strong>: ${__('Write in the third person')}`,
+                                `<strong>/help</strong>: ${__('Show this menu')}`
                                 ];
                             this.showHelpMessages(msgs);
                             return;

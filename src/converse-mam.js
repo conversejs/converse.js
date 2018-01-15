@@ -73,7 +73,6 @@
                      */
                     if (this.disable_mam) { return; }
                     const { _converse } = this.__super__;
-                    this.addSpinner(true);
                     _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
                         (result) => { // Success
                             if (result.supported) {
@@ -92,12 +91,9 @@
                                         });
                                     }
                                 }
-                            } else {
-                                this.clearSpinner();
                             }
                         },
                         () => { // Error
-                            this.clearSpinner();
                             _converse.log(
                                 "Error or timeout while checking for MAM support",
                                 Strophe.LogLevel.ERROR
@@ -115,19 +111,14 @@
                         return;
                     }
                     const { _converse } = this.__super__;
-                    this.addSpinner();
-
                     _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
                         (result) => { // Success
                             if (result.supported) {
                                 this.fetchArchivedMessages();
-                            } else {
-                                this.clearSpinner();
                             }
                             this.model.save({'mam_initialized': true});
                         },
                         () => { // Error
-                            this.clearSpinner();
                             _converse.log(
                                 "Error or timeout while checking for MAM support",
                                 Strophe.LogLevel.ERROR
@@ -253,9 +244,9 @@
                      * Then, upon receiving them, call onChatRoomMessage
                      * so that they are displayed inside it.
                      */
-                    this.addSpinner();
                     const that = this;
                     const { _converse } = this.__super__;
+                    this.addSpinner();
                     _converse.api.archive.query(
                         _.extend({
                             'groupchat': true,

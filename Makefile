@@ -218,8 +218,7 @@ eslint: stamp-npm
 
 .PHONY: check
 check: eslint
-	LOG_CR_VERBOSITY=INFO $(CHROMIUM) http://localhost:$(HTTPSERVE_PORT)/tests.html
-
+	LOG_CR_VERBOSITY=INFO $(CHROMIUM) --no-sandbox http://localhost:$(HTTPSERVE_PORT)/tests.html
 
 ########################################################################
 ## Documentation

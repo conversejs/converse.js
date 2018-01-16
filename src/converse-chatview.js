@@ -520,7 +520,11 @@
                 },
 
                 getExtraMessageClasses (attrs) {
-                    return 'onload ' + (attrs.delayed && 'delayed' || '');
+                    if (window.converse_disable_effects) {
+                        return attrs.delayed && 'delayed' || '';
+                    } else {
+                        return 'onload ' + (attrs.delayed && 'delayed' || '');
+                    }
                 },
 
                 renderMessage (attrs) {
@@ -562,7 +566,9 @@
                             'extra_classes': this.getExtraMessageClasses(attrs)
                         })
                     ));
-                    window.setTimeout(_.partial(u.removeClass, 'onload', msg), 2000);
+                    if (!window.converse_disable_effects) {
+                        window.setTimeout(_.partial(u.removeClass, 'onload', msg), 2000);
+                    }
                     const msg_content = msg.querySelector('.chat-msg-content');
                     msg_content.innerHTML = u.addEmoji(
                         _converse, emojione, u.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))

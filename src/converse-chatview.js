@@ -404,7 +404,7 @@
                      *      This element must have a "data-isodate" attribute
                      *      which specifies its creation date.
                      */
-                    const prev_msg_el = this.getPreviousMessageElement(next_msg_el),
+                    const prev_msg_el = u.getPreviousElement(next_msg_el, ".message:not(.chat-event)"),
                           prev_msg_date = _.isNull(prev_msg_el) ? null : prev_msg_el.getAttribute('data-isodate'),
                           next_msg_date = next_msg_el.getAttribute('data-isodate');
 
@@ -419,34 +419,6 @@
                     }
                 },
 
-                isNotPermanentMessage (el) {
-                    return !_.isNull(el) && (u.hasClass('chat-event', el) || !u.hasClass('message', el));
-                },
-
-                getPreviousMessageElement (el) {
-                    let prev_msg_el = el.previousSibling;
-                    while (this.isNotPermanentMessage(prev_msg_el)) {
-                        prev_msg_el = prev_msg_el.previousSibling
-                    }
-                    return prev_msg_el;
-                },
-
-                getLastMessageElement () {
-                    let last_msg_el = this.content.lastElementChild;
-                    while (this.isNotPermanentMessage(last_msg_el)) {
-                        last_msg_el = last_msg_el.previousSibling
-                    }
-                    return last_msg_el;
-                },
-
-                getFirstMessageElement () {
-                    let first_msg_el = this.content.firstElementChild;
-                    while (this.isNotPermanentMessage(first_msg_el)) {
-                        first_msg_el = first_msg_el.nextSibling
-                    }
-                    return first_msg_el;
-                },
-
                 getLastMessageDate (cutoff) {
                     /* Return the ISO8601 format date of the latest message.
                      *
@@ -454,12 +426,12 @@
                      *  (Object) cutoff: Moment Date cutoff date. The last
                      *      message received cutoff this date will be returned.
                      */
-                    const first_msg = this.getFirstMessageElement(),
+                    const first_msg = u.getFirstChildElement(this.content, '.message:not(.chat-event)'),
                           oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
                     if (!_.isNull(oldest_date) && moment(oldest_date).isAfter(cutoff)) {
                         return null;
                     }
-                    const last_msg = this.getLastMessageElement(),
+                    const last_msg = u.getLastChildElement(this.content, '.message:not(.chat-event)'),
                           most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
                     if (_.isNull(most_recent_date) || moment(most_recent_date).isBefore(cutoff)) {
                         return most_recent_date;

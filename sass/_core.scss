@@ -60,6 +60,37 @@
         @include user-select(none);
     }
 
+    @keyframes colorchange-chatmessage {
+		0%   {background-color: rgba(141, 216, 174, 1);}
+		25%  {background-color: rgba(141, 216, 174, 0.75);}
+		50%  {background-color: rgba(141, 216, 174, 0.5);}
+		75%  {background-color: rgba(141, 216, 174, 0.25);}
+		100% {background-color: transparent;}
+    }
+    @-webkit-keyframes colorchange-chatmessage {
+		0%   {background-color: rgba(141, 216, 174, 1);}
+		25%  {background-color: rgba(141, 216, 174, 0.75);}
+		50%  {background-color: rgba(141, 216, 174, 0.5);}
+		75%  {background-color: rgba(141, 216, 174, 0.25);}
+		100% {background-color: transparent;}
+    }
+
+    @keyframes colorchange-chatmessage-muc {
+		0%   {background-color: rgba(255, 181, 162, 1);}
+		25%  {background-color: rgba(255, 181, 162, 0.75);}
+		50%  {background-color: rgba(255, 181, 162, 0.5);}
+		75%  {background-color: rgba(255, 181, 162, 0.25);}
+		100% {background-color: transparent;}
+    }
+    @-webkit-keyframes colorchange-chatmessage-muc {
+		0%   {background-color: rgba(255, 181, 162, 1);}
+		25%  {background-color: rgba(255, 181, 162, 0.75);}
+		50%  {background-color: rgba(255, 181, 162, 0.5);}
+		75%  {background-color: rgba(255, 181, 162, 0.25);}
+		100% {background-color: transparent;}
+    }
+
+
     @keyframes fadein {
         0% { opacity: 0 }
         100% { opacity: 1 }
@@ -94,6 +125,7 @@
     .locked {
         padding-right: 22px;
     }
+
 
     @include keyframes(spin) {
         from {

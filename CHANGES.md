@@ -47,6 +47,7 @@
 - `hide_open_bookmarks` is now by default `true`.
 
 ### UX/UI changes
+- #984 Improve loading of archived messages via "infinite scroll"
 - Use CSS3 fade transitions to render various elements.
 - Remove `Login` and `Registration` tabs and consolidate into one panel.
 - Show validation error messages on the login form.

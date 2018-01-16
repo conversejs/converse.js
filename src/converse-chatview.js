@@ -404,7 +404,7 @@
                      *      This element must have a "data-isodate" attribute
                      *      which specifies its creation date.
                      */
-                    const prev_msg_el = this.getPreviousMessageElement(next_msg_el),
+                    const prev_msg_el = u.getPreviousElement(next_msg_el, ".message:not(.chat-event)"),
                           prev_msg_date = _.isNull(prev_msg_el) ? null : prev_msg_el.getAttribute('data-isodate'),
                           next_msg_date = next_msg_el.getAttribute('data-isodate');
 
@@ -419,34 +419,6 @@
                     }
                 },
 
-                isNotPermanentMessage (el) {
-                    return !_.isNull(el) && (u.hasClass('chat-event', el) || !u.hasClass('message', el));
-                },
-
-                getPreviousMessageElement (el) {
-                    let prev_msg_el = el.previousSibling;
-                    while (this.isNotPermanentMessage(prev_msg_el)) {
-                        prev_msg_el = prev_msg_el.previousSibling
-                    }
-                    return prev_msg_el;
-                },
-
-                getLastMessageElement () {
-                    let last_msg_el = this.content.lastElementChild;
-                    while (this.isNotPermanentMessage(last_msg_el)) {
-                        last_msg_el = last_msg_el.previousSibling
-                    }
-                    return last_msg_el;
-                },
-
-                getFirstMessageElement () {
-                    let first_msg_el = this.content.firstElementChild;
-                    while (this.isNotPermanentMessage(first_msg_el)) {
-                        first_msg_el = first_msg_el.nextSibling
-                    }
-                    return first_msg_el;
-                },
-
                 getLastMessageDate (cutoff) {
                     /* Return the ISO8601 format date of the latest message.
                      *
@@ -454,12 +426,12 @@
                      *  (Object) cutoff: Moment Date cutoff date. The last
                      *      message received cutoff this date will be returned.
                      */
-                    const first_msg = this.getFirstMessageElement(),
+                    const first_msg = u.getFirstChildElement(this.content, '.message:not(.chat-event)'),
                           oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
                     if (!_.isNull(oldest_date) && moment(oldest_date).isAfter(cutoff)) {
                         return null;
                     }
-                    const last_msg = this.getLastMessageElement(),
+                    const last_msg = u.getLastChildElement(this.content, '.message:not(.chat-event)'),
                           most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
                     if (_.isNull(most_recent_date) || moment(most_recent_date).isBefore(cutoff)) {
                         return most_recent_date;
@@ -511,7 +483,30 @@
                     }
                     this.insertDayIndicator(message_el);
                     this.clearStatusNotification();
-                    this.scrollDown();
+                    this.setScrollPosition(message_el);
+                },
+
+                setScrollPosition (message_el) {
+                    /* Given a newly inserted message, determine whether we
+                     * should keep the scrollbar in place (so as to not scroll
+                     * up when using infinite scroll).
+                     */
+                    if (this.model.get('scrolled')) {
+                        const next_msg_el = u.getNextElement(message_el, ".chat-message");
+                        if (next_msg_el) {
+                            // The currently received message is not new, there
+                            // are newer messages after it. So let's see if we
+                            // should maintain our current scroll position.
+                            if (this.content.scrollTop === 0 || this.model.get('top_visible_message')) {
+                                const top_visible_message = this.model.get('top_visible_message') || next_msg_el;
+
+                                this.model.set('top_visible_message', top_visible_message);
+                                this.content.scrollTop = top_visible_message.offsetTop - 30;
+                            }
+                        }
+                    } else {
+                        this.scrollDown();
+                    }
                 },
 
                 getExtraMessageTemplateAttributes () {
@@ -1027,13 +1022,6 @@
                      * received.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    if (this.model.get('auto_scrolled')) {
-                        this.model.set({
-                            'scrolled': false,
-                            'auto_scrolled': false
-                        });
-                        return;
-                    }
                     let scrolled = true;
                     const is_at_bottom =
                         (this.content.scrollTop + this.content.clientHeight) >=
@@ -1043,11 +1031,17 @@
                         scrolled = false;
                         this.onScrolledDown();
                     }
-                    u.safeSave(this.model, {'scrolled': scrolled});
+                    u.safeSave(this.model, {
+                        'scrolled': scrolled,
+                        'top_visible_message': null
+                    });
                 },
 
                 viewUnreadMessages () {
-                    this.model.save('scrolled', false);
+                    this.model.save({
+                        'scrolled': false,
+                        'top_visible_message': null
+                    });
                     this.scrollDown();
                 },
 
@@ -1058,8 +1052,6 @@
                     }
                     if (u.isVisible(this.content) && !this.model.get('scrolled')) {
                         this.content.scrollTop = this.content.scrollHeight;
-                        this.onScrolledDown();
-                        this.model.save({'auto_scrolled': true});
                     }
                 },
 

@@ -64,16 +64,6 @@
         });
     };
 
-    function calculateElementHeight (el) {
-        /* Return the height of the passed in DOM element,
-         * based on the heights of its children.
-         */
-        return _.reduce(
-            el.children,
-            (result, child) => result + child.offsetHeight, 0
-        );
-    }
-
     function slideOutWrapup (el) {
         /* Wrapup function for slideOut. */
         el.removeAttribute('data-slider-marker');
@@ -84,6 +74,48 @@
 
 
     var u = {};
+
+    u.getNextElement = function (el, selector='*') {
+        let next_el = el.nextElementSibling;
+        while (!_.isNull(next_el) && !sizzle.matchesSelector(next_el, selector)) {
+            next_el = next_el.nextElementSibling;
+        }
+        return next_el;
+    }
+
+    u.getPreviousElement = function (el, selector='*') {
+        let prev_el = el.previousSibling;
+        while (!_.isNull(prev_el) && !sizzle.matchesSelector(prev_el, selector)) {
+            prev_el = prev_el.previousSibling
+        }
+        return prev_el;
+    }
+
+    u.getFirstChildElement = function (el, selector='*') {
+        let first_el = el.firstElementChild;
+        while (!_.isNull(first_el) && !sizzle.matchesSelector(first_el, selector)) {
+            first_el = first_el.nextSibling
+        }
+        return first_el;
+    }
+
+    u.getLastChildElement = function (el, selector='*') {
+        let last_el = el.lastElementChild;
+        while (!_.isNull(last_el) && !sizzle.matchesSelector(last_el, selector)) {
+            last_el = last_el.previousSibling
+        }
+        return last_el;
+    }
+
+    u.calculateElementHeight = function (el) {
+        /* Return the height of the passed in DOM element,
+         * based on the heights of its children.
+         */
+        return _.reduce(
+            el.children,
+            (result, child) => result + child.offsetHeight, 0
+        );
+    }
 
     u.addClass = function (className, el) {
         if (el instanceof Element) {
@@ -199,7 +231,7 @@
                 el.removeAttribute('data-slider-marker');
                 window.cancelAnimationFrame(marker);
             }
-            const end_height = calculateElementHeight(el);
+            const end_height = u.calculateElementHeight(el);
             if (window.converse_disable_effects) { // Effects are disabled (for tests)
                 el.style.height = end_height + 'px';
                 slideOutWrapup(el);
@@ -227,7 +259,7 @@
                     // browser bug where browsers don't know the correct
                     // offsetHeight beforehand.
                     el.removeAttribute('data-slider-marker');
-                    el.style.height = calculateElementHeight(el) + 'px';
+                    el.style.height = u.calculateElementHeight(el) + 'px';
                     el.style.overflow = "";
                     el.style.height = "";
                     resolve();

@@ -64,3 +64,5 @@ develop-eggs
 /vendor/
 /.classpath
 /.tern-project
+/dist/
+/css/

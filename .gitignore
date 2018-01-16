@@ -12,6 +12,8 @@
 .idea
 .su?
 builds/*
+css/*
+dist/*
 .settings
 
 analytics.js

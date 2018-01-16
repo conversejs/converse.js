@@ -1155,6 +1155,50 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none; }
+@keyframes colorchange-chatmessage {
+  0% {
+    background-color: #8dd8ae; }
+  25% {
+    background-color: rgba(141, 216, 174, 0.75); }
+  50% {
+    background-color: rgba(141, 216, 174, 0.5); }
+  75% {
+    background-color: rgba(141, 216, 174, 0.25); }
+  100% {
+    background-color: transparent; } }
+@-webkit-keyframes colorchange-chatmessage {
+  0% {
+    background-color: #8dd8ae; }
+  25% {
+    background-color: rgba(141, 216, 174, 0.75); }
+  50% {
+    background-color: rgba(141, 216, 174, 0.5); }
+  75% {
+    background-color: rgba(141, 216, 174, 0.25); }
+  100% {
+    background-color: transparent; } }
+@keyframes colorchange-chatmessage-muc {
+  0% {
+    background-color: #ffb5a2; }
+  25% {
+    background-color: rgba(255, 181, 162, 0.75); }
+  50% {
+    background-color: rgba(255, 181, 162, 0.5); }
+  75% {
+    background-color: rgba(255, 181, 162, 0.25); }
+  100% {
+    background-color: transparent; } }
+@-webkit-keyframes colorchange-chatmessage-muc {
+  0% {
+    background-color: #ffb5a2; }
+  25% {
+    background-color: rgba(255, 181, 162, 0.75); }
+  50% {
+    background-color: rgba(255, 181, 162, 0.5); }
+  75% {
+    background-color: rgba(255, 181, 162, 0.25); }
+  100% {
+    background-color: transparent; } }
 @keyframes fadein {
   0% {
     opacity: 0; }
@@ -1579,6 +1623,10 @@
     #converse-embedded-chat .chatbox .chat-body .chat-message,
     #conversejs .chatbox .chat-body .chat-message {
       overflow: auto; }
+      #converse-embedded-chat .chatbox .chat-body .chat-message.onload,
+      #conversejs .chatbox .chat-body .chat-message.onload {
+        animation: colorchange-chatmessage 1s;
+        -webkit-animation: colorchange-chatmessage 1s; }
       #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-author,
       #conversejs .chatbox .chat-body .chat-message .chat-msg-author {
         font-weight: bold;
@@ -1588,7 +1636,7 @@
         overflow: hidden; }
       #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-them,
       #conversejs .chatbox .chat-body .chat-message .chat-msg-them {
-        color: #E77051; }
+        color: #3AA569; }
       #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-me,
       #conversejs .chatbox .chat-body .chat-message .chat-msg-me {
         color: #578EA9; }
@@ -1601,10 +1649,10 @@
           margin-bottom: -6px; }
     #converse-embedded-chat .chatbox .chat-body .delayed .chat-msg-them,
     #conversejs .chatbox .chat-body .delayed .chat-msg-them {
-      color: #FB5D50; }
+      color: #41b875; }
     #converse-embedded-chat .chatbox .chat-body .delayed .chat-msg-me,
     #conversejs .chatbox .chat-body .delayed .chat-msg-me {
-      color: #7EABBB; }
+      color: #6899b2; }
   #converse-embedded-chat .chatbox .new-msgs-indicator,
   #conversejs .chatbox .new-msgs-indicator {
     position: absolute;
@@ -1856,7 +1904,7 @@
       border-top-right-radius: 0; } }
 #converse-embedded-chat .chatbox .chat-body .chat-message,
 #conversejs .chatbox .chat-body .chat-message {
-  margin: 0.3em;
+  padding: 0.3em;
   line-height: 20px; }
   #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-author,
   #conversejs .chatbox .chat-body .chat-message .chat-msg-author {
@@ -2553,6 +2601,10 @@
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .mentioned,
       #conversejs .chatroom .box-flyout .chatroom-body .mentioned {
         font-weight: bold; }
+      #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chat-message.onload,
+      #conversejs .chatroom .box-flyout .chatroom-body .chat-message.onload {
+        animation: colorchange-chatmessage-muc 1s;
+        -webkit-animation: colorchange-chatmessage-muc 1s; }
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chat-message .chat-msg-them,
       #conversejs .chatroom .box-flyout .chatroom-body .chat-message .chat-msg-them {
         color: #3AA569; }

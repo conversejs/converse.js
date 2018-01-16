@@ -75,6 +75,10 @@
                     font-weight: bold;
                 }
                 .chat-message {
+                    &.onload {
+                        animation: colorchange-chatmessage-muc 1s;
+                        -webkit-animation: colorchange-chatmessage-muc 1s;
+                    }
                     .chat-msg-them {
                         color: $chatroom-message-them-color;
                     }

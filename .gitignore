@@ -12,7 +12,6 @@
 .idea
 .su?
 builds/*
-css/*
 dist/*
 .settings
 
@@ -65,4 +64,3 @@ develop-eggs
 /.classpath
 /.tern-project
 /dist/
-/css/

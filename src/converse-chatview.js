@@ -999,13 +999,6 @@
                      * received.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    if (this.model.get('auto_scrolled')) {
-                        this.model.set({
-                            'scrolled': false,
-                            'auto_scrolled': false
-                        });
-                        return;
-                    }
                     let scrolled = true;
                     const is_at_bottom =
                         (this.content.scrollTop + this.content.clientHeight) >=
@@ -1030,8 +1023,6 @@
                     }
                     if (u.isVisible(this.content) && !this.model.get('scrolled')) {
                         this.content.scrollTop = this.content.scrollHeight;
-                        this.onScrolledDown();
-                        this.model.save({'auto_scrolled': true});
                     }
                 },
 

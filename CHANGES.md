@@ -23,6 +23,7 @@
 - The `/voice` MUC command didn't set the right role in order to grant voice again.
 
 ### New Features
+- Emojis are now sent in unicode instead of short names
 - #314 Add support for opening chat rooms with a URL fragment such as `#converse/room?jid=room@domain`
   and private chats with a URL fragment such as `#converse/chat?jid=user@domain`
 - #828 Add routing for the `#converse/login` and `#converse/register` URL

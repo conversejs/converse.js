@@ -573,7 +573,7 @@
                     msg_content.innerHTML = u.addEmoji(
                         _converse, emojione, u.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))
                     );
-                    u.renderImageURLs(msg_content);
+                    u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
                     return msg;
                 },
 

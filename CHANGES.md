@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.3.0 (Unreleased)
+## 3.3.0 (2018-01-17)
 
 ### Bugfixes
 - #800 Could not register successfully in ejabberd 17.01

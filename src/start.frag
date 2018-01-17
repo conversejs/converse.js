@@ -2,7 +2,7 @@
  *
  *  An XMPP chat client that runs in the browser.
  *
- *  Version: 3.2.1
+ *  Version: 3.3.0
  */
 
 /* jshint ignore:start */

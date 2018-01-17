@@ -2,7 +2,7 @@
  *
  *  An XMPP chat client that runs in the browser.
  *
- *  Version: 3.2.1
+ *  Version: 3.3.0
  */
 
 /* jshint ignore:start */
@@ -2778,17 +2778,21 @@ if (!String.prototype.trim) {
 ;
 define("polyfill", function(){});
 
+/**
+ * @preserve jed.js https://github.com/SlexAxton/Jed
+ */
 /*
-jed.js
-v0.5.0beta
-
-https://github.com/SlexAxton/Jed
 -----------
 A gettext compatible i18n library for modern JavaScript Applications
 
 by Alex Sexton - AlexSexton [at] gmail - @SlexAxton
-WTFPL license for use
-Dojo CLA for contributions
+
+MIT License
+
+A jQuery Foundation project - requires CLA to contribute -
+https://contribute.jquery.org/CLA/
+
+
 
 Jed offers the entire applicable GNU gettext spec'd set of
 functions, but also offers some nicer wrappers around them.
@@ -2871,7 +2875,9 @@ in order to offer easy upgrades -- jsgettext.berlios.de
         }
       },
       // The default domain if one is missing
-      "domain" : "messages"
+      "domain" : "messages",
+      // enable debug mode to log untranslated strings to the console
+      "debug" : false
     };
 
     // Mix in the sent options with the default options
@@ -2916,7 +2922,7 @@ in order to offer easy upgrades -- jsgettext.berlios.de
     },
     fetch : function ( sArr ) {
       if ( {}.toString.call( sArr ) != '[object Array]' ) {
-        sArr = [].slice.call(arguments);
+        sArr = [].slice.call(arguments, 0);
       }
       return ( sArr && sArr.length ? Jed.sprintf : function(x){ return x; } )(
         this._i18n.dcnpgettext(this._domain, this._context, this._key, this._pkey, this._val),
@@ -3001,9 +3007,6 @@ in order to offer easy upgrades -- jsgettext.berlios.de
       // isn't explicitly passed in
       domain = domain || this._textdomain;
 
-      // Default the value to the singular case
-      val = typeof val == 'undefined' ? 1 : val;
-
       var fallback;
 
       // Handle special cases
@@ -3037,22 +3040,33 @@ in order to offer easy upgrades -- jsgettext.berlios.de
         throw new Error('No translation key found.');
       }
 
-      // Handle invalid numbers, but try casting strings for good measure
-      if ( typeof val != 'number' ) {
-        val = parseInt( val, 10 );
-
-        if ( isNaN( val ) ) {
-          throw new Error('The number that was passed in is not a number.');
-        }
-      }
-
       var key  = context ? context + Jed.context_delimiter + singular_key : singular_key,
           locale_data = this.options.locale_data,
           dict = locale_data[ domain ],
-          pluralForms = dict[""].plural_forms || (locale_data.messages || this.defaults.locale_data.messages)[""].plural_forms,
-          val_idx = getPluralFormFunc(pluralForms)(val) + 1,
+          defaultConf = (locale_data.messages || this.defaults.locale_data.messages)[""],
+          pluralForms = dict[""].plural_forms || dict[""]["Plural-Forms"] || dict[""]["plural-forms"] || defaultConf.plural_forms || defaultConf["Plural-Forms"] || defaultConf["plural-forms"],
           val_list,
           res;
+
+      var val_idx;
+      if (val === undefined) {
+        // No value passed in; assume singular key lookup.
+        val_idx = 0;
+
+      } else {
+        // Value has been passed in; use plural-forms calculations.
+
+        // Handle invalid numbers, but try casting strings for good measure
+        if ( typeof val != 'number' ) {
+          val = parseInt( val, 10 );
+
+          if ( isNaN( val ) ) {
+            throw new Error('The number that was passed in is not a number.');
+          }
+        }
+
+        val_idx = getPluralFormFunc(pluralForms)(val);
+      }
 
       // Throw an error if a domain isn't found
       if ( ! dict ) {
@@ -3063,20 +3077,25 @@ in order to offer easy upgrades -- jsgettext.berlios.de
 
       // If there is no match, then revert back to
       // english style singular/plural with the keys passed in.
-      if ( ! val_list || val_idx >= val_list.length ) {
+      if ( ! val_list || val_idx > val_list.length ) {
         if (this.options.missing_key_callback) {
-          this.options.missing_key_callback(key);
+          this.options.missing_key_callback(key, domain);
         }
-        res = [ null, singular_key, plural_key ];
-        return res[ getPluralFormFunc(pluralForms)( val ) + 1 ];
+        res = [ singular_key, plural_key ];
+
+        // collect untranslated strings
+        if (this.options.debug===true) {
+          console.log(res[ getPluralFormFunc(pluralForms)( val ) ]);
+        }
+        return res[ getPluralFormFunc()( val ) ];
       }
 
       res = val_list[ val_idx ];
 
       // This includes empty strings on purpose
       if ( ! res  ) {
-        res = [ null, singular_key, plural_key ];
-        return res[ getPluralFormFunc(pluralForms)( val ) + 1 ];
+        res = [ singular_key, plural_key ];
+        return res[ getPluralFormFunc()( val ) ];
       }
       return res;
     }
@@ -3380,15 +3399,15 @@ performAction: function anonymous(yytext,yyleng,yylineno,yy,yystate,$$,_$) {
 
 var $0 = $$.length - 1;
 switch (yystate) {
-case 1: return { type : 'GROUP', expr: $$[$0-1] }; 
+case 1: return { type : 'GROUP', expr: $$[$0-1] };
 break;
-case 2:this.$ = { type: 'TERNARY', expr: $$[$0-4], truthy : $$[$0-2], falsey: $$[$0] }; 
+case 2:this.$ = { type: 'TERNARY', expr: $$[$0-4], truthy : $$[$0-2], falsey: $$[$0] };
 break;
 case 3:this.$ = { type: "OR", left: $$[$0-2], right: $$[$0] };
 break;
 case 4:this.$ = { type: "AND", left: $$[$0-2], right: $$[$0] };
 break;
-case 5:this.$ = { type: 'LT', left: $$[$0-2], right: $$[$0] }; 
+case 5:this.$ = { type: 'LT', left: $$[$0-2], right: $$[$0] };
 break;
 case 6:this.$ = { type: 'LTE', left: $$[$0-2], right: $$[$0] };
 break;
@@ -3402,11 +3421,11 @@ case 10:this.$ = { type: 'EQ', left: $$[$0-2], right: $$[$0] };
 break;
 case 11:this.$ = { type: 'MOD', left: $$[$0-2], right: $$[$0] };
 break;
-case 12:this.$ = { type: 'GROUP', expr: $$[$0-1] }; 
+case 12:this.$ = { type: 'GROUP', expr: $$[$0-1] };
 break;
-case 13:this.$ = { type: 'VAR' }; 
+case 13:this.$ = { type: 'VAR' };
 break;
-case 14:this.$ = { type: 'NUM', val: Number(yytext) }; 
+case 14:this.$ = { type: 'NUM', val: Number(yytext) };
 break;
 }
 },
@@ -3692,7 +3711,7 @@ next:function () {
         if (this._input === "") {
             return this.EOF;
         } else {
-            this.parseError('Lexical error on line '+(this.yylineno+1)+'. Unrecognized text.\n'+this.showPosition(), 
+            this.parseError('Lexical error on line '+(this.yylineno+1)+'. Unrecognized text.\n'+this.showPosition(),
                     {text: "", token: null, line: this.yylineno});
         }
     },
@@ -3777,7 +3796,7 @@ return parser;
   }
   else {
     if (typeof define === 'function' && define.amd) {
-      define('jed', [],function() {
+      define('jed',[],function() {
         return Jed;
       });
     }
@@ -5506,15 +5525,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     });
   };
 
-  function calculateElementHeight(el) {
-    /* Return the height of the passed in DOM element,
-     * based on the heights of its children.
-     */
-    return _.reduce(el.children, function (result, child) {
-      return result + child.offsetHeight;
-    }, 0);
-  }
-
   function slideOutWrapup(el) {
     /* Wrapup function for slideOut. */
     el.removeAttribute('data-slider-marker');
@@ -5524,6 +5534,59 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   }
 
   var u = {};
+
+  u.getNextElement = function (el) {
+    var selector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '*';
+    var next_el = el.nextElementSibling;
+
+    while (!_.isNull(next_el) && !sizzle.matchesSelector(next_el, selector)) {
+      next_el = next_el.nextElementSibling;
+    }
+
+    return next_el;
+  };
+
+  u.getPreviousElement = function (el) {
+    var selector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '*';
+    var prev_el = el.previousSibling;
+
+    while (!_.isNull(prev_el) && !sizzle.matchesSelector(prev_el, selector)) {
+      prev_el = prev_el.previousSibling;
+    }
+
+    return prev_el;
+  };
+
+  u.getFirstChildElement = function (el) {
+    var selector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '*';
+    var first_el = el.firstElementChild;
+
+    while (!_.isNull(first_el) && !sizzle.matchesSelector(first_el, selector)) {
+      first_el = first_el.nextSibling;
+    }
+
+    return first_el;
+  };
+
+  u.getLastChildElement = function (el) {
+    var selector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '*';
+    var last_el = el.lastElementChild;
+
+    while (!_.isNull(last_el) && !sizzle.matchesSelector(last_el, selector)) {
+      last_el = last_el.previousSibling;
+    }
+
+    return last_el;
+  };
+
+  u.calculateElementHeight = function (el) {
+    /* Return the height of the passed in DOM element,
+     * based on the heights of its children.
+     */
+    return _.reduce(el.children, function (result, child) {
+      return result + child.offsetHeight;
+    }, 0);
+  };
 
   u.addClass = function (className, el) {
     if (el instanceof Element) {
@@ -5594,20 +5657,29 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   };
 
   u.renderImageURLs = function (obj) {
+    /* Returns a Promise which resolves once all images have been loaded.
+     */
     var list = obj.textContent.match(URL_REGEX) || [];
+    return Promise.all(_.map(list, function (url) {
+      return new Promise(function (resolve, reject) {
+        return isImage(url).then(function (img) {
+          // XXX: need to create a new image, otherwise the event
+          // listener doesn't fire
+          var i = new Image();
+          i.className = 'chat-image';
+          i.src = img.src;
+          i.addEventListener('load', resolve); // We also resolve for non-images, otherwise the
+          // Promise.all resolves prematurely.
 
-    _.forEach(list, function (url) {
-      isImage(url).then(function (img) {
-        img.className = 'chat-image';
-        var anchors = sizzle("a[href=\"".concat(url, "\"]"), obj);
+          i.addEventListener('error', resolve);
+          var anchors = sizzle("a[href=\"".concat(url, "\"]"), obj);
 
-        _.each(anchors, function (a) {
-          a.innerHTML = img.outerHTML;
-        });
+          _.each(anchors, function (a) {
+            a.replaceChild(i, a.firstChild);
+          });
+        }).catch(resolve);
       });
-    });
-
-    return obj;
+    }));
   };
 
   u.slideInAllElements = function (elements) {
@@ -5651,7 +5723,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         window.cancelAnimationFrame(marker);
       }
 
-      var end_height = calculateElementHeight(el);
+      var end_height = u.calculateElementHeight(el);
 
       if (window.converse_disable_effects) {
         // Effects are disabled (for tests)
@@ -5681,7 +5753,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           // browser bug where browsers don't know the correct
           // offsetHeight beforehand.
           el.removeAttribute('data-slider-marker');
-          el.style.height = calculateElementHeight(el) + 'px';
+          el.style.height = u.calculateElementHeight(el) + 'px';
           el.style.overflow = "";
           el.style.height = "";
           resolve();
@@ -6221,28 +6293,26 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             });
         },
 
-        // Plugins can specify optional dependencies (by means of the
-        // `optional_dependencies` list attribute) which refers to dependencies
+        // Plugins can specify dependencies (by means of the
+        // `dependencies` list attribute) which refers to dependencies
         // which will be initialized first, before the plugin itself gets initialized.
-        // They are optional in the sense that if they aren't available, an
-        // error won't be thrown.
-        // However, if you want to make these dependencies strict (i.e.
-        // non-optional), you can set the `strict_plugin_dependencies` attribute to `true`
-        // on the object being made pluggable (i.e. the object passed to
-        // `pluggable.enable`).
-        loadOptionalDependencies: function loadOptionalDependencies(plugin) {
+        //
+        // If `strict_plugin_dependencies` is set to `false` (on the object being
+        // made pluggable), then no error will be thrown if any of these plugins aren't
+        // available.
+        loadPluginDependencies: function loadPluginDependencies(plugin) {
             var _this = this;
 
-            _.each(plugin.optional_dependencies, function (name) {
+            _.each(plugin.dependencies, function (name) {
                 var dep = _this.plugins[name];
                 if (dep) {
-                    if (_.includes(dep.optional_dependencies, plugin.__name__)) {
+                    if (_.includes(dep.dependencies, plugin.__name__)) {
                         /* FIXME: circular dependency checking is only one level deep. */
                         throw "Found a circular dependency between the plugins \"" + plugin.__name__ + "\" and \"" + name + "\"";
                     }
                     _this.initializePlugin(dep);
                 } else {
-                    _this.throwUndefinedDependencyError("Could not find optional dependency \"" + name + "\" " + "for the plugin \"" + plugin.__name__ + "\". " + "If it's needed, make sure it's loaded by require.js");
+                    _this.throwUndefinedDependencyError("Could not find dependency \"" + name + "\" " + "for the plugin \"" + plugin.__name__ + "\". " + "If it's needed, make sure it's loaded by require.js");
                 }
             });
         },
@@ -6292,8 +6362,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             if (_.isBoolean(plugin.enabled) && plugin.enabled || _.isFunction(plugin.enabled) && plugin.enabled(this.plugged) || _.isNil(plugin.enabled)) {
 
                 _.extend(plugin, this.properties);
-                if (plugin.optional_dependencies) {
-                    this.loadOptionalDependencies(plugin);
+                if (plugin.dependencies) {
+                    this.loadPluginDependencies(plugin);
                 }
                 this.applyOverrides(plugin);
                 if (typeof plugin.initialize === "function") {
@@ -7130,7 +7200,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         var feedback = message;
 
         if (message === "host-unknown" || message == "remote-connection-failed") {
-          feedback = __("Sorry, we could not connect to the XMPP host with domain: ") + "\"".concat(Strophe.getDomainFromJid(_converse.connection.jid), "\"");
+          feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s", "\"".concat(Strophe.getDomainFromJid(_converse.connection.jid), "\""));
         } else if (!_.isUndefined(message) && message === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
           feedback = __("The XMPP server did not offer a supported authentication mechanism");
         }
@@ -11697,8 +11767,10 @@ return __p
 
 define('tpl!help_message', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<div class="chat-' +
+__p += '<div class="message chat-' +
 __e(o.type) +
+'" data-isodate="' +
+__e(o.isodate) +
 '">' +
 ((__t = (o.message)) == null ? '' : __t) +
 '</div>\n';
@@ -11742,7 +11814,7 @@ return __p
 
 define('tpl!new_day', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<time class="chat-info chat-date" data-isodate="' +
+__p += '<time class="message chat-info chat-date" data-isodate="' +
 __e(o.isodate) +
 '">' +
 __e(o.datestring) +
@@ -11810,19 +11882,17 @@ return __p
     FORWARD_SLASH: 47
   };
   converse.plugins.add('converse-chatview', {
-    /* Optional dependencies are other plugins which might be
+    /* Plugin dependencies are other plugins which might be
      * overridden or relied upon, and therefore need to be loaded before
-     * this plugin. They are called "optional" because they might not be
-     * available, in which case any overrides applicable to them will be
-     * ignored.
+     * this plugin.
      *
-     * It's possible however to make optional dependencies non-optional.
      * If the setting "strict_plugin_dependencies" is set to true,
-     * an error will be raised if the plugin is not found.
+     * an error will be raised if the plugin is not found. By default it's
+     * false, which means these plugins are only loaded opportunistically.
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    optional_dependencies: ["converse-chatboxes"],
+    dependencies: ["converse-chatboxes"],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -12149,7 +12219,7 @@ return __p
            *      This element must have a "data-isodate" attribute
            *      which specifies its creation date.
            */
-          var prev_msg_el = this.getPreviousMessageElement(next_msg_el),
+          var prev_msg_el = u.getPreviousElement(next_msg_el, ".message:not(.chat-event)"),
               prev_msg_date = _.isNull(prev_msg_el) ? null : prev_msg_el.getAttribute('data-isodate'),
               next_msg_date = next_msg_el.getAttribute('data-isodate');
 
@@ -12161,33 +12231,6 @@ return __p
             }));
           }
         },
-        getPreviousMessageElement: function getPreviousMessageElement(el) {
-          var prev_msg_el = el.previousSibling;
-
-          while (!_.isNull(prev_msg_el) && !u.hasClass('message', prev_msg_el) && !u.hasClass('chat-info', prev_msg_el)) {
-            prev_msg_el = prev_msg_el.previousSibling;
-          }
-
-          return prev_msg_el;
-        },
-        getLastMessageElement: function getLastMessageElement() {
-          var last_msg_el = this.content.lastElementChild;
-
-          while (!_.isNull(last_msg_el) && !u.hasClass('message', last_msg_el) && !u.hasClass('chat-info', last_msg_el)) {
-            last_msg_el = last_msg_el.previousSibling;
-          }
-
-          return last_msg_el;
-        },
-        getFirstMessageElement: function getFirstMessageElement() {
-          var first_msg_el = this.content.firstElementChild;
-
-          while (!_.isNull(first_msg_el) && !u.hasClass('message', first_msg_el) && !u.hasClass('chat-info', first_msg_el)) {
-            first_msg_el = first_msg_el.nextSibling;
-          }
-
-          return first_msg_el;
-        },
         getLastMessageDate: function getLastMessageDate(cutoff) {
           /* Return the ISO8601 format date of the latest message.
            *
@@ -12195,21 +12238,28 @@ return __p
            *  (Object) cutoff: Moment Date cutoff date. The last
            *      message received cutoff this date will be returned.
            */
-          var first_msg = this.getFirstMessageElement(),
+          var first_msg = u.getFirstChildElement(this.content, '.message:not(.chat-event)'),
               oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
 
           if (!_.isNull(oldest_date) && moment(oldest_date).isAfter(cutoff)) {
             return null;
           }
 
-          var last_msg = this.getLastMessageElement(),
+          var last_msg = u.getLastChildElement(this.content, '.message:not(.chat-event)'),
               most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
 
           if (_.isNull(most_recent_date) || moment(most_recent_date).isBefore(cutoff)) {
             return most_recent_date;
           }
+          /* XXX: We avoid .chat-event messages, since they are
+           * temporary and get removed once a new element is
+           * inserted into the chat area, so we don't query for
+           * them here, otherwise we get a null reference later
+           * upon element insertion.
+           */
 
-          var msg_dates = _.invokeMap(sizzle('.message, .chat-info', this.content), Element.prototype.getAttribute, 'data-isodate');
+
+          var msg_dates = _.invokeMap(sizzle('.message:not(.chat-event)', this.content), Element.prototype.getAttribute, 'data-isodate');
 
           if (_.isObject(cutoff)) {
             cutoff = cutoff.format();
@@ -12238,7 +12288,6 @@ return __p
            *      attributes.
            */
           var current_msg_date = moment(attrs.time) || moment,
-              prepend_html = _.bind(this.content.insertAdjacentHTML, this.content, 'afterbegin'),
               previous_msg_date = this.getLastMessageDate(current_msg_date),
               message_el = this.renderMessage(attrs);
 
@@ -12250,7 +12299,30 @@ return __p
           }
 
           this.insertDayIndicator(message_el);
-          this.scrollDown();
+          this.clearStatusNotification();
+          this.setScrollPosition(message_el);
+        },
+        setScrollPosition: function setScrollPosition(message_el) {
+          /* Given a newly inserted message, determine whether we
+           * should keep the scrollbar in place (so as to not scroll
+           * up when using infinite scroll).
+           */
+          if (this.model.get('scrolled')) {
+            var next_msg_el = u.getNextElement(message_el, ".chat-message");
+
+            if (next_msg_el) {
+              // The currently received message is not new, there
+              // are newer messages after it. So let's see if we
+              // should maintain our current scroll position.
+              if (this.content.scrollTop === 0 || this.model.get('top_visible_message')) {
+                var top_visible_message = this.model.get('top_visible_message') || next_msg_el;
+                this.model.set('top_visible_message', top_visible_message);
+                this.content.scrollTop = top_visible_message.offsetTop - 30;
+              }
+            }
+          } else {
+            this.scrollDown();
+          }
         },
         getExtraMessageTemplateAttributes: function getExtraMessageTemplateAttributes() {
           /* Provides a hook for sending more attributes to the
@@ -12262,7 +12334,11 @@ return __p
           return {};
         },
         getExtraMessageClasses: function getExtraMessageClasses(attrs) {
-          return attrs.delayed && 'delayed' || '';
+          if (window.converse_disable_effects) {
+            return attrs.delayed && 'delayed' || '';
+          } else {
+            return 'onload ' + (attrs.delayed && 'delayed' || '');
+          }
         },
         renderMessage: function renderMessage(attrs) {
           /* Renders a chat message based on the passed in attributes.
@@ -12294,13 +12370,6 @@ return __p
             username = attrs.sender === 'me' && __('me') || fullname;
           }
 
-          this.clearStatusNotification();
-
-          if (text.length > 8000) {
-            text = text.substring(0, 10) + '...';
-            this.showStatusNotification(__("A very large message has been received. " + "This might be due to an attack meant to degrade the chat performance. " + "Output has been shortened."), true, true);
-          }
-
           var msg_time = moment(attrs.time) || moment;
           var msg = u.stringToElement(template(_.extend(this.getExtraMessageTemplateAttributes(attrs), {
             'msgid': attrs.msgid,
@@ -12310,11 +12379,16 @@ return __p
             'username': username,
             'extra_classes': this.getExtraMessageClasses(attrs)
           })));
+
+          if (!window.converse_disable_effects) {
+            window.setTimeout(_.partial(u.removeClass, 'onload', msg), 2000);
+          }
+
           var msg_content = msg.querySelector('.chat-msg-content');
           msg_content.innerHTML = u.addEmoji(_converse, emojione, u.addHyperlinks(xss.filterXSS(text, {
             'whiteList': {}
           })));
-          u.renderImageURLs(msg_content);
+          u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
           return msg;
         },
         showHelpMessages: function showHelpMessages(msgs, type, spinner) {
@@ -12322,6 +12396,7 @@ return __p
 
           _.each(msgs, function (msg) {
             _this2.content.insertAdjacentHTML('beforeend', tpl_help_message({
+              'isodate': moment().format(),
               'type': type || 'info',
               'message': xss.filterXSS(msg, {
                 'whiteList': {
@@ -12359,6 +12434,8 @@ return __p
           } else if (message.get('chat_state') === _converse.GONE) {
             this.showStatusNotification(message.get('fullname') + ' ' + __('has gone away'));
           }
+
+          return message;
         },
         shouldShowOnTextMessage: function shouldShowOnTextMessage() {
           return !u.isVisible(this.el);
@@ -12410,10 +12487,14 @@ return __p
 
           if (message.get('type') === 'error') {
             this.handleErrorMessage(message);
-          } else if (!message.get('message')) {
-            this.handleChatStateMessage(message);
           } else {
-            this.handleTextMessage(message);
+            if (message.get('chat_state')) {
+              this.handleChatStateMessage(message);
+            }
+
+            if (message.get('message')) {
+              this.handleTextMessage(message);
+            }
           }
 
           _converse.emit('messageAdded', {
@@ -12474,7 +12555,7 @@ return __p
             if (match[1] === "clear") {
               return this.clearMessages();
             } else if (match[1] === "help") {
-              var msgs = ["<strong>/help</strong>:".concat(__('Show this menu')), "<strong>/me</strong>:".concat(__('Write in the third person')), "<strong>/clear</strong>:".concat(__('Remove messages'))];
+              var msgs = ["<strong>/clear</strong>: ".concat(__('Remove messages')), "<strong>/me</strong>: ".concat(__('Write in the third person')), "<strong>/help</strong>: ".concat(__('Show this menu'))];
               this.showHelpMessages(msgs);
               return;
             }
@@ -12487,7 +12568,7 @@ return __p
             fullname: fullname,
             sender: 'me',
             time: moment().format(),
-            message: text
+            message: emojione.shortnameToUnicode(text)
           });
           this.sendMessage(message);
         },
@@ -12771,14 +12852,6 @@ return __p
             ev.preventDefault();
           }
 
-          if (this.model.get('auto_scrolled')) {
-            this.model.set({
-              'scrolled': false,
-              'auto_scrolled': false
-            });
-            return;
-          }
-
           var scrolled = true;
           var is_at_bottom = this.content.scrollTop + this.content.clientHeight >= this.content.scrollHeight - 62; // sigh...
 
@@ -12788,11 +12861,15 @@ return __p
           }
 
           u.safeSave(this.model, {
-            'scrolled': scrolled
+            'scrolled': scrolled,
+            'top_visible_message': null
           });
         },
         viewUnreadMessages: function viewUnreadMessages() {
-          this.model.save('scrolled', false);
+          this.model.save({
+            'scrolled': false,
+            'top_visible_message': null
+          });
           this.scrollDown();
         },
         _scrollDown: function _scrollDown() {
@@ -12803,10 +12880,6 @@ return __p
 
           if (u.isVisible(this.content) && !this.model.get('scrolled')) {
             this.content.scrollTop = this.content.scrollHeight;
-            this.onScrolledDown();
-            this.model.save({
-              'auto_scrolled': true
-            });
           }
         },
         onScrolledDown: function onScrolledDown() {
@@ -13847,9 +13920,6 @@ return __p
           this.onRemove(contact);
         },
         onRemove: function onRemove(contact) {
-          this.get(contact.get('id')).remove();
-          this.remove(contact.get('id'));
-
           if (this.model.contacts.length === 0) {
             this.el.parentElement.removeChild(this.el);
           }
@@ -14460,154 +14530,131 @@ return __p
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
+
 /*global define */
-
 (function (root, factory) {
-    define('converse-profile',["converse-core",
-            "tpl!change_status_message",
-            "tpl!chat_status",
-            "tpl!choose_status",
-            "tpl!status_option",
-            "converse-vcard"
-    ], factory);
-}(this, function (
-            converse,
-            tpl_change_status_message,
-            tpl_chat_status,
-            tpl_choose_status,
-            tpl_status_option
-        ) {
-    "use strict";
+  define('converse-profile',["converse-core", "tpl!change_status_message", "tpl!chat_status", "tpl!choose_status", "tpl!status_option", "converse-vcard"], factory);
+})(this, function (converse, tpl_change_status_message, tpl_chat_status, tpl_choose_status, tpl_status_option) {
+  "use strict";
 
-    const { Strophe, Backbone, Promise, utils, _, moment } = converse.env;
+  var _converse$env = converse.env,
+      Strophe = _converse$env.Strophe,
+      Backbone = _converse$env.Backbone,
+      Promise = _converse$env.Promise,
+      utils = _converse$env.utils,
+      _ = _converse$env._,
+      moment = _converse$env.moment;
+  converse.plugins.add('converse-profile', {
+    initialize: function initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      var _converse = this._converse,
+          __ = _converse.__;
+      _converse.XMPPStatusView = Backbone.NativeView.extend({
+        el: "form#set-xmpp-status",
+        events: {
+          "click a.choose-xmpp-status": "toggleOptions",
+          "click #fancy-xmpp-status-select a.change-xmpp-status-message": "renderStatusChangeForm",
+          "submit": "setStatusMessage",
+          "click .dropdown dd ul li a": "setStatus"
+        },
+        initialize: function initialize() {
+          this.model.on("change:status", this.updateStatusUI, this);
+          this.model.on("change:status_message", this.updateStatusUI, this);
+          this.model.on("update-status-ui", this.updateStatusUI, this);
+        },
+        render: function render() {
+          // Replace the default dropdown with something nicer
+          var select = this.el.querySelector('select#select-xmpp-status');
+          var chat_status = this.model.get('status') || 'offline';
+          this.el.innerHTML = tpl_choose_status();
+          this.el.querySelector('#fancy-xmpp-status-select').innerHTML = tpl_chat_status({
+            'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
+            'chat_status': chat_status,
+            'desc_custom_status': __('Click here to write a custom status message'),
+            'desc_change_status': __('Click to change your chat status')
+          }); // iterate through all the <option> elements and add option values
 
-
-    converse.plugins.add('converse-profile', {
-
-        initialize () {
-            /* The initialize function gets called as soon as the plugin is
-             * loaded by converse.js's plugin machinery.
-             */
-            const { _converse } = this,
-                { __ } = _converse;
-
-            _converse.XMPPStatusView = Backbone.NativeView.extend({
-                el: "form#set-xmpp-status",
-                events: {
-                    "click a.choose-xmpp-status": "toggleOptions",
-                    "click #fancy-xmpp-status-select a.change-xmpp-status-message": "renderStatusChangeForm",
-                    "submit": "setStatusMessage",
-                    "click .dropdown dd ul li a": "setStatus"
-                },
-
-                initialize () {
-                    this.model.on("change:status", this.updateStatusUI, this);
-                    this.model.on("change:status_message", this.updateStatusUI, this);
-                    this.model.on("update-status-ui", this.updateStatusUI, this);
-                },
-
-                render () {
-                    // Replace the default dropdown with something nicer
-                    const select = this.el.querySelector('select#select-xmpp-status')
-                    const chat_status = this.model.get('status') || 'offline';
-                    this.el.innerHTML = tpl_choose_status();
-
-                    this.el.querySelector('#fancy-xmpp-status-select')
-                        .innerHTML = tpl_chat_status({
-                            'status_message': this.model.get('status_message') ||
-                                              __("I am %1$s", this.getPrettyStatus(chat_status)),
-                            'chat_status': chat_status,
-                            'desc_custom_status': __('Click here to write a custom status message'),
-                            'desc_change_status': __('Click to change your chat status')
-                        });
-
-                    // iterate through all the <option> elements and add option values
-                    const options_list = _.map(
-                        select.querySelectorAll('option'),
-                        function (el) {
-                            return tpl_status_option({
-                                'value': el.value,
-                                'text': el.text
-                            });
-                        }
-                    );
-                    const options_target = this.el.querySelector("#target dd ul");
-                    options_target.classList.add('collapsed');
-                    options_target.innerHTML = options_list.join('');
-                    return this;
-                },
-
-                toggleOptions (ev) {
-                    ev.preventDefault();
-                    utils.slideInAllElements(
-                        document.querySelectorAll('#conversejs .contact-form-container')
-                    );
-                    utils.slideToggleElement(this.el.querySelector("#target dd ul"));
-                },
-
-                renderStatusChangeForm (ev) {
-                    ev.preventDefault();
-                    const xmppstatus = this.el.querySelector('.xmpp-status');
-                    xmppstatus.parentNode.classList.add('no-border');
-                    xmppstatus.outerHTML = tpl_change_status_message({
-                        'status_message': _converse.xmppstatus.get('status_message') || '',
-                        'label_custom_status': __('Custom status'),
-                        'label_save': __('Save')
-                    });
-                    this.el.querySelector('.custom-xmpp-status').focus();
-                },
-
-                setStatusMessage (ev) {
-                    ev.preventDefault();
-                    this.model.setStatusMessage(ev.target.querySelector('input').value);
-                },
-
-                setStatus (ev) {
-                    ev.preventDefault();
-                    const value = ev.target.getAttribute('data-value');
-                    if (value === 'logout') {
-                        _converse.logOut();
-                    } else {
-                        this.model.setStatus(value);
-                    }
-                    utils.slideIn(this.el.querySelector("#target dd ul"));
-                },
-
-                getPrettyStatus (stat) {
-                    if (stat === 'chat') {
-                        return __('online');
-                    } else if (stat === 'dnd') {
-                        return __('busy');
-                    } else if (stat === 'xa') {
-                        return __('away for long');
-                    } else if (stat === 'away') {
-                        return __('away');
-                    } else if (stat === 'offline') {
-                        return __('offline');
-                    } else {
-                        return __(stat) || __('online');
-                    }
-                },
-
-                updateStatusUI (model) {
-                    const stat = model.get('status');
-                    // For translators: the %1$s part gets replaced with the status
-                    // Example, I am online
-                    const status_message = model.get('status_message') || __("I am %1$s", this.getPrettyStatus(stat));
-                    const fancy_select = this.el.querySelector('#fancy-xmpp-status-select');
-                    fancy_select.classList.remove('no-border');
-                    fancy_select.innerHTML = tpl_chat_status({
-                        'chat_status': stat,
-                        'status_message': status_message,
-                        'desc_custom_status': __('Click here to write a custom status message'),
-                        'desc_change_status': __('Click to change your chat status')
-                    });
-                }
+          var options_list = _.map(select.querySelectorAll('option'), function (el) {
+            return tpl_status_option({
+              'value': el.value,
+              'text': el.text
             });
-        }
-    });
-}));
+          });
 
+          var options_target = this.el.querySelector("#target dd ul");
+          options_target.classList.add('collapsed');
+          options_target.innerHTML = options_list.join('');
+          return this;
+        },
+        toggleOptions: function toggleOptions(ev) {
+          ev.preventDefault();
+          utils.slideInAllElements(document.querySelectorAll('#conversejs .contact-form-container'));
+          utils.slideToggleElement(this.el.querySelector("#target dd ul"));
+        },
+        renderStatusChangeForm: function renderStatusChangeForm(ev) {
+          ev.preventDefault();
+          var xmppstatus = this.el.querySelector('.xmpp-status');
+          xmppstatus.parentNode.classList.add('no-border');
+          xmppstatus.outerHTML = tpl_change_status_message({
+            'status_message': _converse.xmppstatus.get('status_message') || '',
+            'label_custom_status': __('Custom status'),
+            'label_save': __('Save')
+          });
+          this.el.querySelector('.custom-xmpp-status').focus();
+        },
+        setStatusMessage: function setStatusMessage(ev) {
+          ev.preventDefault();
+          this.model.setStatusMessage(ev.target.querySelector('input').value);
+        },
+        setStatus: function setStatus(ev) {
+          ev.preventDefault();
+          var value = ev.target.getAttribute('data-value');
+
+          if (value === 'logout') {
+            _converse.logOut();
+          } else {
+            this.model.setStatus(value);
+          }
+
+          utils.slideIn(this.el.querySelector("#target dd ul"));
+        },
+        getPrettyStatus: function getPrettyStatus(stat) {
+          if (stat === 'chat') {
+            return __('online');
+          } else if (stat === 'dnd') {
+            return __('busy');
+          } else if (stat === 'xa') {
+            return __('away for long');
+          } else if (stat === 'away') {
+            return __('away');
+          } else if (stat === 'offline') {
+            return __('offline');
+          } else {
+            return __(stat) || __('online');
+          }
+        },
+        updateStatusUI: function updateStatusUI(model) {
+          var stat = model.get('status'); // For translators: the %1$s part gets replaced with the status
+          // Example, I am online
+
+          var status_message = model.get('status_message') || __("I am %1$s", this.getPrettyStatus(stat));
+
+          var fancy_select = this.el.querySelector('#fancy-xmpp-status-select');
+          fancy_select.classList.remove('no-border');
+          fancy_select.innerHTML = tpl_chat_status({
+            'chat_status': stat,
+            'status_message': status_message,
+            'desc_custom_status': __('Click here to write a custom status message'),
+            'desc_change_status': __('Click to change your chat status')
+          });
+        }
+      });
+    }
+  });
+});
+//# sourceMappingURL=converse-profile.js.map;
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -14665,6 +14712,17 @@ return __p
   10 // RECONNECTING
   ];
   converse.plugins.add('converse-controlbox', {
+    /* Plugin dependencies are other plugins which might be
+     * overridden or relied upon, and therefore need to be loaded before
+     * this plugin.
+     *
+     * If the setting "strict_plugin_dependencies" is set to true,
+     * an error will be raised if the plugin is not found. By default it's
+     * false, which means these plugins are only loaded opportunistically.
+     *
+     * NB: These plugins need to have already been loaded via require.js.
+     */
+    dependencies: ["converse-chatboxes"],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -16080,15 +16138,6 @@ return __p
 };});
 
 
-define('tpl!no_rooms', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<dt class="centered">' +
-__e( o.no_rooms_text ) +
-'</dt>\n';
-return __p
-};});
-
-
 define('tpl!occupant', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -16253,6 +16302,15 @@ return __p
 define('tpl!room_panel', ['lodash'], function(_) {return function(o) {
 var __t, __p = '';
 __p += '<form class="add-chatroom"></form>\n<div class="rooms-list-container">\n    <dl id="available-chatrooms" class="rooms-list"></dl>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!rooms_results', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<dt class="centered">' +
+__e( o.feedback_text ) +
+'</dt>\n';
 return __p
 };});
 
@@ -16577,6 +16635,7 @@ return __p
       this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
       this.items = _.get(this, this.listItems);
       this.items.on('add', this.sortAndPositionAllItems, this);
+      this.items.on('remove', this.removeView, this);
 
       if (!_.isNil(this.sortEvent)) {
         this.items.on(this.sortEvent, this.sortEventually, this);
@@ -16597,6 +16656,9 @@ return __p
 
       item_view.render();
       return item_view;
+    },
+    removeView: function removeView(item) {
+      this.remove(item.get(this.subviewIndex));
     },
     sortAndPositionAllItems: function sortAndPositionAllItems() {
       var _this = this;
@@ -17622,8 +17684,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  * specified in XEP-0045 Multi-user chat.
  */
 (function (root, factory) {
-  define('converse-muc',["form-utils", "converse-core", "lodash.fp", "tpl!chatarea", "tpl!chatroom", "tpl!chatroom_disconnect", "tpl!chatroom_features", "tpl!chatroom_form", "tpl!chatroom_head", "tpl!chatroom_invite", "tpl!chatroom_join_form", "tpl!chatroom_nickname_form", "tpl!chatroom_password_form", "tpl!chatroom_sidebar", "tpl!chatroom_toolbar", "tpl!chatrooms_tab", "tpl!info", "tpl!no_rooms", "tpl!occupant", "tpl!room_description", "tpl!room_item", "tpl!room_panel", "tpl!spinner", "awesomplete", "converse-chatview", "converse-disco", "backbone.overview", "backbone.orderedlistview", "backbone.vdomview"], factory);
-})(this, function (u, converse, fp, tpl_chatarea, tpl_chatroom, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_join_form, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_chatrooms_tab, tpl_info, tpl_no_rooms, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_spinner, Awesomplete) {
+  define('converse-muc',["form-utils", "converse-core", "lodash.fp", "tpl!chatarea", "tpl!chatroom", "tpl!chatroom_disconnect", "tpl!chatroom_features", "tpl!chatroom_form", "tpl!chatroom_head", "tpl!chatroom_invite", "tpl!chatroom_join_form", "tpl!chatroom_nickname_form", "tpl!chatroom_password_form", "tpl!chatroom_sidebar", "tpl!chatroom_toolbar", "tpl!chatrooms_tab", "tpl!info", "tpl!occupant", "tpl!room_description", "tpl!room_item", "tpl!room_panel", "tpl!rooms_results", "tpl!spinner", "awesomplete", "converse-chatview", "converse-disco", "backbone.overview", "backbone.orderedlistview", "backbone.vdomview"], factory);
+})(this, function (u, converse, fp, tpl_chatarea, tpl_chatroom, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_join_form, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_chatrooms_tab, tpl_info, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
   "use strict";
 
   var ROOMS_PANEL_ID = 'chatrooms';
@@ -17688,7 +17750,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    optional_dependencies: ["converse-controlbox", "converse-chatview"],
+    dependencies: ["converse-controlbox", "converse-chatview"],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -19508,13 +19570,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             last_el.outerHTML = tpl_info({
               'data': "data-leavejoin=\"".concat(nick, "\""),
               'isodate': moment().format(),
-              'message': __(nick + ' has left and re-entered the room.')
+              'message': __('%1$s has left and re-entered the room.', nick)
             });
           } else {
-            var message = __(nick + ' has entered the room.');
+            var message;
 
             if (_.get(stat, 'textContent')) {
-              message = message + ' "' + stat.textContent + '"';
+              message = __('%1$s has entered the room. "%2$s"', nick, stat.textContent);
+            } else {
+              message = __('%1$s has entered the room.', nick);
             }
 
             var data = {
@@ -19540,10 +19604,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           var last_el = this.content.lastElementChild;
 
           if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).join === "\"".concat(nick, "\"")) {
-            var message = __('%1$s has entered and left the room.', nick);
+            var message;
 
             if (_.get(stat, 'textContent')) {
-              message = message + ' "' + stat.textContent + '"';
+              message = __('%1$s has entered and left the room. "%2$s"', nick, stat.textContent);
+            } else {
+              message = __('%1$s has entered and left the room.', nick);
             }
 
             last_el.outerHTML = tpl_info({
@@ -19552,10 +19618,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               'message': message
             });
           } else {
-            var _message = __('%1$s has left the room.', nick);
+            var _message;
 
             if (_.get(stat, 'textContent')) {
-              _message = _message + ' "' + stat.textContent + '"';
+              _message = __('%1$s has left the room. "%2$s"', nick, stat.textContent);
+            } else {
+              _message = __('%1$s has left the room.', nick);
             }
 
             var data = {
@@ -19797,7 +19865,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
           return false;
         },
-        isDuplicate: function isDuplicate(message) {
+        isDuplicate: function isDuplicate(message, original_stanza) {
           var msgid = message.getAttribute('id'),
               jid = message.getAttribute('from'),
               resource = Strophe.getResourceFromJid(jid),
@@ -19835,7 +19903,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               sender = resource && Strophe.unescapeNode(resource) || '',
               subject = _.propertyOf(message.querySelector('subject'))('textContent');
 
-          if (this.isDuplicate(message)) {
+          if (this.isDuplicate(message, original_stanza)) {
             return true;
           }
 
@@ -19872,7 +19940,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         tagName: 'li',
         initialize: function initialize() {
           this.model.on('change', this.render, this);
-          this.model.on('destroy', this.destroy, this);
         },
         toHTML: function toHTML() {
           var show = this.model.get('show') || 'online';
@@ -20140,7 +20207,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           }
         },
         promptForInvite: function promptForInvite(suggestion) {
-          var reason = prompt(__('You are about to invite %1$s to the chat room "%2$s". ', suggestion.text.label, this.model.get('id')) + __("You may optionally include a message, explaining the reason for the invitation."));
+          var reason = prompt(__('You are about to invite %1$s to the chat room "%2$s". ' + 'You may optionally include a message, explaining the reason for the invitation.', suggestion.text.label, this.model.get('id')));
 
           if (reason !== null) {
             this.chatroomview.directInvite(suggestion.text.value, reason);
@@ -20308,8 +20375,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         },
         informNoRoomsFound: function informNoRoomsFound() {
           var chatrooms_el = this.el.querySelector('#available-chatrooms');
-          chatrooms_el.innerHTML = tpl_no_rooms({
-            'no_rooms_text': __('No rooms found')
+          chatrooms_el.innerHTML = tpl_rooms_results({
+            'feedback_text': __('No rooms found')
           });
           var input_el = this.el.querySelector('input#show-rooms');
           input_el.classList.remove('hidden');
@@ -20325,7 +20392,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           if (this.rooms.length) {
             // For translators: %1$s is a variable and will be
             // replaced with the XMPP server name
-            available_chatrooms.innerHTML = "<dt>".concat(__('Rooms on %1$s', this.model.get('muc_domain')), "</dt>");
+            available_chatrooms.innerHTML = tpl_rooms_results({
+              'feedback_text': __('Rooms found')
+            });
             var div = document.createElement('div');
             var fragment = document.createDocumentFragment();
 
@@ -20815,27 +20884,31 @@ return __p
 define('tpl!bookmark', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<dd class="available-chatroom" data-room-jid="' +
+__p += '<dd class="available-chatroom ';
+ if (o.hidden) { ;
+__p += ' hidden ';
+ } ;
+__p += '" data-room-jid="' +
 __e(o.jid) +
-'">\n<a class="open-room" data-room-jid="' +
+'">\n    <a class="open-room" data-room-jid="' +
 __e(o.jid) +
 '" title="' +
 __e(o.open_title) +
 '" href="#">' +
 __e(o.name) +
-'</a>\n<a class="right remove-bookmark icon-pushpin ';
+'</a>\n    <a class="right remove-bookmark icon-pushpin ';
  if (o.bookmarked) { ;
 __p += ' button-on ';
  } ;
-__p += '"\n   data-room-jid="' +
+__p += '"\n       data-room-jid="' +
 __e(o.jid) +
 '" data-bookmark-name="' +
 __e(o.name) +
-'"\n   title="' +
-__e(o.jinfo_remove_bookmark) +
-'" href="#">&nbsp;</a>\n<a class="right room-info icon-room-info" data-room-jid="' +
+'"\n       title="' +
+__e(o.info_remove_bookmark) +
+'" href="#">&nbsp;</a>\n    <a class="right room-info icon-room-info" data-room-jid="' +
 __e(o.jid) +
-'"\n   title="' +
+'"\n       title="' +
 __e(o.info_title) +
 '" href="#">&nbsp;</a>\n</dd>\n';
 return __p
@@ -20872,8 +20945,8 @@ return __p
  * in XEP-0048.
  */
 (function (root, factory) {
-  define('converse-bookmarks',["utils", "converse-core", "converse-muc", "tpl!chatroom_bookmark_form", "tpl!chatroom_bookmark_toggle", "tpl!bookmark", "tpl!bookmarks_list"], factory);
-})(this, function (u, converse, muc, tpl_chatroom_bookmark_form, tpl_chatroom_bookmark_toggle, tpl_bookmark, tpl_bookmarks_list) {
+  define('converse-bookmarks',["converse-core", "converse-muc", "tpl!chatroom_bookmark_form", "tpl!chatroom_bookmark_toggle", "tpl!bookmark", "tpl!bookmarks_list"], factory);
+})(this, function (converse, muc, tpl_chatroom_bookmark_form, tpl_chatroom_bookmark_toggle, tpl_bookmark, tpl_bookmarks_list) {
   var _converse$env = converse.env,
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
@@ -20882,8 +20955,19 @@ return __p
       b64_sha1 = _converse$env.b64_sha1,
       sizzle = _converse$env.sizzle,
       _ = _converse$env._;
+  var u = converse.env.utils;
   converse.plugins.add('converse-bookmarks', {
-    optional_dependencies: ["converse-chatboxes", "converse-muc"],
+    /* Plugin dependencies are other plugins which might be
+     * overridden or relied upon, and therefore need to be loaded before
+     * this plugin.
+     *
+     * If the setting "strict_plugin_dependencies" is set to true,
+     * an error will be raised if the plugin is not found. By default it's
+     * false, which means these plugins are only loaded opportunistically.
+     *
+     * NB: These plugins need to have already been loaded via require.js.
+     */
+    dependencies: ["converse-chatboxes", "converse-muc"],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -21052,7 +21136,7 @@ return __p
 
       _converse.api.settings.update({
         allow_bookmarks: true,
-        hide_open_bookmarks: false
+        hide_open_bookmarks: true
       }); // Promises exposed by this plugin
 
 
@@ -21090,11 +21174,6 @@ return __p
       });
 
       _converse.Bookmark = Backbone.Model;
-      _converse.BookmarksList = Backbone.Model.extend({
-        defaults: {
-          "toggle-state": _converse.OPENED
-        }
-      });
       _converse.Bookmarks = Backbone.Collection.extend({
         model: _converse.Bookmark,
         comparator: 'name',
@@ -21239,21 +21318,53 @@ return __p
           _converse.log(iq.outerHTML, Strophe.LogLevel.DEBUG);
 
           if (!_.isNil(deferred)) {
-            return deferred.reject(new Error("Could not fetch bookmarks"));
+            if (iq.querySelector('error[type="cancel"] item-not-found')) {
+              // Not an exception, the user simply doesn't have
+              // any bookmarks.
+              return deferred.resolve();
+            } else {
+              return deferred.reject(new Error("Could not fetch bookmarks"));
+            }
           }
         }
       });
-      _converse.BookmarksView = Backbone.NativeView.extend({
+      _converse.BookmarksList = Backbone.Model.extend({
+        defaults: {
+          "toggle-state": _converse.OPENED
+        }
+      });
+      _converse.BookmarkView = Backbone.VDOMView.extend({
+        toHTML: function toHTML() {
+          return tpl_bookmark({
+            'hidden': _converse.hide_open_bookmarks && _converse.chatboxes.where({
+              'jid': this.model.get('jid')
+            }).length,
+            'bookmarked': true,
+            'info_leave_room': __('Leave this room'),
+            'info_remove': __('Remove this bookmark'),
+            'info_remove_bookmark': __('Unbookmark this room'),
+            'info_title': __('Show more information on this room'),
+            'jid': this.model.get('jid'),
+            'name': this.model.get('name'),
+            'open_title': __('Click to open this room')
+          });
+        }
+      });
+      _converse.BookmarksView = Backbone.OrderedListView.extend({
         tagName: 'div',
-        className: 'bookmarks-list rooms-list-container hidden',
+        className: 'bookmarks-list rooms-list-container',
         events: {
           'click .add-bookmark': 'addBookmark',
           'click .bookmarks-toggle': 'toggleBookmarksList',
           'click .remove-bookmark': 'removeBookmark'
         },
+        listSelector: '.rooms-list',
+        ItemView: _converse.BookmarkView,
+        subviewIndex: 'jid',
         initialize: function initialize() {
-          this.model.on('add', this.renderBookmarkListElement, this);
-          this.model.on('remove', this.removeBookmarkListElement, this);
+          Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+          this.model.on('add', this.showOrHide, this);
+          this.model.on('remove', this.showOrHide, this);
 
           _converse.chatboxes.on('add', this.renderBookmarkListElement, this);
 
@@ -21265,6 +21376,7 @@ return __p
           this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(cachekey));
           this.list_model.fetch();
           this.render();
+          this.sortAndPositionAllItems();
         },
         render: function render() {
           this.el.innerHTML = tpl_bookmarks_list({
@@ -21273,81 +21385,49 @@ return __p
             'label_bookmarks': __('Bookmarks'),
             '_converse': _converse
           });
-          this.model.each(this.renderBookmarkListElement.bind(this));
-
+          this.showOrHide();
+          this.insertIntoControlBox();
+          return this;
+        },
+        insertIntoControlBox: function insertIntoControlBox() {
           var controlboxview = _converse.chatboxviews.get('controlbox');
 
-          if (!_.isUndefined(controlboxview)) {
-            var chatrooms_el = controlboxview.el.querySelector('#chatrooms');
-            chatrooms_el.insertAdjacentElement('afterbegin', this.el);
-          }
+          if (!_.isUndefined(controlboxview) && !document.body.contains(this.el)) {
+            var container = controlboxview.el.querySelector('#chatrooms');
 
-          return this;
+            if (!_.isNull(container)) {
+              container.insertBefore(this.el, container.firstChild);
+            }
+          }
         },
         removeBookmark: _converse.removeBookmarkViaEvent,
         addBookmark: _converse.addBookmarkViaEvent,
-        renderBookmarkListElement: function renderBookmarkListElement(item) {
-          if (item instanceof _converse.ChatBox) {
-            item = _.head(this.model.where({
-              'jid': item.get('jid')
-            }));
+        renderBookmarkListElement: function renderBookmarkListElement(chatbox) {
+          var bookmarkview = this.get(chatbox.get('jid'));
 
-            if (_.isNil(item)) {
-              // A chat box has been closed, but we don't have a
-              // bookmark for it, so nothing further to do here.
+          if (_.isNil(bookmarkview)) {
+            // A chat box has been closed, but we don't have a
+            // bookmark for it, so nothing further to do here.
+            return;
+          }
+
+          bookmarkview.render();
+          this.showOrHide();
+        },
+        showOrHide: function showOrHide(item) {
+          if (_converse.hide_open_bookmarks) {
+            var bookmarks = this.model.filter(function (bookmark) {
+              return !_converse.chatboxes.get(bookmark.get('jid'));
+            });
+
+            if (!bookmarks.length) {
+              u.hideElement(this.el);
               return;
             }
           }
 
-          if (_converse.hide_open_bookmarks && _converse.chatboxes.where({
-            'jid': item.get('jid')
-          }).length) {
-            // A chat box has been opened, and we don't show
-            // bookmarks for open chats, so we remove it.
-            this.removeBookmarkListElement(item);
-            return;
-          }
-
-          var list_el = this.el.querySelector('.bookmarks');
-          var div = document.createElement('div');
-          div.innerHTML = tpl_bookmark({
-            'bookmarked': true,
-            'info_leave_room': __('Leave this room'),
-            'info_remove': __('Remove this bookmark'),
-            'info_remove_bookmark': __('Unbookmark this room'),
-            'info_title': __('Show more information on this room'),
-            'jid': item.get('jid'),
-            'name': item.get('name'),
-            'open_title': __('Click to open this room')
-          });
-
-          var el = _.head(sizzle(".available-chatroom[data-room-jid=\"".concat(item.get('jid'), "\"]"), list_el));
-
-          if (el) {
-            el.innerHTML = div.firstChild.innerHTML;
-          } else {
-            list_el.appendChild(div.firstChild);
-          }
-
-          this.show();
-        },
-        show: function show() {
-          u.showElement(this.el);
-        },
-        hide: function hide() {
-          u.hideElement(this.el);
-        },
-        removeBookmarkListElement: function removeBookmarkListElement(item) {
-          var list_el = this.el.querySelector('.bookmarks');
-
-          var el = _.head(sizzle(".available-chatroom[data-room-jid=\"".concat(item.get('jid'), "\"]"), list_el));
-
-          if (el) {
-            list_el.removeChild(el);
-          }
-
-          if (list_el.childElementCount === 0) {
-            this.hide();
+          if (this.model.models.length) {
+            u.showElement(this.el);
           }
         },
         toggleBookmarksList: function toggleBookmarksList(ev) {
@@ -21396,11 +21476,7 @@ return __p
           return;
         }
 
-        if (_.isUndefined(_converse.bookmarksview)) {
-          initBookmarks();
-        } else {
-          _converse.bookmarksview.render();
-        }
+        initBookmarks();
       };
 
       _converse.on('reconnected', afterReconnection);
@@ -21502,6 +21578,7 @@ return __p
       b64_sha1 = _converse$env.b64_sha1,
       sizzle = _converse$env.sizzle,
       _ = _converse$env._;
+  var u = converse.env.utils;
   converse.plugins.add('converse-roomslist', {
     /* Optional dependencies are other plugins which might be
      * overridden or relied upon, and therefore need to be loaded before
@@ -21515,19 +21592,103 @@ return __p
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    optional_dependencies: ["converse-controlbox", "converse-muc", "converse-bookmarks"],
+    dependencies: ["converse-controlbox", "converse-muc", "converse-bookmarks"],
     initialize: function initialize() {
       /* The initialize function gets called as soon as the plugin is
        * loaded by converse.js's plugin machinery.
        */
       var _converse = this._converse,
           __ = _converse.__;
+      _converse.OpenRooms = Backbone.Collection.extend({
+        comparator: function comparator(room) {
+          if (room.get('bookmarked')) {
+            var bookmark = _.head(_converse.bookmarksview.model.where({
+              'jid': room.get('jid')
+            }));
+
+            return bookmark.get('name');
+          } else {
+            return room.get('name');
+          }
+        },
+        initialize: function initialize() {
+          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.open-rooms-{_converse.bare_jid}"));
+
+          _converse.chatboxes.on('add', this.onChatBoxAdded, this);
+
+          _converse.chatboxes.on('change:bookmarked', this.onChatBoxChanged, this);
+
+          _converse.chatboxes.on('change:name', this.onChatBoxChanged, this);
+
+          _converse.chatboxes.on('change:num_unread', this.onChatBoxChanged, this);
+
+          _converse.chatboxes.on('change:num_unread_general', this.onChatBoxChanged, this);
+
+          _converse.chatboxes.on('remove', this.onChatBoxRemoved, this);
+
+          this.reset(_.map(_converse.chatboxes.where({
+            'type': 'chatroom'
+          }), 'attributes'));
+        },
+        onChatBoxAdded: function onChatBoxAdded(item) {
+          if (item.get('type') === 'chatroom') {
+            this.create(item.attributes);
+          }
+        },
+        onChatBoxChanged: function onChatBoxChanged(item) {
+          if (item.get('type') === 'chatroom') {
+            var room = this.get(item.get('jid'));
+
+            if (!_.isNil(room)) {
+              room.set(item.attributes);
+            }
+          }
+        },
+        onChatBoxRemoved: function onChatBoxRemoved(item) {
+          if (item.get('type') === 'chatroom') {
+            var room = this.get(item.get('jid'));
+            this.remove(room);
+          }
+        }
+      });
       _converse.RoomsList = Backbone.Model.extend({
         defaults: {
           "toggle-state": _converse.OPENED
         }
       });
-      _converse.RoomsListView = Backbone.NativeView.extend({
+      _converse.RoomsListElementView = Backbone.VDOMView.extend({
+        initialize: function initialize() {
+          this.model.on('destroy', this.remove, this);
+          this.model.on('remove', this.remove, this);
+          this.model.on('change:bookmarked', this.render, this);
+          this.model.on('change:name', this.render, this);
+          this.model.on('change:num_unread', this.render, this);
+          this.model.on('change:num_unread_general', this.render, this);
+        },
+        getRoomsListElementName: function getRoomsListElementName() {
+          if (this.model.get('bookmarked') && _converse.bookmarksview) {
+            var bookmark = _.head(_converse.bookmarksview.model.where({
+              'jid': this.model.get('jid')
+            }));
+
+            return bookmark.get('name');
+          } else {
+            return this.model.get('name');
+          }
+        },
+        toHTML: function toHTML() {
+          return tpl_rooms_list_item(_.extend(this.model.toJSON(), {
+            'allow_bookmarks': _converse.allow_bookmarks,
+            'info_leave_room': __('Leave this room'),
+            'info_remove_bookmark': __('Unbookmark this room'),
+            'info_add_bookmark': __('Bookmark this room'),
+            'info_title': __('Show more information on this room'),
+            'name': this.getRoomsListElementName(),
+            'open_title': __('Click to open this room')
+          }));
+        }
+      });
+      _converse.RoomsListView = Backbone.OrderedListView.extend({
         tagName: 'div',
         className: 'open-rooms-list rooms-list-container',
         events: {
@@ -21536,22 +21697,20 @@ return __p
           'click .open-rooms-toggle': 'toggleRoomsList',
           'click .remove-bookmark': 'removeBookmark'
         },
+        listSelector: '.rooms-list',
+        ItemView: _converse.RoomsListElementView,
+        subviewIndex: 'jid',
         initialize: function initialize() {
-          this.toggleRoomsList = _.debounce(this.toggleRoomsList, 600, {
-            'leading': true
-          });
-          this.model.on('add', this.renderRoomsListElement, this);
-          this.model.on('change:bookmarked', this.renderRoomsListElement, this);
-          this.model.on('change:name', this.renderRoomsListElement, this);
-          this.model.on('change:num_unread', this.renderRoomsListElement, this);
-          this.model.on('change:num_unread_general', this.renderRoomsListElement, this);
-          this.model.on('remove', this.removeRoomsListElement, this);
+          Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+          this.model.on('add', this.showOrHide, this);
+          this.model.on('remove', this.showOrHide, this);
           var cachekey = "converse.roomslist".concat(_converse.bare_jid);
           this.list_model = new _converse.RoomsList();
           this.list_model.id = cachekey;
           this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(cachekey));
           this.list_model.fetch();
           this.render();
+          this.sortAndPositionAllItems();
         },
         render: function render() {
           this.el.innerHTML = tpl_rooms_list({
@@ -21559,14 +21718,16 @@ return __p
             'desc_rooms': __('Click to toggle the rooms list'),
             'label_rooms': __('Open Rooms')
           });
-          this.hide();
 
           if (this.list_model.get('toggle-state') !== _converse.OPENED) {
             this.el.querySelector('.open-rooms-list').classList.add('collapsed');
           }
 
-          this.model.each(this.renderRoomsListElement.bind(this));
-
+          this.showOrHide();
+          this.insertIntoControlBox();
+          return this;
+        },
+        insertIntoControlBox: function insertIntoControlBox() {
           var controlboxview = _converse.chatboxviews.get('controlbox');
 
           if (!_.isUndefined(controlboxview) && !document.body.contains(this.el)) {
@@ -21576,14 +21737,12 @@ return __p
               container.insertBefore(this.el, container.firstChild);
             }
           }
-
-          return this.el;
         },
         hide: function hide() {
-          this.el.classList.add('hidden');
+          u.hideElement(this.el);
         },
         show: function show() {
-          this.el.classList.remove('hidden');
+          u.showElement(this.el);
         },
         closeRoom: function closeRoom(ev) {
           ev.preventDefault();
@@ -21594,51 +21753,15 @@ return __p
             _converse.chatboxviews.get(jid).leave();
           }
         },
-        renderRoomsListElement: function renderRoomsListElement(item) {
-          if (item.get('type') !== 'chatroom') {
-            return;
-          }
-
-          this.removeRoomsListElement(item);
-          var name, bookmark;
-
-          if (item.get('bookmarked')) {
-            bookmark = _.head(_converse.bookmarksview.model.where({
-              'jid': item.get('jid')
-            }));
-            name = bookmark.get('name');
+        showOrHide: function showOrHide(item) {
+          if (!this.model.models.length) {
+            u.hideElement(this.el);
           } else {
-            name = item.get('name');
+            u.showElement(this.el);
           }
-
-          var div = document.createElement('div');
-          div.innerHTML = tpl_rooms_list_item(_.extend(item.toJSON(), {
-            'allow_bookmarks': _converse.allow_bookmarks,
-            'info_leave_room': __('Leave this room'),
-            'info_remove_bookmark': __('Unbookmark this room'),
-            'info_add_bookmark': __('Bookmark this room'),
-            'info_title': __('Show more information on this room'),
-            'name': name,
-            'open_title': __('Click to open this room')
-          }));
-          this.el.querySelector('.open-rooms-list').appendChild(div.firstChild);
-          this.show();
         },
         removeBookmark: _converse.removeBookmarkViaEvent,
         addBookmark: _converse.addBookmarkViaEvent,
-        removeRoomsListElement: function removeRoomsListElement(item) {
-          var list_el = this.el.querySelector('.open-rooms-list');
-
-          var el = _.head(sizzle(".available-chatroom[data-room-jid=\"".concat(item.get('jid'), "\"]"), list_el));
-
-          if (el) {
-            list_el.removeChild(el);
-          }
-
-          if (list_el.childElementCount === 0) {
-            this.hide();
-          }
-        },
         toggleRoomsList: function toggleRoomsList(ev) {
           var _this = this;
 
@@ -21672,7 +21795,7 @@ return __p
 
       var initRoomsListView = function initRoomsListView() {
         _converse.rooms_list_view = new _converse.RoomsListView({
-          'model': _converse.chatboxes
+          'model': new _converse.OpenRooms()
         });
       };
 
@@ -21684,15 +21807,7 @@ return __p
         }
       });
 
-      var afterReconnection = function afterReconnection() {
-        if (_.isUndefined(_converse.rooms_list_view)) {
-          initRoomsListView();
-        } else {
-          _converse.rooms_list_view.render();
-        }
-      };
-
-      _converse.api.listen.on('reconnected', afterReconnection);
+      _converse.api.listen.on('reconnected', initRoomsListView);
     }
   });
 });
@@ -21721,8 +21836,130 @@ return __p
   var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count']; // XEP-0313 Message Archive Management
 
   var MAM_ATTRIBUTES = ['with', 'start', 'end'];
+
+  function getMessageArchiveID(stanza) {
+    var result = sizzle("result[xmlns=\"".concat(Strophe.NS.MAM, "\"]"), stanza).pop();
+
+    if (!_.isUndefined(result)) {
+      return result.getAttribute('id');
+    }
+
+    var stanza_id = sizzle("stanza-id[xmlns=\"".concat(Strophe.NS.SID, "\"]"), stanza).pop();
+
+    if (!_.isUndefined(stanza_id)) {
+      return stanza_id.getAttribute('id');
+    }
+  }
+
+  function queryForArchivedMessages(_converse, options, callback, errback) {
+    /* Internal function, called by the "archive.query" API method.
+     */
+    var date;
+
+    if (_.isFunction(options)) {
+      callback = options;
+      errback = callback;
+    }
+
+    var queryid = _converse.connection.getUniqueId();
+
+    var attrs = {
+      'type': 'set'
+    };
+
+    if (!_.isUndefined(options) && options.groupchat) {
+      if (!options['with']) {
+        // eslint-disable-line dot-notation
+        throw new Error('You need to specify a "with" value containing ' + 'the chat room JID, when querying groupchat messages.');
+      }
+
+      attrs.to = options['with']; // eslint-disable-line dot-notation
+    }
+
+    var stanza = $iq(attrs).c('query', {
+      'xmlns': Strophe.NS.MAM,
+      'queryid': queryid
+    });
+
+    if (!_.isUndefined(options)) {
+      stanza.c('x', {
+        'xmlns': Strophe.NS.XFORM,
+        'type': 'submit'
+      }).c('field', {
+        'var': 'FORM_TYPE',
+        'type': 'hidden'
+      }).c('value').t(Strophe.NS.MAM).up().up();
+
+      if (options['with'] && !options.groupchat) {
+        // eslint-disable-line dot-notation
+        stanza.c('field', {
+          'var': 'with'
+        }).c('value').t(options['with']).up().up(); // eslint-disable-line dot-notation
+      }
+
+      _.each(['start', 'end'], function (t) {
+        if (options[t]) {
+          date = moment(options[t]);
+
+          if (date.isValid()) {
+            stanza.c('field', {
+              'var': t
+            }).c('value').t(date.format()).up().up();
+          } else {
+            throw new TypeError("archive.query: invalid date provided for: ".concat(t));
+          }
+        }
+      });
+
+      stanza.up();
+
+      if (options instanceof Strophe.RSM) {
+        stanza.cnode(options.toXML());
+      } else if (_.intersection(RSM_ATTRIBUTES, _.keys(options)).length) {
+        stanza.cnode(new Strophe.RSM(options).toXML());
+      }
+    }
+
+    var messages = [];
+
+    var message_handler = _converse.connection.addHandler(function (message) {
+      var result = message.querySelector('result');
+
+      if (!_.isNull(result) && result.getAttribute('queryid') === queryid) {
+        messages.push(message);
+      }
+
+      return true;
+    }, Strophe.NS.MAM);
+
+    _converse.connection.sendIQ(stanza, function (iq) {
+      _converse.connection.deleteHandler(message_handler);
+
+      if (_.isFunction(callback)) {
+        var set = iq.querySelector('set');
+        var rsm;
+
+        if (!_.isUndefined(set)) {
+          rsm = new Strophe.RSM({
+            xml: set
+          });
+
+          _.extend(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
+        }
+
+        callback(messages, rsm);
+      }
+    }, function () {
+      _converse.connection.deleteHandler(message_handler);
+
+      if (_.isFunction(errback)) {
+        errback.apply(this, arguments);
+      }
+    }, _converse.message_archiving_timeout);
+  }
+
   converse.plugins.add('converse-mam', {
-    optional_dependencies: ['converse-chatview', 'converse-muc'],
+    dependencies: ['converse-chatview', 'converse-muc'],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -21733,10 +21970,10 @@ return __p
         getMessageAttributes: function getMessageAttributes(message, delay, original_stanza) {
           var attrs = this.__super__.getMessageAttributes.apply(this, arguments);
 
-          var result = sizzle("stanza-id[xmlns=\"".concat(Strophe.NS.SID, "\"]"), original_stanza).pop();
+          var archive_id = getMessageArchiveID(original_stanza);
 
-          if (!_.isUndefined(result)) {
-            attrs.archive_id = result.getAttribute('id');
+          if (archive_id) {
+            attrs.archive_id = archive_id;
           }
 
           return attrs;
@@ -21763,30 +22000,30 @@ return __p
           }
 
           var _converse = this.__super__._converse;
-          this.addSpinner(true);
 
           _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(function (result) {
             // Success
             if (result.supported) {
               var most_recent_msg = utils.getMostRecentMessage(_this.model);
-              var archive_id = most_recent_msg.get('archive_id');
 
-              if (archive_id) {
-                _this.fetchArchivedMessages({
-                  'after': most_recent_msg.get('archive_id')
-                });
+              if (_.isNil(most_recent_msg)) {
+                _this.fetchArchivedMessages();
               } else {
-                _this.fetchArchivedMessages({
-                  'start': most_recent_msg.get('time')
-                });
+                var archive_id = most_recent_msg.get('archive_id');
+
+                if (archive_id) {
+                  _this.fetchArchivedMessages({
+                    'after': most_recent_msg.get('archive_id')
+                  });
+                } else {
+                  _this.fetchArchivedMessages({
+                    'start': most_recent_msg.get('time')
+                  });
+                }
               }
-            } else {
-              _this.clearSpinner();
             }
           }, function () {
             // Error
-            _this.clearSpinner();
-
             _converse.log("Error or timeout while checking for MAM support", Strophe.LogLevel.ERROR);
           }).catch(function (msg) {
             _this.clearSpinner();
@@ -21803,14 +22040,11 @@ return __p
           }
 
           var _converse = this.__super__._converse;
-          this.addSpinner();
 
           _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(function (result) {
             // Success
             if (result.supported) {
               _this2.fetchArchivedMessages();
-            } else {
-              _this2.clearSpinner();
             }
 
             _this2.model.save({
@@ -21818,8 +22052,6 @@ return __p
             });
           }, function () {
             // Error
-            _this2.clearSpinner();
-
             _converse.log("Error or timeout while checking for MAM support", Strophe.LogLevel.ERROR);
           }).catch(function (msg) {
             _this2.clearSpinner();
@@ -21851,7 +22083,7 @@ return __p
 
           this.addSpinner();
 
-          _converse.queryForArchivedMessages(_.extend({
+          _converse.api.archive.query(_.extend({
             'before': '',
             // Page backwards from the most recent message
             'max': _converse.archived_messages_page_size,
@@ -21898,6 +22130,21 @@ return __p
           this.model.on('change:mam_enabled', this.fetchArchivedMessagesIfNecessary, this);
           this.model.on('change:connection_status', this.fetchArchivedMessagesIfNecessary, this);
         },
+        isDuplicate: function isDuplicate(message, original_stanza) {
+          var result = this.__super__.isDuplicate.apply(this, arguments);
+
+          if (result) {
+            return result;
+          }
+
+          var archive_id = getMessageArchiveID(original_stanza);
+
+          if (archive_id) {
+            return this.model.messages.filter({
+              'archive_id': archive_id
+            }).length > 0;
+          }
+        },
         renderChatArea: function renderChatArea() {
           var result = this.__super__.renderChatArea.apply(this, arguments);
 
@@ -21933,9 +22180,9 @@ return __p
            * Then, upon receiving them, call onChatRoomMessage
            * so that they are displayed inside it.
            */
-          this.addSpinner();
           var that = this;
           var _converse = this.__super__._converse;
+          this.addSpinner();
 
           _converse.api.archive.query(_.extend({
             'groupchat': true,
@@ -21970,128 +22217,6 @@ return __p
         message_archiving_timeout: 8000 // Time (in milliseconds) to wait before aborting MAM request
 
       });
-
-      _converse.queryForArchivedMessages = function (options, callback, errback) {
-        /* Do a MAM (XEP-0313) query for archived messages.
-         *
-         * Parameters:
-         *    (Object) options - Query parameters, either MAM-specific or also for Result Set Management.
-         *    (Function) callback - A function to call whenever we receive query-relevant stanza.
-         *    (Function) errback - A function to call when an error stanza is received.
-         *
-         * The options parameter can also be an instance of
-         * Strophe.RSM to enable easy querying between results pages.
-         *
-         * The callback function may be called multiple times, first
-         * for the initial IQ result and then for each message
-         * returned. The last time the callback is called, a
-         * Strophe.RSM object is returned on which "next" or "previous"
-         * can be called before passing it in again to this method, to
-         * get the next or previous page in the result set.
-         */
-        var date;
-
-        if (_.isFunction(options)) {
-          callback = options;
-          errback = callback;
-        }
-
-        var queryid = _converse.connection.getUniqueId();
-
-        var attrs = {
-          'type': 'set'
-        };
-
-        if (!_.isUndefined(options) && options.groupchat) {
-          if (!options['with']) {
-            // eslint-disable-line dot-notation
-            throw new Error('You need to specify a "with" value containing ' + 'the chat room JID, when querying groupchat messages.');
-          }
-
-          attrs.to = options['with']; // eslint-disable-line dot-notation
-        }
-
-        var stanza = $iq(attrs).c('query', {
-          'xmlns': Strophe.NS.MAM,
-          'queryid': queryid
-        });
-
-        if (!_.isUndefined(options)) {
-          stanza.c('x', {
-            'xmlns': Strophe.NS.XFORM,
-            'type': 'submit'
-          }).c('field', {
-            'var': 'FORM_TYPE',
-            'type': 'hidden'
-          }).c('value').t(Strophe.NS.MAM).up().up();
-
-          if (options['with'] && !options.groupchat) {
-            // eslint-disable-line dot-notation
-            stanza.c('field', {
-              'var': 'with'
-            }).c('value').t(options['with']).up().up(); // eslint-disable-line dot-notation
-          }
-
-          _.each(['start', 'end'], function (t) {
-            if (options[t]) {
-              date = moment(options[t]);
-
-              if (date.isValid()) {
-                stanza.c('field', {
-                  'var': t
-                }).c('value').t(date.format()).up().up();
-              } else {
-                throw new TypeError("archive.query: invalid date provided for: ".concat(t));
-              }
-            }
-          });
-
-          stanza.up();
-
-          if (options instanceof Strophe.RSM) {
-            stanza.cnode(options.toXML());
-          } else if (_.intersection(RSM_ATTRIBUTES, _.keys(options)).length) {
-            stanza.cnode(new Strophe.RSM(options).toXML());
-          }
-        }
-
-        var messages = [];
-
-        var message_handler = _converse.connection.addHandler(function (message) {
-          var result = message.querySelector('result');
-
-          if (!_.isNull(result) && result.getAttribute('queryid') === queryid) {
-            messages.push(message);
-          }
-
-          return true;
-        }, Strophe.NS.MAM);
-
-        _converse.connection.sendIQ(stanza, function (iq) {
-          _converse.connection.deleteHandler(message_handler);
-
-          if (_.isFunction(callback)) {
-            var set = iq.querySelector('set');
-            var rsm;
-
-            if (!_.isUndefined(set)) {
-              rsm = new Strophe.RSM({
-                xml: set
-              });
-
-              _.extend(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
-            }
-
-            callback(messages, rsm);
-          }
-        }, function () {
-          _converse.connection.deleteHandler(message_handler);
-
-          if (_.isFunction(errback)) {
-            errback.apply(this, arguments);
-          }
-        }, _converse.message_archiving_timeout);
-      };
 
       _converse.onMAMError = function (iq) {
         if (iq.querySelectorAll('feature-not-implemented').length) {
@@ -22169,7 +22294,7 @@ return __p
       });
 
       _converse.on('afterMessagesFetched', function (chatboxview) {
-        chatboxview.fetchArchivedMessagesIfNecessary();
+        chatboxview.fetchNewestMessages();
       });
 
       _converse.on('reconnected', function () {
@@ -22186,12 +22311,30 @@ return __p
         /* Extend default converse.js API to add methods specific to MAM
          */
         'archive': {
-          'query': function query() {
+          'query': function query(options, callback, errback) {
+            /* Do a MAM (XEP-0313) query for archived messages.
+             *
+             * Parameters:
+             *    (Object) options - Query parameters, either
+             *      MAM-specific or also for Result Set Management.
+             *    (Function) callback - A function to call whenever
+             *      we receive query-relevant stanza.
+             *    (Function) errback - A function to call when an
+             *      error stanza is received.
+             *
+             * The options parameter can also be an instance of
+             * Strophe.RSM to enable easy querying between results pages.
+             *
+             * When the the callback is called, a Strophe.RSM object is
+             * returned on which "next" or "previous" can be called
+             * before passing it in again to this method, to
+             * get the next or previous page in the result set.
+             */
             if (!_converse.api.connection.connected()) {
               throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
             }
 
-            return _converse.queryForArchivedMessages.apply(this, arguments);
+            return queryForArchivedMessages(_converse, options, callback, errback);
           }
         }
       });
@@ -22293,6 +22436,17 @@ return __p
   OTR_CLASS_MAPPING[VERIFIED] = 'verified';
   OTR_CLASS_MAPPING[FINISHED] = 'finished';
   converse.plugins.add('converse-otr', {
+    /* Plugin dependencies are other plugins which might be
+     * overridden or relied upon, and therefore need to be loaded before
+     * this plugin.
+     *
+     * If the setting "strict_plugin_dependencies" is set to true,
+     * an error will be raised if the plugin is not found. By default it's
+     * false, which means these plugins are only loaded opportunistically.
+     *
+     * NB: These plugins need to have already been loaded via require.js.
+     */
+    dependencies: ["converse-chatview"],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -24060,7 +24214,7 @@ return __p
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    optional_dependencies: ["converse-controlbox", "converse-muc"],
+    dependencies: ["converse-chatview", "converse-controlbox", "converse-muc", "converse-headline"],
     enabled: function enabled(_converse) {
       return _converse.view_mode == 'overlayed';
     },
@@ -24633,19 +24787,17 @@ return __p
   }
 
   converse.plugins.add('converse-dragresize', {
-    /* Optional dependencies are other plugins which might be
+    /* Plugin dependencies are other plugins which might be
      * overridden or relied upon, and therefore need to be loaded before
-     * this plugin. They are called "optional" because they might not be
-     * available, in which case any overrides applicable to them will be
-     * ignored.
+     * this plugin.
      *
-     * It's possible however to make optional dependencies non-optional.
      * If the setting "strict_plugin_dependencies" is set to true,
-     * an error will be raised if the plugin is not found.
+     * an error will be raised if the plugin is not found. By default it's
+     * false, which means these plugins are only loaded opportunistically.
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    optional_dependencies: ["converse-headline"],
+    dependencies: ["converse-chatview", "converse-headline"],
     enabled: function enabled(_converse) {
       return _converse.view_mode == 'overlayed';
     },
@@ -25001,6 +25153,17 @@ return __p
       utils = _converse$env.utils;
   var HEADLINES_TYPE = 'headline';
   converse.plugins.add('converse-headline', {
+    /* Plugin dependencies are other plugins which might be
+     * overridden or relied upon, and therefore need to be loaded before
+     * this plugin.
+     *
+     * If the setting "strict_plugin_dependencies" is set to true,
+     * an error will be raised if the plugin is not found. By default it's
+     * false, which means these plugins are only loaded opportunistically.
+     *
+     * NB: These plugins need to have already been loaded via require.js.
+     */
+    dependencies: ["converse-chatview"],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -25181,7 +25344,7 @@ return __p
     // an error will be raised if the plugin is not found.
     //
     // NB: These plugins need to have already been loaded via require.js.
-    optional_dependencies: ['converse-muc', 'converse-controlbox', 'converse-rosterview'],
+    dependencies: ['converse-muc', 'converse-controlbox', 'converse-rosterview'],
     enabled: function enabled(_converse) {
       return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
     },

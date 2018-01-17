@@ -1612,8 +1612,8 @@
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
-                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg"><img src="' +
-                                message + '" class="chat-image"></a>');
+                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg"><img class="chat-image"'+
+                            ' src="' + message + '"></a>');
                         message += "?param1=val1&param2=val2";
                         test_utils.sendMessage(view, message);
                         return test_utils.waitUntil(function () {
@@ -1623,9 +1623,8 @@
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
-                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2"><img src="'+
-                                message.replace(/&/g, '&amp;') +
-                                '" class="chat-image"></a>')
+                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2"><img'+
+                            ' class="chat-image" src="'+message.replace(/&/g, '&amp;')+'"></a>')
 
                         // Test now with two images in one message
                         message += ' hello world '+base_url+"/logo/conversejs.svg";
@@ -1638,9 +1637,9 @@
                         var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
                             '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2">'+
-                            '<img src="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2" class="chat-image"></a> hello world '+
+                            '<img class="chat-image" src="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2"></a> hello world '+
                             '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg">'+
-                            '<img src="'+base_url+'/logo/conversejs.svg" class="chat-image"></a>'
+                            '<img class="chat-image" src="'+base_url+'/logo/conversejs.svg"></a>'
                         )
                         done();
                     });

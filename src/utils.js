@@ -180,15 +180,29 @@
     };
 
     u.renderImageURLs = function (obj) {
+        /* Returns a Promise which resolves once all images have been loaded.
+         */
         const list = obj.textContent.match(URL_REGEX) || [];
-        _.forEach(list, function (url) {
-            isImage(url).then(function (img) {
-                img.className = 'chat-image';
-                var anchors = sizzle(`a[href="${url}"]`, obj);
-                _.each(anchors, (a) => { a.innerHTML = img.outerHTML; });
-            });
-        });
-        return obj;
+        return Promise.all(
+            _.map(list, (url) =>
+                new Promise((resolve, reject) =>
+                    isImage(url).then(function (img) {
+                        // XXX: need to create a new image, otherwise the event
+                        // listener doesn't fire
+                        const i = new Image();
+                        i.className = 'chat-image';
+                        i.src = img.src;
+                        i.addEventListener('load', resolve);
+                        // We also resolve for non-images, otherwise the
+                        // Promise.all resolves prematurely.
+                        i.addEventListener('error', resolve);
+                        var anchors = sizzle(`a[href="${url}"]`, obj);
+                        _.each(anchors, (a) => {
+                            a.replaceChild(i, a.firstChild);
+                        });
+                    }).catch(resolve)
+                )
+            ))
     };
 
     u.slideInAllElements = function (elements, duration=300) {

@@ -581,8 +581,8 @@
             } else if (status === Strophe.Status.CONNFAIL) {
                 let feedback = message;
                 if (message === "host-unknown" || message == "remote-connection-failed") {
-                    feedback = __("Sorry, we could not connect to the XMPP host with domain: ") +
-                        `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`;
+                    feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s",
+                        `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`);
                 } else if (!_.isUndefined(message) && message === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
                     feedback = __("The XMPP server did not offer a supported authentication mechanism");
                 }

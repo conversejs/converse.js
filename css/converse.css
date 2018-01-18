@@ -2295,6 +2295,16 @@
       margin-bottom: 0; }
       #conversejs #controlbox .controlbox-pane dd.odd {
         background-color: #DCEAC5; }
+  #conversejs #controlbox .controlbox-emoji-attribution {
+    background: #fff;
+    bottom: 0;
+    font-size: 12px;
+    height: 25px;
+    left: 0;
+    right: 0;
+    padding: 2px 12px;
+    position: absolute;
+    text-align: right; }
   #conversejs #controlbox #users {
     overflow-y: hidden; }
   #conversejs #controlbox .add-xmpp-contact {
@@ -2346,8 +2356,8 @@
   border-bottom-left-radius: 2px;
   border-bottom-right-radius: 2px;
   height: 289px;
-  height: -webkit-calc(100% - 33px);
-  height: calc(100% - 33px); }
+  height: -webkit-calc(100% - 33px - 25px);
+  height: calc(100% - 33px - 25px); }
 
 #conversejs #controlbox .available-chatroom.unread-msgs .msgs-indicator {
   border-radius: 10%;

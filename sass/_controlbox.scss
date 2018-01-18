@@ -467,6 +467,18 @@
                 }
             }
         }
+        
+        .controlbox-emoji-attribution {
+            background: #fff;
+            bottom: 0;
+            font-size: 12px;
+            height: 25px;
+            left: 0;
+            right: 0;
+            padding: 2px 12px;
+            position: absolute;
+            text-align: right; 
+        }
 
         #users {
             overflow-y: hidden;

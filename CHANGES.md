@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.3.1 (Unreleased)
+
+### Translation changes
+- Updated Spanish and French translations.
+- New translation: "Simplified Chinese"
+- Rename `zh` language code to `zh_TW` and add Simplified Chinese as `zh_CN`
+
 ## 3.3.0 (2018-01-17)
 
 ### Bugfixes

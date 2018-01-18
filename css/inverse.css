@@ -2449,7 +2449,8 @@ body {
       opacity: 0.8;
       color: #387592; }
     #conversejs #controlbox .brand-heading-container .brand-subtitle {
-      font-size: 90%; }
+      font-size: 90%;
+      padding: 0.5em; }
     @media screen and (max-width: 480px) {
       #conversejs #controlbox .brand-heading-container .brand-heading {
         font-size: 400%; } }

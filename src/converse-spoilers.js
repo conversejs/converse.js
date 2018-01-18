@@ -183,48 +183,11 @@
                      *      The DOM element representing the message.
                      */
                     console.log(attrs);
-                    let text = attrs.message,
-                        fullname = this.model.get('fullname') || attrs.fullname,
-                        template, username;
+                    let msg = this.__super__.renderMessage.apply(this, arguments);
+                    console.log(msg);
+//                     const msg_content = $msg[0].querySelector('.chat-msg-content');
 
-                    const match = text.match(/^\/(.*?)(?: (.*))?$/);
-                    if ((match) && (match[1] === 'me')) {
-                        text = text.replace(/^\/me/, '');
-                        template = tpl_action;
-                        if (attrs.sender === 'me') {
-                            fullname = _converse.xmppstatus.get('fullname') || attrs.fullname;
-                            username = _.isNil(fullname)? _converse.bare_jid: fullname;
-                        } else {
-                            username = attrs.fullname;
-                        }
-                    } else  {
-                        template = tpl_message;
-                        username = attrs.sender === 'me' && _('me') || fullname;
-                    }
-                    this.$content.find('div.chat-event').remove();
-
-                    if (text.length > 8000) {
-                        text = text.substring(0, 10) + '...';
-                        this.showStatusNotification(
-                            _("A very large message has been received. "+
-                               "This might be due to an attack meant to degrade the chat performance. "+
-                               "Output has been shortened."),
-                            true, true);
-                    }
-                    const msg_time = moment(attrs.time) || moment;
-                    const $msg = $(template(
-                        _.extend(this.getExtraMessageTemplateAttributes(attrs), {
-                            'msgid': attrs.msgid,
-                            'sender': attrs.sender,
-                            'time': msg_time.format(_converse.time_format),
-                            'isodate': msg_time.format(),
-                            'username': username,
-                            'extra_classes': this.getExtraMessageClasses(attrs)
-                        })
-                    ));
-                    const msg_content = $msg[0].querySelector('.chat-msg-content');
-
-                     //Spoiler logic
+                    //Spoiler logic
                     if ('spoiler' in attrs) {
                         let button = document.createElement("<button>"),
                             container = document.createElement("<div>"), 
@@ -261,13 +224,10 @@
                         container.append(content);
 
 
-                        msg_content.append(container);
-
-                    } else {
-                        return this.__super__.renderMessage.apply(this, arguments);
+                        msg.append(container);
                     }
 
-                    return $msg;
+                    return msg;
                 }
             },
             'ChatBox': {

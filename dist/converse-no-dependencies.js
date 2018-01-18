@@ -2,7 +2,7 @@
  *
  *  An XMPP chat client that runs in the browser.
  *
- *  Version: 3.3.0
+ *  Version: 3.3.1
  */
 
 /* jshint ignore:start */
@@ -5321,6 +5321,223 @@ return uk;
 
 })));
 
+//! moment.js locale configuration
+//! locale : Chinese (China) [zh-cn]
+//! author : suupic : https://github.com/suupic
+//! author : Zeno Zeng : https://github.com/zenozeng
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/zh-cn',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var zhCn = moment.defineLocale('zh-cn', {
+    months : '一月_二月_三月_四月_五月_六月_七月_八月_九月_十月_十一月_十二月'.split('_'),
+    monthsShort : '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
+    weekdays : '星期日_星期一_星期二_星期三_星期四_星期五_星期六'.split('_'),
+    weekdaysShort : '周日_周一_周二_周三_周四_周五_周六'.split('_'),
+    weekdaysMin : '日_一_二_三_四_五_六'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'YYYY年MMMD日',
+        LL : 'YYYY年MMMD日',
+        LLL : 'YYYY年MMMD日Ah点mm分',
+        LLLL : 'YYYY年MMMD日ddddAh点mm分',
+        l : 'YYYY年MMMD日',
+        ll : 'YYYY年MMMD日',
+        lll : 'YYYY年MMMD日 HH:mm',
+        llll : 'YYYY年MMMD日dddd HH:mm'
+    },
+    meridiemParse: /凌晨|早上|上午|中午|下午|晚上/,
+    meridiemHour: function (hour, meridiem) {
+        if (hour === 12) {
+            hour = 0;
+        }
+        if (meridiem === '凌晨' || meridiem === '早上' ||
+                meridiem === '上午') {
+            return hour;
+        } else if (meridiem === '下午' || meridiem === '晚上') {
+            return hour + 12;
+        } else {
+            // '中午'
+            return hour >= 11 ? hour : hour + 12;
+        }
+    },
+    meridiem : function (hour, minute, isLower) {
+        var hm = hour * 100 + minute;
+        if (hm < 600) {
+            return '凌晨';
+        } else if (hm < 900) {
+            return '早上';
+        } else if (hm < 1130) {
+            return '上午';
+        } else if (hm < 1230) {
+            return '中午';
+        } else if (hm < 1800) {
+            return '下午';
+        } else {
+            return '晚上';
+        }
+    },
+    calendar : {
+        sameDay : '[今天]LT',
+        nextDay : '[明天]LT',
+        nextWeek : '[下]ddddLT',
+        lastDay : '[昨天]LT',
+        lastWeek : '[上]ddddLT',
+        sameElse : 'L'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}(日|月|周)/,
+    ordinal : function (number, period) {
+        switch (period) {
+            case 'd':
+            case 'D':
+            case 'DDD':
+                return number + '日';
+            case 'M':
+                return number + '月';
+            case 'w':
+            case 'W':
+                return number + '周';
+            default:
+                return number;
+        }
+    },
+    relativeTime : {
+        future : '%s内',
+        past : '%s前',
+        s : '几秒',
+        m : '1 分钟',
+        mm : '%d 分钟',
+        h : '1 小时',
+        hh : '%d 小时',
+        d : '1 天',
+        dd : '%d 天',
+        M : '1 个月',
+        MM : '%d 个月',
+        y : '1 年',
+        yy : '%d 年'
+    },
+    week : {
+        // GB/T 7408-1994《数据元和交换格式·信息交换·日期和时间表示法》与ISO 8601:1988等效
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return zhCn;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Chinese (Taiwan) [zh-tw]
+//! author : Ben : https://github.com/ben-lin
+//! author : Chris Lam : https://github.com/hehachris
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/zh-tw',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var zhTw = moment.defineLocale('zh-tw', {
+    months : '一月_二月_三月_四月_五月_六月_七月_八月_九月_十月_十一月_十二月'.split('_'),
+    monthsShort : '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
+    weekdays : '星期日_星期一_星期二_星期三_星期四_星期五_星期六'.split('_'),
+    weekdaysShort : '週日_週一_週二_週三_週四_週五_週六'.split('_'),
+    weekdaysMin : '日_一_二_三_四_五_六'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'YYYY年MMMD日',
+        LL : 'YYYY年MMMD日',
+        LLL : 'YYYY年MMMD日 HH:mm',
+        LLLL : 'YYYY年MMMD日dddd HH:mm',
+        l : 'YYYY年MMMD日',
+        ll : 'YYYY年MMMD日',
+        lll : 'YYYY年MMMD日 HH:mm',
+        llll : 'YYYY年MMMD日dddd HH:mm'
+    },
+    meridiemParse: /凌晨|早上|上午|中午|下午|晚上/,
+    meridiemHour : function (hour, meridiem) {
+        if (hour === 12) {
+            hour = 0;
+        }
+        if (meridiem === '凌晨' || meridiem === '早上' || meridiem === '上午') {
+            return hour;
+        } else if (meridiem === '中午') {
+            return hour >= 11 ? hour : hour + 12;
+        } else if (meridiem === '下午' || meridiem === '晚上') {
+            return hour + 12;
+        }
+    },
+    meridiem : function (hour, minute, isLower) {
+        var hm = hour * 100 + minute;
+        if (hm < 600) {
+            return '凌晨';
+        } else if (hm < 900) {
+            return '早上';
+        } else if (hm < 1130) {
+            return '上午';
+        } else if (hm < 1230) {
+            return '中午';
+        } else if (hm < 1800) {
+            return '下午';
+        } else {
+            return '晚上';
+        }
+    },
+    calendar : {
+        sameDay : '[今天]LT',
+        nextDay : '[明天]LT',
+        nextWeek : '[下]ddddLT',
+        lastDay : '[昨天]LT',
+        lastWeek : '[上]ddddLT',
+        sameElse : 'L'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}(日|月|週)/,
+    ordinal : function (number, period) {
+        switch (period) {
+            case 'd' :
+            case 'D' :
+            case 'DDD' :
+                return number + '日';
+            case 'M' :
+                return number + '月';
+            case 'w' :
+            case 'W' :
+                return number + '週';
+            default :
+                return number;
+        }
+    },
+    relativeTime : {
+        future : '%s內',
+        past : '%s前',
+        s : '幾秒',
+        m : '1 分鐘',
+        mm : '%d 分鐘',
+        h : '1 小時',
+        hh : '%d 小時',
+        d : '1 天',
+        dd : '%d 天',
+        M : '1 個月',
+        MM : '%d 個月',
+        y : '1 年',
+        yy : '%d 年'
+    }
+});
+
+return zhTw;
+
+})));
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -5332,7 +5549,7 @@ return uk;
 
 /*global define */
 (function (root, factory) {
-  define('i18n',["es6-promise", "jed", "lodash.noconflict", "moment", 'moment/locale/af', 'moment/locale/ca', 'moment/locale/de', 'moment/locale/es', 'moment/locale/fr', 'moment/locale/he', 'moment/locale/hu', 'moment/locale/id', 'moment/locale/it', 'moment/locale/ja', 'moment/locale/nb', 'moment/locale/nl', 'moment/locale/pl', 'moment/locale/pt-br', 'moment/locale/ru', 'moment/locale/uk'], factory);
+  define('i18n',["es6-promise", "jed", "lodash.noconflict", "moment", 'moment/locale/af', 'moment/locale/ca', 'moment/locale/de', 'moment/locale/es', 'moment/locale/fr', 'moment/locale/he', 'moment/locale/hu', 'moment/locale/id', 'moment/locale/it', 'moment/locale/ja', 'moment/locale/nb', 'moment/locale/nl', 'moment/locale/pl', 'moment/locale/pt-br', 'moment/locale/ru', 'moment/locale/uk', 'moment/locale/zh-cn', 'moment/locale/zh-tw'], factory);
 })(this, function (Promise, Jed, _, moment) {
   'use strict';
 
@@ -6898,7 +7115,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       jid: undefined,
       keepalive: true,
       locales_url: '/locale/{{{locale}}}/LC_MESSAGES/converse.json',
-      locales: ['af', 'ca', 'de', 'es', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'uk', 'zh'],
+      locales: ['af', 'ca', 'de', 'es', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'uk', 'zh_CN', 'zh_TW'],
       message_carbons: true,
       message_storage: 'session',
       password: undefined,
@@ -11941,6 +12158,7 @@ return __p
         'chatview_avatar_height': 32,
         'chatview_avatar_width': 32,
         'show_toolbar': true,
+        'show_message_load_animation': false,
         'time_format': 'HH:mm',
         'visible_toolbar_buttons': {
           'emoji': true,
@@ -12334,10 +12552,10 @@ return __p
           return {};
         },
         getExtraMessageClasses: function getExtraMessageClasses(attrs) {
-          if (window.converse_disable_effects) {
-            return attrs.delayed && 'delayed' || '';
-          } else {
+          if (_converse.show_message_load_animation) {
             return 'onload ' + (attrs.delayed && 'delayed' || '');
+          } else {
+            return attrs.delayed && 'delayed' || '';
           }
         },
         renderMessage: function renderMessage(attrs) {
@@ -12380,7 +12598,7 @@ return __p
             'extra_classes': this.getExtraMessageClasses(attrs)
           })));
 
-          if (!window.converse_disable_effects) {
+          if (_converse.show_message_load_animation) {
             window.setTimeout(_.partial(u.removeClass, 'onload', msg), 2000);
           }
 
@@ -25294,7 +25512,7 @@ return __p
 
 define('tpl!inverse_brand_heading', ['lodash'], function(_) {return function(o) {
 var __t, __p = '';
-__p += '<span class="brand-heading-container">\n    <h1 class="brand-heading"><i class="icon-conversejs"></i>inverse</h1>\n    <p class="brand-subtitle"><a href="https://conversejs.org">Open Source</a> XMPP chat client</p>\n<span>\n';
+__p += '<span class="brand-heading-container">\n    <h1 class="brand-heading"><i class="icon-conversejs"></i>inVerse</h1>\n    <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client</p>\n    <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> into your own language</p>\n<span>\n';
 return __p
 };});
 

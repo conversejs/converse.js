@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.3.1 (Unreleased)
+## 3.3.1 (2018-01-18)
 
 ### UI/UX changes
 - Add new configuration option

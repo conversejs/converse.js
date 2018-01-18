@@ -110,6 +110,7 @@
                 'chatview_avatar_height': 32,
                 'chatview_avatar_width': 32,
                 'show_toolbar': true,
+                'show_message_load_animation': false,
                 'time_format': 'HH:mm',
                 'visible_toolbar_buttons': {
                     'emoji': true,
@@ -520,10 +521,10 @@
                 },
 
                 getExtraMessageClasses (attrs) {
-                    if (window.converse_disable_effects) {
-                        return attrs.delayed && 'delayed' || '';
-                    } else {
+                    if (_converse.show_message_load_animation) {
                         return 'onload ' + (attrs.delayed && 'delayed' || '');
+                    } else {
+                        return attrs.delayed && 'delayed' || '';
                     }
                 },
 
@@ -566,7 +567,7 @@
                             'extra_classes': this.getExtraMessageClasses(attrs)
                         })
                     ));
-                    if (!window.converse_disable_effects) {
+                    if (_converse.show_message_load_animation) {
                         window.setTimeout(_.partial(u.removeClass, 'onload', msg), 2000);
                     }
                     const msg_content = msg.querySelector('.chat-msg-content');

@@ -1138,6 +1138,16 @@ the operating system or browser (which might not support emoji).
 See also `emojione_image_path`_.
 
 
+show_message_load_animation
+---------------------------
+* Default: ``false``
+
+Determines whether a CSS3 background-color fade-out animation is shown when messages
+appear in chats.
+
+Set to ``false`` by default since this option causes performance issues on Firefox.
+
+
 show_only_online_users
 ----------------------
 

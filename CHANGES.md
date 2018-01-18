@@ -2,6 +2,12 @@
 
 ## 3.3.1 (Unreleased)
 
+### UI/UX changes
+- Add new configuration option
+  [show_message_load_animation](https://conversejs.org/docs/html/configurations.html#show-message-load-animation)
+  with a default value of `false`. The message load animations (added in 3.3.0)
+  cause slowness and performance issues in Firefox, so they're now disabled by default.
+
 ### Translation changes
 - Updated Spanish and French translations.
 - New translation: "Simplified Chinese"

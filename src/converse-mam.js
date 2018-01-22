@@ -84,7 +84,7 @@
 
         const messages = [];
         const message_handler = _converse.connection.addHandler(function (message) {
-            if (options.groupchat || message.getAttribute('from') !== options['with']) { // eslint-disable-line dot-notation
+            if (options.groupchat && message.getAttribute('from') !== options['with']) { // eslint-disable-line dot-notation
                 return true;
             }
             const result = message.querySelector('result');

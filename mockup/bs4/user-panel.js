@@ -11,6 +11,11 @@ const UserPanel = Backbone.NativeView.extend({
         xhr.open('GET', 'user-panel.html', true);
         xhr.onload = () => {
             this.el.innerHTML = xhr.responseText;
+            this.modals = _.map(this.el.querySelectorAll('[data-toggle="modal"]'), (modal_el) => 
+                new window.Modal(modal_el, {
+                    backdrop: 'static', // we don't want to dismiss Modal when Modal or backdrop is the click event target
+                    keyboard: true // we want to dismiss Modal on pressing Esc key
+                }));
         }
         xhr.send();
     }

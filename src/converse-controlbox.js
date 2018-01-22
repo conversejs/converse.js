@@ -115,11 +115,14 @@
 
             clearSession () {
                 this.__super__.clearSession.apply(this, arguments);
-                const controlbox = this.chatboxes.get('controlbox');
-                if (controlbox &&
-                        controlbox.collection &&
-                        controlbox.collection.browserStorage) {
-                    controlbox.save({'connected': false});
+                const chatboxes = _.get(this, 'chatboxes', null);
+                if (!_.isNil(chatboxes)) {
+                    const controlbox = chatboxes.get('controlbox');
+                    if (controlbox &&
+                            controlbox.collection &&
+                            controlbox.collection.browserStorage) {
+                        controlbox.save({'connected': false});
+                    }
                 }
             },
 

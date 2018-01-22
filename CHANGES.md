@@ -5,6 +5,7 @@
 ### Bugfixes
 
 - Could not register on Ejabberd 18. `"Missing attribute 'id' in tag qualified by namespace 'jabber:client'"`
+- #994 TypeError when using the `user.login` API.
 - #995 `ChildNode.replaceWith` is not available in Internet Explorer or Safari. Use `Node.replaceChild` instead.
 
 ## 3.3.1 (2018-01-18)

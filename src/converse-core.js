@@ -373,7 +373,7 @@
         // Module-level functions
         // ----------------------
 
-        this.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749825).toString()}`;
+        this.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749528).toString()}`;
 
         this.sendCSI = function (stat) {
             /* Send out a Chat Status Notification (XEP-0352)

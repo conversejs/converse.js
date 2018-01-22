@@ -334,7 +334,7 @@
                         return;
                     }
                     form.querySelector('input[type=submit]').classList.add('hidden');
-                    this.fetchRegistrationForm(domain);
+                    this.fetchRegistrationForm(domain.trim());
                 },
 
                 fetchRegistrationForm (domain_name) {

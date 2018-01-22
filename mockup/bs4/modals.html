@@ -1,0 +1,142 @@
+		<!-- User Profile Modal -->
+		<div class="modal fade" id="userProfileModal" tabindex="-1" role="dialog" aria-labelledby="userProfileModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="userProfileModalLabel">Your profile</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary">Save changes</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Change status Modal -->
+		<div class="modal fade" id="changeStatusModal" tabindex="-1" role="dialog" aria-labelledby="changeStatusModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="changeStatusModalLabel">Change chat status</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form class="pure-form set-xmpp-status" id="set-xmpp-status">
+							<ul class="xmpp-status-menu">
+								<li>
+									<a href="#" class="online" data-value="online">
+										<span class="fa fa-circle"></span> Online
+									</a>
+								</li>
+								<li>
+									<a href="#" class="dnd" data-value="dnd">
+										<span class="fa fa-minus-circle"></span> Busy
+									</a>
+								</li>
+								<li>
+									<a href="#" class="away" data-value="away">
+										<span class="fa fa-circle-o"></span> Away
+									</a>
+								</li>
+								<li>
+									<a href="#" class="logout" data-value="logout">
+										<span class="fa fa-times-circle"></span> Offline
+									</a>
+								</li>
+							</ul>
+
+							<div class="form-group">
+								<input type="text" class="form-control" value="" placeholder="Personal status message">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary">Save</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Add contact Modal -->
+		<div class="modal fade" id="addContactModal" tabindex="-1" role="dialog" aria-labelledby="addContactModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="addContactModalLabel">Add a contact</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form class="pure-form add-xmpp-contact">
+							<div class="form-group">
+								<input type="text" name="identifier" class="form-control" placeholder="Contact username">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary">Add</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Chatrooms Modal -->
+		<div class="modal fade" id="chatroomsModal" tabindex="-1" role="dialog" aria-labelledby="chatroomsModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="chatroomsModalLabel">New Chatroom</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form class="pure-form pure-form-stacked converse-form add-chatroom">
+							<div class="form-group">
+								<label for="chatroom">Room name</label>
+								<input type="text" name="chatroom" class="form-control" placeholder="Room name">
+							</div>
+							<div class="form-group">
+								<label for="server">Server</label>
+								<input type="text" name="server" class="form-control" placeholder="Server">
+							</div>
+							<input type="submit" class="btn btn-primary" name="join" value="Join">
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Settings Modal -->
+		<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary">Save changes</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>

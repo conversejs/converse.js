@@ -5,6 +5,7 @@
 ### Bugfixes
 
 - Could not register on Ejabberd 18. `"Missing attribute 'id' in tag qualified by namespace 'jabber:client'"`
+- #993 `moment.format` is not a function error when sending a message.
 - #994 TypeError when using the `user.login` API.
 - #995 `ChildNode.replaceWith` is not available in Internet Explorer or Safari. Use `Node.replaceChild` instead.
 

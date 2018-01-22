@@ -714,7 +714,7 @@
                             .c('forwarded', {'xmlns': Strophe.NS.FORWARD})
                             .c('delay', {
                                 'xmns': Strophe.NS.DELAY,
-                                'stamp': moment.format()
+                                'stamp': moment().format()
                             }).up()
                             .cnode(messageStanza.tree())
                         );

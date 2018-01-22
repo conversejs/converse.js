@@ -1,11 +1,16 @@
-<?php include('head.html'); ?>
-<link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/3.2.1/css/inverse.min.css" />
-<link type="text/css" rel="stylesheet" media="screen" href="css/mockup.css" />
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Converse.js Mockups</title>
+    <link type="text/css" rel="stylesheet" media="screen" href="../../node_modules/bootstrap/dist/css/bootstrap.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="../../node_modules/font-awesome/css/font-awesome.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="../../css/inverse.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="css/mockup.css" />
 </head>
 
 <body>
-	<?php include('menu.html'); ?>
-
 	<div class="container-fluid">
 		<div id="conversejs" class="fullscreen chatbox">
 			<div id="controlbox" class="chatbox">
@@ -13,8 +18,8 @@
 					<div class="controlbox-panes">
 						<div class="row">
 							<div class="col-xl-2 col-md-3">
-								<?php include('sidebar.html'); ?>
-								<?php include('user-panel.html'); ?>
+                                <div class="sidebar"></div>
+                                <div id="users" class="controlbox-pane"></div>
 							</div>
 						</div>
 					</div>
@@ -137,7 +142,23 @@
 			</div>
 		</div>
 
-		<?php include('modals.html'); ?>
+        <div class="modals"></div>
 	</div>
 </body>
+
+<script type="text/javascript" src="../../node_modules/lodash/lodash.js"></script>
+<script type="text/javascript" src="../../node_modules/backbone/backbone.js"></script>
+<script type="text/javascript" src="../../node_modules/backbone.nativeview/backbone.nativeview.js"></script>
+<script type="text/javascript" src="sidebar.js"></script>
+<script type="text/javascript" src="user-panel.js"></script>
+<script type="text/javascript" src="modals.js"></script>
+<script type="text/javascript" src="../../node_modules/bootstrap.native/dist/bootstrap-native-v4.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) { 
+        new Modals();
+        new Sidebar();
+        new UserPanel();    
+    });
+</script>
 </html>

@@ -603,7 +603,8 @@
                     if (has_empty_inputs) { return; }
 
                     const inputs = sizzle(':input:not([type=button]):not([type=submit])', form),
-                        iq = $iq({type: "set"}).c("query", {xmlns:Strophe.NS.REGISTER});
+                          iq = $iq({'type': 'set', 'id': _converse.connection.getUniqueId()})
+                                .c("query", {xmlns:Strophe.NS.REGISTER});
 
                     if (this.form_type === 'xform') {
                         iq.c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});

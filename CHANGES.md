@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.3.2 (Unreleased)
+
+### Bugfixes
+
+- Could not register on Ejabberd 18. `"Missing attribute 'id' in tag qualified by namespace 'jabber:client'"`
+
 ## 3.3.1 (2018-01-18)
 
 ### UI/UX changes

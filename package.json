@@ -37,7 +37,7 @@
     "backbone": "1.3.3",
     "backbone.browserStorage": "0.0.3",
     "backbone.nativeview": "^0.3.3",
-    "backbone.overview": "1.0.0",
+    "backbone.overview": "1.0.1",
     "backbone.vdomview": "1.0.0",
     "bootstrap": "^3.3.7",
     "bourbon": "^4.3.2",

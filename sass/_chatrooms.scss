@@ -69,7 +69,8 @@
                 border-top: 0;
                 width: 100%;
                 .chat-info {
-                    color: $chatroom-head-color;
+                    color: white;
+                    line-height: normal;
                 }
                 .mentioned {
                     font-weight: bold;
@@ -81,6 +82,14 @@
                     }
                     .chat-msg-them {
                         color: $chatroom-message-them-color;
+                        canvas {
+                            background: $red;
+                        }
+                    }
+                    .chat-msg-me {
+                        canvas {
+                            background: $light-blue;
+                        }
                     }
                 }
                 .disconnect-msg {
@@ -89,7 +98,7 @@
                 .chat-area {
                     word-wrap: break-word; 
                     height: 100%;
-                    width: 70%;
+                    width: 100%;
                     float: left;
                     min-width: $chat-width;
                     .new-msgs-indicator {
@@ -97,8 +106,7 @@
                         max-width: 70%;
                     }
                     .chat-content {
-                        // There's an annoying Chrome box-sizing bug which prevents us from adding 0.5em padding here.
-                        padding: 0 0.5em 0 0.5em;
+                        padding: 0.5em;
                     }
                     &.full {
                         min-width: 100%;
@@ -125,6 +133,14 @@
                     .chatroom-features {
                         bottom: 0.5em;
                         width: 100%;
+
+                        .feature {
+                            float: left;
+                            margin-right: 0.5em;
+                            padding-right: 0;
+                            font-size: 1em;
+                            cursor: help;
+                        }
                     }
                     .awesomplete {
                         ul {

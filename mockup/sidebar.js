@@ -18,7 +18,7 @@ const Sidebar = Backbone.NativeView.extend({
             hamburger.classList.remove('fa-times');
             hamburger.classList.remove('fa-bars');
         } else {
-            converse_el.addClass('sidebar-open');
+            converse_el.classList.add('sidebar-open');
             hamburger.classList.remove('fa-bars');
             hamburger.classList.add('fa-times');
         }

@@ -10,6 +10,13 @@
         padding: 0;
         width: 130px;
 
+        .badge {
+            position: absolute;
+            right: 122px;
+            bottom: 8px;
+            border: 1px solid $gray-color;
+        }
+
         #toggle-minimized-chats {
             border-top-left-radius: $chatbox-border-radius;
             border-top-right-radius: $chatbox-border-radius;

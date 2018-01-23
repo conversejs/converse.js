@@ -6,6 +6,24 @@
     @include animation-timing-function(ease);
 }
 
+// FIXME: these need to go elsewhere, they're outside of #conversejs
+.converse-bg {
+  position: relative;
+  height: 100vh;
+  text-align: center;
+  color: #fff;
+}
+
+body .brand-heading {
+  margin: auto;
+  font-size: 6em;
+  font-weight: bold;
+
+    .icon-conversejs {
+        font-size: 0.88em;
+    }
+}
+
 #converse-embedded-chat,
 #conversejs {
     bottom: 0;
@@ -44,15 +62,67 @@
         color: $subdued-color;
     }
 
-    .circle {
-        border-radius: 50%;
-    }
-
     ::selection {
         background-color: $highlight-color;
     }
     ::-moz-selection {
         background-color: $highlight-color;
+    }
+
+	canvas {
+        background:#000;
+        border-radius:4px;
+        margin: 2px 0;
+    }
+
+    .circle {
+        border-radius: 50%;
+    }
+
+	.sidebar {
+		display: none;
+        position: absolute;
+        width: 50px;
+        height: 100vh;
+        padding: 10px 0;
+		background-color: $controlbox-head-color;
+        text-align: center;
+
+		.chatbox-btn {
+			float: none;
+            margin: 0;
+            font-size: 1.35em;
+			&.fa-vcard {
+                margin-top: 1em;
+            }
+		}
+		.bottom {
+            position: absolute;
+            bottom: 1em;
+        }
+	}
+
+	.badge {
+        padding: 0.25em 0.4em;
+        line-height: 1;
+    }
+
+    .fa {
+        font: normal normal normal 14px/1 FontAwesome;
+        display: inline-block;
+        font-size: inherit;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .list-container {
+        text-align: left;
+        margin: 0.3em 0;
+    }
+
+    .btn.btn-primary {
+        color: #fff;
     }
 
     .no-text-select {
@@ -255,7 +325,6 @@
                 min-width: 50%;
             }
             label {
-                margin: 1em 0;
                 font-size: $font-size-large;
             }
             input[type=text],

@@ -12,7 +12,7 @@
         .brand-heading-container {
             text-align: center;
             .brand-heading {
-                text-align: center;
+                font-size: 150%;
                 font-size: 600%;
                 padding: 0.7em 0 0 0;
                 opacity: 0.8;
@@ -63,7 +63,7 @@
         }
         #converse-register, #converse-login {
             margin: 2em 30% 3em 30%;
-            .title, .instructions, label {
+            .title, .instructions {
                 margin: 1em 0;
             }
             input[type=submit],

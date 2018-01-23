@@ -157,15 +157,22 @@
                 font-style: italic;
             }
             .chat-message {
+                overflow: auto; // Ensures that content stays inside
+                margin: 0.3em;
+
                 &.onload {
                     animation: colorchange-chatmessage 1s;
                     -webkit-animation: colorchange-chatmessage 1s;
                 }
-                overflow: auto; // Ensures that content stays inside
+
+                canvas {
+                    vertical-align: middle;
+                    background: $gray-color;
+                }
+
                 .chat-msg-author {
                     font-weight: bold;
                     white-space: nowrap;
-                    float: left;
                     text-overflow: ellipsis;
                     overflow: hidden;
                 }
@@ -247,11 +254,13 @@
                 width: 100%;
             }
             .chat-textarea {
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
                 @include border-bottom-radius($chatbox-border-radius);
-                border: 0;
                 height: $chat-textarea-height;
                 padding: 0.5em;
                 width: 100%;
+                border: none;
                 resize: none;
             }
             .send-button {

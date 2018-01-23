@@ -1,15 +1,18 @@
 #conversejs {
     #controlbox {
-        .pure-form.converse-form {
-            padding: 0;
-        }
         margin-right: 2*$chat-gutter;
+
         @media screen and (max-width: $mobile-portrait-length) {
             margin: 0;
         }
         @media screen and (max-height: $mobile-landscape-height) {
             margin: 0;
         }
+
+        .pure-form.converse-form {
+            padding: 0;
+        }
+
         .controlbox-head {
             background-color: $controlbox-head-color;
             border-top-left-radius: $chatbox-border-radius;
@@ -129,13 +132,19 @@
 
         .brand-heading-container {
             .brand-heading {
-                text-align: left;
-                font-size: 150%;
+                text-align: center;
             }
+            
             .brand-name {
                 font-size: 120%;
             }
         }
+
+		#login-dialog {
+			.brand-heading {
+                color: $global-background-color;
+            }
+		}
 
         .toggle-register-login {
             font-weight: bold;
@@ -150,6 +159,9 @@
         }
 
         #converse-register, #converse-login {
+            fieldset.buttons {
+                text-align: center;
+            }
             .login-anon {
                 height: auto;
                 white-space: normal;
@@ -168,13 +180,41 @@
             }
 
         }
+
         #users {
+            overflow-y: hidden;
+            position: relative;
+
             .add-converse-contact {
                 margin: 0 0 0.75em 0;
+            }
+
+            .chatbox-btn {
+                margin: 0;
+            }
+        }
+
+        #chatrooms, #contacts {
+            margin-top: 0.75em;
+        }
+
+        #users {
+            .userinfo {
+                padding-bottom: 1em;
+                border-bottom: 1px solid $gray-color;
+
+                .username {
+                    margin-left: 0.5em;
+                }
+                .d-flex {
+                    margin-bottom: 0.2em;
+                }
             }
         }
 
         #chatrooms {
+            border-bottom: 1px solid $gray-color;
+
             form.add-chatroom {
                 input[type=button],
                 input[type=submit],
@@ -184,9 +224,8 @@
                 margin: 0;
                 padding: 0;
             }
+
             .rooms-list-container {
-                text-align: left;
-                margin: 0;
                 .rooms-toggle {
                     display: block;
                     color: $text-color;
@@ -195,7 +234,7 @@
                         color: $dark-gray-color;
                     }
                 }
-                dl.rooms-list {
+                .rooms-list {
                     margin: 0.5em 0;
                     text-align: left;
                     dt {
@@ -214,7 +253,7 @@
                         color: $text-color;
                         display: block;
                         overflow: hidden;
-                        padding: 0.3em 0;
+                        padding: 0.2em 0;
                         text-shadow: 0 1px 0 $text-shadow-color;
                         word-wrap: break-word;
                         a:hover {
@@ -464,10 +503,13 @@
             font-size: $font-size;
             position: absolute;
             left: 0;
-            text-align: center;
+            text-align: left;
             width: 100%;
+            height: 100%;
             overflow-y: auto;
             overflow-x: hidden;
+            border-radius: $chatbox-border-radius;
+
             .switch-form {
                 padding-bottom: 2em;
                 p {
@@ -478,7 +520,6 @@
                 font-size: $font-size;
                 font-weight: bold;
                 height: auto;
-                margin: 4px;
             }
             dd {
                 margin-left: 0;
@@ -487,10 +528,6 @@
                     background-color: #DCEAC5;
                 }
             }
-        }
-
-        #users {
-            overflow-y: hidden;
         }
 
         .add-xmpp-contact {
@@ -543,6 +580,21 @@
         padding: 10px 8px 0 8px;
         span {
             color: $inverse-link-color;
+        }
+    }
+
+    .xmpp-status, .xmpp-status-menu {
+        .online {
+            color: $green;
+        }
+        .dnd {
+            color: $red
+        }
+        .away {
+            color: $light-blue;
+        }
+        .logout, .offline {
+            color: $gray-color;
         }
     }
 }

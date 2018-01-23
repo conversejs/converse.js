@@ -10,8 +10,8 @@
     <link type="text/css" rel="stylesheet" media="screen" href="css/mockup.css" />
 </head>
 
-<body>
-	<div class="container converse-bg">
+<body style="background-color: #578EA9">
+	<div class="converse-bg container">
 		<h1 class="brand-heading"><i class="icon-conversejs"></i>Converse.js</h1>
 	</div>
 
@@ -21,15 +21,12 @@
 				<div class="controlbox-panes">
 					<div id="login-dialog" class="controlbox-pane">
 						<div class="row">
-							<div class="col-12">
-								<h1 class="brand-heading">
-									<i class="icon-conversejs"></i> Converse.js</h1>
-								<p>
-									<a href="https://conversejs.org">Open Source</a><br />XMPP chat client</p>
+							<div class="brand-heading-container col-12">
+								<h1 class="brand-heading"><i class="icon-conversejs"></i> converse</h1>
 							</div>
 
 							<div class="col-12">
-								<form class="pure-form converse-form">
+								<form id="converse-login" class="pure-form converse-form">
 									<div class="form-group">
 										<label for="jid">XMPP Username:</label>
 										<input type="text" name="jid" class="form-control" placeholder="user@server" autocomplete="off">

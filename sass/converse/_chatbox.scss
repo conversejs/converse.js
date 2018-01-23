@@ -1,5 +1,5 @@
 #converse-embedded-chat,
-#conversejs {
+#conversejs:not(.fullscreen) {
     .chat-head {
         border-top-left-radius: $chatbox-border-radius;
         border-top-right-radius: $chatbox-border-radius;

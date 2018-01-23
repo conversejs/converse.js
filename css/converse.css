@@ -1952,43 +1952,43 @@ body .brand-heading {
       left: 0; }
 
 #converse-embedded-chat .chat-head,
-#conversejs .chat-head {
+#conversejs:not(.fullscreen) .chat-head {
   border-top-left-radius: 4px;
   border-top-right-radius: 4px; }
   @media screen and (max-height: 450px) {
     #converse-embedded-chat .chat-head,
-    #conversejs .chat-head {
+    #conversejs:not(.fullscreen) .chat-head {
       border-top-left-radius: 0;
       border-top-right-radius: 0; } }
   @media screen and (max-width: 480px) {
     #converse-embedded-chat .chat-head,
-    #conversejs .chat-head {
+    #conversejs:not(.fullscreen) .chat-head {
       border-top-left-radius: 0;
       border-top-right-radius: 0; } }
 #converse-embedded-chat .chatbox .chat-body .chat-message,
-#conversejs .chatbox .chat-body .chat-message {
+#conversejs:not(.fullscreen) .chatbox .chat-body .chat-message {
   padding: 0.3em;
   line-height: 20px; }
   #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-author,
-  #conversejs .chatbox .chat-body .chat-message .chat-msg-author {
+  #conversejs:not(.fullscreen) .chatbox .chat-body .chat-message .chat-msg-author {
     line-height: 20px; }
   #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-content,
-  #conversejs .chatbox .chat-body .chat-message .chat-msg-content {
+  #conversejs:not(.fullscreen) .chatbox .chat-body .chat-message .chat-msg-content {
     line-height: 20px; }
     #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-content .emojione,
-    #conversejs .chatbox .chat-body .chat-message .chat-msg-content .emojione {
+    #conversejs:not(.fullscreen) .chatbox .chat-body .chat-message .chat-msg-content .emojione {
       margin-bottom: -5px; }
 #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar,
-#conversejs .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar {
+#conversejs:not(.fullscreen) .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar {
   width: 100%; }
   #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar .emoji-category,
-  #conversejs .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar .emoji-category {
+  #conversejs:not(.fullscreen) .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar .emoji-category {
     float: left; }
   #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar li,
-  #conversejs .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar li {
+  #conversejs:not(.fullscreen) .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar li {
     padding: 2px; }
 #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li.toggle-smiley ul li,
-#conversejs .chatbox form.sendXMPPMessage .chat-toolbar li.toggle-smiley ul li {
+#conversejs:not(.fullscreen) .chatbox form.sendXMPPMessage .chat-toolbar li.toggle-smiley ul li {
   padding: 2px; }
 
 #conversejs #controlbox {
@@ -2433,15 +2433,15 @@ body .brand-heading {
 #conversejs .xmpp-status .logout, #conversejs .xmpp-status .offline, #conversejs .xmpp-status-menu .logout, #conversejs .xmpp-status-menu .offline {
   color: #818479; }
 
-#conversejs #controlbox #converse-register .button-cancel {
+#conversejs:not(.fullscreen) #controlbox #converse-register .button-cancel {
   font-size: 90%; }
-#conversejs #controlbox .controlbox-pane {
+#conversejs:not(.fullscreen) #controlbox .controlbox-pane {
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
   height: 289px;
   height: -webkit-calc(100% - 55px);
   height: calc(100% - 55px); }
-#conversejs #controlbox .brand-heading-container .brand-heading {
+#conversejs:not(.fullscreen) #controlbox .brand-heading-container .brand-heading {
   font-size: 2.2em;
   margin: 1em 0; }
 
@@ -2880,7 +2880,7 @@ body .brand-heading {
   height: 100%;
   border-radius: 4px; }
 
-#conversejs #minimized-chats {
+#conversejs:not(.fullscreen) #minimized-chats {
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   color: white;
@@ -2890,12 +2890,12 @@ body .brand-heading {
   margin: 0 0.5em;
   padding: 0;
   width: 130px; }
-  #conversejs #minimized-chats .badge {
+  #conversejs:not(.fullscreen) #minimized-chats .badge {
     position: absolute;
     right: 122px;
     bottom: 8px;
     border: 1px solid #818479; }
-  #conversejs #minimized-chats #toggle-minimized-chats {
+  #conversejs:not(.fullscreen) #minimized-chats #toggle-minimized-chats {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     background-color: #578EA9;
@@ -2906,20 +2906,20 @@ body .brand-heading {
     width: 100%;
     height: 100%;
     text-align: center; }
-  #conversejs #minimized-chats .minimized-chats-flyout {
+  #conversejs:not(.fullscreen) #minimized-chats .minimized-chats-flyout {
     height: auto;
     bottom: 35px; }
-    #conversejs #minimized-chats .minimized-chats-flyout .chat-head {
+    #conversejs:not(.fullscreen) #minimized-chats .minimized-chats-flyout .chat-head {
       padding: 0.3em;
       border-radius: 4px;
       width: 130px;
       height: 35px;
       margin-bottom: 0.2em;
       box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4); }
-    #conversejs #minimized-chats .minimized-chats-flyout.minimized {
+    #conversejs:not(.fullscreen) #minimized-chats .minimized-chats-flyout.minimized {
       height: auto; }
-  #conversejs #minimized-chats .unread-message-count,
-  #conversejs #minimized-chats .chat-head-message-count {
+  #conversejs:not(.fullscreen) #minimized-chats .unread-message-count,
+  #conversejs:not(.fullscreen) #minimized-chats .chat-head-message-count {
     font-weight: bold;
     background-color: white;
     border: 1px solid;
@@ -2932,8 +2932,8 @@ body .brand-heading {
     position: absolute;
     right: 116px;
     bottom: 10px; }
-  #conversejs #minimized-chats .unread-message-count-hidden,
-  #conversejs #minimized-chats .chat-head-message-count-hidden {
+  #conversejs:not(.fullscreen) #minimized-chats .unread-message-count-hidden,
+  #conversejs:not(.fullscreen) #minimized-chats .chat-head-message-count-hidden {
     display: none; }
 
 #converse-embedded-chat,

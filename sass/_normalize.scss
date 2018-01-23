@@ -1,8 +1,4 @@
 #conversejs {
-    @import "pure/base";
-    @import "pure/forms";
-    @import "pure/buttons";
-
     @include box-sizing(border-box);
     *, *:before, *:after {
         @include box-sizing(border-box);

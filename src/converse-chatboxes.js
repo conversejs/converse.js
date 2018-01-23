@@ -396,8 +396,12 @@
                         if (_.isNull(el)) {
                             el = document.createElement('div');
                             el.setAttribute('id', 'conversejs');
+                            if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
+                                el.classList.add('fullscreen');
+                            }
                             // Converse.js expects a <body> tag to be present.
                             document.querySelector('body').appendChild(el);
+
                         }
                         el.innerHTML = '';
                         this.setElement(el, false);

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-18 14:45+0100\n"
-"PO-Revision-Date: 2018-01-24 01:10+0000\n"
+"PO-Revision-Date: 2018-01-25 01:48+0000\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese "
 "<https://hosted.weblate.org/projects/conversejs/translations/ja/>\n"
@@ -40,7 +40,7 @@ msgstr "次のドメインの XMPP ホストに接続できませんでした: %
 
 #: dist/converse-no-dependencies.js:7422
 msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr "XMPPサーバーは対応している認証形式を提示しませんでした。"
+msgstr "XMPP サーバーは対応している認証形式を提示しませんでした"
 
 #: dist/converse-no-dependencies.js:8106
 #, javascript-format
@@ -463,8 +463,7 @@ msgstr ""
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
 "service is being shut down"
-msgstr ""
-"MUC(グループチャット)のサービスが停止したため、この談話室から削除されました。"
+msgstr "MUC(グループチャット)のサービスが停止したため、この談話室から削除されました"
 
 #. XXX: Note the triple underscore function and not double
 #. * underscore.
@@ -533,7 +532,7 @@ msgstr "%1$s は発言権を失いました。"
 #: dist/converse-no-dependencies.js:18376
 #, javascript-format
 msgid "%1$s is now a moderator."
-msgstr "%1$s は司会者になりました"
+msgstr "%1$s は司会者になりました。"
 
 #: dist/converse-no-dependencies.js:18384
 msgid "Close and leave this room"
@@ -737,7 +736,7 @@ msgstr "%1$s が題を設定しました: %2$s"
 #: dist/converse-no-dependencies.js:20168
 #, javascript-format
 msgid "Click to mention %1$s in your message."
-msgstr "クリックして、メッセージで %1$s に言及する"
+msgstr "クリックして、メッセージで %1$s に言及します。"
 
 #: dist/converse-no-dependencies.js:20169
 msgid "This user is a moderator."
@@ -927,7 +926,7 @@ msgstr "この談話室についての詳細を見る"
 
 #: dist/converse-no-dependencies.js:20697
 msgid "Description:"
-msgstr "説明: "
+msgstr "説明:"
 
 #: dist/converse-no-dependencies.js:20698
 msgid "Room Address (JID):"
@@ -964,7 +963,7 @@ msgstr "臨時談話室"
 #: dist/converse-no-dependencies.js:20810
 #, javascript-format
 msgid "%1$s has invited you to join a chat room: %2$s"
-msgstr "%1$s があなたを談話室 %2$s へ招待しています。"
+msgstr "%1$s があなたを談話室 %2$s へ招待しています"
 
 #: dist/converse-no-dependencies.js:20812
 #, javascript-format
@@ -1042,7 +1041,7 @@ msgstr "暗号化セッションの再接続"
 #. We need to generate a new key and instance tag
 #: dist/converse-no-dependencies.js:22755
 msgid "Generating private key."
-msgstr "秘密鍵の生成"
+msgstr "秘密鍵を生成します。"
 
 #: dist/converse-no-dependencies.js:22755
 msgid "Your browser might become unresponsive."
@@ -1070,7 +1069,7 @@ msgstr "このユーザーの本人性を検証できませんでした。"
 
 #: dist/converse-no-dependencies.js:22861
 msgid "Exchanging private key with contact."
-msgstr "相手先と秘密鍵を交換"
+msgstr "相手先と秘密鍵を交換します。"
 
 #: dist/converse-no-dependencies.js:22964
 msgid "Your messages are not encrypted anymore"
@@ -1258,7 +1257,7 @@ msgstr "ただいま入力欄を取り寄せています…"
 
 #: dist/converse-no-dependencies.js:23337
 msgid " e.g. conversejs.org"
-msgstr "例: conversejs.org"
+msgstr " 例: conversejs.org"
 
 #: dist/converse-no-dependencies.js:23383
 msgid "Fetch registration form"
@@ -1266,7 +1265,7 @@ msgstr "入力欄を取り寄せ"
 
 #: dist/converse-no-dependencies.js:23384
 msgid "Tip: A list of public XMPP providers is available"
-msgstr "ヒント: 公開 XMPP プロバイダーの一覧です。"
+msgstr "ヒント: 公開 XMPP プロバイダーの一覧です"
 
 #: dist/converse-no-dependencies.js:23385
 msgid "here"

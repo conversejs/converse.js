@@ -2,7 +2,8 @@ SHELL := /bin/bash --login
 # You can set these variables from the command line.
 UGLIFYJS		?= node_modules/.bin/uglifyjs
 BABEL			?= node_modules/.bin/babel
-BOURBON_TEMPLATES = ./node_modules/bourbon/app/assets/stylesheets/ 
+BOURBON 		= ./node_modules/bourbon/app/assets/stylesheets/ 
+BOOTSTRAP		= ./node_modules/bootstrap/scss/ 
 BUILDDIR		= ./docs
 BUNDLE		  	?= ./.bundle/bin/bundle
 CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
@@ -133,19 +134,19 @@ dev: stamp-bundler stamp-npm
 css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css
 
 css/inverse.css:: stamp-bundler sass sass/*
-	$(SASS) -I $(BOURBON_TEMPLATES) sass/inverse/inverse.scss css/inverse.css
+	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/inverse/inverse.scss css/inverse.css
 
 css/inverse.min.css:: css/inverse.css
 	$(CLEANCSS) css/inverse.css > css/inverse.min.css
 
 css/converse-muc-embedded.css:: stamp-bundler sass/*
-	$(SASS) -I $(BOURBON_TEMPLATES) sass/_muc_embedded.scss css/converse-muc-embedded.css
+	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/_muc_embedded.scss css/converse-muc-embedded.css
 
 css/converse-muc-embedded.min.css:: stamp-bundler sass css/converse-muc-embedded.css
 	$(CLEANCSS) css/converse-muc-embedded.css > css/converse-muc-embedded.min.css
 
 css/converse.css:: stamp-bundler sass/*
-	$(SASS) -I $(BOURBON_TEMPLATES) sass/converse/converse.scss css/converse.css
+	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss css/converse.css
 
 css/converse.min.css:: css/converse.css
 	$(CLEANCSS) css/converse.css > css/converse.min.css
@@ -158,7 +159,7 @@ css/mobile.min.css:: stamp-npm sass/*
 
 .PHONY: watch
 watch: stamp-bundler
-	$(SASS) --watch -I ./node_modules/bourbon/app/assets/stylesheets/ sass/converse/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css sass/inverse/inverse.scss:css/inverse.css
+	$(SASS) --watch -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css sass/inverse/inverse.scss:css/inverse.css
 
 .PHONY: watchjs
 watchjs: stamp-npm

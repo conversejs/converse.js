@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-18 14:45+0100\n"
-"PO-Revision-Date: 2018-01-25 22:41+0000\n"
+"PO-Revision-Date: 2018-01-26 23:35+0000\n"
 "Last-Translator: Nathan Follens <nathan@email.is>\n"
 "Language-Team: Dutch "
 "<https://hosted.weblate.org/projects/conversejs/translations/nl/>\n"
@@ -146,7 +146,7 @@ msgstr "Aanmelden"
 
 #: dist/converse-no-dependencies.js:13271
 msgid "Jabber ID:"
-msgstr "Jabber-ID:"
+msgstr "XMPP-ID:"
 
 #: dist/converse-no-dependencies.js:13277
 msgid "Password:"

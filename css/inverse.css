@@ -1317,18 +1317,17 @@ body {
 @media screen and (max-width: 767px) {
   #conversejs #login-dialog .pure-form.converse-form {
     padding: 3em 2em 3em; }
-
-  > .chatbox {
+  #conversejs > .chatbox {
     width: calc(100% - 50px); }
-
-  .chatbox .chat-body .chat-message .chat-msg-author {
+  #conversejs .chatbox .chat-body .chat-message .chat-msg-author {
     white-space: normal; }
-  .chatbox .box-flyout {
-    left: 50px;
-    bottom: 0;
-    width: calc(100% - 50px);
-    height: 100vh;
-    box-shadow: none; } }
+  #conversejs .chatbox .row {
+    width: calc(100% - 50px); }
+    #conversejs .chatbox .row .box-flyout {
+      left: 50px;
+      bottom: 0;
+      height: 100vh;
+      box-shadow: none; } }
 #conversejs.fullscreen .chatbox-btn {
   font-size: 18px;
   margin: 0 0.3em; }
@@ -1377,13 +1376,13 @@ body {
   #conversejs.fullscreen .chatbox .chat-title {
     font-size: 26px;
     line-height: 26px; }
-  #conversejs.fullscreen .chatbox form.sendXMPPMessage ul {
+  #conversejs.fullscreen .chatbox .sendXMPPMessage ul {
     width: 100%; }
-  #conversejs.fullscreen .chatbox form.sendXMPPMessage .toggle-smiley {
+  #conversejs.fullscreen .chatbox .sendXMPPMessage .toggle-smiley {
     padding-left: 0.5em; }
-    #conversejs.fullscreen .chatbox form.sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category-picker {
+    #conversejs.fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category-picker {
       margin-right: 5em; }
-    #conversejs.fullscreen .chatbox form.sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category {
+    #conversejs.fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category {
       padding-left: 10px;
       padding-right: 10px; }
 
@@ -1773,8 +1772,7 @@ body {
     position: absolute;
     top: 0;
     left: 50px;
-    display: none;
-    width: calc(100% - 50px); }
+    display: none; }
     #conversejs #controlbox #users.controlbox-pane {
       height: 100vh; }
   #conversejs.sidebar-open > .chatbox:not(#controlbox) {

@@ -448,25 +448,27 @@
                 padding: 3em 2em 3em;
             }
         }
-    }
-
-    > .chatbox {
-        width: calc(100% - 50px);
-    }
-    .chatbox {
-        .chat-body {
-            .chat-message {
-                .chat-msg-author {
-                    white-space: normal;
+        > .chatbox {
+            width: calc(100% - 50px);
+        }
+        .chatbox {
+            .chat-body {
+                .chat-message {
+                    .chat-msg-author {
+                        white-space: normal;
+                    }
                 }
             }
-        }
-        .box-flyout {
-            left: 50px;
-            bottom: 0;
-            width: calc(100% - 50px);
-            height: 100vh;
-            box-shadow: none;
+            .row {
+                width: calc(100% - 50px);
+
+                .box-flyout {
+                    left: 50px;
+                    bottom: 0;
+                    height: 100vh;
+                    box-shadow: none;
+                }
+            }
         }
     }
 }

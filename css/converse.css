@@ -1243,18 +1243,17 @@ body .brand-heading {
 @media screen and (max-width: 767px) {
   #conversejs #login-dialog .pure-form.converse-form {
     padding: 3em 2em 3em; }
-
-  > .chatbox {
+  #conversejs > .chatbox {
     width: calc(100% - 50px); }
-
-  .chatbox .chat-body .chat-message .chat-msg-author {
+  #conversejs .chatbox .chat-body .chat-message .chat-msg-author {
     white-space: normal; }
-  .chatbox .box-flyout {
-    left: 50px;
-    bottom: 0;
-    width: calc(100% - 50px);
-    height: 100vh;
-    box-shadow: none; } }
+  #conversejs .chatbox .row {
+    width: calc(100% - 50px); }
+    #conversejs .chatbox .row .box-flyout {
+      left: 50px;
+      bottom: 0;
+      height: 100vh;
+      box-shadow: none; } }
 #converse-embedded-chat .chat-head,
 #conversejs:not(.fullscreen) .chat-head {
   border-top-left-radius: 4px;
@@ -1681,8 +1680,7 @@ body .brand-heading {
     position: absolute;
     top: 0;
     left: 50px;
-    display: none;
-    width: calc(100% - 50px); }
+    display: none; }
     #conversejs #controlbox #users.controlbox-pane {
       height: 100vh; }
   #conversejs.sidebar-open > .chatbox:not(#controlbox) {

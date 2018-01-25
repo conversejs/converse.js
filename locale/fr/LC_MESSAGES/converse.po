@@ -7,10 +7,10 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-18 14:45+0100\n"
-"PO-Revision-Date: 2018-01-18 10:34+0100\n"
-"Last-Translator: Jean-Baptiste <jean-baptiste@holcroft.fr>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
-"translations/fr/>\n"
+"PO-Revision-Date: 2018-01-25 18:02+0000\n"
+"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/conversejs/translations/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -39,10 +39,11 @@ msgstr ""
 "réessayer."
 
 #: dist/converse-no-dependencies.js:7420
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
 msgstr ""
 "Désolé, nous n’avons pas pu nous connecter à l’hôte XMPP avec le domaine : "
+"%1$s"
 
 #: dist/converse-no-dependencies.js:7422
 msgid "The XMPP server did not offer a supported authentication mechanism"
@@ -680,24 +681,24 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "La raison indiquée est : « %1$s »."
 
 #: dist/converse-no-dependencies.js:19791
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the room."
-msgstr " a quitté puis rejoint le salon."
+msgstr "%1$s a quitté puis rejoint le salon."
 
 #: dist/converse-no-dependencies.js:19797
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered the room. \"%2$s\""
-msgstr " a rejoint le salon."
+msgstr "%1$s a rejoint le salon. « %2$s »"
 
 #: dist/converse-no-dependencies.js:19799
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered the room."
-msgstr " a rejoint le salon."
+msgstr "%1$s a rejoint le salon."
 
 #: dist/converse-no-dependencies.js:19828
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered and left the room. \"%2$s\""
-msgstr "%1$s a rejoint puis quitté le salon."
+msgstr "%1$s a rejoint puis quitté le salon. « %2$s »"
 
 #: dist/converse-no-dependencies.js:19830
 #, javascript-format
@@ -705,9 +706,9 @@ msgid "%1$s has entered and left the room."
 msgstr "%1$s a rejoint puis quitté le salon."
 
 #: dist/converse-no-dependencies.js:19842
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left the room. \"%2$s\""
-msgstr "%1$s a quitté le salon."
+msgstr "%1$s a quitté le salon. « %2$s »"
 
 #: dist/converse-no-dependencies.js:19844
 #, javascript-format
@@ -890,13 +891,13 @@ msgid "This room does not require a password upon entry"
 msgstr "Ce salon ne nécessite pas de mot de passe pour y accéder"
 
 #: dist/converse-no-dependencies.js:20428
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "You are about to invite %1$s to the chat room \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
 msgstr ""
-"Vous pouvez facultativement ajouter un message, expliquant la raison de "
-"cette invitation."
+"Vous allez inviter %1$s dans le salon %2$s. Vous pouvez facultativement "
+"ajouter un message, expliquant la raison de cette invitation."
 
 #: dist/converse-no-dependencies.js:20450
 msgid "Please enter a valid XMPP username"
@@ -923,14 +924,12 @@ msgid "Rooms"
 msgstr "Salons"
 
 #: dist/converse-no-dependencies.js:20597
-#, fuzzy
 msgid "No rooms found"
-msgstr "Aucun utilisateur trouvé"
+msgstr "Aucun salon trouvé"
 
 #: dist/converse-no-dependencies.js:20614
-#, fuzzy
 msgid "Rooms found"
-msgstr "Salons dans %1$s"
+msgstr "Salons trouvés"
 
 #: dist/converse-no-dependencies.js:20624
 #: dist/converse-no-dependencies.js:21567

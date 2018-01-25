@@ -1,23 +1,4 @@
-@media screen and (max-width: 575px) {
-  body .brand-heading {
-    font-size: 3.75em;
-  }
-  #conversejs.fullscreen.login #controlbox #login-dialog .brand-heading,
-  #conversejs #controlbox #login-dialog .brand-heading {
-    font-size: 3.75em;
-  }
-  #conversejs .chatbox .chat-body {
-    border-radius: 7px;
-  }
-  #conversejs .flyout {
-    border-radius: 4px;
-  }
-}
 @media screen and (max-width: 767px) {
-  #conversejs {
-    left: 0;
-    margin: 0;
-  }
   #conversejs.fullscreen.chatbox > .chatbox,
   #conversejs.fullscreen.chatbox .chatroom {
     width: calc(100% - 50px);
@@ -33,7 +14,7 @@
     left: 0;
   }
   #conversejs.login {
-    margin: 10px;
+    margin: 1em;
   }
   #conversejs.login #controlbox {
     margin: 0;

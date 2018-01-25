@@ -761,6 +761,23 @@ body .brand-heading {
     margin: 0;
     padding: 0; }
 
+@media screen and (max-width: 575px) {
+  body .brand-heading {
+    font-size: 3.75em; }
+
+  #conversejs {
+    margin: 0;
+    width: 100%;
+    height: 100%; }
+    #conversejs .chatbox .chat-body {
+      border-radius: 4px; }
+    #conversejs .flyout {
+      border-radius: 4px; } }
+@media screen and (max-width: 767px) {
+  #conversejs.login {
+    margin: 0;
+    width: 100%;
+    height: 100%; } }
 #converse-embedded-chat .flyout,
 #conversejs .flyout {
   border-radius: 4px;

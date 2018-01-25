@@ -14,13 +14,14 @@
   color: #fff;
 }
 
-body .brand-heading {
-  margin: auto;
-  font-size: 6em;
-  font-weight: bold;
-
-    .icon-conversejs {
-        font-size: 0.88em;
+body {
+    .brand-heading {
+        margin: auto;
+        font-size: 6em;
+        font-weight: bold;
+        .icon-conversejs {
+            font-size: 0.88em;
+        }
     }
 }
 
@@ -376,5 +377,37 @@ body .brand-heading {
     .dropdown ul {
         margin: 0;
         padding: 0;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    body {
+      .brand-heading {
+        font-size: 3.75em;
+        }
+    }
+    #conversejs {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+
+        .chatbox  {
+            .chat-body {
+                border-radius: $chatbox-border-radius;
+            }
+        }
+        .flyout {
+            border-radius: $chatbox-border-radius;
+        }
+    }
+}
+
+@media screen and (max-width: 767px) {
+    #conversejs {
+        &.login {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
     }
 }

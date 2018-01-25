@@ -6,7 +6,7 @@
         margin: 0;
 
         #login-dialog {
-            border-radius: 5px;
+            border-radius: $chatbox-border-radius;
             .converse-form {
                 margin: 0;
                 padding: 3em 2em 3em;

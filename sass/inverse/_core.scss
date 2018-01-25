@@ -40,7 +40,9 @@ body {
 #conversejs.fullscreen {
     width: 100vw;
     height: 100vh;
+    bottom: 0;
     left: 0;
+    right: 0;
 
     form {
         &.pure-form.converse-form {
@@ -64,5 +66,11 @@ body {
                 margin-right: 1em;
             }
         }
+    }
+
+    &.login {
+        width: calc(100vw - 1em);
+        height: calc(100vh - 1em);
+        margin: 0.5em;
     }
 }

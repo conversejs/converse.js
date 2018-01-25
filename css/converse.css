@@ -1254,24 +1254,7 @@ body .brand-heading {
       margin: 0; } }
   #conversejs #controlbox .pure-form.converse-form {
     padding: 0; }
-  #conversejs #controlbox .controlbox-head {
-    background-color: #578EA9;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    color: white;
-    height: 55px;
-    margin: 0;
-    padding: 6px 6px 6px 0; }
-    @media screen and (max-height: 450px) {
-      #conversejs #controlbox .controlbox-head {
-        border-top-left-radius: 0;
-        border-top-right-radius: 0; } }
-    @media screen and (max-width: 480px) {
-      #conversejs #controlbox .controlbox-head {
-        border-top-left-radius: 0;
-        border-top-right-radius: 0; } }
   #conversejs #controlbox.logged-out .box-flyout .controlbox-pane {
-    position: relative;
     overflow-y: auto; }
   #conversejs #controlbox form.search-xmpp-contact {
     margin: 0;
@@ -1377,13 +1360,10 @@ body .brand-heading {
     display: block;
     font-weight: normal;
     margin: 1em 0; }
-  #conversejs #controlbox #users {
-    overflow-y: hidden;
-    position: relative; }
-    #conversejs #controlbox #users .add-converse-contact {
-      margin: 0 0 0.75em 0; }
-    #conversejs #controlbox #users .chatbox-btn {
-      margin: 0; }
+  #conversejs #controlbox #users .add-converse-contact {
+    margin: 0 0 0.75em 0; }
+  #conversejs #controlbox #users .chatbox-btn {
+    margin: 0; }
   #conversejs #controlbox #chatrooms, #conversejs #controlbox #contacts {
     margin-top: 0.75em; }
   #conversejs #controlbox #users .userinfo {
@@ -1523,51 +1503,6 @@ body .brand-heading {
     display: none;
     float: right;
     margin-right: 0.5em; }
-  #conversejs #controlbox #controlbox-tabs {
-    text-align: center;
-    display: inline;
-    overflow: hidden;
-    list-style-type: none;
-    /* single tab */ }
-    #conversejs #controlbox #controlbox-tabs li {
-      float: left;
-      list-style: none;
-      padding-left: 0;
-      text-shadow: white 0 1px 0;
-      width: 40%; }
-      #conversejs #controlbox #controlbox-tabs li a {
-        background-color: white;
-        border-bottom: 1px solid #CCC;
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-        box-shadow: inset 2px -2px 20px rgba(0, 0, 0, 0.3);
-        color: #777;
-        display: block;
-        font-size: 12px;
-        height: 54px;
-        line-height: 54px;
-        margin: 0;
-        text-align: center;
-        text-decoration: none; }
-        #conversejs #controlbox #controlbox-tabs li a.contacts-tab .msgs-indicator {
-          background-color: #3AA569; }
-        #conversejs #controlbox #controlbox-tabs li a.rooms-tab .msgs-indicator {
-          background-color: #E77051; }
-        #conversejs #controlbox #controlbox-tabs li a .msgs-indicator {
-          border: solid white 2px;
-          opacity: 0.8;
-          border-top-right-radius: 5px;
-          float: right; }
-        #conversejs #controlbox #controlbox-tabs li a:hover {
-          color: #777; }
-          #conversejs #controlbox #controlbox-tabs li a:hover .msgs-indicator {
-            opacity: 1; }
-        #conversejs #controlbox #controlbox-tabs li a.current, #conversejs #controlbox #controlbox-tabs li a.current:hover {
-          box-shadow: none;
-          border-bottom: 0;
-          height: 55px;
-          cursor: default;
-          color: #777; }
   #conversejs #controlbox .fancy-dropdown {
     border: 1px solid #B1BFC4;
     height: 25px;
@@ -1620,12 +1555,11 @@ body .brand-heading {
     background-color: white;
     border: 0;
     font-size: 14px;
-    position: absolute;
     left: 0;
     text-align: left;
     width: 100%;
     height: 100%;
-    overflow-y: auto;
+    overflow-y: hidden;
     overflow-x: hidden;
     border-radius: 4px; }
     #conversejs #controlbox .controlbox-pane .switch-form {
@@ -1688,14 +1622,10 @@ body .brand-heading {
 
 #conversejs:not(.fullscreen) #controlbox #converse-register .button-cancel {
   font-size: 90%; }
-#conversejs:not(.fullscreen) #controlbox .controlbox-pane {
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  height: 289px;
-  height: -webkit-calc(100% - 55px);
-  height: calc(100% - 55px); }
+#conversejs:not(.fullscreen) #controlbox .controlbox-panes {
+  border-radius: 4px; }
 #conversejs:not(.fullscreen) #controlbox .brand-heading-container .brand-heading {
-  font-size: 2.2em;
+  font-size: 2em;
   margin: 1em 0; }
 
 #conversejs #controlbox .available-chatroom.unread-msgs .msgs-indicator {
@@ -1709,9 +1639,8 @@ body .brand-heading {
   margin: 0;
   height: 194px;
   height: calc(~"100% - 50px - 20px");
-  border-bottom: 1px solid #818479;
   padding: 0 0 2em 0;
-  overflow: scroll;
+  overflow: hidden;
   height: calc(100% - 70px);
   /* Custom addition for CSP */ }
   #conversejs #converse-roster.no-contact-requests {
@@ -1868,6 +1797,7 @@ body .brand-heading {
           #conversejs #converse-roster .roster-contacts .roster-group li a.remove-xmpp-contact:hover {
             color: #818479; }
   #conversejs #converse-roster span.pending-contact-name {
+    margin-top: 0.5em;
     line-height: 16px;
     width: 100%; }
 

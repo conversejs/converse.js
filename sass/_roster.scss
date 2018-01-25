@@ -5,9 +5,8 @@
     margin: 0;
     height: $roster-height;
     height: calc(~"100% - #{$controlbox-dropdown-height*2} - 20px");
-    border-bottom: 1px solid $gray-color;
     padding: 0 0 2em 0;
-    overflow: scroll;
+    overflow: hidden;
 
     &.no-contact-requests {
         height: calc(~"100% - #{$controlbox-dropdown-height*2} - 20px");
@@ -230,6 +229,7 @@
     }
     span {
         &.pending-contact-name {
+            margin-top: 0.5em;
             line-height: $line-height;
             width: 100%;
         }

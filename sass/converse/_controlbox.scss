@@ -6,16 +6,13 @@
             }
         }
 
-        .controlbox-pane {
-            border-bottom-left-radius: $chatbox-border-radius;
-            border-bottom-right-radius: $chatbox-border-radius;
-            height: 289px;
-            @include calc(height, '100% - #{$controlbox-head-height}');
+        .controlbox-panes {
+            border-radius: $chatbox-border-radius;
         }
 
         .brand-heading-container {
             .brand-heading {
-                font-size: 2.2em;
+                font-size: 2em;
                 margin: 1em 0;
             }
         }

@@ -13,28 +13,9 @@
             padding: 0;
         }
 
-        .controlbox-head {
-            background-color: $controlbox-head-color;
-            border-top-left-radius: $chatbox-border-radius;
-            border-top-right-radius: $chatbox-border-radius;
-            @media screen and (max-height: $mobile-landscape-height) {
-                border-top-left-radius: 0;
-                border-top-right-radius: 0;
-            }
-            @media screen and (max-width: $mobile-portrait-length) {
-                border-top-left-radius: 0;
-                border-top-right-radius: 0;
-            }
-            color: $chat-head-inverse-text-color;
-            height: $chat-head-height;
-            margin: 0;
-            padding: 6px 6px 6px 0;
-        }
-
         &.logged-out {
             .box-flyout {
                 .controlbox-pane {
-                    position: relative;
                     overflow-y: auto;
                 }
             }
@@ -182,9 +163,6 @@
         }
 
         #users {
-            overflow-y: hidden;
-            position: relative;
-
             .add-converse-contact {
                 margin: 0 0 0.75em 0;
             }
@@ -372,67 +350,6 @@
             margin-right: 0.5em;
         }
 
-        #controlbox-tabs {
-            text-align: center;
-            display: inline;
-            overflow: hidden;
-            list-style-type: none;
-
-            /* single tab */
-            li {
-                float: left;
-                list-style: none;
-                padding-left: 0;
-                text-shadow: white 0 1px 0;
-                width: 40%;
-                a {
-                    background-color: white;
-                    border-bottom: 1px solid $border-color;
-                    border-top-left-radius: $button-border-radius;
-                    border-top-right-radius: $button-border-radius;
-                    box-shadow: inset 2px -2px 20px rgba(0, 0, 0, 0.3);
-                    color: $text-color;
-                    display: block;
-                    font-size: $font-size-small;
-                    height: $chat-head-height - 1px;
-                    line-height: $chat-head-height - 1px;
-                    margin: 0;
-                    text-align: center;
-                    text-decoration: none;
-                    &.contacts-tab {
-                        .msgs-indicator {
-                            background-color: $chat-head-color;
-                        }
-                    }
-                    &.rooms-tab {
-                        .msgs-indicator {
-                            background-color: $chatroom-head-color;
-                        }
-                    }
-                    .msgs-indicator {
-                        border: solid white 2px;
-                        opacity: 0.8;
-                        border-top-right-radius: $button-border-radius;
-                        float: right;
-                    }
-                    &:hover {
-                        color: $text-color;
-                        .msgs-indicator {
-                            opacity: 1;
-                        }
-                    }
-                    &.current,
-                    &.current:hover {
-                        box-shadow: none;
-                        border-bottom: 0;
-                        height: $chat-head-height;
-                        cursor: default;
-                        color: $text-color;
-                    }
-                }
-            }
-        }
-
         .fancy-dropdown {
             border: 1px solid $light-background-border-color;
             height: $controlbox-dropdown-height;
@@ -501,12 +418,11 @@
             background-color: white;
             border: 0;
             font-size: $font-size;
-            position: absolute;
             left: 0;
             text-align: left;
             width: 100%;
             height: 100%;
-            overflow-y: auto;
+            overflow-y: hidden;
             overflow-x: hidden;
             border-radius: $chatbox-border-radius;
 

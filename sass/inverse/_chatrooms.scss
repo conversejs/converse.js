@@ -1,4 +1,5 @@
-#conversejs {
+#conversejs.fullscreen {
+
     .chat-head-chatroom {
         height: $chatroom-head-height;
         font-size: 20px;
@@ -13,12 +14,13 @@
     }
 
     .chatroom {
-        @include calc(width, '100% - #{$controlbox-width}');
+
         .box-flyout {
             background-color: $chatroom-head-color;
             border: $flyout-padding solid $chatroom-head-color;
             border-top: 0.8em solid $chatroom-head-color;
-            @include calc(width, '100% - #{$controlbox-width}');
+            width: 100%;
+
             .chatroom-body {
                 @include border-top-radius($chatbox-border-radius);
                 .chatroom-form-container {
@@ -27,6 +29,8 @@
                 .chat-area {
                     border-top-left-radius: $chatbox-border-radius;
                     min-width: auto;
+                    height: calc(100vh - 95px);
+
                     .chat-content {
                         border-top-left-radius: $chatbox-border-radius;
                         padding: 0 $padding $padding $padding;

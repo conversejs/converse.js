@@ -68,6 +68,8 @@
                 background-color: white;
                 border-top: 0;
                 width: 100%;
+                overflow: hidden;
+
                 .chat-info {
                     color: white;
                     line-height: normal;
@@ -97,10 +99,11 @@
                 }
                 .chat-area {
                     word-wrap: break-word; 
-                    height: 100%;
                     width: 100%;
                     float: left;
                     min-width: $chat-width;
+                    height: calc(100% - 95px);
+
                     .new-msgs-indicator {
                         background-color: $chatroom-head-color;
                         max-width: 70%;
@@ -243,7 +246,7 @@
             }
         }
 
-        form.sendXMPPMessage {
+        .sendXMPPMessage {
             .chat-toolbar {
                 background-color: $chatroom-toolbar-color;
             }
@@ -260,6 +263,20 @@
                 margin: -1px 0 0 -1px;
                 width: 100%;
                 border: 1px solid #999;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 767px) {
+    #conversejs  {
+        .chatbox {
+            .box-flyout {
+                .chatroom-body {
+                    .chat-area {
+                        height: calc(100vh - 55px);
+                    }
+                }
             }
         }
     }

@@ -514,3 +514,42 @@
         }
     }
 }
+
+@media screen and (max-width: 767px) {
+    #conversejs {
+        #controlbox {
+            .box-flyout {
+                width: 100%;
+                left: 0;
+            }
+
+            .sidebar {
+                display: block;
+            }
+
+            #users {
+                position: absolute;
+                top: 0;
+                left: 50px;
+                display: none;
+                width: calc(100% - 50px);
+
+                &.controlbox-pane {
+                    height: 100vh;
+                }
+            }
+
+        }
+
+        &.sidebar-open {
+            > .chatbox:not(#controlbox) {
+                display: none;
+            }
+            #controlbox {
+                #users {
+                    display: block;
+                }
+            }
+        }
+    }
+}

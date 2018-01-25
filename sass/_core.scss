@@ -47,18 +47,18 @@ body {
         width: 100vw;
     }
 
-	::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+     ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
         color: $subdued-color;
-	}
-	::-moz-placeholder { /* Firefox 19+ */
+     }
+     ::-moz-placeholder { /* Firefox 19+ */
         color: $subdued-color;
-	}
-	:-ms-input-placeholder { /* IE 10+ */
+     }
+     :-ms-input-placeholder { /* IE 10+ */
         color: $subdued-color;
-	}
-	:-moz-placeholder { /* Firefox 18- */
+     }
+     :-moz-placeholder { /* Firefox 18- */
         color: $subdued-color;
-	}
+     }
     ::placeholder {
         color: $subdued-color;
     }
@@ -70,7 +70,7 @@ body {
         background-color: $highlight-color;
     }
 
-	canvas {
+     canvas {
         background:#000;
         border-radius:4px;
         margin: 2px 0;
@@ -80,30 +80,30 @@ body {
         border-radius: 50%;
     }
 
-	.sidebar {
-		display: none;
+     .sidebar {
+          display: none;
         position: absolute;
         width: 50px;
         height: 100vh;
         padding: 10px 0;
-		background-color: $controlbox-head-color;
+          background-color: $controlbox-head-color;
         text-align: center;
 
-		.chatbox-btn {
-			float: none;
+          .chatbox-btn {
+               float: none;
             margin: 0;
             font-size: 1.35em;
-			&.fa-vcard {
+               &.fa-vcard {
                 margin-top: 1em;
             }
-		}
-		.bottom {
+          }
+          .bottom {
             position: absolute;
             bottom: 1em;
         }
-	}
+     }
 
-	.badge {
+     .badge {
         padding: 0.25em 0.4em;
         line-height: 1;
     }
@@ -132,33 +132,33 @@ body {
     }
 
     @keyframes colorchange-chatmessage {
-		0%   {background-color: rgba(141, 216, 174, 1);}
-		25%  {background-color: rgba(141, 216, 174, 0.75);}
-		50%  {background-color: rgba(141, 216, 174, 0.5);}
-		75%  {background-color: rgba(141, 216, 174, 0.25);}
-		100% {background-color: transparent;}
+          0%   {background-color: rgba(141, 216, 174, 1);}
+          25%  {background-color: rgba(141, 216, 174, 0.75);}
+          50%  {background-color: rgba(141, 216, 174, 0.5);}
+          75%  {background-color: rgba(141, 216, 174, 0.25);}
+          100% {background-color: transparent;}
     }
     @-webkit-keyframes colorchange-chatmessage {
-		0%   {background-color: rgba(141, 216, 174, 1);}
-		25%  {background-color: rgba(141, 216, 174, 0.75);}
-		50%  {background-color: rgba(141, 216, 174, 0.5);}
-		75%  {background-color: rgba(141, 216, 174, 0.25);}
-		100% {background-color: transparent;}
+          0%   {background-color: rgba(141, 216, 174, 1);}
+          25%  {background-color: rgba(141, 216, 174, 0.75);}
+          50%  {background-color: rgba(141, 216, 174, 0.5);}
+          75%  {background-color: rgba(141, 216, 174, 0.25);}
+          100% {background-color: transparent;}
     }
 
     @keyframes colorchange-chatmessage-muc {
-		0%   {background-color: rgba(255, 181, 162, 1);}
-		25%  {background-color: rgba(255, 181, 162, 0.75);}
-		50%  {background-color: rgba(255, 181, 162, 0.5);}
-		75%  {background-color: rgba(255, 181, 162, 0.25);}
-		100% {background-color: transparent;}
+          0%   {background-color: rgba(255, 181, 162, 1);}
+          25%  {background-color: rgba(255, 181, 162, 0.75);}
+          50%  {background-color: rgba(255, 181, 162, 0.5);}
+          75%  {background-color: rgba(255, 181, 162, 0.25);}
+          100% {background-color: transparent;}
     }
     @-webkit-keyframes colorchange-chatmessage-muc {
-		0%   {background-color: rgba(255, 181, 162, 1);}
-		25%  {background-color: rgba(255, 181, 162, 0.75);}
-		50%  {background-color: rgba(255, 181, 162, 0.5);}
-		75%  {background-color: rgba(255, 181, 162, 0.25);}
-		100% {background-color: transparent;}
+          0%   {background-color: rgba(255, 181, 162, 1);}
+          25%  {background-color: rgba(255, 181, 162, 0.75);}
+          50%  {background-color: rgba(255, 181, 162, 0.5);}
+          75%  {background-color: rgba(255, 181, 162, 0.25);}
+          100% {background-color: transparent;}
     }
 
 
@@ -402,12 +402,40 @@ body {
     }
 }
 
-@media screen and (max-width: 767px) {
-    #conversejs {
-        &.login {
-            margin: 0;
-            width: 100%;
-            height: 100%;
-        }
-    }
+
+@media screen and (min-width: 576px) {
+  #conversejs .offset-sm-2 {
+    margin-left: 16.666667%;
+  }
+}
+@media screen and (min-width: 768px) {
+  #conversejs .offset-md-2 {
+    margin-left: 16.666667%;
+  }
+  #conversejs .offset-md-3 {
+    margin-left: 25%;
+  }
+}
+@media screen and (min-width: 992px) {
+  #conversejs .offset-lg-2 {
+    margin-left: 16.666667%;
+  }
+  #conversejs .offset-lg-3 {
+    margin-left: 25%;
+  }
+}
+@media screen and (min-width: 1200px) {
+  #conversejs .offset-xl-2 {
+    margin-left: 16.666667%;
+  }
+}
+@media screen and (max-height: 450px) {
+  #conversejs {
+    left: 0;
+  }
+}
+@media screen and (max-width: 480px) {
+  #conversejs {
+    width: auto;
+  }
 }

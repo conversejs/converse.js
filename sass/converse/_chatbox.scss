@@ -58,3 +58,11 @@
         }
     }
 }
+
+@include media-breakpoint-down(sm) {
+	#conversejs:not(.fullscreen) {
+		.row {
+			flex-direction: column;
+		}
+	}
+}

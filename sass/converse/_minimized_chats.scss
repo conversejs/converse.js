@@ -3,16 +3,12 @@
         border-top-left-radius: $chatbox-border-radius;
         border-top-right-radius: $chatbox-border-radius;
         color: $inverse-link-color;
-        float: right;
-        font-weight: bold;
         height: 100%;
-        margin: 0 $chat-gutter;
+        margin-right: $chat-gutter;
+        bottom: 3*$chat-gutter;
         padding: 0;
-        width: 130px;
 
         .badge {
-            position: absolute;
-            right: 122px;
             bottom: 8px;
             border: 1px solid $gray-color;
         }
@@ -21,22 +17,18 @@
             border-top-left-radius: $chatbox-border-radius;
             border-top-right-radius: $chatbox-border-radius;
             background-color: $link-color;
-            color: white;
-            position: relative;
+            border: 1px solid white;
             padding: 10px 0 0 0;
-            display: block;
-            width: 100%;
-            height: 100%;
             text-align: center;
+            color: white;
         }
 
         .minimized-chats-flyout {
-            height: auto;
-            bottom: $bottom-gutter-height;
+            width: 100%;
+
             .chat-head {
                 padding: 0.3em;
                 border-radius: $chatbox-border-radius;
-                width: $minimized-chats-width;
                 height: 35px;
                 margin-bottom: 0.2em;
                 box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);

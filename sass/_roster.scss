@@ -5,7 +5,7 @@
     margin: 0;
     height: $roster-height;
     height: calc(~"100% - #{$controlbox-dropdown-height*2} - 20px");
-    padding: 0 0 2em 0;
+    padding: 0;
     overflow: hidden;
 
     &.no-contact-requests {

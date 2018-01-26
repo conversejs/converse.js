@@ -5,6 +5,17 @@ body {
   color: #ffffff;
   background-color: #211018;
 }
+
+body .brand-heading {
+    margin: auto;
+    font-size: 6em;
+    font-weight: bold;
+}
+
+body .brand-heading .icon-conversejs {
+    font-size: 0.88em;
+}
+
 html {
   width: 100%;
   height: 100%;
@@ -43,6 +54,14 @@ a:focus {
   text-decoration: none;
   color: #00aaff;
 }
+
+.converse-bg {
+  position: relative;
+  height: 100vh;
+  text-align: center;
+  color: #fff;
+}
+
 .light {
   font-weight: 400;
 }

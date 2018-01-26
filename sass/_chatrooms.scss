@@ -49,8 +49,7 @@
         }
 
         .box-flyout {
-            min-width: $chatroom-width;
-            width: $chatroom-width;
+            width: 100%;
             @media screen and (max-height: $mobile-landscape-height) {
                 height: $mobile-chat-height;
                 width: $mobile-chat-width;
@@ -69,6 +68,10 @@
                 border-top: 0;
                 width: 100%;
                 overflow: hidden;
+
+                .row {
+                    flex-direction: row;
+                }
 
                 .chat-info {
                     color: white;
@@ -99,8 +102,6 @@
                 }
                 .chat-area {
                     word-wrap: break-word; 
-                    width: 100%;
-                    float: left;
                     min-width: $chat-width;
                     height: calc(100% - 95px);
 
@@ -121,13 +122,10 @@
                 .occupants {
                     overflow-x: hidden;
                     overflow-y: hidden;
-                    float: right;
                     vertical-align: top;
                     background-color: white;
                     border-left: 1px solid $text-color;
                     border-bottom-right-radius: $chatbox-border-radius;
-                    width: 30%;
-                    height: 100%;
                     padding: 0.5em;
                     .occupants-heading {
                         padding: 0.3em 0;

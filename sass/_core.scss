@@ -6,59 +6,32 @@
     @include animation-timing-function(ease);
 }
 
-// FIXME: these need to go elsewhere, they're outside of #conversejs
-.converse-bg {
-  position: relative;
-  height: 100vh;
-  text-align: center;
-  color: #fff;
-}
-
-body {
-    .brand-heading {
-        margin: auto;
-        font-size: 6em;
-        font-weight: bold;
-        .icon-conversejs {
-            font-size: 0.88em;
-        }
-    }
-}
-
 #converse-embedded-chat,
 #conversejs {
+    height: 0;
+    width: 100vw;
     bottom: 0;
     color: $text-color;
     direction: ltr;
     display: block;
     font-family: "Helvetica", "Arial", sans-serif;
     font-size: $font-size;
-    height: $bottom-gutter-height;
     position: fixed;
     right: 0;
-    width: auto;
     z-index: 1031; // One more than bootstrap navbar
-    @media screen and (max-height: $mobile-landscape-height) {
-        width: 100%;
-        width: 100vw;
-    }
-    @media screen and (max-width: $mobile-portrait-length) {
-        width: 100%;
-        width: 100vw;
-    }
 
-     ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-        color: $subdued-color;
-     }
-     ::-moz-placeholder { /* Firefox 19+ */
-        color: $subdued-color;
-     }
-     :-ms-input-placeholder { /* IE 10+ */
-        color: $subdued-color;
-     }
-     :-moz-placeholder { /* Firefox 18- */
-        color: $subdued-color;
-     }
+    ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    color: $subdued-color;
+    }
+    ::-moz-placeholder { /* Firefox 19+ */
+    color: $subdued-color;
+    }
+    :-ms-input-placeholder { /* IE 10+ */
+    color: $subdued-color;
+    }
+    :-moz-placeholder { /* Firefox 18- */
+    color: $subdued-color;
+    }
     ::placeholder {
         color: $subdued-color;
     }
@@ -81,31 +54,33 @@ body {
     }
 
      .sidebar {
-          display: none;
+        display: none;
         position: absolute;
         width: 50px;
         height: 100vh;
         padding: 10px 0;
-          background-color: $controlbox-head-color;
+        background-color: $controlbox-head-color;
+        color: white;
         text-align: center;
 
-          .chatbox-btn {
-               float: none;
+        .chatbox-btn {
+            float: none;
             margin: 0;
             font-size: 1.35em;
-               &.fa-vcard {
+            &.fa-vcard {
                 margin-top: 1em;
             }
-          }
-          .bottom {
+        }
+        .bottom {
             position: absolute;
             bottom: 1em;
         }
-     }
-
-     .badge {
-        padding: 0.25em 0.4em;
+    }
+    .badge {
+        padding: 0.4em;
         line-height: 1;
+        font-weight: normal;
+        font-size: 90%;
     }
 
     .fa {
@@ -387,10 +362,6 @@ body {
         }
     }
     #conversejs {
-        margin: 0;
-        width: 100%;
-        height: 100%;
-
         .chatbox  {
             .chat-body {
                 border-radius: $chatbox-border-radius;

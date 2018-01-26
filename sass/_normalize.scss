@@ -1,9 +1,4 @@
 #conversejs {
-    @include box-sizing(border-box);
-    *, *:before, *:after {
-        @include box-sizing(border-box);
-    }
-
     @media screen and (max-width: $mobile-portrait-length) {
         margin: 0;
         right: 10px;

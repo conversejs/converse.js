@@ -85,3 +85,16 @@
         }
     }
 }
+
+@media screen and (max-width: 767px) {
+    #conversejs.fullscreen  {
+        > .chatbox {
+            width: calc(100% - 50px);
+        }
+        .chatbox {
+            .row {
+                width: calc(100% - 50px);
+            }
+        }
+    }
+}

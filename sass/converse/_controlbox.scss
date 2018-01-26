@@ -1,5 +1,7 @@
 #conversejs:not(.fullscreen) {
     #controlbox {
+        order: -1;
+
         #converse-register {
             .button-cancel {
                 font-size: 90%;

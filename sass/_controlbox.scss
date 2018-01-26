@@ -2,13 +2,6 @@
     #controlbox {
         margin-right: 2*$chat-gutter;
 
-        @media screen and (max-width: $mobile-portrait-length) {
-            margin: 0;
-        }
-        @media screen and (max-height: $mobile-landscape-height) {
-            margin: 0;
-        }
-
         .pure-form.converse-form {
             padding: 0;
         }
@@ -122,6 +115,8 @@
         }
 
 		#login-dialog {
+            flex-direction: column;
+
 			.brand-heading {
                 color: $global-background-color;
             }
@@ -409,7 +404,6 @@
         }
 
         .controlbox-panes {
-            height: 100%;
             overflow-y: scroll;
         }
 
@@ -420,9 +414,7 @@
             font-size: $font-size;
             left: 0;
             text-align: left;
-            width: 100%;
-            height: 100%;
-            overflow-y: hidden;
+            overflow-y: scroll;
             overflow-x: hidden;
             border-radius: $chatbox-border-radius;
 
@@ -532,6 +524,7 @@
                 top: 0;
                 left: 50px;
                 display: none;
+                width: calc(100% - 50px);
 
                 &.controlbox-pane {
                     height: 100vh;

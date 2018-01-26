@@ -3,84 +3,53 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Converse.js Mockups</title>
+    <title>Login Fullscreen</title>
     <link type="text/css" rel="stylesheet" media="screen" href="../../node_modules/bootstrap/dist/css/bootstrap.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="../../node_modules/font-awesome/css/font-awesome.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="../../css/inverse.css" />
 </head>
 
 <body>
-     <div class="container converse-bg">
-          <h1 class="brand-heading"><i class="icon-conversejs"></i>&nbsp;inVerse</h1>
-     </div>
+    <div class="container converse-bg">
+        <h1 class="brand-heading"><i class="icon-conversejs"></i>&nbsp;inVerse</h1>
+    </div>
 
-     <div class="container-fluid">
-          <div id="conversejs" class="fullscreen">
-               <div id="controlbox" class="chatbox">
-                    <div class="flyout box-flyout">
-                         <div class="controlbox-panes">
-                              <div id="login-dialog" class="controlbox-pane">
-                                   <div class="row">
-                                        <div class="brand-heading-container col-12">
-                                             <h1 class="brand-heading">
-                                                  <i class="icon-conversejs"></i> inVerse</h1>
-                                             <p>
-                                                  <a href="https://conversejs.org">Open Source</a> XMPP chat client</p>
+    <div id="conversejs" class="fullscreen">
+        <div class="row no-gutters">
+            <div id="controlbox" class="chatbox">
+                <div class="flyout box-flyout">
+                    <div class="controlbox-panes">
+                        <div id="login-dialog" class="controlbox-pane">
+                            <div class="row">
+                                <div class="brand-heading-container col-12">
+                                    <h1 class="brand-heading"><i class="icon-conversejs"></i> inVerse</h1>
+                                    <p><a href="https://conversejs.org">Open Source</a> XMPP chat client</p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-8 offset-sm-2 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+                                    <form id="converse-login" class="pure-form converse-form">
+                                        <div class="form-group">
+                                            <label for="jid">XMPP Username:</label>
+                                            <input type="text" name="jid" class="form-control" placeholder="user@server" autocomplete="off">
                                         </div>
-                                   </div>
-
-                                   <div class="row">
-                                        <div class="col-sm-8 offset-sm-2 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
-                                             <form id="converse-login" class="pure-form converse-form">
-                                                  <div class="form-group">
-                                                       <label for="jid">XMPP Username:</label>
-                                                       <input type="text" name="jid" class="form-control" placeholder="user@server" autocomplete="off">
-                                                  </div>
-                                                  <div class="form-group">
-                                                       <label for="password">Password:</label>
-                                                       <input type="password" name="password" class="form-control" placeholder="password" autocomplete="off">
-                                                  </div>
+                                        <div class="form-group">
+                                            <label for="password">Password:</label>
+                                            <input type="password" name="password" class="form-control" placeholder="password" autocomplete="off">
+                                        </div>
                                         <fieldset class="buttons">
                                             <p><input class="btn btn-primary" type="submit" value="Log In"></p>
                                             <p>Click <a href="#" data-toggle="modal" data-target="#registerModal">here</a> to register.</p>
                                         </fieldset>
-                                             </form>
-                                        </div>
-                                   </div>
-                              </div>
-                         </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-               </div>
-          </div>
-
-          <!-- Register Modal -->
-          <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
-               <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                         <div class="modal-header">
-                              <h5 class="modal-title" id="registerModalLabel">Register</h5>
-                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                   <span aria-hidden="true">&times;</span>
-                              </button>
-                         </div>
-                         <div class="modal-body">
-                              <form id="converse-register">
-                                   <div class="form-group">
-                                        <label for="domain">Your XMPP provider's domain name:</label>
-                                        <input type="text" name="domain" class="form-control" placeholder=" e.g. conversejs.org">
-                                   </div>
-                                   <p>Tip: A list of public XMPP providers is available
-                                        <a href="https://xmpp.net/directory.php" class="url" target="_blank" rel="noopener">here</a>.</p>
-                                   <input class="btn btn-primary" type="submit" value="Fetch registration form">
-                              </form>
-                         </div>
-                         <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                         </div>
-                    </div>
-               </div>
-          </div>
-     </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
-
 </html>

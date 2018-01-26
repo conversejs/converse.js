@@ -4757,6 +4757,7 @@
 
 #converse-embedded-chat,
 #conversejs {
+  margin-left: -0.5em;
   bottom: 0;
   height: auto;
   width: 100vw;
@@ -6264,7 +6265,8 @@ body {
       #conversejs #converse-roster .roster-contacts .roster-group .group-toggle {
         color: #777;
         display: block;
-        width: 100%; }
+        width: 100%;
+        line-height: 22px; }
         #conversejs #converse-roster .roster-contacts .roster-group .group-toggle:hover {
           color: #585B51; }
       #conversejs #converse-roster .roster-contacts .roster-group li {

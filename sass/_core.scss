@@ -8,6 +8,7 @@
 
 #converse-embedded-chat,
 #conversejs {
+    margin-left: -$chat-gutter; // It's a mystery why this is necessary
     bottom: 0;
     height: auto;
     width: 100vw;

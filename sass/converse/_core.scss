@@ -1,6 +1,5 @@
 #conversejs {
-    .row {
+    > .row {
         flex-direction: row-reverse;
-        flex-wrap: nowrap;
     }
 }

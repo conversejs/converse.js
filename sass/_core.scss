@@ -8,16 +8,15 @@
 
 #converse-embedded-chat,
 #conversejs {
-    height: 0;
-    width: 100vw;
     bottom: 0;
+    height: auto;
+    width: 100vw;
     color: $text-color;
     direction: ltr;
     display: block;
     font-family: "Helvetica", "Arial", sans-serif;
     font-size: $font-size;
     position: fixed;
-    right: 0;
     z-index: 1031; // One more than bootstrap navbar
 
     ::-webkit-input-placeholder { /* Chrome/Opera/Safari */

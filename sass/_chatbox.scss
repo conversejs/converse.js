@@ -19,6 +19,7 @@
         }
     }
     .chat-head {
+        flex-wrap: nowrap;
         color: #ffffff;
         font-size: 100%;
         height: $chat-head-height;
@@ -66,7 +67,6 @@
     }
     .chatbox {
         text-align: left;
-        height: $bottom-gutter-height;
         margin: 0 $chat-gutter;
 
         @media screen and (max-height: $mobile-landscape-height) {

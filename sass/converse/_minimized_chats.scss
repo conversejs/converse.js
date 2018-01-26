@@ -1,11 +1,10 @@
 #conversejs:not(.fullscreen) {
     #minimized-chats {
+        margin-bottom: -2*$chat-gutter;
         border-top-left-radius: $chatbox-border-radius;
         border-top-right-radius: $chatbox-border-radius;
         color: $inverse-link-color;
-        height: 100%;
         margin-right: $chat-gutter;
-        bottom: 3*$chat-gutter;
         padding: 0;
 
         .badge {
@@ -24,6 +23,7 @@
         }
 
         .minimized-chats-flyout {
+            flex-direction: column-reverse;
             width: 100%;
 
             .chat-head {

@@ -4757,16 +4757,15 @@
 
 #converse-embedded-chat,
 #conversejs {
-  height: 0;
-  width: 100vw;
   bottom: 0;
+  height: auto;
+  width: 100vw;
   color: #777;
   direction: ltr;
   display: block;
   font-family: "Helvetica", "Arial", sans-serif;
   font-size: 16px;
   position: fixed;
-  right: 0;
   z-index: 1031; }
   #converse-embedded-chat ::-webkit-input-placeholder,
   #conversejs ::-webkit-input-placeholder {
@@ -5219,28 +5218,23 @@ body {
         padding-right: 10%;
         font-size: 120%; }
 
-#conversejs.fullscreen {
-  height: auto;
-  bottom: 0;
-  left: 0;
-  right: 0; }
-  #conversejs.fullscreen form.pure-form.converse-form {
-    margin: 1em; }
-    #conversejs.fullscreen form.pure-form.converse-form input[type=checkbox] {
-      margin-left: 1em;
-      display: inline;
-      margin-bottom: 2em; }
-    #conversejs.fullscreen form.pure-form.converse-form input[type=text],
-    #conversejs.fullscreen form.pure-form.converse-form input[type=password],
-    #conversejs.fullscreen form.pure-form.converse-form input[type=number],
-    #conversejs.fullscreen form.pure-form.converse-form input[type=button],
-    #conversejs.fullscreen form.pure-form.converse-form input[type=submit] {
-      height: 2.2em; }
-    #conversejs.fullscreen form.pure-form.converse-form input[type=button],
-    #conversejs.fullscreen form.pure-form.converse-form input[type=submit] {
-      padding-left: 1em;
-      padding-right: 1em;
-      margin-right: 1em; }
+#conversejs.fullscreen form.pure-form.converse-form {
+  margin: 1em; }
+  #conversejs.fullscreen form.pure-form.converse-form input[type=checkbox] {
+    margin-left: 1em;
+    display: inline;
+    margin-bottom: 2em; }
+  #conversejs.fullscreen form.pure-form.converse-form input[type=text],
+  #conversejs.fullscreen form.pure-form.converse-form input[type=password],
+  #conversejs.fullscreen form.pure-form.converse-form input[type=number],
+  #conversejs.fullscreen form.pure-form.converse-form input[type=button],
+  #conversejs.fullscreen form.pure-form.converse-form input[type=submit] {
+    height: 2.2em; }
+  #conversejs.fullscreen form.pure-form.converse-form input[type=button],
+  #conversejs.fullscreen form.pure-form.converse-form input[type=submit] {
+    padding-left: 1em;
+    padding-right: 1em;
+    margin-right: 1em; }
 
 #converse-embedded-chat .flyout,
 #conversejs .flyout {
@@ -5265,6 +5259,7 @@ body {
       bottom: 0; } }
 #converse-embedded-chat .chat-head,
 #conversejs .chat-head {
+  flex-wrap: nowrap;
   color: #ffffff;
   font-size: 100%;
   height: 62px;
@@ -5312,7 +5307,6 @@ body {
 #converse-embedded-chat .chatbox,
 #conversejs .chatbox {
   text-align: left;
-  height: 35px;
   margin: 0 0.5em; }
   @media screen and (max-height: 450px) {
     #converse-embedded-chat .chatbox,
@@ -5755,7 +5749,7 @@ body {
   #conversejs.fullscreen .chatbox .row {
     width: calc(100% - 50px); } }
 #conversejs #controlbox {
-  margin-right: 1em; }
+  margin-right: 1.5em; }
   #conversejs #controlbox .pure-form.converse-form {
     padding: 0; }
   #conversejs #controlbox.logged-out .box-flyout .controlbox-pane {

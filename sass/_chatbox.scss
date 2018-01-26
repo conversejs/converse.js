@@ -438,12 +438,23 @@
 
 @media screen and (max-width: 767px) {
     #conversejs  {
+        > .row {
+            flex-direction: row-reverse;
+        }
+
         #login-dialog {
             .pure-form.converse-form {
                 padding: 3em 2em 3em;
             }
         }
+
+        .sidebar {
+            display: block;
+        }
+
         .chatbox {
+            width: calc(100% - 50px);
+
             .chat-body {
                 .chat-message {
                     .chat-msg-author {

@@ -54,10 +54,9 @@
 
      .sidebar {
         display: none;
-        position: absolute;
         width: 50px;
         height: 100vh;
-        padding: 10px 0;
+        padding: 1rem 0;
         background-color: $controlbox-head-color;
         color: white;
         text-align: center;

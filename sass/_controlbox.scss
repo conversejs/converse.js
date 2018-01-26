@@ -522,19 +522,17 @@
             #users {
                 position: absolute;
                 top: 0;
-                left: 50px;
                 display: none;
-                width: calc(100% - 50px);
-
                 &.controlbox-pane {
                     height: 100vh;
+                    width: 100%;
                 }
             }
 
         }
 
         &.sidebar-open {
-            > .chatbox:not(#controlbox) {
+            .chatbox:not(#controlbox) {
                 display: none;
             }
             #controlbox {

@@ -88,10 +88,8 @@
 
 @media screen and (max-width: 767px) {
     #conversejs.fullscreen  {
-        > .chatbox {
-            width: calc(100% - 50px);
-        }
         .chatbox {
+            width: calc(100% - 50px);
             .row {
                 width: calc(100% - 50px);
             }

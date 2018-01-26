@@ -171,9 +171,6 @@
 
                 .chat-msg-author {
                     font-weight: bold;
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
-                    overflow: hidden;
                 }
                 .chat-msg-them {
                     color: $message-them-color;

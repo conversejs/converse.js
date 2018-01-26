@@ -5403,10 +5403,7 @@ body {
         background: #818479; }
       #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-author,
       #conversejs .chatbox .chat-body .chat-message .chat-msg-author {
-        font-weight: bold;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden; }
+        font-weight: bold; }
       #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-them,
       #conversejs .chatbox .chat-body .chat-message .chat-msg-them {
         color: #3AA569; }
@@ -6422,11 +6419,8 @@ body {
         height: 100vh; } }
     #converse-embedded-chat .chatroom .box-flyout .chatroom-body,
     #conversejs .chatroom .box-flyout .chatroom-body {
-      height: 289px;
       border-bottom-right-radius: 0;
       border-bottom-left-radius: 0;
-      height: -webkit-calc(100% - 62px);
-      height: calc(100% - 62px);
       background-color: white;
       border-top: 0;
       width: 100%;
@@ -6460,8 +6454,7 @@ body {
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chat-area,
       #conversejs .chatroom .box-flyout .chatroom-body .chat-area {
         word-wrap: break-word;
-        min-width: 100%;
-        height: calc(100% - 95px); }
+        min-width: 100%; }
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chat-area .new-msgs-indicator,
         #conversejs .chatroom .box-flyout .chatroom-body .chat-area .new-msgs-indicator {
           background-color: #E77051;
@@ -6610,9 +6603,6 @@ body {
     width: 100%;
     border: 1px solid #999; }
 
-@media screen and (max-width: 767px) {
-  #conversejs .chatbox .box-flyout .chatroom-body .chat-area {
-    height: calc(100vh - 55px); } }
 #conversejs.fullscreen .chat-head-chatroom {
   height: 62px;
   font-size: 20px; }

@@ -61,9 +61,7 @@
                 height: 100vh;
             }
             .chatroom-body {
-                height: 289px;
                 @include border-bottom-radius($chatbox-border-radius);
-                @include calc(height, '100% - #{$chat-head-height}');
                 background-color: white;
                 border-top: 0;
                 width: 100%;
@@ -103,8 +101,6 @@
                 .chat-area {
                     word-wrap: break-word; 
                     min-width: $chat-width;
-                    height: calc(100% - 95px);
-
                     .new-msgs-indicator {
                         background-color: $chatroom-head-color;
                         max-width: 70%;
@@ -272,7 +268,6 @@
             .box-flyout {
                 .chatroom-body {
                     .chat-area {
-                        height: calc(100vh - 55px);
                     }
                 }
             }

@@ -5035,18 +5035,6 @@
     display: block;
     text-align: center;
     width: 100%; }
-  #converse-embedded-chat a.restore-chat,
-  #conversejs a.restore-chat {
-    padding: 1px 0 1px 5px;
-    color: white;
-    line-height: 15px;
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap; }
-  #converse-embedded-chat a.restore-chat:visited,
-  #conversejs a.restore-chat:visited {
-    color: white; }
   #converse-embedded-chat .activated,
   #conversejs .activated {
     display: block !important; }

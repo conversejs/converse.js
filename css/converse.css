@@ -5035,18 +5035,6 @@
     display: block;
     text-align: center;
     width: 100%; }
-  #converse-embedded-chat a.restore-chat,
-  #conversejs a.restore-chat {
-    padding: 1px 0 1px 5px;
-    color: white;
-    line-height: 15px;
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap; }
-  #converse-embedded-chat a.restore-chat:visited,
-  #conversejs a.restore-chat:visited {
-    color: white; }
   #converse-embedded-chat .activated,
   #conversejs .activated {
     display: block !important; }
@@ -6522,8 +6510,24 @@
     border-top-right-radius: 4px;
     background-color: #578EA9;
     border: 1px solid white;
-    padding: 10px 0 0 0;
+    padding: 0.5em 0;
     text-align: center;
+    color: white;
+    white-space: nowrap;
+    overflow-y: hidden;
+    text-overflow: ellipsis;
+    display: block; }
+  #conversejs:not(.fullscreen) #minimized-chats a.restore-chat {
+    padding: 1px 0 1px 5px;
+    color: white;
+    line-height: 15px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; }
+    #conversejs:not(.fullscreen) #minimized-chats a.restore-chat:hover {
+      text-decoration: none; }
+  #conversejs:not(.fullscreen) #minimized-chats a.restore-chat:visited {
     color: white; }
   #conversejs:not(.fullscreen) #minimized-chats .minimized-chats-flyout {
     flex-direction: column-reverse;

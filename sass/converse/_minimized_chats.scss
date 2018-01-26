@@ -17,9 +17,30 @@
             border-top-right-radius: $chatbox-border-radius;
             background-color: $link-color;
             border: 1px solid white;
-            padding: 10px 0 0 0;
+            padding: 0.5em 0;
             text-align: center;
             color: white;
+            white-space: nowrap;
+            overflow-y: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
+        a.restore-chat {
+            padding: 1px 0 1px 5px;
+            color: $chat-head-text-color;
+            line-height: 15px;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            &:hover {
+                text-decoration: none;
+            }
+        }
+
+        a.restore-chat:visited {
+            color: $chat-head-text-color;
         }
 
         .minimized-chats-flyout {

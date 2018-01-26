@@ -3,16 +3,16 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-18 14:45+0100\n"
-"PO-Revision-Date: 2017-11-23 12:27+0100\n"
+"PO-Revision-Date: 2018-01-27 14:38+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
-"Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
-"conversejs/translations/nb/>\n"
+"Language-Team: Norwegian Bokmål "
+"<https://hosted.weblate.org/projects/conversejs/translations/nb/>\n"
 "Language: nb\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.18-dev\n"
+"X-Generator: Weblate 2.19-dev\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -34,7 +34,7 @@ msgstr "Din Jabber-ID og/eller passord er feilaktig. Prøv igjen."
 #: dist/converse-no-dependencies.js:7420
 #, fuzzy, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr "Kunne ikke koble til XMPP-verten med domenet: "
+msgstr "Kunne ikke koble til XMPP-verten med domenet: %1$s"
 
 #: dist/converse-no-dependencies.js:7422
 msgid "The XMPP server did not offer a supported authentication mechanism"
@@ -504,36 +504,36 @@ msgstr "%1$s har blitt fjernet på grunn av at vedkommende ikke er medlem"
 #: dist/converse-no-dependencies.js:18132
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr "Ditt kallenavn har blitt automatisk endret til %1$s "
+msgstr "Ditt kallenavn har blitt automatisk endret til %1$s"
 
 #: dist/converse-no-dependencies.js:18133
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
-msgstr "Ditt kallenavn har blitt endret til %1$s "
+msgstr "Ditt kallenavn har blitt endret til %1$s"
 
 #: dist/converse-no-dependencies.js:18335
 msgid "Message"
 msgstr "Melding"
 
 #: dist/converse-no-dependencies.js:18364
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a moderator."
-msgstr "Denne brukeren er moderator."
+msgstr "%1$s er ikke lenger moderator."
 
 #: dist/converse-no-dependencies.js:18368
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been given a voice again."
-msgstr "%1$s  ble kastet ut"
+msgstr "%1$s har blitt gitt stemme igjen."
 
 #: dist/converse-no-dependencies.js:18372
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been muted."
-msgstr "%1$s  har blitt utestengt"
+msgstr "%1$s  har blitt forstummet."
 
 #: dist/converse-no-dependencies.js:18376
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a moderator."
-msgstr "Denne brukeren er moderator."
+msgstr "%1$s er nå moderator."
 
 #: dist/converse-no-dependencies.js:18384
 msgid "Close and leave this room"
@@ -662,44 +662,44 @@ msgstr "Denne handlingen har blitt utført av %1$s."
 
 #: dist/converse-no-dependencies.js:19759
 #: dist/converse-no-dependencies.js:19775
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The reason given is: \"%1$s\"."
 msgstr "Oppgitt årsak er: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:19791
 #, fuzzy, javascript-format
 msgid "%1$s has left and re-entered the room."
-msgstr " har forlatt rommet"
+msgstr "%1$s har forlatt og tatt del i rommet igjen."
 
 #: dist/converse-no-dependencies.js:19797
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered the room. \"%2$s\""
-msgstr " har tatt del i rommet."
+msgstr "%1$s har tatt del i rommet \"%2$s\""
 
 #: dist/converse-no-dependencies.js:19799
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered the room."
-msgstr " har tatt del i rommet."
+msgstr "%1$s har tatt del i rommet."
 
 #: dist/converse-no-dependencies.js:19828
 #, fuzzy, javascript-format
 msgid "%1$s has entered and left the room. \"%2$s\""
-msgstr " har forlatt rommet"
+msgstr "%1$s har tatt del i og forlatt rommet: \"%2$s\""
 
 #: dist/converse-no-dependencies.js:19830
 #, fuzzy, javascript-format
 msgid "%1$s has entered and left the room."
-msgstr " har forlatt rommet"
+msgstr "%1$s har tatt del i og forlatt rommet."
 
 #: dist/converse-no-dependencies.js:19842
 #, fuzzy, javascript-format
 msgid "%1$s has left the room. \"%2$s\""
-msgstr " har forlatt rommet"
+msgstr "%1$s har forlatt rommet: \"%2$s\""
 
 #: dist/converse-no-dependencies.js:19844
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left the room."
-msgstr " har forlatt rommet"
+msgstr "%1$s har forlatt rommet."
 
 #: dist/converse-no-dependencies.js:19913
 msgid "You are not on the member list of this room."
@@ -790,7 +790,7 @@ msgstr "Ikke-Anonym"
 #: dist/converse-no-dependencies.js:20272
 #, fuzzy
 msgid "Open"
-msgstr "Åpne"
+msgstr "Åpen"
 
 #: dist/converse-no-dependencies.js:20273
 msgid "Password protected"
@@ -820,9 +820,8 @@ msgid "Unmoderated"
 msgstr "Umoderert"
 
 #: dist/converse-no-dependencies.js:20279
-#, fuzzy
 msgid "No password"
-msgstr "passord"
+msgstr "Inget passord"
 
 #: dist/converse-no-dependencies.js:20280
 msgid "This room is not publicly searchable"
@@ -877,12 +876,13 @@ msgid "This room does not require a password upon entry"
 msgstr "Dette rommet krever ikke et passord ved innlogging"
 
 #: dist/converse-no-dependencies.js:20428
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "You are about to invite %1$s to the chat room \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
 msgstr ""
-"Du kan eventuelt inkludere en melding og forklare årsaken til invitasjonen."
+"Du er i ferd med å invitere %1$s til sludrerommet \"%2$s\". Du kan eventuelt "
+"inkludere en melding og forklare årsaken til invitasjonen."
 
 #: dist/converse-no-dependencies.js:20450
 msgid "Please enter a valid XMPP username"
@@ -909,14 +909,12 @@ msgid "Rooms"
 msgstr "Rom"
 
 #: dist/converse-no-dependencies.js:20597
-#, fuzzy
 msgid "No rooms found"
-msgstr "Ingen brukere funnet"
+msgstr "Fant ingen rom"
 
 #: dist/converse-no-dependencies.js:20614
-#, fuzzy
 msgid "Rooms found"
-msgstr "Rom på %1$s"
+msgstr "Rom funnet"
 
 #: dist/converse-no-dependencies.js:20624
 #: dist/converse-no-dependencies.js:21567
@@ -1304,8 +1302,8 @@ msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
 msgstr ""
-"Noe gikk galt under etablering av forbindelse med \"%1$s\". Er du sikker på "
-"at denne eksisterer?"
+"Noe gikk galt under etablering av forbindelse til\"%1$s\". Er du sikker på "
+"at det eksisterer?"
 
 #: dist/converse-no-dependencies.js:23636
 msgid "Now logging you in"
@@ -1325,9 +1323,9 @@ msgstr ""
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:24194
 #: dist/converse-no-dependencies.js:24200
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Notification from %1$s"
-msgstr "XXX: Hack for Prosody som ikke gir typen \"overskrift\""
+msgstr "Merknad fra %1$s"
 
 #: dist/converse-no-dependencies.js:24202
 #: dist/converse-no-dependencies.js:24213

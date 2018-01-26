@@ -5418,8 +5418,7 @@
     margin: 0;
     padding: 0;
     position: relative;
-    height: 95px;
-    min-width: 200px; }
+    height: 95px; }
     @media screen and (max-height: 450px) {
       #converse-embedded-chat .chatbox .sendXMPPMessage,
       #conversejs .chatbox .sendXMPPMessage {

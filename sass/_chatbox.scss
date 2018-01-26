@@ -245,7 +245,6 @@
             padding: 0;
             position: relative;
             height: #{$chat-textarea-height + $toolbar-height};
-            min-width: $chat-width;
             @media screen and (max-height: $mobile-landscape-height) {
                 width: 100%;
             }

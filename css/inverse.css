@@ -5474,8 +5474,7 @@ body {
     margin: 0;
     padding: 0;
     position: relative;
-    height: 99px;
-    min-width: 100%; }
+    height: 99px; }
     @media screen and (max-height: 450px) {
       #converse-embedded-chat .chatbox .sendXMPPMessage,
       #conversejs .chatbox .sendXMPPMessage {

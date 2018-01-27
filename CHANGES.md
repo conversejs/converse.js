@@ -10,7 +10,7 @@
 - #995 `ChildNode.replaceWith` is not available in Internet Explorer or Safari. Use `Node.replaceChild` instead.
 
 ### LibreJS
-- LibreJS support added for converse and prepared for inverse.
+- Add LibreJS support
 
 ## 3.3.1 (2018-01-18)
 

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-18 14:45+0100\n"
-"PO-Revision-Date: 2018-01-25 18:02+0000\n"
+"PO-Revision-Date: 2018-01-28 10:37+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/conversejs/translations/fr/>\n"
@@ -969,7 +969,7 @@ msgstr "Nécessite une invitation"
 
 #: dist/converse-no-dependencies.js:20706
 msgid "Open room"
-msgstr "Ouvrir un salon"
+msgstr "Salon ouvert"
 
 #: dist/converse-no-dependencies.js:20707
 msgid "Permanent room"
@@ -1260,7 +1260,7 @@ msgstr "Créer votre compte"
 
 #: dist/converse-no-dependencies.js:23144
 msgid "Please enter the XMPP provider to register with:"
-msgstr "Veuillez saisir le fournisseur XMPP auprès duquel s’enregistrer :"
+msgstr "Veuillez saisir le fournisseur XMPP auprès duquel s’inscrire :"
 
 #: dist/converse-no-dependencies.js:23166
 msgid "Already have a chat account?"
@@ -1276,7 +1276,7 @@ msgstr "Création de compte :"
 
 #: dist/converse-no-dependencies.js:23186
 msgid "Register"
-msgstr "S’enregistrer"
+msgstr "S’inscrire"
 
 #: dist/converse-no-dependencies.js:23190
 msgid "Choose a different provider"
@@ -1288,7 +1288,7 @@ msgstr "Ne bougez pas, on va chercher le formulaire d’inscription…"
 
 #: dist/converse-no-dependencies.js:23337
 msgid " e.g. conversejs.org"
-msgstr " e.g. conversejs.org"
+msgstr " par exemple conversejs.org"
 
 #: dist/converse-no-dependencies.js:23383
 msgid "Fetch registration form"
@@ -1335,7 +1335,9 @@ msgstr "Enregistré avec succès"
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
-msgstr "Le fournisseur a rejeté votre demande d’enregistrement."
+msgstr ""
+"Le fournisseur a rejeté votre demande d’inscription. Merci de vérifier que "
+"les données que vous avez fournies sont correctes."
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:24194

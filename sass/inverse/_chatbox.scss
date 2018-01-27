@@ -61,7 +61,7 @@
         }
         .chat-title {
             font-size: $font-size-huge;
-            line-height: $font-size-huge;
+            line-height: $line-height-huge;
         }
 
         .sendXMPPMessage {
@@ -90,9 +90,6 @@
     #conversejs.fullscreen  {
         .chatbox {
             width: calc(100% - 50px);
-            .row {
-                width: calc(100% - 50px);
-            }
         }
     }
 }

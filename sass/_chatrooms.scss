@@ -13,6 +13,13 @@
 
     .chat-head-chatroom {
         background-color: $chatroom-head-color;
+
+        .chatroom-topic {
+            white-space: nowrap;
+            overflow-y: hidden;
+            text-overflow: ellipsis;
+        }
+
         .chatbox-btn {
             &.button-on {
                 background-color: $chat-head-text-color;

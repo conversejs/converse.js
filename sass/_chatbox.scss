@@ -26,14 +26,22 @@
         margin: 0;
         padding: 0.5em;
         position: relative;
+
+        &.chat-head-chatbox {
+            background-color: $chat-head-color;
+        }
+
         .avatar {
             margin-right: 0.5em;
             border-radius: 25%;
             float: left;
         }
-        &.chat-head-chatbox {
-            background-color: $chat-head-color;
+
+        .chatbox-buttons {
+            flex-direction: row-reverse;
+            float: right;
         }
+
         .user-custom-message {
             color: white;
             font-size: 75%;
@@ -100,7 +108,7 @@
         .chat-title {
             color: $chat-head-text-color;
             display: block;
-            line-height: 15px;
+            line-height: $line-height-large;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;

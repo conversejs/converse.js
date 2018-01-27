@@ -8,7 +8,7 @@
 
 #converse-embedded-chat,
 #conversejs {
-    margin-left: -$chat-gutter; // It's a mystery why this is necessary
+    margin-left: -$chat-gutter; // Mystery why this is necessary
     bottom: 0;
     height: auto;
     width: 100vw;
@@ -44,9 +44,8 @@
     }
 
      canvas {
-        background:#000;
-        border-radius:4px;
-        margin: 2px 0;
+        background: $text-color;
+        border-radius: $chatbox-border-radius;
     }
 
     .circle {
@@ -388,10 +387,5 @@
 @media screen and (max-height: 450px) {
   #conversejs {
     left: 0;
-  }
-}
-@media screen and (max-width: 480px) {
-  #conversejs {
-    width: auto;
   }
 }

@@ -2,6 +2,10 @@
     #controlbox {
         margin: 0;
 
+        .controlbox-pane {
+            border-radius: 0;
+        }
+
         #login-dialog {
             border-radius: $chatbox-border-radius;
             .converse-form {

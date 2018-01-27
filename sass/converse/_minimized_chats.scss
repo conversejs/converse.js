@@ -17,6 +17,7 @@
             border-top-right-radius: $chatbox-border-radius;
             background-color: $link-color;
             border: 1px solid white;
+            border-bottom: none;
             padding: 0.5em 0;
             text-align: center;
             color: white;
@@ -53,6 +54,7 @@
                 height: 35px;
                 margin-bottom: 0.2em;
                 box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
+                width: 100%;
             }
             &.minimized {
                 height: auto;

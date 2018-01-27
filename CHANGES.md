@@ -8,6 +8,8 @@
 - #993 `moment.format` is not a function error when sending a message.
 - #994 TypeError when using the `user.login` API.
 - #995 `ChildNode.replaceWith` is not available in Internet Explorer or Safari. Use `Node.replaceChild` instead.
+### LibreJS
+- Add LibreJS support
 
 ## 3.3.1 (2018-01-18)
 

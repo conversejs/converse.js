@@ -229,11 +229,14 @@
                         let content = document.createElement( "div" );
                         let hint = document.createElement("div");
                         let contentHidden = document.createElement("div");
+                        let messageContent = msg.querySelector(".chat-msg-content");
 
                         attrs.spoiler = attrs.spoiler == true ? _('Spoiler') : attrs.spoiler; //Check if attrs.spoiler can be true
                         hint.appendChild(document.createTextNode(attrs.spoiler));
 
-                        contentHidden.appendChild(document.createTextNode(msg.message));
+                        for (var i = 0; i < messageContent.childNodes.length; i++){
+                            contentHidden.append(messageContent.childNodes[i]);
+                        }
                         contentHidden.classList.add("hidden");
 //                         contentHidden.addHyperlinks();
 //                         contentHidden.addEmoticons(_converse.visible_toolbar_buttons.emoticons);
@@ -258,7 +261,10 @@
 
                         console.log('And this is the container:\n');
                         console.log(container);
-                        msg.append(container);
+                        
+                        messageContent.textContent = "";
+                        messageContent.append(document.createElement("br"));
+                        messageContent.append(container);
                     }
 
                     return msg;

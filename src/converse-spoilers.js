@@ -222,7 +222,8 @@
                     console.log(msg);
 
                     //Spoiler logic
-                    if ('spoiler' in attrs) {
+                    //The value of the "spoiler" attribute, corresponds to the spoiler's hint.
+                    if ("spoiler" in attrs) {
                         console.log('Spoiler in attrs \n');
                         let button = document.createElement("button");
                         let container = document.createElement("div"); 
@@ -231,7 +232,6 @@
                         let contentHidden = document.createElement("div");
                         let messageContent = msg.querySelector(".chat-msg-content");
 
-                        attrs.spoiler = attrs.spoiler == true ? _('Spoiler') : attrs.spoiler; //Check if attrs.spoiler can be true
                         hint.appendChild(document.createTextNode(attrs.spoiler));
 
                         for (var i = 0; i < messageContent.childNodes.length; i++){

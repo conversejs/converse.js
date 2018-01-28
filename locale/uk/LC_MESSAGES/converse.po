@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-18 14:45+0100\n"
-"PO-Revision-Date: 2018-01-24 12:34+0000\n"
+"PO-Revision-Date: 2018-01-29 10:18+0000\n"
 "Last-Translator: Марс Ямбар <mjambarmeta@gmail.com>\n"
 "Language-Team: Ukrainian "
 "<https://hosted.weblate.org/projects/conversejs/translations/uk/>\n"
@@ -1381,7 +1381,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:24592
 #: dist/converse-no-dependencies.js:24948
 msgid "Minimize this chat box"
-msgstr ""
+msgstr "Згорнути це вікно чату"
 
 #: dist/converse-no-dependencies.js:24738
 msgid "Click to restore this chat"

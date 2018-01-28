@@ -54,6 +54,39 @@
 
     }
 
+    function toggleDisplaySpoilerMessage(event) {
+        let button = event.target;
+        let isClosed = button.getAttribute("closed");
+        let content = button.nextElementSibling;
+        let hint = content.children[0];
+        let contentHidden = content.children[1];
+        let container = button.parentElement;
+
+        if(isClosed == "true"){//Show spoiler's content
+            button.classList.remove("icon-eye");
+            button.classList.add("toggle-spoiler-display");
+            button.classList.add("icon-eye-blocked");
+            button.setAttribute("closed", "false");
+            button.textContent = _('Hide ');
+            container.style.backgroundColor="#D5FFD2";
+
+            hint.classList.add("hidden");
+            contentHidden.classList.remove("hidden");
+
+
+        }else{//Hide spoiler's content
+            button.classList.remove("icon-eye-blocked");
+            button.classList.add("icon-eye");
+            button.setAttribute("closed", "true");
+            button.textContent = _('Show ');
+            container.style.backgroundColor="Lavender";
+
+            hint.classList.remove("hidden");
+            contentHidden.classList.add("hidden");
+        }
+
+    }
+
     const initSpoilers = function () {
         var spoiler_button = document.createElement('li');
         spoiler_button.classList.add("toggle-spoiler-edit");
@@ -158,7 +191,8 @@
         'overrides': {
             'ChatBoxView': {
                 'events': {
-                    'click .toggle-spoiler-edit': toggleEditSpoilerMessage
+                    'click .toggle-spoiler-edit': toggleEditSpoilerMessage,
+                    'click .toggle-spoiler-display': toggleDisplaySpoilerMessage
                 },
 
                 'createMessageStanza': function () {
@@ -212,7 +246,7 @@
                         content.appendChild(hint);
                         content.appendChild(contentHidden);
                         //Spoiler's button
-                        button.classList.add("spoiler-button");
+                        button.classList.add("toggle-spoiler-display");
                         button.classList.add("icon-eye");
                         button.setAttribute("type", "button");
                         button.appendChild(document.createTextNode(_('Show ')));

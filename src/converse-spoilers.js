@@ -182,48 +182,48 @@
                      *  Returns:
                      *      The DOM element representing the message.
                      */
+                    console.log('These are the attrs and the msg object\n');
                     console.log(attrs);
                     let msg = this.__super__.renderMessage.apply(this, arguments);
                     console.log(msg);
-//                     const msg_content = $msg[0].querySelector('.chat-msg-content');
 
                     //Spoiler logic
                     if ('spoiler' in attrs) {
-                        let button = document.createElement("<button>"),
-                            container = document.createElement("<div>"), 
-                            content = document.createElement( "<div>" ),
-                            hint = document.createElement("<div>"),
-                            contentHidden = document.createElement("<div>");
+                        console.log('Spoiler in attrs \n');
+                        let button = document.createElement("button");
+                        let container = document.createElement("div"); 
+                        let content = document.createElement( "div" );
+                        let hint = document.createElement("div");
+                        let contentHidden = document.createElement("div");
 
-                            attrs.spoiler = attrs.spoiler == true ? _('Spoiler') : attrs.spoiler;
-                            hint.text(attrs.spoiler);
+                        attrs.spoiler = attrs.spoiler == true ? _('Spoiler') : attrs.spoiler; //Check if attrs.spoiler can be true
+                        hint.appendChild(document.createTextNode(attrs.spoiler));
 
-                            contentHidden.text(text);
-                            contentHidden.addClass("hidden");
-                            contentHidden.addHyperlinks();
-                            contentHidden.addEmoticons(_converse.visible_toolbar_buttons.emoticons);
+                        contentHidden.appendChild(document.createTextNode(msg.message));
+                        contentHidden.classList.add("hidden");
+//                         contentHidden.addHyperlinks();
+//                         contentHidden.addEmoticons(_converse.visible_toolbar_buttons.emoticons);
 
-
-                        container.css("background-color", "Lavender");
-                        container.css("text-align", "center");
-
+                        container.style.backgroundColor = "Lavender";
+                        container.style.textAlign = "center";
 
                         //Spoiler's content
-                        content.addClass("spoiler-content");
-                        content.append(hint);
-                        content.append(contentHidden);
-
+                        content.classList.add("spoiler-content");
+                        content.appendChild(hint);
+                        content.appendChild(contentHidden);
                         //Spoiler's button
-                        button.addClass("spoiler-button icon-eye");
-                        button.attr("type", "button");
-                        button.text(_('Show '));
-                        button.css("width", "100%");
-                        button.attr("closed", "true");
+                        button.classList.add("spoiler-button");
+                        button.classList.add("icon-eye");
+                        button.setAttribute("type", "button");
+                        button.appendChild(document.createTextNode(_('Show ')));
+                        button.style.width = "100%";
+                        button.setAttribute("closed", "true");
 
-                        container.append(button);
-                        container.append(content);
+                        container.appendChild(button);
+                        container.appendChild(content);
 
-
+                        console.log('And this is the container:\n');
+                        console.log(container);
                         msg.append(container);
                     }
 
@@ -231,7 +231,7 @@
                 }
             },
             'ChatBox': {
-                'getMessageAttributes': function () {
+                'getMessageAttributes': function (message, delay, original_stanza) {
                     let messageAttributes = this.__super__.getMessageAttributes.apply(this, arguments);
                     console.log(arguments);
                     //Check if message is spoiler

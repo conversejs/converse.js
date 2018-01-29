@@ -4,6 +4,7 @@
 
 ### Bugfixes
 
+- Various fixes for IE11.
 - Could not register on Ejabberd 18. `"Missing attribute 'id' in tag qualified by namespace 'jabber:client'"`
 - #993 `moment.format` is not a function error when sending a message.
 - #994 TypeError when using the `user.login` API.

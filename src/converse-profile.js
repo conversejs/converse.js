@@ -52,7 +52,7 @@
 
                 render () {
                     // Replace the default dropdown with something nicer
-                    const select = this.el.querySelector('select#select-xmpp-status')
+                    const options = this.el.querySelectorAll('#select-xmpp-status option');
                     const chat_status = this.model.get('status') || 'offline';
                     this.el.innerHTML = tpl_choose_status();
 
@@ -67,15 +67,10 @@
 
                     // iterate through all the <option> elements and add option values
                     const options_list = _.map(
-                        select.querySelectorAll('option'),
-                        function (el) {
-                            return tpl_status_option({
-                                'value': el.value,
-                                'text': el.text
-                            });
-                        }
+                        options,
+                        (el) => tpl_status_option({'value': el.value, 'text': el.text })
                     );
-                    const options_target = this.el.querySelector("#target dd ul");
+                    const options_target = this.el.querySelector(".xmpp-status-menu");
                     options_target.classList.add('collapsed');
                     options_target.innerHTML = options_list.join('');
                     return this;

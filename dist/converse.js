@@ -2735,7 +2735,7 @@ if ( typeof define === "function" && define.amd ) {
  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
  * @license   Licensed under MIT license
  *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
- * @version   4.1.1
+ * @version   v4.2.2+97478eb6
  */
 
 (function (global, factory) {
@@ -2753,7 +2753,9 @@ function isFunction(x) {
   return typeof x === 'function';
 }
 
-var _isArray = undefined;
+
+
+var _isArray = void 0;
 if (Array.isArray) {
   _isArray = Array.isArray;
 } else {
@@ -2765,8 +2767,8 @@ if (Array.isArray) {
 var isArray = _isArray;
 
 var len = 0;
-var vertxNext = undefined;
-var customSchedulerFn = undefined;
+var vertxNext = void 0;
+var customSchedulerFn = void 0;
 
 var asap = function asap(callback, arg) {
   queue[len] = callback;
@@ -2795,7 +2797,7 @@ function setAsap(asapFn) {
 var browserWindow = typeof window !== 'undefined' ? window : undefined;
 var browserGlobal = browserWindow || {};
 var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-var isNode = typeof self === 'undefined' && typeof process !== 'undefined' && ({}).toString.call(process) === '[object process]';
+var isNode = typeof self === 'undefined' && typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
 
 // test for web worker but not in IE10
 var isWorker = typeof Uint8ClampedArray !== 'undefined' && typeof importScripts !== 'undefined' && typeof MessageChannel !== 'undefined';
@@ -2875,7 +2877,7 @@ function attemptVertx() {
   }
 }
 
-var scheduleFlush = undefined;
+var scheduleFlush = void 0;
 // Decide what async method to use to triggering processing of queued callbacks:
 if (isNode) {
   scheduleFlush = useNextTick();
@@ -2890,8 +2892,6 @@ if (isNode) {
 }
 
 function then(onFulfillment, onRejection) {
-  var _arguments = arguments;
-
   var parent = this;
 
   var child = new this.constructor(noop);
@@ -2902,13 +2902,12 @@ function then(onFulfillment, onRejection) {
 
   var _state = parent._state;
 
+
   if (_state) {
-    (function () {
-      var callback = _arguments[_state - 1];
-      asap(function () {
-        return invokeCallback(_state, child, callback, parent._result);
-      });
-    })();
+    var callback = arguments[_state - 1];
+    asap(function () {
+      return invokeCallback(_state, child, callback, parent._result);
+    });
   } else {
     subscribe(parent, child, onFulfillment, onRejection);
   }
@@ -3100,6 +3099,7 @@ function subscribe(parent, child, onFulfillment, onRejection) {
   var _subscribers = parent._subscribers;
   var length = _subscribers.length;
 
+
   parent._onerror = null;
 
   _subscribers[length] = child;
@@ -3119,8 +3119,8 @@ function publish(promise) {
     return;
   }
 
-  var child = undefined,
-      callback = undefined,
+  var child = void 0,
+      callback = void 0,
       detail = promise._result;
 
   for (var i = 0; i < subscribers.length; i += 3) {
@@ -3154,10 +3154,10 @@ function tryCatch(callback, detail) {
 
 function invokeCallback(settled, promise, callback, detail) {
   var hasCallback = isFunction(callback),
-      value = undefined,
-      error = undefined,
-      succeeded = undefined,
-      failed = undefined;
+      value = void 0,
+      error = void 0,
+      succeeded = void 0,
+      failed = void 0;
 
   if (hasCallback) {
     value = tryCatch(callback, detail);
@@ -3182,14 +3182,14 @@ function invokeCallback(settled, promise, callback, detail) {
   if (promise._state !== PENDING) {
     // noop
   } else if (hasCallback && succeeded) {
-      resolve(promise, value);
-    } else if (failed) {
-      reject(promise, error);
-    } else if (settled === FULFILLED) {
-      fulfill(promise, value);
-    } else if (settled === REJECTED) {
-      reject(promise, value);
-    }
+    resolve(promise, value);
+  } else if (failed) {
+    reject(promise, error);
+  } else if (settled === FULFILLED) {
+    fulfill(promise, value);
+  } else if (settled === REJECTED) {
+    reject(promise, value);
+  }
 }
 
 function initializePromise(promise, resolver) {
@@ -3216,97 +3216,107 @@ function makePromise(promise) {
   promise._subscribers = [];
 }
 
-function Enumerator$1(Constructor, input) {
-  this._instanceConstructor = Constructor;
-  this.promise = new Constructor(noop);
-
-  if (!this.promise[PROMISE_ID]) {
-    makePromise(this.promise);
-  }
-
-  if (isArray(input)) {
-    this.length = input.length;
-    this._remaining = input.length;
-
-    this._result = new Array(this.length);
-
-    if (this.length === 0) {
-      fulfill(this.promise, this._result);
-    } else {
-      this.length = this.length || 0;
-      this._enumerate(input);
-      if (this._remaining === 0) {
-        fulfill(this.promise, this._result);
-      }
-    }
-  } else {
-    reject(this.promise, validationError());
-  }
+function validationError() {
+  return new Error('Array Methods must be provided an Array');
 }
 
 function validationError() {
   return new Error('Array Methods must be provided an Array');
 }
 
-Enumerator$1.prototype._enumerate = function (input) {
-  for (var i = 0; this._state === PENDING && i < input.length; i++) {
-    this._eachEntry(input[i], i);
+var Enumerator = function () {
+  function Enumerator(Constructor, input) {
+    this._instanceConstructor = Constructor;
+    this.promise = new Constructor(noop);
+
+    if (!this.promise[PROMISE_ID]) {
+      makePromise(this.promise);
+    }
+
+    if (isArray(input)) {
+      this.length = input.length;
+      this._remaining = input.length;
+
+      this._result = new Array(this.length);
+
+      if (this.length === 0) {
+        fulfill(this.promise, this._result);
+      } else {
+        this.length = this.length || 0;
+        this._enumerate(input);
+        if (this._remaining === 0) {
+          fulfill(this.promise, this._result);
+        }
+      }
+    } else {
+      reject(this.promise, validationError());
+    }
   }
-};
 
-Enumerator$1.prototype._eachEntry = function (entry, i) {
-  var c = this._instanceConstructor;
-  var resolve$$1 = c.resolve;
+  Enumerator.prototype._enumerate = function _enumerate(input) {
+    for (var i = 0; this._state === PENDING && i < input.length; i++) {
+      this._eachEntry(input[i], i);
+    }
+  };
 
-  if (resolve$$1 === resolve$1) {
-    var _then = getThen(entry);
+  Enumerator.prototype._eachEntry = function _eachEntry(entry, i) {
+    var c = this._instanceConstructor;
+    var resolve$$1 = c.resolve;
 
-    if (_then === then && entry._state !== PENDING) {
-      this._settledAt(entry._state, i, entry._result);
-    } else if (typeof _then !== 'function') {
+
+    if (resolve$$1 === resolve$1) {
+      var _then = getThen(entry);
+
+      if (_then === then && entry._state !== PENDING) {
+        this._settledAt(entry._state, i, entry._result);
+      } else if (typeof _then !== 'function') {
+        this._remaining--;
+        this._result[i] = entry;
+      } else if (c === Promise$2) {
+        var promise = new c(noop);
+        handleMaybeThenable(promise, entry, _then);
+        this._willSettleAt(promise, i);
+      } else {
+        this._willSettleAt(new c(function (resolve$$1) {
+          return resolve$$1(entry);
+        }), i);
+      }
+    } else {
+      this._willSettleAt(resolve$$1(entry), i);
+    }
+  };
+
+  Enumerator.prototype._settledAt = function _settledAt(state, i, value) {
+    var promise = this.promise;
+
+
+    if (promise._state === PENDING) {
       this._remaining--;
-      this._result[i] = entry;
-    } else if (c === Promise$3) {
-      var promise = new c(noop);
-      handleMaybeThenable(promise, entry, _then);
-      this._willSettleAt(promise, i);
-    } else {
-      this._willSettleAt(new c(function (resolve$$1) {
-        return resolve$$1(entry);
-      }), i);
+
+      if (state === REJECTED) {
+        reject(promise, value);
+      } else {
+        this._result[i] = value;
+      }
     }
-  } else {
-    this._willSettleAt(resolve$$1(entry), i);
-  }
-};
 
-Enumerator$1.prototype._settledAt = function (state, i, value) {
-  var promise = this.promise;
-
-  if (promise._state === PENDING) {
-    this._remaining--;
-
-    if (state === REJECTED) {
-      reject(promise, value);
-    } else {
-      this._result[i] = value;
+    if (this._remaining === 0) {
+      fulfill(promise, this._result);
     }
-  }
+  };
 
-  if (this._remaining === 0) {
-    fulfill(promise, this._result);
-  }
-};
+  Enumerator.prototype._willSettleAt = function _willSettleAt(promise, i) {
+    var enumerator = this;
 
-Enumerator$1.prototype._willSettleAt = function (promise, i) {
-  var enumerator = this;
+    subscribe(promise, undefined, function (value) {
+      return enumerator._settledAt(FULFILLED, i, value);
+    }, function (reason) {
+      return enumerator._settledAt(REJECTED, i, reason);
+    });
+  };
 
-  subscribe(promise, undefined, function (value) {
-    return enumerator._settledAt(FULFILLED, i, value);
-  }, function (reason) {
-    return enumerator._settledAt(REJECTED, i, reason);
-  });
-};
+  return Enumerator;
+}();
 
 /**
   `Promise.all` accepts an array of promises, and returns a new promise which
@@ -3355,8 +3365,8 @@ Enumerator$1.prototype._willSettleAt = function (promise, i) {
   fulfilled, or rejected if any of them become rejected.
   @static
 */
-function all$1(entries) {
-  return new Enumerator$1(this, entries).promise;
+function all(entries) {
+  return new Enumerator(this, entries).promise;
 }
 
 /**
@@ -3424,7 +3434,7 @@ function all$1(entries) {
   @return {Promise} a promise which settles in the same way as the first passed
   promise to settle.
 */
-function race$1(entries) {
+function race(entries) {
   /*jshint validthis:true */
   var Constructor = this;
 
@@ -3591,262 +3601,283 @@ function needsNew() {
   ```
 
   @class Promise
-  @param {function} resolver
+  @param {Function} resolver
   Useful for tooling.
   @constructor
 */
-function Promise$3(resolver) {
-  this[PROMISE_ID] = nextId();
-  this._result = this._state = undefined;
-  this._subscribers = [];
 
-  if (noop !== resolver) {
-    typeof resolver !== 'function' && needsResolver();
-    this instanceof Promise$3 ? initializePromise(this, resolver) : needsNew();
+var Promise$2 = function () {
+  function Promise(resolver) {
+    this[PROMISE_ID] = nextId();
+    this._result = this._state = undefined;
+    this._subscribers = [];
+
+    if (noop !== resolver) {
+      typeof resolver !== 'function' && needsResolver();
+      this instanceof Promise ? initializePromise(this, resolver) : needsNew();
+    }
   }
-}
-
-Promise$3.all = all$1;
-Promise$3.race = race$1;
-Promise$3.resolve = resolve$1;
-Promise$3.reject = reject$1;
-Promise$3._setScheduler = setScheduler;
-Promise$3._setAsap = setAsap;
-Promise$3._asap = asap;
-
-Promise$3.prototype = {
-  constructor: Promise$3,
 
   /**
-    The primary way of interacting with a promise is through its `then` method,
-    which registers callbacks to receive either a promise's eventual value or the
-    reason why the promise cannot be fulfilled.
-  
-    ```js
-    findUser().then(function(user){
-      // user is available
-    }, function(reason){
-      // user is unavailable, and you are given the reason why
-    });
-    ```
-  
-    Chaining
-    --------
-  
-    The return value of `then` is itself a promise.  This second, 'downstream'
-    promise is resolved with the return value of the first promise's fulfillment
-    or rejection handler, or rejected if the handler throws an exception.
-  
-    ```js
-    findUser().then(function (user) {
-      return user.name;
-    }, function (reason) {
-      return 'default name';
-    }).then(function (userName) {
-      // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
-      // will be `'default name'`
-    });
-  
-    findUser().then(function (user) {
-      throw new Error('Found user, but still unhappy');
-    }, function (reason) {
-      throw new Error('`findUser` rejected and we're unhappy');
-    }).then(function (value) {
-      // never reached
-    }, function (reason) {
-      // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
-      // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
-    });
-    ```
-    If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
-  
-    ```js
-    findUser().then(function (user) {
-      throw new PedagogicalException('Upstream error');
-    }).then(function (value) {
-      // never reached
-    }).then(function (value) {
-      // never reached
-    }, function (reason) {
-      // The `PedgagocialException` is propagated all the way down to here
-    });
-    ```
-  
-    Assimilation
-    ------------
-  
-    Sometimes the value you want to propagate to a downstream promise can only be
-    retrieved asynchronously. This can be achieved by returning a promise in the
-    fulfillment or rejection handler. The downstream promise will then be pending
-    until the returned promise is settled. This is called *assimilation*.
-  
-    ```js
-    findUser().then(function (user) {
-      return findCommentsByAuthor(user);
-    }).then(function (comments) {
-      // The user's comments are now available
-    });
-    ```
-  
-    If the assimliated promise rejects, then the downstream promise will also reject.
-  
-    ```js
-    findUser().then(function (user) {
-      return findCommentsByAuthor(user);
-    }).then(function (comments) {
-      // If `findCommentsByAuthor` fulfills, we'll have the value here
-    }, function (reason) {
-      // If `findCommentsByAuthor` rejects, we'll have the reason here
-    });
-    ```
-  
-    Simple Example
-    --------------
-  
-    Synchronous Example
-  
-    ```javascript
-    let result;
-  
-    try {
-      result = findResult();
-      // success
-    } catch(reason) {
+  The primary way of interacting with a promise is through its `then` method,
+  which registers callbacks to receive either a promise's eventual value or the
+  reason why the promise cannot be fulfilled.
+   ```js
+  findUser().then(function(user){
+    // user is available
+  }, function(reason){
+    // user is unavailable, and you are given the reason why
+  });
+  ```
+   Chaining
+  --------
+   The return value of `then` is itself a promise.  This second, 'downstream'
+  promise is resolved with the return value of the first promise's fulfillment
+  or rejection handler, or rejected if the handler throws an exception.
+   ```js
+  findUser().then(function (user) {
+    return user.name;
+  }, function (reason) {
+    return 'default name';
+  }).then(function (userName) {
+    // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
+    // will be `'default name'`
+  });
+   findUser().then(function (user) {
+    throw new Error('Found user, but still unhappy');
+  }, function (reason) {
+    throw new Error('`findUser` rejected and we're unhappy');
+  }).then(function (value) {
+    // never reached
+  }, function (reason) {
+    // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
+    // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
+  });
+  ```
+  If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
+   ```js
+  findUser().then(function (user) {
+    throw new PedagogicalException('Upstream error');
+  }).then(function (value) {
+    // never reached
+  }).then(function (value) {
+    // never reached
+  }, function (reason) {
+    // The `PedgagocialException` is propagated all the way down to here
+  });
+  ```
+   Assimilation
+  ------------
+   Sometimes the value you want to propagate to a downstream promise can only be
+  retrieved asynchronously. This can be achieved by returning a promise in the
+  fulfillment or rejection handler. The downstream promise will then be pending
+  until the returned promise is settled. This is called *assimilation*.
+   ```js
+  findUser().then(function (user) {
+    return findCommentsByAuthor(user);
+  }).then(function (comments) {
+    // The user's comments are now available
+  });
+  ```
+   If the assimliated promise rejects, then the downstream promise will also reject.
+   ```js
+  findUser().then(function (user) {
+    return findCommentsByAuthor(user);
+  }).then(function (comments) {
+    // If `findCommentsByAuthor` fulfills, we'll have the value here
+  }, function (reason) {
+    // If `findCommentsByAuthor` rejects, we'll have the reason here
+  });
+  ```
+   Simple Example
+  --------------
+   Synchronous Example
+   ```javascript
+  let result;
+   try {
+    result = findResult();
+    // success
+  } catch(reason) {
+    // failure
+  }
+  ```
+   Errback Example
+   ```js
+  findResult(function(result, err){
+    if (err) {
       // failure
-    }
-    ```
-  
-    Errback Example
-  
-    ```js
-    findResult(function(result, err){
-      if (err) {
-        // failure
-      } else {
-        // success
-      }
-    });
-    ```
-  
-    Promise Example;
-  
-    ```javascript
-    findResult().then(function(result){
+    } else {
       // success
-    }, function(reason){
+    }
+  });
+  ```
+   Promise Example;
+   ```javascript
+  findResult().then(function(result){
+    // success
+  }, function(reason){
+    // failure
+  });
+  ```
+   Advanced Example
+  --------------
+   Synchronous Example
+   ```javascript
+  let author, books;
+   try {
+    author = findAuthor();
+    books  = findBooksByAuthor(author);
+    // success
+  } catch(reason) {
+    // failure
+  }
+  ```
+   Errback Example
+   ```js
+   function foundBooks(books) {
+   }
+   function failure(reason) {
+   }
+   findAuthor(function(author, err){
+    if (err) {
+      failure(err);
       // failure
-    });
-    ```
-  
-    Advanced Example
-    --------------
-  
-    Synchronous Example
-  
-    ```javascript
-    let author, books;
-  
-    try {
-      author = findAuthor();
-      books  = findBooksByAuthor(author);
-      // success
-    } catch(reason) {
-      // failure
-    }
-    ```
-  
-    Errback Example
-  
-    ```js
-  
-    function foundBooks(books) {
-  
-    }
-  
-    function failure(reason) {
-  
-    }
-  
-    findAuthor(function(author, err){
-      if (err) {
-        failure(err);
-        // failure
-      } else {
-        try {
-          findBoooksByAuthor(author, function(books, err) {
-            if (err) {
-              failure(err);
-            } else {
-              try {
-                foundBooks(books);
-              } catch(reason) {
-                failure(reason);
-              }
+    } else {
+      try {
+        findBoooksByAuthor(author, function(books, err) {
+          if (err) {
+            failure(err);
+          } else {
+            try {
+              foundBooks(books);
+            } catch(reason) {
+              failure(reason);
             }
-          });
-        } catch(error) {
-          failure(err);
-        }
-        // success
+          }
+        });
+      } catch(error) {
+        failure(err);
       }
-    });
-    ```
-  
-    Promise Example;
-  
-    ```javascript
-    findAuthor().
-      then(findBooksByAuthor).
-      then(function(books){
-        // found books
-    }).catch(function(reason){
-      // something went wrong
-    });
-    ```
-  
-    @method then
-    @param {Function} onFulfilled
-    @param {Function} onRejected
-    Useful for tooling.
-    @return {Promise}
+      // success
+    }
+  });
+  ```
+   Promise Example;
+   ```javascript
+  findAuthor().
+    then(findBooksByAuthor).
+    then(function(books){
+      // found books
+  }).catch(function(reason){
+    // something went wrong
+  });
+  ```
+   @method then
+  @param {Function} onFulfilled
+  @param {Function} onRejected
+  Useful for tooling.
+  @return {Promise}
   */
-  then: then,
 
   /**
-    `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
-    as the catch block of a try/catch statement.
+  `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
+  as the catch block of a try/catch statement.
+  ```js
+  function findAuthor(){
+  throw new Error('couldn't find that author');
+  }
+  // synchronous
+  try {
+  findAuthor();
+  } catch(reason) {
+  // something went wrong
+  }
+  // async with promises
+  findAuthor().catch(function(reason){
+  // something went wrong
+  });
+  ```
+  @method catch
+  @param {Function} onRejection
+  Useful for tooling.
+  @return {Promise}
+  */
+
+
+  Promise.prototype.catch = function _catch(onRejection) {
+    return this.then(null, onRejection);
+  };
+
+  /**
+    `finally` will be invoked regardless of the promise's fate just as native
+    try/catch/finally behaves
+  
+    Synchronous example:
   
     ```js
-    function findAuthor(){
-      throw new Error('couldn't find that author');
+    findAuthor() {
+      if (Math.random() > 0.5) {
+        throw new Error();
+      }
+      return new Author();
     }
   
-    // synchronous
     try {
-      findAuthor();
-    } catch(reason) {
-      // something went wrong
+      return findAuthor(); // succeed or fail
+    } catch(error) {
+      return findOtherAuther();
+    } finally {
+      // always runs
+      // doesn't affect the return value
     }
+    ```
   
-    // async with promises
+    Asynchronous example:
+  
+    ```js
     findAuthor().catch(function(reason){
-      // something went wrong
+      return findOtherAuther();
+    }).finally(function(){
+      // author was either found, or not
     });
     ```
   
-    @method catch
-    @param {Function} onRejection
-    Useful for tooling.
+    @method finally
+    @param {Function} callback
     @return {Promise}
   */
-  'catch': function _catch(onRejection) {
-    return this.then(null, onRejection);
-  }
-};
+
+
+  Promise.prototype.finally = function _finally(callback) {
+    var promise = this;
+    var constructor = promise.constructor;
+
+    return promise.then(function (value) {
+      return constructor.resolve(callback()).then(function () {
+        return value;
+      });
+    }, function (reason) {
+      return constructor.resolve(callback()).then(function () {
+        throw reason;
+      });
+    });
+  };
+
+  return Promise;
+}();
+
+Promise$2.prototype.then = then;
+Promise$2.all = all;
+Promise$2.race = race;
+Promise$2.resolve = resolve$1;
+Promise$2.reject = reject$1;
+Promise$2._setScheduler = setScheduler;
+Promise$2._setAsap = setAsap;
+Promise$2._asap = asap;
 
 /*global self*/
-function polyfill$1() {
-    var local = undefined;
+function polyfill() {
+    var local = void 0;
 
     if (typeof global !== 'undefined') {
         local = global;
@@ -3875,18 +3906,20 @@ function polyfill$1() {
         }
     }
 
-    local.Promise = Promise$3;
+    local.Promise = Promise$2;
 }
 
 // Strange compat..
-Promise$3.polyfill = polyfill$1;
-Promise$3.Promise = Promise$3;
+Promise$2.polyfill = polyfill;
+Promise$2.Promise = Promise$2;
 
-Promise$3.polyfill();
+Promise$2.polyfill();
 
-return Promise$3;
+return Promise$2;
 
 })));
+
+
 
 //# sourceMappingURL=es6-promise.auto.map
 ;
@@ -32786,11 +32819,6 @@ Strophe.Connection.prototype = {
      *  are ready and keep poll requests going.
      */
     _onIdle: function () {
-        // if (typeof previous_date === 'undefined') {
-        //     previous_date = new Date();
-        // }
-        // console.log(Math.abs(new Date() - previous_date));
-        // previous_date = new Date();
         var i, thand, since, newList;
 
         // add timed handlers scheduled for addition
@@ -33910,7 +33938,7 @@ Strophe.Bosh.prototype = {
                    (reqStatus >= 400 && reqStatus < 600) ||
                    reqStatus >= 12000) {
             // request failed
-            Strophe.warn("request id "+req.id+"."+req.sends+" error "+reqStatus+" happened");
+            Strophe.error("request id "+req.id+"."+req.sends+" error "+reqStatus+" happened");
             this._hitError(reqStatus);
             this._callProtocolErrorHandlers(req);
             if (reqStatus >= 400 && reqStatus < 500) {
@@ -38248,21 +38276,13 @@ return Backbone.BrowserStorage;
     }, console);
 
     if (level === Strophe.LogLevel.ERROR) {
-      if (_converse.debug) {
-        logger.trace("".concat(prefix, " ").concat(moment().format(), " ERROR: ").concat(message), style);
-      } else {
-        logger.error("".concat(prefix, " ERROR: ").concat(message), style);
-      }
+      logger.error("".concat(prefix, " ERROR: ").concat(message), style);
     } else if (level === Strophe.LogLevel.WARN) {
       if (_converse.debug) {
         logger.warn("".concat(prefix, " ").concat(moment().format(), " WARNING: ").concat(message), style);
       }
     } else if (level === Strophe.LogLevel.FATAL) {
-      if (_converse.debug) {
-        logger.trace("".concat(prefix, " ").concat(moment().format(), " FATAL: ").concat(message), style);
-      } else {
-        logger.error("".concat(prefix, " FATAL: ").concat(message), style);
-      }
+      logger.error("".concat(prefix, " FATAL: ").concat(message), style);
     } else if (_converse.debug) {
       if (level === Strophe.LogLevel.DEBUG) {
         logger.debug("".concat(prefix, " ").concat(moment().format(), " DEBUG: ").concat(message), style);
@@ -38467,7 +38487,7 @@ return Backbone.BrowserStorage;
     // ----------------------
 
     this.generateResource = function () {
-      return "/converse.js-".concat(Math.floor(Math.random() * 139749825).toString());
+      return "/converse.js-".concat(Math.floor(Math.random() * 139749528).toString());
     };
 
     this.sendCSI = function (stat) {
@@ -41370,7 +41390,6 @@ return Backbone.BrowserStorage;
 
 }(this.emojione = this.emojione || {}));
 if(typeof module === "object") module.exports = this.emojione;
-
 define("emojione", (function (global) {
     return function () {
         var ret, fn;
@@ -41380,146 +41399,144 @@ define("emojione", (function (global) {
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * 默认配置
+ * default settings
  *
- * @author 老雷<leizongmin@gmail.com>
+ * @author Zongmin Lei<leizongmin@gmail.com>
  */
 
-var FilterCSS = require('cssfilter').FilterCSS;
-var getDefaultCSSWhiteList = require('cssfilter').getDefaultWhiteList;
-var _ = require('./util');
+var FilterCSS = require("cssfilter").FilterCSS;
+var getDefaultCSSWhiteList = require("cssfilter").getDefaultWhiteList;
+var _ = require("./util");
 
-// 默认白名单
-function getDefaultWhiteList () {
+function getDefaultWhiteList() {
   return {
-    a:      ['target', 'href', 'title'],
-    abbr:   ['title'],
+    a: ["target", "href", "title"],
+    abbr: ["title"],
     address: [],
-    area:   ['shape', 'coords', 'href', 'alt'],
+    area: ["shape", "coords", "href", "alt"],
     article: [],
-    aside:  [],
-    audio:  ['autoplay', 'controls', 'loop', 'preload', 'src'],
-    b:      [],
-    bdi:    ['dir'],
-    bdo:    ['dir'],
-    big:    [],
-    blockquote: ['cite'],
-    br:     [],
+    aside: [],
+    audio: ["autoplay", "controls", "loop", "preload", "src"],
+    b: [],
+    bdi: ["dir"],
+    bdo: ["dir"],
+    big: [],
+    blockquote: ["cite"],
+    br: [],
     caption: [],
     center: [],
-    cite:   [],
-    code:   [],
-    col:    ['align', 'valign', 'span', 'width'],
-    colgroup: ['align', 'valign', 'span', 'width'],
-    dd:     [],
-    del:    ['datetime'],
-    details: ['open'],
-    div:    [],
-    dl:     [],
-    dt:     [],
-    em:     [],
-    font:   ['color', 'size', 'face'],
+    cite: [],
+    code: [],
+    col: ["align", "valign", "span", "width"],
+    colgroup: ["align", "valign", "span", "width"],
+    dd: [],
+    del: ["datetime"],
+    details: ["open"],
+    div: [],
+    dl: [],
+    dt: [],
+    em: [],
+    font: ["color", "size", "face"],
     footer: [],
-    h1:     [],
-    h2:     [],
-    h3:     [],
-    h4:     [],
-    h5:     [],
-    h6:     [],
+    h1: [],
+    h2: [],
+    h3: [],
+    h4: [],
+    h5: [],
+    h6: [],
     header: [],
-    hr:     [],
-    i:      [],
-    img:    ['src', 'alt', 'title', 'width', 'height'],
-    ins:    ['datetime'],
-    li:     [],
-    mark:   [],
-    nav:    [],
-    ol:     [],
-    p:      [],
-    pre:    [],
-    s:      [],
-    section:[],
-    small:  [],
-    span:   [],
-    sub:    [],
-    sup:    [],
+    hr: [],
+    i: [],
+    img: ["src", "alt", "title", "width", "height"],
+    ins: ["datetime"],
+    li: [],
+    mark: [],
+    nav: [],
+    ol: [],
+    p: [],
+    pre: [],
+    s: [],
+    section: [],
+    small: [],
+    span: [],
+    sub: [],
+    sup: [],
     strong: [],
-    table:  ['width', 'border', 'align', 'valign'],
-    tbody:  ['align', 'valign'],
-    td:     ['width', 'rowspan', 'colspan', 'align', 'valign'],
-    tfoot:  ['align', 'valign'],
-    th:     ['width', 'rowspan', 'colspan', 'align', 'valign'],
-    thead:  ['align', 'valign'],
-    tr:     ['rowspan', 'align', 'valign'],
-    tt:     [],
-    u:      [],
-    ul:     [],
-    video:  ['autoplay', 'controls', 'loop', 'preload', 'src', 'height', 'width']
+    table: ["width", "border", "align", "valign"],
+    tbody: ["align", "valign"],
+    td: ["width", "rowspan", "colspan", "align", "valign"],
+    tfoot: ["align", "valign"],
+    th: ["width", "rowspan", "colspan", "align", "valign"],
+    thead: ["align", "valign"],
+    tr: ["rowspan", "align", "valign"],
+    tt: [],
+    u: [],
+    ul: [],
+    video: ["autoplay", "controls", "loop", "preload", "src", "height", "width"]
   };
 }
 
-// 默认CSS Filter
 var defaultCSSFilter = new FilterCSS();
 
 /**
- * 匹配到标签时的处理方法
+ * default onTag function
  *
  * @param {String} tag
  * @param {String} html
  * @param {Object} options
  * @return {String}
  */
-function onTag (tag, html, options) {
+function onTag(tag, html, options) {
   // do nothing
 }
 
 /**
- * 匹配到不在白名单上的标签时的处理方法
+ * default onIgnoreTag function
  *
  * @param {String} tag
  * @param {String} html
  * @param {Object} options
  * @return {String}
  */
-function onIgnoreTag (tag, html, options) {
+function onIgnoreTag(tag, html, options) {
   // do nothing
 }
 
 /**
- * 匹配到标签属性时的处理方法
+ * default onTagAttr function
  *
  * @param {String} tag
  * @param {String} name
  * @param {String} value
  * @return {String}
  */
-function onTagAttr (tag, name, value) {
+function onTagAttr(tag, name, value) {
   // do nothing
 }
 
 /**
- * 匹配到不在白名单上的标签属性时的处理方法
+ * default onIgnoreTagAttr function
  *
  * @param {String} tag
  * @param {String} name
  * @param {String} value
  * @return {String}
  */
-function onIgnoreTagAttr (tag, name, value) {
+function onIgnoreTagAttr(tag, name, value) {
   // do nothing
 }
 
 /**
- * HTML转义
+ * default escapeHtml function
  *
  * @param {String} html
  */
-function escapeHtml (html) {
-  return html.replace(REGEXP_LT, '&lt;').replace(REGEXP_GT, '&gt;');
+function escapeHtml(html) {
+  return html.replace(REGEXP_LT, "&lt;").replace(REGEXP_GT, "&gt;");
 }
 
 /**
- * 安全的标签属性值
+ * default safeAttrValue function
  *
  * @param {String} tag
  * @param {String} name
@@ -41527,46 +41544,46 @@ function escapeHtml (html) {
  * @param {Object} cssFilter
  * @return {String}
  */
-function safeAttrValue (tag, name, value, cssFilter) {
-  // 转换为友好的属性值，再做判断
+function safeAttrValue(tag, name, value, cssFilter) {
+  // unescape attribute value firstly
   value = friendlyAttrValue(value);
 
-  if (name === 'href' || name === 'src') {
-    // 过滤 href 和 src 属性
-    // 仅允许 http:// | https:// | mailto: | / | # 开头的地址
+  if (name === "href" || name === "src") {
+    // filter `href` and `src` attribute
+    // only allow the value that starts with `http://` | `https://` | `mailto:` | `/` | `#`
     value = _.trim(value);
-    if (value === '#') return '#';
-    if (!(value.substr(0, 7) === 'http://' ||
-         value.substr(0, 8) === 'https://' ||
-         value.substr(0, 7) === 'mailto:' ||
-         value[0] === '#' ||
-         value[0] === '/')) {
-      return '';
+    if (value === "#") return "#";
+    if (
+      !(
+        value.substr(0, 7) === "http://" ||
+        value.substr(0, 8) === "https://" ||
+        value.substr(0, 7) === "mailto:" ||
+        value.substr(0, 4) === "tel:" ||
+        value[0] === "#" ||
+        value[0] === "/"
+      )
+    ) {
+      return "";
     }
-  } else if (name === 'background') {
-    // 过滤 background 属性 （这个xss漏洞较老了，可能已经不适用）
-    // javascript:
+  } else if (name === "background") {
+    // filter `background` attribute (maybe no use)
+    // `javascript:`
     REGEXP_DEFAULT_ON_TAG_ATTR_4.lastIndex = 0;
     if (REGEXP_DEFAULT_ON_TAG_ATTR_4.test(value)) {
-      return '';
+      return "";
     }
-  } else if (name === 'style') {
-    // /*注释*/
-    /*REGEXP_DEFAULT_ON_TAG_ATTR_3.lastIndex = 0;
-    if (REGEXP_DEFAULT_ON_TAG_ATTR_3.test(value)) {
-      return '';
-    }*/
-    // expression()
+  } else if (name === "style") {
+    // `expression()`
     REGEXP_DEFAULT_ON_TAG_ATTR_7.lastIndex = 0;
     if (REGEXP_DEFAULT_ON_TAG_ATTR_7.test(value)) {
-      return '';
+      return "";
     }
-    // url()
+    // `url()`
     REGEXP_DEFAULT_ON_TAG_ATTR_8.lastIndex = 0;
     if (REGEXP_DEFAULT_ON_TAG_ATTR_8.test(value)) {
       REGEXP_DEFAULT_ON_TAG_ATTR_4.lastIndex = 0;
       if (REGEXP_DEFAULT_ON_TAG_ATTR_4.test(value)) {
-        return '';
+        return "";
       }
     }
     if (cssFilter !== false) {
@@ -41575,161 +41592,166 @@ function safeAttrValue (tag, name, value, cssFilter) {
     }
   }
 
-  // 输出时需要转义<>"
+  // escape `<>"` before returns
   value = escapeAttrValue(value);
   return value;
 }
 
-// 正则表达式
+// RegExp list
 var REGEXP_LT = /</g;
 var REGEXP_GT = />/g;
 var REGEXP_QUOTE = /"/g;
 var REGEXP_QUOTE_2 = /&quot;/g;
-var REGEXP_ATTR_VALUE_1 = /&#([a-zA-Z0-9]*);?/img;
-var REGEXP_ATTR_VALUE_COLON = /&colon;?/img;
-var REGEXP_ATTR_VALUE_NEWLINE = /&newline;?/img;
-var REGEXP_DEFAULT_ON_TAG_ATTR_3 = /\/\*|\*\//mg;
-var REGEXP_DEFAULT_ON_TAG_ATTR_4 = /((j\s*a\s*v\s*a|v\s*b|l\s*i\s*v\s*e)\s*s\s*c\s*r\s*i\s*p\s*t\s*|m\s*o\s*c\s*h\s*a)\:/ig;
-var REGEXP_DEFAULT_ON_TAG_ATTR_5 = /^[\s"'`]*(d\s*a\s*t\s*a\s*)\:/ig;
-var REGEXP_DEFAULT_ON_TAG_ATTR_6 = /^[\s"'`]*(d\s*a\s*t\s*a\s*)\:\s*image\//ig;
-var REGEXP_DEFAULT_ON_TAG_ATTR_7 = /e\s*x\s*p\s*r\s*e\s*s\s*s\s*i\s*o\s*n\s*\(.*/ig;
-var REGEXP_DEFAULT_ON_TAG_ATTR_8 = /u\s*r\s*l\s*\(.*/ig;
+var REGEXP_ATTR_VALUE_1 = /&#([a-zA-Z0-9]*);?/gim;
+var REGEXP_ATTR_VALUE_COLON = /&colon;?/gim;
+var REGEXP_ATTR_VALUE_NEWLINE = /&newline;?/gim;
+var REGEXP_DEFAULT_ON_TAG_ATTR_3 = /\/\*|\*\//gm;
+var REGEXP_DEFAULT_ON_TAG_ATTR_4 = /((j\s*a\s*v\s*a|v\s*b|l\s*i\s*v\s*e)\s*s\s*c\s*r\s*i\s*p\s*t\s*|m\s*o\s*c\s*h\s*a)\:/gi;
+var REGEXP_DEFAULT_ON_TAG_ATTR_5 = /^[\s"'`]*(d\s*a\s*t\s*a\s*)\:/gi;
+var REGEXP_DEFAULT_ON_TAG_ATTR_6 = /^[\s"'`]*(d\s*a\s*t\s*a\s*)\:\s*image\//gi;
+var REGEXP_DEFAULT_ON_TAG_ATTR_7 = /e\s*x\s*p\s*r\s*e\s*s\s*s\s*i\s*o\s*n\s*\(.*/gi;
+var REGEXP_DEFAULT_ON_TAG_ATTR_8 = /u\s*r\s*l\s*\(.*/gi;
 
 /**
- * 对双引号进行转义
+ * escape doube quote
  *
  * @param {String} str
  * @return {String} str
  */
-function escapeQuote (str) {
-  return str.replace(REGEXP_QUOTE, '&quot;');
+function escapeQuote(str) {
+  return str.replace(REGEXP_QUOTE, "&quot;");
 }
 
 /**
- * 对双引号进行转义
+ * unescape double quote
  *
  * @param {String} str
  * @return {String} str
  */
-function unescapeQuote (str) {
+function unescapeQuote(str) {
   return str.replace(REGEXP_QUOTE_2, '"');
 }
 
 /**
- * 对html实体编码进行转义
+ * escape html entities
  *
  * @param {String} str
  * @return {String}
  */
-function escapeHtmlEntities (str) {
-  return str.replace(REGEXP_ATTR_VALUE_1, function replaceUnicode (str, code) {
-    return (code[0] === 'x' || code[0] === 'X')
-            ? String.fromCharCode(parseInt(code.substr(1), 16))
-            : String.fromCharCode(parseInt(code, 10));
+function escapeHtmlEntities(str) {
+  return str.replace(REGEXP_ATTR_VALUE_1, function replaceUnicode(str, code) {
+    return code[0] === "x" || code[0] === "X"
+      ? String.fromCharCode(parseInt(code.substr(1), 16))
+      : String.fromCharCode(parseInt(code, 10));
   });
 }
 
 /**
- * 对html5新增的危险实体编码进行转义
+ * escape html5 new danger entities
  *
  * @param {String} str
  * @return {String}
  */
-function escapeDangerHtml5Entities (str) {
-  return str.replace(REGEXP_ATTR_VALUE_COLON, ':')
-            .replace(REGEXP_ATTR_VALUE_NEWLINE, ' ');
+function escapeDangerHtml5Entities(str) {
+  return str
+    .replace(REGEXP_ATTR_VALUE_COLON, ":")
+    .replace(REGEXP_ATTR_VALUE_NEWLINE, " ");
 }
 
 /**
- * 清除不可见字符
+ * clear nonprintable characters
  *
  * @param {String} str
  * @return {String}
  */
-function clearNonPrintableCharacter (str) {
-  var str2 = '';
+function clearNonPrintableCharacter(str) {
+  var str2 = "";
   for (var i = 0, len = str.length; i < len; i++) {
-    str2 += str.charCodeAt(i) < 32 ? ' ' : str.charAt(i);
+    str2 += str.charCodeAt(i) < 32 ? " " : str.charAt(i);
   }
   return _.trim(str2);
 }
 
 /**
- * 将标签的属性值转换成一般字符，便于分析
+ * get friendly attribute value
  *
  * @param {String} str
  * @return {String}
  */
-function friendlyAttrValue (str) {
-  str = unescapeQuote(str);             // 双引号
-  str = escapeHtmlEntities(str);         // 转换HTML实体编码
-  str = escapeDangerHtml5Entities(str);  // 转换危险的HTML5新增实体编码
-  str = clearNonPrintableCharacter(str); // 清除不可见字符
+function friendlyAttrValue(str) {
+  str = unescapeQuote(str);
+  str = escapeHtmlEntities(str);
+  str = escapeDangerHtml5Entities(str);
+  str = clearNonPrintableCharacter(str);
   return str;
 }
 
 /**
- * 转义用于输出的标签属性值
+ * unescape attribute value
  *
  * @param {String} str
  * @return {String}
  */
-function escapeAttrValue (str) {
+function escapeAttrValue(str) {
   str = escapeQuote(str);
   str = escapeHtml(str);
   return str;
 }
 
 /**
- * 去掉不在白名单中的标签onIgnoreTag处理方法
+ * `onIgnoreTag` function for removing all the tags that are not in whitelist
  */
-function onIgnoreTagStripAll () {
-  return '';
+function onIgnoreTagStripAll() {
+  return "";
 }
 
 /**
- * 删除标签体
+ * remove tag body
+ * specify a `tags` list, if the tag is not in the `tags` list then process by the specify function (optional)
  *
- * @param {array} tags 要删除的标签列表
- * @param {function} next 对不在列表中的标签的处理函数，可选
+ * @param {array} tags
+ * @param {function} next
  */
-function StripTagBody (tags, next) {
-  if (typeof(next) !== 'function') {
-    next = function () {};
+function StripTagBody(tags, next) {
+  if (typeof next !== "function") {
+    next = function() {};
   }
 
   var isRemoveAllTag = !Array.isArray(tags);
-  function isRemoveTag (tag) {
+  function isRemoveTag(tag) {
     if (isRemoveAllTag) return true;
-    return (_.indexOf(tags, tag) !== -1);
+    return _.indexOf(tags, tag) !== -1;
   }
 
-  var removeList = [];   // 要删除的位置范围列表
-  var posStart = false;  // 当前标签开始位置
+  var removeList = [];
+  var posStart = false;
 
   return {
-    onIgnoreTag: function (tag, html, options) {
+    onIgnoreTag: function(tag, html, options) {
       if (isRemoveTag(tag)) {
         if (options.isClosing) {
-          var ret = '[/removed]';
+          var ret = "[/removed]";
           var end = options.position + ret.length;
-          removeList.push([posStart !== false ? posStart : options.position, end]);
+          removeList.push([
+            posStart !== false ? posStart : options.position,
+            end
+          ]);
           posStart = false;
           return ret;
         } else {
           if (!posStart) {
             posStart = options.position;
           }
-          return '[removed]';
+          return "[removed]";
         }
       } else {
         return next(tag, html, options);
       }
     },
-    remove: function (html) {
-      var rethtml = '';
+    remove: function(html) {
+      var rethtml = "";
       var lastPos = 0;
-      _.forEach(removeList, function (pos) {
+      _.forEach(removeList, function(pos) {
         rethtml += html.slice(lastPos, pos[0]);
         lastPos = pos[1];
       });
@@ -41740,25 +41762,25 @@ function StripTagBody (tags, next) {
 }
 
 /**
- * 去除备注标签
+ * remove html comments
  *
  * @param {String} html
  * @return {String}
  */
-function stripCommentTag (html) {
-  return html.replace(STRIP_COMMENT_TAG_REGEXP, '');
+function stripCommentTag(html) {
+  return html.replace(STRIP_COMMENT_TAG_REGEXP, "");
 }
 var STRIP_COMMENT_TAG_REGEXP = /<!--[\s\S]*?-->/g;
 
 /**
- * 去除不可见字符
+ * remove invisible characters
  *
  * @param {String} html
  * @return {String}
  */
-function stripBlankChar (html) {
-  var chars = html.split('');
-  chars = chars.filter(function (char) {
+function stripBlankChar(html) {
+  var chars = html.split("");
+  chars = chars.filter(function(char) {
     var c = char.charCodeAt(0);
     if (c === 127) return false;
     if (c <= 31) {
@@ -41767,9 +41789,8 @@ function stripBlankChar (html) {
     }
     return true;
   });
-  return chars.join('');
+  return chars.join("");
 }
-
 
 exports.whiteList = getDefaultWhiteList();
 exports.getDefaultWhiteList = getDefaultWhiteList;
@@ -41795,131 +41816,126 @@ exports.getDefaultCSSWhiteList = getDefaultCSSWhiteList;
 
 },{"./util":4,"cssfilter":8}],2:[function(require,module,exports){
 /**
- * 模块入口
+ * xss
  *
- * @author 老雷<leizongmin@gmail.com>
+ * @author Zongmin Lei<leizongmin@gmail.com>
  */
 
-var DEFAULT = require('./default');
-var parser = require('./parser');
-var FilterXSS = require('./xss');
-
+var DEFAULT = require("./default");
+var parser = require("./parser");
+var FilterXSS = require("./xss");
 
 /**
- * XSS过滤
+ * filter xss function
  *
- * @param {String} html 要过滤的HTML代码
- * @param {Object} options 选项：whiteList, onTag, onTagAttr, onIgnoreTag, onIgnoreTagAttr, safeAttrValue, escapeHtml
+ * @param {String} html
+ * @param {Object} options { whiteList, onTag, onTagAttr, onIgnoreTag, onIgnoreTagAttr, safeAttrValue, escapeHtml }
  * @return {String}
  */
-function filterXSS (html, options) {
+function filterXSS(html, options) {
   var xss = new FilterXSS(options);
   return xss.process(html);
 }
 
-
-// 输出
 exports = module.exports = filterXSS;
 exports.FilterXSS = FilterXSS;
 for (var i in DEFAULT) exports[i] = DEFAULT[i];
 for (var i in parser) exports[i] = parser[i];
 
-
-// 在浏览器端使用
-if (typeof window !== 'undefined') {
+// using `xss` on the browser, output `filterXSS` to the globals
+if (typeof window !== "undefined") {
   window.filterXSS = module.exports;
 }
 
 },{"./default":1,"./parser":3,"./xss":5}],3:[function(require,module,exports){
 /**
- * 简单 HTML Parser
+ * Simple HTML Parser
  *
- * @author 老雷<leizongmin@gmail.com>
+ * @author Zongmin Lei<leizongmin@gmail.com>
  */
 
-var _ = require('./util');
+var _ = require("./util");
 
 /**
- * 获取标签的名称
+ * get tag name
  *
- * @param {String} html 如：'<a hef="#">'
+ * @param {String} html e.g. '<a hef="#">'
  * @return {String}
  */
-function getTagName (html) {
-  var i = html.indexOf(' ');
+function getTagName(html) {
+  var i = _.spaceIndex(html);
   if (i === -1) {
     var tagName = html.slice(1, -1);
   } else {
     var tagName = html.slice(1, i + 1);
   }
   tagName = _.trim(tagName).toLowerCase();
-  if (tagName.slice(0, 1) === '/') tagName = tagName.slice(1);
-  if (tagName.slice(-1) === '/') tagName = tagName.slice(0, -1);
+  if (tagName.slice(0, 1) === "/") tagName = tagName.slice(1);
+  if (tagName.slice(-1) === "/") tagName = tagName.slice(0, -1);
   return tagName;
 }
 
 /**
- * 是否为闭合标签
+ * is close tag?
  *
  * @param {String} html 如：'<a hef="#">'
  * @return {Boolean}
  */
-function isClosing (html) {
-  return (html.slice(0, 2) === '</');
+function isClosing(html) {
+  return html.slice(0, 2) === "</";
 }
 
 /**
- * 分析HTML代码，调用相应的函数处理，返回处理后的HTML
+ * parse input html and returns processed html
  *
  * @param {String} html
- * @param {Function} onTag 处理标签的函数
- *   参数格式： function (sourcePosition, position, tag, html, isClosing)
- * @param {Function} escapeHtml 对HTML进行转义的函数
+ * @param {Function} onTag e.g. function (sourcePosition, position, tag, html, isClosing)
+ * @param {Function} escapeHtml
  * @return {String}
  */
-function parseTag (html, onTag, escapeHtml) {
-  'user strict';
+function parseTag(html, onTag, escapeHtml) {
+  "user strict";
 
-  var rethtml = '';        // 待返回的HTML
-  var lastPos = 0;         // 上一个标签结束位置
-  var tagStart = false;    // 当前标签开始位置
-  var quoteStart = false;  // 引号开始位置
-  var currentPos = 0;      // 当前位置
-  var len = html.length;   // HTML长度
-  var currentHtml = '';    // 当前标签的HTML代码
-  var currentTagName = ''; // 当前标签的名称
+  var rethtml = "";
+  var lastPos = 0;
+  var tagStart = false;
+  var quoteStart = false;
+  var currentPos = 0;
+  var len = html.length;
+  var currentTagName = "";
+  var currentHtml = "";
 
-  // 逐个分析字符
   for (currentPos = 0; currentPos < len; currentPos++) {
     var c = html.charAt(currentPos);
     if (tagStart === false) {
-      if (c === '<') {
+      if (c === "<") {
         tagStart = currentPos;
         continue;
       }
     } else {
       if (quoteStart === false) {
-        if (c === '<') {
+        if (c === "<") {
           rethtml += escapeHtml(html.slice(lastPos, currentPos));
           tagStart = currentPos;
           lastPos = currentPos;
           continue;
         }
-        if (c === '>') {
+        if (c === ">") {
           rethtml += escapeHtml(html.slice(lastPos, tagStart));
           currentHtml = html.slice(tagStart, currentPos + 1);
           currentTagName = getTagName(currentHtml);
-          rethtml += onTag(tagStart,
-                           rethtml.length,
-                           currentTagName,
-                           currentHtml,
-                           isClosing(currentHtml));
+          rethtml += onTag(
+            tagStart,
+            rethtml.length,
+            currentTagName,
+            currentHtml,
+            isClosing(currentHtml)
+          );
           lastPos = currentPos + 1;
           tagStart = false;
           continue;
         }
-        // HTML标签内的引号仅当前一个字符是等于号时才有效
-        if ((c === '"' || c === "'") && html.charAt(currentPos - 1) === '=') {
+        if ((c === '"' || c === "'") && html.charAt(currentPos - 1) === "=") {
           quoteStart = c;
           continue;
         }
@@ -41938,45 +41954,46 @@ function parseTag (html, onTag, escapeHtml) {
   return rethtml;
 }
 
-// 不符合属性名称规则的正则表达式
-var REGEXP_ATTR_NAME = /[^a-zA-Z0-9_:\.\-]/img;
+var REGEXP_ILLEGAL_ATTR_NAME = /[^a-zA-Z0-9_:\.\-]/gim;
 
 /**
- * 分析标签HTML代码，调用相应的函数处理，返回HTML
+ * parse input attributes and returns processed attributes
  *
- * @param {String} html 如标签'<a href="#" target="_blank">' 则为 'href="#" target="_blank"'
- * @param {Function} onAttr 处理属性值的函数
- *   函数格式： function (name, value)
+ * @param {String} html e.g. `href="#" target="_blank"`
+ * @param {Function} onAttr e.g. `function (name, value)`
  * @return {String}
  */
-function parseAttr (html, onAttr) {
-  'user strict';
+function parseAttr(html, onAttr) {
+  "user strict";
 
-  var lastPos = 0;        // 当前位置
-  var retAttrs = [];      // 待返回的属性列表
-  var tmpName = false;    // 临时属性名称
-  var len = html.length;  // HTML代码长度
+  var lastPos = 0;
+  var retAttrs = [];
+  var tmpName = false;
+  var len = html.length;
 
-  function addAttr (name, value) {
+  function addAttr(name, value) {
     name = _.trim(name);
-    name = name.replace(REGEXP_ATTR_NAME, '').toLowerCase();
+    name = name.replace(REGEXP_ILLEGAL_ATTR_NAME, "").toLowerCase();
     if (name.length < 1) return;
-    var ret = onAttr(name, value || '');
+    var ret = onAttr(name, value || "");
     if (ret) retAttrs.push(ret);
-  };
+  }
 
   // 逐个分析字符
   for (var i = 0; i < len; i++) {
     var c = html.charAt(i);
     var v, j;
-    if (tmpName === false && c === '=') {
+    if (tmpName === false && c === "=") {
       tmpName = html.slice(lastPos, i);
       lastPos = i + 1;
       continue;
     }
     if (tmpName !== false) {
-      // HTML标签内的引号仅当前一个字符是等于号时才有效
-      if (i === lastPos && (c === '"' || c === "'") && html.charAt(i - 1) === '=') {
+      if (
+        i === lastPos &&
+        (c === '"' || c === "'") &&
+        html.charAt(i - 1) === "="
+      ) {
         j = html.indexOf(c, i + 1);
         if (j === -1) {
           break;
@@ -41990,7 +42007,8 @@ function parseAttr (html, onAttr) {
         }
       }
     }
-    if (c === ' ') {
+    if (/\s|\n|\t/.test(c)) {
+      html = html.replace(/\s|\n|\t/g, " ");
       if (tmpName === false) {
         j = findNextEqual(html, i);
         if (j === -1) {
@@ -42027,51 +42045,52 @@ function parseAttr (html, onAttr) {
     }
   }
 
-  return _.trim(retAttrs.join(' '));
+  return _.trim(retAttrs.join(" "));
 }
 
-function findNextEqual (str, i) {
+function findNextEqual(str, i) {
   for (; i < str.length; i++) {
     var c = str[i];
-    if (c === ' ') continue;
-    if (c === '=') return i;
+    if (c === " ") continue;
+    if (c === "=") return i;
     return -1;
   }
 }
 
-function findBeforeEqual (str, i) {
+function findBeforeEqual(str, i) {
   for (; i > 0; i--) {
     var c = str[i];
-    if (c === ' ') continue;
-    if (c === '=') return i;
+    if (c === " ") continue;
+    if (c === "=") return i;
     return -1;
   }
 }
 
-function isQuoteWrapString (text) {
-  if ((text[0] === '"' && text[text.length - 1] === '"') ||
-      (text[0] === '\'' && text[text.length - 1] === '\'')) {
+function isQuoteWrapString(text) {
+  if (
+    (text[0] === '"' && text[text.length - 1] === '"') ||
+    (text[0] === "'" && text[text.length - 1] === "'")
+  ) {
     return true;
   } else {
     return false;
   }
-};
+}
 
-function stripQuoteWrap (text) {
+function stripQuoteWrap(text) {
   if (isQuoteWrapString(text)) {
     return text.substr(1, text.length - 2);
   } else {
     return text;
   }
-};
-
+}
 
 exports.parseTag = parseTag;
 exports.parseAttr = parseAttr;
 
 },{"./util":4}],4:[function(require,module,exports){
 module.exports = {
-  indexOf: function (arr, item) {
+  indexOf: function(arr, item) {
     var i, j;
     if (Array.prototype.indexOf) {
       return arr.indexOf(item);
@@ -42083,7 +42102,7 @@ module.exports = {
     }
     return -1;
   },
-  forEach: function (arr, fn, scope) {
+  forEach: function(arr, fn, scope) {
     var i, j;
     if (Array.prototype.forEach) {
       return arr.forEach(fn, scope);
@@ -42092,71 +42111,75 @@ module.exports = {
       fn.call(scope, arr[i], i, arr);
     }
   },
-  trim: function (str) {
+  trim: function(str) {
     if (String.prototype.trim) {
       return str.trim();
     }
-    return str.replace(/(^\s*)|(\s*$)/g, '');
+    return str.replace(/(^\s*)|(\s*$)/g, "");
+  },
+  spaceIndex: function(str) {
+    var reg = /\s|\n|\t/;
+    var match = reg.exec(str);
+    return match ? match.index : -1;
   }
 };
 
 },{}],5:[function(require,module,exports){
 /**
- * 过滤XSS
+ * filter xss
  *
- * @author 老雷<leizongmin@gmail.com>
+ * @author Zongmin Lei<leizongmin@gmail.com>
  */
 
-var FilterCSS = require('cssfilter').FilterCSS;
-var DEFAULT = require('./default');
-var parser = require('./parser');
+var FilterCSS = require("cssfilter").FilterCSS;
+var DEFAULT = require("./default");
+var parser = require("./parser");
 var parseTag = parser.parseTag;
 var parseAttr = parser.parseAttr;
-var _ = require('./util');
-
+var _ = require("./util");
 
 /**
- * 返回值是否为空
+ * returns `true` if the input value is `undefined` or `null`
  *
  * @param {Object} obj
  * @return {Boolean}
  */
-function isNull (obj) {
-  return (obj === undefined || obj === null);
+function isNull(obj) {
+  return obj === undefined || obj === null;
 }
 
 /**
- * 取标签内的属性列表字符串
+ * get attributes for a tag
  *
  * @param {String} html
  * @return {Object}
  *   - {String} html
  *   - {Boolean} closing
  */
-function getAttrs (html) {
-  var i = html.indexOf(' ');
+function getAttrs(html) {
+  var i = _.spaceIndex(html);
   if (i === -1) {
     return {
-      html:    '',
-      closing: (html[html.length - 2] === '/')
+      html: "",
+      closing: html[html.length - 2] === "/"
     };
   }
   html = _.trim(html.slice(i + 1, -1));
-  var isClosing = (html[html.length - 1] === '/');
+  var isClosing = html[html.length - 1] === "/";
   if (isClosing) html = _.trim(html.slice(0, -1));
   return {
-    html:    html,
+    html: html,
     closing: isClosing
   };
 }
 
 /**
- * 浅拷贝对象
+ * shallow copy
  *
  * @param {Object} obj
  * @return {Object}
  */
-function shallowCopyObject (obj) {
+function shallowCopyObject(obj) {
   var ret = {};
   for (var i in obj) {
     ret[i] = obj[i];
@@ -42165,20 +42188,22 @@ function shallowCopyObject (obj) {
 }
 
 /**
- * XSS过滤对象
+ * FilterXSS class
  *
  * @param {Object} options
- *   选项：whiteList, onTag, onTagAttr, onIgnoreTag,
+ *        whiteList, onTag, onTagAttr, onIgnoreTag,
  *        onIgnoreTagAttr, safeAttrValue, escapeHtml
  *        stripIgnoreTagBody, allowCommentTag, stripBlankChar
- *        css{whiteList, onAttr, onIgnoreAttr} css=false表示禁用cssfilter
+ *        css{whiteList, onAttr, onIgnoreAttr} `css=false` means don't use `cssfilter`
  */
-function FilterXSS (options) {
+function FilterXSS(options) {
   options = shallowCopyObject(options || {});
 
   if (options.stripIgnoreTag) {
     if (options.onIgnoreTag) {
-      console.error('Notes: cannot use these two options "stripIgnoreTag" and "onIgnoreTag" at the same time');
+      console.error(
+        'Notes: cannot use these two options "stripIgnoreTag" and "onIgnoreTag" at the same time'
+      );
     }
     options.onIgnoreTag = DEFAULT.onIgnoreTagStripAll;
   }
@@ -42201,16 +42226,16 @@ function FilterXSS (options) {
 }
 
 /**
- * 开始处理
+ * start process and returns result
  *
  * @param {String} html
  * @return {String}
  */
-FilterXSS.prototype.process = function (html) {
-  // 兼容各种奇葩输入
-  html = html || '';
+FilterXSS.prototype.process = function(html) {
+  // compatible with the input
+  html = html || "";
   html = html.toString();
-  if (!html) return '';
+  if (!html) return "";
 
   var me = this;
   var options = me.options;
@@ -42223,93 +42248,92 @@ FilterXSS.prototype.process = function (html) {
   var escapeHtml = options.escapeHtml;
   var cssFilter = me.cssFilter;
 
-  // 是否清除不可见字符
+  // remove invisible characters
   if (options.stripBlankChar) {
     html = DEFAULT.stripBlankChar(html);
   }
 
-  // 是否禁止备注标签
+  // remove html comments
   if (!options.allowCommentTag) {
     html = DEFAULT.stripCommentTag(html);
   }
 
-  // 如果开启了stripIgnoreTagBody
+  // if enable stripIgnoreTagBody
   var stripIgnoreTagBody = false;
   if (options.stripIgnoreTagBody) {
-    var stripIgnoreTagBody = DEFAULT.StripTagBody(options.stripIgnoreTagBody, onIgnoreTag);
+    var stripIgnoreTagBody = DEFAULT.StripTagBody(
+      options.stripIgnoreTagBody,
+      onIgnoreTag
+    );
     onIgnoreTag = stripIgnoreTagBody.onIgnoreTag;
   }
 
-  var retHtml = parseTag(html, function (sourcePosition, position, tag, html, isClosing) {
-    var info = {
-      sourcePosition: sourcePosition,
-      position:       position,
-      isClosing:      isClosing,
-      isWhite:        (tag in whiteList)
-    };
+  var retHtml = parseTag(
+    html,
+    function(sourcePosition, position, tag, html, isClosing) {
+      var info = {
+        sourcePosition: sourcePosition,
+        position: position,
+        isClosing: isClosing,
+        isWhite: whiteList.hasOwnProperty(tag)
+      };
 
-    // 调用onTag处理
-    var ret = onTag(tag, html, info);
-    if (!isNull(ret)) return ret;
-
-    // 默认标签处理方法
-    if (info.isWhite) {
-      // 白名单标签，解析标签属性
-      // 如果是闭合标签，则不需要解析属性
-      if (info.isClosing) {
-        return '</' + tag + '>';
-      }
-
-      var attrs = getAttrs(html);
-      var whiteAttrList = whiteList[tag];
-      var attrsHtml = parseAttr(attrs.html, function (name, value) {
-
-        // 调用onTagAttr处理
-        var isWhiteAttr = (_.indexOf(whiteAttrList, name) !== -1);
-        var ret = onTagAttr(tag, name, value, isWhiteAttr);
-        if (!isNull(ret)) return ret;
-
-        // 默认的属性处理方法
-        if (isWhiteAttr) {
-          // 白名单属性，调用safeAttrValue过滤属性值
-          value = safeAttrValue(tag, name, value, cssFilter);
-          if (value) {
-            return name + '="' + value + '"';
-          } else {
-            return name;
-          }
-        } else {
-          // 非白名单属性，调用onIgnoreTagAttr处理
-          var ret = onIgnoreTagAttr(tag, name, value, isWhiteAttr);
-          if (!isNull(ret)) return ret;
-          return;
-        }
-      });
-
-      // 构造新的标签代码
-      var html = '<' + tag;
-      if (attrsHtml) html += ' ' + attrsHtml;
-      if (attrs.closing) html += ' /';
-      html += '>';
-      return html;
-
-    } else {
-      // 非白名单标签，调用onIgnoreTag处理
-      var ret = onIgnoreTag(tag, html, info);
+      // call `onTag()`
+      var ret = onTag(tag, html, info);
       if (!isNull(ret)) return ret;
-      return escapeHtml(html);
-    }
 
-  }, escapeHtml);
+      if (info.isWhite) {
+        if (info.isClosing) {
+          return "</" + tag + ">";
+        }
 
-  // 如果开启了stripIgnoreTagBody，需要对结果再进行处理
+        var attrs = getAttrs(html);
+        var whiteAttrList = whiteList[tag];
+        var attrsHtml = parseAttr(attrs.html, function(name, value) {
+          // call `onTagAttr()`
+          var isWhiteAttr = _.indexOf(whiteAttrList, name) !== -1;
+          var ret = onTagAttr(tag, name, value, isWhiteAttr);
+          if (!isNull(ret)) return ret;
+
+          if (isWhiteAttr) {
+            // call `safeAttrValue()`
+            value = safeAttrValue(tag, name, value, cssFilter);
+            if (value) {
+              return name + '="' + value + '"';
+            } else {
+              return name;
+            }
+          } else {
+            // call `onIgnoreTagAttr()`
+            var ret = onIgnoreTagAttr(tag, name, value, isWhiteAttr);
+            if (!isNull(ret)) return ret;
+            return;
+          }
+        });
+
+        // build new tag html
+        var html = "<" + tag;
+        if (attrsHtml) html += " " + attrsHtml;
+        if (attrs.closing) html += " /";
+        html += ">";
+        return html;
+      } else {
+        // call `onIgnoreTag()`
+        var ret = onIgnoreTag(tag, html, info);
+        if (!isNull(ret)) return ret;
+        return escapeHtml(html);
+      }
+    },
+    escapeHtml
+  );
+
+  // if enable stripIgnoreTagBody
   if (stripIgnoreTagBody) {
     retHtml = stripIgnoreTagBody.remove(retHtml);
   }
 
   return retHtml;
 };
-
 
 module.exports = FilterXSS;
 
@@ -42354,14 +42378,16 @@ function shallowCopyObject (obj) {
  *
  * @param {Object} options
  *   - {Object} whiteList
- *   - {Object} onAttr
- *   - {Object} onIgnoreAttr
+ *   - {Function} onAttr
+ *   - {Function} onIgnoreAttr
+ *   - {Function} safeAttrValue
  */
 function FilterCSS (options) {
   options = shallowCopyObject(options || {});
   options.whiteList = options.whiteList || DEFAULT.whiteList;
   options.onAttr = options.onAttr || DEFAULT.onAttr;
   options.onIgnoreAttr = options.onIgnoreAttr || DEFAULT.onIgnoreAttr;
+  options.safeAttrValue = options.safeAttrValue || DEFAULT.safeAttrValue;
   this.options = options;
 }
 
@@ -42376,6 +42402,7 @@ FilterCSS.prototype.process = function (css) {
   var whiteList = options.whiteList;
   var onAttr = options.onAttr;
   var onIgnoreAttr = options.onIgnoreAttr;
+  var safeAttrValue = options.safeAttrValue;
 
   var retCSS = parseStyle(css, function (sourcePosition, position, name, value, source) {
 
@@ -42385,6 +42412,10 @@ FilterCSS.prototype.process = function (css) {
     else if (typeof check === 'function') isWhite = check(value);
     else if (check instanceof RegExp) isWhite = check.test(value);
     if (isWhite !== true) isWhite = false;
+
+    // 如果过滤后 value 为空则直接忽略
+    value = safeAttrValue(name, value);
+    if (!value) return;
 
     var opts = {
       position: position,
@@ -42797,11 +42828,26 @@ function onIgnoreAttr (name, value, options) {
   // do nothing
 }
 
+var REGEXP_URL_JAVASCRIPT = /javascript\s*\:/img;
+
+/**
+ * 过滤属性值
+ *
+ * @param {String} name
+ * @param {String} value
+ * @return {String}
+ */
+function safeAttrValue(name, value) {
+  if (REGEXP_URL_JAVASCRIPT.test(value)) return '';
+  return value;
+}
+
 
 exports.whiteList = getDefaultWhiteList();
 exports.getDefaultWhiteList = getDefaultWhiteList;
 exports.onAttr = onAttr;
 exports.onIgnoreAttr = onIgnoreAttr;
+exports.safeAttrValue = safeAttrValue;
 
 },{}],8:[function(require,module,exports){
 /**
@@ -44043,7 +44089,7 @@ return __p
               'xmlns': Strophe.NS.FORWARD
             }).c('delay', {
               'xmns': Strophe.NS.DELAY,
-              'stamp': moment.format()
+              'stamp': moment().format()
             }).up().cnode(messageStanza.tree()));
           }
         },
@@ -44317,14 +44363,7 @@ return __p
             return;
           }
 
-          var that = this;
-          u.fadeIn(this.el, function () {
-            that.afterShown();
-
-            if (focus) {
-              that.focus();
-            }
-          });
+          u.fadeIn(this.el, _.bind(this.afterShown, this, focus));
         },
         show: function show(focus) {
           if (_.isUndefined(this.debouncedShow)) {
@@ -47189,7 +47228,7 @@ return __p
         },
         render: function render() {
           // Replace the default dropdown with something nicer
-          var select = this.el.querySelector('select#select-xmpp-status');
+          var options = this.el.querySelectorAll('#select-xmpp-status option');
           var chat_status = this.model.get('status') || 'offline';
           this.el.innerHTML = tpl_choose_status();
           this.el.querySelector('#fancy-xmpp-status-select').innerHTML = tpl_chat_status({
@@ -47199,14 +47238,14 @@ return __p
             'desc_change_status': __('Click to change your chat status')
           }); // iterate through all the <option> elements and add option values
 
-          var options_list = _.map(select.querySelectorAll('option'), function (el) {
+          var options_list = _.map(options, function (el) {
             return tpl_status_option({
               'value': el.value,
               'text': el.text
             });
           });
 
-          var options_target = this.el.querySelector("#target dd ul");
+          var options_target = this.el.querySelector(".xmpp-status-menu");
           options_target.classList.add('collapsed');
           options_target.innerHTML = options_list.join('');
           return this;
@@ -47368,12 +47407,16 @@ return __p
       clearSession: function clearSession() {
         this.__super__.clearSession.apply(this, arguments);
 
-        var controlbox = this.chatboxes.get('controlbox');
+        var chatboxes = _.get(this, 'chatboxes', null);
 
-        if (controlbox && controlbox.collection && controlbox.collection.browserStorage) {
-          controlbox.save({
-            'connected': false
-          });
+        if (!_.isNil(chatboxes)) {
+          var controlbox = chatboxes.get('controlbox');
+
+          if (controlbox && controlbox.collection && controlbox.collection.browserStorage) {
+            controlbox.save({
+              'connected': false
+            });
+          }
         }
       },
       ChatBoxes: {
@@ -47865,6 +47908,10 @@ return __p
         },
         renderTab: function renderTab() {
           var controlbox = _converse.chatboxes.get('controlbox');
+
+          if (_.isNil(controlbox)) {
+            return;
+          }
 
           var chats = fp.filter(_.partial(u.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
           this.tab_el.innerHTML = tpl_contacts_tab({
@@ -50235,7 +50282,7 @@ Strophe.addConnectionPlugin('disco',
       this.items.sort();
       var list_el = this.el.querySelector(this.listSelector);
       var div = document.createElement('div');
-      list_el.replaceWith(div);
+      list_el.parentNode.replaceChild(div, list_el);
       this.items.each(function (item) {
         var view = _this.get(item.get(_this.subviewIndex));
 
@@ -50245,7 +50292,7 @@ Strophe.addConnectionPlugin('disco',
 
         list_el.insertAdjacentElement('beforeend', view.el);
       });
-      div.replaceWith(list_el);
+      div.parentNode.replaceChild(list_el, div);
     }
   });
   return Backbone.OrderedListView;
@@ -51733,7 +51780,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             description: this.model.get('description') || ''
           }));
         },
-        afterShown: function afterShown() {
+        afterShown: function afterShown(focus) {
           /* Override from converse-chatview, specifically to avoid
            * the 'active' chat state from being sent out prematurely.
            *
@@ -51746,6 +51793,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           }
 
           this.occupantsview.setOccupantsHeight();
+          this.scrollDown();
+
+          if (focus) {
+            this.focus();
+          }
         },
         show: function show(focus) {
           if (u.isVisible(this.el)) {
@@ -51759,11 +51811,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 
           u.showElement(this.el);
-          this.afterShown();
-
-          if (focus) {
-            this.focus();
-          }
+          this.afterShown(focus);
         },
         afterConnected: function afterConnected() {
           if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
@@ -53947,6 +53995,23 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           input_el.classList.remove('hidden');
           this.removeSpinner();
         },
+        roomStanzaItemToHTMLElement: function roomStanzaItemToHTMLElement(room) {
+          if (!u.isValidJID(room.getAttribute('jid'), '@')) {
+            // Some XMPP servers return the MUC service in
+            // the list of rooms (see #1003).
+            return null;
+          }
+
+          var name = Strophe.unescapeNode(room.getAttribute('name') || room.getAttribute('jid'));
+          var div = document.createElement('div');
+          div.innerHTML = tpl_room_item({
+            'name': name,
+            'jid': room.getAttribute('jid'),
+            'open_title': __('Click to open this room'),
+            'info_title': __('Show more information on this room')
+          });
+          return div.firstChild;
+        },
         onRoomsFound: function onRoomsFound(iq) {
           /* Handle the IQ stanza returned from the server, containing
            * all its public rooms.
@@ -53960,19 +54025,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             available_chatrooms.innerHTML = tpl_rooms_results({
               'feedback_text': __('Rooms found')
             });
-            var div = document.createElement('div');
             var fragment = document.createDocumentFragment();
 
-            for (var i = 0; i < this.rooms.length; i++) {
-              var name = Strophe.unescapeNode(this.rooms[i].getAttribute('name') || this.rooms[i].getAttribute('jid'));
-              div.innerHTML = tpl_room_item({
-                'name': name,
-                'jid': this.rooms[i].getAttribute('jid'),
-                'open_title': __('Click to open this room'),
-                'info_title': __('Show more information on this room')
-              });
-              fragment.appendChild(div.firstChild);
-            }
+            var children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil);
+
+            _.each(children, function (child) {
+              return fragment.appendChild(child);
+            });
 
             available_chatrooms.appendChild(fragment);
             var input_el = this.el.querySelector('input#show-rooms');
@@ -55569,6 +55628,11 @@ Strophe.RSM.prototype = {
     var messages = [];
 
     var message_handler = _converse.connection.addHandler(function (message) {
+      if (options.groupchat && message.getAttribute('from') !== options['with']) {
+        // eslint-disable-line dot-notation
+        return true;
+      }
+
       var result = message.querySelector('result');
 
       if (!_.isNull(result) && result.getAttribute('queryid') === queryid) {
@@ -63869,7 +63933,7 @@ __p += '<span class="spinner login-submit"></span>\n<p class="info">' +
 __e(o.__("Hold tight, we're fetching the registration form…")) +
 '</p>\n';
  if (o.cancel) { ;
-__p += '\n	<button class="pure-button button-cancel hor_centered">' +
+__p += '\n    <button class="pure-button button-cancel hor_centered">' +
 __e(o.__('Cancel')) +
 '</button>\n';
  } ;
@@ -64208,7 +64272,7 @@ return __p
           }
 
           form.querySelector('input[type=submit]').classList.add('hidden');
-          this.fetchRegistrationForm(domain);
+          this.fetchRegistrationForm(domain.trim());
         },
         fetchRegistrationForm: function fetchRegistrationForm(domain_name) {
           /* This is called with a domain name based on which, it fetches a
@@ -64465,7 +64529,8 @@ return __p
 
           var inputs = sizzle(':input:not([type=button]):not([type=submit])', form),
               iq = $iq({
-            type: "set"
+            'type': 'set',
+            'id': _converse.connection.getUniqueId()
           }).c("query", {
             xmlns: Strophe.NS.REGISTER
           });
@@ -65916,7 +65981,11 @@ return __p
             height = "";
           }
 
-          this.el.querySelector('.box-flyout').style.height = height;
+          var flyout_el = this.el.querySelector('.box-flyout');
+
+          if (!_.isNull(flyout_el)) {
+            flyout_el.style.height = height;
+          }
         },
         setChatBoxWidth: function setChatBoxWidth(width) {
           var _converse = this.__super__._converse;
@@ -65928,7 +65997,11 @@ return __p
           }
 
           this.el.style.width = width;
-          this.el.querySelector('.box-flyout').style.width = width;
+          var flyout_el = this.el.querySelector('.box-flyout');
+
+          if (!_.isNull(flyout_el)) {
+            flyout_el.style.width = width;
+          }
         },
         adjustToViewport: function adjustToViewport() {
           /* Event handler called when viewport gets resized. We remove

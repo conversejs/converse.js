@@ -992,11 +992,7 @@
                         if (focus) { this.focus(); }
                         return;
                     }
-                    const that = this;
-                    u.fadeIn(this.el, function () {
-                        that.afterShown();
-                        if (focus) { that.focus(); }
-                    });
+                    u.fadeIn(this.el, _.bind(this.afterShown, this, focus));
                 },
 
                 show (focus) {

@@ -1099,6 +1099,8 @@
 
 #converse-embedded-chat,
 #conversejs {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
   bottom: 0;
   color: #777;
   direction: ltr;

@@ -7,6 +7,7 @@
 - Various fixes for IE11.
 - Could not register on Ejabberd 18. `"Missing attribute 'id' in tag qualified by namespace 'jabber:client'"`
 - #878 Ending slash in link not recognized
+- #921 FATAL error when `visible_toolbar_buttons.emoji = false`
 - #959 Add padding for the iPhone X (to the mobile CSS).
 - #993 `moment.format` is not a function error when sending a message.
 - #994 TypeError when using the `user.login` API.

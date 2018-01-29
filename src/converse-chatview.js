@@ -956,8 +956,10 @@
 
                 renderEmojiPicker () {
                     var toggle = this.el.querySelector('.toggle-smiley');
-                    toggle.innerHTML = '';
-                    toggle.appendChild(this.emoji_picker_view.render().el);
+                    if (!_.isNull(toggle)) {
+                        toggle.innerHTML = '';
+                        toggle.appendChild(this.emoji_picker_view.render().el);
+                    }
                 },
 
                 focus () {

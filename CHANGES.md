@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.3.2 (Unreleased)
+## 3.3.2 (2018-01-29)
 
 ### Bugfixes
 

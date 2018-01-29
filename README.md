@@ -103,3 +103,22 @@ For support queries and discussions, please join the mailing list: <conversejs@l
 Also take a look at the [mailing list archives](http://librelist.com/browser/conversejs).
 
 Issues can be logged on the [Github issue tracker](https://github.com/jcbrand/converse.js/issues).
+
+## Donations
+
+A heartfelt thanks for everyone who has supported this project over the years.
+Many people have contributed testing, bugfixes, features and corrections.
+
+Recently we have started accepting donations via [Patreon](https://www.patreon.com/jcbrand) and [Liberapay](https://liberapay.com/jcbrand).
+
+The following people are making recurring donations:
+
+* [Rafael](https://www.patreon.com/user/creators?u=4340078)
+* [mt7479](https://www.patreon.com/user/creators?u=3892290)
+* [roelra](https://www.patreon.com/user/creators?u=5958918)
+* An anonymous backer on Liberapay
+
+Additionally this project is supported by
+
+* [![KeyCDN](https://conversejs.org/logo/keycdn.png)](https://www.keycdn.com/)
+* [![Wikisuite](https://conversejs.org/logo/wikisuite.png)](http://wikisuite.org)

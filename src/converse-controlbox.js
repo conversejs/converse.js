@@ -597,6 +597,9 @@
 
                 renderTab () {
                     const controlbox = _converse.chatboxes.get('controlbox');
+                    if (_.isNil(controlbox)) {
+                        return;
+                    }
                     const chats = fp.filter(_.partial(u.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
                     this.tab_el.innerHTML = tpl_contacts_tab({
                         'label_contacts': LABEL_CONTACTS,

@@ -24,7 +24,7 @@
     const b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
 
-    const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g;
+    const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b[/]/g;
 
     const logger = _.assign({
         'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,

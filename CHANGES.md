@@ -8,6 +8,7 @@
 - #993 `moment.format` is not a function error when sending a message.
 - #994 TypeError when using the `user.login` API.
 - #995 `ChildNode.replaceWith` is not available in Internet Explorer or Safari. Use `Node.replaceChild` instead.
+- #1003 Don't list MUC domain in rooms list.
 
 ## 3.3.1 (2018-01-18)
 

@@ -1241,6 +1241,7 @@
                         // so we don't send out a presence stanza again.
                         return this;
                     }
+
                     const stanza = $pres({
                         'from': _converse.connection.jid,
                         'to': this.getRoomJIDAndNick(nick)
@@ -2649,6 +2650,26 @@
                     this.removeSpinner();
                 },
 
+                roomStanzaItemToHTMLElement (room) {
+                    if (!u.isValidJID(room.getAttribute('jid'), '@')) {
+                        // Some XMPP servers return the MUC service in
+                        // the list of rooms (see #1003).
+                        return null;
+                    }
+                    const name = Strophe.unescapeNode(
+                        room.getAttribute('name') ||
+                            room.getAttribute('jid')
+                    );
+                    const div = document.createElement('div');
+                    div.innerHTML = tpl_room_item({
+                        'name': name,
+                        'jid': room.getAttribute('jid'),
+                        'open_title': __('Click to open this room'),
+                        'info_title': __('Show more information on this room')
+                    });
+                    return div.firstChild;
+                },
+
                 onRoomsFound (iq) {
                     /* Handle the IQ stanza returned from the server, containing
                      * all its public rooms.
@@ -2661,21 +2682,9 @@
                         available_chatrooms.innerHTML = tpl_rooms_results({
                             'feedback_text': __('Rooms found')
                         });
-                        const div = document.createElement('div');
                         const fragment = document.createDocumentFragment();
-                        for (let i=0; i<this.rooms.length; i++) {
-                            const name = Strophe.unescapeNode(
-                                this.rooms[i].getAttribute('name') ||
-                                    this.rooms[i].getAttribute('jid')
-                            );
-                            div.innerHTML = tpl_room_item({
-                                'name': name,
-                                'jid': this.rooms[i].getAttribute('jid'),
-                                'open_title': __('Click to open this room'),
-                                'info_title': __('Show more information on this room')
-                            });
-                            fragment.appendChild(div.firstChild);
-                        }
+                        const children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil)
+                        _.each(children, (child) => fragment.appendChild(child));
                         available_chatrooms.appendChild(fragment);
                         const input_el = this.el.querySelector('input#show-rooms');
                         input_el.classList.remove('hidden')

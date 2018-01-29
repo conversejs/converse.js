@@ -163,21 +163,13 @@
                 'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
             }, console);
         if (level === Strophe.LogLevel.ERROR) {
-            if (_converse.debug) {
-                logger.trace(`${prefix} ${moment().format()} ERROR: ${message}`, style);
-            } else {
-                logger.error(`${prefix} ERROR: ${message}`, style);
-            }
+            logger.error(`${prefix} ERROR: ${message}`, style);
         } else if (level === Strophe.LogLevel.WARN) {
             if (_converse.debug) {
                 logger.warn(`${prefix} ${moment().format()} WARNING: ${message}`, style);
             }
         } else if (level === Strophe.LogLevel.FATAL) {
-            if (_converse.debug) {
-                logger.trace(`${prefix} ${moment().format()} FATAL: ${message}`, style);
-            } else {
-                logger.error(`${prefix} FATAL: ${message}`, style);
-            }
+            logger.error(`${prefix} FATAL: ${message}`, style);
         } else if (_converse.debug) {
             if (level === Strophe.LogLevel.DEBUG) {
                 logger.debug(`${prefix} ${moment().format()} DEBUG: ${message}`, style);

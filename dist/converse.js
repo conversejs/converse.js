@@ -2,7 +2,7 @@
  *
  *  An XMPP chat client that runs in the browser.
  *
- *  Version: 3.3.1
+ *  Version: 3.3.2
  */
 
 /* jshint ignore:start */
@@ -34805,7 +34805,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   var b64_sha1 = Strophe.SHA1.b64_sha1;
   Strophe = Strophe.Strophe;
-  var URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g;
+  var URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
 
   var logger = _.assign({
     'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
@@ -35173,6 +35173,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     return _.filter(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
   };
 
+  u.isValidMUCJID = function (jid) {
+    return !jid.startsWith('@') && !jid.endsWith('@');
+  };
+
   u.isSameBareJID = function (jid1, jid2) {
     return Strophe.getBareJidFromJid(jid1).toLowerCase() === Strophe.getBareJidFromJid(jid2).toLowerCase();
   };
@@ -35199,11 +35203,17 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     return text && !!text.match(/^\?OTR/);
   };
 
-  u.isHeadlineMessage = function (message) {
+  u.isHeadlineMessage = function (_converse, message) {
     var from_jid = message.getAttribute('from');
 
     if (message.getAttribute('type') === 'headline') {
       return true;
+    }
+
+    var chatbox = _converse.chatboxes.get(Strophe.getBareJidFromJid(from_jid));
+
+    if (chatbox && chatbox.get('type') === 'chatroom') {
+      return false;
     }
 
     if (message.getAttribute('type') !== 'error' && !_.isNil(from_jid) && !_.includes(from_jid, '@')) {
@@ -40561,7 +40571,7 @@ return Backbone.BrowserStorage;
             _converse.log("onMessage: Ignoring incoming message intended for a different resource: ".concat(to_jid), Strophe.LogLevel.INFO);
 
             return true;
-          } else if (utils.isHeadlineMessage(message)) {
+          } else if (utils.isHeadlineMessage(_converse, message)) {
             // XXX: Ideally we wouldn't have to check for headline
             // messages, but Prosody sends headline messages with the
             // wrong type ('chat'), so we need to filter them out here.
@@ -44322,8 +44332,11 @@ return __p
         },
         renderEmojiPicker: function renderEmojiPicker() {
           var toggle = this.el.querySelector('.toggle-smiley');
-          toggle.innerHTML = '';
-          toggle.appendChild(this.emoji_picker_view.render().el);
+
+          if (!_.isNull(toggle)) {
+            toggle.innerHTML = '';
+            toggle.appendChild(this.emoji_picker_view.render().el);
+          }
         },
         focus: function focus() {
           var textarea_el = this.el.querySelector('.chat-textarea');
@@ -51552,8 +51565,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       _converse.api.promises.add(['roomsPanelRendered', 'roomsAutoJoined']);
 
       function openRoom(jid) {
-        if (!u.isValidJID(jid)) {
-          return converse.log("Invalid JID \"".concat(jid, "\" provided in URL fragment"), Strophe.LogLevel.WARN);
+        if (!u.isValidMUCJID(jid)) {
+          return _converse.log("Invalid JID \"".concat(jid, "\" provided in URL fragment"), Strophe.LogLevel.WARN);
         }
 
         var promises = [_converse.api.waitUntil('roomsAutoJoined')];
@@ -51667,7 +51680,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           'click .new-msgs-indicator': 'viewUnreadMessages',
           'click .occupant': 'onOccupantClicked',
           'keypress .chat-textarea': 'keyPressed',
-          'click .send-button': 'onSendButtonClicked'
+          'click .send-button': 'onFormSubmitted'
         },
         initialize: function initialize() {
           var _this = this;
@@ -52479,9 +52492,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           }
 
           var room = this.model.get('jid');
-          var node = Strophe.getNodeFromJid(room);
-          var domain = Strophe.getDomainFromJid(room);
-          return node + "@" + domain + (nick !== null ? "/".concat(nick) : "");
+          var jid = Strophe.getBareJidFromJid(room);
+          return jid + (nick !== null ? "/".concat(nick) : "");
         },
         registerHandlers: function registerHandlers() {
           /* Register presence and message handlers for this chat
@@ -53996,12 +54008,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           this.removeSpinner();
         },
         roomStanzaItemToHTMLElement: function roomStanzaItemToHTMLElement(room) {
-          if (!u.isValidJID(room.getAttribute('jid'), '@')) {
-            // Some XMPP servers return the MUC service in
-            // the list of rooms (see #1003).
-            return null;
-          }
-
           var name = Strophe.unescapeNode(room.getAttribute('name') || room.getAttribute('jid'));
           var div = document.createElement('div');
           div.innerHTML = tpl_room_item({
@@ -54166,7 +54172,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
           return {
             'jid': jid,
-            'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid))
+            'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
           };
         },
         openChatRoom: function openChatRoom(ev) {
@@ -64968,7 +64974,7 @@ return __p
           return false;
         } else if (message.getAttribute('type') === 'groupchat') {
           return _converse.shouldNotifyOfGroupMessage(message);
-        } else if (utils.isHeadlineMessage(message)) {
+        } else if (utils.isHeadlineMessage(_converse, message)) {
           // We want to show notifications for headline messages.
           return _converse.isMessageToHiddenChat(message);
         }
@@ -66307,7 +66313,7 @@ return __p
         /* Handler method for all incoming messages of type "headline". */
         var from_jid = message.getAttribute('from');
 
-        if (utils.isHeadlineMessage(message)) {
+        if (utils.isHeadlineMessage(_converse, message)) {
           if (_.includes(from_jid, '@') && !_converse.allow_non_roster_messaging) {
             return;
           }

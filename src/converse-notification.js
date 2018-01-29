@@ -93,7 +93,7 @@
                     return false;
                 } else if (message.getAttribute('type') === 'groupchat') {
                     return _converse.shouldNotifyOfGroupMessage(message);
-                } else if (utils.isHeadlineMessage(message)) {
+                } else if (utils.isHeadlineMessage(_converse, message)) {
                     // We want to show notifications for headline messages.
                     return _converse.isMessageToHiddenChat(message);
                 }

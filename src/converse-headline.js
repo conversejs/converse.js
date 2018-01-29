@@ -129,7 +129,7 @@
             function onHeadlineMessage (message) {
                 /* Handler method for all incoming messages of type "headline". */
                 const from_jid = message.getAttribute('from');
-                if (utils.isHeadlineMessage(message)) {
+                if (utils.isHeadlineMessage(_converse, message)) {
                     if (_.includes(from_jid, '@') && !_converse.allow_non_roster_messaging) {
                         return;
                     }

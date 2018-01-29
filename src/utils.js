@@ -399,10 +399,14 @@
         return text && !!text.match(/^\?OTR/);
     };
 
-    u.isHeadlineMessage = function (message) {
+    u.isHeadlineMessage = function (_converse, message) {
         var from_jid = message.getAttribute('from');
         if (message.getAttribute('type') === 'headline') {
             return true;
+        }
+        const chatbox = _converse.chatboxes.get(Strophe.getBareJidFromJid(from_jid));
+        if (chatbox && chatbox.get('type') === 'chatroom') {
+            return false;
         }
         if (message.getAttribute('type') !== 'error' &&
                 !_.isNil(from_jid) &&

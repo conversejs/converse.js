@@ -367,6 +367,10 @@
         return _.filter(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
     };
 
+    u.isValidMUCJID = function (jid) {
+        return !jid.startsWith('@') && !jid.endsWith('@');
+    };
+
     u.isSameBareJID = function (jid1, jid2) {
         return Strophe.getBareJidFromJid(jid1).toLowerCase() ===
                 Strophe.getBareJidFromJid(jid2).toLowerCase();

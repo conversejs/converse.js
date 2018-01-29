@@ -10,7 +10,7 @@
 - #994 TypeError when using the `user.login` API.
 - #995 `ChildNode.replaceWith` is not available in Internet Explorer or Safari. Use `Node.replaceChild` instead.
 - #1000 Scroll to bottom when maximizing a chat room.
-- #1003 Don't list MUC domain in rooms list.
+- #1003 Handle bare MUC room JIDs
 
 ### Translation changes
 

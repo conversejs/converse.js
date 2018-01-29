@@ -319,8 +319,8 @@
 
 
             function openRoom (jid) {
-                if (!u.isValidJID(jid)) {
-                    return converse.log(
+                if (!u.isValidMUCJID(jid)) {
+                    return _converse.log(
                         `Invalid JID "${jid}" provided in URL fragment`,
                         Strophe.LogLevel.WARN
                     );
@@ -1187,9 +1187,8 @@
                         nick = this.model.get('nick');
                     }
                     const room = this.model.get('jid');
-                    const node = Strophe.getNodeFromJid(room);
-                    const domain = Strophe.getDomainFromJid(room);
-                    return node + "@" + domain + (nick !== null ? `/${nick}` : "");
+                    const jid = Strophe.getBareJidFromJid(room);
+                    return jid + (nick !== null ? `/${nick}` : "");
                 },
 
                 registerHandlers () {
@@ -2652,11 +2651,6 @@
                 },
 
                 roomStanzaItemToHTMLElement (room) {
-                    if (!u.isValidJID(room.getAttribute('jid'), '@')) {
-                        // Some XMPP servers return the MUC service in
-                        // the list of rooms (see #1003).
-                        return null;
-                    }
                     const name = Strophe.unescapeNode(
                         room.getAttribute('name') ||
                             room.getAttribute('jid')
@@ -2816,7 +2810,7 @@
                     }
                     return {
                         'jid': jid,
-                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
+                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
                     }
                 },
 

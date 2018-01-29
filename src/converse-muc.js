@@ -435,7 +435,7 @@
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant': 'onOccupantClicked',
                     'keypress .chat-textarea': 'keyPressed',
-                    'click .send-button': 'onSendButtonClicked'
+                    'click .send-button': 'onFormSubmitted'
                 },
 
                 initialize () {

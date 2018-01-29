@@ -56,7 +56,6 @@
     "lodash": "4.17.4",
     "lodash-template-loader": "^2.0.0",
     "moment": "~2.18.1",
-    "npm": "^4.1.1",
     "otr": "0.2.16",
     "pluggable.js": "2.0.0",
     "po2json": "^0.4.4",

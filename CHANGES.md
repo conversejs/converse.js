@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.3.3 (Unreleased)
+
+- Attribute error when empty IQ stanza is returned for vCard query
+
 ## 3.3.2 (2018-01-29)
 
 ### Bugfixes

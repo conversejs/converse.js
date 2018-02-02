@@ -62,7 +62,7 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
- 
+
             ChatBox: {
                 initialize () {
                     this.__super__.initialize.apply(this, arguments);
@@ -118,7 +118,7 @@
                     }
                     return key;
                 },
-                
+
                 getSession (callback) {
                     const { _converse } = this.__super__,
                         { __ } = _converse;
@@ -403,7 +403,7 @@
                         _.partial(utils.slideToggleElement, menu)
                     );
                 },
-                
+
                 getOTRTooltip () {
                     const { _converse } = this.__super__,
                         { __ } = _converse,
@@ -419,13 +419,10 @@
                     }
                 },
 
-                renderToolbar (toolbar, options) {
+                addOTRToolbarButton (options) {
                     const { _converse } = this.__super__,
-                        { __ } = _converse;
-                    if (!_converse.show_toolbar) {
-                        return;
-                    }
-                    const data = this.model.toJSON();
+                          { __ } = _converse,
+                          data = this.model.toJSON();
                     options = _.extend(options || {}, {
                         FINISHED,
                         UNENCRYPTED,
@@ -443,13 +440,17 @@
                         otr_tooltip: this.getOTRTooltip(),
                         otr_translated_status: OTR_TRANSLATED_MAPPING[data.otr_status],
                     });
-                    this.__super__.renderToolbar.apply(this, arguments);
                     this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
-                        'beforeend', 
+                        'beforeend',
                         tpl_toolbar_otr(
                             _.extend(this.model.toJSON(), options || {})
                         ));
-                    return this;
+                },
+
+                renderToolbar (toolbar, options) {
+                    const result = this.__super__.renderToolbar.apply(this, arguments);
+                    this.addOTRToolbarButton(options);
+                    return result;
                 }
             }
         },

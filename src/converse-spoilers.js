@@ -61,11 +61,20 @@
                     return result;
                 },
 
-                isEditSpoilerMessage () {
-                    return this.el.querySelector('.toggle-spoiler-edit').getAttribute('active') === 'true';
+                getOutgoingMessageAttributes (text) {
+                    debugger;
+                    const { __ } = this.__super__._converse,
+                          attrs = this.__super__.getOutgoingMessageAttributes.apply(this, arguments);
+
+                    if (this.model.get('sending_spoiler')) {
+                        const spoiler = this.el.querySelector('.chat-textarea-hint')
+                        attrs.is_spoiler = true;
+                        attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : __('Spoiler');
+                    }
+                    return attrs;
                 },
 
-                'toggleSpoilerMessage': function (event) {
+                toggleSpoilerMessage (event) {
                     const { _converse } = this.__super__,
                           { __ } = _converse;
 
@@ -109,7 +118,7 @@
                     return hintTextArea;
                 },
 
-                'toggleEditSpoilerMessage': function () {
+                toggleEditSpoilerMessage () {
                     const { _converse } = this.__super__,
                           { __ } = _converse;
 
@@ -117,10 +126,10 @@
                     const textArea = this.el.querySelector('.chat-textarea');
                     const spoiler_button = this.el.querySelector('.toggle-spoiler-edit');
 
-                    if (this.isEditSpoilerMessage()) {
+                    if (this.model.get('sending_spoiler')) {
                         textArea.style['background-color'] = '';
                         textArea.setAttribute('placeholder', __('Personal message'));
-                        spoiler_button.setAttribute("active", "false");
+                        this.model.set('sending_spoiler', false);
                         spoiler_button.innerHTML = '<a class="icon-eye" title="' + __('Click here to write a message as a spoiler') + '"></a>'; // better get the element <a></a> and change the class?
                         const hintTextArea = document.querySelector('.chat-textarea-hint');
                         if ( hintTextArea ) {
@@ -129,7 +138,7 @@
                     } else {
                         textArea.style['background-color'] = '#D5FFD2';
                         textArea.setAttribute('placeholder', __('Write your spoiler\'s content here'));
-                        spoiler_button.setAttribute("active", "true");
+                        this.model.set('sending_spoiler', true);
                         // TODO template
                         spoiler_button.innerHTML = '<a class="icon-eye-blocked" title="' + __('Cancel writing spoiler message') + '"></a>';
                         // better get the element <a></a> and change the class?
@@ -139,7 +148,7 @@
                 },
 
                 addSpoilerElement (stanza) {
-                    if (this.isEditSpoilerMessage()) {
+                    if (this.model.get('sending_spoiler')) {
                         const has_hint = this.el.querySelector('.chat-textarea-hint').value.length > 0;
                         if (has_hint) {
                             const hint = document.querySelector('.chat-textarea-hint').value;

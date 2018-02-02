@@ -753,16 +753,22 @@
                             return;
                         }
                     }
-                    let fullname = _converse.xmppstatus.get('fullname');
-                    fullname = _.isEmpty(fullname)? _converse.bare_jid: fullname;
-
-                    const message = this.model.messages.create({
-                        fullname,
-                        sender: 'me',
-                        time: moment().format(),
-                        message: emojione.shortnameToUnicode(text)
-                    });
+                    const attrs = this.getOutgoingMessageAttributes(text)
+                    const message = this.model.messages.create(attrs);
                     this.sendMessage(message);
+                },
+
+                getOutgoingMessageAttributes (text) {
+                    /* Overridable method which returns the attributes to be
+                     * passed to Backbone.Message's constructor.
+                     */
+                    const fullname = _converse.xmppstatus.get('fullname');
+                    return {
+                        'fullname': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
+                        'sender': 'me',
+                        'time': moment().format(),
+                        'message': emojione.shortnameToUnicode(text)
+                    }
                 },
 
                 sendChatState () {

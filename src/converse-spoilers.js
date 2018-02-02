@@ -6,20 +6,10 @@
     ], factory);
 }(this, function (converse, tpl_spoiler_button) {
 
-    const { _ } = converse.env;
+    const { _, Strophe } = converse.env;
     const u = converse.env.utils;
 
-    function isEditSpoilerMessage () {
-        return document.querySelector('.toggle-spoiler-edit').getAttribute('active') === 'true';
-    }
-
-    function hasHint () {
-        return document.querySelector('.chat-textarea-hint').value.length > 0;
-    }
-
-    function getHint () {
-        return document.querySelector('.chat-textarea-hint').value;
-    }
+    Strophe.addNamespace('SPOILER', 'urn:xmpp:spoiler:0');
 
 
     // The following line registers your plugin.
@@ -69,6 +59,10 @@
                     const result = this.__super__.renderToolbar.apply(this, arguments);
                     this.addSpoilerToolbarButton();
                     return result;
+                },
+
+                isEditSpoilerMessage () {
+                    return this.el.querySelector('.toggle-spoiler-edit').getAttribute('active') === 'true';
                 },
 
                 'toggleSpoilerMessage': function (event) {
@@ -123,16 +117,7 @@
                     const textArea = this.el.querySelector('.chat-textarea');
                     const spoiler_button = this.el.querySelector('.toggle-spoiler-edit');
 
-                    if (!isEditSpoilerMessage()) {
-                        textArea.style['background-color'] = '#D5FFD2';
-                        textArea.setAttribute('placeholder', __('Write your spoiler\'s content here'));
-                        spoiler_button.setAttribute("active", "true");
-                        // TODO template
-                        spoiler_button.innerHTML = '<a class="icon-eye-blocked" title="' + __('Cancel writing spoiler message') + '"></a>';
-                        // better get the element <a></a> and change the class?
-                        form.insertBefore(this.createHintTextArea(), textArea);
-                        // <textarea type="text" class="chat-textarea-hint " placeholder="Hint (optional)" style="background-color: rgb(188, 203, 209); height:30px;"></textarea>
-                    } else {
+                    if (this.isEditSpoilerMessage()) {
                         textArea.style['background-color'] = '';
                         textArea.setAttribute('placeholder', __('Personal message'));
                         spoiler_button.setAttribute("active", "false");
@@ -141,19 +126,34 @@
                         if ( hintTextArea ) {
                             hintTextArea.remove();
                         }
+                    } else {
+                        textArea.style['background-color'] = '#D5FFD2';
+                        textArea.setAttribute('placeholder', __('Write your spoiler\'s content here'));
+                        spoiler_button.setAttribute("active", "true");
+                        // TODO template
+                        spoiler_button.innerHTML = '<a class="icon-eye-blocked" title="' + __('Cancel writing spoiler message') + '"></a>';
+                        // better get the element <a></a> and change the class?
+                        form.insertBefore(this.createHintTextArea(), textArea);
+                        // <textarea type="text" class="chat-textarea-hint " placeholder="Hint (optional)" style="background-color: rgb(188, 203, 209); height:30px;"></textarea>
                     }
                 },
 
-                'createMessageStanza': function () {
-                    const messageStanza = this.__super__.createMessageStanza.apply(this, arguments);
-                    if (isEditSpoilerMessage()) {
-                        if (hasHint()){
-                            messageStanza.c('spoiler',{'xmlns': 'urn:xmpp:spoiler:0'}, getHint());
+                addSpoilerElement (stanza) {
+                    if (this.isEditSpoilerMessage()) {
+                        const has_hint = this.el.querySelector('.chat-textarea-hint').value.length > 0;
+                        if (has_hint) {
+                            const hint = document.querySelector('.chat-textarea-hint').value;
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }, hint);
                         } else {
-                            messageStanza.c('spoiler',{'xmlns': 'urn:xmpp:spoiler:0'});
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER });
                         }
                     }
-                    return messageStanza;
+                },
+
+                createMessageStanza () {
+                    const stanza = this.__super__.createMessageStanza.apply(this, arguments);
+                    this.addSpoilerElement(stanza);
+                    return stanza;
                 },
 
                 'renderMessage': function (attrs) {

@@ -117,6 +117,17 @@
                 },
 
                 getMessageAttributes (message, delay, original_stanza) {
+                    /* Parses a passed in message stanza and returns an object
+                     * of attributes.
+                     *
+                     * Parameters:
+                     *    (XMLElement) message - The message stanza
+                     *    (XMLElement) delay - The <delay> node from the
+                     *      stanza, if there was one.
+                     *    (XMLElement) original_stanza - The original stanza,
+                     *      that contains the message stanza, if it was
+                     *      contained, otherwise it's the message stanza itself.
+                     */
                     delay = delay || message.querySelector('delay');
                     const type = message.getAttribute('type'),
                         body = this.getMessageBody(message);
@@ -157,13 +168,16 @@
                 },
 
                 createMessage (message, delay, original_stanza) {
+                    /* Create a Backbone.Message object inside this chat box
+                     * based on the identified message stanza.
+                     */
                     return this.messages.create(this.getMessageAttributes.apply(this, arguments));
                 },
 
                 newMessageWillBeHidden () {
                     /* Returns a boolean to indicate whether a newly received
-                    * message will be visible to the user or not.
-                    */
+                     * message will be visible to the user or not.
+                     */
                     return this.get('hidden') ||
                         this.get('minimized') ||
                         this.isScrolledUp() ||
@@ -256,8 +270,11 @@
 
                 onMessage (message) {
                     /* Handler method for all incoming single-user chat "message"
-                    * stanzas.
-                    */
+                     * stanzas.
+                     *
+                     * Parameters:
+                     *    (XMLElement) message - The incoming message stanza
+                     */
                     let contact_jid, delay, resource,
                         from_jid = message.getAttribute('from'),
                         to_jid = message.getAttribute('to');

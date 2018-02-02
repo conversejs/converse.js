@@ -946,7 +946,9 @@
                 },
 
                 renderToolbar (toolbar, options) {
-                    if (!_converse.show_toolbar) { return; }
+                    if (!_converse.show_toolbar) {
+                        return this;
+                    }
                     toolbar = toolbar || tpl_toolbar;
                     options = _.assign(
                         this.model.toJSON(),

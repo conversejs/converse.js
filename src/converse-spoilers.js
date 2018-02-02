@@ -53,19 +53,21 @@
                     'click .toggle-spoiler-display': 'toggleSpoilerMessage'
                 },
 
-                'renderToolbar': function (toolbar, options) {
-                    const { _converse } = this.__super__;
-
-                    const result = this.__super__.renderToolbar.apply(this, arguments);
-                    if (!_converse.show_toolbar) { return result; }
-
-                    const html = tpl_spoiler_button({
-                        'title': _converse.__('Click here to write a message as a spoiler')
-                    });
+                addSpoilerToolbarButton () {
                     const toolbar_el = this.el.querySelector('.chat-toolbar');
                     if (!_.isNull(toolbar_el)) {
-                        toolbar_el.appendChild(u.stringToElement(html));
+                        toolbar_el.insertAdjacentHTML(
+                            'beforeend',
+                            tpl_spoiler_button({
+                                'title': this.__super__._converse.__('Click here to write a message as a spoiler')
+                            })
+                        );
                     }
+                },
+
+                renderToolbar (toolbar, options) {
+                    const result = this.__super__.renderToolbar.apply(this, arguments);
+                    this.addSpoilerToolbarButton();
                     return result;
                 },
 
@@ -176,7 +178,7 @@
                     if ("spoiler" in attrs) {
                         console.log('Spoiler in attrs \n');
                         const button = document.createElement("button");
-                        const container = document.createElement("div"); 
+                        const container = document.createElement("div");
                         const content = document.createElement( "div" );
                         const hint = document.createElement("div");
                         const contentHidden = document.createElement("div");

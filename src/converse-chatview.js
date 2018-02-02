@@ -308,6 +308,9 @@
                     return this;
                 },
 
+                renderTextArea () {
+                },
+
                 insertHeading () {
                     this.heading = new _converse.ChatBoxHeading({'model': this.model});
                     this.heading.render();

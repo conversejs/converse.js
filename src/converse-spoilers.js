@@ -1,6 +1,13 @@
 (function (root, factory) {
-    define(["converse-core", "strophe.vcard", "converse-chatview"], factory);
-}(this, function (converse, tpl_message) {
+    define([
+        "converse-core",
+        "tpl!spoiler_button",
+        "converse-chatview"
+    ], factory);
+}(this, function (converse, tpl_spoiler_button) {
+
+    const { _ } = converse.env;
+    const u = converse.env.utils;
 
     function isEditSpoilerMessage () {
         return document.querySelector('.toggle-spoiler-edit').getAttribute('active') === 'true';
@@ -43,21 +50,37 @@
 
                 'events': {
                     'click .toggle-spoiler-edit': 'toggleEditSpoilerMessage',
-                    'click .toggle-spoiler-display': 'toggleDisplaySpoilerMessage'
+                    'click .toggle-spoiler-display': 'toggleSpoilerMessage'
                 },
 
-                'toggleDisplaySpoilerMessage': function (event) {
+                'renderToolbar': function (toolbar, options) {
+                    const { _converse } = this.__super__;
+
+                    const result = this.__super__.renderToolbar.apply(this, arguments);
+                    if (!_converse.show_toolbar) { return result; }
+
+                    const html = tpl_spoiler_button({
+                        'title': _converse.__('Click here to write a message as a spoiler')
+                    });
+                    const toolbar_el = this.el.querySelector('.chat-toolbar');
+                    if (!_.isNull(toolbar_el)) {
+                        toolbar_el.appendChild(u.stringToElement(html));
+                    }
+                    return result;
+                },
+
+                'toggleSpoilerMessage': function (event) {
                     const { _converse } = this.__super__,
                           { __ } = _converse;
 
                     const button = event.target;
-                    const isClosed = button.getAttribute("closed");
-                    const content = button.nextElementSibling;
-                    const hint = content.children[0];
-                    const contentHidden = content.children[1];
+                    const textarea = button.nextElementSibling;
+                    const hint = textarea.children[0];
+                    const contentHidden = textarea.children[1];
                     const container = button.parentElement;
 
-                    if (isClosed == "true") { //Show spoiler's content
+                    if (button.getAttribute("closed") == "true") {
+                        //Show spoiler's content
                         button.classList.remove("icon-eye");
                         button.classList.add("toggle-spoiler-display");
                         button.classList.add("icon-eye-blocked");
@@ -94,9 +117,9 @@
                     const { _converse } = this.__super__,
                           { __ } = _converse;
 
-                    const form = document.querySelector('.sendXMPPMessage');
-                    const textArea = document.querySelector('.chat-textarea');
-                    const spoiler_button = document.querySelector('.toggle-spoiler-edit');
+                    const form = this.el.querySelector('.sendXMPPMessage');
+                    const textArea = this.el.querySelector('.chat-textarea');
+                    const spoiler_button = this.el.querySelector('.toggle-spoiler-edit');
 
                     if (!isEditSpoilerMessage()) {
                         textArea.style['background-color'] = '#D5FFD2';
@@ -229,17 +252,11 @@
             /* Inside this method, you have access to the private
              * `_converse` object.
              */
-            const { _converse } = this,
-                  { __ } = _converse;
+            const { _converse } = this;
 
-            function initSpoilers () {
-                const spoiler_button = document.createElement('li');
-                spoiler_button.classList.add("toggle-spoiler-edit");
-                spoiler_button.setAttribute("active", "false");
-                spoiler_button.innerHTML = '<a class="icon-eye" title="' + __('Click here to write a message as a spoiler') + '"></a>';
-                document.querySelector('.chat-toolbar').appendChild(spoiler_button);
+            function initSpoilers (chatbox) {
+                chatbox.renderToolbar();
             }
-
             _converse.on('chatBoxFocused', initSpoilers);
         }
     });

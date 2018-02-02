@@ -173,9 +173,9 @@
                     const msg = this.__super__.renderMessage.apply(this, arguments);
                     console.log(msg);
 
-                    //Spoiler logic
-                    //The value of the "spoiler" attribute, corresponds to the spoiler's hint.
-                    if ("spoiler" in attrs) {
+                    // Spoiler logic
+                    // The value of the "spoiler" attribute, corresponds to the spoiler's hint.
+                    if (attrs.is_spoiler) {
                         console.log('Spoiler in attrs \n');
                         const button = document.createElement("button");
                         const container = document.createElement("div");
@@ -184,7 +184,7 @@
                         const contentHidden = document.createElement("div");
                         const messageContent = msg.querySelector(".chat-msg-content");
 
-                        hint.appendChild(document.createTextNode(attrs.spoiler));
+                        hint.appendChild(document.createTextNode(attrs.spoiler_hint));
 
                         for (var i = 0; i < messageContent.childNodes.length; i++){
                             contentHidden.append(messageContent.childNodes[i]);
@@ -218,30 +218,21 @@
                         messageContent.append(document.createElement("br"));
                         messageContent.append(container);
                     }
-
                     return msg;
                 }
             },
-            'ChatBox': {
-                'getMessageAttributes': function (message, delay, original_stanza) {
-                    const { _converse } = this.__super__,
-                          { __ } = _converse;
-                    const messageAttributes = this.__super__.getMessageAttributes.apply(this, arguments);
-                    console.log(arguments);
-                    //Check if message is spoiler
-                    let spoiler = null, i = 0, found = false;
 
-                    while (i < message.childNodes.length && !found) {
-                        if (message.childNodes[i].nodeName == "spoiler") {
-                            spoiler = message.childNodes[i];
-                            found = true;
-                        }
-                        i++;
-                    }
+            'ChatBox': {
+
+                getMessageAttributes (message, delay, original_stanza) {
+                    const attrs = this.__super__.getMessageAttributes.apply(this, arguments);
+                    const spoiler = message.querySelector(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`)
                     if (spoiler) {
-                        messageAttributes.spoiler = spoiler.textContent.length > 0 ? spoiler.textContent : __('Spoiler');
+                        const { __ } = this.__super__._converse;
+                        attrs.is_spoiler = true;
+                        attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : __('Spoiler');
                     }
-                    return messageAttributes;
+                    return attrs;
                 }
             }
         },

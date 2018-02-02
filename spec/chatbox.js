@@ -17,7 +17,7 @@
     var moment = converse.env.moment;
     var u = converse.env.utils;
 
-    return describe("Chatboxes", function() {
+    return describe("Chatboxes", function () {
         describe("A Chatbox", function () {
 
             it("has a /help command to show the available commands",

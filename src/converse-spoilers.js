@@ -2,201 +2,125 @@
     define(["converse-core", "strophe.vcard", "converse-chatview"], factory);
 }(this, function (converse, tpl_message) {
 
-    // Commonly used utilities and variables can be found under the "env"
-    // namespace of the "converse" global.
-    var Strophe = converse.env.Strophe,
-        $iq = converse.env.$iq,
-        $msg = converse.env.$msg,
-        $pres = converse.env.$pres,
-        $build = converse.env.$build,
-        b64_sha1 = converse.env.b64_sha1,
-        _ = converse.env._,
-        moment = converse.env.moment;
-
-    function isEditSpoilerMessage() {
+    function isEditSpoilerMessage () {
         return document.querySelector('.toggle-spoiler-edit').getAttribute('active') === 'true';
     }
 
-    function hasHint() {
+    function hasHint () {
         return document.querySelector('.chat-textarea-hint').value.length > 0;
     }
 
-    function getHint() {
+    function getHint () {
         return document.querySelector('.chat-textarea-hint').value;
     }
 
-    function toggleEditSpoilerMessage() {
-        let form = document.querySelector('.sendXMPPMessage');
-        let textArea = document.querySelector('.chat-textarea');
-        let hintTextArea = null;
-        let spoiler_button = document.querySelector('.toggle-spoiler-edit');
-
-        if (!isEditSpoilerMessage()) {
-            textArea.style['background-color'] = '#D5FFD2';
-            textArea.setAttribute('placeholder', _('Write your spoiler\'s content here'));
-            spoiler_button.setAttribute("active", "true");
-            spoiler_button.innerHTML = '<a class="icon-eye-blocked" title="' + _('Cancel writing spoiler message') + '"></a>'; // better get the element <a></a> and change the class?
-            hintTextArea = createHintTextArea();
-            form.insertBefore(hintTextArea, textArea);
-//                     <textarea type="text" class="chat-textarea-hint " placeholder="Hint (optional)" style="background-color: rgb(188, 203, 209); height:30px;"></textarea>
-
-        } else {
-            textArea.style['background-color'] = '';
-            textArea.setAttribute('placeholder', _('Personal message'));
-            spoiler_button.setAttribute("active", "false");
-            spoiler_button.innerHTML = '<a class="icon-eye" title="' + _('Click here to write a message as a spoiler') + '"></a>'; // better get the element <a></a> and change the class?
-            hintTextArea = document.querySelector('.chat-textarea-hint');
-            if ( hintTextArea ) {
-                hintTextArea.remove();
-
-            }
-        }
-
-    }
-
-    function toggleDisplaySpoilerMessage(event) {
-        let button = event.target;
-        let isClosed = button.getAttribute("closed");
-        let content = button.nextElementSibling;
-        let hint = content.children[0];
-        let contentHidden = content.children[1];
-        let container = button.parentElement;
-
-        if(isClosed == "true"){//Show spoiler's content
-            button.classList.remove("icon-eye");
-            button.classList.add("toggle-spoiler-display");
-            button.classList.add("icon-eye-blocked");
-            button.setAttribute("closed", "false");
-            button.textContent = _('Hide ');
-            container.style.backgroundColor="#D5FFD2";
-
-            hint.classList.add("hidden");
-            contentHidden.classList.remove("hidden");
-
-
-        }else{//Hide spoiler's content
-            button.classList.remove("icon-eye-blocked");
-            button.classList.add("icon-eye");
-            button.setAttribute("closed", "true");
-            button.textContent = _('Show ');
-            container.style.backgroundColor="Lavender";
-
-            hint.classList.remove("hidden");
-            contentHidden.classList.add("hidden");
-        }
-
-    }
-
-    const initSpoilers = function () {
-        var spoiler_button = document.createElement('li');
-        spoiler_button.classList.add("toggle-spoiler-edit");
-        spoiler_button.setAttribute("active", "false");
-        spoiler_button.innerHTML = '<a class="icon-eye" title="' + _('Click here to write a message as a spoiler') + '"></a>';
-        document.querySelector('.chat-toolbar').appendChild(spoiler_button);
-    };
-
-    function createHintTextArea(){
-        let hintTextArea = document.createElement('input');
-        hintTextArea.setAttribute('type', 'text');
-        hintTextArea.setAttribute('placeholder', _('Hint (optional)'));
-        hintTextArea.classList.add('chat-textarea-hint');
-        hintTextArea.style['height'] = '30px';
-        return hintTextArea;
-    }
 
     // The following line registers your plugin.
     converse.plugins.add("converse-spoilers", {
-
         /* Optional dependencies are other plugins which might be
-           * overridden or relied upon, and therefore need to be loaded before
-           * this plugin. They are called "optional" because they might not be
-           * available, in which case any overrides applicable to them will be
-           * ignored.
-           *
-           * NB: These plugins need to have already been loaded via require.js.
-           *
-           * It's possible to make optional dependencies non-optional.
-           * If the setting "strict_plugin_dependencies" is set to true,
-           * an error will be raised if the plugin is not found.
-           */
-        'optional_dependencies': [],
-
-        /* Converse.js's plugin mechanism will call the initialize
-         * method on any plugin (if it exists) as soon as the plugin has
-         * been loaded.
+         * overridden or relied upon, and therefore need to be loaded before
+         * this plugin. They are called "optional" because they might not be
+         * available, in which case any overrides applicable to them will be
+         * ignored.
+         *
+         * It's possible however to make optional dependencies non-optional.
+         * If the setting "strict_plugin_dependencies" is set to true,
+         * an error will be raised if the plugin is not found.
+         *
+         * NB: These plugins need to have already been loaded via require.js.
          */
-        'initialize': function () {
-            /* Inside this method, you have access to the private
-             * `_converse` object.
-             */
-            var _converse = this._converse;
-            _converse.log("The converse-spoilers plugin is being initialized");
+        dependencies: ["converse-chatview"],
 
-            /* From the `_converse` object you can get any configuration
-             * options that the user might have passed in via
-             * `converse.initialize`.
-             *
-             * You can also specify new configuration settings for this
-             * plugin, or override the default values of existing
-             * configuration settings. This is done like so:
-            */
-            _converse.api.settings.update({
-                'initialize_message': 'Initializing converse-spoilers!'
-            });
+        overrides: {
+            // Overrides mentioned here will be picked up by converse.js's
+            // plugin architecture they will replace existing methods on the
+            // relevant objects or classes.
+            //
+            // New functions which don't exist yet can also be added.
 
-            /* The user can then pass in values for the configuration
-             * settings when `converse.initialize` gets called.
-             * For example:
-             *
-             *      converse.initialize({
-             *           "initialize_message": "My plugin has been initialized"
-             *      });
-             */
-            alert(this._converse.initialize_message);
 
-            /* Besides `_converse.api.settings.update`, there is also a
-             * `_converse.api.promises.add` method, which allows you to
-             * add new promises that your plugin is obligated to fulfill.
-             *
-             * This method takes a string or a list of strings which
-             * represent the promise names:
-             *
-             *      _converse.api.promises.add('myPromise');
-             *
-             * Your plugin should then, when appropriate, resolve the
-             * promise by calling `_converse.api.emit`, which will also
-             * emit an event with the same name as the promise.
-             * For example:
-             *
-             *      _converse.api.emit('operationCompleted');
-             *
-             * Other plugins can then either listen for the event
-             * `operationCompleted` like so:
-             *
-             *      _converse.api.listen.on('operationCompleted', function { ... });
-             *
-             * or they can wait for the promise to be fulfilled like so:
-             *
-             *      _converse.api.waitUntil('operationCompleted', function { ... });
-             */
-
-            _converse.on('chatBoxFocused', function (chatbox) { initSpoilers(); });
-
-        },
-
-        /* If you want to override some function or a Backbone model or
-         * view defined elsewhere in converse.js, then you do that under
-         * the "overrides" namespace.
-         */
-        'overrides': {
             'ChatBoxView': {
+
                 'events': {
-                    'click .toggle-spoiler-edit': toggleEditSpoilerMessage,
-                    'click .toggle-spoiler-display': toggleDisplaySpoilerMessage
+                    'click .toggle-spoiler-edit': 'toggleEditSpoilerMessage',
+                    'click .toggle-spoiler-display': 'toggleDisplaySpoilerMessage'
+                },
+
+                'toggleDisplaySpoilerMessage': function (event) {
+                    const { _converse } = this.__super__,
+                          { __ } = _converse;
+
+                    const button = event.target;
+                    const isClosed = button.getAttribute("closed");
+                    const content = button.nextElementSibling;
+                    const hint = content.children[0];
+                    const contentHidden = content.children[1];
+                    const container = button.parentElement;
+
+                    if (isClosed == "true") { //Show spoiler's content
+                        button.classList.remove("icon-eye");
+                        button.classList.add("toggle-spoiler-display");
+                        button.classList.add("icon-eye-blocked");
+                        button.setAttribute("closed", "false");
+                        button.textContent = __('Hide ');
+                        container.style.backgroundColor="#D5FFD2";
+
+                        hint.classList.add("hidden");
+                        contentHidden.classList.remove("hidden");
+                    } else { //Hide spoiler's content
+                        button.classList.remove("icon-eye-blocked");
+                        button.classList.add("icon-eye");
+                        button.setAttribute("closed", "true");
+                        button.textContent = __('Show ');
+                        container.style.backgroundColor="Lavender";
+                        hint.classList.remove("hidden");
+                        contentHidden.classList.add("hidden");
+                    }
+                },
+
+                'createHintTextArea': function () {
+                    const { _converse } = this.__super__,
+                          { __ } = _converse;
+
+                    const hintTextArea = document.createElement('input');
+                    hintTextArea.setAttribute('type', 'text');
+                    hintTextArea.setAttribute('placeholder', __('Hint (optional)'));
+                    hintTextArea.classList.add('chat-textarea-hint');
+                    hintTextArea.style.height = '30px';
+                    return hintTextArea;
+                },
+
+                'toggleEditSpoilerMessage': function () {
+                    const { _converse } = this.__super__,
+                          { __ } = _converse;
+
+                    const form = document.querySelector('.sendXMPPMessage');
+                    const textArea = document.querySelector('.chat-textarea');
+                    const spoiler_button = document.querySelector('.toggle-spoiler-edit');
+
+                    if (!isEditSpoilerMessage()) {
+                        textArea.style['background-color'] = '#D5FFD2';
+                        textArea.setAttribute('placeholder', __('Write your spoiler\'s content here'));
+                        spoiler_button.setAttribute("active", "true");
+                        // TODO template
+                        spoiler_button.innerHTML = '<a class="icon-eye-blocked" title="' + __('Cancel writing spoiler message') + '"></a>';
+                        // better get the element <a></a> and change the class?
+                        form.insertBefore(this.createHintTextArea(), textArea);
+                        // <textarea type="text" class="chat-textarea-hint " placeholder="Hint (optional)" style="background-color: rgb(188, 203, 209); height:30px;"></textarea>
+                    } else {
+                        textArea.style['background-color'] = '';
+                        textArea.setAttribute('placeholder', __('Personal message'));
+                        spoiler_button.setAttribute("active", "false");
+                        spoiler_button.innerHTML = '<a class="icon-eye" title="' + __('Click here to write a message as a spoiler') + '"></a>'; // better get the element <a></a> and change the class?
+                        const hintTextArea = document.querySelector('.chat-textarea-hint');
+                        if ( hintTextArea ) {
+                            hintTextArea.remove();
+                        }
+                    }
                 },
 
                 'createMessageStanza': function () {
-                    let messageStanza = this.__super__.createMessageStanza.apply(this, arguments);
+                    const messageStanza = this.__super__.createMessageStanza.apply(this, arguments);
                     if (isEditSpoilerMessage()) {
                         if (hasHint()){
                             messageStanza.c('spoiler',{'xmlns': 'urn:xmpp:spoiler:0'}, getHint());
@@ -216,21 +140,24 @@
                      *  Returns:
                      *      The DOM element representing the message.
                      */
+                    const { _converse } = this.__super__,
+                          { __ } = _converse;
+
                     console.log('These are the attrs and the msg object\n');
                     console.log(attrs);
-                    let msg = this.__super__.renderMessage.apply(this, arguments);
+                    const msg = this.__super__.renderMessage.apply(this, arguments);
                     console.log(msg);
 
                     //Spoiler logic
                     //The value of the "spoiler" attribute, corresponds to the spoiler's hint.
                     if ("spoiler" in attrs) {
                         console.log('Spoiler in attrs \n');
-                        let button = document.createElement("button");
-                        let container = document.createElement("div"); 
-                        let content = document.createElement( "div" );
-                        let hint = document.createElement("div");
-                        let contentHidden = document.createElement("div");
-                        let messageContent = msg.querySelector(".chat-msg-content");
+                        const button = document.createElement("button");
+                        const container = document.createElement("div"); 
+                        const content = document.createElement( "div" );
+                        const hint = document.createElement("div");
+                        const contentHidden = document.createElement("div");
+                        const messageContent = msg.querySelector(".chat-msg-content");
 
                         hint.appendChild(document.createTextNode(attrs.spoiler));
 
@@ -238,8 +165,8 @@
                             contentHidden.append(messageContent.childNodes[i]);
                         }
                         contentHidden.classList.add("hidden");
-//                         contentHidden.addHyperlinks();
-//                         contentHidden.addEmoticons(_converse.visible_toolbar_buttons.emoticons);
+                        // contentHidden.addHyperlinks();
+                        // contentHidden.addEmoticons(_converse.visible_toolbar_buttons.emoticons);
 
                         container.style.backgroundColor = "Lavender";
                         container.style.textAlign = "center";
@@ -252,7 +179,7 @@
                         button.classList.add("toggle-spoiler-display");
                         button.classList.add("icon-eye");
                         button.setAttribute("type", "button");
-                        button.appendChild(document.createTextNode(_('Show ')));
+                        button.appendChild(document.createTextNode(__('Show ')));
                         button.style.width = "100%";
                         button.setAttribute("closed", "true");
 
@@ -272,7 +199,9 @@
             },
             'ChatBox': {
                 'getMessageAttributes': function (message, delay, original_stanza) {
-                    let messageAttributes = this.__super__.getMessageAttributes.apply(this, arguments);
+                    const { _converse } = this.__super__,
+                          { __ } = _converse;
+                    const messageAttributes = this.__super__.getMessageAttributes.apply(this, arguments);
                     console.log(arguments);
                     //Check if message is spoiler
                     let spoiler = null, i = 0, found = false;
@@ -282,17 +211,36 @@
                             spoiler = message.childNodes[i];
                             found = true;
                         }
-
                         i++;
                     }
                     if (spoiler) {
-                        messageAttributes['spoiler'] = spoiler.textContent.length > 0 ? spoiler.textContent : _('Spoiler');
+                        messageAttributes.spoiler = spoiler.textContent.length > 0 ? spoiler.textContent : __('Spoiler');
                     }
-
                     return messageAttributes;
                 }
             }
+        },
 
+        /* Converse.js's plugin mechanism will call the initialize
+         * method on any plugin (if it exists) as soon as the plugin has
+         * been loaded.
+         */
+        initialize () {
+            /* Inside this method, you have access to the private
+             * `_converse` object.
+             */
+            const { _converse } = this,
+                  { __ } = _converse;
+
+            function initSpoilers () {
+                const spoiler_button = document.createElement('li');
+                spoiler_button.classList.add("toggle-spoiler-edit");
+                spoiler_button.setAttribute("active", "false");
+                spoiler_button.innerHTML = '<a class="icon-eye" title="' + __('Click here to write a message as a spoiler') + '"></a>';
+                document.querySelector('.chat-toolbar').appendChild(spoiler_button);
+            }
+
+            _converse.on('chatBoxFocused', initSpoilers);
         }
     });
 }));

@@ -261,7 +261,7 @@
 
                         console.log('And this is the container:\n');
                         console.log(container);
-                        
+
                         messageContent.textContent = "";
                         messageContent.append(document.createElement("br"));
                         messageContent.append(container);

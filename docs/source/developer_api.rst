@@ -916,7 +916,7 @@ It takes 3 parameters:
             var _converse = this._converse;
             _converse.api.waitUntil('roomsAutoJoined').then(function () {
                 var create_if_not_found = true;
-                this._converse.api.rooms.open(
+                this._converse.api.rooms.get(
                     'group@muc.example.com',
                     {'nick': 'dread-pirate-roberts'},
                     create_if_not_found

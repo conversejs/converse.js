@@ -448,10 +448,12 @@
                     spyOn(window, 'confirm').and.returnValue(true);
                     $('#chatrooms dl.bookmarks dd:nth-child(2) a:nth-child(2)')[0].click();
                     expect(window.confirm).toHaveBeenCalled();
-                    expect($('#chatrooms dl.bookmarks dd a').text().trim()).toBe(
-                        "1st Bookmark  Bookmark with a very very long name that will be shortened  The Play&apos;s the Thing")
-                    done();
-                });
+
+                    return test_utils.waitUntil(function () {
+                        return $('#chatrooms dl.bookmarks dd a').text().trim() ===
+                            "1st Bookmark  Bookmark with a very very long name that will be shortened  The Play&apos;s the Thing";
+                    }, 300)
+                }).then(done);
             }));
 
             it("remembers the toggle state of the bookmarks list", mock.initConverseWithPromises(

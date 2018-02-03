@@ -319,8 +319,8 @@
 
 
             function openRoom (jid) {
-                if (!u.isValidJID(jid)) {
-                    return converse.log(
+                if (!u.isValidMUCJID(jid)) {
+                    return _converse.log(
                         `Invalid JID "${jid}" provided in URL fragment`,
                         Strophe.LogLevel.WARN
                     );
@@ -435,7 +435,7 @@
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant': 'onOccupantClicked',
                     'keypress .chat-textarea': 'keyPressed',
-                    'click .send-button': 'onSendButtonClicked'
+                    'click .send-button': 'onFormSubmitted'
                 },
 
                 initialize () {
@@ -553,7 +553,7 @@
                     }));
                 },
 
-                afterShown () {
+                afterShown (focus) {
                     /* Override from converse-chatview, specifically to avoid
                      * the 'active' chat state from being sent out prematurely.
                      *
@@ -565,6 +565,8 @@
                         this.model.save();
                     }
                     this.occupantsview.setOccupantsHeight();
+                    this.scrollDown();
+                    if (focus) { this.focus(); }
                 },
 
                 show (focus) {
@@ -575,8 +577,7 @@
                     // Override from converse-chatview in order to not use
                     // "fadeIn", which causes flashing.
                     u.showElement(this.el);
-                    this.afterShown();
-                    if (focus) { this.focus(); }
+                    this.afterShown(focus);
                 },
 
                 afterConnected () {
@@ -1186,9 +1187,8 @@
                         nick = this.model.get('nick');
                     }
                     const room = this.model.get('jid');
-                    const node = Strophe.getNodeFromJid(room);
-                    const domain = Strophe.getDomainFromJid(room);
-                    return node + "@" + domain + (nick !== null ? `/${nick}` : "");
+                    const jid = Strophe.getBareJidFromJid(room);
+                    return jid + (nick !== null ? `/${nick}` : "");
                 },
 
                 registerHandlers () {
@@ -1241,6 +1241,7 @@
                         // so we don't send out a presence stanza again.
                         return this;
                     }
+
                     const stanza = $pres({
                         'from': _converse.connection.jid,
                         'to': this.getRoomJIDAndNick(nick)
@@ -1845,12 +1846,14 @@
                             tpl_info({
                                 'data': `data-leavejoin="${nick}"`,
                                 'isodate': moment().format(),
-                                'message': __(nick+' has left and re-entered the room.')
+                                'message': __('%1$s has left and re-entered the room.', nick)
                             });
                     } else {
-                        let  message = __(nick+' has entered the room.');
+                        let  message;
                         if (_.get(stat, 'textContent')) {
-                            message = message + ' "' + stat.textContent + '"';
+                            message = __('%1$s has entered the room. "%2$s"', nick, stat.textContent);
+                        } else {
+                            message = __('%1$s has entered the room.', nick);
                         }
                         const data = {
                             'data': `data-join="${nick}"`,
@@ -1877,9 +1880,11 @@
                     if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
                             _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
 
-                        let message = __('%1$s has entered and left the room.', nick);
+                        let message;
                         if (_.get(stat, 'textContent')) {
-                            message = message + ' "' + stat.textContent + '"';
+                            message = __('%1$s has entered and left the room. "%2$s"', nick, stat.textContent);
+                        } else {
+                            message = __('%1$s has entered and left the room.', nick);
                         }
                         last_el.outerHTML =
                             tpl_info({
@@ -1888,9 +1893,11 @@
                                 'message': message
                             });
                     } else {
-                        let  message = __('%1$s has left the room.', nick);
+                        let message;
                         if (_.get(stat, 'textContent')) {
-                            message = message + ' "' + stat.textContent + '"';
+                            message = __('%1$s has left the room. "%2$s"', nick, stat.textContent);
+                        } else {
+                            message = __('%1$s has left the room.', nick);
                         }
                         const data = {
                             'message': message,
@@ -2462,8 +2469,9 @@
 
                 promptForInvite (suggestion) {
                     const reason = prompt(
-                        __('You are about to invite %1$s to the chat room "%2$s". ', suggestion.text.label, this.model.get('id')) +
-                        __("You may optionally include a message, explaining the reason for the invitation.")
+                        __('You are about to invite %1$s to the chat room "%2$s". '+
+                           'You may optionally include a message, explaining the reason for the invitation.',
+                           suggestion.text.label, this.model.get('id'))
                     );
                     if (reason !== null) {
                         this.chatroomview.directInvite(suggestion.text.value, reason);
@@ -2642,6 +2650,21 @@
                     this.removeSpinner();
                 },
 
+                roomStanzaItemToHTMLElement (room) {
+                    const name = Strophe.unescapeNode(
+                        room.getAttribute('name') ||
+                            room.getAttribute('jid')
+                    );
+                    const div = document.createElement('div');
+                    div.innerHTML = tpl_room_item({
+                        'name': name,
+                        'jid': room.getAttribute('jid'),
+                        'open_title': __('Click to open this room'),
+                        'info_title': __('Show more information on this room')
+                    });
+                    return div.firstChild;
+                },
+
                 onRoomsFound (iq) {
                     /* Handle the IQ stanza returned from the server, containing
                      * all its public rooms.
@@ -2654,21 +2677,9 @@
                         available_chatrooms.innerHTML = tpl_rooms_results({
                             'feedback_text': __('Rooms found')
                         });
-                        const div = document.createElement('div');
                         const fragment = document.createDocumentFragment();
-                        for (let i=0; i<this.rooms.length; i++) {
-                            const name = Strophe.unescapeNode(
-                                this.rooms[i].getAttribute('name') ||
-                                    this.rooms[i].getAttribute('jid')
-                            );
-                            div.innerHTML = tpl_room_item({
-                                'name': name,
-                                'jid': this.rooms[i].getAttribute('jid'),
-                                'open_title': __('Click to open this room'),
-                                'info_title': __('Show more information on this room')
-                            });
-                            fragment.appendChild(div.firstChild);
-                        }
+                        const children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil)
+                        _.each(children, (child) => fragment.appendChild(child));
                         available_chatrooms.appendChild(fragment);
                         const input_el = this.el.querySelector('input#show-rooms');
                         input_el.classList.remove('hidden')
@@ -2799,7 +2810,7 @@
                     }
                     return {
                         'jid': jid,
-                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
+                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
                     }
                 },
 

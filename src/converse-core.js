@@ -163,21 +163,13 @@
                 'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
             }, console);
         if (level === Strophe.LogLevel.ERROR) {
-            if (_converse.debug) {
-                logger.trace(`${prefix} ${moment().format()} ERROR: ${message}`, style);
-            } else {
-                logger.error(`${prefix} ERROR: ${message}`, style);
-            }
+            logger.error(`${prefix} ERROR: ${message}`, style);
         } else if (level === Strophe.LogLevel.WARN) {
             if (_converse.debug) {
                 logger.warn(`${prefix} ${moment().format()} WARNING: ${message}`, style);
             }
         } else if (level === Strophe.LogLevel.FATAL) {
-            if (_converse.debug) {
-                logger.trace(`${prefix} ${moment().format()} FATAL: ${message}`, style);
-            } else {
-                logger.error(`${prefix} FATAL: ${message}`, style);
-            }
+            logger.error(`${prefix} FATAL: ${message}`, style);
         } else if (_converse.debug) {
             if (level === Strophe.LogLevel.DEBUG) {
                 logger.debug(`${prefix} ${moment().format()} DEBUG: ${message}`, style);
@@ -314,7 +306,7 @@
             locales: [
                 'af', 'ca', 'de', 'es', 'en', 'fr', 'he',
                 'hu', 'id', 'it', 'ja', 'nb', 'nl',
-                'pl', 'pt_BR', 'ru', 'uk', 'zh'
+                'pl', 'pt_BR', 'ru', 'uk', 'zh_CN', 'zh_TW'
             ],
             message_carbons: true,
             message_storage: 'session',
@@ -373,7 +365,7 @@
         // Module-level functions
         // ----------------------
 
-        this.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749825).toString()}`;
+        this.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749528).toString()}`;
 
         this.sendCSI = function (stat) {
             /* Send out a Chat Status Notification (XEP-0352)
@@ -581,8 +573,8 @@
             } else if (status === Strophe.Status.CONNFAIL) {
                 let feedback = message;
                 if (message === "host-unknown" || message == "remote-connection-failed") {
-                    feedback = __("Sorry, we could not connect to the XMPP host with domain: ") +
-                        `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`;
+                    feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s",
+                        `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`);
                 } else if (!_.isUndefined(message) && message === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
                     feedback = __("The XMPP server did not offer a supported authentication mechanism");
                 }

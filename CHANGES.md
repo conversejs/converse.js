@@ -1,6 +1,43 @@
 # Changelog
 
-## 3.3.0 (Unreleased)
+## 3.3.3 (Unreleased)
+
+- Attribute error when empty IQ stanza is returned for vCard query
+
+## 3.3.2 (2018-01-29)
+
+### Bugfixes
+
+- Various fixes for IE11.
+- Could not register on Ejabberd 18. `"Missing attribute 'id' in tag qualified by namespace 'jabber:client'"`
+- #878 Ending slash in link not recognized
+- #921 FATAL error when `visible_toolbar_buttons.emoji = false`
+- #959 Add padding for the iPhone X (to the mobile CSS).
+- #993 `moment.format` is not a function error when sending a message.
+- #994 TypeError when using the `user.login` API.
+- #995 `ChildNode.replaceWith` is not available in Internet Explorer or Safari. Use `Node.replaceChild` instead.
+- #999 MUC Chat Send button causes page reload
+- #1000 Scroll to bottom when maximizing a chat room.
+- #1003 Handle bare MUC room JIDs
+
+### Translation changes
+
+- Updated Dutch, French, Japanese, Norwegian Bokmål and Ukrainian translations
+
+## 3.3.1 (2018-01-18)
+
+### UI/UX changes
+- Add new configuration option
+  [show_message_load_animation](https://conversejs.org/docs/html/configurations.html#show-message-load-animation)
+  with a default value of `false`. The message load animations (added in 3.3.0)
+  cause slowness and performance issues in Firefox, so they're now disabled by default.
+
+### Translation changes
+- Updated Spanish and French translations.
+- New translation: "Simplified Chinese"
+- Rename `zh` language code to `zh_TW` and add Simplified Chinese as `zh_CN`
+
+## 3.3.0 (2018-01-17)
 
 ### Bugfixes
 - #800 Could not register successfully in ejabberd 17.01
@@ -48,6 +85,7 @@
 - `hide_open_bookmarks` is now by default `true`.
 
 ### UX/UI changes
+- #984 Improve loading of archived messages via "infinite scroll"
 - Use CSS3 fade transitions to render various elements.
 - Remove `Login` and `Registration` tabs and consolidate into one panel.
 - Show validation error messages on the login form.

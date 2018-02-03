@@ -272,7 +272,7 @@
                             Strophe.LogLevel.INFO
                         );
                         return true;
-                    } else if (utils.isHeadlineMessage(message)) {
+                    } else if (utils.isHeadlineMessage(_converse, message)) {
                         // XXX: Ideally we wouldn't have to check for headline
                         // messages, but Prosody sends headline messages with the
                         // wrong type ('chat'), so we need to filter them out here.

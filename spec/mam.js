@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["jquery", "jasmine", "mock", "converse-core", "test-utils"], factory);
-} (this, function ($, jasmine, mock, converse, test_utils) {
+    define(["jasmine", "mock", "converse-core", "test-utils"], factory);
+} (this, function (jasmine, mock, converse, test_utils) {
     "use strict";
     var _ = converse.env._;
     var Backbone = converse.env.Backbone;
@@ -63,7 +63,7 @@
                     _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 }
                 _converse.api.archive.query();
-                var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
+                var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'><query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'/></iq>");
                 done();
@@ -80,7 +80,7 @@
                     _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 }
                 _converse.api.archive.query({'with':'juliet@capulet.lit'});
-                var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
+                var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
@@ -96,6 +96,104 @@
                     "</iq>"
                 );
             }));
+
+           it("can be used to query for archived messages from a chat room", mock.initConverse(function (_converse) {
+                if (!_converse.disco_entities.get(_converse.domain).features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
+                }
+                var sent_stanza, IQ_id;
+                var sendIQ = _converse.connection.sendIQ;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                var callback = jasmine.createSpy('callback');
+
+                _converse.api.archive.query({'with': 'coven@chat.shakespeare.lit', 'groupchat': true}, callback);
+                var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
+
+                expect(sent_stanza.toString()).toBe(
+                    "<iq type='set' to='coven@chat.shakespeare.lit' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                        "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
+                            "<x xmlns='jabber:x:data' type='submit'>"+
+                                "<field var='FORM_TYPE' type='hidden'>"+
+                                    "<value>urn:xmpp:mam:2</value>"+
+                                "</field>"+
+                            "</x>"+
+                        "</query>"+
+                    "</iq>");
+           }));
+
+           it("checks whether returned MAM messages from a MUC room are from the right JID", mock.initConverse(function (_converse) {
+                if (!_converse.disco_entities.get(_converse.domain).features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
+                }
+                var sent_stanza, IQ_id;
+                var sendIQ = _converse.connection.sendIQ;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                var callback = jasmine.createSpy('callback');
+
+                _converse.api.archive.query({'with': 'coven@chat.shakespear.lit', 'groupchat': true, 'max':'10'}, callback);
+                var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
+
+                /* <message id='iasd207' from='coven@chat.shakespeare.lit' to='hag66@shakespeare.lit/pda'>
+                 *     <result xmlns='urn:xmpp:mam:2' queryid='g27' id='34482-21985-73620'>
+                 *         <forwarded xmlns='urn:xmpp:forward:0'>
+                 *         <delay xmlns='urn:xmpp:delay' stamp='2002-10-13T23:58:37Z'/>
+                 *         <message xmlns="jabber:client"
+                 *             from='coven@chat.shakespeare.lit/firstwitch'
+                 *             id='162BEBB1-F6DB-4D9A-9BD8-CFDCC801A0B2'
+                 *             type='groupchat'>
+                 *             <body>Thrice the brinded cat hath mew'd.</body>
+                 *             <x xmlns='http://jabber.org/protocol/muc#user'>
+                 *             <item affiliation='none'
+                 *                     jid='witch1@shakespeare.lit'
+                 *                     role='participant' />
+                 *             </x>
+                 *         </message>
+                 *         </forwarded>
+                 *     </result>
+                 * </message>
+                 */
+                var msg1 = $msg({'id':'iasd207', 'from': 'other@chat.shakespear.lit', 'to': 'dummy@localhost'})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'34482-21985-73620'})
+                                .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
+                                    .c('message', {
+                                        'xmlns':'jabber:client',
+                                        'to':'dummy@localhost',
+                                        'id':'162BEBB1-F6DB-4D9A-9BD8-CFDCC801A0B2',
+                                        'from':'coven@chat.shakespeare.lit/firstwitch',
+                                        'type':'groupchat' })
+                                    .c('body').t("Thrice the brinded cat hath mew'd.");
+                _converse.connection._dataRecv(test_utils.createRequest(msg1));
+
+                /* Send an <iq> stanza to indicate the end of the result set.
+                 *
+                 * <iq type='result' id='juliet1'>
+                 *     <fin xmlns='urn:xmpp:mam:2'>
+                 *     <set xmlns='http://jabber.org/protocol/rsm'>
+                 *         <first index='0'>28482-98726-73623</first>
+                 *         <last>09af3-cc343-b409f</last>
+                 *         <count>20</count>
+                 *     </set>
+                 * </iq>
+                 */
+                var stanza = $iq({'type': 'result', 'id': IQ_id})
+                    .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
+                        .c('set',  {'xmlns': 'http://jabber.org/protocol/rsm'})
+                            .c('first', {'index': '0'}).t('23452-4534-1').up()
+                            .c('last').t('09af3-cc343-b409f').up()
+                            .c('count').t('16');
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                expect(callback).toHaveBeenCalled();
+                var args = callback.calls.argsFor(0);
+                expect(args[0].length).toBe(0);
+           }));
 
            it("can be used to query for all messages in a certain timespan", mock.initConverse(function (_converse) {
                 var sent_stanza, IQ_id;
@@ -114,7 +212,7 @@
                     'end': end
 
                 });
-                var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
+                var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
@@ -155,7 +253,7 @@
                 }
                 var start = '2010-06-07T00:00:00Z';
                 _converse.api.archive.query({'start': start});
-                var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
+                var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
@@ -184,7 +282,7 @@
                 }
                 var start = '2010-06-07T00:00:00Z';
                 _converse.api.archive.query({'start': start, 'max':10});
-                var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
+                var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
@@ -220,7 +318,7 @@
                     'after': '09af3-cc343-b409f',
                     'max':10
                 });
-                var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
+                var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
@@ -252,7 +350,7 @@
                     _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 }
                 _converse.api.archive.query({'before': '', 'max':10});
-                var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
+                var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
@@ -289,7 +387,7 @@
                 rsm.start = '2010-06-07T00:00:00Z';
                 _converse.api.archive.query(rsm);
 
-                var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
+                var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
@@ -325,7 +423,7 @@
                 var callback = jasmine.createSpy('callback');
 
                 _converse.api.archive.query({'with': 'romeo@capulet.lit', 'max':'10'}, callback);
-                var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
+                var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
 
                 /*  <message id='aeb213' to='juliet@capulet.lit/chamber'>
                  *  <result xmlns='urn:xmpp:mam:2' queryid='f27' id='28482-98726-73623'>

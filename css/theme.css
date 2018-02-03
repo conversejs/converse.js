@@ -338,6 +338,12 @@ ul.features {
     margin-left: 0;
     margin-right: 0;
 }
+
+.mastodon {
+    width: 5em;
+    height: 5em;
+}
+
 .sponsors {
     clear: both;
     font-size: 1.4em;

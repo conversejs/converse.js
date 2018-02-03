@@ -14,8 +14,12 @@
 
 
     function onVCardData (_converse, jid, iq, callback) {
-        const vcard = iq.querySelector('vCard'),
-            img_type = _.get(vcard.querySelector('TYPE'), 'textContent'),
+        const vcard = iq.querySelector('vCard');
+        if (_.isNull(vcard)) {
+            // Some servers return an empty IQ
+            return onVCardError(_converse, jid, iq, callback);
+        }
+        const img_type = _.get(vcard.querySelector('TYPE'), 'textContent'),
             img = _.get(vcard.querySelector('BINVAL'), 'textContent'),
             url = _.get(vcard.querySelector('URL'), 'textContent'),
             fullname = _.get(vcard.querySelector('FN'), 'textContent');

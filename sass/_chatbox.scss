@@ -230,7 +230,8 @@
                 position: relative;
             }
         }
-        form.sendXMPPMessage {
+
+        .sendXMPPMessage {
             -moz-background-clip: padding;
             -webkit-background-clip: padding-box;
             @include border-bottom-radius($chatbox-border-radius);
@@ -248,9 +249,10 @@
             @media screen and (max-width: $mobile-portrait-length) {
                 width: 100%;
             }
-            .chat-textarea-hint {
+            .spoiler-hint {
                 width: 100%;
             }
+
             .chat-textarea {
                 @include border-bottom-radius($chatbox-border-radius);
                 border: 0;

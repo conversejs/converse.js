@@ -284,7 +284,9 @@
                             'label_send': __('Send'),
                             'show_send_button': _converse.show_send_button,
                             'show_textarea': true,
-                            'show_toolbar': _converse.show_toolbar
+                            'show_toolbar': _converse.show_toolbar,
+                            'hint_value': _.get(this.el.querySelector('.spoiler-hint'), 'value'),
+                            'message_value': _.get(this.el.querySelector('.chat-textarea'), 'value')
                         }));
                 },
 
@@ -784,9 +786,9 @@
                           .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
 
                     if (this.message_form_view.model.get('sending_spoiler')) {
-                        const has_hint = this.el.querySelector('.chat-textarea-hint').value.length > 0;
+                        const has_hint = this.el.querySelector('.spoiler-hint').value.length > 0;
                         if (has_hint) {
-                            const hint = document.querySelector('.chat-textarea-hint').value;
+                            const hint = document.querySelector('.spoiler-hint').value;
                             stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }, hint);
                         } else {
                             stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER });
@@ -867,7 +869,7 @@
                             'is_spoiler': is_spoiler
                         };
                     if (is_spoiler) {
-                        const spoiler = this.el.querySelector('.chat-textarea-hint')
+                        const spoiler = this.el.querySelector('.spoiler-hint')
                         attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : __('Spoiler');
                     }
                     return attrs;

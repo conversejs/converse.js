@@ -263,6 +263,79 @@
                 }
             });
 
+            _converse.ChatBoxMessageForm = Backbone.VDOMView.extend({
+                className: 'message-form-container',
+                events: {
+                    'click .toggle-spoiler-edit': 'toggleEditSpoilerMessage',
+                },
+
+                toHTML () {
+                    let placeholder;
+                    if (this.model.get('sending_spoiler')) {
+                        placeholder = __('Spoiler message');
+                    } else {
+                        placeholder = __('Personal message');
+                    }
+                    return tpl_chatbox_message_form(
+                        _.extend(this.model.toJSON(), {
+                            'allow_spoiler_messages': _converse.allow_spoiler_messages,
+                            'label_personal_message': placeholder,
+                            'label_spoiler_hint': __('Optional spoiler hint'),
+                            'label_send': __('Send'),
+                            'show_send_button': _converse.show_send_button,
+                            'show_textarea': true,
+                            'show_toolbar': _converse.show_toolbar
+                        }));
+                },
+
+                renderToolbar (toolbar, options) {
+                    if (!_converse.show_toolbar) {
+                        return this;
+                    }
+                    toolbar = toolbar || tpl_toolbar;
+                    options = _.assign(
+                        this.model.toJSON(),
+                        this.getToolbarOptions(options || {})
+                    );
+                    this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
+                    return this;
+                },
+
+                afterRender () {
+                    this.renderToolbar();
+                },
+
+                getToolbarOptions (options) {
+                    return _.extend(options || {}, {
+                        'allow_spoiler_messages': _converse.allow_spoiler_messages,
+                        'label_clear': __('Clear all messages'),
+                        'label_insert_smiley': __('Insert a smiley'),
+                        'label_start_call': __('Start a call'),
+                        'show_call_button': _converse.visible_toolbar_buttons.call,
+                        'show_clear_button': _converse.visible_toolbar_buttons.clear,
+                        'use_emoji': _converse.visible_toolbar_buttons.emoji,
+                    });
+                },
+
+                toggleEditSpoilerMessage () {
+                    const { __ } = _converse,
+                          text_area = this.el.querySelector('.chat-textarea'),
+                          spoiler_button = this.el.querySelector('.toggle-spoiler-edit');
+                    let spoiler_title;
+                    if (this.model.get('sending_spoiler')) {
+                        this.model.set('sending_spoiler', false);
+                        spoiler_title = __('Click to write your message as a spoiler');
+                    } else {
+                        this.model.set('sending_spoiler', true);
+                        spoiler_title = __('Click to write as a normal (non-spoiler) message');
+                    }
+                    spoiler_button.outerHTML = tpl_spoiler_button(_.extend(
+                        this.model.toJSON(), {'title': spoiler_title})
+                    )
+                    this.render();
+                }
+            });
+
             _converse.ChatBoxView = Backbone.NativeView.extend({
                 length: 200,
                 className: 'chatbox hidden',
@@ -277,7 +350,6 @@
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .toggle-spoiler-display': 'toggleSpoilerMessage',
-                    'click .toggle-spoiler-edit': 'toggleEditSpoilerMessage',
                     'keypress .chat-textarea': 'keyPressed'
                 },
 
@@ -313,24 +385,14 @@
                 },
 
                 renderMessageForm () {
-                    const div = this.el.querySelector('.message-form-container');
-                    let placeholder;
-                    if (this.model.get('sending_spoiler')) {
-                        placeholder = __('Spoiler message');
-                    } else {
-                        placeholder = __('Personal message');
-                    }
-                    div.innerHTML = tpl_chatbox_message_form(
-                        _.extend(this.model.toJSON(), {
-                            'allow_spoiler_messages': _converse.allow_spoiler_messages,
-                            'label_personal_message': placeholder,
-                            'label_spoiler_hint': __('Optional spoiler hint'),
-                            'label_send': __('Send'),
-                            'show_send_button': _converse.show_send_button,
-                            'show_textarea': true,
-                            'show_toolbar': _converse.show_toolbar
-                        }));
-                    this.renderToolbar();
+                    this.message_form_view = new _converse.ChatBoxMessageForm({
+                        'model': new Backbone.Model()
+                    });
+                    this.message_form_view.render();
+                    this.content.insertAdjacentElement(
+                        'afterEnd',
+                        this.message_form_view.el
+                    );
                 },
 
                 insertHeading () {
@@ -721,7 +783,7 @@
                         }).c('body').t(message.get('message')).up()
                           .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
 
-                    if (this.model.get('sending_spoiler')) {
+                    if (this.message_form_view.model.get('sending_spoiler')) {
                         const has_hint = this.el.querySelector('.chat-textarea-hint').value.length > 0;
                         if (has_hint) {
                             const hint = document.querySelector('.chat-textarea-hint').value;
@@ -796,7 +858,7 @@
                      * passed to Backbone.Message's constructor.
                      */
                     const fullname = _converse.xmppstatus.get('fullname'),
-                        is_spoiler = this.model.get('sending_spoiler'),
+                        is_spoiler = this.message_form_view.model.get('sending_spoiler'),
                         attrs = {
                             'fullname': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
                             'sender': 'me',
@@ -980,31 +1042,6 @@
                     return this;
                 },
 
-                getToolbarOptions (options) {
-                    return _.extend(options || {}, {
-                        'allow_spoiler_messages': _converse.allow_spoiler_messages,
-                        'label_clear': __('Clear all messages'),
-                        'label_insert_smiley': __('Insert a smiley'),
-                        'label_start_call': __('Start a call'),
-                        'show_call_button': _converse.visible_toolbar_buttons.call,
-                        'show_clear_button': _converse.visible_toolbar_buttons.clear,
-                        'use_emoji': _converse.visible_toolbar_buttons.emoji,
-                    });
-                },
-
-                renderToolbar (toolbar, options) {
-                    if (!_converse.show_toolbar) {
-                        return this;
-                    }
-                    toolbar = toolbar || tpl_toolbar;
-                    options = _.assign(
-                        this.model.toJSON(),
-                        this.getToolbarOptions(options || {})
-                    );
-                    this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
-                    return this;
-                },
-
                 renderEmojiPicker () {
                     var toggle = this.el.querySelector('.toggle-smiley');
                     if (!_.isNull(toggle)) {
@@ -1012,26 +1049,6 @@
                         toggle.appendChild(this.emoji_picker_view.render().el);
                     }
                 },
-
-                toggleEditSpoilerMessage () {
-                    const { _converse } = this.__super__,
-                          { __ } = _converse,
-                          text_area = this.el.querySelector('.chat-textarea'),
-                          spoiler_button = this.el.querySelector('.toggle-spoiler-edit');
-                    let spoiler_title;
-                    if (this.model.get('sending_spoiler')) {
-                        this.model.set('sending_spoiler', false);
-                        spoiler_title = __('Click to write your message as a spoiler');
-                    } else {
-                        this.model.set('sending_spoiler', true);
-                        spoiler_title = __('Click to write as a normal (non-spoiler) message');
-                    }
-                    spoiler_button.outerHTML = tpl_spoiler_button(_.extend(
-                        this.model.toJSON(), {'title': spoiler_title})
-                    )
-                    this.renderMessageForm();
-                },
-
 
                 focus () {
                     const textarea_el = this.el.querySelector('.chat-textarea');

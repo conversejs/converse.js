@@ -1,10 +1,9 @@
 (function (root, factory) {
     define([
         "converse-core",
-        "tpl!spoiler_button",
         "converse-chatview"
     ], factory);
-}(this, function (converse, tpl_spoiler_button) {
+}(this, function (converse) {
 
     const { _, Strophe } = converse.env;
     const u = converse.env.utils;
@@ -38,42 +37,6 @@
 
             'ChatBoxView': {
 
-                'events': {
-                    'click .toggle-spoiler-edit': 'toggleEditSpoilerMessage',
-                    'click .toggle-spoiler-display': 'toggleSpoilerMessage'
-                },
-
-                addSpoilerToolbarButton () {
-                    const toolbar_el = this.el.querySelector('.chat-toolbar');
-                    if (!_.isNull(toolbar_el)) {
-                        toolbar_el.insertAdjacentHTML(
-                            'beforeend',
-                            tpl_spoiler_button(_.extend(
-                                this.model.toJSON(), {
-                                'title': this.__super__._converse.__('Click here to write a message as a spoiler')
-                            }))
-                        );
-                    }
-                },
-
-                renderToolbar (toolbar, options) {
-                    const result = this.__super__.renderToolbar.apply(this, arguments);
-                    this.addSpoilerToolbarButton();
-                    return result;
-                },
-
-                getOutgoingMessageAttributes (text) {
-                    const { __ } = this.__super__._converse,
-                          attrs = this.__super__.getOutgoingMessageAttributes.apply(this, arguments);
-
-                    if (this.model.get('sending_spoiler')) {
-                        const spoiler = this.el.querySelector('.chat-textarea-hint')
-                        attrs.is_spoiler = true;
-                        attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : __('Spoiler');
-                    }
-                    return attrs;
-                },
-
                 toggleSpoilerMessage (event) {
                     const { _converse } = this.__super__,
                           { __ } = _converse;
@@ -106,44 +69,6 @@
                     }
                 },
 
-                toggleEditSpoilerMessage () {
-                    const { _converse } = this.__super__,
-                          { __ } = _converse,
-                          text_area = this.el.querySelector('.chat-textarea'),
-                          spoiler_button = this.el.querySelector('.toggle-spoiler-edit');
-                    let spoiler_title;
-
-                    if (this.model.get('sending_spoiler')) {
-                        this.model.set('sending_spoiler', false);
-                        spoiler_title = __('Click to write your message as a spoiler');
-                    } else {
-                        this.model.set('sending_spoiler', true);
-                        spoiler_title = __('Click to write as a normal (non-spoiler) message');
-                    }
-                    spoiler_button.outerHTML = tpl_spoiler_button(_.extend(
-                        this.model.toJSON(), {'title': spoiler_title})
-                    )
-                    this.renderMessageForm();
-                },
-
-                addSpoilerElement (stanza) {
-                    if (this.model.get('sending_spoiler')) {
-                        const has_hint = this.el.querySelector('.chat-textarea-hint').value.length > 0;
-                        if (has_hint) {
-                            const hint = document.querySelector('.chat-textarea-hint').value;
-                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }, hint);
-                        } else {
-                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER });
-                        }
-                    }
-                },
-
-                createMessageStanza () {
-                    const stanza = this.__super__.createMessageStanza.apply(this, arguments);
-                    this.addSpoilerElement(stanza);
-                    return stanza;
-                },
-
                 'renderMessage': function (attrs) {
                     /* Renders a chat message based on the passed in attributes.
                      *
@@ -154,12 +79,8 @@
                      *      The DOM element representing the message.
                      */
                     const { _converse } = this.__super__,
-                          { __ } = _converse;
-
-                    console.log('These are the attrs and the msg object\n');
-                    console.log(attrs);
-                    const msg = this.__super__.renderMessage.apply(this, arguments);
-                    console.log(msg);
+                          { __ } = _converse,
+                          msg = this.__super__.renderMessage.apply(this, arguments);
 
                     // Spoiler logic
                     // The value of the "spoiler" attribute, corresponds to the spoiler's hint.
@@ -207,20 +128,6 @@
                         messageContent.append(container);
                     }
                     return msg;
-                }
-            },
-
-            'ChatBox': {
-
-                getMessageAttributes (message, delay, original_stanza) {
-                    const attrs = this.__super__.getMessageAttributes.apply(this, arguments);
-                    const spoiler = message.querySelector(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`)
-                    if (spoiler) {
-                        const { __ } = this.__super__._converse;
-                        attrs.is_spoiler = true;
-                        attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : __('Spoiler');
-                    }
-                    return attrs;
                 }
             }
         }

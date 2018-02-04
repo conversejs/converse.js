@@ -128,6 +128,9 @@
                      *      that contains the message stanza, if it was
                      *      contained, otherwise it's the message stanza itself.
                      */
+                    const { _converse } = this.__super__,
+                          { __ } = _converse;
+
                     delay = delay || message.querySelector('delay');
                     const type = message.getAttribute('type'),
                         body = this.getMessageBody(message);
@@ -155,7 +158,8 @@
                         sender = 'them';
                         fullname = this.get('fullname') || from;
                     }
-                    return {
+                    const spoiler = message.querySelector(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`);
+                    const attrs = {
                         'type': type,
                         'chat_state': chat_state,
                         'delayed': delayed,
@@ -163,8 +167,13 @@
                         'message': body || undefined,
                         'msgid': message.getAttribute('id'),
                         'sender': sender,
-                        'time': time
+                        'time': time,
+                        'is_spoiler': !_.isNull(spoiler)
                     };
+                    if (spoiler) {
+                        attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : __('Spoiler');
+                    }
+                    return attrs;
                 },
 
                 createMessage (message, delay, original_stanza) {

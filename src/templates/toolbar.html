@@ -1,7 +1,15 @@
 {[ if (o.use_emoji)  { ]}
-    <li class="toggle-toolbar-menu toggle-smiley icon-happy" title="{{{o.label_insert_smiley}}}">
-        <ul class="emoji-picker"></ul>
-    </li>
+<li class="toggle-toolbar-menu toggle-smiley icon-happy" title="{{{o.label_insert_smiley}}}">
+    <ul class="emoji-picker"></ul>
+</li>
+{[ } ]}
+{[ if (o.allow_spoiler_messages) { ]}
+<li class="toggle-spoiler-edit">
+    <a class="
+        {[ if (o.sending_spoiler)  { ]} icon-eye-blocked {[ } ]}
+        {[ if (!o.sending_spoiler)  { ]} icon-eye {[ } ]}"
+        title="{{ o.title }}"></a>
+</li>
 {[ } ]}
 {[ if (o.show_call_button)  { ]}
 <li class="toggle-call"><a class="icon-phone" title="{{{o.label_start_call}}}"></a></li>

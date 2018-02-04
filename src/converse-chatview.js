@@ -22,6 +22,7 @@
             "tpl!message",
             "tpl!new_day",
             "tpl!spinner",
+            "tpl!spoiler_button",
             "tpl!toolbar"
     ], factory);
 }(this, function (
@@ -39,6 +40,7 @@
             tpl_message,
             tpl_new_day,
             tpl_spinner,
+            tpl_spoiler_button,
             tpl_toolbar
     ) {
     "use strict";
@@ -268,13 +270,15 @@
 
                 events: {
                     'click .close-chatbox-button': 'close',
-                    'keypress .chat-textarea': 'keyPressed',
+                    'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .send-button': 'onFormSubmitted',
-                    'click .toggle-smiley': 'toggleEmojiMenu',
-                    'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
-                    'click .toggle-clear': 'clearMessages',
                     'click .toggle-call': 'toggleCall',
-                    'click .new-msgs-indicator': 'viewUnreadMessages'
+                    'click .toggle-clear': 'clearMessages',
+                    'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
+                    'click .toggle-smiley': 'toggleEmojiMenu',
+                    'click .toggle-spoiler-display': 'toggleSpoilerMessage',
+                    'click .toggle-spoiler-edit': 'toggleEditSpoilerMessage',
+                    'keypress .chat-textarea': 'keyPressed'
                 },
 
                 initialize () {
@@ -709,13 +713,24 @@
                 },
 
                 createMessageStanza (message) {
-                    return $msg({
-                                from: _converse.connection.jid,
-                                to: this.model.get('jid'),
-                                type: 'chat',
-                                id: message.get('msgid')
+                    const stanza = $msg({
+                            'from': _converse.connection.jid,
+                            'to': this.model.get('jid'),
+                            'type': 'chat',
+                            'id': message.get('msgid')
                         }).c('body').t(message.get('message')).up()
-                            .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+                          .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+
+                    if (this.model.get('sending_spoiler')) {
+                        const has_hint = this.el.querySelector('.chat-textarea-hint').value.length > 0;
+                        if (has_hint) {
+                            const hint = document.querySelector('.chat-textarea-hint').value;
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }, hint);
+                        } else {
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER });
+                        }
+                    }
+                    return stanza;
                 },
 
                 sendMessage (message) {
@@ -780,13 +795,20 @@
                     /* Overridable method which returns the attributes to be
                      * passed to Backbone.Message's constructor.
                      */
-                    const fullname = _converse.xmppstatus.get('fullname');
-                    return {
-                        'fullname': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
-                        'sender': 'me',
-                        'time': moment().format(),
-                        'message': emojione.shortnameToUnicode(text)
+                    const fullname = _converse.xmppstatus.get('fullname'),
+                        is_spoiler = this.model.get('sending_spoiler'),
+                        attrs = {
+                            'fullname': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
+                            'sender': 'me',
+                            'time': moment().format(),
+                            'message': emojione.shortnameToUnicode(text),
+                            'is_spoiler': is_spoiler
+                        };
+                    if (is_spoiler) {
+                        const spoiler = this.el.querySelector('.chat-textarea-hint')
+                        attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : __('Spoiler');
                     }
+                    return attrs;
                 },
 
                 sendChatState () {
@@ -960,6 +982,7 @@
 
                 getToolbarOptions (options) {
                     return _.extend(options || {}, {
+                        'allow_spoiler_messages': _converse.allow_spoiler_messages,
                         'label_clear': __('Clear all messages'),
                         'label_insert_smiley': __('Insert a smiley'),
                         'label_start_call': __('Start a call'),
@@ -979,7 +1002,6 @@
                         this.getToolbarOptions(options || {})
                     );
                     this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
-
                     return this;
                 },
 
@@ -990,6 +1012,26 @@
                         toggle.appendChild(this.emoji_picker_view.render().el);
                     }
                 },
+
+                toggleEditSpoilerMessage () {
+                    const { _converse } = this.__super__,
+                          { __ } = _converse,
+                          text_area = this.el.querySelector('.chat-textarea'),
+                          spoiler_button = this.el.querySelector('.toggle-spoiler-edit');
+                    let spoiler_title;
+                    if (this.model.get('sending_spoiler')) {
+                        this.model.set('sending_spoiler', false);
+                        spoiler_title = __('Click to write your message as a spoiler');
+                    } else {
+                        this.model.set('sending_spoiler', true);
+                        spoiler_title = __('Click to write as a normal (non-spoiler) message');
+                    }
+                    spoiler_button.outerHTML = tpl_spoiler_button(_.extend(
+                        this.model.toJSON(), {'title': spoiler_title})
+                    )
+                    this.renderMessageForm();
+                },
+
 
                 focus () {
                     const textarea_el = this.el.querySelector('.chat-textarea');

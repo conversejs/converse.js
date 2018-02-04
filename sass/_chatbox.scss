@@ -248,6 +248,9 @@
             @media screen and (max-width: $mobile-portrait-length) {
                 width: 100%;
             }
+            .chat-textarea-hint {
+                width: 100%;
+            }
             .chat-textarea {
                 @include border-bottom-radius($chatbox-border-radius);
                 border: 0;
@@ -255,6 +258,10 @@
                 padding: 0.5em;
                 width: 100%;
                 resize: none;
+                &.spoiler {
+                    background-color: lighten($chat-head-color, 50%);
+                    height: 42px;
+                }
             }
             .send-button {
                 position: absolute;

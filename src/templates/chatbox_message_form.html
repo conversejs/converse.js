@@ -1,0 +1,19 @@
+<div class="new-msgs-indicator hidden">▼ {{{ o.unread_msgs }}} ▼</div>
+<form class="sendXMPPMessage">
+    {[ if (o.show_toolbar) { ]}
+        <ul class="chat-toolbar no-text-select"></ul>
+    {[ } ]}
+    {[ if (o.allow_spoiler_messages) { ]}
+        <input type="text" placeholder="{{o.label_spoiler_hint}}"
+            class="{[ if (!o.sending_spoiler) { ]} hidden {[ } ]} chat-textarea-hint"/>
+    {[ } ]}
+    <textarea
+        type="text"
+        class="chat-textarea
+            {[ if (o.show_send_button) { ]} chat-textarea-send-button {[ } ]}
+            {[ if (o.sending_spoiler) { ]} spoiler {[ } ]}"
+        placeholder="{{{o.label_personal_message}}}"></textarea>
+    {[ if (o.show_send_button) { ]}
+        <button type="submit" class="pure-button send-button">{{{ o.label_send }}}</button>
+    {[ } ]}
+</form>

@@ -15,6 +15,7 @@
             "tpl!action",
             "tpl!chatbox",
             "tpl!chatbox_head",
+            "tpl!chatbox_message_form",
             "tpl!emojis",
             "tpl!help_message",
             "tpl!info",
@@ -31,6 +32,7 @@
             tpl_action,
             tpl_chatbox,
             tpl_chatbox_head,
+            tpl_chatbox_message_form,
             tpl_emojis,
             tpl_help_message,
             tpl_info,
@@ -105,6 +107,7 @@
                 { __ } = _converse;
 
             _converse.api.settings.update({
+                'allow_spoiler_messages': true,
                 'use_emojione': true,
                 'emojione_image_path': emojione.imagePathPNG,
                 'chatview_avatar_height': 32,
@@ -286,8 +289,10 @@
                     this.model.on('change:chat_status', this.onChatStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
-
-                    this.render().renderToolbar().insertHeading().fetchMessages();
+                    this.render();
+                    this.renderMessageForm();
+                    this.insertHeading();
+                    this.fetchMessages();
                     _converse.emit('chatBoxOpened', this);
                     _converse.emit('chatBoxInitialized', this);
                 },
@@ -296,11 +301,6 @@
                     this.el.setAttribute('id', this.model.get('box_id'));
                     this.el.innerHTML = tpl_chatbox(
                         _.extend(this.model.toJSON(), {
-                                label_personal_message: __('Personal message'),
-                                label_send: __('Send'),
-                                show_send_button: _converse.show_send_button,
-                                show_textarea: true,
-                                show_toolbar: _converse.show_toolbar,
                                 unread_msgs: __('You have unread messages')
                             }
                         ));
@@ -308,7 +308,25 @@
                     return this;
                 },
 
-                renderTextArea () {
+                renderMessageForm () {
+                    const div = this.el.querySelector('.message-form-container');
+                    let placeholder;
+                    if (this.model.get('sending_spoiler')) {
+                        placeholder = __('Spoiler message');
+                    } else {
+                        placeholder = __('Personal message');
+                    }
+                    div.innerHTML = tpl_chatbox_message_form(
+                        _.extend(this.model.toJSON(), {
+                            'allow_spoiler_messages': _converse.allow_spoiler_messages,
+                            'label_personal_message': placeholder,
+                            'label_spoiler_hint': __('Optional spoiler hint'),
+                            'label_send': __('Send'),
+                            'show_send_button': _converse.show_send_button,
+                            'show_textarea': true,
+                            'show_toolbar': _converse.show_toolbar
+                        }));
+                    this.renderToolbar();
                 },
 
                 insertHeading () {

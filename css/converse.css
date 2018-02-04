@@ -1002,7 +1002,7 @@
     /* rgba supported */
     border: 1px solid #999;
     /*IE 6/7/8*/
-    border: none rgba(0, 0, 0, 0);
+    border: none transparent;
     /*IE9 + everything else*/
     background-color: #E6E6E6;
     text-decoration: none;
@@ -1713,6 +1713,9 @@
       #converse-embedded-chat .chatbox form.sendXMPPMessage,
       #conversejs .chatbox form.sendXMPPMessage {
         width: 100%; } }
+    #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-textarea-hint,
+    #conversejs .chatbox form.sendXMPPMessage .chat-textarea-hint {
+      width: 100%; }
     #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-textarea,
     #conversejs .chatbox form.sendXMPPMessage .chat-textarea {
       border-bottom-left-radius: 4px;
@@ -1722,6 +1725,10 @@
       padding: 0.5em;
       width: 100%;
       resize: none; }
+      #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-textarea.spoiler,
+      #conversejs .chatbox form.sendXMPPMessage .chat-textarea.spoiler {
+        background-color: #e7f7ee;
+        height: 42px; }
     #converse-embedded-chat .chatbox form.sendXMPPMessage .send-button,
     #conversejs .chatbox form.sendXMPPMessage .send-button {
       position: absolute;

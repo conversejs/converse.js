@@ -113,7 +113,6 @@
                                 info_close: '',
                                 label_personal_message: '',
                                 show_send_button: false,
-                                show_textarea: false,
                                 show_toolbar: false,
                                 unread_msgs: ''
                             }
@@ -122,7 +121,8 @@
                     return this;
                 },
 
-                // Override to avoid the method in converse-chatview.js
+                // Override to avoid the methods in converse-chatview.js
+                'renderMessageForm': _.noop,
                 'afterShown': _.noop
             });
 

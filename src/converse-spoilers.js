@@ -48,9 +48,10 @@
                     if (!_.isNull(toolbar_el)) {
                         toolbar_el.insertAdjacentHTML(
                             'beforeend',
-                            tpl_spoiler_button({
+                            tpl_spoiler_button(_.extend(
+                                this.model.toJSON(), {
                                 'title': this.__super__._converse.__('Click here to write a message as a spoiler')
-                            })
+                            }))
                         );
                     }
                 },
@@ -62,7 +63,6 @@
                 },
 
                 getOutgoingMessageAttributes (text) {
-                    debugger;
                     const { __ } = this.__super__._converse,
                           attrs = this.__super__.getOutgoingMessageAttributes.apply(this, arguments);
 
@@ -106,45 +106,24 @@
                     }
                 },
 
-                'createHintTextArea': function () {
-                    const { _converse } = this.__super__,
-                          { __ } = _converse;
-
-                    const hintTextArea = document.createElement('input');
-                    hintTextArea.setAttribute('type', 'text');
-                    hintTextArea.setAttribute('placeholder', __('Hint (optional)'));
-                    hintTextArea.classList.add('chat-textarea-hint');
-                    hintTextArea.style.height = '30px';
-                    return hintTextArea;
-                },
-
                 toggleEditSpoilerMessage () {
                     const { _converse } = this.__super__,
-                          { __ } = _converse;
-
-                    const form = this.el.querySelector('.sendXMPPMessage');
-                    const textArea = this.el.querySelector('.chat-textarea');
-                    const spoiler_button = this.el.querySelector('.toggle-spoiler-edit');
+                          { __ } = _converse,
+                          text_area = this.el.querySelector('.chat-textarea'),
+                          spoiler_button = this.el.querySelector('.toggle-spoiler-edit');
+                    let spoiler_title;
 
                     if (this.model.get('sending_spoiler')) {
-                        textArea.style['background-color'] = '';
-                        textArea.setAttribute('placeholder', __('Personal message'));
                         this.model.set('sending_spoiler', false);
-                        spoiler_button.innerHTML = '<a class="icon-eye" title="' + __('Click here to write a message as a spoiler') + '"></a>'; // better get the element <a></a> and change the class?
-                        const hintTextArea = document.querySelector('.chat-textarea-hint');
-                        if ( hintTextArea ) {
-                            hintTextArea.remove();
-                        }
+                        spoiler_title = __('Click to write your message as a spoiler');
                     } else {
-                        textArea.style['background-color'] = '#D5FFD2';
-                        textArea.setAttribute('placeholder', __('Write your spoiler\'s content here'));
                         this.model.set('sending_spoiler', true);
-                        // TODO template
-                        spoiler_button.innerHTML = '<a class="icon-eye-blocked" title="' + __('Cancel writing spoiler message') + '"></a>';
-                        // better get the element <a></a> and change the class?
-                        form.insertBefore(this.createHintTextArea(), textArea);
-                        // <textarea type="text" class="chat-textarea-hint " placeholder="Hint (optional)" style="background-color: rgb(188, 203, 209); height:30px;"></textarea>
+                        spoiler_title = __('Click to write as a normal (non-spoiler) message');
                     }
+                    spoiler_button.outerHTML = tpl_spoiler_button(_.extend(
+                        this.model.toJSON(), {'title': spoiler_title})
+                    )
+                    this.renderMessageForm();
                 },
 
                 addSpoilerElement (stanza) {
@@ -244,22 +223,6 @@
                     return attrs;
                 }
             }
-        },
-
-        /* Converse.js's plugin mechanism will call the initialize
-         * method on any plugin (if it exists) as soon as the plugin has
-         * been loaded.
-         */
-        initialize () {
-            /* Inside this method, you have access to the private
-             * `_converse` object.
-             */
-            const { _converse } = this;
-
-            function initSpoilers (chatbox) {
-                chatbox.renderToolbar();
-            }
-            _converse.on('chatBoxFocused', initSpoilers);
         }
     });
 }));

@@ -302,7 +302,7 @@
             include_offline_state: false,
             jid: undefined,
             keepalive: true,
-            locales_url: '/locale/{{{locale}}}/LC_MESSAGES/converse.json',
+            locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
             locales: [
                 'af', 'ca', 'de', 'es', 'en', 'fr', 'he',
                 'hu', 'id', 'it', 'ja', 'nb', 'nl',

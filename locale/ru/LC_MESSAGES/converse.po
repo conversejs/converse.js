@@ -8,45 +8,47 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-29 16:31+0100\n"
-"PO-Revision-Date: 2016-04-07 10:22+0000\n"
-"Last-Translator: Laconic Team <info@laconic.website>\n"
-"Language-Team: Laconic Team <info@laconic.website>\n"
+"PO-Revision-Date: 2018-02-05 08:40+0000\n"
+"Last-Translator: Timur Koltcov <timyrrin@gmail.com>\n"
+"Language-Team: Russian "
+"<https://hosted.weblate.org/projects/conversejs/translations/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.6\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2.19-dev\n"
 
 #: dist/converse-no-dependencies.js:7305
 msgid "The connection has dropped, attempting to reconnect."
-msgstr ""
+msgstr "Соединение потеряно, попытка переподключения."
 
 #: dist/converse-no-dependencies.js:7403
-#, fuzzy
 msgid "An error occurred while connecting to the chat server."
-msgstr "При сохранение формы произошла ошибка."
+msgstr "При подключении к чат-серверу произошла ошибка."
 
 #: dist/converse-no-dependencies.js:7410
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
-msgstr ""
+msgstr "Твой ID Jabber'а и/или пароль некорректный. Пожалуйста попробуй снова."
 
 #: dist/converse-no-dependencies.js:7422
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr ""
+msgstr "К сожалению, нам не удалось подключиться к хосту XMPP с домена: %1$с"
 
 #: dist/converse-no-dependencies.js:7424
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:8108
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
-msgstr "Возникла ошибка при добавлении "
+msgstr "Прости, произошла ошибка при добавлении %1$s в качестве контакта."
 
 #: dist/converse-no-dependencies.js:8292
 msgid "This client does not allow presence subscriptions"
-msgstr "Программа не поддерживает уведомления о статусе"
+msgstr "Данный чат-клиент не поддерживает уведомления о статусе"
 
 #: dist/converse-no-dependencies.js:8373
 msgid "Click to hide these contacts"
@@ -63,13 +65,12 @@ msgstr "Ваше сообщение"
 #: dist/converse-no-dependencies.js:12365
 #: dist/converse-no-dependencies.js:18368
 msgid "Send"
-msgstr ""
+msgstr "Отправить"
 
 #: dist/converse-no-dependencies.js:12369
 #: dist/converse-no-dependencies.js:18371
-#, fuzzy
 msgid "You have unread messages"
-msgstr "Удалить сообщения"
+msgstr "У тебя есть непрочитанные сообщения"
 
 #: dist/converse-no-dependencies.js:12616
 msgid "me"
@@ -77,7 +78,7 @@ msgstr "Я"
 
 #: dist/converse-no-dependencies.js:12666
 msgid "Typing from another device"
-msgstr ""
+msgstr "Набирает с другого девайса"
 
 #: dist/converse-no-dependencies.js:12668
 msgid "is typing"
@@ -85,7 +86,7 @@ msgstr "набирает текст"
 
 #: dist/converse-no-dependencies.js:12674
 msgid "Stopped typing on the other device"
-msgstr ""
+msgstr "Перестал набирать с другого девайса"
 
 #: dist/converse-no-dependencies.js:12676
 msgid "has stopped typing"
@@ -143,7 +144,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:13295
 msgid "Jabber ID:"
-msgstr ""
+msgstr "ID Джаббера:"
 
 #: dist/converse-no-dependencies.js:13301
 msgid "Password:"
@@ -214,19 +215,19 @@ msgstr "Несгруппированные"
 
 #: dist/converse-no-dependencies.js:13685
 msgid "Filter"
-msgstr ""
+msgstr "Фильтр"
 
 #: dist/converse-no-dependencies.js:13688
 msgid "State"
-msgstr ""
+msgstr "Штат"
 
 #: dist/converse-no-dependencies.js:13689
 msgid "Any"
-msgstr ""
+msgstr "Любой"
 
 #: dist/converse-no-dependencies.js:13690
 msgid "Unread"
-msgstr ""
+msgstr "Непрочитанно"
 
 #: dist/converse-no-dependencies.js:13691
 #: dist/converse-no-dependencies.js:15463
@@ -258,19 +259,19 @@ msgstr "Не в сети"
 
 #: dist/converse-no-dependencies.js:13871
 #: dist/converse-no-dependencies.js:13894
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to remove %1$s as a contact"
-msgstr "Удалить контакт"
+msgstr "Нажми что-бы удалить %1$s как контакт"
 
 #: dist/converse-no-dependencies.js:13877
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to accept the contact request from %1$s"
-msgstr "Кликните, чтобы принять запрос этого контакта"
+msgstr "Кликни, что-бы принять запрос на добавление от %1$s"
 
 #: dist/converse-no-dependencies.js:13878
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to decline the contact request from %1$s"
-msgstr "Кликните, чтобы отклонить запрос этого контакта"
+msgstr "Кликни, что-бы отклонить запрос на добавление от %1$s"
 
 #: dist/converse-no-dependencies.js:13893
 msgid "Click to chat with this contact"
@@ -285,9 +286,9 @@ msgid "Are you sure you want to remove this contact?"
 msgstr "Вы уверены, что хотите удалить этот контакт?"
 
 #: dist/converse-no-dependencies.js:13956
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
-msgstr "Возникла ошибка при удалении "
+msgstr "Прости, произошла ошибка при попытке удаления %1$s как контакта."
 
 #: dist/converse-no-dependencies.js:13978
 msgid "Are you sure you want to decline this contact request?"
@@ -571,7 +572,7 @@ msgstr "Дать права администратора"
 
 #: dist/converse-no-dependencies.js:18987
 msgid "Ban user from room"
-msgstr "Забанить пользователя в этом чате."
+msgstr "Забанить пользователя в этом чате"
 
 #: dist/converse-no-dependencies.js:18987
 #, fuzzy
@@ -580,7 +581,7 @@ msgstr "Изменить роль пользователя на \"участни
 
 #: dist/converse-no-dependencies.js:18987
 msgid "Kick user from room"
-msgstr "Удалить пользователя из чата."
+msgstr "Удалить пользователя из чата"
 
 #: dist/converse-no-dependencies.js:18987
 #, fuzzy
@@ -653,7 +654,7 @@ msgstr "Открыть чат"
 
 #: dist/converse-no-dependencies.js:19644
 msgid "This chatroom requires a password"
-msgstr "Для доступа в чат необходим пароль."
+msgstr "Для доступа в чат необходим пароль"
 
 #: dist/converse-no-dependencies.js:19645
 msgid "Password: "
@@ -767,7 +768,7 @@ msgstr "Пользователь не может посылать сообщен
 
 #: dist/converse-no-dependencies.js:20262
 msgid "Occupants"
-msgstr "Участники:"
+msgstr "Участники"
 
 #: dist/converse-no-dependencies.js:20279
 #: dist/converse-no-dependencies.js:20483
@@ -1078,7 +1079,7 @@ msgstr "Восстанавливается зашифрованная сесси
 #. We need to generate a new key and instance tag
 #: dist/converse-no-dependencies.js:22797
 msgid "Generating private key."
-msgstr "Генерируется секретный ключ"
+msgstr "Генерируется секретный ключ."
 
 #: dist/converse-no-dependencies.js:22797
 msgid "Your browser might become unresponsive."
@@ -1163,7 +1164,7 @@ msgstr ""
 "Отпечаток для %1$s: %4$s\n"
 "\n"
 "Если вы удостоверились, что отпечатки совпадают, нажмите OK; если нет "
-"нажмите Отмена"
+"нажмите Отмена."
 
 #: dist/converse-no-dependencies.js:23064
 msgid ""
@@ -1180,11 +1181,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:23065
 msgid "What is your security question?"
-msgstr "Введите секретный вопрос"
+msgstr "Какой твой секретный вопрос?"
 
 #: dist/converse-no-dependencies.js:23068
 msgid "What is the answer to the security question?"
-msgstr "Ответ на секретный вопрос"
+msgstr "Какой твой ответ на секретный вопрос?"
 
 #: dist/converse-no-dependencies.js:23072
 msgid "Invalid authentication scheme provided"
@@ -1210,7 +1211,7 @@ msgid ""
 "Your contact has closed their end of the private session, you should do the "
 "same"
 msgstr ""
-"Ваш контакт закрыл свою часть приватной сессии, вы должны сделать тоже самое."
+"Ваш контакт закрыл свою часть приватной сессии, вы должны сделать тоже самое"
 
 #: dist/converse-no-dependencies.js:23114
 msgid "End encrypted conversation"
@@ -1300,7 +1301,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:23379
 msgid " e.g. conversejs.org"
-msgstr "например, conversejs.org"
+msgstr " например, conversejs.org"
 
 #: dist/converse-no-dependencies.js:23425
 msgid "Fetch registration form"

@@ -280,7 +280,7 @@
                         _.extend(this.model.toJSON(), {
                             'allow_spoiler_messages': _converse.allow_spoiler_messages,
                             'label_personal_message': placeholder,
-                            'label_spoiler_hint': __('Optional spoiler hint'),
+                            'label_spoiler_hint': __('Optional hint'),
                             'label_send': __('Send'),
                             'show_send_button': _converse.show_send_button,
                             'show_textarea': true,
@@ -288,6 +288,10 @@
                             'hint_value': _.get(this.el.querySelector('.spoiler-hint'), 'value'),
                             'message_value': _.get(this.el.querySelector('.chat-textarea'), 'value')
                         }));
+                },
+
+                afterRender () {
+                    this.renderToolbar();
                 },
 
                 renderToolbar (toolbar, options) {
@@ -301,10 +305,6 @@
                     );
                     this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
                     return this;
-                },
-
-                afterRender () {
-                    this.renderToolbar();
                 },
 
                 getToolbarOptions (options) {
@@ -335,6 +335,7 @@
                         this.model.toJSON(), {'title': spoiler_title})
                     )
                     this.render();
+                    this.parent.focus();
                 }
             });
 
@@ -390,6 +391,7 @@
                     this.message_form_view = new _converse.ChatBoxMessageForm({
                         'model': new Backbone.Model()
                     });
+                    this.message_form_view.parent = this;
                     this.message_form_view.render();
                     this.content.insertAdjacentElement(
                         'afterEnd',

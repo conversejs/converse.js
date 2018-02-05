@@ -5,12 +5,6 @@
     ], factory);
 }(this, function (converse) {
 
-    const { _, Strophe } = converse.env;
-    const u = converse.env.utils;
-
-    Strophe.addNamespace('SPOILER', 'urn:xmpp:spoiler:0');
-
-
     // The following line registers your plugin.
     converse.plugins.add("converse-spoilers", {
         /* Optional dependencies are other plugins which might be
@@ -33,7 +27,6 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-
 
             'ChatBoxView': {
 

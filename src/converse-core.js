@@ -44,6 +44,7 @@
     Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
     Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
     Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
+    Strophe.addNamespace('SPOILER', 'urn:xmpp:spoiler:0');
     Strophe.addNamespace('XFORM', 'jabber:x:data');
 
     // Use Mustache style syntax for variable interpolation

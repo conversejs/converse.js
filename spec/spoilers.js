@@ -10,6 +10,7 @@
 
     var _ = converse.env._;
     var $msg = converse.env.$msg;
+    var u = converse.env.utils;
 
     return describe("A spoiler message", function () {
 
@@ -26,8 +27,8 @@
              *      <spoiler xmlns='urn:xmpp:spoiler:0'>Love story end</spoiler>
              *  </message>
              */
-            const spoiler_hint = "Love story end"
-            const spoiler = "And at the end of the story, both of them die! It is so tragic!";
+            var spoiler_hint = "Love story end"
+            var spoiler = "And at the end of the story, both of them die! It is so tragic!";
             var msg = $msg({
                     'xmlns': 'jabber:client',
                     'to': _converse.bare_jid,
@@ -40,15 +41,46 @@
                 .tree();
             _converse.chatboxes.onMessage(msg);
 
-            var chatboxview = _converse.chatboxviews.get(sender_jid);
-            var message_content = chatboxview.el.querySelector('.chat-message .chat-msg-content');
+            var view = _converse.chatboxviews.get(sender_jid);
+            var message_content = view.el.querySelector('.chat-msg-content');
+            expect(message_content.textContent).toBe(spoiler);
 
-            // TODO add better assertions, currently only checks whether the
-            // text is in the DOM, not whether the spoiler is shown or
-            // not. Before updating this the spoiler rendering code needs
-            // improvement.
-            expect(_.includes(message_content.outerHTML, spoiler_hint)).toBeTruthy();
-            expect(_.includes(message_content.outerHTML, spoiler)).toBeTruthy();
+            var spoiler_hint_el = view.el.querySelector('.spoiler-hint');
+            expect(spoiler_hint_el.textContent).toBe(spoiler_hint);
+            done();
+        }));
+
+        it("can be received without a hint",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
+            test_utils.createContacts(_converse, 'current');
+            var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+
+            /* <message to='romeo@montague.net/orchard' from='juliet@capulet.net/balcony' id='spoiler2'>
+             *      <body>And at the end of the story, both of them die! It is so tragic!</body>
+             *      <spoiler xmlns='urn:xmpp:spoiler:0'>Love story end</spoiler>
+             *  </message>
+             */
+            var spoiler = "And at the end of the story, both of them die! It is so tragic!";
+            var msg = $msg({
+                    'xmlns': 'jabber:client',
+                    'to': _converse.bare_jid,
+                    'from': sender_jid,
+                    'type': 'chat'
+                }).c('body').t(spoiler).up()
+                  .c('spoiler', {
+                      'xmlns': 'urn:xmpp:spoiler:0',
+                    }).tree();
+            _converse.chatboxes.onMessage(msg);
+
+            var view = _converse.chatboxviews.get(sender_jid);
+            var message_content = view.el.querySelector('.chat-msg-content');
+            expect(message_content.textContent).toBe(spoiler);
+
+            var spoiler_hint_el = view.el.querySelector('.spoiler-hint');
+            expect(spoiler_hint_el.textContent).toBe('');
             done();
         }));
 
@@ -65,6 +97,7 @@
 
             var view = _converse.chatboxviews.get(contact_jid);
             spyOn(view, 'onMessageSubmitted').and.callThrough();
+            spyOn(_converse.connection, 'send');
 
             var spoiler_toggle = view.el.querySelector('.toggle-spoiler-edit');
             spoiler_toggle.click();
@@ -77,6 +110,39 @@
                 keyCode: 13
             });
             expect(view.onMessageSubmitted).toHaveBeenCalled();
+
+            /* Test the XML stanza 
+             *
+             * <message from="dummy@localhost/resource"
+             *          to="max.frankfurter@localhost"
+             *          type="chat"
+             *          id="4547c38b-d98b-45a5-8f44-b4004dbc335e"
+             *          xmlns="jabber:client">
+             *    <body>This is the spoiler</body>
+             *    <active xmlns="http://jabber.org/protocol/chatstates"/>
+             *    <spoiler xmlns="urn:xmpp:spoiler:0"/>
+             * </message>"
+             */
+            var stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+            var spoiler_el = stanza.querySelector('spoiler[xmlns="urn:xmpp:spoiler:0"]');
+            expect(_.isNull(spoiler_el)).toBeFalsy();
+            expect(spoiler_el.textContent).toBe('');
+
+            var body_el = stanza.querySelector('body');
+            expect(body_el.textContent).toBe('This is the spoiler');
+
+            /* Test the HTML spoiler message */
+            var spoiler_msg_el = view.el.querySelector('.chat-msg-content.spoiler');
+            expect(spoiler_msg_el.textContent).toBe('This is the spoiler');
+            expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeTruthy();
+
+            spoiler_toggle = view.el.querySelector('.toggle-spoiler');
+            expect(spoiler_toggle.textContent).toBe('Show spoiler');
+            spoiler_toggle.click();
+            expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeFalsy();
+            expect(spoiler_toggle.textContent).toBe('Hide spoiler');
+            spoiler_toggle.click();
+            expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeTruthy();
             done();
         }));
 
@@ -96,10 +162,53 @@
             var spoiler_toggle = view.el.querySelector('.toggle-spoiler-edit');
             spoiler_toggle.click();
 
-            var hint_input = view.el.querySelector('.chat-textarea-hint');
+            spyOn(view, 'onMessageSubmitted').and.callThrough();
+            spyOn(_converse.connection, 'send');
 
-            // TODO
+            var textarea = view.el.querySelector('.chat-textarea');
+            textarea.value = 'This is the spoiler';
+            var hint_input = view.el.querySelector('.spoiler-hint');
+            hint_input.value = 'This is the hint';
 
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13
+            });
+            expect(view.onMessageSubmitted).toHaveBeenCalled();
+
+            /* Test the XML stanza 
+             *
+             * <message from="dummy@localhost/resource"
+             *          to="max.frankfurter@localhost"
+             *          type="chat"
+             *          id="4547c38b-d98b-45a5-8f44-b4004dbc335e"
+             *          xmlns="jabber:client">
+             *    <body>This is the spoiler</body>
+             *    <active xmlns="http://jabber.org/protocol/chatstates"/>
+             *    <spoiler xmlns="urn:xmpp:spoiler:0">This is the hint</spoiler>
+             * </message>"
+             */
+            var stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+            var spoiler_el = stanza.querySelector('spoiler[xmlns="urn:xmpp:spoiler:0"]');
+            expect(_.isNull(spoiler_el)).toBeFalsy();
+            expect(spoiler_el.textContent).toBe('This is the hint');
+
+            var body_el = stanza.querySelector('body');
+            expect(body_el.textContent).toBe('This is the spoiler');
+
+            /* Test the HTML spoiler message */
+            var spoiler_msg_el = view.el.querySelector('.chat-msg-content.spoiler');
+            expect(spoiler_msg_el.textContent).toBe('This is the spoiler');
+            expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeTruthy();
+
+            spoiler_toggle = view.el.querySelector('.toggle-spoiler');
+            expect(spoiler_toggle.textContent).toBe('Show spoiler');
+            spoiler_toggle.click();
+            expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeFalsy();
+            expect(spoiler_toggle.textContent).toBe('Hide spoiler');
+            spoiler_toggle.click();
+            expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeTruthy();
             done();
         }));
     });

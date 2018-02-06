@@ -171,7 +171,7 @@
                         'is_spoiler': !_.isNull(spoiler)
                     };
                     if (spoiler) {
-                        attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : __('Spoiler');
+                        attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
                     }
                     return attrs;
                 },

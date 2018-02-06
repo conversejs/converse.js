@@ -853,6 +853,25 @@
                     }
                 },
 
+                parseMessageForCommands (text) {
+                    const match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
+                    if (match) {
+                        if (match[1] === "clear") {
+                            this.clearMessages();
+                            return true;
+                        }
+                        else if (match[1] === "help") {
+                            const msgs = [
+                                `<strong>/clear</strong>: ${__('Remove messages')}`,
+                                `<strong>/me</strong>: ${__('Write in the third person')}`,
+                                `<strong>/help</strong>: ${__('Show this menu')}`
+                                ];
+                            this.showHelpMessages(msgs);
+                            return true;
+                        }
+                    }
+                },
+
                 onMessageSubmitted (text, spoiler_hint) {
                     /* This method gets called once the user has typed a message
                      * and then pressed enter in a chat box.
@@ -869,20 +888,8 @@
                             'error'
                         );
                     }
-                    const match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
-                    if (match) {
-                        if (match[1] === "clear") {
-                            return this.clearMessages();
-                        }
-                        else if (match[1] === "help") {
-                            const msgs = [
-                                `<strong>/clear</strong>: ${__('Remove messages')}`,
-                                `<strong>/me</strong>: ${__('Write in the third person')}`,
-                                `<strong>/help</strong>: ${__('Show this menu')}`
-                                ];
-                            this.showHelpMessages(msgs);
-                            return;
-                        }
+                    if (this.parseMessageForCommands(text)) {
+                        return;
                     }
                     const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint)
                     const message = this.model.messages.create(attrs);
@@ -962,7 +969,7 @@
                           message = textarea.value;
 
                     let spoiler_hint;
-                    if (this.model.get('sending_spoiler')) {
+                    if (this.message_form_view.model.get('sending_spoiler')) {
                         const hint_el = this.el.querySelector('form.sendXMPPMessage input.spoiler-hint');
                         spoiler_hint = hint_el.value;
                         hint_el.value = '';

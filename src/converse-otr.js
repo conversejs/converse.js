@@ -283,22 +283,28 @@
                     return stanza;
                 },
 
-                onMessageSubmitted (text) {
+                parseMessageForCommands (text) {
                     const { _converse } = this.__super__;
-                    if (!_converse.connection.authenticated) {
-                        return this.showHelpMessages(
-                            ['Sorry, the connection has been lost, '+
-                              'and your message could not be sent'],
-                            'error'
-                        );
-                    }
                     const match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
                     if (match) {
                         if ((_converse.allow_otr) && (match[1] === "endotr")) {
-                            return this.endOTR();
+                            this.endOTR();
+                            return true;
                         } else if ((_converse.allow_otr) && (match[1] === "otr")) {
-                            return this.model.initiateOTR();
+                            this.model.initiateOTR();
+                            return true;
                         }
+                    }
+                    return this.__super__.parseMessageForCommands.apply(this, arguments);
+                },
+
+                onMessageSubmitted (text, spoiler_hint) {
+                    const { _converse } = this.__super__;
+                    if (!_converse.connection.authenticated) {
+                        this.__super__.onMessageSubmitted.apply(this, arguments);
+                    }
+                    if (this.parseMessageForCommands(text)) {
+                        return;
                     }
                     if (_.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
                         // Off-the-record encryption is active

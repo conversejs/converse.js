@@ -319,6 +319,15 @@
                     });
                 },
 
+                focus () {
+                    const textarea_el = this.el.querySelector('.chat-textarea');
+                    if (!_.isNull(textarea_el)) {
+                        textarea_el.focus();
+                        _converse.emit('chatBoxFocused', this.parent);
+                    }
+                    return this;
+                },
+
                 toggleEditSpoilerMessage () {
                     const { __ } = _converse,
                           text_area = this.el.querySelector('.chat-textarea'),
@@ -335,7 +344,7 @@
                         this.model.toJSON(), {'title': spoiler_title})
                     )
                     this.render();
-                    this.parent.focus();
+                    this.focus();
                 }
             });
 
@@ -663,7 +672,6 @@
                     messageContent.textContent = "";
                     messageContent.append(document.createElement("br"));
                     messageContent.append(container);
-                    return msg;
                 },
 
                 renderMessage (attrs) {
@@ -712,11 +720,11 @@
                     msg_content.innerHTML = u.addEmoji(
                         _converse, emojione, u.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))
                     );
-                    u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
 
                     if (attrs.is_spoiler) {
-                        return this.renderSpoilerMessage(msg, attrs)
+                        this.renderSpoilerMessage(msg, attrs)
                     }
+                    u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
                     return msg;
                 },
 
@@ -1106,12 +1114,7 @@
                 },
 
                 focus () {
-                    const textarea_el = this.el.querySelector('.chat-textarea');
-                    if (!_.isNull(textarea_el)) {
-                        textarea_el.focus();
-                        _converse.emit('chatBoxFocused', this);
-                    }
-                    return this;
+                    this.message_form_view.focus();
                 },
 
                 hide () {

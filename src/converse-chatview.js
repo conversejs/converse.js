@@ -619,6 +619,53 @@
                     }
                 },
 
+                renderSpoilerMessage (msg, attrs) {
+                    /* Render a "spoiler" message, as defined in XEP-0382
+                     *
+                     * Parameters:
+                     *  (Object) attrs: An object containing the message attributes.
+                     */
+                    console.log('Spoiler in attrs \n');
+                    const button = document.createElement("button");
+                    const container = document.createElement("div");
+                    const content = document.createElement( "div" );
+                    const hint = document.createElement("div");
+                    const contentHidden = document.createElement("div");
+                    const messageContent = msg.querySelector(".chat-msg-content");
+
+                    hint.appendChild(document.createTextNode(attrs.spoiler_hint));
+
+                    for (var i = 0; i < messageContent.childNodes.length; i++){
+                        contentHidden.append(messageContent.childNodes[i]);
+                    }
+                    contentHidden.classList.add("hidden");
+                    // contentHidden.addHyperlinks();
+                    // contentHidden.addEmoticons(_converse.visible_toolbar_buttons.emoticons);
+
+                    container.style.backgroundColor = "Lavender";
+                    container.style.textAlign = "center";
+
+                    //Spoiler's content
+                    content.classList.add("spoiler-content");
+                    content.appendChild(hint);
+                    content.appendChild(contentHidden);
+                    //Spoiler's button
+                    button.classList.add("toggle-spoiler-display");
+                    button.classList.add("icon-eye");
+                    button.setAttribute("type", "button");
+                    button.appendChild(document.createTextNode(__('Show ')));
+                    button.style.width = "100%";
+                    button.setAttribute("closed", "true");
+
+                    container.appendChild(button);
+                    container.appendChild(content);
+
+                    messageContent.textContent = "";
+                    messageContent.append(document.createElement("br"));
+                    messageContent.append(container);
+                    return msg;
+                },
+
                 renderMessage (attrs) {
                     /* Renders a chat message based on the passed in attributes.
                      *
@@ -666,6 +713,10 @@
                         _converse, emojione, u.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))
                     );
                     u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
+
+                    if (attrs.is_spoiler) {
+                        return this.renderSpoilerMessage(msg, attrs)
+                    }
                     return msg;
                 },
 

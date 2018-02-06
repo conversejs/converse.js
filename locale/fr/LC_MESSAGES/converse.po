@@ -7,10 +7,10 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-29 16:31+0100\n"
-"PO-Revision-Date: 2018-01-28 10:37+0000\n"
+"PO-Revision-Date: 2018-02-07 20:36+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
-"translations/fr/>\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/conversejs/translations/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -273,17 +273,17 @@ msgstr "Déconnecté"
 #: dist/converse-no-dependencies.js:13894
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
-msgstr "Cliquez pour retirer le contact « %1$s »"
+msgstr "Cliquez pour retirer le contact %1$s"
 
 #: dist/converse-no-dependencies.js:13877
 #, javascript-format
 msgid "Click to accept the contact request from %1$s"
-msgstr "Cliquez pour accepter la demande de « %1$s »"
+msgstr "Cliquez pour accepter la demande d’ajout de contact de %1$s"
 
 #: dist/converse-no-dependencies.js:13878
 #, javascript-format
 msgid "Click to decline the contact request from %1$s"
-msgstr "Cliquez pour décliner la demande de contact de « %1$s »"
+msgstr "Cliquez pour décliner la demande d’ajout de contact de %1$s"
 
 #: dist/converse-no-dependencies.js:13893
 msgid "Click to chat with this contact"
@@ -306,7 +306,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:13978
 msgid "Are you sure you want to decline this contact request?"
-msgstr "Voulez-vous vraiment rejeter cette demande de contact ?"
+msgstr "Voulez-vous vraiment rejeter cette demande d’ajout de contact ?"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online

@@ -1682,6 +1682,8 @@ body {
         margin-top: 1em; }
     #converse-embedded-chat .chatbox .chat-body .chat-image,
     #conversejs .chatbox .chat-body .chat-image {
+      height: auto;
+      width: auto;
       max-height: 24em;
       max-width: 100%; }
     #converse-embedded-chat .chatbox .chat-body .chat-action,
@@ -1744,6 +1746,9 @@ body {
     line-height: 1.3em;
     height: 206px;
     height: calc(100% - 100px); }
+    #converse-embedded-chat .chatbox .chat-content .toggle-spoiler:before,
+    #conversejs .chatbox .chat-content .toggle-spoiler:before {
+      padding-right: 0.25em; }
   #converse-embedded-chat .chatbox .chat-content-sendbutton,
   #conversejs .chatbox .chat-content-sendbutton {
     height: calc(100% - 132px); }

@@ -217,6 +217,11 @@
             line-height: 1.3em;
             height: 206px;
             height: calc(100% - #{$toolbar-height + $chat-textarea-height +1px});
+
+            .toggle-spoiler:before {
+                padding-right: 0.25em;
+                whitespace: nowrap;
+            }
         }
         .chat-content-sendbutton {
             height: calc(100% - #{$toolbar-height + $chat-textarea-height + $send-button-height + 2*$send-button-margin});

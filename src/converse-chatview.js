@@ -23,6 +23,7 @@
             "tpl!new_day",
             "tpl!spinner",
             "tpl!spoiler_button",
+            "tpl!spoiler_message",
             "tpl!toolbar"
     ], factory);
 }(this, function (
@@ -41,6 +42,7 @@
             tpl_new_day,
             tpl_spinner,
             tpl_spoiler_button,
+            tpl_spoiler_message,
             tpl_toolbar
     ) {
     "use strict";
@@ -361,7 +363,7 @@
                     'click .toggle-clear': 'clearMessages',
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-smiley': 'toggleEmojiMenu',
-                    'click .toggle-spoiler-display': 'toggleSpoilerMessage',
+                    'click .toggle-spoiler': 'toggleSpoilerMessage',
                     'keypress .chat-textarea': 'keyPressed'
                 },
 
@@ -610,14 +612,18 @@
                     }
                 },
 
-                getExtraMessageTemplateAttributes () {
+                getExtraMessageTemplateAttributes (attrs) {
                     /* Provides a hook for sending more attributes to the
                      * message template.
                      *
                      * Parameters:
                      *  (Object) attrs: An object containing message attributes.
                      */
-                    return {};
+                    if (attrs.is_spoiler) {
+                        return {'label_show': __('Show spoiler')};
+                    } else {
+                        return {}
+                    }
                 },
 
                 getExtraMessageClasses (attrs) {
@@ -632,46 +638,11 @@
                     /* Render a "spoiler" message, as defined in XEP-0382
                      *
                      * Parameters:
+                     *  (HTMLElement) msg: The chat message DOM element
                      *  (Object) attrs: An object containing the message attributes.
                      */
-                    console.log('Spoiler in attrs \n');
-                    const button = document.createElement("button");
-                    const container = document.createElement("div");
-                    const content = document.createElement( "div" );
-                    const hint = document.createElement("div");
-                    const contentHidden = document.createElement("div");
-                    const messageContent = msg.querySelector(".chat-msg-content");
-
-                    hint.appendChild(document.createTextNode(attrs.spoiler_hint));
-
-                    for (var i = 0; i < messageContent.childNodes.length; i++){
-                        contentHidden.append(messageContent.childNodes[i]);
-                    }
-                    contentHidden.classList.add("hidden");
-                    // contentHidden.addHyperlinks();
-                    // contentHidden.addEmoticons(_converse.visible_toolbar_buttons.emoticons);
-
-                    container.style.backgroundColor = "Lavender";
-                    container.style.textAlign = "center";
-
-                    //Spoiler's content
-                    content.classList.add("spoiler-content");
-                    content.appendChild(hint);
-                    content.appendChild(contentHidden);
-                    //Spoiler's button
-                    button.classList.add("toggle-spoiler-display");
-                    button.classList.add("icon-eye");
-                    button.setAttribute("type", "button");
-                    button.appendChild(document.createTextNode(__('Show ')));
-                    button.style.width = "100%";
-                    button.setAttribute("closed", "true");
-
-                    container.appendChild(button);
-                    container.appendChild(content);
-
-                    messageContent.textContent = "";
-                    messageContent.append(document.createElement("br"));
-                    messageContent.append(container);
+                    const hint = msg.querySelector('.spoiler-hint');
+                    hint.appendChild(document.createTextNode(attrs.spoiler_hint || ''));
                 },
 
                 renderMessage (attrs) {
@@ -697,6 +668,8 @@
                         } else {
                             username = attrs.fullname;
                         }
+                    } else if (attrs.is_spoiler) {
+                        template = tpl_spoiler_message;
                     } else  {
                         template = tpl_message;
                         username = attrs.sender === 'me' && __('me') || fullname;
@@ -714,13 +687,13 @@
                         })
                     ));
                     if (_converse.show_message_load_animation) {
-                        window.setTimeout(_.partial(u.removeClass, 'onload', msg), 2000);
+                        window.setTimeout(
+                            _.partial(u.removeClass, 'onload', msg), 2000);
                     }
                     const msg_content = msg.querySelector('.chat-msg-content');
                     msg_content.innerHTML = u.addEmoji(
                         _converse, emojione, u.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))
                     );
-
                     if (attrs.is_spoiler) {
                         this.renderSpoilerMessage(msg, attrs)
                     }
@@ -846,11 +819,9 @@
                         }).c('body').t(message.get('message')).up()
                           .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
 
-                    if (this.message_form_view.model.get('sending_spoiler')) {
-                        const has_hint = this.el.querySelector('.spoiler-hint').value.length > 0;
-                        if (has_hint) {
-                            const hint = document.querySelector('.spoiler-hint').value;
-                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }, hint);
+                    if (message.get('is_spoiler')) {
+                        if (message.get('spoiler_hint')) {
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }, message.get('spoiler_hint'));
                         } else {
                             stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER });
                         }
@@ -882,12 +853,14 @@
                     }
                 },
 
-                onMessageSubmitted (text) {
+                onMessageSubmitted (text, spoiler_hint) {
                     /* This method gets called once the user has typed a message
                      * and then pressed enter in a chat box.
                      *
                      *  Parameters:
-                     *    (string) text - The chat message text.
+                     *    (String) text - The chat message text.
+                     *    (String) spoiler_hint - A hint in case the message
+                     *      text is a spoiler message. See XEP-0382
                      */
                     if (!_converse.connection.authenticated) {
                         return this.showHelpMessages(
@@ -911,12 +884,12 @@
                             return;
                         }
                     }
-                    const attrs = this.getOutgoingMessageAttributes(text)
+                    const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint)
                     const message = this.model.messages.create(attrs);
                     this.sendMessage(message);
                 },
 
-                getOutgoingMessageAttributes (text) {
+                getOutgoingMessageAttributes (text, spoiler_hint) {
                     /* Overridable method which returns the attributes to be
                      * passed to Backbone.Message's constructor.
                      */
@@ -930,8 +903,7 @@
                             'is_spoiler': is_spoiler
                         };
                     if (is_spoiler) {
-                        const spoiler = this.el.querySelector('.spoiler-hint')
-                        attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : __('Spoiler');
+                        attrs.spoiler_hint = spoiler_hint;
                     }
                     return attrs;
                 },
@@ -988,10 +960,17 @@
                     ev.preventDefault();
                     const textarea = this.el.querySelector('.chat-textarea'),
                           message = textarea.value;
+
+                    let spoiler_hint;
+                    if (this.model.get('sending_spoiler')) {
+                        const hint_el = this.el.querySelector('form.sendXMPPMessage input.spoiler-hint');
+                        spoiler_hint = hint_el.value;
+                        hint_el.value = '';
+                    }
                     textarea.value = '';
                     textarea.focus();
                     if (message !== '') {
-                        this.onMessageSubmitted(message);
+                        this.onMessageSubmitted(message, spoiler_hint);
                         _converse.emit('messageSend', message);
                     }
                     this.setChatState(_converse.ACTIVE);
@@ -1036,6 +1015,7 @@
                     this.insertIntoTextArea(target.getAttribute('data-emoji'));
                 },
 
+
                 toggleEmojiMenu (ev) {
                     if (u.hasClass('insert-emoji', ev.target)) {
                         return;
@@ -1065,6 +1045,27 @@
                         connection: _converse.connection,
                         model: this.model
                     });
+                },
+
+                toggleSpoilerMessage (ev) {
+                    if (ev && ev.preventDefault) {
+                        ev.preventDefault();
+                    }
+                    const toggle_el = ev.target;
+                    u.slideToggleElement(
+                        toggle_el.parentElement.querySelector('.spoiler')
+                    );
+                    if (toggle_el.getAttribute("data-toggle-state") == "closed") {
+                        toggle_el.textContent = __('Hide spoiler');
+                        toggle_el.classList.remove("icon-eye");
+                        toggle_el.classList.add("icon-eye-blocked");
+                        toggle_el.setAttribute("data-toggle-state", "open");
+                    } else {
+                        toggle_el.textContent = __('Show spoiler');
+                        toggle_el.classList.remove("icon-eye-blocked");
+                        toggle_el.classList.add("icon-eye");
+                        toggle_el.setAttribute("data-toggle-state", "closed");
+                    }
                 },
 
                 onChatStatusChanged (item) {

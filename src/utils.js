@@ -389,7 +389,7 @@
             return !sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length &&
                    !sizzle('delay[xmlns="'+Strophe.NS.DELAY+'"]', message).length;
         } else {
-            return !message.get('archive_id') && !message.get('delayed');
+            return !message.get('delayed');
         }
     };
 

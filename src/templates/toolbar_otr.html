@@ -1,6 +1,5 @@
 {[ if (o.allow_otr)  { ]}
     <li class="toggle-toolbar-menu toggle-otr {{{o.otr_status_class}}}" title="{{{o.otr_tooltip}}}">
-        <span class="chat-toolbar-text">{{{o.otr_translated_status}}}</span>
         {[ if (o.otr_status == o.UNENCRYPTED) { ]}
             <span class="icon-unlocked"></span>
         {[ } ]}

@@ -1821,20 +1821,16 @@ body {
     #conversejs .chatbox .sendXMPPMessage .chat-toolbar {
       box-sizing: border-box;
       margin: 0;
-      padding: 5px;
+      padding: 0.25em;
       height: 29px;
       display: block;
-      background-color: #3AA569; }
+      background-color: #50c282; }
       #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar a,
       #conversejs .chatbox .sendXMPPMessage .chat-toolbar a {
-        font-size: 16px;
+        font-size: 18px;
         color: white;
         text-decoration: none;
         text-shadow: none; }
-      #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar .chat-toolbar-text,
-      #conversejs .chatbox .sendXMPPMessage .chat-toolbar .chat-toolbar-text {
-        font-size: 12px;
-        padding-right: 3px; }
       #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar .unencrypted a,
       #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar .unencrypted,
       #conversejs .chatbox .sendXMPPMessage .chat-toolbar .unencrypted a,

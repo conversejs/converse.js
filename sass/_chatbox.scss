@@ -294,19 +294,15 @@
             .chat-toolbar {
                 box-sizing: border-box;
                 margin: 0;
-                padding: 5px;
+                padding: 0.25em;
                 height: $toolbar-height;
                 display: block;
-                background-color: $chat-head-color;
+                background-color: lighten($chat-head-color, 10%);
                 a {
-                    font-size: $font-size;
+                    font-size: $font-size-large;
                     color: white;
                     text-decoration: none;
                     text-shadow: none;
-                }
-                .chat-toolbar-text {
-                    font-size: 12px;
-                    padding-right: 3px;
                 }
                 .unencrypted a,
                 .unencrypted {

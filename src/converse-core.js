@@ -44,6 +44,7 @@
     Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
     Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
     Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
+    Strophe.addNamespace('SPOILER', 'urn:xmpp:spoiler:0');
     Strophe.addNamespace('XFORM', 'jabber:x:data');
 
     // Use Mustache style syntax for variable interpolation
@@ -85,7 +86,8 @@
         'converse-roomslist',
         'converse-rosterview',
         'converse-singleton',
-        'converse-vcard'
+        'converse-vcard',
+        'converse-spoilers'
     ];
 
     // Make converse pluggable
@@ -1471,6 +1473,7 @@
         this.connfeedback = new this.ConnectionFeedback();
 
         this.XMPPStatus = Backbone.Model.extend({
+
             initialize () {
                 this.set({
                     'status' : this.getStatus()

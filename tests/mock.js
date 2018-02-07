@@ -6,6 +6,9 @@
     var Strophe = converse.env.Strophe;
     var $iq = converse.env.$iq;
     var mock = {};
+
+    mock.view_mode = 'overlayed';
+
     // Names from http://www.fakenamegenerator.com/
     mock.req_names = [
         'Louw Spekman', 'Mohamad Stet', 'Dominik Beyer'
@@ -110,10 +113,19 @@
             'no_trimming': true,
             'auto_login': true,
             'jid': 'dummy@localhost',
+            'view_mode': mock.view_mode,
             'password': 'secret',
             'debug': false
         }, settings || {}));
         _converse.ChatBoxViews.prototype.trimChat = function () {};
+
+        var entity = _converse.api.disco.entities.get(_converse.bare_jid, true);
+        entity.identities.create({
+            'category': 'pubsub',
+            'type': 'pep'
+        });
+        entity.waitUntilFeaturesDiscovered.resolve();
+
         window.converse_disable_effects = true;
         return _converse;
     }

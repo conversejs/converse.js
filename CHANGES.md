@@ -2,7 +2,15 @@
 
 ## 3.3.3 (Unreleased)
 
+### Bugfixes
 - Attribute error when empty IQ stanza is returned for vCard query
+
+### New features
+- XEP-0382 Spoiler Messages (currently only for private chats)
+- Listen for new room bookmarks pushed from the user's PEP service.
+
+### API changes
+- New API method `_converse.disco.getIdentity` to check whether a JID has a given identity.
 
 ## 3.3.2 (2018-01-29)
 

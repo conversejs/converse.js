@@ -364,7 +364,7 @@
     };
 
     u.isValidJID = function (jid) {
-        return _.filter(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+        return _.compact(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
     };
 
     u.isValidMUCJID = function (jid) {
@@ -389,7 +389,7 @@
             return !sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length &&
                    !sizzle('delay[xmlns="'+Strophe.NS.DELAY+'"]', message).length;
         } else {
-            return !message.get('archive_id') && !message.get('delayed');
+            return !message.get('delayed');
         }
     };
 

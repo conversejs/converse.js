@@ -266,7 +266,7 @@ a:focus {
   font-size: 26px;
 }
 .banner-social-buttons {
-    padding-top: 7em;
+    padding-top: 5em;
 }
 ::-moz-selection {
   text-shadow: none;
@@ -340,8 +340,9 @@ ul.features {
 }
 
 .mastodon {
-    width: 5em;
-    height: 5em;
+    width: 4em;
+    height: 4em;
+    margin-top: 0.9em;
 }
 
 .sponsors {

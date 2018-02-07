@@ -14,11 +14,12 @@
     }
     utils.waitUntil = waitUntilPromise.default;
 
-    utils.waitUntilFeatureSupportConfirmed = function (_converse, feature_name) {
+    utils.waitUntilFeatureSupportConfirmed = function (_converse, entity_jid, feature_name) {
         var IQ_disco, stanza;
         return utils.waitUntil(function () {
             IQ_disco = _.filter(_converse.connection.IQ_stanzas, function (iq) {
-                return iq.nodeTree.querySelector('query[xmlns="http://jabber.org/protocol/disco#info"]');
+                return iq.nodeTree.querySelector('query[xmlns="http://jabber.org/protocol/disco#info"]') &&
+                    iq.nodeTree.getAttribute('to') === entity_jid;
             }).pop();
             return !_.isUndefined(IQ_disco);
         }, 300).then(function () {
@@ -68,7 +69,10 @@
     utils.closeControlBox = function () {
         var controlbox = document.querySelector("#controlbox");
         if (u.isVisible(controlbox)) {
-            controlbox.querySelector(".close-chatbox-button").click();
+            var button = controlbox.querySelector(".close-chatbox-button");
+            if (!_.isNull(button)) {
+                button.click();
+            }
         }
         return this;
     };

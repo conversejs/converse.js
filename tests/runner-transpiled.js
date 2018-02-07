@@ -1,6 +1,7 @@
 /*global config */
 
 // Extra test dependencies
+config.baseUrl = '../';
 config.paths.jquery = "node_modules/jquery/dist/jquery";
 config.paths.mock = "tests/mock";
 config.paths['wait-until-promise'] = "node_modules/wait-until-promise/index";

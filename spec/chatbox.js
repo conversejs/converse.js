@@ -17,7 +17,7 @@
     var moment = converse.env.moment;
     var u = converse.env.utils;
 
-    return describe("Chatboxes", function() {
+    return describe("Chatboxes", function () {
         describe("A Chatbox", function () {
 
             it("has a /help command to show the available commands",
@@ -57,7 +57,7 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.waitUntilFeatureSupportConfirmed(_converse, 'vcard-temp')
+                test_utils.waitUntilFeatureSupportConfirmed(_converse, 'localhost', 'vcard-temp')
                 .then(function () {
                     return test_utils.waitUntil(function () {
                         return _converse.xmppstatus.get('fullname');
@@ -419,7 +419,7 @@
                     expect(view).toBeDefined();
                     var $toolbar = $(view.el).find('ul.chat-toolbar');
                     expect($toolbar.length).toBe(1);
-                    expect($toolbar.children('li').length).toBe(3);
+                    expect($toolbar.children('li').length).toBe(4);
                     done();
                 }));
 
@@ -1228,7 +1228,7 @@
                         function (done, _converse) {
 
                     var contact, sent_stanza, IQ_id, stanza;
-                    test_utils.waitUntilFeatureSupportConfirmed(_converse, 'vcard-temp')
+                    test_utils.waitUntilFeatureSupportConfirmed(_converse, 'localhost', 'vcard-temp')
                     .then(function () {
                         return test_utils.waitUntil(function () {
                             return _converse.xmppstatus.get('fullname');
@@ -1842,7 +1842,7 @@
                             function (done, _converse) {
 
                         var contact, sent_stanza, IQ_id, stanza;
-                        test_utils.waitUntilFeatureSupportConfirmed(_converse, 'vcard-temp')
+                        test_utils.waitUntilFeatureSupportConfirmed(_converse, 'localhost', 'vcard-temp')
                         .then(function () {
                             return test_utils.waitUntil(function () {
                                 return _converse.xmppstatus.get('fullname');
@@ -1989,7 +1989,7 @@
                             function (done, _converse) {
 
                         var contact, sent_stanza, IQ_id, stanza;
-                        test_utils.waitUntilFeatureSupportConfirmed(_converse, 'vcard-temp')
+                        test_utils.waitUntilFeatureSupportConfirmed(_converse, 'localhost', 'vcard-temp')
                         .then(function () {
                             return test_utils.waitUntil(function () {
                                 return _converse.xmppstatus.get('fullname');

@@ -227,9 +227,9 @@
             }
         }
 
-        form.sendXMPPMessage {
+        .sendXMPPMessage {
             .chat-toolbar {
-                background-color: $chatroom-toolbar-color;
+                background-color: lighten($chatroom-head-color, 10%);
             }
             .chat-textarea {
                 border-bottom-right-radius: 0;

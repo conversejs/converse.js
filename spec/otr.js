@@ -4,7 +4,41 @@
     var Strophe = converse.env.Strophe;
     var b64_sha1 = converse.env.b64_sha1;
 
-    return describe("The OTR module", function() {
+    describe("A chatbox with an active OTR session", function() {
+
+        it("will not show the spoiler toolbar button",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
+            test_utils.createContacts(_converse, 'current');
+            var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            test_utils.openChatBoxFor(_converse, contact_jid);
+
+            var view = _converse.chatboxviews.get(contact_jid);
+            var spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
+            expect(spoiler_toggle).not.toBe(null);
+
+            view.model.set('otr_status', 0);
+            spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
+            expect(spoiler_toggle).not.toBe(null);
+
+            view.model.set('otr_status', 1);
+            spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
+            expect(spoiler_toggle).toBe(null);
+
+            view.model.set('otr_status', 2);
+            spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
+            expect(spoiler_toggle).toBe(null);
+
+            view.model.set('otr_status', 3);
+            spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
+            expect(spoiler_toggle).not.toBe(null);
+            done();
+        }));
+    });
+
+    describe("The OTR module", function() {
 
         it("will add processing hints to sent out encrypted <message> stanzas",
             mock.initConverseWithPromises(

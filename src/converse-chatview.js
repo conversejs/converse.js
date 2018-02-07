@@ -278,7 +278,7 @@
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .toggle-spoiler': 'toggleSpoilerMessage',
-                    'click .toggle-spoiler-edit': 'toggleComposeSpoilerMessage',
+                    'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
                     'keypress .chat-textarea': 'keyPressed'
                 },
 

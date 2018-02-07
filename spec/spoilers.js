@@ -99,7 +99,7 @@
             spyOn(view, 'onMessageSubmitted').and.callThrough();
             spyOn(_converse.connection, 'send');
 
-            var spoiler_toggle = view.el.querySelector('.toggle-spoiler-edit');
+            var spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
             spoiler_toggle.click();
 
             var textarea = view.el.querySelector('.chat-textarea');
@@ -159,7 +159,7 @@
 
             var view = _converse.chatboxviews.get(contact_jid);
 
-            var spoiler_toggle = view.el.querySelector('.toggle-spoiler-edit');
+            var spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
             spoiler_toggle.click();
 
             spyOn(view, 'onMessageSubmitted').and.callThrough();

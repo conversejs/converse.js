@@ -458,7 +458,7 @@
 
                 getToolbarOptions (options) {
                     options = this.__super__.getToolbarOptions();
-                    if (this.model.get('composing_spoiler') && this.isOTREncryptedSession()) {
+                    if (this.isOTREncryptedSession()) {
                         options.show_spoiler_button = false;
                     }
                     return options;

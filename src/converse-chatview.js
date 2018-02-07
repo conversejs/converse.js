@@ -330,7 +330,7 @@
                 renderMessageForm () {
                     let placeholder;
                     if (this.model.get('composing_spoiler')) {
-                        placeholder = __('Spoiler message');
+                        placeholder = __('Hidden message');
                     } else {
                         placeholder = __('Personal message');
                     }
@@ -570,7 +570,7 @@
                      *  (Object) attrs: An object containing message attributes.
                      */
                     if (attrs.is_spoiler) {
-                        return {'label_show': __('Show spoiler')};
+                        return {'label_show': __('Show hidden message')};
                     } else {
                         return {}
                     }
@@ -829,7 +829,7 @@
                      *  Parameters:
                      *    (String) text - The chat message text.
                      *    (String) spoiler_hint - A hint in case the message
-                     *      text is a spoiler message. See XEP-0382
+                     *      text is a hidden/spoiler message. See XEP-0382
                      */
                     if (!_converse.connection.authenticated) {
                         return this.showHelpMessages(
@@ -1028,12 +1028,12 @@
                         toggle_el.parentElement.querySelector('.spoiler')
                     );
                     if (toggle_el.getAttribute("data-toggle-state") == "closed") {
-                        toggle_el.textContent = __('Hide spoiler');
+                        toggle_el.textContent = __('Hide hidden message');
                         toggle_el.classList.remove("icon-eye");
                         toggle_el.classList.add("icon-eye-blocked");
                         toggle_el.setAttribute("data-toggle-state", "open");
                     } else {
-                        toggle_el.textContent = __('Show spoiler');
+                        toggle_el.textContent = __('Show hidden message');
                         toggle_el.classList.remove("icon-eye-blocked");
                         toggle_el.classList.add("icon-eye");
                         toggle_el.setAttribute("data-toggle-state", "closed");

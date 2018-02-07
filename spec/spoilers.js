@@ -137,10 +137,10 @@
             expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeTruthy();
 
             spoiler_toggle = view.el.querySelector('.toggle-spoiler');
-            expect(spoiler_toggle.textContent).toBe('Show spoiler');
+            expect(spoiler_toggle.textContent).toBe('Show hidden message');
             spoiler_toggle.click();
             expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeFalsy();
-            expect(spoiler_toggle.textContent).toBe('Hide spoiler');
+            expect(spoiler_toggle.textContent).toBe('Hide hidden message');
             spoiler_toggle.click();
             expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeTruthy();
             done();
@@ -203,10 +203,10 @@
             expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeTruthy();
 
             spoiler_toggle = view.el.querySelector('.toggle-spoiler');
-            expect(spoiler_toggle.textContent).toBe('Show spoiler');
+            expect(spoiler_toggle.textContent).toBe('Show hidden message');
             spoiler_toggle.click();
             expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeFalsy();
-            expect(spoiler_toggle.textContent).toBe('Hide spoiler');
+            expect(spoiler_toggle.textContent).toBe('Hide hidden message');
             spoiler_toggle.click();
             expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeTruthy();
             done();

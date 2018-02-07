@@ -688,7 +688,7 @@
                     ev.preventDefault();
                     const input = ev.target.querySelector('input');
                     const jid = input.value;
-                    if (!jid || _.filter(jid.split('@')).length < 2) {
+                    if (!jid || _.compact(jid.split('@')).length < 2) {
                         this.el.querySelector('.search-xmpp div').innerHTML =
                             this.generateAddContactHTML({
                                 error_message: __('Please enter a valid XMPP address'),

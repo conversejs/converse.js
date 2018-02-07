@@ -486,8 +486,7 @@
                 },
 
                 renderChatArea () {
-                    /* Render the UI container in which chat room messages will
-                     * appear.
+                    /* Render the UI container in which chat room messages will appear.
                      */
                     if (_.isNull(this.el.querySelector('.chat-area'))) {
                         const container_el = this.el.querySelector('.chatroom-body');
@@ -583,8 +582,8 @@
                 afterConnected () {
                     if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                         this.setChatState(_converse.ACTIVE);
-                        this.renderEmojiPicker();
                         this.scrollDown();
+                        this.renderEmojiPicker();
                         this.focus();
                     }
                 },
@@ -2488,7 +2487,7 @@
                     evt.preventDefault();
                     const el = evt.target.querySelector('input.invited-contact'),
                           jid = el.value;
-                    if (!jid || _.filter(jid.split('@')).length < 2) {
+                    if (!jid || _.compact(jid.split('@')).length < 2) {
                         evt.target.outerHTML = tpl_chatroom_invite({
                             'error_message': __('Please enter a valid XMPP username'),
                             'label_invitation': __('Invite'),

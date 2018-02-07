@@ -364,7 +364,7 @@
     };
 
     u.isValidJID = function (jid) {
-        return _.filter(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+        return _.compact(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
     };
 
     u.isValidMUCJID = function (jid) {

@@ -345,7 +345,8 @@
                             'show_send_button': _converse.show_send_button,
                             'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
                             'show_textarea': true,
-                            'show_toolbar': _converse.show_toolbar
+                            'show_toolbar': _converse.show_toolbar,
+                            'unread_msgs': __('You have unread messages')
                         }));
                     this.renderToolbar();
                 },
@@ -1077,11 +1078,15 @@
                     return this;
                 },
 
+                renderEmojiPicker () {
+                    this.emoji_picker_view.render();
+                },
+
                 insertEmojiPicker () {
-                    var toggle = this.el.querySelector('.toggle-smiley');
-                    if (!_.isNull(toggle)) {
-                        toggle.innerHTML = '';
-                        toggle.appendChild(this.emoji_picker_view.render().el);
+                    var picker_el = this.el.querySelector('.emoji-picker');
+                    if (!_.isNull(picker_el)) {
+                        picker_el.innerHTML = '';
+                        picker_el.appendChild(this.emoji_picker_view.el);
                     }
                 },
 
@@ -1105,7 +1110,7 @@
                     }
                     this.setChatState(_converse.ACTIVE);
                     this.scrollDown();
-                    this.renderToolbar();
+                    this.renderEmojiPicker();
                     if (focus) {
                         this.focus();
                     }

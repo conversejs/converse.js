@@ -298,9 +298,10 @@
                 height: $toolbar-height;
                 display: block;
                 background-color: lighten($chat-head-color, 10%);
+                color: white;
                 a {
-                    font-size: $font-size-large;
                     color: white;
+                    font-size: $font-size-large;
                     text-decoration: none;
                     text-shadow: none;
                 }
@@ -395,7 +396,6 @@
                         color: white;
                     }
                     &.toggle-smiley {
-                        padding-left: 5px;
                         .emoji-toolbar {
                             .emoji-category-picker,
                             .emoji-skintone-picker {

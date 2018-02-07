@@ -68,7 +68,10 @@
     utils.closeControlBox = function () {
         var controlbox = document.querySelector("#controlbox");
         if (u.isVisible(controlbox)) {
-            controlbox.querySelector(".close-chatbox-button").click();
+            var button = controlbox.querySelector(".close-chatbox-button");
+            if (!_.isNull(button)) {
+                button.click();
+            }
         }
         return this;
     };

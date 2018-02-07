@@ -62,7 +62,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes"],
+        dependencies: ["converse-chatboxes", "converse-disco"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -1202,6 +1202,12 @@
                         this.model.clearUnreadMsgCounter();
                     }
                 }
+            });
+
+
+            _converse.on('connected', () => {
+                // Advertise that we support XEP-0382 Message Spoilers
+                _converse.connection.disco.addFeature(Strophe.NS.SPOILER);
             });
         }
     });

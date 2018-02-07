@@ -6,6 +6,9 @@
     var Strophe = converse.env.Strophe;
     var $iq = converse.env.$iq;
     var mock = {};
+
+    mock.view_mode = 'overlayed';
+
     // Names from http://www.fakenamegenerator.com/
     mock.req_names = [
         'Louw Spekman', 'Mohamad Stet', 'Dominik Beyer'
@@ -110,6 +113,7 @@
             'no_trimming': true,
             'auto_login': true,
             'jid': 'dummy@localhost',
+            'view_mode': mock.view_mode,
             'password': 'secret',
             'debug': false
         }, settings || {}));

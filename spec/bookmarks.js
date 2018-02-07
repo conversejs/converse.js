@@ -12,6 +12,7 @@
 } (this, function (jasmine, $, converse, utils, mock, test_utils) {
     "use strict";
     var $iq = converse.env.$iq,
+        $msg = converse.env.$msg,
         Backbone = converse.env.Backbone,
         Strophe = converse.env.Strophe,
         _ = converse.env._,
@@ -278,51 +279,58 @@
 
     describe("Bookmarks", function () {
 
-        xit("can be pushed from the XMPP server", mock.initConverse(function (_converse) {
-            // TODO
-            /* The stored data is automatically pushed to all of the user's
-             * connected resources.
-             *
-             * Publisher receives event notification
-             * -------------------------------------
-             * <message from='juliet@capulet.lit'
-             *         to='juliet@capulet.lit/balcony'
-             *         type='headline'
-             *         id='rnfoo1'>
-             * <event xmlns='http://jabber.org/protocol/pubsub#event'>
-             *     <items node='storage:bookmarks'>
-             *     <item id='current'>
-             *         <storage xmlns='storage:bookmarks'>
-             *         <conference name='The Play&apos;s the Thing'
-             *                     autojoin='true'
-             *                     jid='theplay@conference.shakespeare.lit'>
-             *             <nick>JC</nick>
-             *         </conference>
-             *         </storage>
-             *     </item>
-             *     </items>
-             * </event>
-             * </message>
+        it("can be pushed from the XMPP server", mock.initConverseWithPromises(
+            ['send'], ['rosterGroupsFetched', 'connected'], {},
+            function (done, _converse) {
 
-             * <message from='juliet@capulet.lit'
-             *         to='juliet@capulet.lit/chamber'
-             *         type='headline'
-             *         id='rnfoo2'>
-             * <event xmlns='http://jabber.org/protocol/pubsub#event'>
-             *     <items node='storage:bookmarks'>
-             *     <item id='current'>
-             *         <storage xmlns='storage:bookmarks'>
-             *         <conference name='The Play&apos;s the Thing'
-             *                     autojoin='true'
-             *                     jid='theplay@conference.shakespeare.lit'>
-             *             <nick>JC</nick>
-             *         </conference>
-             *         </storage>
-             *     </item>
-             *     </items>
-             * </event>
-             * </message>
-             */
+            test_utils.openControlBox().openRoomsPanel(_converse);
+
+            test_utils.waitUntil(function () {
+                return _converse.bookmarks;
+            }, 300).then(function () {
+                /* The stored data is automatically pushed to all of the user's
+                 * connected resources.
+                 *
+                 * Publisher receives event notification
+                 * -------------------------------------
+                 * <message from='juliet@capulet.lit'
+                 *         to='juliet@capulet.lit/balcony'
+                 *         type='headline'
+                 *         id='rnfoo1'>
+                 * <event xmlns='http://jabber.org/protocol/pubsub#event'>
+                 *     <items node='storage:bookmarks'>
+                 *     <item id='current'>
+                 *         <storage xmlns='storage:bookmarks'>
+                 *         <conference name='The Play&apos;s the Thing'
+                 *                     autojoin='true'
+                 *                     jid='theplay@conference.shakespeare.lit'>
+                 *             <nick>JC</nick>
+                 *         </conference>
+                 *         </storage>
+                 *     </item>
+                 *     </items>
+                 * </event>
+                 * </message>
+                 */
+                var stanza = $msg({
+                    'from': 'dummy@localhost',
+                    'to': 'dummy@localhost/resource',
+                    'type': 'headline',
+                    'id': 'rnfoo1'
+                }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
+                    .c('items', {'node': 'storage:bookmarks'})
+                        .c('item', {'id': 'current'})
+                            .c('storage', {'xmlns': 'storage:bookmarks'})
+                                .c('conference', {'name': 'The Play&apos;s the Thing',
+                                                  'autojoin': 'true',
+                                                  'jid':'theplay@conference.shakespeare.lit'})
+                                    .c('nick').t('JC');
+
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                expect(_converse.bookmarks.length).toBe(1);
+                expect(_converse.chatboxviews.get('theplay@conference.shakespeare.lit')).not.toBeUndefined();
+                done();
+            });
         }));
 
         it("can be retrieved from the XMPP server", mock.initConverseWithPromises(

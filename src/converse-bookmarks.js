@@ -155,7 +155,7 @@
                     _.each(body.querySelectorAll('.chatroom-form-container'), u.removeElement);
 
                     body.insertAdjacentHTML(
-                        'beforeend', 
+                        'beforeend',
                         tpl_chatroom_bookmark_form({
                             heading: __('Bookmark this room'),
                             label_name: __('The name for this bookmark:'),
@@ -222,7 +222,7 @@
             // configuration settings.
             _converse.api.settings.update({
                 allow_bookmarks: true,
-                hide_open_bookmarks: true 
+                hide_open_bookmarks: true
             });
             // Promises exposed by this plugin
             _converse.api.promises.add('bookmarksInitialized');
@@ -370,10 +370,13 @@
                     }
                 },
 
-                onBookmarksReceived (deferred, iq) {
+                createBookmarksFromStanza (stanza) {
                     const bookmarks = sizzle(
-                        'items[node="storage:bookmarks"] item[id="current"] storage conference',
-                        iq
+                        'items[node="storage:bookmarks"] '+
+                        'item#current '+
+                        'storage[xmlns="storage:bookmarks"] '+
+                        'conference',
+                        stanza
                     )
                     _.forEach(bookmarks, (bookmark) => {
                         this.create({
@@ -383,6 +386,10 @@
                             'nick': bookmark.querySelector('nick').textContent
                         });
                     });
+                },
+
+                onBookmarksReceived (deferred, iq) {
+                    this.createBookmarksFromStanza(iq);
                     if (!_.isUndefined(deferred)) {
                         return deferred.resolve();
                     }
@@ -556,6 +563,16 @@
                 _converse.api.waitUntil('roomsPanelRendered')
             ]).then(initBookmarks)
               .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
+            _converse.on('connected', () => {
+                // Add a handler for bookmarks pushed from other connected clients
+                // (from the same user obviously)
+                _converse.connection.addHandler((message) => {
+                    if (message.querySelector('event[xmlns="'+Strophe.NS.PUBSUB+'#event"]')) {
+                        _converse.bookmarks.createBookmarksFromStanza(message);
+                    }
+                }, null, 'message', 'headline', null, _converse.bare_jid);
+            });
 
             const afterReconnection = function () {
                 if (!_converse.allow_bookmarks) {

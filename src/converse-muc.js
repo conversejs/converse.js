@@ -326,6 +326,9 @@
                     );
                 }
                 const promises = [_converse.api.waitUntil('roomsAutoJoined')]
+                if (_converse.allow_bookmarks) {
+                    promises.push( _converse.api.waitUntil('bookmarksInitialized'));
+                }
                 Promise.all(promises).then(() => {
                     _converse.api.rooms.open(jid);
                 });

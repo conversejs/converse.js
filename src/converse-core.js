@@ -1473,6 +1473,7 @@
         this.connfeedback = new this.ConnectionFeedback();
 
         this.XMPPStatus = Backbone.Model.extend({
+
             initialize () {
                 this.set({
                     'status' : this.getStatus()

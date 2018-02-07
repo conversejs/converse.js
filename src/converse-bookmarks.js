@@ -71,26 +71,33 @@
                     this.setBookmarkState();
                 },
 
-                generateHeadingHTML () {
+                renderHeading () {
                     const { _converse } = this.__super__,
-                        { __ } = _converse,
-                        html = this.__super__.generateHeadingHTML.apply(this, arguments);
+                          { __ } = _converse;
+
                     if (_converse.allow_bookmarks) {
-                        const div = document.createElement('div');
-                        div.innerHTML = html;
-                        const bookmark_button = tpl_chatroom_bookmark_toggle(
-                            _.assignIn(
-                                this.model.toJSON(),
-                                {
-                                    info_toggle_bookmark: __('Bookmark this room'),
-                                    bookmarked: this.model.get('bookmarked')
-                                }
-                            ));
-                        const close_button = div.querySelector('.close-chatbox-button');
-                        close_button.insertAdjacentHTML('afterend', bookmark_button);
-                        return div.innerHTML;
+                        _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then((identity) => {
+                            if (_.isNil(identity)) {
+                                return;
+                            }
+                            const div = document.createElement('div');
+                            div.innerHTML = this.generateHeadingHTML();
+
+                            const bookmark_button = tpl_chatroom_bookmark_toggle(
+                                _.assignIn(
+                                    this.model.toJSON(),
+                                    {
+                                        info_toggle_bookmark: __('Bookmark this room'),
+                                        bookmarked: this.model.get('bookmarked')
+                                    }
+                                ));
+                            const close_button = div.querySelector('.close-chatbox-button');
+                            close_button.insertAdjacentHTML('afterend', bookmark_button);
+                            this.el.querySelector('.chat-head-chatroom').innerHTML = div.innerHTML;
+                        });
+                    } else {
+                        return this.__super__.renderHeading.apply(this, arguments);
                     }
-                    return html;
                 },
 
                 checkForReservedNick () {
@@ -112,6 +119,9 @@
 
                 onBookmarked () {
                     const icon = this.el.querySelector('.icon-pushpin');
+                    if (_.isNull(icon)) {
+                        return;
+                    }
                     if (this.model.get('bookmarked')) {
                         icon.classList.add('button-on');
                     } else {
@@ -520,14 +530,23 @@
                 if (!_converse.allow_bookmarks) {
                     return;
                 }
-                _converse.bookmarks = new _converse.Bookmarks();
-                _converse.bookmarks.fetchBookmarks().then(() => {
-                    _converse.bookmarksview = new _converse.BookmarksView(
-                        {'model': _converse.bookmarks}
-                    );
-                })
-                .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR))
-                .then(() => {
+                // Only initialize bookmarks if the server supports PEP
+                _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then((identity) => {
+                    if (_.isNil(identity)) {
+                        _converse.emit('bookmarksInitialized');
+                        return;
+                    }
+                    _converse.bookmarks = new _converse.Bookmarks();
+                    _converse.bookmarks.fetchBookmarks().then(() => {
+                        _converse.bookmarksview = new _converse.BookmarksView(
+                            {'model': _converse.bookmarks}
+                        );
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR))
+                      .then(() => {
+                          _converse.emit('bookmarksInitialized');
+                      });
+                }).catch((e) => {
+                    _converse.log(e, Strophe.LogLevel.ERROR);
                     _converse.emit('bookmarksInitialized');
                 });
             };

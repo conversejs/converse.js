@@ -298,6 +298,10 @@
                     return this.__super__.parseMessageForCommands.apply(this, arguments);
                 },
 
+                isOTREncryptedSession () {
+                    return _.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'));
+                },
+
                 onMessageSubmitted (text, spoiler_hint) {
                     const { _converse } = this.__super__;
                     if (!_converse.connection.authenticated) {
@@ -306,8 +310,7 @@
                     if (this.parseMessageForCommands(text)) {
                         return;
                     }
-                    if (_.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
-                        // Off-the-record encryption is active
+                    if (this.isOTREncryptedSession()) {
                         this.model.otr.sendMsg(text);
                         this.model.trigger('showSentOTRMessage', text);
                     } else {
@@ -451,6 +454,14 @@
                         tpl_toolbar_otr(
                             _.extend(this.model.toJSON(), options || {})
                         ));
+                },
+
+                getToolbarOptions (options) {
+                    options = this.__super__.getToolbarOptions();
+                    if (this.model.get('composing_spoiler') && this.isOTREncryptedSession()) {
+                        options.show_spoiler_button = false;
+                    }
+                    return options;
                 },
 
                 renderToolbar (toolbar, options) {

@@ -1,6 +1,9 @@
+{[ if (o.show_spoiler_button)  { ]}
+<!-- XXX: This markup is also in src/templates/toolbar.html -->
 <li class="toggle-spoiler-edit">
-<a class="
-    {[ if (o.sending_spoiler)  { ]} icon-eye-blocked {[ } ]}
-    {[ if (!o.sending_spoiler)  { ]} icon-eye {[ } ]}"
-    title="{{ o.title }}"></a>
+    <a class="
+        {[ if (o.sending_spoiler)  { ]} icon-eye-blocked {[ } ]}
+        {[ if (!o.sending_spoiler)  { ]} icon-eye {[ } ]}"
+        title="{{ o.title }}"></a>
 </li>
+{[ } ]}

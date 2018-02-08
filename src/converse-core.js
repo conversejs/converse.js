@@ -857,10 +857,8 @@
         this.RosterContact = Backbone.Model.extend({
 
             defaults: {
-                'bookmarked': false,
                 'chat_state': undefined,
                 'chat_status': 'offline',
-                'groups': [],
                 'image': _converse.DEFAULT_IMAGE,
                 'image_type': _converse.DEFAULT_IMAGE_TYPE,
                 'num_unread': 0,
@@ -873,11 +871,12 @@
                 const resource = Strophe.getResourceFromJid(jid);
                 attributes.jid = bare_jid;
                 this.set(_.assignIn({
+                    'fullname': bare_jid,
+                    'groups': [],
                     'id': bare_jid,
                     'jid': bare_jid,
-                    'fullname': bare_jid,
-                    'user_id': Strophe.getNodeFromJid(jid),
-                    'resources': resource ? {resource :0} : {},
+                    'resources': {},
+                    'user_id': Strophe.getNodeFromJid(jid)
                 }, attributes));
 
                 this.on('destroy', () => { this.removeFromRoster(); });

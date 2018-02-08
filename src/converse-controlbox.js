@@ -451,6 +451,8 @@
 
             _converse.LoginPanelModel = Backbone.Model.extend({
                 defaults: {
+                    // Passed-by-reference. Fine in this case because there's
+                    // only one such model.
                     'errors': [],
                 }
             });

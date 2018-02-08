@@ -4,6 +4,11 @@
 
 ### Bugfixes
 - Attribute error when empty IQ stanza is returned for vCard query
+- Don't allow PEP bookmarks if `pubsub#publish-options` is not advertised by the server.
+
+_Note: previously this meant that bookmarks sent to servers that don't
+support `pubsub#publish-options` were visible to all your contacts, even
+though they should be private._
 
 ### New features
 - XEP-0382 Spoiler Messages (currently only for private chats)

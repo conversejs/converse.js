@@ -419,7 +419,7 @@
                     expect(view).toBeDefined();
                     var $toolbar = $(view.el).find('ul.chat-toolbar');
                     expect($toolbar.length).toBe(1);
-                    expect($toolbar.children('li').length).toBe(4);
+                    expect($toolbar.children('li').length).toBe(3);
                     done();
                 }));
 

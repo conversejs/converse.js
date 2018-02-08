@@ -4,14 +4,6 @@
     <span class="emoji-picker"></span>
 </li>
 {[ } ]}
-{[ if (o.show_spoiler_button)  { ]}
-<li class="toggle-compose-spoiler">
-    <a class="
-        {[ if (o.composing_spoiler)  { ]} icon-eye-blocked {[ } ]}
-        {[ if (!o.composing_spoiler)  { ]} icon-eye {[ } ]}"
-        title="{{ o.label_toggle_spoiler }}"></a>
-</li>
-{[ } ]}
 {[ if (o.show_call_button)  { ]}
 <li class="toggle-call"><a class="icon-phone" title="{{{o.label_start_call}}}"></a></li>
 {[ } ]}

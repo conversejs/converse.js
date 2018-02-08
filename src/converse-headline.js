@@ -146,8 +146,7 @@
             }
 
             function registerHeadlineHandler () {
-                _converse.connection.addHandler(
-                        onHeadlineMessage, null, 'message');
+                _converse.connection.addHandler(onHeadlineMessage, null, 'message');
             }
             _converse.on('connected', registerHeadlineHandler);
             _converse.on('reconnected', registerHeadlineHandler);

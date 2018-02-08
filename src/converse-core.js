@@ -9,6 +9,7 @@
     define(["sizzle",
             "es6-promise",
             "lodash.noconflict",
+            "lodash.fp",
             "polyfill",
             "i18n",
             "utils",
@@ -19,7 +20,7 @@
             "backbone.nativeview",
             "backbone.browserStorage"
     ], factory);
-}(this, function (sizzle, Promise, _, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
+}(this, function (sizzle, Promise, _, f, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
 
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -972,6 +973,7 @@
 
                 const resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
                 resources[resource] = {
+                    'name': resource,
                     'priority': priority,
                     'status': chat_status,
                     'timestamp': timestamp
@@ -2019,6 +2021,7 @@
             'Promise': Promise,
             'Strophe': Strophe,
             '_': _,
+            'f': f,
             'b64_sha1':  b64_sha1,
             'moment': moment,
             'sizzle': sizzle,

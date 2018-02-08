@@ -3,6 +3,8 @@
 } (this, function ($, jasmine, mock, converse, test_utils) {
     var Strophe = converse.env.Strophe;
     var b64_sha1 = converse.env.b64_sha1;
+    var $pres = converse.env.$pres;
+    var _ = converse.env._;
 
     describe("A chatbox with an active OTR session", function() {
 
@@ -13,28 +15,57 @@
 
             test_utils.createContacts(_converse, 'current');
             var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+
+            // XXX: We need to send a presence from the contact, so that we
+            // have a resource, that resource is then queried to see
+            // whether Strophe.NS.SPOILER is supported, in which case
+            // the spoiler button will appear.
+            var presence = $pres({
+                'from': contact_jid+'/phone',
+                'to': 'dummy@localhost'
+            });
+            _converse.connection._dataRecv(test_utils.createRequest(presence));
             test_utils.openChatBoxFor(_converse, contact_jid);
 
-            var view = _converse.chatboxviews.get(contact_jid);
-            var spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
-            expect(spoiler_toggle).not.toBe(null);
+            test_utils.waitUntilDiscoConfirmed(_converse, contact_jid+'/phone', [], [Strophe.NS.SPOILER]).then(function () {
+                var spoiler_toggle;
+                var view = _converse.chatboxviews.get(contact_jid);
+                spyOn(view, 'addSpoilerButton').and.callThrough();
+                view.model.set('otr_status', 1);
 
-            view.model.set('otr_status', 0);
-            spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
-            expect(spoiler_toggle).not.toBe(null);
+                test_utils.waitUntil(function () {
+                    return _.isNull(view.el.querySelector('.toggle-compose-spoiler'));
+                }).then(function () {
+                    spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
+                    expect(spoiler_toggle).toBe(null);
 
-            view.model.set('otr_status', 1);
-            spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
-            expect(spoiler_toggle).toBe(null);
+                    view.model.set('otr_status', 3);
 
-            view.model.set('otr_status', 2);
-            spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
-            expect(spoiler_toggle).toBe(null);
+                    return test_utils.waitUntil(function () {
+                        return !_.isNull(view.el.querySelector('.toggle-compose-spoiler'));
+                    });
+                }).then(function () {
+                    spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
+                    expect(spoiler_toggle).not.toBe(null);
 
-            view.model.set('otr_status', 3);
-            spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
-            expect(spoiler_toggle).not.toBe(null);
-            done();
+                    view.model.set('otr_status', 2);
+                    return test_utils.waitUntil(function () {
+                        return _.isNull(view.el.querySelector('.toggle-compose-spoiler'));
+                    });
+                }).then(function () {
+                    spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
+                    expect(spoiler_toggle).toBe(null);
+
+                    view.model.set('otr_status', 4);
+                    return test_utils.waitUntil(function () {
+                        return !_.isNull(view.el.querySelector('.toggle-compose-spoiler'));
+                    });
+                }).then(function () {
+                    spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
+                    expect(spoiler_toggle).not.toBe(null);
+                    done();
+                });
+            });
         }));
     });
 

@@ -14,7 +14,7 @@
     }
     utils.waitUntil = waitUntilPromise.default;
 
-    utils.waitUntilFeatureSupportConfirmed = function (_converse, entity_jid, feature_name) {
+    utils.waitUntilDiscoConfirmed = function (_converse, entity_jid, identities, features) {
         var IQ_disco, stanza;
         return utils.waitUntil(function () {
             IQ_disco = _.filter(_converse.connection.IQ_stanzas, function (iq) {
@@ -24,13 +24,19 @@
             return !_.isUndefined(IQ_disco);
         }, 300).then(function () {
             var info_IQ_id = IQ_disco.nodeTree.getAttribute('id');
-            stanza = $iq({
+            var stanza = $iq({
                 'type': 'result',
-                'from': 'localhost',
+                'from': entity_jid,
                 'to': 'dummy@localhost/resource',
                 'id': info_IQ_id
-            }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
-                .c('feature', {'var': feature_name});
+            }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'});
+
+            _.forEach(identities, function (identity) {
+                stanza.c('identity', {'category': 'pubsub', 'type': 'pep'}).up()
+            });
+            _.forEach(features, function (feature) {
+                stanza.c('feature', {'var': feature}).up();
+            });
             _converse.connection._dataRecv(utils.createRequest(stanza));
         });
     }

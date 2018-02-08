@@ -71,32 +71,28 @@
                     this.setBookmarkState();
                 },
 
-                renderHeading () {
+                renderBookmarkToggle () {
                     const { _converse } = this.__super__,
                           { __ } = _converse;
+                    const bookmark_button = tpl_chatroom_bookmark_toggle(
+                        _.assignIn(this.model.toJSON(), {
+                            info_toggle_bookmark: __('Bookmark this room'),
+                            bookmarked: this.model.get('bookmarked')
+                        }));
+                    const close_button = this.el.querySelector('.close-chatbox-button');
+                    close_button.insertAdjacentHTML('afterend', bookmark_button);
+                },
 
+                renderHeading () {
+                    this.__super__.renderHeading.apply(this, arguments);
+                    const { _converse } = this.__super__;
                     if (_converse.allow_bookmarks) {
                         _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then((identity) => {
                             if (_.isNil(identity)) {
                                 return;
                             }
-                            const div = document.createElement('div');
-                            div.innerHTML = this.generateHeadingHTML();
-
-                            const bookmark_button = tpl_chatroom_bookmark_toggle(
-                                _.assignIn(
-                                    this.model.toJSON(),
-                                    {
-                                        info_toggle_bookmark: __('Bookmark this room'),
-                                        bookmarked: this.model.get('bookmarked')
-                                    }
-                                ));
-                            const close_button = div.querySelector('.close-chatbox-button');
-                            close_button.insertAdjacentHTML('afterend', bookmark_button);
-                            this.el.querySelector('.chat-head-chatroom').innerHTML = div.innerHTML;
-                        });
-                    } else {
-                        return this.__super__.renderHeading.apply(this, arguments);
+                            this.renderBookmarkToggle();
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
                 },
 
@@ -537,9 +533,14 @@
                 if (!_converse.allow_bookmarks) {
                     return;
                 }
-                // Only initialize bookmarks if the server supports PEP
-                _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then((identity) => {
-                    if (_.isNil(identity)) {
+                Promise.all([
+                    _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid),
+                    _converse.api.disco.supports(Strophe.NS.PUBSUB+'#publish-options', _converse.bare_jid)
+                ]).then((args) => {
+                    const identity = args[0],
+                          options_support = args[1];
+
+                    if (_.isNil(identity) || !options_support.supported) {
                         _converse.emit('bookmarksInitialized');
                         return;
                     }

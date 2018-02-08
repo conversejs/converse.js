@@ -119,13 +119,6 @@
         }, settings || {}));
         _converse.ChatBoxViews.prototype.trimChat = function () {};
 
-        var entity = _converse.api.disco.entities.get(_converse.bare_jid, true);
-        entity.identities.create({
-            'category': 'pubsub',
-            'type': 'pep'
-        });
-        entity.waitUntilFeaturesDiscovered.resolve();
-
         window.converse_disable_effects = true;
         return _converse;
     }

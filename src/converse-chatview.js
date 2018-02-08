@@ -22,6 +22,7 @@
             "tpl!message",
             "tpl!new_day",
             "tpl!spinner",
+            "tpl!spoiler_button",
             "tpl!spoiler_message",
             "tpl!toolbar"
     ], factory);
@@ -40,11 +41,12 @@
             tpl_message,
             tpl_new_day,
             tpl_spinner,
+            tpl_spoiler_button,
             tpl_spoiler_message,
             tpl_toolbar
     ) {
     "use strict";
-    const { $msg, Backbone, Strophe, _, b64_sha1, sizzle, moment } = converse.env;
+    const { $msg, Backbone, Promise, Strophe, _, b64_sha1, f, sizzle, moment } = converse.env;
     const u = converse.env.utils;
     const KEY = {
         ENTER: 13,
@@ -323,6 +325,7 @@
                         this.getToolbarOptions(options || {})
                     );
                     this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
+                    this.addSpoilerButton(options);
                     this.insertEmojiPicker();
                     return this;
                 },
@@ -343,12 +346,38 @@
                             'label_spoiler_hint': __('Optional hint'),
                             'message_value': _.get(this.el.querySelector('.chat-textarea'), 'value'),
                             'show_send_button': _converse.show_send_button,
-                            'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
-                            'show_textarea': true,
                             'show_toolbar': _converse.show_toolbar,
                             'unread_msgs': __('You have unread messages')
                         }));
                     this.renderToolbar();
+                },
+
+                addSpoilerButton (options) {
+                    /* Asynchronously adds a button for writing spoiler
+                     * messages, based on whether the contact's client supports
+                     * it.
+                     */
+                    if (!options.show_spoiler_button || this.model.get('type') === 'chatroom') {
+                        return;
+                    }
+                    const contact_jid = this.model.get('jid');
+                    const resources = this.model.get('resources');
+                    if (_.isEmpty(resources)) {
+                        return;
+                    }
+                    Promise.all(_.map(_.keys(resources), (resource) =>
+                        _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${resource}`)
+                    )).then((results) => {
+                        const supported = _.every(f.map(f.get('supported'))(results));
+                        if (supported) {
+                            const html = tpl_spoiler_button(this.model.toJSON());
+                            if (_converse.visible_toolbar_buttons.emoji) {
+                                this.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
+                            } else {
+                                this.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
+                            }
+                        }
+                    });
                 },
 
                 insertHeading () {

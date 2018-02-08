@@ -218,6 +218,7 @@
             // configuration settings.
             _converse.api.settings.update({
                 allow_bookmarks: true,
+                allow_public_bookmarks: false,
                 hide_open_bookmarks: true
             });
             // Promises exposed by this plugin
@@ -540,7 +541,7 @@
                     const identity = args[0],
                           options_support = args[1];
 
-                    if (_.isNil(identity) || !options_support.supported) {
+                    if (_.isNil(identity) || (!options_support.supported && !_converse.allow_public_bookmarks)) {
                         _converse.emit('bookmarksInitialized');
                         return;
                     }

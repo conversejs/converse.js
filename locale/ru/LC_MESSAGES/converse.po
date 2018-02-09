@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-29 16:31+0100\n"
-"PO-Revision-Date: 2018-02-09 15:21+0000\n"
+"PO-Revision-Date: 2018-02-10 15:39+0000\n"
 "Last-Translator: Translator <admin@pochta.cf>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/conversejs/translations/ru/>\n"
@@ -144,7 +144,7 @@ msgstr "Вход"
 
 #: dist/converse-no-dependencies.js:13295
 msgid "Jabber ID:"
-msgstr "ID Джаббера:"
+msgstr "Идентификатор XMPP:"
 
 #: dist/converse-no-dependencies.js:13301
 msgid "Password:"
@@ -454,7 +454,9 @@ msgstr "Вас удалили из-за изменения прав"
 msgid ""
 "You have been removed from this room because the room has changed to members-"
 "only and you're not a member"
-msgstr "Вы отключены от чата, потому что он теперь только для участников"
+msgstr ""
+"Вы отключены от чата, потому что он теперь только для участников и вы не "
+"являетесь членом"
 
 #: dist/converse-no-dependencies.js:18144
 msgid ""

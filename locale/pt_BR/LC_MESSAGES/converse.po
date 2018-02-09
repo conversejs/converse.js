@@ -8,8 +8,9 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-29 16:31+0100\n"
-"PO-Revision-Date: 2018-02-09 18:24+0000\n"
-"Last-Translator: anonymous <>\n"
+"PO-Revision-Date: 2018-02-09 18:31+0000\n"
+"Last-Translator: Alexandre Thadeu Clemente Bass <alexandrebassouto@gmail.com>"
+"\n"
 "Language-Team: Portuguese (Brazil) "
 "<https://hosted.weblate.org/projects/conversejs/translations/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -40,7 +41,6 @@ msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
 msgstr "Desculpe, não conseguimos nos conectar ao host XMPP com domínio: %1$s"
 
 #: dist/converse-no-dependencies.js:7424
-#, fuzzy
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr "O servidor XMPP não ofereceu um mecanismo de autenticação suportado"
 
@@ -84,9 +84,8 @@ msgid "Typing from another device"
 msgstr "Escrevendo de outro dispositivo"
 
 #: dist/converse-no-dependencies.js:12668
-#, fuzzy
 msgid "is typing"
-msgstr "%1$s está digitando"
+msgstr "está digitando"
 
 #: dist/converse-no-dependencies.js:12674
 msgid "Stopped typing on the other device"
@@ -481,7 +480,7 @@ msgstr ""
 #. * strings are picked up by the translation machinery.
 #.
 #: dist/converse-no-dependencies.js:18157
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned"
 msgstr "%1$s foi banido"
 
@@ -491,19 +490,19 @@ msgid "%1$s's nickname has changed"
 msgstr "O apelido de %1$s foi alterado"
 
 #: dist/converse-no-dependencies.js:18159
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been kicked out"
 msgstr "%1$s foi expulso"
 
 #: dist/converse-no-dependencies.js:18160
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr "<srtong>%1$s foi removido por causa de troca de associação"
+msgstr "%1$s foi removido por causa de troca de associação"
 
 #: dist/converse-no-dependencies.js:18161
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr "%1$s foi removido por não ser um membro"
+msgstr "%1$s foi removido por não ser mais um membro"
 
 #: dist/converse-no-dependencies.js:18164
 #, javascript-format
@@ -585,7 +584,6 @@ msgid "Kick user from room"
 msgstr "Expulsar usuário da sala"
 
 #: dist/converse-no-dependencies.js:18987
-#, fuzzy
 msgid "Write in 3rd person"
 msgstr "Escrever em terceira pessoa"
 
@@ -614,9 +612,8 @@ msgid "Revoke user's membership"
 msgstr "Revogar a associação do usuário"
 
 #: dist/converse-no-dependencies.js:18987
-#, fuzzy
 msgid "Set room subject"
-msgstr "Definir tópico do chat"
+msgstr "Definir tópico da sala"
 
 #: dist/converse-no-dependencies.js:18987
 msgid "Set room subject (alias for /subject)"
@@ -671,9 +668,9 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "A razão dada é: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:19823
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the room."
-msgstr "CLique para abrir a sala"
+msgstr "%1$s saiu e voltou a entrar na sala."
 
 #: dist/converse-no-dependencies.js:19829
 #, javascript-format
@@ -752,9 +749,8 @@ msgid "This user can send messages in this room."
 msgstr "Esse usuário pode enviar mensagens nessa sala."
 
 #: dist/converse-no-dependencies.js:20203
-#, fuzzy
 msgid "This user can NOT send messages in this room."
-msgstr "Esse usuário NÃO pode enviar mensagens nessa sala"
+msgstr "Esse usuário NÃO pode enviar mensagens nessa sala."
 
 #: dist/converse-no-dependencies.js:20262
 msgid "Occupants"
@@ -793,7 +789,6 @@ msgid "Non-anonymous"
 msgstr "Não anônimo"
 
 #: dist/converse-no-dependencies.js:20304
-#, fuzzy
 msgid "Open"
 msgstr "Sala aberta"
 
@@ -816,9 +811,8 @@ msgid "Semi-anonymous"
 msgstr "Semi anônimo"
 
 #: dist/converse-no-dependencies.js:20309
-#, fuzzy
 msgid "Temporary"
-msgstr "Sala temporária"
+msgstr "Temporário"
 
 #: dist/converse-no-dependencies.js:20310
 #: dist/converse-no-dependencies.js:20748
@@ -1081,30 +1075,26 @@ msgid "Could not verify this user's identify."
 msgstr "Não foi possível verificar a identidade deste usuário."
 
 #: dist/converse-no-dependencies.js:22903
-#, fuzzy
 msgid "Exchanging private key with contact."
-msgstr "Trocando chave-privada com o contato."
+msgstr "Trocando chave privada com o contato."
 
 #: dist/converse-no-dependencies.js:23006
 msgid "Your messages are not encrypted anymore"
 msgstr "Suas mensagens não estão mais criptografadas"
 
 #: dist/converse-no-dependencies.js:23008
-#, fuzzy
 msgid ""
 "Your messages are now encrypted but your contact's identity has not been "
 "verified."
 msgstr ""
-"Suas mensagens estão agora criptografadas mas a identidade do contatonão foi "
-"confirmada."
+"Suas mensagens estão agora criptografadas, mas a identidade do seu contato "
+"não foi verificada."
 
 #: dist/converse-no-dependencies.js:23010
-#, fuzzy
 msgid "Your contact's identify has been verified."
 msgstr "A identidade do contato foi verificada."
 
 #: dist/converse-no-dependencies.js:23012
-#, fuzzy
 msgid "Your contact has ended encryption on their end, you should do the same."
 msgstr "Seu contato parou de usar criptografia, você deveria fazer o mesmo."
 
@@ -1144,7 +1134,6 @@ msgstr ""
 "contrário, clique Cancelar."
 
 #: dist/converse-no-dependencies.js:23064
-#, fuzzy
 msgid ""
 "You will be prompted to provide a security question and then an answer to "
 "that question.\n"
@@ -1156,7 +1145,7 @@ msgstr ""
 "resposta.\n"
 "\n"
 "Nós iremos, então, transfeir a pergunta para seu contato e caso ele envie "
-"corretamente a mesma resposta (caso sensitivo), a identidade dele será "
+"corretamente a mesma resposta (case sensitivo), a identidade dele será "
 "verificada."
 
 #: dist/converse-no-dependencies.js:23065
@@ -1178,18 +1167,15 @@ msgstr ""
 "criptografia OTR."
 
 #: dist/converse-no-dependencies.js:23091
-#, fuzzy
 msgid "Your messages are encrypted, but your contact has not been verified."
 msgstr ""
 "Suas mensagens estão criptografadas, mas seu contato não foi verificado."
 
 #: dist/converse-no-dependencies.js:23093
-#, fuzzy
 msgid "Your messages are encrypted and your contact verified."
 msgstr "Suas mensagens estão criptografadas e seu contato verificado."
 
 #: dist/converse-no-dependencies.js:23095
-#, fuzzy
 msgid ""
 "Your contact has closed their end of the private session, you should do the "
 "same"
@@ -1278,7 +1264,6 @@ msgid "Choose a different provider"
 msgstr "Escolha um provedor diferente"
 
 #: dist/converse-no-dependencies.js:23244
-#, fuzzy
 msgid "Hold tight, we're fetching the registration form…"
 msgstr "Espere, estamos carregando o formulário de inscrição …"
 
@@ -1287,7 +1272,6 @@ msgid " e.g. conversejs.org"
 msgstr " ex. conversejs.org"
 
 #: dist/converse-no-dependencies.js:23425
-#, fuzzy
 msgid "Fetch registration form"
 msgstr "Inserir formulário de inscrição"
 
@@ -1304,7 +1288,6 @@ msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr "Desculpe, não podemos  conectar ao provedor escolhido."
 
 #: dist/converse-no-dependencies.js:23491
-#, fuzzy
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -1313,7 +1296,7 @@ msgstr ""
 "conta. Experimente com um provedor diferente."
 
 #: dist/converse-no-dependencies.js:23515
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
@@ -1322,9 +1305,8 @@ msgstr ""
 "que ele existe?"
 
 #: dist/converse-no-dependencies.js:23678
-#, fuzzy
 msgid "Now logging you in"
-msgstr "Agora você logou em"
+msgstr "Agora você logou"
 
 #: dist/converse-no-dependencies.js:23682
 msgid "Registered successfully"

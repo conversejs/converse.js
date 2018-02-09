@@ -288,7 +288,7 @@
             authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
             auto_away: 0, // Seconds after which user status is set to 'away'
             auto_login: false, // Currently only used in connection with anonymous login
-            auto_reconnect: false,
+            auto_reconnect: true,
             auto_subscribe: false,
             auto_xa: 0, // Seconds after which user status is set to 'xa'
             blacklisted_plugins: [],

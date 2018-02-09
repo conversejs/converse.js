@@ -18,6 +18,7 @@ though they should be private._
 - New API method `_converse.disco.getIdentity` to check whether a JID has a given identity.
 
 ### Configuration settings
+- `auto_reconnect` is now set to `true` by default.
 - New configuration setting [allow_public_bookmarks](https://conversejs.org/docs/html/configurations.html#allow-public-bookmarks)
 - New configuration setting [root](https://conversejs.org/docs/html/configurations.html#root)
 

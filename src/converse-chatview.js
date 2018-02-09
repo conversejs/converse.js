@@ -74,15 +74,16 @@
             // New functions which don't exist yet can also be added.
             //
             registerGlobalEventHandlers: function () {
+                const { _converse } = this.__super__;
                 this.__super__.registerGlobalEventHandlers();
-                document.addEventListener(
+                _converse.root.addEventListener(
                     'click', function (ev) {
                         if (_.includes(ev.target.classList, 'toggle-toolbar-menu') ||
                             _.includes(ev.target.classList, 'insert-emoji')) {
                             return;
                         }
                         u.slideInAllElements(
-                            document.querySelectorAll('.toolbar-menu')
+                            _converse.root.querySelectorAll('.toolbar-menu')
                         )
                     }
                 );
@@ -430,7 +431,7 @@
                      * as well as src/converse-muc.js (if those plugins are
                      * enabled).
                      */
-                    const container = document.querySelector('#conversejs');
+                    const container = _converse.root.querySelector('#conversejs');
                     if (this.el.parentNode !== container) {
                         container.insertBefore(this.el, container.firstChild);
                     }
@@ -1024,7 +1025,7 @@
                         }
                     }
                     const elements = _.difference(
-                        document.querySelectorAll('.toolbar-menu'),
+                        _converse.root.querySelectorAll('.toolbar-menu'),
                         [this.emoji_picker_view.el]
                     );
                     u.slideInAllElements(elements)

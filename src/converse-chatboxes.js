@@ -418,12 +418,17 @@
                     * If the #conversejs element doesn't exist, create it.
                     */
                     if (!this.el) {
-                        let el = document.querySelector('#conversejs');
+                        let el = _converse.root.querySelector('#conversejs');
                         if (_.isNull(el)) {
                             el = document.createElement('div');
                             el.setAttribute('id', 'conversejs');
-                            // Converse.js expects a <body> tag to be present.
-                            document.querySelector('body').appendChild(el);
+                            const body = _converse.root.querySelector('body');
+                            if (body) {
+                                body.appendChild(el);
+                            } else {
+                                // Perhaps inside a web component?
+                                _converse.root.appendChild(el);
+                            }
                         }
                         el.innerHTML = '';
                         this.setElement(el, false);

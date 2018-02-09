@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window, document, JSON */
+/*global Backbone, define, window, JSON */
 (function (root, factory) {
     define(["sizzle",
             "es6-promise",
@@ -318,6 +318,7 @@
             priority: 0,
             registration_domain: '',
             rid: undefined,
+            root: window.document,
             roster_groups: true,
             show_only_online_users: false,
             show_send_button: false,
@@ -591,19 +592,25 @@
         this.incrementMsgCounter = function () {
             this.msg_counter += 1;
             const unreadMsgCount = this.msg_counter;
-            if (document.title.search(/^Messages \(\d+\) /) === -1) {
-                document.title = `Messages (${unreadMsgCount}) ${document.title}`;
+            let title = document.title;
+            if (_.isNil(title)) {
+                return;
+            }
+            if (title.search(/^Messages \(\d+\) /) === -1) {
+                title = `Messages (${unreadMsgCount}) ${title}`;
             } else {
-                document.title = document.title.replace(
-                    /^Messages \(\d+\) /, `Messages (${unreadMsgCount}) `
-                );
+                title = title.replace(/^Messages \(\d+\) /, `Messages (${unreadMsgCount})`);
             }
         };
 
         this.clearMsgCounter = function () {
             this.msg_counter = 0;
-            if (document.title.search(/^Messages \(\d+\) /) !== -1) {
-                document.title = document.title.replace(/^Messages \(\d+\) /, "");
+            let title = document.title;
+            if (_.isNil(title)) {
+                return;
+            }
+            if (title.search(/^Messages \(\d+\) /) !== -1) {
+                title = title.replace(/^Messages \(\d+\) /, "");
             }
         };
 

@@ -1091,6 +1091,35 @@ providers_link
 The hyperlink on the registration form which points to a directory of public
 XMPP servers.
 
+root
+----
+
+* Default: ``window.document``
+
+When using converse.js inside a web component's shadow DOM, you will need to set this settings'
+value to the shadow-root of the shadow DOM.
+
+For example:
+
+.. code-block:: javascript
+
+  class CustomChatComponent extends HTMLElement {
+    constructor() {
+      super();
+      const shadowRoot  = this.attachShadow({mode: "open"});
+      this.initConverse(shadowRoot);
+    }
+
+    initConverse(shadowRoot) {
+        window.addEventListener("converse-loaded", function(event) {
+            converse.initialize({
+                root: shadowRoot,
+                // Other settings go here...
+            });
+        });
+      }
+    }
+
 
 roster_groups
 -------------

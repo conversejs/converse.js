@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, JC Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window, document, JSON */
+/*global Backbone, define, window, JSON */
 
 /* converse-singleton
  * ******************

@@ -17,8 +17,9 @@ though they should be private._
 ### API changes
 - New API method `_converse.disco.getIdentity` to check whether a JID has a given identity.
 
-### New configuration settings
+### Configuration settings
 - New configuration setting [allow_public_bookmarks](https://conversejs.org/docs/html/configurations.html#allow-public-bookmarks)
+- New configuration setting [root](https://conversejs.org/docs/html/configurations.html#root)
 
 
 ## 3.3.2 (2018-01-29)

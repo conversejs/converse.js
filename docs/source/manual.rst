@@ -168,7 +168,7 @@ A normal contact
 
 If the person accepts your contact request, they will get a *chat status
 indicator* in your roster and will also become clickable. Clicking on the name
-of the user will open a chat box in which you can then start chatting with that
+of the user will open a chatbox in which you can then start chatting with that
 user.
 
 .. figure:: images/remove-contact.png

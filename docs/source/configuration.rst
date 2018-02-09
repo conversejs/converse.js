@@ -6,7 +6,7 @@
 Configuration
 =============
 
-The included minified JS and CSS files can be used for demoing or testing, but
+The included minified JavaScript and CSS files can be used for demoing or testing, but
 you'll want to configure *Converse.js* to suit your needs before you deploy it
 on your website.
 
@@ -19,7 +19,7 @@ Please refer to the `Configuration settings`_ section below for info on
 all the available configuration settings.
 
 After you have configured *Converse.js*, you'll have to regenerate the minified
-JS file so that it will include the new settings. Please refer to the
+JavaScript file so that it will include the new settings. Please refer to the
 :ref:`minification` section for more info on how to do this.
 
 .. _`configuration-settings`:
@@ -133,7 +133,7 @@ allow_contact_removal
 * Default:  ``true``
 
 Allow the user to remove roster contacts by clicking on the delete icon
-(i.e. traschcan) next to a contact's name in the roster.
+(i.e. trashcan) next to a contact's name in the roster.
 
 allow_contact_requests
 ----------------------
@@ -151,7 +151,7 @@ allow_dragresize
 * Default: ``true``
 
 Allow users to resize chats by dragging the edges. The min-height and min-width
-CSS properties set on a chat boxes (specifically on the ``#converse.js .chatbox > .box-flyout`` element)
+CSS properties set on a chatboxes (specifically on the ``#converse.js .chatbox > .box-flyout`` element)
 will be honored, IF they are set in pixels.
 
 allow_muc
@@ -167,9 +167,9 @@ allow_muc_invitations
 
 * Default:  ``true``
 
-Allows users to be invited to join MUC chat rooms. An "Invite" widget will
-appear in the sidebar of the chat room where you can type in the JID of a user
-to invite into the chat room.
+Allows users to be invited to join MUC chatrooms. An "Invite" widget will
+appear in the sidebar of the chatroom where you can type in the JID of a user
+to invite into the chatroom.
 
 .. _`allow_non_roster_messaging`:
 
@@ -224,7 +224,7 @@ animate
 
 * Default:  ``true``
 
-Show animations, for example when opening and closing chat boxes.
+Show animations, for example when opening and closing chatboxes.
 
 archived_messages_page_size
 ---------------------------
@@ -237,10 +237,10 @@ This feature applies to `XEP-0313: Message Archive Management (MAM) <https://xmp
 and will only take effect if your server supports MAM.
 
 It allows you to specify the maximum amount of archived messages to be returned per query.
-When you open a chat box or room, archived messages will be displayed (if
+When you open a chatbox or room, archived messages will be displayed (if
 available) and the amount returned will be no more than the page size.
 
-You will be able to query for even older messages by scrolling upwards in the chat box or room
+You will be able to query for even older messages by scrolling upwards in the chatbox or room
 (the so-called infinite scrolling pattern).
 
 auto_list_rooms
@@ -251,7 +251,7 @@ auto_list_rooms
 If true, and the XMPP server on which the current user is logged in supports
 multi-user chat, then a list of rooms on that server will be fetched.
 
-Not recommended for servers with lots of chat rooms.
+Not recommended for servers with lots of chatrooms.
 
 For each room on the server a query is made to fetch further details (e.g.
 features, number of occupants etc.), so on servers with many rooms this
@@ -941,15 +941,15 @@ muc_history_max_stanzas
 * Default:  ``undefined``
 
 This option allows you to specify the maximum amount of messages to be shown in a
-chat room when you enter it. By default, the amount specified in the room
+chatroom when you enter it. By default, the amount specified in the room
 configuration or determined by the server will be returned.
 
 Please note, this option is not related to
 `XEP-0313 Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_,
-which also allows you to show archived chat room messages, but follows a
+which also allows you to show archived chatroom messages, but follows a
 different approach.
 
-If you're using MAM for archiving chat room messages, you might want to set
+If you're using MAM for archiving chatroom messages, you might want to set
 this option to zero.
 
 muc_instant_rooms
@@ -971,9 +971,9 @@ muc_nickname_from_jid
 * Default: ``false``
 
 When set to ``true``, then users will not be prompted to provide nicknames for
-chat rooms. Instead, the node part of a user's JID (i.e. JID = node@domain/resource)
+chatrooms. Instead, the node part of a user's JID (i.e. JID = node@domain/resource)
 will be used. If the user's nickname is already taken by another user in the
-chat room, then an integer will be added to make it unique.
+chatroom, then an integer will be added to make it unique.
 
 So, for example, if john@example.com joins a chatroom, his nickname will
 automatically be "john". If now john@differentdomain.com tries to join the
@@ -985,7 +985,7 @@ muc_show_join_leave
 
 * Default; ``true``
 
-Determines whether Converse.js will show info messages inside a chat room
+Determines whether Converse.js will show info messages inside a chatroom
 whenever a user joins or leaves it.
 
 notify_all_room_messages
@@ -1028,7 +1028,7 @@ play_sounds
 * Default:  ``false``
 
 Plays a notification sound when you receive a personal message or when your
-nickname is mentioned in a chat room.
+nickname is mentioned in a chatroom.
 
 Inside the ``./sounds`` directory of the Converse.js repo you'll see MP3 and Ogg
 formatted sound files. We need both, because neither format is supported by all browsers.
@@ -1310,7 +1310,7 @@ use_otr_by_default
 * Default:  ``false``
 
 If set to ``true``, Converse.js will automatically try to initiate an OTR (off-the-record)
-encrypted chat session every time you open a chat box.
+encrypted chat session every time you open a chatbox.
 
 use_vcards
 ----------
@@ -1335,7 +1335,7 @@ visible_toolbar_buttons
         toggle_occupants: true
     }
 
-Allows you to show or hide buttons on the chat boxes' toolbars.
+Allows you to show or hide buttons on the chatboxes' toolbars.
 
 * *call*:
     Provides a button with a picture of a telephone on it.
@@ -1349,11 +1349,11 @@ Allows you to show or hide buttons on the chat boxes' toolbars.
             // ... Third-party library code ...
         });
 * *clear*:
-    Provides a button for clearing messages from a chat box.
+    Provides a button for clearing messages from a chatbox.
 * *emoji*:
     Enables rendering of emoji and provides a toolbar button for choosing them.
 * *toggle_occupants*:
-    Shows a button for toggling (i.e. showing/hiding) the list of occupants in a chat room.
+    Shows a button for toggling (i.e. showing/hiding) the list of occupants in a chatroom.
 
 .. _`websocket-url`:
 
@@ -1519,7 +1519,9 @@ xhr_user_search
 There are two ways to add users.
 
 * The user inputs a valid JID (Jabber ID), and the user is added as a pending contact.
-* The user inputs some text (for example part of a firstname or lastname), an XHR (Ajax Request) will be made to a remote server, and a list of matches are returned. The user can then choose one of the matches to add as a contact.
+* The user inputs some text (for example part of a first name or last name),
+  an XHR (Ajax Request) will be made to a remote server, and a list of matches are returned.
+  The user can then choose one of the matches to add as a contact.
 
 This setting enables the second mechanism, otherwise by default the first will be used.
 

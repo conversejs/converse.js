@@ -100,7 +100,7 @@ Headless build
 
 There is also the option of making a headless build of converse.js.
 This means a build without any UI but still containing core functionality of
-maintaining a roster, chat boxes and messages.
+maintaining a roster, chatboxes and messages.
 
 The file `src/headless.js <https://github.com/jcbrand/converse.js/blob/master/src/headless.js>`_
 is used to determine which plugins are included in the build.

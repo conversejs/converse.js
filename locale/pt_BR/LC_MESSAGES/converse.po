@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-29 16:31+0100\n"
-"PO-Revision-Date: 2018-02-09 18:31+0000\n"
+"PO-Revision-Date: 2018-02-09 18:36+0000\n"
 "Last-Translator: Alexandre Thadeu Clemente Bass <alexandrebassouto@gmail.com>"
 "\n"
 "Language-Team: Portuguese (Brazil) "
@@ -33,7 +33,7 @@ msgstr "Ocorreu um erro ao se conectar ao servidor de bate-papo."
 
 #: dist/converse-no-dependencies.js:7410
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
-msgstr "Seu ID Jabber e/ou senha estão incorretas. Por favor, tente novamente."
+msgstr "Seu ID XMPP e/ou senha estão incorretas. Por favor, tente novamente."
 
 #: dist/converse-no-dependencies.js:7422
 #, javascript-format

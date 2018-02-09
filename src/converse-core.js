@@ -79,6 +79,7 @@
         'converse-mam',
         'converse-minimize',
         'converse-muc',
+        'converse-muc-embedded',
         'converse-notification',
         'converse-otr',
         'converse-ping',
@@ -87,8 +88,8 @@
         'converse-roomslist',
         'converse-rosterview',
         'converse-singleton',
-        'converse-vcard',
-        'converse-spoilers'
+        'converse-spoilers',
+        'converse-vcard'
     ];
 
     // Make converse pluggable
@@ -1802,6 +1803,21 @@
             const whitelist = _converse.core_plugins.concat(
                 _converse.whitelisted_plugins);
 
+            if (_converse.view_mode === 'embedded') {
+                _.forEach([ // eslint-disable-line lodash/prefer-map
+                    "converse-bookmarks",
+                    "converse-controlbox",
+                    "converse-dragresize",
+                    "converse-headline",
+                    "converse-minimize",
+                    "converse-otr",
+                    "converse-register",
+                    "converse-vcard",
+                ], (name) => {
+                    _converse.blacklisted_plugins.push(name)
+                });
+            }
+
             _converse.pluggable.initializePlugins({
                 'updateSettings' () {
                     _converse.log(
@@ -1846,13 +1862,10 @@
             i18n.fetchTranslations(
                 _converse.locale,
                 _converse.locales,
-                _.template(_converse.locales_url)({'locale': _converse.locale})
-            ).then(() => {
-                finishInitialization();
-            }).catch((reason) => {
-                finishInitialization();
-                _converse.log(reason, Strophe.LogLevel.ERROR);
-            });
+                _.template(_converse.locales_url)({'locale': _converse.locale}))
+            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+            .then(finishInitialization)
+            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }
         return init_promise;
     };

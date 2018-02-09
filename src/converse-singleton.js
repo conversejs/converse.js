@@ -40,7 +40,7 @@
         dependencies: ['converse-muc', 'converse-controlbox', 'converse-rosterview'],
 
         enabled (_converse) {
-            return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
+            return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
         },
 
         overrides: {

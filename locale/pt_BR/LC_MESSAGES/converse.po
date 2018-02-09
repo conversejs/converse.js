@@ -9,8 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-29 16:31+0100\n"
 "PO-Revision-Date: 2018-02-09 18:24+0000\n"
-"Last-Translator: Alexandre Thadeu Clemente Bass <alexandrebassouto@gmail.com>"
-"\n"
+"Last-Translator: anonymous <>\n"
 "Language-Team: Portuguese (Brazil) "
 "<https://hosted.weblate.org/projects/conversejs/translations/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -55,14 +54,12 @@ msgid "This client does not allow presence subscriptions"
 msgstr "Este cliente não permite assinaturas de presença"
 
 #: dist/converse-no-dependencies.js:8373
-#, fuzzy
 msgid "Click to hide these contacts"
-msgstr "Clique para remover o contato"
+msgstr "Clique para esconder esses contatos"
 
 #: dist/converse-no-dependencies.js:12315
-#, fuzzy
 msgid "Close this chat box"
-msgstr "Clique para remover o contato"
+msgstr "Feche esta caixa de bate-papo"
 
 #: dist/converse-no-dependencies.js:12364
 msgid "Personal message"

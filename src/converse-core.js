@@ -2003,7 +2003,7 @@
     };
 
     // The public API
-    return {
+    window.converse = {
         'initialize' (settings, callback) {
             return _converse.initialize(settings, callback);
         },
@@ -2035,4 +2035,6 @@
             'utils': utils
         }
     };
+    window.dispatchEvent(new Event('converse-loaded'));
+    return window.converse;
 }));

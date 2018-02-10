@@ -24,7 +24,7 @@
     const b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
 
-    const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g;
+    const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
 
     const logger = _.assign({
         'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
@@ -64,16 +64,6 @@
         });
     };
 
-    function calculateElementHeight (el) {
-        /* Return the height of the passed in DOM element,
-         * based on the heights of its children.
-         */
-        return _.reduce(
-            el.children,
-            (result, child) => result + child.offsetHeight, 0
-        );
-    }
-
     function slideOutWrapup (el) {
         /* Wrapup function for slideOut. */
         el.removeAttribute('data-slider-marker');
@@ -84,6 +74,48 @@
 
 
     var u = {};
+
+    u.getNextElement = function (el, selector='*') {
+        let next_el = el.nextElementSibling;
+        while (!_.isNull(next_el) && !sizzle.matchesSelector(next_el, selector)) {
+            next_el = next_el.nextElementSibling;
+        }
+        return next_el;
+    }
+
+    u.getPreviousElement = function (el, selector='*') {
+        let prev_el = el.previousSibling;
+        while (!_.isNull(prev_el) && !sizzle.matchesSelector(prev_el, selector)) {
+            prev_el = prev_el.previousSibling
+        }
+        return prev_el;
+    }
+
+    u.getFirstChildElement = function (el, selector='*') {
+        let first_el = el.firstElementChild;
+        while (!_.isNull(first_el) && !sizzle.matchesSelector(first_el, selector)) {
+            first_el = first_el.nextSibling
+        }
+        return first_el;
+    }
+
+    u.getLastChildElement = function (el, selector='*') {
+        let last_el = el.lastElementChild;
+        while (!_.isNull(last_el) && !sizzle.matchesSelector(last_el, selector)) {
+            last_el = last_el.previousSibling
+        }
+        return last_el;
+    }
+
+    u.calculateElementHeight = function (el) {
+        /* Return the height of the passed in DOM element,
+         * based on the heights of its children.
+         */
+        return _.reduce(
+            el.children,
+            (result, child) => result + child.offsetHeight, 0
+        );
+    }
 
     u.addClass = function (className, el) {
         if (el instanceof Element) {
@@ -148,15 +180,29 @@
     };
 
     u.renderImageURLs = function (obj) {
+        /* Returns a Promise which resolves once all images have been loaded.
+         */
         const list = obj.textContent.match(URL_REGEX) || [];
-        _.forEach(list, function (url) {
-            isImage(url).then(function (img) {
-                img.className = 'chat-image';
-                var anchors = sizzle(`a[href="${url}"]`, obj);
-                _.each(anchors, (a) => { a.innerHTML = img.outerHTML; });
-            });
-        });
-        return obj;
+        return Promise.all(
+            _.map(list, (url) =>
+                new Promise((resolve, reject) =>
+                    isImage(url).then(function (img) {
+                        // XXX: need to create a new image, otherwise the event
+                        // listener doesn't fire
+                        const i = new Image();
+                        i.className = 'chat-image';
+                        i.src = img.src;
+                        i.addEventListener('load', resolve);
+                        // We also resolve for non-images, otherwise the
+                        // Promise.all resolves prematurely.
+                        i.addEventListener('error', resolve);
+                        var anchors = sizzle(`a[href="${url}"]`, obj);
+                        _.each(anchors, (a) => {
+                            a.replaceChild(i, a.firstChild);
+                        });
+                    }).catch(resolve)
+                )
+            ))
     };
 
     u.slideInAllElements = function (elements, duration=300) {
@@ -199,7 +245,7 @@
                 el.removeAttribute('data-slider-marker');
                 window.cancelAnimationFrame(marker);
             }
-            const end_height = calculateElementHeight(el);
+            const end_height = u.calculateElementHeight(el);
             if (window.converse_disable_effects) { // Effects are disabled (for tests)
                 el.style.height = end_height + 'px';
                 slideOutWrapup(el);
@@ -227,7 +273,7 @@
                     // browser bug where browsers don't know the correct
                     // offsetHeight beforehand.
                     el.removeAttribute('data-slider-marker');
-                    el.style.height = calculateElementHeight(el) + 'px';
+                    el.style.height = u.calculateElementHeight(el) + 'px';
                     el.style.overflow = "";
                     el.style.height = "";
                     resolve();
@@ -318,7 +364,11 @@
     };
 
     u.isValidJID = function (jid) {
-        return _.filter(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+        return _.compact(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+    };
+
+    u.isValidMUCJID = function (jid) {
+        return !jid.startsWith('@') && !jid.endsWith('@');
     };
 
     u.isSameBareJID = function (jid1, jid2) {
@@ -339,7 +389,7 @@
             return !sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length &&
                    !sizzle('delay[xmlns="'+Strophe.NS.DELAY+'"]', message).length;
         } else {
-            return !message.get('archive_id') && !message.get('delayed');
+            return !message.get('delayed');
         }
     };
 
@@ -349,10 +399,14 @@
         return text && !!text.match(/^\?OTR/);
     };
 
-    u.isHeadlineMessage = function (message) {
+    u.isHeadlineMessage = function (_converse, message) {
         var from_jid = message.getAttribute('from');
         if (message.getAttribute('type') === 'headline') {
             return true;
+        }
+        const chatbox = _converse.chatboxes.get(Strophe.getBareJidFromJid(from_jid));
+        if (chatbox && chatbox.get('type') === 'chatroom') {
+            return false;
         }
         if (message.getAttribute('type') !== 'error' &&
                 !_.isNil(from_jid) &&

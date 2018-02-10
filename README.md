@@ -1,7 +1,6 @@
 # converse.js
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/jcbrand/converse.js.svg)](https://greenkeeper.io/)
-
+[![inVerse](https://inverse.chat/badge.svg?room=discuss@conference.conversejs.org)](https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org)
 [![Travis](https://api.travis-ci.org/jcbrand/converse.js.png?branch=master)](https://travis-ci.org/jcbrand/converse.js)
 [![Bountysource bounties](https://img.shields.io/bountysource/team/converse.js/activity.svg?maxAge=2592000)](https://www.bountysource.com/teams/converse.js/issues?tracker_ids=194169)
 [![Translation status](https://hosted.weblate.org/widgets/conversejs/-/svg-badge.svg)](https://hosted.weblate.org/engage/conversejs/?utm_source=widget)
@@ -42,7 +41,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 ## Features
 
 -   A [plugin architecture](https://conversejs.org/docs/html/plugin_development.html) based on [pluggable.js](https://jcbrand.github.io/pluggable.js/)
--   Single-user chat
+-   Single-user and group chats
 -   Contacts and groups
 -   Multi-user chat rooms [XEP 45](http://xmpp.org/extensions/xep-0045.html)
 -   Direct invitations to chat rooms [XEP 249](http://xmpp.org/extensions/xep-0249.html)
@@ -59,6 +58,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   Third person "/me" messages [XEP 245](http://xmpp.org/extensions/xep-0245.html)
 -   XMPP Ping [XEP 199](http://xmpp.org/extensions/xep-0199.html)
 -   Server-side archiving of messages [XEP 313](http://xmpp.org/extensions/xep-0313.html)
+-   Hidden Messages (aka Spoilers) [XEP 382](http://xmpp.org/extensions/xep-0382.html)
 -   Client state indication [XEP 352](http://xmpp.org/extensions/xep-0352.html)
 -   Off-the-record encryption
 -   Translated into 16 languages
@@ -103,3 +103,22 @@ For support queries and discussions, please join the mailing list: <conversejs@l
 Also take a look at the [mailing list archives](http://librelist.com/browser/conversejs).
 
 Issues can be logged on the [Github issue tracker](https://github.com/jcbrand/converse.js/issues).
+
+## Donations
+
+A heartfelt thanks for everyone who has supported this project over the years.
+Many people have contributed testing, bugfixes, features and corrections.
+
+Recently we have started accepting donations via [Patreon](https://www.patreon.com/jcbrand) and [Liberapay](https://liberapay.com/jcbrand).
+
+The following people are making recurring donations:
+
+* [Rafael](https://www.patreon.com/user/creators?u=4340078)
+* [mt7479](https://www.patreon.com/user/creators?u=3892290)
+* [roelra](https://www.patreon.com/user/creators?u=5958918)
+* An anonymous backer on Liberapay
+
+Additionally this project is supported by
+
+* [![KeyCDN](https://conversejs.org/logo/keycdn.png)](https://www.keycdn.com/)
+* [![Wikisuite](https://conversejs.org/logo/wikisuite.png)](http://wikisuite.org)

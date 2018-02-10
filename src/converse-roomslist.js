@@ -107,7 +107,7 @@
                 },
 
                 getRoomsListElementName () {
-                    if (this.model.get('bookmarked')) {
+                    if (this.model.get('bookmarked') && _converse.bookmarksview) {
                         const bookmark = _.head(_converse.bookmarksview.model.where({'jid': this.model.get('jid')}));
                         return bookmark.get('name');
                     } else {
@@ -160,8 +160,7 @@
                 },
 
                 render () {
-                    this.el.innerHTML =
-                        tpl_rooms_list({
+                    this.el.innerHTML = tpl_rooms_list({
                         'toggle_state': this.list_model.get('toggle-state'),
                         'desc_rooms': __('Click to toggle the rooms list'),
                         'label_rooms': __('Open Rooms')
@@ -202,33 +201,6 @@
                     }
                 },
 
-                renderRoomsListElement (item) {
-                    if (item.get('type') !== 'chatroom') {
-                        return;
-                    }
-                    this.removeRoomsListElement(item);
-
-                    let name, bookmark;
-                    if (item.get('bookmarked')) {
-                        bookmark = _.head(_converse.bookmarksview.model.where({'jid': item.get('jid')}));
-                        name = bookmark.get('name');
-                    } else {
-                        name = item.get('name');
-                    }
-                    const div = document.createElement('div');
-                    div.innerHTML = tpl_rooms_list_item(_.extend(item.toJSON(), {
-                        'allow_bookmarks': _converse.allow_bookmarks,
-                        'info_leave_room': __('Leave this room'),
-                        'info_remove_bookmark': __('Unbookmark this room'),
-                        'info_add_bookmark': __('Bookmark this room'),
-                        'info_title': __('Show more information on this room'),
-                        'name': name,
-                        'open_title': __('Click to open this room')
-                    }));
-                    this.el.querySelector('.open-rooms-list').appendChild(div.firstChild);
-                    this.show();
-                },
-
                 showOrHide (item) {
                     if (!this.model.models.length) {
                         u.hideElement(this.el);
@@ -239,17 +211,6 @@
 
                 removeBookmark: _converse.removeBookmarkViaEvent,
                 addBookmark: _converse.addBookmarkViaEvent,
-
-                removeRoomsListElement (item) {
-                    const list_el = this.el.querySelector('.open-rooms-list');
-                    const el = _.head(sizzle(`.available-chatroom[data-room-jid="${item.get('jid')}"]`, list_el));
-                    if (el) {
-                        list_el.removeChild(el);
-                    }
-                    if (list_el.childElementCount === 0) {
-                        this.hide();
-                    }
-                },
 
                 toggleRoomsList (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
@@ -289,14 +250,7 @@
                 }
             });
 
-            const afterReconnection = function () {
-                if (_.isUndefined(_converse.rooms_list_view)) {
-                    initRoomsListView();
-                } else {
-                    _converse.rooms_list_view.render();
-                }
-            };
-            _converse.api.listen.on('reconnected', afterReconnection);
+            _converse.api.listen.on('reconnected', initRoomsListView);
         }
     });
 }));

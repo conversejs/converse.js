@@ -437,6 +437,39 @@ The **disco** grouping
 This grouping collects API functions related to `service discovery
 <https://xmpp.org/extensions/xep-0030.html>`_.
 
+getIdentity
+~~~~~~~~~~~
+
+Paramters:
+
+* (String) category
+* (String) type
+* (String) entity JID
+
+Get the identity (with the given category and type) for a given disco entity.
+
+For example, when determining support for PEP (personal eventing protocol), you
+want to know whether the user's own JID has an identity with
+``category='pubsub'`` and ``type='pep'`` as explained in this section of
+XEP-0163: https://xmpp.org/extensions/xep-0163.html#support
+
+.. code-block:: javascript
+
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then(
+                function (identity) {
+                    if (_.isNil(identity)) {
+                        // The entity DOES NOT have this identity
+                    } else {
+                        // The entity DOES have this identity
+                    }
+                }
+            ).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        }
+    });
+
 supports
 ~~~~~~~~
 
@@ -450,7 +483,7 @@ Returns a `Promise` which, when resolved, returns a map/object with keys
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            _converse.api.disco.supports(_converse.bare_jid, Strophe.NS.MAM).then(
+            _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
                 function (value) {
                     // `value` is a map with two keys, `supported` and `feature`.
 
@@ -916,7 +949,7 @@ It takes 3 parameters:
             var _converse = this._converse;
             _converse.api.waitUntil('roomsAutoJoined').then(function () {
                 var create_if_not_found = true;
-                this._converse.api.rooms.open(
+                this._converse.api.rooms.get(
                     'group@muc.example.com',
                     {'nick': 'dread-pirate-roberts'},
                     create_if_not_found

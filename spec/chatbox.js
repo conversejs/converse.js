@@ -17,15 +17,47 @@
     var moment = converse.env.moment;
     var u = converse.env.utils;
 
-    return describe("Chatboxes", function() {
+    return describe("Chatboxes", function () {
         describe("A Chatbox", function () {
+
+            it("has a /help command to show the available commands",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.createContacts(_converse, 'current');
+                test_utils.openControlBox();
+                test_utils.openContactsPanel(_converse);
+
+                var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                test_utils.openChatBoxFor(_converse, contact_jid);
+                var view = _converse.chatboxviews.get(contact_jid);
+                test_utils.sendMessage(view, '/help');
+
+                const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info:not(.chat-date)'), 0);
+                expect(info_messages.length).toBe(3);
+                expect(info_messages.pop().textContent).toBe('/help: Show this menu');
+                expect(info_messages.pop().textContent).toBe('/me: Write in the third person');
+                expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
+
+                var msg = $msg({
+                        from: contact_jid,
+                        to: _converse.connection.jid,
+                        type: 'chat',
+                        id: (new Date()).getTime()
+                    }).c('body').t('hello world').tree();
+                _converse.chatboxes.onMessage(msg);
+                expect(view.content.lastElementChild.textContent.trim().indexOf('hello world')).not.toBe(-1);
+                done();
+            }));
+
 
             it("supports the /me command",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.waitUntilFeatureSupportConfirmed(_converse, 'vcard-temp')
+                test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
                 .then(function () {
                     return test_utils.waitUntil(function () {
                         return _converse.xmppstatus.get('fullname');
@@ -938,6 +970,7 @@
                         null, ['rosterGroupsFetched'], {},
                         function (done, _converse) {
 
+
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
                     test_utils.openContactsPanel(_converse);
@@ -953,17 +986,17 @@
                         var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
                         /*  <message id='aeb213' to='juliet@capulet.lit/chamber'>
-                            *    <forwarded xmlns='urn:xmpp:forward:0'>
-                            *      <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:08:25Z'/>
-                            *      <message xmlns='jabber:client'
-                            *          to='juliet@capulet.lit/balcony'
-                            *          from='romeo@montague.lit/orchard'
-                            *          type='chat'>
-                            *          <body>Call me but love, and I'll be new baptized; Henceforth I never will be Romeo.</body>
-                            *      </message>
-                            *    </forwarded>
-                            *  </message>
-                            */
+                         *    <forwarded xmlns='urn:xmpp:forward:0'>
+                         *      <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:08:25Z'/>
+                         *      <message xmlns='jabber:client'
+                         *          to='juliet@capulet.lit/balcony'
+                         *          from='romeo@montague.lit/orchard'
+                         *          type='chat'>
+                         *          <body>Call me but love, and I'll be new baptized; Henceforth I never will be Romeo.</body>
+                         *      </message>
+                         *    </forwarded>
+                         *  </message>
+                         */
                         msg = $msg({'id': 'aeb213', 'to': _converse.bare_jid})
                             .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
                                 .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T13:08:25Z'}).up()
@@ -978,7 +1011,7 @@
 
                         msg = $msg({'id': 'aeb214', 'to': _converse.bare_jid})
                             .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                                .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2017-12-31T23:08:25Z'}).up()
+                                .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2017-12-31T22:08:25Z'}).up()
                                 .c('message', {
                                     'xmlns': 'jabber:client',
                                     'to': _converse.bare_jid,
@@ -1026,7 +1059,7 @@
 
                         msg = $msg({'id': 'aeb218', 'to': _converse.bare_jid})
                             .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                                .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T23:28:23Z'}).up()
+                                .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T22:28:23Z'}).up()
                                 .c('message', {
                                     'xmlns': 'jabber:client',
                                     'to': _converse.bare_jid,
@@ -1067,14 +1100,16 @@
                         var $time = $chat_content.find('time');
                         expect($time.length).toEqual(4);
                         $time = $chat_content.find('time:first');
-                        expect($time.data('isodate')).toEqual('2017-12-31T00:00:00+00:00');
+                        expect($time.data('isodate')).toEqual(moment('2017-12-31T00:00:00').format());
+                        expect($time.text()).toEqual('Sunday Dec 31st 2017')
 
                         expect($time[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toBe('Older message');
                         var $el = $chat_content.find('.chat-message:first').find('.chat-msg-content')
                         expect($el.text()).toEqual('Older message');
 
                         $time = $chat_content.find('time:eq(1)');
-                        expect($time.data('isodate')).toEqual('2018-01-01T00:00:00+00:00');
+                        expect($time.data('isodate')).toEqual(moment('2018-01-01T00:00:00').format());
+                        expect($time.text()).toEqual("Monday Jan 1st 2018");
                         expect($time[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toBe('Inbetween message');
                         $el = $chat_content.find('.chat-message:eq(1)');
                         expect($el.find('.chat-msg-content').text()).toEqual('Inbetween message');
@@ -1083,7 +1118,8 @@
                         expect($el.find('.chat-msg-content').text()).toEqual('another inbetween message');
 
                         $time = $chat_content.find('time:nth(2)');
-                        expect($time.data('isodate')).toEqual('2018-01-02T00:00:00+00:00');
+                        expect($time.data('isodate')).toEqual(moment('2018-01-02T00:00:00').format());
+                        expect($time.text()).toEqual("Tuesday Jan 2nd 2018");
                         expect($time[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toBe('An earlier message on the next day');
                         $el = $chat_content.find('.chat-message:eq(3)');
                         expect($el.find('.chat-msg-content').text()).toEqual('An earlier message on the next day');
@@ -1192,7 +1228,7 @@
                         function (done, _converse) {
 
                     var contact, sent_stanza, IQ_id, stanza;
-                    test_utils.waitUntilFeatureSupportConfirmed(_converse, 'vcard-temp')
+                    test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
                     .then(function () {
                         return test_utils.waitUntil(function () {
                             return _converse.xmppstatus.get('fullname');
@@ -1576,8 +1612,8 @@
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
-                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg"><img src="' +
-                                message + '" class="chat-image"></a>');
+                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg"><img class="chat-image"'+
+                            ' src="' + message + '"></a>');
                         message += "?param1=val1&param2=val2";
                         test_utils.sendMessage(view, message);
                         return test_utils.waitUntil(function () {
@@ -1587,9 +1623,8 @@
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
-                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2"><img src="'+
-                                message.replace(/&/g, '&amp;') +
-                                '" class="chat-image"></a>')
+                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2"><img'+
+                            ' class="chat-image" src="'+message.replace(/&/g, '&amp;')+'"></a>')
 
                         // Test now with two images in one message
                         message += ' hello world '+base_url+"/logo/conversejs.svg";
@@ -1602,9 +1637,9 @@
                         var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
                             '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2">'+
-                            '<img src="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2" class="chat-image"></a> hello world '+
+                            '<img class="chat-image" src="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2"></a> hello world '+
                             '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg">'+
-                            '<img src="'+base_url+'/logo/conversejs.svg" class="chat-image"></a>'
+                            '<img class="chat-image" src="'+base_url+'/logo/conversejs.svg"></a>'
                         )
                         done();
                     });
@@ -1807,7 +1842,7 @@
                             function (done, _converse) {
 
                         var contact, sent_stanza, IQ_id, stanza;
-                        test_utils.waitUntilFeatureSupportConfirmed(_converse, 'vcard-temp')
+                        test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
                         .then(function () {
                             return test_utils.waitUntil(function () {
                                 return _converse.xmppstatus.get('fullname');
@@ -1954,7 +1989,7 @@
                             function (done, _converse) {
 
                         var contact, sent_stanza, IQ_id, stanza;
-                        test_utils.waitUntilFeatureSupportConfirmed(_converse, 'vcard-temp')
+                        test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
                         .then(function () {
                             return test_utils.waitUntil(function () {
                                 return _converse.xmppstatus.get('fullname');

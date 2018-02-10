@@ -30,6 +30,8 @@
         'moment/locale/pt-br',
         'moment/locale/ru',
         'moment/locale/uk',
+        'moment/locale/zh-cn',
+        'moment/locale/zh-tw'
     ], factory);
 }(this, function (Promise, Jed, _, moment) {
     'use strict';

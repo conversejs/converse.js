@@ -1,6 +1,7 @@
 /*global config */
 
 // Extra test dependencies
+config.baseUrl = '../';
 config.paths.jquery = "node_modules/jquery/dist/jquery";
 config.paths.mock = "tests/mock";
 config.paths['wait-until-promise'] = "node_modules/wait-until-promise/index";
@@ -32,6 +33,7 @@ require.config(config);
 var specs = [
     "jasmine",
     //"spec/transcripts",
+    "spec/spoilers",
     "spec/profiling",
     "spec/utils",
     "spec/converse",
@@ -57,6 +59,10 @@ var specs = [
 
 require(['console-reporter', 'mock', 'sinon', 'wait-until-promise', 'pluggable'],
         function(ConsoleReporter, mock, sinon, waitUntilPromise, pluggable) {
+
+    if (config.view_mode) {
+        mock.view_mode = config.view_mode;
+    }
     window.sinon = sinon;
     window.waitUntilPromise = waitUntilPromise.default;
     window.localStorage.clear();

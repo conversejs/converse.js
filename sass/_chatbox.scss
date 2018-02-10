@@ -79,6 +79,11 @@
             margin: 0;
             width: $mobile-chat-width;
         }
+
+        .spoiler {
+            background-color: lighten($chat-head-color, 50%);
+        }
+
         .box-flyout {
             background-color: white;
             box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
@@ -150,6 +155,8 @@
                 }
             }
             .chat-image {
+                height: auto;
+                width: auto;
                 max-height: 24em;
                 max-width: 100%;
             }
@@ -157,6 +164,10 @@
                 font-style: italic;
             }
             .chat-message {
+                &.onload {
+                    animation: colorchange-chatmessage 1s;
+                    -webkit-animation: colorchange-chatmessage 1s;
+                }
                 overflow: auto; // Ensures that content stays inside
                 .chat-msg-author {
                     font-weight: bold;
@@ -174,6 +185,12 @@
                 .chat-msg-content {
                     max-width: 100%;
                     word-wrap: break-word;
+
+                    &.spoiler {
+                        border-radius: $chatbox-border-radius;
+                        padding: 0.5em;
+                    }
+
                     .emojione {
                         margin-bottom: -6px;
                     }
@@ -181,10 +198,10 @@
             }
             .delayed {
                 .chat-msg-them {
-                    color: #FB5D50;
+                    color: lighten($message-them-color, 5%);
                 }
                 .chat-msg-me {
-                    color: #7EABBB;
+                    color: lighten($link-color, 5%);
                 }
             }
         }
@@ -211,6 +228,11 @@
             line-height: 1.3em;
             height: 206px;
             height: calc(100% - #{$toolbar-height + $chat-textarea-height +1px});
+
+            .toggle-spoiler:before {
+                padding-right: 0.25em;
+                whitespace: nowrap;
+            }
         }
         .chat-content-sendbutton {
             height: calc(100% - #{$toolbar-height + $chat-textarea-height + $send-button-height + 2*$send-button-margin});
@@ -224,7 +246,8 @@
                 position: relative;
             }
         }
-        form.sendXMPPMessage {
+
+        .sendXMPPMessage {
             -moz-background-clip: padding;
             -webkit-background-clip: padding-box;
             @include border-bottom-radius($chatbox-border-radius);
@@ -242,6 +265,10 @@
             @media screen and (max-width: $mobile-portrait-length) {
                 width: 100%;
             }
+            .spoiler-hint {
+                width: 100%;
+            }
+
             .chat-textarea {
                 @include border-bottom-radius($chatbox-border-radius);
                 border: 0;
@@ -249,6 +276,9 @@
                 padding: 0.5em;
                 width: 100%;
                 resize: none;
+                &.spoiler {
+                    height: 42px;
+                }
             }
             .send-button {
                 position: absolute;
@@ -264,19 +294,16 @@
             .chat-toolbar {
                 box-sizing: border-box;
                 margin: 0;
-                padding: 5px;
+                padding: 0.25em;
                 height: $toolbar-height;
                 display: block;
-                background-color: $toolbar-color;
+                background-color: lighten($chat-head-color, 10%);
+                color: white;
                 a {
-                    font-size: $font-size;
-                    color: $text-color;
+                    color: white;
+                    font-size: $font-size-large;
                     text-decoration: none;
                     text-shadow: none;
-                }
-                .chat-toolbar-text {
-                    font-size: 12px;
-                    padding-right: 3px;
                 }
                 .unencrypted a,
                 .unencrypted {
@@ -366,10 +393,9 @@
                         }
                     }
                     &.toggle-toolbar-menu {
-                        color: $text-color;
+                        color: white;
                     }
                     &.toggle-smiley {
-                        padding-left: 5px;
                         .emoji-toolbar {
                             .emoji-category-picker,
                             .emoji-skintone-picker {

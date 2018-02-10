@@ -71,26 +71,29 @@
                     this.setBookmarkState();
                 },
 
-                generateHeadingHTML () {
+                renderBookmarkToggle () {
                     const { _converse } = this.__super__,
-                        { __ } = _converse,
-                        html = this.__super__.generateHeadingHTML.apply(this, arguments);
+                          { __ } = _converse;
+                    const bookmark_button = tpl_chatroom_bookmark_toggle(
+                        _.assignIn(this.model.toJSON(), {
+                            info_toggle_bookmark: __('Bookmark this room'),
+                            bookmarked: this.model.get('bookmarked')
+                        }));
+                    const close_button = this.el.querySelector('.close-chatbox-button');
+                    close_button.insertAdjacentHTML('afterend', bookmark_button);
+                },
+
+                renderHeading () {
+                    this.__super__.renderHeading.apply(this, arguments);
+                    const { _converse } = this.__super__;
                     if (_converse.allow_bookmarks) {
-                        const div = document.createElement('div');
-                        div.innerHTML = html;
-                        const bookmark_button = tpl_chatroom_bookmark_toggle(
-                            _.assignIn(
-                                this.model.toJSON(),
-                                {
-                                    info_toggle_bookmark: __('Bookmark this room'),
-                                    bookmarked: this.model.get('bookmarked')
-                                }
-                            ));
-                        const close_button = div.querySelector('.close-chatbox-button');
-                        close_button.insertAdjacentHTML('afterend', bookmark_button);
-                        return div.innerHTML;
+                        _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then((identity) => {
+                            if (_.isNil(identity)) {
+                                return;
+                            }
+                            this.renderBookmarkToggle();
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
-                    return html;
                 },
 
                 checkForReservedNick () {
@@ -112,6 +115,9 @@
 
                 onBookmarked () {
                     const icon = this.el.querySelector('.icon-pushpin');
+                    if (_.isNull(icon)) {
+                        return;
+                    }
                     if (this.model.get('bookmarked')) {
                         icon.classList.add('button-on');
                     } else {
@@ -145,7 +151,7 @@
                     _.each(body.querySelectorAll('.chatroom-form-container'), u.removeElement);
 
                     body.insertAdjacentHTML(
-                        'beforeend', 
+                        'beforeend',
                         tpl_chatroom_bookmark_form({
                             heading: __('Bookmark this room'),
                             label_name: __('The name for this bookmark:'),
@@ -212,7 +218,8 @@
             // configuration settings.
             _converse.api.settings.update({
                 allow_bookmarks: true,
-                hide_open_bookmarks: true 
+                allow_public_bookmarks: false,
+                hide_open_bookmarks: true
             });
             // Promises exposed by this plugin
             _converse.api.promises.add('bookmarksInitialized');
@@ -360,10 +367,13 @@
                     }
                 },
 
-                onBookmarksReceived (deferred, iq) {
+                createBookmarksFromStanza (stanza) {
                     const bookmarks = sizzle(
-                        'items[node="storage:bookmarks"] item[id="current"] storage conference',
-                        iq
+                        'items[node="storage:bookmarks"] '+
+                        'item#current '+
+                        'storage[xmlns="storage:bookmarks"] '+
+                        'conference',
+                        stanza
                     )
                     _.forEach(bookmarks, (bookmark) => {
                         this.create({
@@ -373,6 +383,10 @@
                             'nick': bookmark.querySelector('nick').textContent
                         });
                     });
+                },
+
+                onBookmarksReceived (deferred, iq) {
+                    this.createBookmarksFromStanza(iq);
                     if (!_.isUndefined(deferred)) {
                         return deferred.resolve();
                     }
@@ -383,7 +397,13 @@
                     _converse.log('Error while fetching bookmarks', Strophe.LogLevel.WARN);
                     _converse.log(iq.outerHTML, Strophe.LogLevel.DEBUG);
                     if (!_.isNil(deferred)) {
-                        return deferred.reject(new Error("Could not fetch bookmarks"));
+                        if (iq.querySelector('error[type="cancel"] item-not-found')) {
+                            // Not an exception, the user simply doesn't have
+                            // any bookmarks.
+                            return deferred.resolve();
+                        } else {
+                            return deferred.reject(new Error("Could not fetch bookmarks"));
+                        }
                     }
                 }
             });
@@ -457,9 +477,12 @@
 
                 insertIntoControlBox () {
                     const controlboxview = _converse.chatboxviews.get('controlbox');
-                    if (!_.isUndefined(controlboxview)) {
-                        const chatrooms_el = controlboxview.el.querySelector('#chatrooms');
-                        chatrooms_el.insertAdjacentElement('afterbegin', this.el);
+                    if (!_.isUndefined(controlboxview) &&
+                            !document.body.contains(this.el)) {
+                        const container = controlboxview.el.querySelector('#chatrooms');
+                        if (!_.isNull(container)) {
+                            container.insertBefore(this.el, container.firstChild);
+                        }
                     }
                 },
 
@@ -511,14 +534,28 @@
                 if (!_converse.allow_bookmarks) {
                     return;
                 }
-                _converse.bookmarks = new _converse.Bookmarks();
-                _converse.bookmarks.fetchBookmarks().then(() => {
-                    _converse.bookmarksview = new _converse.BookmarksView(
-                        {'model': _converse.bookmarks}
-                    );
-                })
-                .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR))
-                .then(() => {
+                Promise.all([
+                    _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid),
+                    _converse.api.disco.supports(Strophe.NS.PUBSUB+'#publish-options', _converse.bare_jid)
+                ]).then((args) => {
+                    const identity = args[0],
+                          options_support = args[1];
+
+                    if (_.isNil(identity) || (!options_support.supported && !_converse.allow_public_bookmarks)) {
+                        _converse.emit('bookmarksInitialized');
+                        return;
+                    }
+                    _converse.bookmarks = new _converse.Bookmarks();
+                    _converse.bookmarks.fetchBookmarks().then(() => {
+                        _converse.bookmarksview = new _converse.BookmarksView(
+                            {'model': _converse.bookmarks}
+                        );
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR))
+                      .then(() => {
+                          _converse.emit('bookmarksInitialized');
+                      });
+                }).catch((e) => {
+                    _converse.log(e, Strophe.LogLevel.ERROR);
                     _converse.emit('bookmarksInitialized');
                 });
             };
@@ -529,15 +566,21 @@
             ]).then(initBookmarks)
               .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
+            _converse.on('connected', () => {
+                // Add a handler for bookmarks pushed from other connected clients
+                // (from the same user obviously)
+                _converse.connection.addHandler((message) => {
+                    if (message.querySelector('event[xmlns="'+Strophe.NS.PUBSUB+'#event"]')) {
+                        _converse.bookmarks.createBookmarksFromStanza(message);
+                    }
+                }, null, 'message', 'headline', null, _converse.bare_jid);
+            });
+
             const afterReconnection = function () {
                 if (!_converse.allow_bookmarks) {
                     return;
                 }
-                if (_.isUndefined(_converse.bookmarksview)) {
-                    initBookmarks();
-                } else {
-                    _converse.bookmarksview.render();
-                }
+                initBookmarks();
             };
             _converse.on('reconnected', afterReconnection);
         }

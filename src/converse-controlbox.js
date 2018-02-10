@@ -115,11 +115,14 @@
 
             clearSession () {
                 this.__super__.clearSession.apply(this, arguments);
-                const controlbox = this.chatboxes.get('controlbox');
-                if (controlbox &&
-                        controlbox.collection &&
-                        controlbox.collection.browserStorage) {
-                    controlbox.save({'connected': false});
+                const chatboxes = _.get(this, 'chatboxes', null);
+                if (!_.isNil(chatboxes)) {
+                    const controlbox = chatboxes.get('controlbox');
+                    if (controlbox &&
+                            controlbox.collection &&
+                            controlbox.collection.browserStorage) {
+                        controlbox.save({'connected': false});
+                    }
                 }
             },
 
@@ -448,6 +451,8 @@
 
             _converse.LoginPanelModel = Backbone.Model.extend({
                 defaults: {
+                    // Passed-by-reference. Fine in this case because there's
+                    // only one such model.
                     'errors': [],
                 }
             });
@@ -594,6 +599,9 @@
 
                 renderTab () {
                     const controlbox = _converse.chatboxes.get('controlbox');
+                    if (_.isNil(controlbox)) {
+                        return;
+                    }
                     const chats = fp.filter(_.partial(u.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
                     this.tab_el.innerHTML = tpl_contacts_tab({
                         'label_contacts': LABEL_CONTACTS,
@@ -682,7 +690,7 @@
                     ev.preventDefault();
                     const input = ev.target.querySelector('input');
                     const jid = input.value;
-                    if (!jid || _.filter(jid.split('@')).length < 2) {
+                    if (!jid || _.compact(jid.split('@')).length < 2) {
                         this.el.querySelector('.search-xmpp div').innerHTML =
                             this.generateAddContactHTML({
                                 error_message: __('Please enter a valid XMPP address'),

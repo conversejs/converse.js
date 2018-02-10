@@ -118,6 +118,8 @@ allow_bookmarks
 Enables/disables chatroom bookmarks functionality.
 This setting is only applicable if the ``converse-bookmarks`` plugin is loaded.
 
+See also: `allow_public_bookmarks`_
+
 allow_chat_pending_contacts
 ---------------------------
 
@@ -189,6 +191,24 @@ allow_otr
 * Default:  ``true``
 
 Allow Off-the-record encryption of single-user chat messages.
+
+allow_public_bookmarks
+----------------------
+
+* Default: ``false``
+
+Some XMPP servers don't support private PEP/PubSub nodes, as required for
+private bookmarks and outlined in `XEP-0223 <https://xmpp.org/extensions/xep-0223.html>`_.
+
+Even though Converse.js asks for the bookmarks to be kept private (via the
+`<publish-options>` XML node), the server simply ignores the privacy settings
+and publishes the node contents under the default privacy setting, which makes
+the information available to all roster contacts.
+
+If your your XMPP server does not support `XEP-0223`'s ``#publish-options``
+feature and you don't mind that your room bookmarks are visible to all
+contacts, then you can set this setting to ``true``. Otherwise you won't be
+able to have any room bookmarks at all for an account on that XMPP server.
 
 allow_registration
 ------------------
@@ -1136,6 +1156,16 @@ render emojis. If set to ``false``, then rendering support will fall back to
 the operating system or browser (which might not support emoji).
 
 See also `emojione_image_path`_.
+
+
+show_message_load_animation
+---------------------------
+* Default: ``false``
+
+Determines whether a CSS3 background-color fade-out animation is shown when messages
+appear in chats.
+
+Set to ``false`` by default since this option causes performance issues on Firefox.
 
 
 show_only_online_users

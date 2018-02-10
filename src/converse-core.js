@@ -9,6 +9,7 @@
     define(["sizzle",
             "es6-promise",
             "lodash.noconflict",
+            "lodash.fp",
             "polyfill",
             "i18n",
             "utils",
@@ -19,7 +20,7 @@
             "backbone.nativeview",
             "backbone.browserStorage"
     ], factory);
-}(this, function (sizzle, Promise, _, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
+}(this, function (sizzle, Promise, _, f, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
 
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -44,6 +45,7 @@
     Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
     Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
     Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
+    Strophe.addNamespace('SPOILER', 'urn:xmpp:spoiler:0');
     Strophe.addNamespace('XFORM', 'jabber:x:data');
 
     // Use Mustache style syntax for variable interpolation
@@ -85,7 +87,8 @@
         'converse-roomslist',
         'converse-rosterview',
         'converse-singleton',
-        'converse-vcard'
+        'converse-vcard',
+        'converse-spoilers'
     ];
 
     // Make converse pluggable
@@ -163,21 +166,13 @@
                 'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
             }, console);
         if (level === Strophe.LogLevel.ERROR) {
-            if (_converse.debug) {
-                logger.trace(`${prefix} ${moment().format()} ERROR: ${message}`, style);
-            } else {
-                logger.error(`${prefix} ERROR: ${message}`, style);
-            }
+            logger.error(`${prefix} ERROR: ${message}`, style);
         } else if (level === Strophe.LogLevel.WARN) {
             if (_converse.debug) {
                 logger.warn(`${prefix} ${moment().format()} WARNING: ${message}`, style);
             }
         } else if (level === Strophe.LogLevel.FATAL) {
-            if (_converse.debug) {
-                logger.trace(`${prefix} ${moment().format()} FATAL: ${message}`, style);
-            } else {
-                logger.error(`${prefix} FATAL: ${message}`, style);
-            }
+            logger.error(`${prefix} FATAL: ${message}`, style);
         } else if (_converse.debug) {
             if (level === Strophe.LogLevel.DEBUG) {
                 logger.debug(`${prefix} ${moment().format()} DEBUG: ${message}`, style);
@@ -310,11 +305,11 @@
             include_offline_state: false,
             jid: undefined,
             keepalive: true,
-            locales_url: '/locale/{{{locale}}}/LC_MESSAGES/converse.json',
+            locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
             locales: [
                 'af', 'ca', 'de', 'es', 'en', 'fr', 'he',
                 'hu', 'id', 'it', 'ja', 'nb', 'nl',
-                'pl', 'pt_BR', 'ru', 'uk', 'zh'
+                'pl', 'pt_BR', 'ru', 'uk', 'zh_CN', 'zh_TW'
             ],
             message_carbons: true,
             message_storage: 'session',
@@ -373,7 +368,7 @@
         // Module-level functions
         // ----------------------
 
-        this.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749825).toString()}`;
+        this.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749528).toString()}`;
 
         this.sendCSI = function (stat) {
             /* Send out a Chat Status Notification (XEP-0352)
@@ -581,8 +576,8 @@
             } else if (status === Strophe.Status.CONNFAIL) {
                 let feedback = message;
                 if (message === "host-unknown" || message == "remote-connection-failed") {
-                    feedback = __("Sorry, we could not connect to the XMPP host with domain: ") +
-                        `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`;
+                    feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s",
+                        `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`);
                 } else if (!_.isUndefined(message) && message === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
                     feedback = __("The XMPP server did not offer a supported authentication mechanism");
                 }
@@ -863,10 +858,8 @@
         this.RosterContact = Backbone.Model.extend({
 
             defaults: {
-                'bookmarked': false,
                 'chat_state': undefined,
                 'chat_status': 'offline',
-                'groups': [],
                 'image': _converse.DEFAULT_IMAGE,
                 'image_type': _converse.DEFAULT_IMAGE_TYPE,
                 'num_unread': 0,
@@ -879,11 +872,12 @@
                 const resource = Strophe.getResourceFromJid(jid);
                 attributes.jid = bare_jid;
                 this.set(_.assignIn({
+                    'fullname': bare_jid,
+                    'groups': [],
                     'id': bare_jid,
                     'jid': bare_jid,
-                    'fullname': bare_jid,
-                    'user_id': Strophe.getNodeFromJid(jid),
-                    'resources': resource ? {resource :0} : {},
+                    'resources': {},
+                    'user_id': Strophe.getNodeFromJid(jid)
                 }, attributes));
 
                 this.on('destroy', () => { this.removeFromRoster(); });
@@ -979,6 +973,7 @@
 
                 const resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
                 resources[resource] = {
+                    'name': resource,
                     'priority': priority,
                     'status': chat_status,
                     'timestamp': timestamp
@@ -1479,6 +1474,7 @@
         this.connfeedback = new this.ConnectionFeedback();
 
         this.XMPPStatus = Backbone.Model.extend({
+
             initialize () {
                 this.set({
                     'status' : this.getStatus()
@@ -2025,6 +2021,7 @@
             'Promise': Promise,
             'Strophe': Strophe,
             '_': _,
+            'f': f,
             'b64_sha1':  b64_sha1,
             'moment': moment,
             'sizzle': sizzle,

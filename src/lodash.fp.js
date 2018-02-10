@@ -1,5 +1,4 @@
-define(['lodash', 'lodash.converter', 'converse-core'], function (_, lodashConverter, converse) {
+define(['lodash', 'lodash.converter'], function (_, lodashConverter) {
     var fp = lodashConverter(_.runInContext());
-    converse.env.fp = fp;
     return fp;
 });

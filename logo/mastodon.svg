@@ -7,9 +7,10 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   viewBox="0 0 100 100"
    id="svg899"
    version="1.1"
-   sodipodi:docname="mastodon2.svg"
+   sodipodi:docname="mastodon.svg"
    >
   <sodipodi:namedview
      pagecolor="#ffffff"
@@ -55,7 +56,7 @@
   </defs>
   <g
      id="g872"
-     transform="matrix(0.89768578,0,0,0.91474781,0.80767452,7.5300112)">
+     transform="matrix(1.2351757,0,0,1.2586523,-10.042372,-11.404917)">
     <use
        y="0"
        x="0"

@@ -13,6 +13,33 @@ config.paths.jasmine = "node_modules/jasmine-core/lib/jasmine-core/boot";
 config.paths["jasmine-console"] = "node_modules/jasmine-core/lib/console/console";
 config.paths["console-reporter"] = "tests/console-reporter";
 config.paths["jasmine-html"] = "node_modules/jasmine-core/lib/jasmine-core/jasmine-html";
+
+config.paths.converse =                 "builds/converse";
+config.paths.utils =                    "builds/utils";
+config.paths["converse-bookmarks"] =    "builds/converse-bookmarks";
+config.paths["converse-chatboxes"] =    "builds/converse-chatboxes";
+config.paths["converse-chatview"] =     "builds/converse-chatview";
+config.paths["converse-controlbox"] =   "builds/converse-controlbox";
+config.paths["converse-core"] =         "builds/converse-core";
+config.paths["converse-disco"] =        "builds/converse-disco";
+config.paths["converse-dragresize"] =   "builds/converse-dragresize";
+config.paths["converse-headline"] =     "builds/converse-headline";
+config.paths["converse-fullscreen"] =   "builds/converse-fullscreen";
+config.paths["converse-mam"] =          "builds/converse-mam";
+config.paths["converse-minimize"] =     "builds/converse-minimize";
+config.paths["converse-muc"] =          "builds/converse-muc";
+config.paths["converse-muc-embedded"] = "builds/converse-muc-embedded";
+config.paths["converse-notification"] = "builds/converse-notification";
+config.paths["converse-otr"] =          "builds/converse-otr";
+config.paths["converse-ping"] =         "builds/converse-ping";
+config.paths["converse-profile"] =      "builds/converse-profile";
+config.paths["converse-register"] =     "builds/converse-register";
+config.paths["converse-roomslist"] =    "builds/converse-roomslist";
+config.paths["converse-rosterview"] =   "builds/converse-rosterview";
+config.paths["converse-singleton"] =    "builds/converse-singleton";
+config.paths["converse-vcard"] =        "builds/converse-vcard";
+
+
 config.shim.jasmine = {
     exports: 'window.jasmineRequire'
 };
@@ -33,7 +60,6 @@ require.config(config);
 var specs = [
     "jasmine",
     //"spec/transcripts",
-    "spec/spoilers",
     "spec/profiling",
     "spec/utils",
     "spec/converse",
@@ -59,14 +85,13 @@ var specs = [
 
 require(['console-reporter', 'mock', 'sinon', 'wait-until-promise', 'pluggable'],
         function(ConsoleReporter, mock, sinon, waitUntilPromise, pluggable) {
-
-    if (config.view_mode) {
-        mock.view_mode = config.view_mode;
-    }
     window.sinon = sinon;
+    waitUntilPromise.setPromiseImplementation(window.Promise);
     window.waitUntilPromise = waitUntilPromise.default;
+
     window.localStorage.clear();
     window.sessionStorage.clear();
+
     // Load the specs
     require(specs, function (jasmine) {
         var jasmineEnv = jasmine.getEnv();

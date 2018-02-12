@@ -1,15 +1,46 @@
 # Changelog
 
-## 3.3.2 (Unreleased)
+## 3.3.3 (Unreleased)
+
+### Bugfixes
+- Attribute error when empty IQ stanza is returned for vCard query
+- Don't allow PEP bookmarks if `pubsub#publish-options` is not advertised by the server.
+
+_Note: previously this meant that bookmarks sent to servers that don't
+support `pubsub#publish-options` were visible to all your contacts, even
+though they should be private._
+
+### New features
+- XEP-0382 Spoiler Messages (currently only for private chats)
+- Listen for new room bookmarks pushed from the user's PEP service.
+
+### API changes
+- New API method `_converse.disco.getIdentity` to check whether a JID has a given identity.
+
+### New configuration settings
+- New configuration setting [allow_public_bookmarks](https://conversejs.org/docs/html/configurations.html#allow-public-bookmarks)
+
+### LibreJS
+- Add LibreJS support
+## 3.3.2 (2018-01-29)
 
 ### Bugfixes
 
+- Various fixes for IE11.
 - Could not register on Ejabberd 18. `"Missing attribute 'id' in tag qualified by namespace 'jabber:client'"`
+- #878 Ending slash in link not recognized
+- #921 FATAL error when `visible_toolbar_buttons.emoji = false`
+- #959 Add padding for the iPhone X (to the mobile CSS).
 - #993 `moment.format` is not a function error when sending a message.
 - #994 TypeError when using the `user.login` API.
 - #995 `ChildNode.replaceWith` is not available in Internet Explorer or Safari. Use `Node.replaceChild` instead.
-### LibreJS
-- Add LibreJS support
+- #999 MUC Chat Send button causes page reload
+- #1000 Scroll to bottom when maximizing a chat room.
+- #1003 Handle bare MUC room JIDs
+
+### Translation changes
+
+- Updated Dutch, French, Japanese, Norwegian Bokmål and Ukrainian translations
 
 ## 3.3.1 (2018-01-18)
 

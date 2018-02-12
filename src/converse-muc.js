@@ -319,14 +319,14 @@
 
 
             function openRoom (jid) {
-                if (!u.isValidJID(jid)) {
-                    return converse.log(
+                if (!u.isValidMUCJID(jid)) {
+                    return _converse.log(
                         `Invalid JID "${jid}" provided in URL fragment`,
                         Strophe.LogLevel.WARN
                     );
                 }
                 const promises = [_converse.api.waitUntil('roomsAutoJoined')]
-                if (!_converse.allow_bookmarks) {
+                if (_converse.allow_bookmarks) {
                     promises.push( _converse.api.waitUntil('bookmarksInitialized'));
                 }
                 Promise.all(promises).then(() => {
@@ -435,7 +435,7 @@
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant': 'onOccupantClicked',
                     'keypress .chat-textarea': 'keyPressed',
-                    'click .send-button': 'onSendButtonClicked'
+                    'click .send-button': 'onFormSubmitted'
                 },
 
                 initialize () {
@@ -486,8 +486,7 @@
                 },
 
                 renderChatArea () {
-                    /* Render the UI container in which chat room messages will
-                     * appear.
+                    /* Render the UI container in which chat room messages will appear.
                      */
                     if (_.isNull(this.el.querySelector('.chat-area'))) {
                         const container_el = this.el.querySelector('.chatroom-body');
@@ -553,7 +552,7 @@
                     }));
                 },
 
-                afterShown () {
+                afterShown (focus) {
                     /* Override from converse-chatview, specifically to avoid
                      * the 'active' chat state from being sent out prematurely.
                      *
@@ -565,6 +564,8 @@
                         this.model.save();
                     }
                     this.occupantsview.setOccupantsHeight();
+                    this.scrollDown();
+                    if (focus) { this.focus(); }
                 },
 
                 show (focus) {
@@ -575,15 +576,14 @@
                     // Override from converse-chatview in order to not use
                     // "fadeIn", which causes flashing.
                     u.showElement(this.el);
-                    this.afterShown();
-                    if (focus) { this.focus(); }
+                    this.afterShown(focus);
                 },
 
                 afterConnected () {
                     if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                         this.setChatState(_converse.ACTIVE);
-                        this.renderEmojiPicker();
                         this.scrollDown();
+                        this.renderEmojiPicker();
                         this.focus();
                     }
                 },
@@ -1186,9 +1186,8 @@
                         nick = this.model.get('nick');
                     }
                     const room = this.model.get('jid');
-                    const node = Strophe.getNodeFromJid(room);
-                    const domain = Strophe.getDomainFromJid(room);
-                    return node + "@" + domain + (nick !== null ? `/${nick}` : "");
+                    const jid = Strophe.getBareJidFromJid(room);
+                    return jid + (nick !== null ? `/${nick}` : "");
                 },
 
                 registerHandlers () {
@@ -1241,6 +1240,7 @@
                         // so we don't send out a presence stanza again.
                         return this;
                     }
+
                     const stanza = $pres({
                         'from': _converse.connection.jid,
                         'to': this.getRoomJIDAndNick(nick)
@@ -2487,7 +2487,7 @@
                     evt.preventDefault();
                     const el = evt.target.querySelector('input.invited-contact'),
                           jid = el.value;
-                    if (!jid || _.filter(jid.split('@')).length < 2) {
+                    if (!jid || _.compact(jid.split('@')).length < 2) {
                         evt.target.outerHTML = tpl_chatroom_invite({
                             'error_message': __('Please enter a valid XMPP username'),
                             'label_invitation': __('Invite'),
@@ -2649,6 +2649,21 @@
                     this.removeSpinner();
                 },
 
+                roomStanzaItemToHTMLElement (room) {
+                    const name = Strophe.unescapeNode(
+                        room.getAttribute('name') ||
+                            room.getAttribute('jid')
+                    );
+                    const div = document.createElement('div');
+                    div.innerHTML = tpl_room_item({
+                        'name': name,
+                        'jid': room.getAttribute('jid'),
+                        'open_title': __('Click to open this room'),
+                        'info_title': __('Show more information on this room')
+                    });
+                    return div.firstChild;
+                },
+
                 onRoomsFound (iq) {
                     /* Handle the IQ stanza returned from the server, containing
                      * all its public rooms.
@@ -2661,21 +2676,9 @@
                         available_chatrooms.innerHTML = tpl_rooms_results({
                             'feedback_text': __('Rooms found')
                         });
-                        const div = document.createElement('div');
                         const fragment = document.createDocumentFragment();
-                        for (let i=0; i<this.rooms.length; i++) {
-                            const name = Strophe.unescapeNode(
-                                this.rooms[i].getAttribute('name') ||
-                                    this.rooms[i].getAttribute('jid')
-                            );
-                            div.innerHTML = tpl_room_item({
-                                'name': name,
-                                'jid': this.rooms[i].getAttribute('jid'),
-                                'open_title': __('Click to open this room'),
-                                'info_title': __('Show more information on this room')
-                            });
-                            fragment.appendChild(div.firstChild);
-                        }
+                        const children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil)
+                        _.each(children, (child) => fragment.appendChild(child));
                         available_chatrooms.appendChild(fragment);
                         const input_el = this.el.querySelector('input#show-rooms');
                         input_el.classList.remove('hidden')
@@ -2806,7 +2809,7 @@
                     }
                     return {
                         'jid': jid,
-                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
+                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
                     }
                 },
 

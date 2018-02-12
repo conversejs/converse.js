@@ -79,7 +79,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                     var entities = _converse.disco_entities;
-                    expect(entities.length).toBe(1);
+                    expect(entities.length).toBe(2); // We have an extra entity, which is the user's JID
                     expect(entities.get(_converse.domain).features.length).toBe(5);
                     expect(entities.get(_converse.domain).identities.length).toBe(3);
                     expect(entities.get('localhost').features.where({'var': 'jabber:iq:version'}).length).toBe(1);
@@ -159,7 +159,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                     entities = _converse.disco_entities;
-                    expect(entities.length).toBe(4);
+                    expect(entities.length).toBe(5); // We have an extra entity, which is the user's JID
                     expect(entities.get(_converse.domain).identities.where({'category': 'conference'}).length).toBe(1);
                     expect(entities.get(_converse.domain).identities.where({'category': 'directory'}).length).toBe(1);
                     done();

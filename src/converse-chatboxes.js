@@ -7,7 +7,7 @@
 /*global define */
 
 (function (root, factory) {
-    define(["converse-core"], factory);
+    define(["converse-core", "backbone.overview"], factory);
 }(this, function (converse) {
     "use strict";
     const { Backbone, Promise, Strophe, b64_sha1, moment, utils, _ } = converse.env;

@@ -8,23 +8,23 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-29 16:31+0100\n"
-"PO-Revision-Date: 2018-01-29 10:18+0000\n"
-"Last-Translator: Марс Ямбар <mjambarmeta@gmail.com>\n"
-"Language-Team: Ukrainian <https://hosted.weblate.org/projects/conversejs/"
-"translations/uk/>\n"
+"PO-Revision-Date: 2018-02-13 19:39+0000\n"
+"Last-Translator: Максим Якимчук <xpinovo@gmail.com>\n"
+"Language-Team: Ukrainian "
+"<https://hosted.weblate.org/projects/conversejs/translations/uk/>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 2.19-dev\n"
 "domain: converse\n"
 "lang: uk\n"
 
 #: dist/converse-no-dependencies.js:7305
 msgid "The connection has dropped, attempting to reconnect."
-msgstr ""
+msgstr "З'єднання втрачено, спроба відновити зв'язок."
 
 #: dist/converse-no-dependencies.js:7403
 msgid "An error occurred while connecting to the chat server."
@@ -878,9 +878,8 @@ msgid "Anyone can join this room"
 msgstr "Клацніть, щоб увійти в цю кімнату"
 
 #: dist/converse-no-dependencies.js:20318
-#, fuzzy
 msgid "This room requires a password before entry"
-msgstr "Ця кімната вимагає пароль"
+msgstr "Ця кімната вимагає ввести пароль перед входом"
 
 #: dist/converse-no-dependencies.js:20319
 msgid "This room persists even if it's unoccupied"
@@ -1016,7 +1015,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:21332
 #: dist/converse-no-dependencies.js:21939
 msgid "Bookmark this room"
-msgstr ""
+msgstr "Додати цю кімнату в закладки"
 
 #: dist/converse-no-dependencies.js:21333
 msgid "The name for this bookmark:"
@@ -1031,9 +1030,9 @@ msgid "What should your nickname for this room be?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:21410
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr "Ви впевнені, що хочете видалити цей контакт?"
+msgstr "Ви впевнені, що хочете видалити закладку \"%1$s\"?"
 
 #: dist/converse-no-dependencies.js:21522
 msgid "Sorry, something went wrong while trying to save your bookmark."
@@ -1043,31 +1042,28 @@ msgstr ""
 #: dist/converse-no-dependencies.js:21937
 #, fuzzy
 msgid "Leave this room"
-msgstr "Клацніть, щоб увійти в цю кімнату"
+msgstr "Залишити цю кімнату"
 
 #: dist/converse-no-dependencies.js:21599
 msgid "Remove this bookmark"
-msgstr ""
+msgstr "Вилучити цю закладку"
 
 #: dist/converse-no-dependencies.js:21600
 #: dist/converse-no-dependencies.js:21938
-#, fuzzy
 msgid "Unbookmark this room"
-msgstr "Клацніть, щоб увійти в цю кімнату"
+msgstr "Видалити цю кімнату з закладок"
 
 #: dist/converse-no-dependencies.js:21639
-#, fuzzy
 msgid "Click to toggle the bookmarks list"
-msgstr "Клацніть, щоб увійти в цю кімнату"
+msgstr "Натисніть, щоб переключити список закладок"
 
 #: dist/converse-no-dependencies.js:21640
 msgid "Bookmarks"
-msgstr ""
+msgstr "Закладки"
 
 #: dist/converse-no-dependencies.js:21973
-#, fuzzy
 msgid "Click to toggle the rooms list"
-msgstr "Клацніть, щоб увійти в цю кімнату"
+msgstr "Натисніть, щоб переключити список кімнат"
 
 #: dist/converse-no-dependencies.js:21974
 #, fuzzy
@@ -1075,9 +1071,9 @@ msgid "Open Rooms"
 msgstr "Увійти в кімнату"
 
 #: dist/converse-no-dependencies.js:22007
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to leave the room \"%1$s\"?"
-msgstr "Ви впевнені, що хочете видалити цей контакт?"
+msgstr "Ви впевнені, що хочете залишити кімнату \"%1$s\"?"
 
 #: dist/converse-no-dependencies.js:22786
 msgid "Re-establishing encrypted session"
@@ -1269,11 +1265,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:23172
 msgid "Create an account"
-msgstr ""
+msgstr "Створити обліковий запис"
 
 #: dist/converse-no-dependencies.js:23184
 msgid "Create your account"
-msgstr ""
+msgstr "Створити свій обліковий запис"
 
 #: dist/converse-no-dependencies.js:23186
 msgid "Please enter the XMPP provider to register with:"
@@ -1289,7 +1285,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:23220
 msgid "Account Registration:"
-msgstr ""
+msgstr "Реєстрація облікового запису:"
 
 #: dist/converse-no-dependencies.js:23228
 msgid "Register"
@@ -1297,7 +1293,7 @@ msgstr "Реєстрація"
 
 #: dist/converse-no-dependencies.js:23232
 msgid "Choose a different provider"
-msgstr ""
+msgstr "Виберіть іншого провайдера"
 
 #: dist/converse-no-dependencies.js:23244
 msgid "Hold tight, we're fetching the registration form…"
@@ -1321,7 +1317,7 @@ msgstr "тут"
 
 #: dist/converse-no-dependencies.js:23475
 msgid "Sorry, we're unable to connect to your chosen provider."
-msgstr ""
+msgstr "На жаль, ми не можемо підключитися до обраного вами провайдера."
 
 #: dist/converse-no-dependencies.js:23491
 msgid ""
@@ -1349,18 +1345,19 @@ msgid "Registered successfully"
 msgstr "Успішно зареєстровано"
 
 #: dist/converse-no-dependencies.js:23791
-#, fuzzy
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
-msgstr "Провайдер відхилив Вашу спробу реєстрації."
+msgstr ""
+"Провайдер відхилив вашу спробу реєстрації. Будь ласка, перевірте введені "
+"значення на коректність."
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:24237
 #: dist/converse-no-dependencies.js:24243
 #, javascript-format
 msgid "Notification from %1$s"
-msgstr ""
+msgstr "Сповіщення від %1$s"
 
 #: dist/converse-no-dependencies.js:24245
 #: dist/converse-no-dependencies.js:24256
@@ -1370,13 +1367,12 @@ msgid "%1$s says"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:24293
-#, fuzzy
 msgid "has come online"
-msgstr "тепер поза мережею"
+msgstr "зʼявився в мережі"
 
 #: dist/converse-no-dependencies.js:24310
 msgid "wants to be your contact"
-msgstr ""
+msgstr "хоче бути у вашому списку контактів"
 
 #: dist/converse-no-dependencies.js:24635
 #: dist/converse-no-dependencies.js:24991

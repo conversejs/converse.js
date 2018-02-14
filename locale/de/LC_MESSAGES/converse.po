@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-29 16:31+0100\n"
-"PO-Revision-Date: 2017-12-19 20:50+0000\n"
+"PO-Revision-Date: 2018-02-02 18:36+0000\n"
 "Last-Translator: Andreas Kleinert <Andy.Kleinert@gmail.com>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
-"translations/de/>\n"
+"Language-Team: German "
+"<https://hosted.weblate.org/projects/conversejs/translations/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.18\n"
+"X-Generator: Weblate 2.19-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -25,12 +25,12 @@ msgstr ""
 #: dist/converse-no-dependencies.js:7305
 msgid "The connection has dropped, attempting to reconnect."
 msgstr ""
-"Die Verbindung ist abgebrochen und versucht, die Verbindung wieder "
-"herzustellen."
+"Die Verbindung ist abgebrochen und es wird versucht, die Verbindung "
+"wiederherzustellen."
 
 #: dist/converse-no-dependencies.js:7403
 msgid "An error occurred while connecting to the chat server."
-msgstr "Beim Speichern des Formulars ist ein Fehler aufgetreten."
+msgstr "Beim Verbinden mit dem Chatserver ist ein Fehler aufgetreten."
 
 #: dist/converse-no-dependencies.js:7410
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
@@ -39,10 +39,11 @@ msgstr ""
 "erneut."
 
 #: dist/converse-no-dependencies.js:7422
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
 msgstr ""
-"Leider konnten wir keine Verbindung zum XMPP-Host mit der Domain herstellen: "
+"Leider konnten wir keine Verbindung zum XMPP-Host mit der Domain „%1$s” "
+"herstellen"
 
 #: dist/converse-no-dependencies.js:7424
 msgid "The XMPP server did not offer a supported authentication mechanism"
@@ -528,24 +529,24 @@ msgid "Message"
 msgstr "Nachricht"
 
 #: dist/converse-no-dependencies.js:18396
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a moderator."
-msgstr "Dieser Benutzer ist ein Moderator."
+msgstr "%1$s ist kein Moderator mehr."
 
 #: dist/converse-no-dependencies.js:18400
 #, fuzzy, javascript-format
 msgid "%1$s has been given a voice again."
-msgstr "%1$s wurde hinausgeworfen"
+msgstr "%1$s darf wieder Kommentare schreiben"
 
 #: dist/converse-no-dependencies.js:18404
 #, fuzzy, javascript-format
 msgid "%1$s has been muted."
-msgstr "%1$s wurde verbannt"
+msgstr "%1$s wurde das Schreibrecht entzogen"
 
 #: dist/converse-no-dependencies.js:18408
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a moderator."
-msgstr "Dieser Benutzer ist ein Moderator."
+msgstr "%1$s ist jetzt ein Moderator."
 
 #: dist/converse-no-dependencies.js:18416
 msgid "Close and leave this room"
@@ -586,9 +587,8 @@ msgid "Ban user from room"
 msgstr "Benutzer aus dem Raum verbannen"
 
 #: dist/converse-no-dependencies.js:18987
-#, fuzzy
 msgid "Change user role to participant"
-msgstr "Benutzerrolle zu Teilnehmer ändern"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:18987
 msgid "Kick user from room"
@@ -681,39 +681,39 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "Angegebene Grund: „%1$s”"
 
 #: dist/converse-no-dependencies.js:19823
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the room."
-msgstr " hat den Raum verlassen"
+msgstr "%1$s hat den Raum erneut betreten."
 
 #: dist/converse-no-dependencies.js:19829
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered the room. \"%2$s\""
-msgstr " ist dem Raum beigetreten."
+msgstr "%1$s hat den Raum betreten. „%2$s”"
 
 #: dist/converse-no-dependencies.js:19831
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered the room."
-msgstr " ist dem Raum beigetreten."
+msgstr "%1$s hat den Raum betreten."
 
 #: dist/converse-no-dependencies.js:19860
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered and left the room. \"%2$s\""
-msgstr " hat den Raum verlassen"
+msgstr "%1$s hat den Raum wieder verlassen. „%2$s”"
 
 #: dist/converse-no-dependencies.js:19862
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered and left the room."
-msgstr " hat den Raum verlassen"
+msgstr "%1$s hat den Raum wieder verlassen."
 
 #: dist/converse-no-dependencies.js:19874
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left the room. \"%2$s\""
-msgstr " hat den Raum verlassen"
+msgstr "%1$s hat den Raum verlassen. „%2$s”"
 
 #: dist/converse-no-dependencies.js:19876
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left the room."
-msgstr " hat den Raum verlassen"
+msgstr "%1$s hat den Raum verlassen."
 
 #: dist/converse-no-dependencies.js:19945
 msgid "You are not on the member list of this room."
@@ -833,9 +833,8 @@ msgid "Unmoderated"
 msgstr "Nicht moderiert"
 
 #: dist/converse-no-dependencies.js:20311
-#, fuzzy
 msgid "No password"
-msgstr "passwort"
+msgstr "Kein Passwort"
 
 #: dist/converse-no-dependencies.js:20312
 msgid "This room is not publicly searchable"
@@ -890,12 +889,13 @@ msgid "This room does not require a password upon entry"
 msgstr "Dieser Raum erfordert kein Passwort"
 
 #: dist/converse-no-dependencies.js:20460
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "You are about to invite %1$s to the chat room \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
 msgstr ""
-"Du kannst optional eine Nachricht mit den Gründen der Einladung mitsenden."
+"Sie sind dabei, %1$s in den Chatraum „%2$s” einzuladen. Optional können Sie "
+"eine Nachricht anfügen, in der Sie den Grund für die Einladung erläutern."
 
 #: dist/converse-no-dependencies.js:20482
 msgid "Please enter a valid XMPP username"
@@ -922,9 +922,8 @@ msgid "Rooms"
 msgstr "Räume"
 
 #: dist/converse-no-dependencies.js:20629
-#, fuzzy
 msgid "No rooms found"
-msgstr "Keine Benutzer gefunden"
+msgstr "Keine Räume gefunden"
 
 #: dist/converse-no-dependencies.js:20641
 #: dist/converse-no-dependencies.js:21604
@@ -939,9 +938,8 @@ msgid "Show more information on this room"
 msgstr "Mehr Information über diesen Raum anzeigen"
 
 #: dist/converse-no-dependencies.js:20657
-#, fuzzy
 msgid "Rooms found"
-msgstr "Räume auf %1$s"
+msgstr "Räume gefunden"
 
 #: dist/converse-no-dependencies.js:20734
 msgid "Description:"
@@ -1003,7 +1001,7 @@ msgstr "Name des Lesezeichens:"
 
 #: dist/converse-no-dependencies.js:21334
 msgid "Would you like this room to be automatically joined upon startup?"
-msgstr "Beim Anmelden diesem Raum automatisch betreten?"
+msgstr "Beim Anmelden diesen Raum automatisch betreten?"
 
 #: dist/converse-no-dependencies.js:21335
 msgid "What should your nickname for this room be?"

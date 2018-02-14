@@ -478,7 +478,7 @@
                 insertIntoControlBox () {
                     const controlboxview = _converse.chatboxviews.get('controlbox');
                     if (!_.isUndefined(controlboxview) &&
-                            !document.body.contains(this.el)) {
+                            !_converse.root.contains(this.el)) {
                         const container = controlboxview.el.querySelector('#chatrooms');
                         if (!_.isNull(container)) {
                             container.insertBefore(this.el, container.firstChild);

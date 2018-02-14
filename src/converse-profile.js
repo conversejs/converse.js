@@ -79,7 +79,7 @@
                 toggleOptions (ev) {
                     ev.preventDefault();
                     utils.slideInAllElements(
-                        document.querySelectorAll('#conversejs .contact-form-container')
+                        _converse.root.querySelectorAll('#conversejs .contact-form-container')
                     );
                     utils.slideToggleElement(this.el.querySelector("#target dd ul"));
                 },

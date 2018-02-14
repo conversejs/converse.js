@@ -1,0 +1,292 @@
+/*
+    Color scheme helpers:
+    https://coolors.co/app/264653-2a9d8f-e9c46a-f4a261-e76f51
+    http://paletton.com/#uid=70a0u0kkNs+b4JOgryLpxqpsbkI
+ */
+@font-face {
+  font-family: 'Converse-js';
+  src: url("../fonticons/fonts/icomoon.eot?wvi0ht");
+  src: url("../fonticons/fonts/icomoon.eot?wvi0ht#iefix") format("embedded-opentype"), url("../fonticons/fonts/icomoon.ttf?wvi0ht") format("truetype"), url("../fonticons/fonts/icomoon.woff?wvi0ht") format("woff"), url("../fonticons/fonts/icomoon.svg?wvi0ht#icomoon") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+.icon-conversejs {
+  padding-right: 0.2em;
+  font-family: 'Converse-js';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+.icon-conversejs:before {
+  content: "\e600"; }
+
+#converse-embedded-chat .icon-address-book:before,
+#conversejs .icon-address-book:before {
+  content: "\270f"; }
+#converse-embedded-chat .icon-attachment:before,
+#conversejs .icon-attachment:before {
+  content: "\e032"; }
+#converse-embedded-chat .icon-away:before,
+#conversejs .icon-away:before {
+  content: "\25fb"; }
+#converse-embedded-chat .icon-blocked:before,
+#conversejs .icon-blocked:before {
+  content: "\2718"; }
+#converse-embedded-chat .icon-bold:before,
+#conversejs .icon-bold:before {
+  content: "\e04d"; }
+#converse-embedded-chat .icon-bubbles2:before,
+#conversejs .icon-bubbles2:before {
+  content: "\e016"; }
+#converse-embedded-chat .icon-bubbles3:before,
+#conversejs .icon-bubbles3:before {
+  content: "\e017"; }
+#converse-embedded-chat .icon-bubbles:before,
+#conversejs .icon-bubbles:before {
+  content: "\e015"; }
+#converse-embedded-chat .icon-busy:before,
+#conversejs .icon-busy:before {
+  content: "\e004"; }
+#converse-embedded-chat .icon-dnd:before,
+#conversejs .icon-dnd:before {
+  content: "\e004"; }
+#converse-embedded-chat .icon-cancel-circle:before,
+#conversejs .icon-cancel-circle:before {
+  content: "\e058"; }
+#converse-embedded-chat .icon-checkmark:before,
+#conversejs .icon-checkmark:before {
+  content: "\2713"; }
+#converse-embedded-chat .icon-close:before,
+#conversejs .icon-close:before {
+  content: "\2715"; }
+#converse-embedded-chat .icon-closed:before,
+#conversejs .icon-closed:before {
+  content: "\25ba"; }
+#converse-embedded-chat .icon-cog:before,
+#conversejs .icon-cog:before {
+  content: "\e02f"; }
+#converse-embedded-chat .icon-cogs:before,
+#conversejs .icon-cogs:before {
+  content: "\e022"; }
+#converse-embedded-chat .icon-conversejs:before,
+#conversejs .icon-conversejs:before {
+  content: "\e600"; }
+#converse-embedded-chat .icon-database:before,
+#conversejs .icon-database:before {
+  content: "\f1c0"; }
+#converse-embedded-chat .icon-envelope:before,
+#conversejs .icon-envelope:before {
+  content: "\f003"; }
+#converse-embedded-chat .icon-exit:before,
+#conversejs .icon-exit:before {
+  content: "\e601"; }
+#converse-embedded-chat .icon-eye-blocked:before,
+#conversejs .icon-eye-blocked:before {
+  content: "\e031"; }
+#converse-embedded-chat .icon-eye:before,
+#conversejs .icon-eye:before {
+  content: "\e030"; }
+#converse-embedded-chat .icon-github:before,
+#conversejs .icon-github:before {
+  content: "\eab0"; }
+#converse-embedded-chat .icon-globe:before,
+#conversejs .icon-globe:before {
+  content: "\f0ac"; }
+#converse-embedded-chat .icon-google2:before,
+#conversejs .icon-google2:before {
+  content: "\ea89"; }
+#converse-embedded-chat .icon-group:before,
+#conversejs .icon-group:before {
+  content: "\f0c0"; }
+#converse-embedded-chat .icon-happy:before,
+#conversejs .icon-happy:before {
+  content: "\263b"; }
+#converse-embedded-chat .icon-heart2:before,
+#conversejs .icon-heart2:before {
+  content: "\f004"; }
+#converse-embedded-chat .icon-heart:before,
+#conversejs .icon-heart:before {
+  content: "\2764"; }
+#converse-embedded-chat .icon-heart_empty:before,
+#conversejs .icon-heart_empty:before {
+  content: "\f08a"; }
+#converse-embedded-chat .icon-hide-users:before,
+#conversejs .icon-hide-users:before {
+  content: "\e01c"; }
+#converse-embedded-chat .icon-home:before,
+#conversejs .icon-home:before {
+  content: "\e000"; }
+#converse-embedded-chat .icon-idcard-dark:before,
+#conversejs .icon-idcard-dark:before {
+  content: "\f2c2"; }
+#converse-embedded-chat .icon-idcard:before,
+#conversejs .icon-idcard:before {
+  content: "\f2c3"; }
+#converse-embedded-chat .icon-image:before,
+#conversejs .icon-image:before {
+  content: "\2b14"; }
+#converse-embedded-chat .icon-info:before,
+#conversejs .icon-info:before {
+  content: "\2360"; }
+#converse-embedded-chat .icon-italic:before,
+#conversejs .icon-italic:before {
+  content: "\e04f"; }
+#converse-embedded-chat .icon-key:before,
+#conversejs .icon-key:before {
+  content: "\e028"; }
+#converse-embedded-chat .icon-legal:before,
+#conversejs .icon-legal:before {
+  content: "\f0e3"; }
+#converse-embedded-chat .icon-lock-2:before,
+#conversejs .icon-lock-2:before {
+  content: "\e027"; }
+#converse-embedded-chat .icon-minus:before,
+#conversejs .icon-minus:before {
+  content: "\e05a"; }
+#converse-embedded-chat .icon-music:before,
+#conversejs .icon-music:before {
+  content: "\266b"; }
+#converse-embedded-chat .icon-newtab:before,
+#conversejs .icon-newtab:before {
+  content: "\e053"; }
+#converse-embedded-chat .icon-notebook:before,
+#conversejs .icon-notebook:before {
+  content: "\2710"; }
+#converse-embedded-chat .icon-notification:before,
+#conversejs .icon-notification:before {
+  content: "\e01f"; }
+#converse-embedded-chat .icon-offline:before,
+#conversejs .icon-offline:before {
+  content: "\e002"; }
+#converse-embedded-chat .icon-logout:before,
+#conversejs .icon-logout:before {
+  content: "\e002"; }
+#converse-embedded-chat .icon-online:before,
+#conversejs .icon-online:before {
+  content: "\25fc"; }
+#converse-embedded-chat .icon-opened:before,
+#conversejs .icon-opened:before {
+  content: "\25bc"; }
+#converse-embedded-chat .icon-pencil:before,
+#conversejs .icon-pencil:before {
+  content: "\270e"; }
+#converse-embedded-chat .icon-phone-hang-up:before,
+#conversejs .icon-phone-hang-up:before {
+  content: "\260e"; }
+#converse-embedded-chat .icon-phone:before,
+#conversejs .icon-phone:before {
+  content: "\260f"; }
+#converse-embedded-chat .icon-plus:before,
+#conversejs .icon-plus:before {
+  content: "\271a"; }
+#converse-embedded-chat .icon-pushpin:before,
+#conversejs .icon-pushpin:before {
+  content: "\e012"; }
+#converse-embedded-chat .icon-quotes-left:before,
+#conversejs .icon-quotes-left:before {
+  content: "\e01d"; }
+#converse-embedded-chat .icon-reddit:before,
+#conversejs .icon-reddit:before {
+  content: "\eac6"; }
+#converse-embedded-chat .icon-remove:before,
+#conversejs .icon-remove:before {
+  content: "\e02d"; }
+#converse-embedded-chat .icon-room-info:before,
+#conversejs .icon-room-info:before {
+  content: "\e059"; }
+#converse-embedded-chat .icon-save:before,
+#conversejs .icon-save:before {
+  content: "\f0c7"; }
+#converse-embedded-chat .icon-search:before,
+#conversejs .icon-search:before {
+  content: "\e021"; }
+#converse-embedded-chat .icon-show-users:before,
+#conversejs .icon-show-users:before {
+  content: "\e01e"; }
+#converse-embedded-chat .icon-smiley:before,
+#conversejs .icon-smiley:before {
+  content: "\263a"; }
+#converse-embedded-chat .icon-snowflake:before,
+#conversejs .icon-snowflake:before {
+  content: "\f2dc"; }
+#converse-embedded-chat .icon-spell-check:before,
+#conversejs .icon-spell-check:before {
+  content: "\e045"; }
+#converse-embedded-chat .icon-spinner:before,
+#conversejs .icon-spinner:before {
+  content: "\231b"; }
+#converse-embedded-chat .icon-star:before,
+#conversejs .icon-star:before {
+  content: "\f005"; }
+#converse-embedded-chat .icon-star_empty:before,
+#conversejs .icon-star_empty:before {
+  content: "\f006"; }
+#converse-embedded-chat .icon-strikethrough:before,
+#conversejs .icon-strikethrough:before {
+  content: "\e050"; }
+#converse-embedded-chat .icon-twitter:before,
+#conversejs .icon-twitter:before {
+  content: "\ea96"; }
+#converse-embedded-chat .icon-underline:before,
+#conversejs .icon-underline:before {
+  content: "\e04e"; }
+#converse-embedded-chat .icon-unlocked:before,
+#conversejs .icon-unlocked:before {
+  content: "\e025"; }
+#converse-embedded-chat .icon-user:before,
+#conversejs .icon-user:before {
+  content: "\e01a"; }
+#converse-embedded-chat .icon-users:before,
+#conversejs .icon-users:before {
+  content: "\e01b"; }
+#converse-embedded-chat .icon-warning:before,
+#conversejs .icon-warning:before {
+  content: "\26a0"; }
+#converse-embedded-chat .icon-wrench:before,
+#conversejs .icon-wrench:before {
+  content: "\e024"; }
+#converse-embedded-chat .icon-xa:before,
+#conversejs .icon-xa:before {
+  content: "\e602"; }
+#converse-embedded-chat .icon-zoomin:before,
+#conversejs .icon-zoomin:before {
+  content: "\e02b"; }
+#converse-embedded-chat .icon-zoomout:before,
+#conversejs .icon-zoomout:before {
+  content: "\e02a"; }
+#converse-embedded-chat [data-icon]:before,
+#conversejs [data-icon]:before {
+  content: attr(data-icon);
+  font-family: 'Converse-js';
+  font-variant: normal;
+  font-weight: normal;
+  line-height: 1;
+  speak: none;
+  text-transform: none;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+#converse-embedded-chat [class^="icon-"]:before, #converse-embedded-chat [class*=" icon-"]:before,
+#conversejs [class^="icon-"]:before,
+#conversejs [class*=" icon-"]:before {
+  background-position: 14px 14px;
+  background-image: none;
+  font-family: 'Converse-js';
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  width: auto;
+  height: auto;
+  line-height: 1;
+  speak: none;
+  text-transform: none;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+/*# sourceMappingURL=fonts.css.map */

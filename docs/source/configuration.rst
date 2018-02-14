@@ -1091,6 +1091,35 @@ providers_link
 The hyperlink on the registration form which points to a directory of public
 XMPP servers.
 
+root
+----
+
+* Default: ``window.document``
+
+When using converse.js inside a web component's shadow DOM, you will need to set this settings'
+value to the shadow-root of the shadow DOM.
+
+For example:
+
+.. code-block:: javascript
+
+  class CustomChatComponent extends HTMLElement {
+    constructor() {
+      super();
+      const shadowRoot  = this.attachShadow({mode: "open"});
+      this.initConverse(shadowRoot);
+    }
+
+    initConverse(shadowRoot) {
+        window.addEventListener("converse-loaded", function(event) {
+            converse.initialize({
+                root: shadowRoot,
+                // Other settings go here...
+            });
+        });
+      }
+    }
+
 
 roster_groups
 -------------
@@ -1388,20 +1417,21 @@ view_mode
 ---------
 
 * Default: ``overlayed``
-* Allowed values: ``overlayed``, ``fullscreen``, ``mobile``
+* Allowed values: ``overlayed``, ``fullscreen``, ``mobile``, ``embedded``
 
 The ``view_mode`` setting configures converse.js's mode and resulting behavior.
 
 Before the introduction of this setting (in version 3.3.0), there were there
-different builds, each for the diffent modes.
+different builds, each for the different modes.
 
 These were:
 
-* ``converse.js`` for the ``overlayed`` mode
 * ``converse-mobile.js`` for the ``mobile`` mode
+* ``converse-muc-embedded.js`` for embedding a single MUC room into the page.
+* ``converse.js`` for the ``overlayed`` mode
 * ``inverse.js`` for the ``fullscreen`` mode
 
-Besides having three different builds, certain plugins had to be whitelisted
+Besides having different builds, certain plugins had to be whitelisted
 and blacklisted for the different modes.
 
 ``converse-singleton`` had to be whitelisted for the ``mobile`` and ``fullscreen``
@@ -1411,11 +1441,25 @@ modes, additionally ``converse-inverse`` had to be whitelisted for the
 For both those modes the ``converse-minimize`` and ``converse-dragresize``
 plugins had to be blacklisted.
 
-Since version 3.3.0, the last two builds no longer exist, and instead the
-standard ``converse.js`` build is used, together with the appropraite
-``view_mode`` value.
+When using ``converse-muc-embedded.js`` various plugins also had to manually be
+blacklisted.
 
-Furthermore, it's no longer necessary to whitelist or blacklist any plugins.
+Since version 3.3.0 it's no longer necessary to blacklist any plugins (except
+for ``converse-muc-embedded.js``, which is from version 3.3.3).
+
+Blacklisting now happens automatically.
+
+Since version 3.3.0, the ``inverse.js`` and ``converse-mobile.js`` builds no
+longer exist. Instead the standard ``converse.js`` build is used, together with
+the appropriate ``view_mode`` value.
+
+The ``converse-muc-embedded.js`` build is still kept, because it's smaller than
+``converse.js`` due to unused code being removed. It doesn't however contain
+any new code, so the full ``converse.js`` build could be used instead, as long
+as ``view_mode`` is set to ``embedded``.
+
+Furthermore, it's no longer necessary to whitelist or blacklist any plugins
+when switching view modes.
 
 .. note::
     Although the ``view_mode`` setting has removed the need for different

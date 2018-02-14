@@ -9,7 +9,7 @@ CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
 CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
 ESLINT		  	?= ./node_modules/.bin/eslint
 HTTPSERVE	   	?= ./node_modules/.bin/http-server
-HTTPSERVE_PORT	        ?= 8000
+HTTPSERVE_PORT  ?= 8000
 PAPER		   	=
 PO2JSON		 	?= ./node_modules/.bin/po2json
 RJS			 	?= ./node_modules/.bin/r.js
@@ -131,7 +131,7 @@ dev: stamp-bundler stamp-npm
 ## Builds
 
 .PHONY: css
-css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css
+css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css css/fonts.css
 
 css/inverse.css:: dev sass sass/*
 	$(SASS) -I $(BOURBON_TEMPLATES) sass/inverse/inverse.scss css/inverse.css
@@ -156,6 +156,9 @@ css/theme.min.css:: stamp-npm css/theme.css
 
 css/mobile.min.css:: stamp-npm sass/*
 	$(CLEANCSS) css/mobile.css > css/mobile.min.css
+
+css/fonts.css:: dev sass/*
+	$(SASS) -I $(BOURBON_TEMPLATES) sass/only-fonts.scss css/fonts.css
 
 .PHONY: watch
 watch: dev

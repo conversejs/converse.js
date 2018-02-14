@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-29 16:31+0100\n"
+"POT-Creation-Date: 2018-02-14 16:51+0100\n"
 "PO-Revision-Date: 2017-09-08 12:24+0000\n"
 "Last-Translator: Theodore Fabian Rudy <dorerudy@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/conversejs/"
@@ -20,472 +20,499 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 2.17-dev\n"
 
-#: dist/converse-no-dependencies.js:7305
+#: dist/converse-no-dependencies.js:7312
 msgid "The connection has dropped, attempting to reconnect."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:7403
+#: dist/converse-no-dependencies.js:7410
 #, fuzzy
 msgid "An error occurred while connecting to the chat server."
 msgstr "Kesalahan terjadi saat menyimpan formulir ini."
 
-#: dist/converse-no-dependencies.js:7410
+#: dist/converse-no-dependencies.js:7417
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:7422
+#: dist/converse-no-dependencies.js:7429
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:7424
+#: dist/converse-no-dependencies.js:7431
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:8108
+#: dist/converse-no-dependencies.js:8123
 #, fuzzy, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
 msgstr ""
 "Maaf, ada sesuatu kesalahan saat mencoba menambahkan %1$s1 sebagai kontak"
 
-#: dist/converse-no-dependencies.js:8292
+#: dist/converse-no-dependencies.js:8307
 #, fuzzy
 msgid "This client does not allow presence subscriptions"
 msgstr "Klien ini tidak mengizinkan langganan kehadiran"
 
-#: dist/converse-no-dependencies.js:8373
+#: dist/converse-no-dependencies.js:8388
 #, fuzzy
 msgid "Click to hide these contacts"
 msgstr "Klik untuk menyembunyikan kontak ini"
 
-#: dist/converse-no-dependencies.js:12315
+#: dist/converse-no-dependencies.js:12430
 #, fuzzy
 msgid "Close this chat box"
 msgstr "Klik untuk menghapus teman ini"
 
-#: dist/converse-no-dependencies.js:12364
-#, fuzzy
-msgid "Personal message"
-msgstr "Pesan pribadi"
-
-#: dist/converse-no-dependencies.js:12365
-#: dist/converse-no-dependencies.js:18368
-#, fuzzy
-msgid "Send"
-msgstr "Kirim"
-
-#: dist/converse-no-dependencies.js:12369
-#: dist/converse-no-dependencies.js:18371
+#: dist/converse-no-dependencies.js:12482
+#: dist/converse-no-dependencies.js:12519
+#: dist/converse-no-dependencies.js:18692
 #, fuzzy
 msgid "You have unread messages"
 msgstr "Anda mempunyai pesan yang belum dibaca"
 
-#: dist/converse-no-dependencies.js:12616
+#: dist/converse-no-dependencies.js:12505
 #, fuzzy
-msgid "me"
-msgstr "saya"
+msgid "Hidden message"
+msgstr "Pesan pribadi"
 
-#: dist/converse-no-dependencies.js:12666
-msgid "Typing from another device"
-msgstr "Mengetik dari perangkat lain"
-
-#: dist/converse-no-dependencies.js:12668
-msgid "is typing"
-msgstr "sedang menulis"
-
-#: dist/converse-no-dependencies.js:12674
+#: dist/converse-no-dependencies.js:12507
 #, fuzzy
-msgid "Stopped typing on the other device"
-msgstr "Berhenti mengetik dari perangkat lain"
+msgid "Personal message"
+msgstr "Pesan pribadi"
 
-#: dist/converse-no-dependencies.js:12676
-msgid "has stopped typing"
-msgstr "telah berhenti menulis"
-
-#: dist/converse-no-dependencies.js:12681
-#: dist/converse-no-dependencies.js:12958
-#: dist/converse-no-dependencies.js:24289
+#: dist/converse-no-dependencies.js:12514
+#: dist/converse-no-dependencies.js:18689
 #, fuzzy
-msgid "has gone away"
-msgstr "telah pergi"
+msgid "Send"
+msgstr "Kirim"
 
-#: dist/converse-no-dependencies.js:12804
-#: dist/converse-no-dependencies.js:18987
-msgid "Remove messages"
-msgstr "Hapus pesan"
+#: dist/converse-no-dependencies.js:12515
+msgid "Optional hint"
+msgstr ""
 
-#: dist/converse-no-dependencies.js:12804
+#: dist/converse-no-dependencies.js:12571
 #, fuzzy
-msgid "Write in the third person"
-msgstr "Tulis ini menggunakan pihak ketiga"
+msgid "Click to write as a normal (non-spoiler) message"
+msgstr "Klik disini untuk menulis status pesan kustom"
 
-#: dist/converse-no-dependencies.js:12804
-#: dist/converse-no-dependencies.js:18987
-msgid "Show this menu"
-msgstr "Tampilkan menu ini"
-
-#: dist/converse-no-dependencies.js:12897
-msgid "Are you sure you want to clear the messages from this chat box?"
-msgstr "Apakah anda yakin ingin menghapus pesan dari kotak obrolan ini?"
-
-#: dist/converse-no-dependencies.js:12956
-#: dist/converse-no-dependencies.js:24287
+#: dist/converse-no-dependencies.js:12573
 #, fuzzy
-msgid "has gone offline"
-msgstr "telah offline"
+msgid "Click to write your message as a spoiler"
+msgstr "Klik disini untuk menulis status pesan kustom"
 
-#: dist/converse-no-dependencies.js:12960
-#: dist/converse-no-dependencies.js:24291
-#, fuzzy
-msgid "is busy"
-msgstr "sedang sibuk"
-
-#: dist/converse-no-dependencies.js:12996
+#: dist/converse-no-dependencies.js:12577
 msgid "Clear all messages"
 msgstr "Hapus semua pesan"
 
-#: dist/converse-no-dependencies.js:12997
+#: dist/converse-no-dependencies.js:12578
 #, fuzzy
 msgid "Insert a smiley"
 msgstr "Masukan wajah senyum"
 
-#: dist/converse-no-dependencies.js:12998
+#: dist/converse-no-dependencies.js:12579
 #, fuzzy
 msgid "Start a call"
 msgstr "Memulai panggilan"
 
-#: dist/converse-no-dependencies.js:13273
+#: dist/converse-no-dependencies.js:12774
+#: dist/converse-no-dependencies.js:13237
+#, fuzzy
+msgid "Show hidden message"
+msgstr "Tampilkan menu ini"
+
+#: dist/converse-no-dependencies.js:12826
+#, fuzzy
+msgid "me"
+msgstr "saya"
+
+#: dist/converse-no-dependencies.js:12881
+msgid "Typing from another device"
+msgstr "Mengetik dari perangkat lain"
+
+#: dist/converse-no-dependencies.js:12883
+msgid "is typing"
+msgstr "sedang menulis"
+
+#: dist/converse-no-dependencies.js:12889
+#, fuzzy
+msgid "Stopped typing on the other device"
+msgstr "Berhenti mengetik dari perangkat lain"
+
+#: dist/converse-no-dependencies.js:12891
+msgid "has stopped typing"
+msgstr "telah berhenti menulis"
+
+#: dist/converse-no-dependencies.js:12896
+#: dist/converse-no-dependencies.js:13252
+#: dist/converse-no-dependencies.js:24733
+#, fuzzy
+msgid "has gone away"
+msgstr "telah pergi"
+
+#: dist/converse-no-dependencies.js:13024
+#: dist/converse-no-dependencies.js:19307
+msgid "Remove messages"
+msgstr "Hapus pesan"
+
+#: dist/converse-no-dependencies.js:13024
+#, fuzzy
+msgid "Write in the third person"
+msgstr "Tulis ini menggunakan pihak ketiga"
+
+#: dist/converse-no-dependencies.js:13024
+#: dist/converse-no-dependencies.js:19307
+msgid "Show this menu"
+msgstr "Tampilkan menu ini"
+
+#: dist/converse-no-dependencies.js:13155
+msgid "Are you sure you want to clear the messages from this chat box?"
+msgstr "Apakah anda yakin ingin menghapus pesan dari kotak obrolan ini?"
+
+#: dist/converse-no-dependencies.js:13232
+msgid "Hide hidden message"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:13250
+#: dist/converse-no-dependencies.js:24731
+#, fuzzy
+msgid "has gone offline"
+msgstr "telah offline"
+
+#: dist/converse-no-dependencies.js:13254
+#: dist/converse-no-dependencies.js:24735
+#, fuzzy
+msgid "is busy"
+msgstr "sedang sibuk"
+
+#: dist/converse-no-dependencies.js:13550
 msgid "Login"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:13295
+#: dist/converse-no-dependencies.js:13572
 msgid "Jabber ID:"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:13301
+#: dist/converse-no-dependencies.js:13578
 msgid "Password:"
 msgstr "Kata sandi:"
 
-#: dist/converse-no-dependencies.js:13303
+#: dist/converse-no-dependencies.js:13580
 msgid "password"
 msgstr "kata sandi"
 
-#: dist/converse-no-dependencies.js:13307
-#: dist/converse-no-dependencies.js:19646
+#: dist/converse-no-dependencies.js:13584
+#: dist/converse-no-dependencies.js:19966
 msgid "Submit"
 msgstr "Kirim"
 
-#: dist/converse-no-dependencies.js:13313
+#: dist/converse-no-dependencies.js:13590
 #, fuzzy
 msgid "Click here to log in anonymously"
 msgstr "Klik disini untuk memasuki penyamaran"
 
-#: dist/converse-no-dependencies.js:13608
+#: dist/converse-no-dependencies.js:13879
 msgid "This contact is busy"
 msgstr "Kontak ini sedang sibuk"
 
-#: dist/converse-no-dependencies.js:13609
+#: dist/converse-no-dependencies.js:13880
 msgid "This contact is online"
 msgstr "Kontak ini terhubung"
 
-#: dist/converse-no-dependencies.js:13610
+#: dist/converse-no-dependencies.js:13881
 msgid "This contact is offline"
 msgstr "Kontak ini tidak terhubung"
 
-#: dist/converse-no-dependencies.js:13611
+#: dist/converse-no-dependencies.js:13882
 msgid "This contact is unavailable"
 msgstr "Kontak ini tidak tersedia"
 
-#: dist/converse-no-dependencies.js:13612
+#: dist/converse-no-dependencies.js:13883
 #, fuzzy
 msgid "This contact is away for an extended period"
 msgstr "Kontak ini pergi untuk waktu yang lama"
 
-#: dist/converse-no-dependencies.js:13613
+#: dist/converse-no-dependencies.js:13884
 msgid "This contact is away"
 msgstr "Kontak ini sedang pergi"
 
-#: dist/converse-no-dependencies.js:13616
-#: dist/converse-no-dependencies.js:15114
-#: dist/converse-no-dependencies.js:15637
+#: dist/converse-no-dependencies.js:13887
+#: dist/converse-no-dependencies.js:15390
+#: dist/converse-no-dependencies.js:15917
 #, fuzzy
 msgid "Contacts"
 msgstr "Kontak"
 
-#: dist/converse-no-dependencies.js:13618
+#: dist/converse-no-dependencies.js:13889
 msgid "Groups"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:13620
+#: dist/converse-no-dependencies.js:13891
 msgid "My contacts"
 msgstr "Kontak saya"
 
-#: dist/converse-no-dependencies.js:13622
+#: dist/converse-no-dependencies.js:13893
 msgid "Pending contacts"
 msgstr "Kontak yang tertunda"
 
-#: dist/converse-no-dependencies.js:13624
+#: dist/converse-no-dependencies.js:13895
 msgid "Contact requests"
 msgstr "Permintaan pertemanan"
 
-#: dist/converse-no-dependencies.js:13626
+#: dist/converse-no-dependencies.js:13897
 msgid "Ungrouped"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:13685
+#: dist/converse-no-dependencies.js:13956
 msgid "Filter"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:13688
+#: dist/converse-no-dependencies.js:13959
 msgid "State"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:13689
+#: dist/converse-no-dependencies.js:13960
 msgid "Any"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:13690
+#: dist/converse-no-dependencies.js:13961
 msgid "Unread"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:13691
-#: dist/converse-no-dependencies.js:15463
+#: dist/converse-no-dependencies.js:13962
+#: dist/converse-no-dependencies.js:15742
 msgid "Online"
 msgstr "Terhubung"
 
-#: dist/converse-no-dependencies.js:13692
+#: dist/converse-no-dependencies.js:13963
 msgid "Chatty"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:13693
-#: dist/converse-no-dependencies.js:15464
+#: dist/converse-no-dependencies.js:13964
+#: dist/converse-no-dependencies.js:15743
 msgid "Busy"
 msgstr "Sibuk"
 
-#: dist/converse-no-dependencies.js:13694
-#: dist/converse-no-dependencies.js:15465
+#: dist/converse-no-dependencies.js:13965
+#: dist/converse-no-dependencies.js:15744
 #, fuzzy
 msgid "Away"
 msgstr "Pergi"
 
-#: dist/converse-no-dependencies.js:13695
+#: dist/converse-no-dependencies.js:13966
 msgid "Extended Away"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:13696
-#: dist/converse-no-dependencies.js:15466
+#: dist/converse-no-dependencies.js:13967
+#: dist/converse-no-dependencies.js:15745
 msgid "Offline"
 msgstr "Tidak Terhubung"
 
-#: dist/converse-no-dependencies.js:13871
-#: dist/converse-no-dependencies.js:13894
+#: dist/converse-no-dependencies.js:14142
+#: dist/converse-no-dependencies.js:14165
 #, fuzzy, javascript-format
 msgid "Click to remove %1$s as a contact"
 msgstr "Klik untuk menghapus teman ini"
 
-#: dist/converse-no-dependencies.js:13877
+#: dist/converse-no-dependencies.js:14148
 #, fuzzy, javascript-format
 msgid "Click to accept the contact request from %1$s"
 msgstr "Klik untuk menghapus teman ini"
 
-#: dist/converse-no-dependencies.js:13878
+#: dist/converse-no-dependencies.js:14149
 #, fuzzy, javascript-format
 msgid "Click to decline the contact request from %1$s"
 msgstr "Klik untuk menghapus teman ini"
 
-#: dist/converse-no-dependencies.js:13893
-msgid "Click to chat with this contact"
+#: dist/converse-no-dependencies.js:14164
+#, fuzzy, javascript-format
+msgid "Click to chat with %1$s (JID: %2$s)"
 msgstr "Klik untuk mulai perbincangan dengan kontak ini"
 
-#: dist/converse-no-dependencies.js:13895
-msgid "Name"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:13939
+#: dist/converse-no-dependencies.js:14209
 #, fuzzy
 msgid "Are you sure you want to remove this contact?"
 msgstr "Klik untuk menghapus teman ini"
 
-#: dist/converse-no-dependencies.js:13956
+#: dist/converse-no-dependencies.js:14226
 #, fuzzy, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
 msgstr "Klik untuk menghapus teman ini"
 
-#: dist/converse-no-dependencies.js:13978
+#: dist/converse-no-dependencies.js:14248
 #, fuzzy
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Klik untuk menghapus teman ini"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
-#: dist/converse-no-dependencies.js:14815
-#: dist/converse-no-dependencies.js:14884
+#: dist/converse-no-dependencies.js:15091
+#: dist/converse-no-dependencies.js:15160
 #, javascript-format
 msgid "I am %1$s"
 msgstr "Saya %1$s"
 
-#: dist/converse-no-dependencies.js:14817
-#: dist/converse-no-dependencies.js:14891
+#: dist/converse-no-dependencies.js:15093
+#: dist/converse-no-dependencies.js:15167
 #, fuzzy
 msgid "Click here to write a custom status message"
 msgstr "Klik disini untuk menulis status pesan kustom"
 
-#: dist/converse-no-dependencies.js:14818
-#: dist/converse-no-dependencies.js:14892
+#: dist/converse-no-dependencies.js:15094
+#: dist/converse-no-dependencies.js:15168
 msgid "Click to change your chat status"
 msgstr "Klik untuk mengganti status obrolan"
 
-#: dist/converse-no-dependencies.js:14844
+#: dist/converse-no-dependencies.js:15120
 #, fuzzy
 msgid "Custom status"
 msgstr "Status kustom"
 
-#: dist/converse-no-dependencies.js:14845
-#: dist/converse-no-dependencies.js:19275
-#: dist/converse-no-dependencies.js:21337
+#: dist/converse-no-dependencies.js:15121
+#: dist/converse-no-dependencies.js:19595
+#: dist/converse-no-dependencies.js:21675
 #, fuzzy
 msgid "Save"
 msgstr "Simpan"
 
-#: dist/converse-no-dependencies.js:14867
-#: dist/converse-no-dependencies.js:14877
+#: dist/converse-no-dependencies.js:15143
+#: dist/converse-no-dependencies.js:15153
 msgid "online"
 msgstr "terhubung"
 
-#: dist/converse-no-dependencies.js:14869
+#: dist/converse-no-dependencies.js:15145
 msgid "busy"
 msgstr "sibuk"
 
-#: dist/converse-no-dependencies.js:14871
+#: dist/converse-no-dependencies.js:15147
 #, fuzzy
 msgid "away for long"
 msgstr "lama tak di tempat"
 
-#: dist/converse-no-dependencies.js:14873
+#: dist/converse-no-dependencies.js:15149
 #, fuzzy
 msgid "away"
 msgstr "pergi"
 
-#: dist/converse-no-dependencies.js:14875
+#: dist/converse-no-dependencies.js:15151
 msgid "offline"
 msgstr "tidak terhubung"
 
-#: dist/converse-no-dependencies.js:15379
+#: dist/converse-no-dependencies.js:15658
 msgid "Username"
 msgstr "Nama pengguna"
 
-#: dist/converse-no-dependencies.js:15379
+#: dist/converse-no-dependencies.js:15658
 msgid "user@domain"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:15387
-#: dist/converse-no-dependencies.js:15586
+#: dist/converse-no-dependencies.js:15666
+#: dist/converse-no-dependencies.js:15866
 msgid "Please enter a valid XMPP address"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:15467
+#: dist/converse-no-dependencies.js:15746
 #, fuzzy
 msgid "Log out"
 msgstr "Masuk"
 
-#: dist/converse-no-dependencies.js:15474
+#: dist/converse-no-dependencies.js:15753
 #, fuzzy
 msgid "Click to add new chat contacts"
 msgstr "Klik untuk menambahkan obrolan baru"
 
-#: dist/converse-no-dependencies.js:15475
+#: dist/converse-no-dependencies.js:15754
 #, fuzzy
 msgid "Add a contact"
 msgstr "Tambah kontak"
 
-#: dist/converse-no-dependencies.js:15514
+#: dist/converse-no-dependencies.js:15793
 #, fuzzy
 msgid "Contact name"
 msgstr "Nama kontak"
 
-#: dist/converse-no-dependencies.js:15515
+#: dist/converse-no-dependencies.js:15794
 msgid "Search"
 msgstr "Cari"
 
-#: dist/converse-no-dependencies.js:15520
-#: dist/converse-no-dependencies.js:15587
+#: dist/converse-no-dependencies.js:15799
+#: dist/converse-no-dependencies.js:15867
 #, fuzzy
 msgid "e.g. user@example.org"
 msgstr "contoh pengguna@contoh.org"
 
-#: dist/converse-no-dependencies.js:15521
-#: dist/converse-no-dependencies.js:15588
+#: dist/converse-no-dependencies.js:15800
+#: dist/converse-no-dependencies.js:15868
 msgid "Add"
 msgstr "Tambah"
 
-#: dist/converse-no-dependencies.js:15552
+#: dist/converse-no-dependencies.js:15832
 #, fuzzy
 msgid "No users found"
 msgstr "Pengguna tak ditemukan"
 
-#: dist/converse-no-dependencies.js:15556
+#: dist/converse-no-dependencies.js:15836
 msgid "Click to add as a chat contact"
 msgstr "Klik untuk menambahkan sebagai teman"
 
-#: dist/converse-no-dependencies.js:15637
+#: dist/converse-no-dependencies.js:15917
 msgid "Toggle chat"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:18128
+#: dist/converse-no-dependencies.js:18450
 msgid "This room is not anonymous"
 msgstr "Ruang ini tidak anonim"
 
-#: dist/converse-no-dependencies.js:18129
+#: dist/converse-no-dependencies.js:18451
 msgid "This room now shows unavailable members"
 msgstr "Ruang ini sekarang menampilkan anggota yang tidak tersedia"
 
-#: dist/converse-no-dependencies.js:18130
+#: dist/converse-no-dependencies.js:18452
 msgid "This room does not show unavailable members"
 msgstr "Ruang ini tidak menampilkan anggota yang tidak tersedia"
 
-#: dist/converse-no-dependencies.js:18131
+#: dist/converse-no-dependencies.js:18453
 #, fuzzy
 msgid "The room configuration has changed"
 msgstr "Konfigurasi ruangan yang tak berhubungan dengan privasi telah diubah"
 
-#: dist/converse-no-dependencies.js:18132
+#: dist/converse-no-dependencies.js:18454
 msgid "Room logging is now enabled"
 msgstr "Pencatatan di ruang ini sekarang dinyalakan"
 
-#: dist/converse-no-dependencies.js:18133
+#: dist/converse-no-dependencies.js:18455
 msgid "Room logging is now disabled"
 msgstr "Pencatatan di ruangan ini sekarang dimatikan"
 
-#: dist/converse-no-dependencies.js:18134
+#: dist/converse-no-dependencies.js:18456
 #, fuzzy
 msgid "This room is now no longer anonymous"
 msgstr "Ruangan ini sekarang tak-anonim"
 
-#: dist/converse-no-dependencies.js:18135
+#: dist/converse-no-dependencies.js:18457
 msgid "This room is now semi-anonymous"
 msgstr "Ruang ini sekarang semi-anonim"
 
-#: dist/converse-no-dependencies.js:18136
+#: dist/converse-no-dependencies.js:18458
 msgid "This room is now fully-anonymous"
 msgstr "Ruang ini sekarang anonim"
 
-#: dist/converse-no-dependencies.js:18137
+#: dist/converse-no-dependencies.js:18459
 msgid "A new room has been created"
 msgstr "Ruang baru telah dibuat"
 
-#: dist/converse-no-dependencies.js:18140
+#: dist/converse-no-dependencies.js:18462
 msgid "You have been banned from this room"
 msgstr "Anda telah dicekal dari ruang ini"
 
-#: dist/converse-no-dependencies.js:18141
+#: dist/converse-no-dependencies.js:18463
 msgid "You have been kicked from this room"
 msgstr "Anda telah ditendang dari ruang ini"
 
-#: dist/converse-no-dependencies.js:18142
+#: dist/converse-no-dependencies.js:18464
 msgid "You have been removed from this room because of an affiliation change"
 msgstr "Anda telah dihapus dari ruang ini karena perubahan afiliasi"
 
-#: dist/converse-no-dependencies.js:18143
+#: dist/converse-no-dependencies.js:18465
 msgid ""
 "You have been removed from this room because the room has changed to members-"
 "only and you're not a member"
@@ -493,7 +520,7 @@ msgstr ""
 "Anda telah dihapus dari ruang ini karena ruang ini telah diganti menjadi "
 "khusus anggota dan anda bukan anggota"
 
-#: dist/converse-no-dependencies.js:18144
+#: dist/converse-no-dependencies.js:18466
 #, fuzzy
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
@@ -512,630 +539,630 @@ msgstr ""
 #. * can then at least tell gettext to scan for it so that these
 #. * strings are picked up by the translation machinery.
 #.
-#: dist/converse-no-dependencies.js:18157
+#: dist/converse-no-dependencies.js:18479
 #, fuzzy, javascript-format
 msgid "%1$s has been banned"
 msgstr "%1$s telah dicekal"
 
-#: dist/converse-no-dependencies.js:18158
+#: dist/converse-no-dependencies.js:18480
 #, fuzzy, javascript-format
 msgid "%1$s's nickname has changed"
 msgstr "%1$s telah dicekal"
 
-#: dist/converse-no-dependencies.js:18159
+#: dist/converse-no-dependencies.js:18481
 #, fuzzy, javascript-format
 msgid "%1$s has been kicked out"
 msgstr "%1$s telah ditendang keluar"
 
-#: dist/converse-no-dependencies.js:18160
+#: dist/converse-no-dependencies.js:18482
 #, fuzzy, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
 msgstr "%1$s telah dihapus karena perubahan afiliasi"
 
-#: dist/converse-no-dependencies.js:18161
+#: dist/converse-no-dependencies.js:18483
 #, fuzzy, javascript-format
 msgid "%1$s has been removed for not being a member"
 msgstr "%1$s telah dihapus karena bukan anggota"
 
-#: dist/converse-no-dependencies.js:18164
+#: dist/converse-no-dependencies.js:18486
 #, fuzzy, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
 msgstr "Nama panggilan anda telah diubah"
 
-#: dist/converse-no-dependencies.js:18165
+#: dist/converse-no-dependencies.js:18487
 #, fuzzy, javascript-format
 msgid "Your nickname has been changed to %1$s"
 msgstr "Nama panggilan anda telah diubah"
 
-#: dist/converse-no-dependencies.js:18367
+#: dist/converse-no-dependencies.js:18688
 msgid "Message"
 msgstr "Pesan"
 
-#: dist/converse-no-dependencies.js:18396
+#: dist/converse-no-dependencies.js:18717
 #, fuzzy, javascript-format
 msgid "%1$s is no longer a moderator."
 msgstr "Pengguna ini adalah moderator"
 
-#: dist/converse-no-dependencies.js:18400
+#: dist/converse-no-dependencies.js:18721
 #, fuzzy, javascript-format
 msgid "%1$s has been given a voice again."
 msgstr "%1$s telah ditendang keluar"
 
-#: dist/converse-no-dependencies.js:18404
+#: dist/converse-no-dependencies.js:18725
 #, fuzzy, javascript-format
 msgid "%1$s has been muted."
 msgstr "%1$s telah dicekal"
 
-#: dist/converse-no-dependencies.js:18408
+#: dist/converse-no-dependencies.js:18729
 #, fuzzy, javascript-format
 msgid "%1$s is now a moderator."
 msgstr "Pengguna ini adalah moderator"
 
-#: dist/converse-no-dependencies.js:18416
+#: dist/converse-no-dependencies.js:18737
 #, fuzzy
 msgid "Close and leave this room"
 msgstr "Tutup dan tinggalkan ruang ini"
 
-#: dist/converse-no-dependencies.js:18417
+#: dist/converse-no-dependencies.js:18738
 #, fuzzy
 msgid "Configure this room"
 msgstr "Konfigurasi ruang ini"
 
-#: dist/converse-no-dependencies.js:18475
+#: dist/converse-no-dependencies.js:18795
 #, fuzzy
 msgid "Hide the list of occupants"
 msgstr "Sembunyikan daftar penghuni"
 
-#: dist/converse-no-dependencies.js:18912
+#: dist/converse-no-dependencies.js:19232
 #, javascript-format
 msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:18925
+#: dist/converse-no-dependencies.js:19245
 #, fuzzy
 msgid "Are you sure you want to clear the messages from this room?"
 msgstr "Apakah anda yakin ingin menghapus pesan pada ruang ini?"
 
-#: dist/converse-no-dependencies.js:18934
+#: dist/converse-no-dependencies.js:19254
 #, fuzzy
 msgid "Error: could not execute the command"
 msgstr "Kesalahan: tidak bisa menjalankan perintah"
 
-#: dist/converse-no-dependencies.js:18987
+#: dist/converse-no-dependencies.js:19307
 #, fuzzy
 msgid "Change user's affiliation to admin"
 msgstr "Ubah afiliasi pengguna ke admin"
 
-#: dist/converse-no-dependencies.js:18987
+#: dist/converse-no-dependencies.js:19307
 #, fuzzy
 msgid "Ban user from room"
 msgstr "Larang pengguna dari ruangan"
 
-#: dist/converse-no-dependencies.js:18987
+#: dist/converse-no-dependencies.js:19307
 #, fuzzy
 msgid "Change user role to participant"
 msgstr "Ubah peran pengguna menjadi penghuni"
 
-#: dist/converse-no-dependencies.js:18987
+#: dist/converse-no-dependencies.js:19307
 #, fuzzy
 msgid "Kick user from room"
 msgstr "Tendang pengguna dari ruangan"
 
-#: dist/converse-no-dependencies.js:18987
+#: dist/converse-no-dependencies.js:19307
 #, fuzzy
 msgid "Write in 3rd person"
 msgstr "Tulis ini menggunakan bahasa pihak ketiga"
 
-#: dist/converse-no-dependencies.js:18987
+#: dist/converse-no-dependencies.js:19307
 msgid "Grant membership to a user"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:18987
+#: dist/converse-no-dependencies.js:19307
 msgid "Remove user's ability to post messages"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:18987
+#: dist/converse-no-dependencies.js:19307
 msgid "Change your nickname"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:18987
+#: dist/converse-no-dependencies.js:19307
 msgid "Grant moderator role to user"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:18987
+#: dist/converse-no-dependencies.js:19307
 #, fuzzy
 msgid "Grant ownership of this room"
 msgstr "Anda bukan anggota dari ruangan ini"
 
-#: dist/converse-no-dependencies.js:18987
+#: dist/converse-no-dependencies.js:19307
 msgid "Revoke user's membership"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:18987
+#: dist/converse-no-dependencies.js:19307
 #, fuzzy
 msgid "Set room subject"
 msgstr "Setel topik ruangan"
 
-#: dist/converse-no-dependencies.js:18987
+#: dist/converse-no-dependencies.js:19307
 msgid "Set room subject (alias for /subject)"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:18987
+#: dist/converse-no-dependencies.js:19307
 msgid "Allow muted user to post messages"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:19276
-#: dist/converse-no-dependencies.js:21338
-#: dist/converse-no-dependencies.js:23248
+#: dist/converse-no-dependencies.js:19596
+#: dist/converse-no-dependencies.js:21676
+#: dist/converse-no-dependencies.js:23692
 #, fuzzy
 msgid "Cancel"
 msgstr "Batal"
 
-#: dist/converse-no-dependencies.js:19595
+#: dist/converse-no-dependencies.js:19915
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:19621
+#: dist/converse-no-dependencies.js:19941
 msgid "Please choose your nickname"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:19622
-#: dist/converse-no-dependencies.js:20534
+#: dist/converse-no-dependencies.js:19942
+#: dist/converse-no-dependencies.js:20854
 msgid "Nickname"
 msgstr "Nama panggilan"
 
-#: dist/converse-no-dependencies.js:19623
+#: dist/converse-no-dependencies.js:19943
 #, fuzzy
 msgid "Enter room"
 msgstr "Ruangan terbuka"
 
-#: dist/converse-no-dependencies.js:19644
+#: dist/converse-no-dependencies.js:19964
 msgid "This chatroom requires a password"
 msgstr "Ruangan ini membutuhkan kata sandi"
 
-#: dist/converse-no-dependencies.js:19645
+#: dist/converse-no-dependencies.js:19965
 msgid "Password: "
 msgstr "Kata sandi: "
 
-#: dist/converse-no-dependencies.js:19787
+#: dist/converse-no-dependencies.js:20107
 #, fuzzy, javascript-format
 msgid "This action was done by %1$s."
 msgstr "Nama panggilan anda telah diubah"
 
-#: dist/converse-no-dependencies.js:19791
-#: dist/converse-no-dependencies.js:19807
+#: dist/converse-no-dependencies.js:20111
+#: dist/converse-no-dependencies.js:20127
 #, javascript-format
 msgid "The reason given is: \"%1$s\"."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:19823
+#: dist/converse-no-dependencies.js:20143
 #, fuzzy, javascript-format
 msgid "%1$s has left and re-entered the room."
 msgstr "Klik untuk membuka ruangan ini"
 
-#: dist/converse-no-dependencies.js:19829
+#: dist/converse-no-dependencies.js:20149
 #, fuzzy, javascript-format
 msgid "%1$s has entered the room. \"%2$s\""
 msgstr "Klik untuk membuka ruangan ini"
 
-#: dist/converse-no-dependencies.js:19831
+#: dist/converse-no-dependencies.js:20151
 #, fuzzy, javascript-format
 msgid "%1$s has entered the room."
 msgstr "Klik untuk membuka ruangan ini"
 
-#: dist/converse-no-dependencies.js:19860
+#: dist/converse-no-dependencies.js:20180
 #, fuzzy, javascript-format
 msgid "%1$s has entered and left the room. \"%2$s\""
 msgstr "Klik untuk membuka ruangan ini"
 
-#: dist/converse-no-dependencies.js:19862
+#: dist/converse-no-dependencies.js:20182
 #, fuzzy, javascript-format
 msgid "%1$s has entered and left the room."
 msgstr "Klik untuk membuka ruangan ini"
 
-#: dist/converse-no-dependencies.js:19874
+#: dist/converse-no-dependencies.js:20194
 #, fuzzy, javascript-format
 msgid "%1$s has left the room. \"%2$s\""
 msgstr "Klik untuk membuka ruangan ini"
 
-#: dist/converse-no-dependencies.js:19876
+#: dist/converse-no-dependencies.js:20196
 #, fuzzy, javascript-format
 msgid "%1$s has left the room."
 msgstr "Klik untuk membuka ruangan ini"
 
-#: dist/converse-no-dependencies.js:19945
+#: dist/converse-no-dependencies.js:20265
 #, fuzzy
 msgid "You are not on the member list of this room."
 msgstr "Anda bukan anggota dari ruangan ini"
 
-#: dist/converse-no-dependencies.js:19947
+#: dist/converse-no-dependencies.js:20267
 #, fuzzy
 msgid "You have been banned from this room."
 msgstr "Anda telah dicekal dari ruangan ini"
 
-#: dist/converse-no-dependencies.js:19951
+#: dist/converse-no-dependencies.js:20271
 #, fuzzy
 msgid "No nickname was specified."
 msgstr "Nama panggilan belum ditentukan"
 
-#: dist/converse-no-dependencies.js:19955
+#: dist/converse-no-dependencies.js:20275
 #, fuzzy
 msgid "You are not allowed to create new rooms."
 msgstr "Anda tak diizinkan untuk membuat ruangan baru"
 
-#: dist/converse-no-dependencies.js:19957
+#: dist/converse-no-dependencies.js:20277
 #, fuzzy
 msgid "Your nickname doesn't conform to this room's policies."
 msgstr "Nama panggilan anda tidak sesuai aturan ruangan ini"
 
-#: dist/converse-no-dependencies.js:19961
+#: dist/converse-no-dependencies.js:20281
 #, fuzzy
 msgid "This room does not (yet) exist."
 msgstr "Ruangan ini belum dibuat"
 
-#: dist/converse-no-dependencies.js:19963
+#: dist/converse-no-dependencies.js:20283
 #, fuzzy
 msgid "This room has reached its maximum number of occupants."
 msgstr "Ruangan ini telah mencapai jumlah penghuni maksimum"
 
-#: dist/converse-no-dependencies.js:20084
+#: dist/converse-no-dependencies.js:20404
 #, javascript-format
 msgid "Topic set by %1$s to: %2$s"
 msgstr "Topik diganti oleh %1$s menjadi: %2$s"
 
-#: dist/converse-no-dependencies.js:20200
+#: dist/converse-no-dependencies.js:20520
 #, fuzzy, javascript-format
 msgid "Click to mention %1$s in your message."
 msgstr "Klik untuk membuka ruangan ini"
 
-#: dist/converse-no-dependencies.js:20201
+#: dist/converse-no-dependencies.js:20521
 #, fuzzy
 msgid "This user is a moderator."
 msgstr "Pengguna ini adalah moderator"
 
-#: dist/converse-no-dependencies.js:20202
+#: dist/converse-no-dependencies.js:20522
 #, fuzzy
 msgid "This user can send messages in this room."
 msgstr "Pengguna ini dapat mengirim pesan di ruangan ini"
 
-#: dist/converse-no-dependencies.js:20203
+#: dist/converse-no-dependencies.js:20523
 #, fuzzy
 msgid "This user can NOT send messages in this room."
 msgstr "Pengguna ini tak dapat mengirim pesan di ruangan ini"
 
-#: dist/converse-no-dependencies.js:20262
+#: dist/converse-no-dependencies.js:20582
 #, fuzzy
 msgid "Occupants"
 msgstr "Penghuni:"
 
-#: dist/converse-no-dependencies.js:20279
-#: dist/converse-no-dependencies.js:20483
+#: dist/converse-no-dependencies.js:20599
+#: dist/converse-no-dependencies.js:20803
 msgid "Invite"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:20298
+#: dist/converse-no-dependencies.js:20618
 #, fuzzy
 msgid "Features"
 msgstr "Fitur:"
 
-#: dist/converse-no-dependencies.js:20299
-#: dist/converse-no-dependencies.js:20739
+#: dist/converse-no-dependencies.js:20619
+#: dist/converse-no-dependencies.js:21059
 msgid "Hidden"
 msgstr "Tersembunyi"
 
-#: dist/converse-no-dependencies.js:20300
+#: dist/converse-no-dependencies.js:20620
 msgid "Message archiving"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:20301
+#: dist/converse-no-dependencies.js:20621
 msgid "Members only"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:20302
-#: dist/converse-no-dependencies.js:20741
+#: dist/converse-no-dependencies.js:20622
+#: dist/converse-no-dependencies.js:21061
 msgid "Moderated"
 msgstr "Dimoderasi"
 
-#: dist/converse-no-dependencies.js:20303
-#: dist/converse-no-dependencies.js:20742
+#: dist/converse-no-dependencies.js:20623
+#: dist/converse-no-dependencies.js:21062
 msgid "Non-anonymous"
 msgstr "Tidak anonim"
 
-#: dist/converse-no-dependencies.js:20304
+#: dist/converse-no-dependencies.js:20624
 #, fuzzy
 msgid "Open"
 msgstr "Ruangan terbuka"
 
-#: dist/converse-no-dependencies.js:20305
+#: dist/converse-no-dependencies.js:20625
 #, fuzzy
 msgid "Password protected"
 msgstr "Kata sandi: "
 
-#: dist/converse-no-dependencies.js:20306
+#: dist/converse-no-dependencies.js:20626
 msgid "Persistent"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:20307
-#: dist/converse-no-dependencies.js:20745
+#: dist/converse-no-dependencies.js:20627
+#: dist/converse-no-dependencies.js:21065
 msgid "Public"
 msgstr "Umum"
 
-#: dist/converse-no-dependencies.js:20308
-#: dist/converse-no-dependencies.js:20746
+#: dist/converse-no-dependencies.js:20628
+#: dist/converse-no-dependencies.js:21066
 msgid "Semi-anonymous"
 msgstr "Semi-anonim"
 
-#: dist/converse-no-dependencies.js:20309
+#: dist/converse-no-dependencies.js:20629
 #, fuzzy
 msgid "Temporary"
 msgstr "Ruangan sementara"
 
-#: dist/converse-no-dependencies.js:20310
-#: dist/converse-no-dependencies.js:20748
+#: dist/converse-no-dependencies.js:20630
+#: dist/converse-no-dependencies.js:21068
 msgid "Unmoderated"
 msgstr "Tidak dimoderasi"
 
-#: dist/converse-no-dependencies.js:20311
+#: dist/converse-no-dependencies.js:20631
 #, fuzzy
 msgid "No password"
 msgstr "kata sandi"
 
-#: dist/converse-no-dependencies.js:20312
+#: dist/converse-no-dependencies.js:20632
 #, fuzzy
 msgid "This room is not publicly searchable"
 msgstr "Ruangan ini tidak anonim"
 
-#: dist/converse-no-dependencies.js:20313
+#: dist/converse-no-dependencies.js:20633
 msgid "Messages are archived on the server"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:20314
+#: dist/converse-no-dependencies.js:20634
 #, fuzzy
 msgid "This room is restricted to members only"
 msgstr "Ruangan ini telah mencapai jumlah penghuni maksimum"
 
-#: dist/converse-no-dependencies.js:20315
+#: dist/converse-no-dependencies.js:20635
 #, fuzzy
 msgid "This room is being moderated"
 msgstr "Pengguna ini adalah moderator"
 
-#: dist/converse-no-dependencies.js:20316
+#: dist/converse-no-dependencies.js:20636
 msgid "All other room occupants can see your XMPP username"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:20317
+#: dist/converse-no-dependencies.js:20637
 #, fuzzy
 msgid "Anyone can join this room"
 msgstr "Klik untuk membuka ruangan ini"
 
-#: dist/converse-no-dependencies.js:20318
+#: dist/converse-no-dependencies.js:20638
 #, fuzzy
 msgid "This room requires a password before entry"
 msgstr "Ruangan ini membutuhkan kata sandi"
 
-#: dist/converse-no-dependencies.js:20319
+#: dist/converse-no-dependencies.js:20639
 msgid "This room persists even if it's unoccupied"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:20320
+#: dist/converse-no-dependencies.js:20640
 #, fuzzy
 msgid "This room is publicly searchable"
 msgstr "Ruangan ini tidak anonim"
 
-#: dist/converse-no-dependencies.js:20321
+#: dist/converse-no-dependencies.js:20641
 msgid "Only moderators can see your XMPP username"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:20322
+#: dist/converse-no-dependencies.js:20642
 msgid "This room will disappear once the last person leaves"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:20323
+#: dist/converse-no-dependencies.js:20643
 #, fuzzy
 msgid "This room is not being moderated"
 msgstr "Ruangan ini tidak anonim"
 
-#: dist/converse-no-dependencies.js:20324
+#: dist/converse-no-dependencies.js:20644
 #, fuzzy
 msgid "This room does not require a password upon entry"
 msgstr "Ruangan ini membutuhkan kata sandi"
 
-#: dist/converse-no-dependencies.js:20460
+#: dist/converse-no-dependencies.js:20780
 #, javascript-format
 msgid ""
 "You are about to invite %1$s to the chat room \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:20482
+#: dist/converse-no-dependencies.js:20802
 msgid "Please enter a valid XMPP username"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:20533
+#: dist/converse-no-dependencies.js:20853
 msgid "Room name"
 msgstr "Nama ruang"
 
-#: dist/converse-no-dependencies.js:20535
+#: dist/converse-no-dependencies.js:20855
 msgid "Server"
 msgstr "Server"
 
-#: dist/converse-no-dependencies.js:20536
+#: dist/converse-no-dependencies.js:20856
 #, fuzzy
 msgid "Join Room"
 msgstr "Ikuti"
 
-#: dist/converse-no-dependencies.js:20537
+#: dist/converse-no-dependencies.js:20857
 msgid "Show rooms"
 msgstr "Tampilkan ruangan"
 
-#: dist/converse-no-dependencies.js:20598
+#: dist/converse-no-dependencies.js:20918
 msgid "Rooms"
 msgstr "Ruangan"
 
-#: dist/converse-no-dependencies.js:20629
+#: dist/converse-no-dependencies.js:20949
 #, fuzzy
 msgid "No rooms found"
 msgstr "Pengguna tak ditemukan"
 
-#: dist/converse-no-dependencies.js:20641
-#: dist/converse-no-dependencies.js:21604
-#: dist/converse-no-dependencies.js:21942
+#: dist/converse-no-dependencies.js:20961
+#: dist/converse-no-dependencies.js:21946
+#: dist/converse-no-dependencies.js:22309
 #, fuzzy
 msgid "Click to open this room"
 msgstr "Klik untuk membuka ruangan ini"
 
-#: dist/converse-no-dependencies.js:20642
-#: dist/converse-no-dependencies.js:21601
-#: dist/converse-no-dependencies.js:21940
+#: dist/converse-no-dependencies.js:20962
+#: dist/converse-no-dependencies.js:21943
+#: dist/converse-no-dependencies.js:22307
 #, fuzzy
 msgid "Show more information on this room"
 msgstr "Tampilkan lebih informasi ruangan ini"
 
-#: dist/converse-no-dependencies.js:20657
+#: dist/converse-no-dependencies.js:20977
 #, fuzzy
 msgid "Rooms found"
 msgstr "Ruangan di %1$s"
 
-#: dist/converse-no-dependencies.js:20734
+#: dist/converse-no-dependencies.js:21054
 msgid "Description:"
 msgstr "Deskripsi:"
 
-#: dist/converse-no-dependencies.js:20735
+#: dist/converse-no-dependencies.js:21055
 msgid "Room Address (JID):"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:20736
+#: dist/converse-no-dependencies.js:21056
 msgid "Occupants:"
 msgstr "Penghuni:"
 
-#: dist/converse-no-dependencies.js:20737
+#: dist/converse-no-dependencies.js:21057
 msgid "Features:"
 msgstr "Fitur:"
 
-#: dist/converse-no-dependencies.js:20738
+#: dist/converse-no-dependencies.js:21058
 msgid "Requires authentication"
 msgstr "Membutuhkan otentikasi"
 
-#: dist/converse-no-dependencies.js:20740
+#: dist/converse-no-dependencies.js:21060
 msgid "Requires an invitation"
 msgstr "Membutuhkan undangan"
 
-#: dist/converse-no-dependencies.js:20743
+#: dist/converse-no-dependencies.js:21063
 msgid "Open room"
 msgstr "Ruang terbuka"
 
-#: dist/converse-no-dependencies.js:20744
+#: dist/converse-no-dependencies.js:21064
 msgid "Permanent room"
 msgstr "Ruang permanen"
 
-#: dist/converse-no-dependencies.js:20747
+#: dist/converse-no-dependencies.js:21067
 msgid "Temporary room"
 msgstr "Ruang sementara"
 
-#: dist/converse-no-dependencies.js:20847
+#: dist/converse-no-dependencies.js:21167
 #, javascript-format
 msgid "%1$s has invited you to join a chat room: %2$s"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:20849
+#: dist/converse-no-dependencies.js:21169
 #, javascript-format
 msgid ""
 "%1$s has invited you to join a chat room: %2$s, and left the following "
 "reason: \"%3$s\""
 msgstr ""
 
-#: dist/converse-no-dependencies.js:21262
-#: dist/converse-no-dependencies.js:21332
-#: dist/converse-no-dependencies.js:21939
+#: dist/converse-no-dependencies.js:21583
+#: dist/converse-no-dependencies.js:21670
+#: dist/converse-no-dependencies.js:22306
 msgid "Bookmark this room"
 msgstr "Tandai ruang ini"
 
-#: dist/converse-no-dependencies.js:21333
+#: dist/converse-no-dependencies.js:21671
 msgid "The name for this bookmark:"
 msgstr "Nama untuk penanda ini:"
 
-#: dist/converse-no-dependencies.js:21334
+#: dist/converse-no-dependencies.js:21672
 #, fuzzy
 msgid "Would you like this room to be automatically joined upon startup?"
 msgstr ""
 "Apakah Anda ingin ruangan ini digabungkan secara otomatis saat startup?"
 
-#: dist/converse-no-dependencies.js:21335
+#: dist/converse-no-dependencies.js:21673
 #, fuzzy
 msgid "What should your nickname for this room be?"
 msgstr "Apa nama panggilanmu untuk ruangan ini?"
 
-#: dist/converse-no-dependencies.js:21410
+#: dist/converse-no-dependencies.js:21749
 #, fuzzy, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "Apakah anda yakin ingin menghapus penanda \"%1$s☺\"?"
 
-#: dist/converse-no-dependencies.js:21522
+#: dist/converse-no-dependencies.js:21861
 #, fuzzy
 msgid "Sorry, something went wrong while trying to save your bookmark."
 msgstr "Maaf, ada yang tidak beres saat mencoba menyimpan penanda Anda."
 
-#: dist/converse-no-dependencies.js:21598
-#: dist/converse-no-dependencies.js:21937
+#: dist/converse-no-dependencies.js:21940
+#: dist/converse-no-dependencies.js:22304
 #, fuzzy
 msgid "Leave this room"
 msgstr "Meninggalkan ruangan ini"
 
-#: dist/converse-no-dependencies.js:21599
+#: dist/converse-no-dependencies.js:21941
 #, fuzzy
 msgid "Remove this bookmark"
 msgstr "Hapus penanda ini"
 
-#: dist/converse-no-dependencies.js:21600
-#: dist/converse-no-dependencies.js:21938
+#: dist/converse-no-dependencies.js:21942
+#: dist/converse-no-dependencies.js:22305
 #, fuzzy
 msgid "Unbookmark this room"
 msgstr "Melepas penanda ruangan ini"
 
-#: dist/converse-no-dependencies.js:21639
+#: dist/converse-no-dependencies.js:21981
 #, fuzzy
 msgid "Click to toggle the bookmarks list"
 msgstr "Klik untuk membuka daftar penanda"
 
-#: dist/converse-no-dependencies.js:21640
+#: dist/converse-no-dependencies.js:21982
 #, fuzzy
 msgid "Bookmarks"
 msgstr "Penanda"
 
-#: dist/converse-no-dependencies.js:21973
+#: dist/converse-no-dependencies.js:22340
 #, fuzzy
 msgid "Click to toggle the rooms list"
 msgstr "Klik untuk membuka ruangan ini"
 
-#: dist/converse-no-dependencies.js:21974
+#: dist/converse-no-dependencies.js:22341
 #, fuzzy
 msgid "Open Rooms"
 msgstr "Ruangan terbuka"
 
-#: dist/converse-no-dependencies.js:22007
+#: dist/converse-no-dependencies.js:22374
 #, fuzzy, javascript-format
 msgid "Are you sure you want to leave the room \"%1$s\"?"
 msgstr "Klik untuk menghapus teman ini"
 
-#: dist/converse-no-dependencies.js:22786
+#: dist/converse-no-dependencies.js:23211
 #, fuzzy
 msgid "Re-establishing encrypted session"
 msgstr "Menyambung kembali sesi yang terenkripsi"
 
 #. We need to generate a new key and instance tag
-#: dist/converse-no-dependencies.js:22797
+#: dist/converse-no-dependencies.js:23222
 msgid "Generating private key."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:22797
+#: dist/converse-no-dependencies.js:23222
 msgid "Your browser might become unresponsive."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:22840
+#: dist/converse-no-dependencies.js:23265
 #, fuzzy, javascript-format
 msgid ""
 "Authentication request from %1$s\n"
@@ -1152,19 +1179,19 @@ msgstr ""
 "\n"
 "%2$s"
 
-#: dist/converse-no-dependencies.js:22849
+#: dist/converse-no-dependencies.js:23274
 msgid "Could not verify this user's identify."
 msgstr "Tidak dapat melakukan verifikasi identitas pengguna ini."
 
-#: dist/converse-no-dependencies.js:22903
+#: dist/converse-no-dependencies.js:23328
 msgid "Exchanging private key with contact."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23006
+#: dist/converse-no-dependencies.js:23443
 msgid "Your messages are not encrypted anymore"
 msgstr "Pesan anda tidak lagi terenkripsi"
 
-#: dist/converse-no-dependencies.js:23008
+#: dist/converse-no-dependencies.js:23445
 #, fuzzy
 msgid ""
 "Your messages are now encrypted but your contact's identity has not been "
@@ -1173,32 +1200,32 @@ msgstr ""
 "Pesan anda sekarang terenkripsi, namun identitas teman anda belum dapat "
 "diverifikasi."
 
-#: dist/converse-no-dependencies.js:23010
+#: dist/converse-no-dependencies.js:23447
 #, fuzzy
 msgid "Your contact's identify has been verified."
 msgstr "Identitas teman anda telah diverifikasi."
 
-#: dist/converse-no-dependencies.js:23012
+#: dist/converse-no-dependencies.js:23449
 #, fuzzy
 msgid "Your contact has ended encryption on their end, you should do the same."
 msgstr ""
 "Teman anda menghentikan percakapan terenkripsi, anda sebaiknya melakukan hal "
 "yang sama."
 
-#: dist/converse-no-dependencies.js:23022
+#: dist/converse-no-dependencies.js:23459
 msgid "Your message could not be sent"
 msgstr "Pesan anda tidak dapat dikirim"
 
-#: dist/converse-no-dependencies.js:23024
+#: dist/converse-no-dependencies.js:23461
 msgid "We received an unencrypted message"
 msgstr "Kami menerima pesan tidak terenkripsi"
 
-#: dist/converse-no-dependencies.js:23026
+#: dist/converse-no-dependencies.js:23463
 #, fuzzy
 msgid "We received an unreadable encrypted message"
 msgstr "Kami menerima pesan terenkripsi yang gagal dibaca"
 
-#: dist/converse-no-dependencies.js:23052
+#: dist/converse-no-dependencies.js:23489
 #, javascript-format
 msgid ""
 "Here are the fingerprints, please confirm them with %1$s, outside of this "
@@ -1221,7 +1248,7 @@ msgstr ""
 "Jika anda bisa mengkonfirmasi sidik jadi cocok, klik Lanjutkan, jika tidak "
 "klik Batal."
 
-#: dist/converse-no-dependencies.js:23064
+#: dist/converse-no-dependencies.js:23501
 #, fuzzy
 msgid ""
 "You will be prompted to provide a security question and then an answer to "
@@ -1237,34 +1264,34 @@ msgstr ""
 "jawaban yang sama (huruf kapital diperhatikan), identitas mereka "
 "diverifikasi."
 
-#: dist/converse-no-dependencies.js:23065
+#: dist/converse-no-dependencies.js:23502
 msgid "What is your security question?"
 msgstr "Apakah pertanyaan keamanan Anda?"
 
-#: dist/converse-no-dependencies.js:23068
+#: dist/converse-no-dependencies.js:23505
 msgid "What is the answer to the security question?"
 msgstr "Apa jawaban dari pertanyaan keamanan tersebut?"
 
-#: dist/converse-no-dependencies.js:23072
+#: dist/converse-no-dependencies.js:23509
 msgid "Invalid authentication scheme provided"
 msgstr "Skema otentikasi salah"
 
-#: dist/converse-no-dependencies.js:23089
+#: dist/converse-no-dependencies.js:23527
 msgid "Your messages are not encrypted. Click here to enable OTR encryption."
 msgstr ""
 "Pesan anda tak terenkripsi. Klik di sini untuk mengaktifkan enkripsi OTR."
 
-#: dist/converse-no-dependencies.js:23091
+#: dist/converse-no-dependencies.js:23529
 #, fuzzy
 msgid "Your messages are encrypted, but your contact has not been verified."
 msgstr "Pesan anda terenkripsi, tetapi teman anda belum diverifikasi."
 
-#: dist/converse-no-dependencies.js:23093
+#: dist/converse-no-dependencies.js:23531
 #, fuzzy
 msgid "Your messages are encrypted and your contact verified."
 msgstr "Pesan anda terenkripsi dan teman anda telah diverifikasi."
 
-#: dist/converse-no-dependencies.js:23095
+#: dist/converse-no-dependencies.js:23533
 #, fuzzy
 msgid ""
 "Your contact has closed their end of the private session, you should do the "
@@ -1273,27 +1300,27 @@ msgstr ""
 "Teman anda telah mematikan sesi terenkripsi, dan anda juga sebaiknya "
 "melakukan hal yang sama"
 
-#: dist/converse-no-dependencies.js:23114
+#: dist/converse-no-dependencies.js:23547
 msgid "End encrypted conversation"
 msgstr "Akhiri percakapan terenkripsi"
 
-#: dist/converse-no-dependencies.js:23115
+#: dist/converse-no-dependencies.js:23548
 msgid "Refresh encrypted conversation"
 msgstr "Segarkan percakapan terenkripsi"
 
-#: dist/converse-no-dependencies.js:23116
+#: dist/converse-no-dependencies.js:23549
 msgid "Start encrypted conversation"
 msgstr "Mulai percakapan terenkripsi"
 
-#: dist/converse-no-dependencies.js:23117
+#: dist/converse-no-dependencies.js:23550
 msgid "Verify with fingerprints"
 msgstr "Verifikasi menggunakan sidik jari"
 
-#: dist/converse-no-dependencies.js:23118
+#: dist/converse-no-dependencies.js:23551
 msgid "Verify with SMP"
 msgstr "Verifikasi menggunakan SMP"
 
-#: dist/converse-no-dependencies.js:23119
+#: dist/converse-no-dependencies.js:23552
 msgid "What's this?"
 msgstr "Apakah ini?"
 
@@ -1303,144 +1330,144 @@ msgstr "Apakah ini?"
 #. has been initialized and with it the i18n machinery. That's why
 #. we do it here in the "initialize" method and not at the top of
 #. the module.
-#: dist/converse-no-dependencies.js:23151
+#: dist/converse-no-dependencies.js:23595
 msgid "unencrypted"
 msgstr "tak terenkripsi"
 
-#: dist/converse-no-dependencies.js:23152
+#: dist/converse-no-dependencies.js:23596
 msgid "unverified"
 msgstr "tak terverifikasi"
 
-#: dist/converse-no-dependencies.js:23153
+#: dist/converse-no-dependencies.js:23597
 msgid "verified"
 msgstr "terverifikasi"
 
-#: dist/converse-no-dependencies.js:23154
+#: dist/converse-no-dependencies.js:23598
 msgid "finished"
 msgstr "selesai"
 
-#: dist/converse-no-dependencies.js:23170
+#: dist/converse-no-dependencies.js:23614
 msgid "Don't have a chat account?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23172
+#: dist/converse-no-dependencies.js:23616
 msgid "Create an account"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23184
+#: dist/converse-no-dependencies.js:23628
 msgid "Create your account"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23186
+#: dist/converse-no-dependencies.js:23630
 msgid "Please enter the XMPP provider to register with:"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23208
+#: dist/converse-no-dependencies.js:23652
 msgid "Already have a chat account?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23210
+#: dist/converse-no-dependencies.js:23654
 msgid "Log in here"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23220
+#: dist/converse-no-dependencies.js:23664
 msgid "Account Registration:"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23228
+#: dist/converse-no-dependencies.js:23672
 msgid "Register"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23232
+#: dist/converse-no-dependencies.js:23676
 msgid "Choose a different provider"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23244
+#: dist/converse-no-dependencies.js:23688
 msgid "Hold tight, we're fetching the registration form…"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23379
+#: dist/converse-no-dependencies.js:23823
 msgid " e.g. conversejs.org"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23425
+#: dist/converse-no-dependencies.js:23869
 msgid "Fetch registration form"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23426
+#: dist/converse-no-dependencies.js:23870
 msgid "Tip: A list of public XMPP providers is available"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23427
+#: dist/converse-no-dependencies.js:23871
 msgid "here"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23475
+#: dist/converse-no-dependencies.js:23919
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23491
+#: dist/converse-no-dependencies.js:23935
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23515
+#: dist/converse-no-dependencies.js:23959
 #, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23678
+#: dist/converse-no-dependencies.js:24122
 msgid "Now logging you in"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23682
+#: dist/converse-no-dependencies.js:24126
 msgid "Registered successfully"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23791
+#: dist/converse-no-dependencies.js:24235
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
 msgstr ""
 
 #. workaround for Prosody which doesn't give type "headline"
-#: dist/converse-no-dependencies.js:24237
-#: dist/converse-no-dependencies.js:24243
+#: dist/converse-no-dependencies.js:24681
+#: dist/converse-no-dependencies.js:24687
 #, javascript-format
 msgid "Notification from %1$s"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24245
-#: dist/converse-no-dependencies.js:24256
-#: dist/converse-no-dependencies.js:24259
+#: dist/converse-no-dependencies.js:24689
+#: dist/converse-no-dependencies.js:24700
+#: dist/converse-no-dependencies.js:24703
 #, javascript-format
 msgid "%1$s says"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24293
+#: dist/converse-no-dependencies.js:24737
 #, fuzzy
 msgid "has come online"
 msgstr "Teman ini tidak terhubung"
 
-#: dist/converse-no-dependencies.js:24310
+#: dist/converse-no-dependencies.js:24754
 msgid "wants to be your contact"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24635
-#: dist/converse-no-dependencies.js:24991
+#: dist/converse-no-dependencies.js:25079
+#: dist/converse-no-dependencies.js:25435
 #, fuzzy
 msgid "Minimize this chat box"
 msgstr "Meminimimalkan kotak chat ini"
 
-#: dist/converse-no-dependencies.js:24781
+#: dist/converse-no-dependencies.js:25225
 #, fuzzy
 msgid "Click to restore this chat"
 msgstr "Klik untuk menghapus teman ini"
 
-#: dist/converse-no-dependencies.js:24968
+#: dist/converse-no-dependencies.js:25412
 #, fuzzy
 msgid "Minimized"
 msgstr "Diminimalkan"

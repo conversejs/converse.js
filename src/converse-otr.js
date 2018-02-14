@@ -403,9 +403,10 @@
 
                 toggleOTRMenu (ev) {
                     ev.stopPropagation();
+                    const { _converse } = this.__super__;
                     const menu = this.el.querySelector('.toggle-otr ul');
                     const elements = _.difference(
-                        document.querySelectorAll('.toolbar-menu'),
+                        _converse.root.querySelectorAll('.toolbar-menu'),
                         [menu]
                     );
                     utils.slideInAllElements(elements).then(

@@ -7,7 +7,7 @@
 /*global define */
 
 (function (root, factory) {
-    define(["converse-core"], factory);
+    define(["converse-core", "backbone.overview"], factory);
 }(this, function (converse) {
     "use strict";
     const { Backbone, Promise, Strophe, b64_sha1, moment, utils, _ } = converse.env;
@@ -195,8 +195,8 @@
 
                 incrementUnreadMsgCounter (stanza) {
                     /* Given a newly received message, update the unread counter if
-                    * necessary.
-                    */
+                     * necessary.
+                     */
                     if (_.isNull(stanza.querySelector('body'))) {
                         return; // The message has no text
                     }
@@ -418,12 +418,17 @@
                     * If the #conversejs element doesn't exist, create it.
                     */
                     if (!this.el) {
-                        let el = document.querySelector('#conversejs');
+                        let el = _converse.root.querySelector('#conversejs');
                         if (_.isNull(el)) {
                             el = document.createElement('div');
                             el.setAttribute('id', 'conversejs');
-                            // Converse.js expects a <body> tag to be present.
-                            document.querySelector('body').appendChild(el);
+                            const body = _converse.root.querySelector('body');
+                            if (body) {
+                                body.appendChild(el);
+                            } else {
+                                // Perhaps inside a web component?
+                                _converse.root.appendChild(el);
+                            }
                         }
                         el.innerHTML = '';
                         this.setElement(el, false);

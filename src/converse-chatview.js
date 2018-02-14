@@ -74,15 +74,16 @@
             // New functions which don't exist yet can also be added.
             //
             registerGlobalEventHandlers: function () {
+                const { _converse } = this.__super__;
                 this.__super__.registerGlobalEventHandlers();
-                document.addEventListener(
+                _converse.root.addEventListener(
                     'click', function (ev) {
                         if (_.includes(ev.target.classList, 'toggle-toolbar-menu') ||
                             _.includes(ev.target.classList, 'insert-emoji')) {
                             return;
                         }
                         u.slideInAllElements(
-                            document.querySelectorAll('.toolbar-menu')
+                            _converse.root.querySelectorAll('.toolbar-menu')
                         )
                     }
                 );
@@ -208,7 +209,7 @@
                 },
 
                 setScrollPosition (ev) {
-                    this.model.save('scroll_position', ev.target.scrollTop);
+                    this.model.save('scroll_position', this.content);
                 },
 
                 chooseSkinTone (ev) {
@@ -430,7 +431,7 @@
                      * as well as src/converse-muc.js (if those plugins are
                      * enabled).
                      */
-                    const container = document.querySelector('#conversejs');
+                    const container = _converse.root.querySelector('#conversejs');
                     if (this.el.parentNode !== container) {
                         container.insertBefore(this.el, container.firstChild);
                     }
@@ -1024,7 +1025,7 @@
                         }
                     }
                     const elements = _.difference(
-                        document.querySelectorAll('.toolbar-menu'),
+                        _converse.root.querySelectorAll('.toolbar-menu'),
                         [this.emoji_picker_view.el]
                     );
                     u.slideInAllElements(elements)
@@ -1135,6 +1136,7 @@
 
                 afterShown (focus) {
                     if (u.isPersistableModel(this.model)) {
+                        this.model.clearUnreadMsgCounter();
                         this.model.save();
                     }
                     this.setChatState(_converse.ACTIVE);
@@ -1218,7 +1220,7 @@
                     }
                 },
 
-                onScrolledDown() {
+                onScrolledDown () {
                     this.hideNewMessagesIndicator();
                     if (_converse.windowState !== 'hidden') {
                         this.model.clearUnreadMsgCounter();

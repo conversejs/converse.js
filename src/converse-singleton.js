@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, JC Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window, document, JSON */
+/*global Backbone, define, window, JSON */
 
 /* converse-singleton
  * ******************
@@ -40,7 +40,7 @@
         dependencies: ['converse-muc', 'converse-controlbox', 'converse-rosterview'],
 
         enabled (_converse) {
-            return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
+            return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
         },
 
         overrides: {
@@ -97,6 +97,15 @@
                      * time. So before opening a chat, we make sure all other
                      * chats are hidden.
                      */
+                    if (!this.model.get('hidden')) {
+                        _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
+                        return this.__super__.show.apply(this, arguments);
+                    }
+                }
+            },
+
+            ChatRoomView: {
+                show (focus) {
                     if (!this.model.get('hidden')) {
                         _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
                         return this.__super__.show.apply(this, arguments);

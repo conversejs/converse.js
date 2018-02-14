@@ -558,9 +558,8 @@
                      *
                      * This is instead done in `afterConnected` below.
                      */
-                    if (this.model.collection && this.model.collection.browserStorage) {
-                        // Without a connection, we haven't yet initialized
-                        // localstorage
+                    if (u.isPersistableModel(this.model)) {
+                        this.model.clearUnreadMsgCounter();
                         this.model.save();
                     }
                     this.occupantsview.setOccupantsHeight();
@@ -2894,6 +2893,9 @@
                  * settings).
                  */
                 _.each(_converse.auto_join_rooms, function (room) {
+                    if (_converse.chatboxes.where({'jid': room}).length) {
+                        return;
+                    }
                     if (_.isString(room)) {
                         _converse.api.rooms.open(room);
                     } else if (_.isObject(room)) {

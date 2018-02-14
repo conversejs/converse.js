@@ -1,27 +1,49 @@
 # Changelog
 
-## 3.3.3 (Unreleased)
+## 3.3.3 (2018-02-14)
 
 ### Bugfixes
 - Attribute error when empty IQ stanza is returned for vCard query
-- Don't allow PEP bookmarks if `pubsub#publish-options` is not advertised by the server.
+- In fullscreen view, sometimes a background MUC would come into the foreground
+  when a new message appears inside it.
 
-_Note: previously this meant that bookmarks sent to servers that don't
-support `pubsub#publish-options` were visible to all your contacts, even
-though they should be private._
+### Security fixes
+
+- CVE-2018-6591: Don't allow PEP bookmarks if `pubsub#publish-options` is not advertised by the server.
+
+    In previous versions of converse.js, bookmarks sent to servers that don't
+    support `pubsub#publish-options` were visible to all your contacts, even
+    though they should be kept private. This is due to those servers simply
+    ignoring the `pubsub#publish-options` directive and converse.js not checking
+    first whether `pubsub#publish-options` is supported before setting bookmarks
+    via PEP.
+
+    More info here: https://gultsch.de/converse_bookmarks.html
 
 ### New features
 - XEP-0382 Spoiler Messages (currently only for private chats)
 - Listen for new room bookmarks pushed from the user's PEP service.
+- Simplified the [embedded](https://conversejs.org/demo/embedded.html) usecase.
+    - No need to manually blacklist or whitelist any plugins.
+    - Relies on the [view_mode](https://conversejs.org/docs/html/configurations.html#view-mode) being set to `'embedded'`.
+    - The main `converse.js` build can be used for the embedded usecase.
+    - Maintain MUC session upon page reload
 
 ### API changes
 - New API method `_converse.disco.getIdentity` to check whether a JID has a given identity.
 
-### New configuration settings
+### Configuration settings
+- `auto_reconnect` is now set to `true` by default.
 - New configuration setting [allow_public_bookmarks](https://conversejs.org/docs/html/configurations.html#allow-public-bookmarks)
+- New configuration setting [root](https://conversejs.org/docs/html/configurations.html#root)
+- The [view_mode](https://conversejs.org/docs/html/configurations.html#view-mode) setting now has a new possible value: `embedded`
 
 ### LibreJS
 - Add LibreJS support
+
+### Translation updates
+- Chinese (Traditional), French, German, Portuguese (Brazil), Russian, Ukrainian
+
 ## 3.3.2 (2018-01-29)
 
 ### Bugfixes

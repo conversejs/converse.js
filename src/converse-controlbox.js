@@ -426,8 +426,8 @@
                     const tab = ev.target,
                         sibling_li = tab.parentNode.nextElementSibling || tab.parentNode.previousElementSibling,
                         sibling = sibling_li.firstChild,
-                        sibling_panel = document.querySelector(sibling.getAttribute('href')),
-                        tab_panel = document.querySelector(tab.getAttribute('href'));
+                        sibling_panel = _converse.root.querySelector(sibling.getAttribute('href')),
+                        tab_panel = _converse.root.querySelector(tab.getAttribute('href'));
 
                     u.hideElement(sibling_panel);
                     u.removeClass('current', sibling);
@@ -656,7 +656,7 @@
                     xhr.onload = function () {
                         if (xhr.status >= 200 && xhr.status < 400) {
                             const data = JSON.parse(xhr.responseText),
-                                  ul = document.querySelector('.search-xmpp ul');
+                                  ul = _converse.root.querySelector('.search-xmpp ul');
                             u.removeElement(ul.querySelector('li.found-user'));
                             u.removeElement(ul.querySelector('li.chat-info'));
                             if (!data.length) {
@@ -769,7 +769,7 @@
 
                 onClick (e) {
                     e.preventDefault();
-                    if (u.isVisible(document.querySelector("#controlbox"))) {
+                    if (u.isVisible(_converse.root.querySelector("#controlbox"))) {
                         const controlbox = _converse.chatboxes.get('controlbox');
                         if (_converse.connection.connected) {
                             controlbox.save({closed: true});

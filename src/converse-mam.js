@@ -253,7 +253,7 @@
 
                 onScroll (ev) {
                     const { _converse } = this.__super__;
-                    if (ev.target.scrollTop === 0 && this.model.messages.length) {
+                    if (this.content.scrollTop === 0 && this.model.messages.length) {
                         const oldest_message = this.model.messages.at(0);
                         const archive_id = oldest_message.get('archive_id');
                         if (archive_id) {

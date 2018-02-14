@@ -1136,6 +1136,7 @@
 
                 afterShown (focus) {
                     if (u.isPersistableModel(this.model)) {
+                        this.model.clearUnreadMsgCounter();
                         this.model.save();
                     }
                     this.setChatState(_converse.ACTIVE);
@@ -1219,7 +1220,7 @@
                     }
                 },
 
-                onScrolledDown() {
+                onScrolledDown () {
                     this.hideNewMessagesIndicator();
                     if (_converse.windowState !== 'hidden') {
                         this.model.clearUnreadMsgCounter();

@@ -5,6 +5,8 @@
 ### Bugfixes
 - Attribute error when empty IQ stanza is returned for vCard query
 - Don't allow PEP bookmarks if `pubsub#publish-options` is not advertised by the server.
+- In fullscreen view, sometimes a background MUC would come into the foreground
+  when a new message appears inside it.
 
 _Note: previously this meant that bookmarks sent to servers that don't
 support `pubsub#publish-options` were visible to all your contacts, even
@@ -27,6 +29,8 @@ though they should be private._
 - New configuration setting [root](https://conversejs.org/docs/html/configurations.html#root)
 - The [view_mode](https://conversejs.org/docs/html/configurations.html#view-mode) setting now has a new possible value: `embedded`
 
+### Translation updates
+- Chinese (Traditional), French, German, Portuguese (Brazil), Russian, Ukrainian
 
 ## 3.3.2 (2018-01-29)
 

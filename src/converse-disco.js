@@ -7,7 +7,7 @@
 
 /* This is a Converse.js plugin which add support for XEP-0030: Service Discovery */
 
-/*global Backbone, define, window, document */
+/*global Backbone, define, window */
 (function (root, factory) {
     define(["converse-core", "sizzle", "strophe.disco"], factory);
 }(this, function (converse, sizzle) {

@@ -21,7 +21,7 @@
     converse.plugins.add('converse-fullscreen', {
 
         enabled (_converse) {
-            return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
+            return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
         },
 
         overrides: {
@@ -37,7 +37,8 @@
                 },
 
                 insertBrandHeading () {
-                    const el = document.getElementById('converse-login-panel');
+                    const { _converse } = this.__super__;
+                    const el = _converse.root.getElementById('converse-login-panel');
                     el.parentNode.insertAdjacentHTML(
                         'afterbegin',
                         this.createBrandHeadingHTML()

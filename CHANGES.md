@@ -13,12 +13,18 @@ though they should be private._
 ### New features
 - XEP-0382 Spoiler Messages (currently only for private chats)
 - Listen for new room bookmarks pushed from the user's PEP service.
+- Simplified the [embedded](https://conversejs.org/demo/embedded.html) usecase.
+    - No need to manually blacklist or whitelist any plugins.
+    - Relies on the [view_mode](https://conversejs.org/docs/html/configurations.html#view-mode) being set to `'embedded'`.
 
 ### API changes
 - New API method `_converse.disco.getIdentity` to check whether a JID has a given identity.
 
-### New configuration settings
+### Configuration settings
+- `auto_reconnect` is now set to `true` by default.
 - New configuration setting [allow_public_bookmarks](https://conversejs.org/docs/html/configurations.html#allow-public-bookmarks)
+- New configuration setting [root](https://conversejs.org/docs/html/configurations.html#root)
+- The [view_mode](https://conversejs.org/docs/html/configurations.html#view-mode) setting now has a new possible value: `embedded`
 
 
 ## 3.3.2 (2018-01-29)

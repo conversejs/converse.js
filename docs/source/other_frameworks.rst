@@ -52,7 +52,7 @@ Below is an example code that wraps converse.js as an angular.js service.
                                      // file src/locales.js to include only those
                                      // translations that you care about.
 
-            "converse-chatview",     // Renders standalone chat boxes for single user chat
+            "converse-chatview",     // Renders standalone chatboxes for single user chat
             "converse-controlbox",   // The control box
             "converse-bookmarks",    // XEP-0048 Bookmarks
             "converse-mam",          // XEP-0313 Message Archive Management
@@ -62,8 +62,8 @@ Below is an example code that wraps converse.js as an angular.js service.
             "converse-register",     // XEP-0077 In-band registration
             "converse-ping",         // XEP-0199 XMPP Ping
             "converse-notification", // HTML5 Notifications
-            "converse-minimize",     // Allows chat boxes to be minimized
-            "converse-dragresize",   // Allows chat boxes to be resized by dragging them
+            "converse-minimize",     // Allows chatboxes to be minimized
+            "converse-dragresize",   // Allows chatboxes to be resized by dragging them
             "converse-headline",     // Support for headline messages
             // END: Removable components
 

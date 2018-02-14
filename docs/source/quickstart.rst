@@ -22,8 +22,8 @@ The latest versions of these files are available at these URLs:
 
 To load a specific version of Converse.js you can put the version in the URL, like so:
 
-* https://cdn.conversejs.org/3.0.3/dist/converse.min.js
-* https://cdn.conversejs.org/3.0.3/css/converse.min.css
+* https://cdn.conversejs.org/3.3.2/dist/converse.min.js
+* https://cdn.conversejs.org/3.3.2/css/converse.min.css
 
 You can include these two URLs inside the *<head>* element of your website
 via the *script* and *link* tags:
@@ -100,7 +100,7 @@ Headless build
 
 There is also the option of making a headless build of converse.js.
 This means a build without any UI but still containing core functionality of
-maintaining a roster, chat boxes and messages.
+maintaining a roster, chatboxes and messages.
 
 The file `src/headless.js <https://github.com/jcbrand/converse.js/blob/master/src/headless.js>`_
 is used to determine which plugins are included in the build.

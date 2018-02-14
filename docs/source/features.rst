@@ -69,17 +69,17 @@ Languages increase the size of the Converse.js significantly.
 If you only need one, or a subset of the available languages, it's better to
 make a custom build which includes only those languages that you need.
 
-Moderating chat rooms
-=====================
+Moderating chatrooms
+====================
 
-Here are the different commands that may be used to moderate a chat room:
+Here are the different commands that may be used to moderate a chatroom:
 
 +------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
 | Event Type | When is it triggered?                                                                        | Example (substitue $nickname with an actual user's nickname)  |
 +============+==============================================================================================+===============================================================+
-| **ban**    | Ban a user from the chat room. They will not be able to join again.                          | /ban $nickname                                                |
+| **ban**    | Ban a user from the chatroom. They will not be able to join again.                           | /ban $nickname                                                |
 +------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
-| **clear**  | Clear the messages shown in the chat room.                                                   | /clear                                                        |
+| **clear**  | Clear the messages shown in the chatroom.                                                    | /clear                                                        |
 +------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
 | **deop**   | Make a moderator a normal occupant.                                                          | /deop $nickname [$reason]                                     |
 +------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
@@ -95,7 +95,7 @@ Here are the different commands that may be used to moderate a chat room:
 +------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
 | **op**     | Make a normal occupant a moderator.                                                          | /op $nickname [$reason]                                       |
 +------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
-| **topic**  | Set the topic of the chat room.                                                              | /topic ${topic text}                                          |
+| **topic**  | Set the topic of the chatroom.                                                               | /topic ${topic text}                                          |
 +------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
 | **voice**  | Allow a muted user to post messages to the room.                                             | /voice $nickname [$reason]                                    |
 +------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+

@@ -209,7 +209,7 @@
                 },
 
                 setScrollPosition (ev) {
-                    this.model.save('scroll_position', ev.target.scrollTop);
+                    this.model.save('scroll_position', this.content);
                 },
 
                 chooseSkinTone (ev) {

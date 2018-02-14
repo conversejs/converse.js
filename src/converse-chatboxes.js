@@ -195,8 +195,8 @@
 
                 incrementUnreadMsgCounter (stanza) {
                     /* Given a newly received message, update the unread counter if
-                    * necessary.
-                    */
+                     * necessary.
+                     */
                     if (_.isNull(stanza.querySelector('body'))) {
                         return; // The message has no text
                     }

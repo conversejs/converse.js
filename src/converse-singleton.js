@@ -104,6 +104,15 @@
                 }
             },
 
+            ChatRoomView: {
+                show (focus) {
+                    if (!this.model.get('hidden')) {
+                        _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
+                        return this.__super__.show.apply(this, arguments);
+                    }
+                }
+            },
+
             RosterContactView: {
                 openChat (ev) {
                     /* We only have one chat visible at any one

@@ -16,6 +16,7 @@ though they should be private._
 - Simplified the [embedded](https://conversejs.org/demo/embedded.html) usecase.
     - No need to manually blacklist or whitelist any plugins.
     - Relies on the [view_mode](https://conversejs.org/docs/html/configurations.html#view-mode) being set to `'embedded'`.
+    - The main `converse.js` build can be used for the embedded usecase.
 
 ### API changes
 - New API method `_converse.disco.getIdentity` to check whether a JID has a given identity.

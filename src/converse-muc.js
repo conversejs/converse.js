@@ -2893,6 +2893,9 @@
                  * settings).
                  */
                 _.each(_converse.auto_join_rooms, function (room) {
+                    if (_converse.chatboxes.where({'jid': room}).length) {
+                        return;
+                    }
                     if (_.isString(room)) {
                         _converse.api.rooms.open(room);
                     } else if (_.isObject(room)) {

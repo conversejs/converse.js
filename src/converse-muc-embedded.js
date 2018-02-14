@@ -23,25 +23,6 @@
             //
             // New functions which don't exist yet can also be added.
 
-            ChatBoxes: {
-                onConnected () {
-                    // Override to avoid storing or fetching chat boxes from session
-                    // storage.
-                    const { _converse } = this.__super__;
-                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                        converse.env.b64_sha1(`converse.chatboxes-${_converse.bare_jid}`));
-                    this.registerMessageHandler();
-                    /* This is disabled:
-                     *
-                     * this.fetch({
-                     *      add: true,
-                     *      success: this.onChatBoxesFetched.bind(this)
-                     *  });
-                     */
-                     this.onChatBoxesFetched(new Backbone.Collection());
-                }
-            },
-
             ChatBoxViews: {
                 initialize () {
                     this.__super__.initialize.apply(this, arguments);

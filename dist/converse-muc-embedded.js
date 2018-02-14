@@ -2,7 +2,7 @@
  *
  *  An XMPP chat client that runs in the browser.
  *
- *  Version: 3.3.2
+ *  Version: 3.3.3
  */
 
 /* jshint ignore:start */
@@ -41366,6 +41366,168 @@ return Backbone.BrowserStorage;
   return window.converse;
 });
 //# sourceMappingURL=converse-core.js.map;
+/*!
+ * Backbone.Overview 
+ *
+ * Copyright (c) 2018, JC Brand <jc@opkode.com>
+ * Licensed under the Mozilla Public License (MPL) 
+ */
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define('backbone.overview',["underscore", "backbone"], factory);
+  } else {
+    // RequireJS isn't being used.
+    // Assume underscore and backbone are loaded in <script> tags
+    factory(_ || root._, Backbone || root.Backbone);
+  }
+})(this, function (_, Backbone) {
+  "use strict";
+
+  var View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
+
+  var Overview = Backbone.Overview = function (options) {
+    /* An Overview is a View that contains and keeps track of sub-views.
+     * Kind of like what a Collection is to a Model.
+     */
+    var that = this;
+    this.views = {};
+    this.keys = _.partial(_.keys, this.views);
+    this.getAll = _.partial(_.identity, this.views);
+
+    this.get = function (id) {
+      return that.views[id];
+    };
+
+    this.xget = function (id) {
+      /* Exclusive get. Returns all instances except the given id. */
+      return _.filter(that.views, function (view, vid) {
+        return vid !== id;
+      });
+    };
+
+    this.add = function (id, view) {
+      that.views[id] = view;
+      return view;
+    };
+
+    this.remove = function (id) {
+      if (typeof id === "undefined") {
+        new View().remove.apply(that);
+      }
+
+      var view = that.views[id];
+
+      if (view) {
+        delete that.views[id];
+        view.remove();
+        return view;
+      }
+    };
+
+    this.removeAll = function () {
+      _.each(_.keys(that.views), that.remove);
+
+      return that;
+    };
+
+    View.apply(this, Array.prototype.slice.apply(arguments));
+  };
+
+  var methods = ['all', 'any', 'chain', 'collect', 'contains', 'detect', 'difference', 'drop', 'each', 'every', 'filter', 'find', 'first', 'foldl', 'foldr', 'forEach', 'head', 'include', 'indexOf', 'initial', 'inject', 'invoke', 'isEmpty', 'last', 'lastIndexOf', 'map', 'max', 'min', 'reduce', 'reduceRight', 'reject', 'rest', 'sample', 'select', 'shuffle', 'size', 'some', 'sortBy', 'tail', 'take', 'toArray', 'without']; // Mix in each Underscore method as a proxy to `Overview#view`.
+
+  _.each(methods, function (method) {
+    Overview.prototype[method] = function () {
+      var args = Array.prototype.slice.call(arguments);
+      args.unshift(this.views);
+      return _[method].apply(_, args);
+    };
+  });
+
+  _.extend(Overview.prototype, View.prototype);
+
+  Overview.extend = View.extend;
+  Backbone.OrderedListView = Backbone.Overview.extend({
+    // The `listItems` attribute denotes the path (from this View) to the
+    // list of items.
+    listItems: 'model',
+    // The `sortEvent` attribute specifies the event which should cause the
+    // ordered list to be sorted.
+    sortEvent: 'change',
+    // The `listSelector` is the selector used to query for the DOM list
+    // element which contains the ordered items.
+    listSelector: '.ordered-items',
+    // The `itemView` is constructor which should be called to create a
+    // View for a new item.
+    ItemView: undefined,
+    initialize: function initialize() {
+      this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
+      this.items = _.get(this, this.listItems);
+      this.items.on('add', this.createItemView, this);
+      this.items.on('add', this.sortEventually, this);
+      this.items.on(this.sortEvent, this.sortEventually, this);
+    },
+    createItemView: function createItemView(item) {
+      var item_view = this.get(item.get('id'));
+
+      if (!item_view) {
+        item_view = new this.ItemView({
+          model: item
+        });
+        this.add(item.get('id'), item_view);
+      } else {
+        item_view.model = item;
+        item_view.initialize();
+      }
+
+      item_view.render();
+      return item_view;
+    },
+    sortAndPositionAllItems: function sortAndPositionAllItems() {
+      var _this = this;
+
+      this.items.sort();
+      this.items.each(function (item) {
+        if (_.isUndefined(_this.get(item.get('id')))) {
+          _this.createItemView(item);
+        }
+
+        _this.positionItem(item, _this.el.querySelector(_this.listSelector));
+      });
+    },
+    positionItem: function positionItem(item, list_el) {
+      /* Place the View's DOM element in the correct alphabetical
+       * position in the list.
+       *
+       * IMPORTANT: there's an important implicit assumption being
+       * made here. And that is that initially this method gets called
+       * for each item in the right positional order.
+       *
+       * In other words, it gets called for the 0th, then the
+       * 1st, then the 2nd, 3rd and so on.
+       *
+       * That's why we call it in the "success" handler after
+       * fetching the items, so that we know we have ALL of
+       * them and that they're sorted.
+       */
+      var view = this.get(item.get('id')),
+          index = this.items.indexOf(item);
+
+      if (index === 0) {
+        list_el.insertAdjacentElement('afterbegin', view.el);
+      } else if (index === this.items.length - 1) {
+        list_el.insertAdjacentElement('beforeend', view.el);
+      } else {
+        var neighbour_el = list_el.querySelector('li:nth-child(' + index + ')');
+        neighbour_el.insertAdjacentElement('afterend', view.el);
+      }
+
+      return view;
+    }
+  });
+  return Backbone.Overview;
+});
+
+//# sourceMappingURL=backbone.overview.js.map;
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -41375,7 +41537,7 @@ return Backbone.BrowserStorage;
 
 /*global define */
 (function (root, factory) {
-  define('converse-chatboxes',["converse-core"], factory);
+  define('converse-chatboxes',["converse-core", "backbone.overview"], factory);
 })(this, function (converse) {
   "use strict";
 
@@ -41549,8 +41711,8 @@ return Backbone.BrowserStorage;
         },
         incrementUnreadMsgCounter: function incrementUnreadMsgCounter(stanza) {
           /* Given a newly received message, update the unread counter if
-          * necessary.
-          */
+           * necessary.
+           */
           if (_.isNull(stanza.querySelector('body'))) {
             return; // The message has no text
           }
@@ -44739,7 +44901,7 @@ return __p
           }
         },
         setScrollPosition: function setScrollPosition(ev) {
-          this.model.save('scroll_position', ev.target.scrollTop);
+          this.model.save('scroll_position', this.content);
         },
         chooseSkinTone: function chooseSkinTone(ev) {
           ev.preventDefault();
@@ -45664,6 +45826,7 @@ return __p
         },
         afterShown: function afterShown(focus) {
           if (u.isPersistableModel(this.model)) {
+            this.model.clearUnreadMsgCounter();
             this.model.save();
           }
 
@@ -46742,7 +46905,7 @@ Strophe.RSM.prototype = {
         onScroll: function onScroll(ev) {
           var _converse = this.__super__._converse;
 
-          if (ev.target.scrollTop === 0 && this.model.messages.length) {
+          if (this.content.scrollTop === 0 && this.model.messages.length) {
             var oldest_message = this.model.messages.at(0);
             var archive_id = oldest_message.get('archive_id');
 
@@ -48344,168 +48507,6 @@ define("awesomplete", (function (global) {
 }(this)));
 
 /*!
- * Backbone.Overview 
- *
- * Copyright (c) 2018, JC Brand <jc@opkode.com>
- * Licensed under the Mozilla Public License (MPL) 
- */
-(function (root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    define('backbone.overview',["underscore", "backbone"], factory);
-  } else {
-    // RequireJS isn't being used.
-    // Assume underscore and backbone are loaded in <script> tags
-    factory(_ || root._, Backbone || root.Backbone);
-  }
-})(this, function (_, Backbone) {
-  "use strict";
-
-  var View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
-
-  var Overview = Backbone.Overview = function (options) {
-    /* An Overview is a View that contains and keeps track of sub-views.
-     * Kind of like what a Collection is to a Model.
-     */
-    var that = this;
-    this.views = {};
-    this.keys = _.partial(_.keys, this.views);
-    this.getAll = _.partial(_.identity, this.views);
-
-    this.get = function (id) {
-      return that.views[id];
-    };
-
-    this.xget = function (id) {
-      /* Exclusive get. Returns all instances except the given id. */
-      return _.filter(that.views, function (view, vid) {
-        return vid !== id;
-      });
-    };
-
-    this.add = function (id, view) {
-      that.views[id] = view;
-      return view;
-    };
-
-    this.remove = function (id) {
-      if (typeof id === "undefined") {
-        new View().remove.apply(that);
-      }
-
-      var view = that.views[id];
-
-      if (view) {
-        delete that.views[id];
-        view.remove();
-        return view;
-      }
-    };
-
-    this.removeAll = function () {
-      _.each(_.keys(that.views), that.remove);
-
-      return that;
-    };
-
-    View.apply(this, Array.prototype.slice.apply(arguments));
-  };
-
-  var methods = ['all', 'any', 'chain', 'collect', 'contains', 'detect', 'difference', 'drop', 'each', 'every', 'filter', 'find', 'first', 'foldl', 'foldr', 'forEach', 'head', 'include', 'indexOf', 'initial', 'inject', 'invoke', 'isEmpty', 'last', 'lastIndexOf', 'map', 'max', 'min', 'reduce', 'reduceRight', 'reject', 'rest', 'sample', 'select', 'shuffle', 'size', 'some', 'sortBy', 'tail', 'take', 'toArray', 'without']; // Mix in each Underscore method as a proxy to `Overview#view`.
-
-  _.each(methods, function (method) {
-    Overview.prototype[method] = function () {
-      var args = Array.prototype.slice.call(arguments);
-      args.unshift(this.views);
-      return _[method].apply(_, args);
-    };
-  });
-
-  _.extend(Overview.prototype, View.prototype);
-
-  Overview.extend = View.extend;
-  Backbone.OrderedListView = Backbone.Overview.extend({
-    // The `listItems` attribute denotes the path (from this View) to the
-    // list of items.
-    listItems: 'model',
-    // The `sortEvent` attribute specifies the event which should cause the
-    // ordered list to be sorted.
-    sortEvent: 'change',
-    // The `listSelector` is the selector used to query for the DOM list
-    // element which contains the ordered items.
-    listSelector: '.ordered-items',
-    // The `itemView` is constructor which should be called to create a
-    // View for a new item.
-    ItemView: undefined,
-    initialize: function initialize() {
-      this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
-      this.items = _.get(this, this.listItems);
-      this.items.on('add', this.createItemView, this);
-      this.items.on('add', this.sortEventually, this);
-      this.items.on(this.sortEvent, this.sortEventually, this);
-    },
-    createItemView: function createItemView(item) {
-      var item_view = this.get(item.get('id'));
-
-      if (!item_view) {
-        item_view = new this.ItemView({
-          model: item
-        });
-        this.add(item.get('id'), item_view);
-      } else {
-        item_view.model = item;
-        item_view.initialize();
-      }
-
-      item_view.render();
-      return item_view;
-    },
-    sortAndPositionAllItems: function sortAndPositionAllItems() {
-      var _this = this;
-
-      this.items.sort();
-      this.items.each(function (item) {
-        if (_.isUndefined(_this.get(item.get('id')))) {
-          _this.createItemView(item);
-        }
-
-        _this.positionItem(item, _this.el.querySelector(_this.listSelector));
-      });
-    },
-    positionItem: function positionItem(item, list_el) {
-      /* Place the View's DOM element in the correct alphabetical
-       * position in the list.
-       *
-       * IMPORTANT: there's an important implicit assumption being
-       * made here. And that is that initially this method gets called
-       * for each item in the right positional order.
-       *
-       * In other words, it gets called for the 0th, then the
-       * 1st, then the 2nd, 3rd and so on.
-       *
-       * That's why we call it in the "success" handler after
-       * fetching the items, so that we know we have ALL of
-       * them and that they're sorted.
-       */
-      var view = this.get(item.get('id')),
-          index = this.items.indexOf(item);
-
-      if (index === 0) {
-        list_el.insertAdjacentElement('afterbegin', view.el);
-      } else if (index === this.items.length - 1) {
-        list_el.insertAdjacentElement('beforeend', view.el);
-      } else {
-        var neighbour_el = list_el.querySelector('li:nth-child(' + index + ')');
-        neighbour_el.insertAdjacentElement('afterend', view.el);
-      }
-
-      return view;
-    }
-  });
-  return Backbone.Overview;
-});
-
-//# sourceMappingURL=backbone.overview.js.map;
-/*!
  * Backbone.OrderedListView
  *
  * Copyright (c) 2017, JC Brand <jc@opkode.com>
@@ -50086,9 +50087,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
            *
            * This is instead done in `afterConnected` below.
            */
-          if (this.model.collection && this.model.collection.browserStorage) {
-            // Without a connection, we haven't yet initialized
-            // localstorage
+          if (u.isPersistableModel(this.model)) {
+            this.model.clearUnreadMsgCounter();
             this.model.save();
           }
 
@@ -52545,6 +52545,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
          * settings).
          */
         _.each(_converse.auto_join_rooms, function (room) {
+          if (_converse.chatboxes.where({
+            'jid': room
+          }).length) {
+            return;
+          }
+
           if (_.isString(room)) {
             _converse.api.rooms.open(room);
           } else if (_.isObject(room)) {
@@ -52786,24 +52792,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       // relevant objects or classes.
       //
       // New functions which don't exist yet can also be added.
-      ChatBoxes: {
-        onConnected: function onConnected() {
-          // Override to avoid storing or fetching chat boxes from session
-          // storage.
-          var _converse = this.__super__._converse;
-          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](converse.env.b64_sha1("converse.chatboxes-".concat(_converse.bare_jid)));
-          this.registerMessageHandler();
-          /* This is disabled:
-           *
-           * this.fetch({
-           *      add: true,
-           *      success: this.onChatBoxesFetched.bind(this)
-           *  });
-           */
-
-          this.onChatBoxesFetched(new Backbone.Collection());
-        }
-      },
       ChatBoxViews: {
         initialize: function initialize() {
           this.__super__.initialize.apply(this, arguments);

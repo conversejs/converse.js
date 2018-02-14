@@ -116,6 +116,7 @@ The following people are making recurring donations:
 * [Rafael](https://www.patreon.com/user/creators?u=4340078)
 * [mt7479](https://www.patreon.com/user/creators?u=3892290)
 * [roelra](https://www.patreon.com/user/creators?u=5958918)
+* [Guus der Kinderen](https://www.patreon.com/user/creators?u=8302585)
 * An anonymous backer on Liberapay
 
 Additionally this project is supported by

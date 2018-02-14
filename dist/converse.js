@@ -2,7 +2,7 @@
  *
  *  An XMPP chat client that runs in the browser.
  *
- *  Version: 3.3.2
+ *  Version: 3.3.3
  */
 
 /* jshint ignore:start */
@@ -2735,7 +2735,7 @@ if ( typeof define === "function" && define.amd ) {
  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
  * @license   Licensed under MIT license
  *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
- * @version   v4.2.2+97478eb6
+ * @version   v4.2.4+314e4831
  */
 
 (function (global, factory) {
@@ -2868,8 +2868,7 @@ function flush() {
 
 function attemptVertx() {
   try {
-    var r = require;
-    var vertx = r('vertx');
+    var vertx = Function('return this')().require('vertx');
     vertxNext = vertx.runOnLoop || vertx.runOnContext;
     return useVertxTimer();
   } catch (e) {
@@ -2959,7 +2958,7 @@ function resolve$1(object) {
   return promise;
 }
 
-var PROMISE_ID = Math.random().toString(36).substring(16);
+var PROMISE_ID = Math.random().toString(36).substring(2);
 
 function noop() {}
 
@@ -2967,7 +2966,7 @@ var PENDING = void 0;
 var FULFILLED = 1;
 var REJECTED = 2;
 
-var GET_THEN_ERROR = new ErrorObject();
+var TRY_CATCH_ERROR = { error: null };
 
 function selfFulfillment() {
   return new TypeError("You cannot resolve a promise with itself");
@@ -2981,8 +2980,8 @@ function getThen(promise) {
   try {
     return promise.then;
   } catch (error) {
-    GET_THEN_ERROR.error = error;
-    return GET_THEN_ERROR;
+    TRY_CATCH_ERROR.error = error;
+    return TRY_CATCH_ERROR;
   }
 }
 
@@ -3041,9 +3040,9 @@ function handleMaybeThenable(promise, maybeThenable, then$$1) {
   if (maybeThenable.constructor === promise.constructor && then$$1 === then && maybeThenable.constructor.resolve === resolve$1) {
     handleOwnThenable(promise, maybeThenable);
   } else {
-    if (then$$1 === GET_THEN_ERROR) {
-      reject(promise, GET_THEN_ERROR.error);
-      GET_THEN_ERROR.error = null;
+    if (then$$1 === TRY_CATCH_ERROR) {
+      reject(promise, TRY_CATCH_ERROR.error);
+      TRY_CATCH_ERROR.error = null;
     } else if (then$$1 === undefined) {
       fulfill(promise, maybeThenable);
     } else if (isFunction(then$$1)) {
@@ -3137,12 +3136,6 @@ function publish(promise) {
   promise._subscribers.length = 0;
 }
 
-function ErrorObject() {
-  this.error = null;
-}
-
-var TRY_CATCH_ERROR = new ErrorObject();
-
 function tryCatch(callback, detail) {
   try {
     return callback(detail);
@@ -3214,10 +3207,6 @@ function makePromise(promise) {
   promise._state = undefined;
   promise._result = undefined;
   promise._subscribers = [];
-}
-
-function validationError() {
-  return new Error('Array Methods must be provided an Array');
 }
 
 function validationError() {
@@ -3877,36 +3866,36 @@ Promise$2._asap = asap;
 
 /*global self*/
 function polyfill() {
-    var local = void 0;
+  var local = void 0;
 
-    if (typeof global !== 'undefined') {
-        local = global;
-    } else if (typeof self !== 'undefined') {
-        local = self;
-    } else {
-        try {
-            local = Function('return this')();
-        } catch (e) {
-            throw new Error('polyfill failed because global object is unavailable in this environment');
-        }
+  if (typeof global !== 'undefined') {
+    local = global;
+  } else if (typeof self !== 'undefined') {
+    local = self;
+  } else {
+    try {
+      local = Function('return this')();
+    } catch (e) {
+      throw new Error('polyfill failed because global object is unavailable in this environment');
+    }
+  }
+
+  var P = local.Promise;
+
+  if (P) {
+    var promiseToString = null;
+    try {
+      promiseToString = Object.prototype.toString.call(P.resolve());
+    } catch (e) {
+      // silently ignored
     }
 
-    var P = local.Promise;
-
-    if (P) {
-        var promiseToString = null;
-        try {
-            promiseToString = Object.prototype.toString.call(P.resolve());
-        } catch (e) {
-            // silently ignored
-        }
-
-        if (promiseToString === '[object Promise]' && !P.cast) {
-            return;
-        }
+    if (promiseToString === '[object Promise]' && !P.cast) {
+      return;
     }
+  }
 
-    local.Promise = Promise$2;
+  local.Promise = Promise$2;
 }
 
 // Strange compat..
@@ -21026,6 +21015,1054 @@ define('lodash.noconflict',['lodash'], function (_) {
     return _.noConflict();
 });
 
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define('lodash.converter',[], factory);
+	else if(typeof exports === 'object')
+		exports["fp"] = factory();
+	else
+		root["fp"] = factory();
+})(this, function() {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseConvert = __webpack_require__(1);
+
+	/**
+	 * Converts `lodash` to an immutable auto-curried iteratee-first data-last
+	 * version with conversion `options` applied.
+	 *
+	 * @param {Function} lodash The lodash function to convert.
+	 * @param {Object} [options] The options object. See `baseConvert` for more details.
+	 * @returns {Function} Returns the converted `lodash`.
+	 */
+	function browserConvert(lodash, options) {
+	  return baseConvert(lodash, lodash, options);
+	}
+
+	if (typeof _ == 'function' && typeof _.runInContext == 'function') {
+      // XXX: Customization in order to be able to run both _ and fp in the
+      // non-AMD usecase.
+	  fp = browserConvert(_.runInContext());
+	}
+	module.exports = browserConvert;
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var mapping = __webpack_require__(2),
+	    fallbackHolder = __webpack_require__(3);
+
+	/** Built-in value reference. */
+	var push = Array.prototype.push;
+
+	/**
+	 * Creates a function, with an arity of `n`, that invokes `func` with the
+	 * arguments it receives.
+	 *
+	 * @private
+	 * @param {Function} func The function to wrap.
+	 * @param {number} n The arity of the new function.
+	 * @returns {Function} Returns the new function.
+	 */
+	function baseArity(func, n) {
+	  return n == 2
+	    ? function(a, b) { return func.apply(undefined, arguments); }
+	    : function(a) { return func.apply(undefined, arguments); };
+	}
+
+	/**
+	 * Creates a function that invokes `func`, with up to `n` arguments, ignoring
+	 * any additional arguments.
+	 *
+	 * @private
+	 * @param {Function} func The function to cap arguments for.
+	 * @param {number} n The arity cap.
+	 * @returns {Function} Returns the new function.
+	 */
+	function baseAry(func, n) {
+	  return n == 2
+	    ? function(a, b) { return func(a, b); }
+	    : function(a) { return func(a); };
+	}
+
+	/**
+	 * Creates a clone of `array`.
+	 *
+	 * @private
+	 * @param {Array} array The array to clone.
+	 * @returns {Array} Returns the cloned array.
+	 */
+	function cloneArray(array) {
+	  var length = array ? array.length : 0,
+	      result = Array(length);
+
+	  while (length--) {
+	    result[length] = array[length];
+	  }
+	  return result;
+	}
+
+	/**
+	 * Creates a function that clones a given object using the assignment `func`.
+	 *
+	 * @private
+	 * @param {Function} func The assignment function.
+	 * @returns {Function} Returns the new cloner function.
+	 */
+	function createCloner(func) {
+	  return function(object) {
+	    return func({}, object);
+	  };
+	}
+
+	/**
+	 * A specialized version of `_.spread` which flattens the spread array into
+	 * the arguments of the invoked `func`.
+	 *
+	 * @private
+	 * @param {Function} func The function to spread arguments over.
+	 * @param {number} start The start position of the spread.
+	 * @returns {Function} Returns the new function.
+	 */
+	function flatSpread(func, start) {
+	  return function() {
+	    var length = arguments.length,
+	        lastIndex = length - 1,
+	        args = Array(length);
+
+	    while (length--) {
+	      args[length] = arguments[length];
+	    }
+	    var array = args[start],
+	        otherArgs = args.slice(0, start);
+
+	    if (array) {
+	      push.apply(otherArgs, array);
+	    }
+	    if (start != lastIndex) {
+	      push.apply(otherArgs, args.slice(start + 1));
+	    }
+	    return func.apply(this, otherArgs);
+	  };
+	}
+
+	/**
+	 * Creates a function that wraps `func` and uses `cloner` to clone the first
+	 * argument it receives.
+	 *
+	 * @private
+	 * @param {Function} func The function to wrap.
+	 * @param {Function} cloner The function to clone arguments.
+	 * @returns {Function} Returns the new immutable function.
+	 */
+	function wrapImmutable(func, cloner) {
+	  return function() {
+	    var length = arguments.length;
+	    if (!length) {
+	      return;
+	    }
+	    var args = Array(length);
+	    while (length--) {
+	      args[length] = arguments[length];
+	    }
+	    var result = args[0] = cloner.apply(undefined, args);
+	    func.apply(undefined, args);
+	    return result;
+	  };
+	}
+
+	/**
+	 * The base implementation of `convert` which accepts a `util` object of methods
+	 * required to perform conversions.
+	 *
+	 * @param {Object} util The util object.
+	 * @param {string} name The name of the function to convert.
+	 * @param {Function} func The function to convert.
+	 * @param {Object} [options] The options object.
+	 * @param {boolean} [options.cap=true] Specify capping iteratee arguments.
+	 * @param {boolean} [options.curry=true] Specify currying.
+	 * @param {boolean} [options.fixed=true] Specify fixed arity.
+	 * @param {boolean} [options.immutable=true] Specify immutable operations.
+	 * @param {boolean} [options.rearg=true] Specify rearranging arguments.
+	 * @returns {Function|Object} Returns the converted function or object.
+	 */
+	function baseConvert(util, name, func, options) {
+	  var setPlaceholder,
+	      isLib = typeof name == 'function',
+	      isObj = name === Object(name);
+
+	  if (isObj) {
+	    options = func;
+	    func = name;
+	    name = undefined;
+	  }
+	  if (func == null) {
+	    throw new TypeError;
+	  }
+	  options || (options = {});
+
+	  var config = {
+	    'cap': 'cap' in options ? options.cap : true,
+	    'curry': 'curry' in options ? options.curry : true,
+	    'fixed': 'fixed' in options ? options.fixed : true,
+	    'immutable': 'immutable' in options ? options.immutable : true,
+	    'rearg': 'rearg' in options ? options.rearg : true
+	  };
+
+	  var forceCurry = ('curry' in options) && options.curry,
+	      forceFixed = ('fixed' in options) && options.fixed,
+	      forceRearg = ('rearg' in options) && options.rearg,
+	      placeholder = isLib ? func : fallbackHolder,
+	      pristine = isLib ? func.runInContext() : undefined;
+
+	  var helpers = isLib ? func : {
+	    'ary': util.ary,
+	    'assign': util.assign,
+	    'clone': util.clone,
+	    'curry': util.curry,
+	    'forEach': util.forEach,
+	    'isArray': util.isArray,
+	    'isFunction': util.isFunction,
+	    'iteratee': util.iteratee,
+	    'keys': util.keys,
+	    'rearg': util.rearg,
+	    'toInteger': util.toInteger,
+	    'toPath': util.toPath
+	  };
+
+	  var ary = helpers.ary,
+	      assign = helpers.assign,
+	      clone = helpers.clone,
+	      curry = helpers.curry,
+	      each = helpers.forEach,
+	      isArray = helpers.isArray,
+	      isFunction = helpers.isFunction,
+	      keys = helpers.keys,
+	      rearg = helpers.rearg,
+	      toInteger = helpers.toInteger,
+	      toPath = helpers.toPath;
+
+	  var aryMethodKeys = keys(mapping.aryMethod);
+
+	  var wrappers = {
+	    'castArray': function(castArray) {
+	      return function() {
+	        var value = arguments[0];
+	        return isArray(value)
+	          ? castArray(cloneArray(value))
+	          : castArray.apply(undefined, arguments);
+	      };
+	    },
+	    'iteratee': function(iteratee) {
+	      return function() {
+	        var func = arguments[0],
+	            arity = arguments[1],
+	            result = iteratee(func, arity),
+	            length = result.length;
+
+	        if (config.cap && typeof arity == 'number') {
+	          arity = arity > 2 ? (arity - 2) : 1;
+	          return (length && length <= arity) ? result : baseAry(result, arity);
+	        }
+	        return result;
+	      };
+	    },
+	    'mixin': function(mixin) {
+	      return function(source) {
+	        var func = this;
+	        if (!isFunction(func)) {
+	          return mixin(func, Object(source));
+	        }
+	        var pairs = [];
+	        each(keys(source), function(key) {
+	          if (isFunction(source[key])) {
+	            pairs.push([key, func.prototype[key]]);
+	          }
+	        });
+
+	        mixin(func, Object(source));
+
+	        each(pairs, function(pair) {
+	          var value = pair[1];
+	          if (isFunction(value)) {
+	            func.prototype[pair[0]] = value;
+	          } else {
+	            delete func.prototype[pair[0]];
+	          }
+	        });
+	        return func;
+	      };
+	    },
+	    'nthArg': function(nthArg) {
+	      return function(n) {
+	        var arity = n < 0 ? 1 : (toInteger(n) + 1);
+	        return curry(nthArg(n), arity);
+	      };
+	    },
+	    'rearg': function(rearg) {
+	      return function(func, indexes) {
+	        var arity = indexes ? indexes.length : 0;
+	        return curry(rearg(func, indexes), arity);
+	      };
+	    },
+	    'runInContext': function(runInContext) {
+	      return function(context) {
+	        return baseConvert(util, runInContext(context), options);
+	      };
+	    }
+	  };
+
+	  /*--------------------------------------------------------------------------*/
+
+	  /**
+	   * Casts `func` to a function with an arity capped iteratee if needed.
+	   *
+	   * @private
+	   * @param {string} name The name of the function to inspect.
+	   * @param {Function} func The function to inspect.
+	   * @returns {Function} Returns the cast function.
+	   */
+	  function castCap(name, func) {
+	    if (config.cap) {
+	      var indexes = mapping.iterateeRearg[name];
+	      if (indexes) {
+	        return iterateeRearg(func, indexes);
+	      }
+	      var n = !isLib && mapping.iterateeAry[name];
+	      if (n) {
+	        return iterateeAry(func, n);
+	      }
+	    }
+	    return func;
+	  }
+
+	  /**
+	   * Casts `func` to a curried function if needed.
+	   *
+	   * @private
+	   * @param {string} name The name of the function to inspect.
+	   * @param {Function} func The function to inspect.
+	   * @param {number} n The arity of `func`.
+	   * @returns {Function} Returns the cast function.
+	   */
+	  function castCurry(name, func, n) {
+	    return (forceCurry || (config.curry && n > 1))
+	      ? curry(func, n)
+	      : func;
+	  }
+
+	  /**
+	   * Casts `func` to a fixed arity function if needed.
+	   *
+	   * @private
+	   * @param {string} name The name of the function to inspect.
+	   * @param {Function} func The function to inspect.
+	   * @param {number} n The arity cap.
+	   * @returns {Function} Returns the cast function.
+	   */
+	  function castFixed(name, func, n) {
+	    if (config.fixed && (forceFixed || !mapping.skipFixed[name])) {
+	      var data = mapping.methodSpread[name],
+	          start = data && data.start;
+
+	      return start  === undefined ? ary(func, n) : flatSpread(func, start);
+	    }
+	    return func;
+	  }
+
+	  /**
+	   * Casts `func` to an rearged function if needed.
+	   *
+	   * @private
+	   * @param {string} name The name of the function to inspect.
+	   * @param {Function} func The function to inspect.
+	   * @param {number} n The arity of `func`.
+	   * @returns {Function} Returns the cast function.
+	   */
+	  function castRearg(name, func, n) {
+	    return (config.rearg && n > 1 && (forceRearg || !mapping.skipRearg[name]))
+	      ? rearg(func, mapping.methodRearg[name] || mapping.aryRearg[n])
+	      : func;
+	  }
+
+	  /**
+	   * Creates a clone of `object` by `path`.
+	   *
+	   * @private
+	   * @param {Object} object The object to clone.
+	   * @param {Array|string} path The path to clone by.
+	   * @returns {Object} Returns the cloned object.
+	   */
+	  function cloneByPath(object, path) {
+	    path = toPath(path);
+
+	    var index = -1,
+	        length = path.length,
+	        lastIndex = length - 1,
+	        result = clone(Object(object)),
+	        nested = result;
+
+	    while (nested != null && ++index < length) {
+	      var key = path[index],
+	          value = nested[key];
+
+	      if (value != null) {
+	        nested[path[index]] = clone(index == lastIndex ? value : Object(value));
+	      }
+	      nested = nested[key];
+	    }
+	    return result;
+	  }
+
+	  /**
+	   * Converts `lodash` to an immutable auto-curried iteratee-first data-last
+	   * version with conversion `options` applied.
+	   *
+	   * @param {Object} [options] The options object. See `baseConvert` for more details.
+	   * @returns {Function} Returns the converted `lodash`.
+	   */
+	  function convertLib(options) {
+	    return _.runInContext.convert(options)(undefined);
+	  }
+
+	  /**
+	   * Create a converter function for `func` of `name`.
+	   *
+	   * @param {string} name The name of the function to convert.
+	   * @param {Function} func The function to convert.
+	   * @returns {Function} Returns the new converter function.
+	   */
+	  function createConverter(name, func) {
+	    var realName = mapping.aliasToReal[name] || name,
+	        methodName = mapping.remap[realName] || realName,
+	        oldOptions = options;
+
+	    return function(options) {
+	      var newUtil = isLib ? pristine : helpers,
+	          newFunc = isLib ? pristine[methodName] : func,
+	          newOptions = assign(assign({}, oldOptions), options);
+
+	      return baseConvert(newUtil, realName, newFunc, newOptions);
+	    };
+	  }
+
+	  /**
+	   * Creates a function that wraps `func` to invoke its iteratee, with up to `n`
+	   * arguments, ignoring any additional arguments.
+	   *
+	   * @private
+	   * @param {Function} func The function to cap iteratee arguments for.
+	   * @param {number} n The arity cap.
+	   * @returns {Function} Returns the new function.
+	   */
+	  function iterateeAry(func, n) {
+	    return overArg(func, function(func) {
+	      return typeof func == 'function' ? baseAry(func, n) : func;
+	    });
+	  }
+
+	  /**
+	   * Creates a function that wraps `func` to invoke its iteratee with arguments
+	   * arranged according to the specified `indexes` where the argument value at
+	   * the first index is provided as the first argument, the argument value at
+	   * the second index is provided as the second argument, and so on.
+	   *
+	   * @private
+	   * @param {Function} func The function to rearrange iteratee arguments for.
+	   * @param {number[]} indexes The arranged argument indexes.
+	   * @returns {Function} Returns the new function.
+	   */
+	  function iterateeRearg(func, indexes) {
+	    return overArg(func, function(func) {
+	      var n = indexes.length;
+	      return baseArity(rearg(baseAry(func, n), indexes), n);
+	    });
+	  }
+
+	  /**
+	   * Creates a function that invokes `func` with its first argument transformed.
+	   *
+	   * @private
+	   * @param {Function} func The function to wrap.
+	   * @param {Function} transform The argument transform.
+	   * @returns {Function} Returns the new function.
+	   */
+	  function overArg(func, transform) {
+	    return function() {
+	      var length = arguments.length;
+	      if (!length) {
+	        return func();
+	      }
+	      var args = Array(length);
+	      while (length--) {
+	        args[length] = arguments[length];
+	      }
+	      var index = config.rearg ? 0 : (length - 1);
+	      args[index] = transform(args[index]);
+	      return func.apply(undefined, args);
+	    };
+	  }
+
+	  /**
+	   * Creates a function that wraps `func` and applys the conversions
+	   * rules by `name`.
+	   *
+	   * @private
+	   * @param {string} name The name of the function to wrap.
+	   * @param {Function} func The function to wrap.
+	   * @returns {Function} Returns the converted function.
+	   */
+	  function wrap(name, func) {
+	    var result,
+	        realName = mapping.aliasToReal[name] || name,
+	        wrapped = func,
+	        wrapper = wrappers[realName];
+
+	    if (wrapper) {
+	      wrapped = wrapper(func);
+	    }
+	    else if (config.immutable) {
+	      if (mapping.mutate.array[realName]) {
+	        wrapped = wrapImmutable(func, cloneArray);
+	      }
+	      else if (mapping.mutate.object[realName]) {
+	        wrapped = wrapImmutable(func, createCloner(func));
+	      }
+	      else if (mapping.mutate.set[realName]) {
+	        wrapped = wrapImmutable(func, cloneByPath);
+	      }
+	    }
+	    each(aryMethodKeys, function(aryKey) {
+	      each(mapping.aryMethod[aryKey], function(otherName) {
+	        if (realName == otherName) {
+	          var data = mapping.methodSpread[realName],
+	              afterRearg = data && data.afterRearg;
+
+	          result = afterRearg
+	            ? castFixed(realName, castRearg(realName, wrapped, aryKey), aryKey)
+	            : castRearg(realName, castFixed(realName, wrapped, aryKey), aryKey);
+
+	          result = castCap(realName, result);
+	          result = castCurry(realName, result, aryKey);
+	          return false;
+	        }
+	      });
+	      return !result;
+	    });
+
+	    result || (result = wrapped);
+	    if (result == func) {
+	      result = forceCurry ? curry(result, 1) : function() {
+	        return func.apply(this, arguments);
+	      };
+	    }
+	    result.convert = createConverter(realName, func);
+	    if (mapping.placeholder[realName]) {
+	      setPlaceholder = true;
+	      result.placeholder = func.placeholder = placeholder;
+	    }
+	    return result;
+	  }
+
+	  /*--------------------------------------------------------------------------*/
+
+	  if (!isObj) {
+	    return wrap(name, func);
+	  }
+	  var _ = func;
+
+	  // Convert methods by ary cap.
+	  var pairs = [];
+	  each(aryMethodKeys, function(aryKey) {
+	    each(mapping.aryMethod[aryKey], function(key) {
+	      var func = _[mapping.remap[key] || key];
+	      if (func) {
+	        pairs.push([key, wrap(key, func)]);
+	      }
+	    });
+	  });
+
+	  // Convert remaining methods.
+	  each(keys(_), function(key) {
+	    var func = _[key];
+	    if (typeof func == 'function') {
+	      var length = pairs.length;
+	      while (length--) {
+	        if (pairs[length][0] == key) {
+	          return;
+	        }
+	      }
+	      func.convert = createConverter(key, func);
+	      pairs.push([key, func]);
+	    }
+	  });
+
+	  // Assign to `_` leaving `_.prototype` unchanged to allow chaining.
+	  each(pairs, function(pair) {
+	    _[pair[0]] = pair[1];
+	  });
+
+	  _.convert = convertLib;
+	  if (setPlaceholder) {
+	    _.placeholder = placeholder;
+	  }
+	  // Assign aliases.
+	  each(keys(_), function(key) {
+	    each(mapping.realToAlias[key] || [], function(alias) {
+	      _[alias] = _[key];
+	    });
+	  });
+
+	  return _;
+	}
+
+	module.exports = baseConvert;
+
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	/** Used to map aliases to their real names. */
+	exports.aliasToReal = {
+
+	  // Lodash aliases.
+	  'each': 'forEach',
+	  'eachRight': 'forEachRight',
+	  'entries': 'toPairs',
+	  'entriesIn': 'toPairsIn',
+	  'extend': 'assignIn',
+	  'extendAll': 'assignInAll',
+	  'extendAllWith': 'assignInAllWith',
+	  'extendWith': 'assignInWith',
+	  'first': 'head',
+
+	  // Methods that are curried variants of others.
+	  'conforms': 'conformsTo',
+	  'matches': 'isMatch',
+	  'property': 'get',
+
+	  // Ramda aliases.
+	  '__': 'placeholder',
+	  'F': 'stubFalse',
+	  'T': 'stubTrue',
+	  'all': 'every',
+	  'allPass': 'overEvery',
+	  'always': 'constant',
+	  'any': 'some',
+	  'anyPass': 'overSome',
+	  'apply': 'spread',
+	  'assoc': 'set',
+	  'assocPath': 'set',
+	  'complement': 'negate',
+	  'compose': 'flowRight',
+	  'contains': 'includes',
+	  'dissoc': 'unset',
+	  'dissocPath': 'unset',
+	  'dropLast': 'dropRight',
+	  'dropLastWhile': 'dropRightWhile',
+	  'equals': 'isEqual',
+	  'identical': 'eq',
+	  'indexBy': 'keyBy',
+	  'init': 'initial',
+	  'invertObj': 'invert',
+	  'juxt': 'over',
+	  'omitAll': 'omit',
+	  'nAry': 'ary',
+	  'path': 'get',
+	  'pathEq': 'matchesProperty',
+	  'pathOr': 'getOr',
+	  'paths': 'at',
+	  'pickAll': 'pick',
+	  'pipe': 'flow',
+	  'pluck': 'map',
+	  'prop': 'get',
+	  'propEq': 'matchesProperty',
+	  'propOr': 'getOr',
+	  'props': 'at',
+	  'symmetricDifference': 'xor',
+	  'symmetricDifferenceBy': 'xorBy',
+	  'symmetricDifferenceWith': 'xorWith',
+	  'takeLast': 'takeRight',
+	  'takeLastWhile': 'takeRightWhile',
+	  'unapply': 'rest',
+	  'unnest': 'flatten',
+	  'useWith': 'overArgs',
+	  'where': 'conformsTo',
+	  'whereEq': 'isMatch',
+	  'zipObj': 'zipObject'
+	};
+
+	/** Used to map ary to method names. */
+	exports.aryMethod = {
+	  '1': [
+	    'assignAll', 'assignInAll', 'attempt', 'castArray', 'ceil', 'create',
+	    'curry', 'curryRight', 'defaultsAll', 'defaultsDeepAll', 'floor', 'flow',
+	    'flowRight', 'fromPairs', 'invert', 'iteratee', 'memoize', 'method', 'mergeAll',
+	    'methodOf', 'mixin', 'nthArg', 'over', 'overEvery', 'overSome','rest', 'reverse',
+	    'round', 'runInContext', 'spread', 'template', 'trim', 'trimEnd', 'trimStart',
+	    'uniqueId', 'words', 'zipAll'
+	  ],
+	  '2': [
+	    'add', 'after', 'ary', 'assign', 'assignAllWith', 'assignIn', 'assignInAllWith',
+	    'at', 'before', 'bind', 'bindAll', 'bindKey', 'chunk', 'cloneDeepWith',
+	    'cloneWith', 'concat', 'conformsTo', 'countBy', 'curryN', 'curryRightN',
+	    'debounce', 'defaults', 'defaultsDeep', 'defaultTo', 'delay', 'difference',
+	    'divide', 'drop', 'dropRight', 'dropRightWhile', 'dropWhile', 'endsWith', 'eq',
+	    'every', 'filter', 'find', 'findIndex', 'findKey', 'findLast', 'findLastIndex',
+	    'findLastKey', 'flatMap', 'flatMapDeep', 'flattenDepth', 'forEach',
+	    'forEachRight', 'forIn', 'forInRight', 'forOwn', 'forOwnRight', 'get',
+	    'groupBy', 'gt', 'gte', 'has', 'hasIn', 'includes', 'indexOf', 'intersection',
+	    'invertBy', 'invoke', 'invokeMap', 'isEqual', 'isMatch', 'join', 'keyBy',
+	    'lastIndexOf', 'lt', 'lte', 'map', 'mapKeys', 'mapValues', 'matchesProperty',
+	    'maxBy', 'meanBy', 'merge', 'mergeAllWith', 'minBy', 'multiply', 'nth', 'omit',
+	    'omitBy', 'overArgs', 'pad', 'padEnd', 'padStart', 'parseInt', 'partial',
+	    'partialRight', 'partition', 'pick', 'pickBy', 'propertyOf', 'pull', 'pullAll',
+	    'pullAt', 'random', 'range', 'rangeRight', 'rearg', 'reject', 'remove',
+	    'repeat', 'restFrom', 'result', 'sampleSize', 'some', 'sortBy', 'sortedIndex',
+	    'sortedIndexOf', 'sortedLastIndex', 'sortedLastIndexOf', 'sortedUniqBy',
+	    'split', 'spreadFrom', 'startsWith', 'subtract', 'sumBy', 'take', 'takeRight',
+	    'takeRightWhile', 'takeWhile', 'tap', 'throttle', 'thru', 'times', 'trimChars',
+	    'trimCharsEnd', 'trimCharsStart', 'truncate', 'union', 'uniqBy', 'uniqWith',
+	    'unset', 'unzipWith', 'without', 'wrap', 'xor', 'zip', 'zipObject',
+	    'zipObjectDeep'
+	  ],
+	  '3': [
+	    'assignInWith', 'assignWith', 'clamp', 'differenceBy', 'differenceWith',
+	    'findFrom', 'findIndexFrom', 'findLastFrom', 'findLastIndexFrom', 'getOr',
+	    'includesFrom', 'indexOfFrom', 'inRange', 'intersectionBy', 'intersectionWith',
+	    'invokeArgs', 'invokeArgsMap', 'isEqualWith', 'isMatchWith', 'flatMapDepth',
+	    'lastIndexOfFrom', 'mergeWith', 'orderBy', 'padChars', 'padCharsEnd',
+	    'padCharsStart', 'pullAllBy', 'pullAllWith', 'rangeStep', 'rangeStepRight',
+	    'reduce', 'reduceRight', 'replace', 'set', 'slice', 'sortedIndexBy',
+	    'sortedLastIndexBy', 'transform', 'unionBy', 'unionWith', 'update', 'xorBy',
+	    'xorWith', 'zipWith'
+	  ],
+	  '4': [
+	    'fill', 'setWith', 'updateWith'
+	  ]
+	};
+
+	/** Used to map ary to rearg configs. */
+	exports.aryRearg = {
+	  '2': [1, 0],
+	  '3': [2, 0, 1],
+	  '4': [3, 2, 0, 1]
+	};
+
+	/** Used to map method names to their iteratee ary. */
+	exports.iterateeAry = {
+	  'dropRightWhile': 1,
+	  'dropWhile': 1,
+	  'every': 1,
+	  'filter': 1,
+	  'find': 1,
+	  'findFrom': 1,
+	  'findIndex': 1,
+	  'findIndexFrom': 1,
+	  'findKey': 1,
+	  'findLast': 1,
+	  'findLastFrom': 1,
+	  'findLastIndex': 1,
+	  'findLastIndexFrom': 1,
+	  'findLastKey': 1,
+	  'flatMap': 1,
+	  'flatMapDeep': 1,
+	  'flatMapDepth': 1,
+	  'forEach': 1,
+	  'forEachRight': 1,
+	  'forIn': 1,
+	  'forInRight': 1,
+	  'forOwn': 1,
+	  'forOwnRight': 1,
+	  'map': 1,
+	  'mapKeys': 1,
+	  'mapValues': 1,
+	  'partition': 1,
+	  'reduce': 2,
+	  'reduceRight': 2,
+	  'reject': 1,
+	  'remove': 1,
+	  'some': 1,
+	  'takeRightWhile': 1,
+	  'takeWhile': 1,
+	  'times': 1,
+	  'transform': 2
+	};
+
+	/** Used to map method names to iteratee rearg configs. */
+	exports.iterateeRearg = {
+	  'mapKeys': [1],
+	  'reduceRight': [1, 0]
+	};
+
+	/** Used to map method names to rearg configs. */
+	exports.methodRearg = {
+	  'assignInAllWith': [1, 0],
+	  'assignInWith': [1, 2, 0],
+	  'assignAllWith': [1, 0],
+	  'assignWith': [1, 2, 0],
+	  'differenceBy': [1, 2, 0],
+	  'differenceWith': [1, 2, 0],
+	  'getOr': [2, 1, 0],
+	  'intersectionBy': [1, 2, 0],
+	  'intersectionWith': [1, 2, 0],
+	  'isEqualWith': [1, 2, 0],
+	  'isMatchWith': [2, 1, 0],
+	  'mergeAllWith': [1, 0],
+	  'mergeWith': [1, 2, 0],
+	  'padChars': [2, 1, 0],
+	  'padCharsEnd': [2, 1, 0],
+	  'padCharsStart': [2, 1, 0],
+	  'pullAllBy': [2, 1, 0],
+	  'pullAllWith': [2, 1, 0],
+	  'rangeStep': [1, 2, 0],
+	  'rangeStepRight': [1, 2, 0],
+	  'setWith': [3, 1, 2, 0],
+	  'sortedIndexBy': [2, 1, 0],
+	  'sortedLastIndexBy': [2, 1, 0],
+	  'unionBy': [1, 2, 0],
+	  'unionWith': [1, 2, 0],
+	  'updateWith': [3, 1, 2, 0],
+	  'xorBy': [1, 2, 0],
+	  'xorWith': [1, 2, 0],
+	  'zipWith': [1, 2, 0]
+	};
+
+	/** Used to map method names to spread configs. */
+	exports.methodSpread = {
+	  'assignAll': { 'start': 0 },
+	  'assignAllWith': { 'start': 0 },
+	  'assignInAll': { 'start': 0 },
+	  'assignInAllWith': { 'start': 0 },
+	  'defaultsAll': { 'start': 0 },
+	  'defaultsDeepAll': { 'start': 0 },
+	  'invokeArgs': { 'start': 2 },
+	  'invokeArgsMap': { 'start': 2 },
+	  'mergeAll': { 'start': 0 },
+	  'mergeAllWith': { 'start': 0 },
+	  'partial': { 'start': 1 },
+	  'partialRight': { 'start': 1 },
+	  'without': { 'start': 1 },
+	  'zipAll': { 'start': 0 }
+	};
+
+	/** Used to identify methods which mutate arrays or objects. */
+	exports.mutate = {
+	  'array': {
+	    'fill': true,
+	    'pull': true,
+	    'pullAll': true,
+	    'pullAllBy': true,
+	    'pullAllWith': true,
+	    'pullAt': true,
+	    'remove': true,
+	    'reverse': true
+	  },
+	  'object': {
+	    'assign': true,
+	    'assignAll': true,
+	    'assignAllWith': true,
+	    'assignIn': true,
+	    'assignInAll': true,
+	    'assignInAllWith': true,
+	    'assignInWith': true,
+	    'assignWith': true,
+	    'defaults': true,
+	    'defaultsAll': true,
+	    'defaultsDeep': true,
+	    'defaultsDeepAll': true,
+	    'merge': true,
+	    'mergeAll': true,
+	    'mergeAllWith': true,
+	    'mergeWith': true,
+	  },
+	  'set': {
+	    'set': true,
+	    'setWith': true,
+	    'unset': true,
+	    'update': true,
+	    'updateWith': true
+	  }
+	};
+
+	/** Used to track methods with placeholder support */
+	exports.placeholder = {
+	  'bind': true,
+	  'bindKey': true,
+	  'curry': true,
+	  'curryRight': true,
+	  'partial': true,
+	  'partialRight': true
+	};
+
+	/** Used to map real names to their aliases. */
+	exports.realToAlias = (function() {
+	  var hasOwnProperty = Object.prototype.hasOwnProperty,
+	      object = exports.aliasToReal,
+	      result = {};
+
+	  for (var key in object) {
+	    var value = object[key];
+	    if (hasOwnProperty.call(result, value)) {
+	      result[value].push(key);
+	    } else {
+	      result[value] = [key];
+	    }
+	  }
+	  return result;
+	}());
+
+	/** Used to map method names to other names. */
+	exports.remap = {
+	  'assignAll': 'assign',
+	  'assignAllWith': 'assignWith',
+	  'assignInAll': 'assignIn',
+	  'assignInAllWith': 'assignInWith',
+	  'curryN': 'curry',
+	  'curryRightN': 'curryRight',
+	  'defaultsAll': 'defaults',
+	  'defaultsDeepAll': 'defaultsDeep',
+	  'findFrom': 'find',
+	  'findIndexFrom': 'findIndex',
+	  'findLastFrom': 'findLast',
+	  'findLastIndexFrom': 'findLastIndex',
+	  'getOr': 'get',
+	  'includesFrom': 'includes',
+	  'indexOfFrom': 'indexOf',
+	  'invokeArgs': 'invoke',
+	  'invokeArgsMap': 'invokeMap',
+	  'lastIndexOfFrom': 'lastIndexOf',
+	  'mergeAll': 'merge',
+	  'mergeAllWith': 'mergeWith',
+	  'padChars': 'pad',
+	  'padCharsEnd': 'padEnd',
+	  'padCharsStart': 'padStart',
+	  'propertyOf': 'get',
+	  'rangeStep': 'range',
+	  'rangeStepRight': 'rangeRight',
+	  'restFrom': 'rest',
+	  'spreadFrom': 'spread',
+	  'trimChars': 'trim',
+	  'trimCharsEnd': 'trimEnd',
+	  'trimCharsStart': 'trimStart',
+	  'zipAll': 'zip'
+	};
+
+	/** Used to track methods that skip fixing their arity. */
+	exports.skipFixed = {
+	  'castArray': true,
+	  'flow': true,
+	  'flowRight': true,
+	  'iteratee': true,
+	  'mixin': true,
+	  'rearg': true,
+	  'runInContext': true
+	};
+
+	/** Used to track methods that skip rearranging arguments. */
+	exports.skipRearg = {
+	  'add': true,
+	  'assign': true,
+	  'assignIn': true,
+	  'bind': true,
+	  'bindKey': true,
+	  'concat': true,
+	  'difference': true,
+	  'divide': true,
+	  'eq': true,
+	  'gt': true,
+	  'gte': true,
+	  'isEqual': true,
+	  'lt': true,
+	  'lte': true,
+	  'matchesProperty': true,
+	  'merge': true,
+	  'multiply': true,
+	  'overArgs': true,
+	  'partial': true,
+	  'partialRight': true,
+	  'propertyOf': true,
+	  'random': true,
+	  'range': true,
+	  'rangeRight': true,
+	  'subtract': true,
+	  'zip': true,
+	  'zipObject': true,
+	  'zipObjectDeep': true
+	};
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	/**
+	 * The default argument placeholder value for methods.
+	 *
+	 * @type {Object}
+	 */
+	module.exports = {};
+
+
+/***/ }
+/******/ ])
+});
+;
+
+define('lodash.fp',['lodash', 'lodash.converter'], function (_, lodashConverter) {
+    var fp = lodashConverter(_.runInContext());
+    return fp;
+});
+
 if (!String.prototype.includes) {
   String.prototype.includes = function(search, start) {
         'use strict';
@@ -35170,7 +36207,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   };
 
   u.isValidJID = function (jid) {
-    return _.filter(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+    return _.compact(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
   };
 
   u.isValidMUCJID = function (jid) {
@@ -35193,7 +36230,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     if (message instanceof Element) {
       return !sizzle('result[xmlns="' + Strophe.NS.MAM + '"]', message).length && !sizzle('delay[xmlns="' + Strophe.NS.DELAY + '"]', message).length;
     } else {
-      return !message.get('archive_id') && !message.get('delayed');
+      return !message.get('delayed');
     }
   };
 
@@ -38156,10 +39193,10 @@ return Backbone.BrowserStorage;
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
-/*global Backbone, define, window, document, JSON */
+/*global Backbone, define, window, JSON */
 (function (root, factory) {
-  define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "polyfill", "i18n", "utils", "moment", "strophe", "pluggable", "backbone.noconflict", "backbone.nativeview", "backbone.browserStorage"], factory);
-})(this, function (sizzle, Promise, _, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
+  define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "lodash.fp", "polyfill", "i18n", "utils", "moment", "strophe", "pluggable", "backbone.noconflict", "backbone.nativeview", "backbone.browserStorage"], factory);
+})(this, function (sizzle, Promise, _, f, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
   /* Cannot use this due to Safari bug.
    * See https://github.com/jcbrand/converse.js/issues/196
    */
@@ -38185,6 +39222,7 @@ return Backbone.BrowserStorage;
   Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
   Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
   Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
+  Strophe.addNamespace('SPOILER', 'urn:xmpp:spoiler:0');
   Strophe.addNamespace('XFORM', 'jabber:x:data'); // Use Mustache style syntax for variable interpolation
 
   /* Configuration of Lodash templates (this config is distinct to the
@@ -38206,7 +39244,7 @@ return Backbone.BrowserStorage;
 
   _.extend(_converse, Backbone.Events);
 
-  _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-profile', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton', 'converse-vcard']; // Make converse pluggable
+  _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-muc-embedded', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-profile', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Make converse pluggable
 
   pluggable.enable(_converse, '_converse', 'pluggable'); // Module-level constants
 
@@ -38415,7 +39453,7 @@ return Backbone.BrowserStorage;
       // Seconds after which user status is set to 'away'
       auto_login: false,
       // Currently only used in connection with anonymous login
-      auto_reconnect: false,
+      auto_reconnect: true,
       auto_subscribe: false,
       auto_xa: 0,
       // Seconds after which user status is set to 'xa'
@@ -38435,7 +39473,7 @@ return Backbone.BrowserStorage;
       include_offline_state: false,
       jid: undefined,
       keepalive: true,
-      locales_url: '/locale/{{{locale}}}/LC_MESSAGES/converse.json',
+      locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
       locales: ['af', 'ca', 'de', 'es', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'uk', 'zh_CN', 'zh_TW'],
       message_carbons: true,
       message_storage: 'session',
@@ -38444,6 +39482,7 @@ return Backbone.BrowserStorage;
       priority: 0,
       registration_domain: '',
       rid: undefined,
+      root: window.document,
       roster_groups: true,
       show_only_online_users: false,
       show_send_button: false,
@@ -38754,19 +39793,29 @@ return Backbone.BrowserStorage;
     this.incrementMsgCounter = function () {
       this.msg_counter += 1;
       var unreadMsgCount = this.msg_counter;
+      var title = document.title;
 
-      if (document.title.search(/^Messages \(\d+\) /) === -1) {
-        document.title = "Messages (".concat(unreadMsgCount, ") ").concat(document.title);
+      if (_.isNil(title)) {
+        return;
+      }
+
+      if (title.search(/^Messages \(\d+\) /) === -1) {
+        title = "Messages (".concat(unreadMsgCount, ") ").concat(title);
       } else {
-        document.title = document.title.replace(/^Messages \(\d+\) /, "Messages (".concat(unreadMsgCount, ") "));
+        title = title.replace(/^Messages \(\d+\) /, "Messages (".concat(unreadMsgCount, ")"));
       }
     };
 
     this.clearMsgCounter = function () {
       this.msg_counter = 0;
+      var title = document.title;
 
-      if (document.title.search(/^Messages \(\d+\) /) !== -1) {
-        document.title = document.title.replace(/^Messages \(\d+\) /, "");
+      if (_.isNil(title)) {
+        return;
+      }
+
+      if (title.search(/^Messages \(\d+\) /) !== -1) {
+        title = title.replace(/^Messages \(\d+\) /, "");
       }
     };
 
@@ -39058,10 +40107,8 @@ return Backbone.BrowserStorage;
 
     this.RosterContact = Backbone.Model.extend({
       defaults: {
-        'bookmarked': false,
         'chat_state': undefined,
         'chat_status': 'offline',
-        'groups': [],
         'image': _converse.DEFAULT_IMAGE,
         'image_type': _converse.DEFAULT_IMAGE_TYPE,
         'num_unread': 0,
@@ -39075,13 +40122,12 @@ return Backbone.BrowserStorage;
         var resource = Strophe.getResourceFromJid(jid);
         attributes.jid = bare_jid;
         this.set(_.assignIn({
+          'fullname': bare_jid,
+          'groups': [],
           'id': bare_jid,
           'jid': bare_jid,
-          'fullname': bare_jid,
-          'user_id': Strophe.getNodeFromJid(jid),
-          'resources': resource ? {
-            resource: 0
-          } : {}
+          'resources': {},
+          'user_id': Strophe.getNodeFromJid(jid)
         }, attributes));
         this.on('destroy', function () {
           _this3.removeFromRoster();
@@ -39190,6 +40236,7 @@ return Backbone.BrowserStorage;
         priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
         var resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
         resources[resource] = {
+          'name': resource,
           'priority': priority,
           'status': chat_status,
           'timestamp': timestamp
@@ -40070,6 +41117,13 @@ return Backbone.BrowserStorage;
 
       var whitelist = _converse.core_plugins.concat(_converse.whitelisted_plugins);
 
+      if (_converse.view_mode === 'embedded') {
+        _.forEach([// eslint-disable-line lodash/prefer-map
+        "converse-bookmarks", "converse-controlbox", "converse-dragresize", "converse-headline", "converse-minimize", "converse-otr", "converse-register", "converse-vcard"], function (name) {
+          _converse.blacklisted_plugins.push(name);
+        });
+      }
+
       _converse.pluggable.initializePlugins({
         'updateSettings': function updateSettings() {
           _converse.log("(DEPRECATION) " + "The `updateSettings` method has been deprecated. " + "Please use `_converse.api.settings.update` instead.", Strophe.LogLevel.WARN);
@@ -40113,13 +41167,7 @@ return Backbone.BrowserStorage;
     } else {
       i18n.fetchTranslations(_converse.locale, _converse.locales, _.template(_converse.locales_url)({
         'locale': _converse.locale
-      })).then(function () {
-        finishInitialization();
-      }).catch(function (reason) {
-        finishInitialization();
-
-        _converse.log(reason, Strophe.LogLevel.ERROR);
-      });
+      })).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL)).then(finishInitialization).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
     }
 
     return init_promise;
@@ -40283,7 +41331,7 @@ return Backbone.BrowserStorage;
     }
   }; // The public API
 
-  return {
+  window.converse = {
     'initialize': function initialize(settings, callback) {
       return _converse.initialize(settings, callback);
     },
@@ -40307,14 +41355,179 @@ return Backbone.BrowserStorage;
       'Promise': Promise,
       'Strophe': Strophe,
       '_': _,
+      'f': f,
       'b64_sha1': b64_sha1,
       'moment': moment,
       'sizzle': sizzle,
       'utils': utils
     }
   };
+  window.dispatchEvent(new Event('converse-loaded'));
+  return window.converse;
 });
 //# sourceMappingURL=converse-core.js.map;
+/*!
+ * Backbone.Overview 
+ *
+ * Copyright (c) 2018, JC Brand <jc@opkode.com>
+ * Licensed under the Mozilla Public License (MPL) 
+ */
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define('backbone.overview',["underscore", "backbone"], factory);
+  } else {
+    // RequireJS isn't being used.
+    // Assume underscore and backbone are loaded in <script> tags
+    factory(_ || root._, Backbone || root.Backbone);
+  }
+})(this, function (_, Backbone) {
+  "use strict";
+
+  var View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
+
+  var Overview = Backbone.Overview = function (options) {
+    /* An Overview is a View that contains and keeps track of sub-views.
+     * Kind of like what a Collection is to a Model.
+     */
+    var that = this;
+    this.views = {};
+    this.keys = _.partial(_.keys, this.views);
+    this.getAll = _.partial(_.identity, this.views);
+
+    this.get = function (id) {
+      return that.views[id];
+    };
+
+    this.xget = function (id) {
+      /* Exclusive get. Returns all instances except the given id. */
+      return _.filter(that.views, function (view, vid) {
+        return vid !== id;
+      });
+    };
+
+    this.add = function (id, view) {
+      that.views[id] = view;
+      return view;
+    };
+
+    this.remove = function (id) {
+      if (typeof id === "undefined") {
+        new View().remove.apply(that);
+      }
+
+      var view = that.views[id];
+
+      if (view) {
+        delete that.views[id];
+        view.remove();
+        return view;
+      }
+    };
+
+    this.removeAll = function () {
+      _.each(_.keys(that.views), that.remove);
+
+      return that;
+    };
+
+    View.apply(this, Array.prototype.slice.apply(arguments));
+  };
+
+  var methods = ['all', 'any', 'chain', 'collect', 'contains', 'detect', 'difference', 'drop', 'each', 'every', 'filter', 'find', 'first', 'foldl', 'foldr', 'forEach', 'head', 'include', 'indexOf', 'initial', 'inject', 'invoke', 'isEmpty', 'last', 'lastIndexOf', 'map', 'max', 'min', 'reduce', 'reduceRight', 'reject', 'rest', 'sample', 'select', 'shuffle', 'size', 'some', 'sortBy', 'tail', 'take', 'toArray', 'without']; // Mix in each Underscore method as a proxy to `Overview#view`.
+
+  _.each(methods, function (method) {
+    Overview.prototype[method] = function () {
+      var args = Array.prototype.slice.call(arguments);
+      args.unshift(this.views);
+      return _[method].apply(_, args);
+    };
+  });
+
+  _.extend(Overview.prototype, View.prototype);
+
+  Overview.extend = View.extend;
+  Backbone.OrderedListView = Backbone.Overview.extend({
+    // The `listItems` attribute denotes the path (from this View) to the
+    // list of items.
+    listItems: 'model',
+    // The `sortEvent` attribute specifies the event which should cause the
+    // ordered list to be sorted.
+    sortEvent: 'change',
+    // The `listSelector` is the selector used to query for the DOM list
+    // element which contains the ordered items.
+    listSelector: '.ordered-items',
+    // The `itemView` is constructor which should be called to create a
+    // View for a new item.
+    ItemView: undefined,
+    initialize: function initialize() {
+      this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
+      this.items = _.get(this, this.listItems);
+      this.items.on('add', this.createItemView, this);
+      this.items.on('add', this.sortEventually, this);
+      this.items.on(this.sortEvent, this.sortEventually, this);
+    },
+    createItemView: function createItemView(item) {
+      var item_view = this.get(item.get('id'));
+
+      if (!item_view) {
+        item_view = new this.ItemView({
+          model: item
+        });
+        this.add(item.get('id'), item_view);
+      } else {
+        item_view.model = item;
+        item_view.initialize();
+      }
+
+      item_view.render();
+      return item_view;
+    },
+    sortAndPositionAllItems: function sortAndPositionAllItems() {
+      var _this = this;
+
+      this.items.sort();
+      this.items.each(function (item) {
+        if (_.isUndefined(_this.get(item.get('id')))) {
+          _this.createItemView(item);
+        }
+
+        _this.positionItem(item, _this.el.querySelector(_this.listSelector));
+      });
+    },
+    positionItem: function positionItem(item, list_el) {
+      /* Place the View's DOM element in the correct alphabetical
+       * position in the list.
+       *
+       * IMPORTANT: there's an important implicit assumption being
+       * made here. And that is that initially this method gets called
+       * for each item in the right positional order.
+       *
+       * In other words, it gets called for the 0th, then the
+       * 1st, then the 2nd, 3rd and so on.
+       *
+       * That's why we call it in the "success" handler after
+       * fetching the items, so that we know we have ALL of
+       * them and that they're sorted.
+       */
+      var view = this.get(item.get('id')),
+          index = this.items.indexOf(item);
+
+      if (index === 0) {
+        list_el.insertAdjacentElement('afterbegin', view.el);
+      } else if (index === this.items.length - 1) {
+        list_el.insertAdjacentElement('beforeend', view.el);
+      } else {
+        var neighbour_el = list_el.querySelector('li:nth-child(' + index + ')');
+        neighbour_el.insertAdjacentElement('afterend', view.el);
+      }
+
+      return view;
+    }
+  });
+  return Backbone.Overview;
+});
+
+//# sourceMappingURL=backbone.overview.js.map;
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -40324,7 +41537,7 @@ return Backbone.BrowserStorage;
 
 /*global define */
 (function (root, factory) {
-  define('converse-chatboxes',["converse-core"], factory);
+  define('converse-chatboxes',["converse-core", "backbone.overview"], factory);
 })(this, function (converse) {
   "use strict";
 
@@ -40425,6 +41638,19 @@ return Backbone.BrowserStorage;
           return type === 'error' ? _.propertyOf(message.querySelector('error text'))('textContent') : _.propertyOf(message.querySelector('body'))('textContent');
         },
         getMessageAttributes: function getMessageAttributes(message, delay, original_stanza) {
+          /* Parses a passed in message stanza and returns an object
+           * of attributes.
+           *
+           * Parameters:
+           *    (XMLElement) message - The message stanza
+           *    (XMLElement) delay - The <delay> node from the
+           *      stanza, if there was one.
+           *    (XMLElement) original_stanza - The original stanza,
+           *      that contains the message stanza, if it was
+           *      contained, otherwise it's the message stanza itself.
+           */
+          var _converse = this.__super__._converse,
+              __ = _converse.__;
           delay = delay || message.querySelector('delay');
           var type = message.getAttribute('type'),
               body = this.getMessageBody(message);
@@ -40452,7 +41678,8 @@ return Backbone.BrowserStorage;
             fullname = this.get('fullname') || from;
           }
 
-          return {
+          var spoiler = message.querySelector("spoiler[xmlns=\"".concat(Strophe.NS.SPOILER, "\"]"));
+          var attrs = {
             'type': type,
             'chat_state': chat_state,
             'delayed': delayed,
@@ -40460,22 +41687,32 @@ return Backbone.BrowserStorage;
             'message': body || undefined,
             'msgid': message.getAttribute('id'),
             'sender': sender,
-            'time': time
+            'time': time,
+            'is_spoiler': !_.isNull(spoiler)
           };
+
+          if (spoiler) {
+            attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
+          }
+
+          return attrs;
         },
         createMessage: function createMessage(message, delay, original_stanza) {
+          /* Create a Backbone.Message object inside this chat box
+           * based on the identified message stanza.
+           */
           return this.messages.create(this.getMessageAttributes.apply(this, arguments));
         },
         newMessageWillBeHidden: function newMessageWillBeHidden() {
           /* Returns a boolean to indicate whether a newly received
-          * message will be visible to the user or not.
-          */
+           * message will be visible to the user or not.
+           */
           return this.get('hidden') || this.get('minimized') || this.isScrolledUp() || _converse.windowState === 'hidden';
         },
         incrementUnreadMsgCounter: function incrementUnreadMsgCounter(stanza) {
           /* Given a newly received message, update the unread counter if
-          * necessary.
-          */
+           * necessary.
+           */
           if (_.isNull(stanza.querySelector('body'))) {
             return; // The message has no text
           }
@@ -40556,8 +41793,11 @@ return Backbone.BrowserStorage;
         },
         onMessage: function onMessage(message) {
           /* Handler method for all incoming single-user chat "message"
-          * stanzas.
-          */
+           * stanzas.
+           *
+           * Parameters:
+           *    (XMLElement) message - The incoming message stanza
+           */
           var contact_jid,
               delay,
               resource,
@@ -40700,13 +41940,20 @@ return Backbone.BrowserStorage;
           * If the #conversejs element doesn't exist, create it.
           */
           if (!this.el) {
-            var el = document.querySelector('#conversejs');
+            var el = _converse.root.querySelector('#conversejs');
 
             if (_.isNull(el)) {
               el = document.createElement('div');
-              el.setAttribute('id', 'conversejs'); // Converse.js expects a <body> tag to be present.
+              el.setAttribute('id', 'conversejs');
 
-              document.querySelector('body').appendChild(el);
+              var body = _converse.root.querySelector('body');
+
+              if (body) {
+                body.appendChild(el);
+              } else {
+                // Perhaps inside a web component?
+                _converse.root.appendChild(el);
+              }
             }
 
             el.innerHTML = '';
@@ -43200,35 +44447,13 @@ return __p
 
 
 define('tpl!chatbox', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<div class="flyout box-flyout">\n    <div class="chat-body">\n        <div class="chat-content ';
  if (o.show_send_button) { ;
 __p += 'chat-content-sendbutton';
  } ;
-__p += '"></div>\n        <div class="new-msgs-indicator hidden">▼ ' +
-__e( o.unread_msgs ) +
-' ▼</div>\n        ';
- if (o.show_textarea) { ;
-__p += '\n        <form class="sendXMPPMessage">\n            ';
- if (o.show_toolbar) { ;
-__p += '\n                <ul class="chat-toolbar no-text-select"></ul>\n            ';
- } ;
-__p += '\n            <textarea\n                type="text"\n                class="chat-textarea ';
- if (o.show_send_button) { ;
-__p += 'chat-textarea-send-button';
- } ;
-__p += '"\n                placeholder="' +
-__e(o.label_personal_message) +
-'"></textarea>\n            ';
- if (o.show_send_button) { ;
-__p += '\n                <button type="submit" class="pure-button send-button">' +
-__e( o.label_send ) +
-'</button>\n            ';
- } ;
-__p += '\n        </form>\n        ';
- } ;
-__p += '\n    </div>\n</div>\n';
+__p += '"></div>\n        <div class="message-form-container"/>\n    </div>\n</div>\n';
 return __p
 };});
 
@@ -43265,6 +44490,46 @@ __p += '\n            </a>\n        ';
 __p += '\n        <p class="user-custom-message">' +
 __e( o.status ) +
 '</p>\n    </div>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!chatbox_message_form', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<div class="message-form-container">\n<div class="new-msgs-indicator hidden">▼ ' +
+__e( o.unread_msgs ) +
+' ▼</div>\n<form class="sendXMPPMessage">\n    ';
+ if (o.show_toolbar) { ;
+__p += '\n        <ul class="chat-toolbar no-text-select"></ul>\n    ';
+ } ;
+__p += '\n    <input type="text" placeholder="' +
+((__t = (o.label_spoiler_hint)) == null ? '' : __t) +
+'" value="' +
+((__t = ( o.hint_value )) == null ? '' : __t) +
+'"\n           class="';
+ if (!o.composing_spoiler) { ;
+__p += ' hidden ';
+ } ;
+__p += ' spoiler-hint"/>\n    <textarea\n        type="text"\n        class="chat-textarea\n            ';
+ if (o.show_send_button) { ;
+__p += ' chat-textarea-send-button ';
+ } ;
+__p += '\n            ';
+ if (o.composing_spoiler) { ;
+__p += ' spoiler ';
+ } ;
+__p += '"\n        placeholder="' +
+__e(o.label_personal_message) +
+'">' +
+((__t = ( o.message_value )) == null ? '' : __t) +
+'</textarea>\n    ';
+ if (o.show_send_button) { ;
+__p += '\n        <button type="submit" class="pure-button send-button">' +
+__e( o.label_send ) +
+'</button>\n    ';
+ } ;
+__p += '\n</form>\n</div>\n';
 return __p
 };});
 
@@ -43394,14 +44659,53 @@ return __p
 };});
 
 
+define('tpl!spoiler_button', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<li class="toggle-compose-spoiler">\n    <a class="\n        ';
+ if (o.composing_spoiler)  { ;
+__p += ' icon-eye-blocked ';
+ } ;
+__p += '\n        ';
+ if (!o.composing_spoiler)  { ;
+__p += ' icon-eye ';
+ } ;
+__p += '"\n        title="' +
+((__t = ( o.label_toggle_spoiler )) == null ? '' : __t) +
+'"></a>\n</li>\n';
+return __p
+};});
+
+
+define('tpl!spoiler_message', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<div class="message chat-message ' +
+__e(o.extra_classes) +
+'" data-isodate="' +
+__e(o.isodate) +
+'" data-msgid="' +
+__e(o.msgid) +
+'">\n    <span class="chat-msg-author chat-msg-' +
+__e(o.sender) +
+'">' +
+__e(o.time) +
+' ' +
+__e(o.username) +
+':&nbsp;</span>\n    <div class="spoiler-hint"><!-- message gets added here via renderMessage --></div>\n    <a class="icon-eye toggle-spoiler" data-toggle-state="closed" href="#">' +
+__e(o.label_show) +
+'</a>\n    <div class="chat-msg-content spoiler collapsed"><!-- message gets added here via renderMessage --></div>\n</div>\n';
+return __p
+};});
+
+
 define('tpl!toolbar', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  if (o.use_emoji)  { ;
-__p += '\n    <li class="toggle-toolbar-menu toggle-smiley icon-happy" title="' +
+__p += '\n<li class="toggle-toolbar-menu toggle-smiley">\n    <a class="icon-happy" title="' +
 __e(o.label_insert_smiley) +
-'">\n        <ul class="emoji-picker"></ul>\n    </li>\n';
+'"></a>\n    <span class="emoji-picker"></span>\n</li>\n';
  } ;
 __p += '\n';
  if (o.show_call_button)  { ;
@@ -43411,7 +44715,7 @@ __e(o.label_start_call) +
  } ;
 __p += '\n';
  if (o.show_clear_button)  { ;
-__p += '\n<li class="toggle-clear"><a class="icon-trash" title="' +
+__p += '\n<li class="toggle-clear"><a class="icon-remove" title="' +
 __e(o.label_clear) +
 '"></a></li>\n';
  } ;
@@ -43428,16 +44732,18 @@ return __p
 
 /*global define */
 (function (root, factory) {
-  define('converse-chatview',["converse-core", "converse-chatboxes", "emojione", "xss", "tpl!action", "tpl!chatbox", "tpl!chatbox_head", "tpl!emojis", "tpl!help_message", "tpl!info", "tpl!message", "tpl!new_day", "tpl!spinner", "tpl!toolbar"], factory);
-})(this, function (converse, dummy, emojione, xss, tpl_action, tpl_chatbox, tpl_chatbox_head, tpl_emojis, tpl_help_message, tpl_info, tpl_message, tpl_new_day, tpl_spinner, tpl_toolbar) {
+  define('converse-chatview',["converse-core", "converse-chatboxes", "emojione", "xss", "tpl!action", "tpl!chatbox", "tpl!chatbox_head", "tpl!chatbox_message_form", "tpl!emojis", "tpl!help_message", "tpl!info", "tpl!message", "tpl!new_day", "tpl!spinner", "tpl!spoiler_button", "tpl!spoiler_message", "tpl!toolbar"], factory);
+})(this, function (converse, dummy, emojione, xss, tpl_action, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_help_message, tpl_info, tpl_message, tpl_new_day, tpl_spinner, tpl_spoiler_button, tpl_spoiler_message, tpl_toolbar) {
   "use strict";
 
   var _converse$env = converse.env,
       $msg = _converse$env.$msg,
       Backbone = _converse$env.Backbone,
+      Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
       _ = _converse$env._,
       b64_sha1 = _converse$env.b64_sha1,
+      f = _converse$env.f,
       sizzle = _converse$env.sizzle,
       moment = _converse$env.moment;
   var u = converse.env.utils;
@@ -43456,7 +44762,7 @@ return __p
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-chatboxes"],
+    dependencies: ["converse-chatboxes", "converse-disco"],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -43465,14 +44771,16 @@ return __p
       // New functions which don't exist yet can also be added.
       //
       registerGlobalEventHandlers: function registerGlobalEventHandlers() {
+        var _converse = this.__super__._converse;
+
         this.__super__.registerGlobalEventHandlers();
 
-        document.addEventListener('click', function (ev) {
+        _converse.root.addEventListener('click', function (ev) {
           if (_.includes(ev.target.classList, 'toggle-toolbar-menu') || _.includes(ev.target.classList, 'insert-emoji')) {
             return;
           }
 
-          u.slideInAllElements(document.querySelectorAll('.toolbar-menu'));
+          u.slideInAllElements(_converse.root.querySelectorAll('.toolbar-menu'));
         });
       },
       ChatBoxViews: {
@@ -43508,9 +44816,10 @@ return __p
         'show_message_load_animation': false,
         'time_format': 'HH:mm',
         'visible_toolbar_buttons': {
-          'emoji': true,
           'call': false,
-          'clear': true
+          'clear': true,
+          'emoji': true,
+          'spoiler': true
         }
       });
 
@@ -43592,7 +44901,7 @@ return __p
           }
         },
         setScrollPosition: function setScrollPosition(ev) {
-          this.model.save('scroll_position', ev.target.scrollTop);
+          this.model.save('scroll_position', this.content);
         },
         chooseSkinTone: function chooseSkinTone(ev) {
           ev.preventDefault();
@@ -43651,13 +44960,15 @@ return __p
         // Leaky abstraction from MUC
         events: {
           'click .close-chatbox-button': 'close',
-          'keypress .chat-textarea': 'keyPressed',
+          'click .new-msgs-indicator': 'viewUnreadMessages',
           'click .send-button': 'onFormSubmitted',
-          'click .toggle-smiley': 'toggleEmojiMenu',
-          'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
-          'click .toggle-clear': 'clearMessages',
           'click .toggle-call': 'toggleCall',
-          'click .new-msgs-indicator': 'viewUnreadMessages'
+          'click .toggle-clear': 'clearMessages',
+          'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
+          'click .toggle-smiley': 'toggleEmojiMenu',
+          'click .toggle-spoiler': 'toggleSpoilerMessage',
+          'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
+          'keypress .chat-textarea': 'keyPressed'
         },
         initialize: function initialize() {
           this.scrollDown = _.debounce(this._scrollDown, 250);
@@ -43671,7 +44982,8 @@ return __p
           this.model.on('change:chat_status', this.onChatStatusChanged, this);
           this.model.on('showHelpMessages', this.showHelpMessages, this);
           this.model.on('sendMessage', this.sendMessage, this);
-          this.render().renderToolbar().insertHeading().fetchMessages();
+          this.render();
+          this.fetchMessages();
 
           _converse.emit('chatBoxOpened', this);
 
@@ -43680,15 +44992,80 @@ return __p
         render: function render() {
           this.el.setAttribute('id', this.model.get('box_id'));
           this.el.innerHTML = tpl_chatbox(_.extend(this.model.toJSON(), {
-            label_personal_message: __('Personal message'),
-            label_send: __('Send'),
-            show_send_button: _converse.show_send_button,
-            show_textarea: true,
-            show_toolbar: _converse.show_toolbar,
             unread_msgs: __('You have unread messages')
           }));
           this.content = this.el.querySelector('.chat-content');
+          this.renderMessageForm();
+          this.insertHeading();
           return this;
+        },
+        renderToolbar: function renderToolbar(toolbar, options) {
+          if (!_converse.show_toolbar) {
+            return this;
+          }
+
+          toolbar = toolbar || tpl_toolbar;
+          options = _.assign(this.model.toJSON(), this.getToolbarOptions(options || {}));
+          this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
+          this.addSpoilerButton(options);
+          this.insertEmojiPicker();
+          return this;
+        },
+        renderMessageForm: function renderMessageForm() {
+          var placeholder;
+
+          if (this.model.get('composing_spoiler')) {
+            placeholder = __('Hidden message');
+          } else {
+            placeholder = __('Personal message');
+          }
+
+          var form_container = this.el.querySelector('.message-form-container');
+          form_container.innerHTML = tpl_chatbox_message_form(_.extend(this.model.toJSON(), {
+            'hint_value': _.get(this.el.querySelector('.spoiler-hint'), 'value'),
+            'label_personal_message': placeholder,
+            'label_send': __('Send'),
+            'label_spoiler_hint': __('Optional hint'),
+            'message_value': _.get(this.el.querySelector('.chat-textarea'), 'value'),
+            'show_send_button': _converse.show_send_button,
+            'show_toolbar': _converse.show_toolbar,
+            'unread_msgs': __('You have unread messages')
+          }));
+          this.renderToolbar();
+        },
+        addSpoilerButton: function addSpoilerButton(options) {
+          var _this2 = this;
+
+          /* Asynchronously adds a button for writing spoiler
+           * messages, based on whether the contact's client supports
+           * it.
+           */
+          if (!options.show_spoiler_button || this.model.get('type') === 'chatroom') {
+            return;
+          }
+
+          var contact_jid = this.model.get('jid');
+          var resources = this.model.get('resources');
+
+          if (_.isEmpty(resources)) {
+            return;
+          }
+
+          Promise.all(_.map(_.keys(resources), function (resource) {
+            return _converse.api.disco.supports(Strophe.NS.SPOILER, "".concat(contact_jid, "/").concat(resource));
+          })).then(function (results) {
+            var supported = _.every(f.map(f.get('supported'))(results));
+
+            if (supported) {
+              var html = tpl_spoiler_button(_this2.model.toJSON());
+
+              if (_converse.visible_toolbar_buttons.emoji) {
+                _this2.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
+              } else {
+                _this2.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
+              }
+            }
+          });
         },
         insertHeading: function insertHeading() {
           this.heading = new _converse.ChatBoxHeading({
@@ -43700,15 +45077,24 @@ return __p
           flyout.insertBefore(this.heading.el, flyout.querySelector('.chat-body'));
           return this;
         },
-        createEmojiPicker: function createEmojiPicker() {
-          if (_.isUndefined(_converse.emojipicker)) {
-            _converse.emojipicker = new _converse.EmojiPicker();
+        getToolbarOptions: function getToolbarOptions(options) {
+          var label_toggle_spoiler;
 
-            _converse.emojipicker.fetch();
+          if (this.model.get('composing_spoiler')) {
+            label_toggle_spoiler = __('Click to write as a normal (non-spoiler) message');
+          } else {
+            label_toggle_spoiler = __('Click to write your message as a spoiler');
           }
 
-          this.emoji_picker_view = new _converse.EmojiPickerView({
-            'model': _converse.emojipicker
+          return _.extend(options || {}, {
+            'label_clear': __('Clear all messages'),
+            'label_insert_smiley': __('Insert a smiley'),
+            'label_start_call': __('Start a call'),
+            'label_toggle_spoiler': label_toggle_spoiler,
+            'show_call_button': _converse.visible_toolbar_buttons.call,
+            'show_clear_button': _converse.visible_toolbar_buttons.clear,
+            'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
+            'use_emoji': _converse.visible_toolbar_buttons.emoji
           });
         },
         afterMessagesFetched: function afterMessagesFetched() {
@@ -43731,7 +45117,7 @@ return __p
            * as well as src/converse-muc.js (if those plugins are
            * enabled).
            */
-          var container = document.querySelector('#conversejs');
+          var container = _converse.root.querySelector('#conversejs');
 
           if (this.el.parentNode !== container) {
             container.insertBefore(this.el, container.firstChild);
@@ -43889,14 +45275,20 @@ return __p
             this.scrollDown();
           }
         },
-        getExtraMessageTemplateAttributes: function getExtraMessageTemplateAttributes() {
+        getExtraMessageTemplateAttributes: function getExtraMessageTemplateAttributes(attrs) {
           /* Provides a hook for sending more attributes to the
            * message template.
            *
            * Parameters:
            *  (Object) attrs: An object containing message attributes.
            */
-          return {};
+          if (attrs.is_spoiler) {
+            return {
+              'label_show': __('Show hidden message')
+            };
+          } else {
+            return {};
+          }
         },
         getExtraMessageClasses: function getExtraMessageClasses(attrs) {
           if (_converse.show_message_load_animation) {
@@ -43904,6 +45296,16 @@ return __p
           } else {
             return attrs.delayed && 'delayed' || '';
           }
+        },
+        renderSpoilerMessage: function renderSpoilerMessage(msg, attrs) {
+          /* Render a "spoiler" message, as defined in XEP-0382
+           *
+           * Parameters:
+           *  (HTMLElement) msg: The chat message DOM element
+           *  (Object) attrs: An object containing the message attributes.
+           */
+          var hint = msg.querySelector('.spoiler-hint');
+          hint.appendChild(document.createTextNode(attrs.spoiler_hint || ''));
         },
         renderMessage: function renderMessage(attrs) {
           /* Renders a chat message based on the passed in attributes.
@@ -43930,6 +45332,8 @@ return __p
             } else {
               username = attrs.fullname;
             }
+          } else if (attrs.is_spoiler) {
+            template = tpl_spoiler_message;
           } else {
             template = tpl_message;
             username = attrs.sender === 'me' && __('me') || fullname;
@@ -43953,14 +45357,19 @@ return __p
           msg_content.innerHTML = u.addEmoji(_converse, emojione, u.addHyperlinks(xss.filterXSS(text, {
             'whiteList': {}
           })));
+
+          if (attrs.is_spoiler) {
+            this.renderSpoilerMessage(msg, attrs);
+          }
+
           u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
           return msg;
         },
         showHelpMessages: function showHelpMessages(msgs, type, spinner) {
-          var _this2 = this;
+          var _this3 = this;
 
           _.each(msgs, function (msg) {
-            _this2.content.insertAdjacentHTML('beforeend', tpl_help_message({
+            _this3.content.insertAdjacentHTML('beforeend', tpl_help_message({
               'isodate': moment().format(),
               'type': type || 'info',
               'message': xss.filterXSS(msg, {
@@ -44068,14 +45477,28 @@ return __p
           });
         },
         createMessageStanza: function createMessageStanza(message) {
-          return $msg({
-            from: _converse.connection.jid,
-            to: this.model.get('jid'),
-            type: 'chat',
-            id: message.get('msgid')
+          var stanza = $msg({
+            'from': _converse.connection.jid,
+            'to': this.model.get('jid'),
+            'type': 'chat',
+            'id': message.get('msgid')
           }).c('body').t(message.get('message')).up().c(_converse.ACTIVE, {
             'xmlns': Strophe.NS.CHATSTATES
           }).up();
+
+          if (message.get('is_spoiler')) {
+            if (message.get('spoiler_hint')) {
+              stanza.c('spoiler', {
+                'xmlns': Strophe.NS.SPOILER
+              }, message.get('spoiler_hint'));
+            } else {
+              stanza.c('spoiler', {
+                'xmlns': Strophe.NS.SPOILER
+              });
+            }
+          }
+
+          return stanza;
         },
         sendMessage: function sendMessage(message) {
           /* Responsible for sending off a text message.
@@ -44103,39 +45526,60 @@ return __p
             }).up().cnode(messageStanza.tree()));
           }
         },
-        onMessageSubmitted: function onMessageSubmitted(text) {
+        parseMessageForCommands: function parseMessageForCommands(text) {
+          var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
+
+          if (match) {
+            if (match[1] === "clear") {
+              this.clearMessages();
+              return true;
+            } else if (match[1] === "help") {
+              var msgs = ["<strong>/clear</strong>: ".concat(__('Remove messages')), "<strong>/me</strong>: ".concat(__('Write in the third person')), "<strong>/help</strong>: ".concat(__('Show this menu'))];
+              this.showHelpMessages(msgs);
+              return true;
+            }
+          }
+        },
+        onMessageSubmitted: function onMessageSubmitted(text, spoiler_hint) {
           /* This method gets called once the user has typed a message
            * and then pressed enter in a chat box.
            *
            *  Parameters:
-           *    (string) text - The chat message text.
+           *    (String) text - The chat message text.
+           *    (String) spoiler_hint - A hint in case the message
+           *      text is a hidden/spoiler message. See XEP-0382
            */
           if (!_converse.connection.authenticated) {
             return this.showHelpMessages(['Sorry, the connection has been lost, ' + 'and your message could not be sent'], 'error');
           }
 
-          var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
-
-          if (match) {
-            if (match[1] === "clear") {
-              return this.clearMessages();
-            } else if (match[1] === "help") {
-              var msgs = ["<strong>/clear</strong>: ".concat(__('Remove messages')), "<strong>/me</strong>: ".concat(__('Write in the third person')), "<strong>/help</strong>: ".concat(__('Show this menu'))];
-              this.showHelpMessages(msgs);
-              return;
-            }
+          if (this.parseMessageForCommands(text)) {
+            return;
           }
 
-          var fullname = _converse.xmppstatus.get('fullname');
-
-          fullname = _.isEmpty(fullname) ? _converse.bare_jid : fullname;
-          var message = this.model.messages.create({
-            fullname: fullname,
-            sender: 'me',
-            time: moment().format(),
-            message: emojione.shortnameToUnicode(text)
-          });
+          var attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
+          var message = this.model.messages.create(attrs);
           this.sendMessage(message);
+        },
+        getOutgoingMessageAttributes: function getOutgoingMessageAttributes(text, spoiler_hint) {
+          /* Overridable method which returns the attributes to be
+           * passed to Backbone.Message's constructor.
+           */
+          var fullname = _converse.xmppstatus.get('fullname'),
+              is_spoiler = this.model.get('composing_spoiler'),
+              attrs = {
+            'fullname': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
+            'sender': 'me',
+            'time': moment().format(),
+            'message': emojione.shortnameToUnicode(text),
+            'is_spoiler': is_spoiler
+          };
+
+          if (is_spoiler) {
+            attrs.spoiler_hint = spoiler_hint;
+          }
+
+          return attrs;
         },
         sendChatState: function sendChatState() {
           /* Sends a message with the status of the user in this chat session
@@ -44186,11 +45630,19 @@ return __p
           ev.preventDefault();
           var textarea = this.el.querySelector('.chat-textarea'),
               message = textarea.value;
+          var spoiler_hint;
+
+          if (this.model.get('composing_spoiler')) {
+            var hint_el = this.el.querySelector('form.sendXMPPMessage input.spoiler-hint');
+            spoiler_hint = hint_el.value;
+            hint_el.value = '';
+          }
+
           textarea.value = '';
           textarea.focus();
 
           if (message !== '') {
-            this.onMessageSubmitted(message);
+            this.onMessageSubmitted(message, spoiler_hint);
 
             _converse.emit('messageSend', message);
           }
@@ -44235,6 +45687,17 @@ return __p
           textbox_el.value = existing + value + ' ';
           textbox_el.focus();
         },
+        createEmojiPicker: function createEmojiPicker() {
+          if (_.isUndefined(_converse.emojipicker)) {
+            _converse.emojipicker = new _converse.EmojiPicker();
+
+            _converse.emojipicker.fetch();
+          }
+
+          this.emoji_picker_view = new _converse.EmojiPickerView({
+            'model': _converse.emojipicker
+          });
+        },
         insertEmoji: function insertEmoji(ev) {
           ev.stopPropagation();
           var target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
@@ -44253,7 +45716,7 @@ return __p
             }
           }
 
-          var elements = _.difference(document.querySelectorAll('.toolbar-menu'), [this.emoji_picker_view.el]);
+          var elements = _.difference(_converse.root.querySelectorAll('.toolbar-menu'), [this.emoji_picker_view.el]);
 
           u.slideInAllElements(elements).then(_.partial(u.slideToggleElement, this.emoji_picker_view.el)).then(this.focus.bind(this));
         },
@@ -44264,6 +45727,31 @@ return __p
             connection: _converse.connection,
             model: this.model
           });
+        },
+        toggleComposeSpoilerMessage: function toggleComposeSpoilerMessage() {
+          this.model.set('composing_spoiler', !this.model.get('composing_spoiler'));
+          this.renderMessageForm();
+          this.focus();
+        },
+        toggleSpoilerMessage: function toggleSpoilerMessage(ev) {
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          var toggle_el = ev.target;
+          u.slideToggleElement(toggle_el.parentElement.querySelector('.spoiler'));
+
+          if (toggle_el.getAttribute("data-toggle-state") == "closed") {
+            toggle_el.textContent = __('Hide hidden message');
+            toggle_el.classList.remove("icon-eye");
+            toggle_el.classList.add("icon-eye-blocked");
+            toggle_el.setAttribute("data-toggle-state", "open");
+          } else {
+            toggle_el.textContent = __('Show hidden message');
+            toggle_el.classList.remove("icon-eye-blocked");
+            toggle_el.classList.add("icon-eye");
+            toggle_el.setAttribute("data-toggle-state", "closed");
+          }
         },
         onChatStatusChanged: function onChatStatusChanged(item) {
           var chat_status = item.get('chat_status');
@@ -44310,32 +45798,15 @@ return __p
 
           return this;
         },
-        getToolbarOptions: function getToolbarOptions(options) {
-          return _.extend(options || {}, {
-            'label_clear': __('Clear all messages'),
-            'label_insert_smiley': __('Insert a smiley'),
-            'label_start_call': __('Start a call'),
-            'show_call_button': _converse.visible_toolbar_buttons.call,
-            'show_clear_button': _converse.visible_toolbar_buttons.clear,
-            'use_emoji': _converse.visible_toolbar_buttons.emoji
-          });
-        },
-        renderToolbar: function renderToolbar(toolbar, options) {
-          if (!_converse.show_toolbar) {
-            return;
-          }
-
-          toolbar = toolbar || tpl_toolbar;
-          options = _.assign(this.model.toJSON(), this.getToolbarOptions(options || {}));
-          this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
-          return this;
-        },
         renderEmojiPicker: function renderEmojiPicker() {
-          var toggle = this.el.querySelector('.toggle-smiley');
+          this.emoji_picker_view.render();
+        },
+        insertEmojiPicker: function insertEmojiPicker() {
+          var picker_el = this.el.querySelector('.emoji-picker');
 
-          if (!_.isNull(toggle)) {
-            toggle.innerHTML = '';
-            toggle.appendChild(this.emoji_picker_view.render().el);
+          if (!_.isNull(picker_el)) {
+            picker_el.innerHTML = '';
+            picker_el.appendChild(this.emoji_picker_view.el);
           }
         },
         focus: function focus() {
@@ -44355,12 +45826,13 @@ return __p
         },
         afterShown: function afterShown(focus) {
           if (u.isPersistableModel(this.model)) {
+            this.model.clearUnreadMsgCounter();
             this.model.save();
           }
 
           this.setChatState(_converse.ACTIVE);
-          this.renderEmojiPicker();
           this.scrollDown();
+          this.renderEmojiPicker();
 
           if (focus) {
             this.focus();
@@ -44460,1060 +45932,16 @@ return __p
           }
         }
       });
+
+      _converse.on('connected', function () {
+        // Advertise that we support XEP-0382 Message Spoilers
+        _converse.connection.disco.addFeature(Strophe.NS.SPOILER);
+      });
     }
   });
   return converse;
 });
 //# sourceMappingURL=converse-chatview.js.map;
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define('lodash.converter',[], factory);
-	else if(typeof exports === 'object')
-		exports["fp"] = factory();
-	else
-		root["fp"] = factory();
-})(this, function() {
-return /******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId])
-/******/ 			return installedModules[moduleId].exports;
-
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			exports: {},
-/******/ 			id: moduleId,
-/******/ 			loaded: false
-/******/ 		};
-
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
-/******/ 		// Flag the module as loaded
-/******/ 		module.loaded = true;
-
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-
-
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseConvert = __webpack_require__(1);
-
-	/**
-	 * Converts `lodash` to an immutable auto-curried iteratee-first data-last
-	 * version with conversion `options` applied.
-	 *
-	 * @param {Function} lodash The lodash function to convert.
-	 * @param {Object} [options] The options object. See `baseConvert` for more details.
-	 * @returns {Function} Returns the converted `lodash`.
-	 */
-	function browserConvert(lodash, options) {
-	  return baseConvert(lodash, lodash, options);
-	}
-
-	if (typeof _ == 'function' && typeof _.runInContext == 'function') {
-      // XXX: Customization in order to be able to run both _ and fp in the
-      // non-AMD usecase.
-	  fp = browserConvert(_.runInContext());
-	}
-	module.exports = browserConvert;
-
-
-/***/ },
-/* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var mapping = __webpack_require__(2),
-	    fallbackHolder = __webpack_require__(3);
-
-	/** Built-in value reference. */
-	var push = Array.prototype.push;
-
-	/**
-	 * Creates a function, with an arity of `n`, that invokes `func` with the
-	 * arguments it receives.
-	 *
-	 * @private
-	 * @param {Function} func The function to wrap.
-	 * @param {number} n The arity of the new function.
-	 * @returns {Function} Returns the new function.
-	 */
-	function baseArity(func, n) {
-	  return n == 2
-	    ? function(a, b) { return func.apply(undefined, arguments); }
-	    : function(a) { return func.apply(undefined, arguments); };
-	}
-
-	/**
-	 * Creates a function that invokes `func`, with up to `n` arguments, ignoring
-	 * any additional arguments.
-	 *
-	 * @private
-	 * @param {Function} func The function to cap arguments for.
-	 * @param {number} n The arity cap.
-	 * @returns {Function} Returns the new function.
-	 */
-	function baseAry(func, n) {
-	  return n == 2
-	    ? function(a, b) { return func(a, b); }
-	    : function(a) { return func(a); };
-	}
-
-	/**
-	 * Creates a clone of `array`.
-	 *
-	 * @private
-	 * @param {Array} array The array to clone.
-	 * @returns {Array} Returns the cloned array.
-	 */
-	function cloneArray(array) {
-	  var length = array ? array.length : 0,
-	      result = Array(length);
-
-	  while (length--) {
-	    result[length] = array[length];
-	  }
-	  return result;
-	}
-
-	/**
-	 * Creates a function that clones a given object using the assignment `func`.
-	 *
-	 * @private
-	 * @param {Function} func The assignment function.
-	 * @returns {Function} Returns the new cloner function.
-	 */
-	function createCloner(func) {
-	  return function(object) {
-	    return func({}, object);
-	  };
-	}
-
-	/**
-	 * A specialized version of `_.spread` which flattens the spread array into
-	 * the arguments of the invoked `func`.
-	 *
-	 * @private
-	 * @param {Function} func The function to spread arguments over.
-	 * @param {number} start The start position of the spread.
-	 * @returns {Function} Returns the new function.
-	 */
-	function flatSpread(func, start) {
-	  return function() {
-	    var length = arguments.length,
-	        lastIndex = length - 1,
-	        args = Array(length);
-
-	    while (length--) {
-	      args[length] = arguments[length];
-	    }
-	    var array = args[start],
-	        otherArgs = args.slice(0, start);
-
-	    if (array) {
-	      push.apply(otherArgs, array);
-	    }
-	    if (start != lastIndex) {
-	      push.apply(otherArgs, args.slice(start + 1));
-	    }
-	    return func.apply(this, otherArgs);
-	  };
-	}
-
-	/**
-	 * Creates a function that wraps `func` and uses `cloner` to clone the first
-	 * argument it receives.
-	 *
-	 * @private
-	 * @param {Function} func The function to wrap.
-	 * @param {Function} cloner The function to clone arguments.
-	 * @returns {Function} Returns the new immutable function.
-	 */
-	function wrapImmutable(func, cloner) {
-	  return function() {
-	    var length = arguments.length;
-	    if (!length) {
-	      return;
-	    }
-	    var args = Array(length);
-	    while (length--) {
-	      args[length] = arguments[length];
-	    }
-	    var result = args[0] = cloner.apply(undefined, args);
-	    func.apply(undefined, args);
-	    return result;
-	  };
-	}
-
-	/**
-	 * The base implementation of `convert` which accepts a `util` object of methods
-	 * required to perform conversions.
-	 *
-	 * @param {Object} util The util object.
-	 * @param {string} name The name of the function to convert.
-	 * @param {Function} func The function to convert.
-	 * @param {Object} [options] The options object.
-	 * @param {boolean} [options.cap=true] Specify capping iteratee arguments.
-	 * @param {boolean} [options.curry=true] Specify currying.
-	 * @param {boolean} [options.fixed=true] Specify fixed arity.
-	 * @param {boolean} [options.immutable=true] Specify immutable operations.
-	 * @param {boolean} [options.rearg=true] Specify rearranging arguments.
-	 * @returns {Function|Object} Returns the converted function or object.
-	 */
-	function baseConvert(util, name, func, options) {
-	  var setPlaceholder,
-	      isLib = typeof name == 'function',
-	      isObj = name === Object(name);
-
-	  if (isObj) {
-	    options = func;
-	    func = name;
-	    name = undefined;
-	  }
-	  if (func == null) {
-	    throw new TypeError;
-	  }
-	  options || (options = {});
-
-	  var config = {
-	    'cap': 'cap' in options ? options.cap : true,
-	    'curry': 'curry' in options ? options.curry : true,
-	    'fixed': 'fixed' in options ? options.fixed : true,
-	    'immutable': 'immutable' in options ? options.immutable : true,
-	    'rearg': 'rearg' in options ? options.rearg : true
-	  };
-
-	  var forceCurry = ('curry' in options) && options.curry,
-	      forceFixed = ('fixed' in options) && options.fixed,
-	      forceRearg = ('rearg' in options) && options.rearg,
-	      placeholder = isLib ? func : fallbackHolder,
-	      pristine = isLib ? func.runInContext() : undefined;
-
-	  var helpers = isLib ? func : {
-	    'ary': util.ary,
-	    'assign': util.assign,
-	    'clone': util.clone,
-	    'curry': util.curry,
-	    'forEach': util.forEach,
-	    'isArray': util.isArray,
-	    'isFunction': util.isFunction,
-	    'iteratee': util.iteratee,
-	    'keys': util.keys,
-	    'rearg': util.rearg,
-	    'toInteger': util.toInteger,
-	    'toPath': util.toPath
-	  };
-
-	  var ary = helpers.ary,
-	      assign = helpers.assign,
-	      clone = helpers.clone,
-	      curry = helpers.curry,
-	      each = helpers.forEach,
-	      isArray = helpers.isArray,
-	      isFunction = helpers.isFunction,
-	      keys = helpers.keys,
-	      rearg = helpers.rearg,
-	      toInteger = helpers.toInteger,
-	      toPath = helpers.toPath;
-
-	  var aryMethodKeys = keys(mapping.aryMethod);
-
-	  var wrappers = {
-	    'castArray': function(castArray) {
-	      return function() {
-	        var value = arguments[0];
-	        return isArray(value)
-	          ? castArray(cloneArray(value))
-	          : castArray.apply(undefined, arguments);
-	      };
-	    },
-	    'iteratee': function(iteratee) {
-	      return function() {
-	        var func = arguments[0],
-	            arity = arguments[1],
-	            result = iteratee(func, arity),
-	            length = result.length;
-
-	        if (config.cap && typeof arity == 'number') {
-	          arity = arity > 2 ? (arity - 2) : 1;
-	          return (length && length <= arity) ? result : baseAry(result, arity);
-	        }
-	        return result;
-	      };
-	    },
-	    'mixin': function(mixin) {
-	      return function(source) {
-	        var func = this;
-	        if (!isFunction(func)) {
-	          return mixin(func, Object(source));
-	        }
-	        var pairs = [];
-	        each(keys(source), function(key) {
-	          if (isFunction(source[key])) {
-	            pairs.push([key, func.prototype[key]]);
-	          }
-	        });
-
-	        mixin(func, Object(source));
-
-	        each(pairs, function(pair) {
-	          var value = pair[1];
-	          if (isFunction(value)) {
-	            func.prototype[pair[0]] = value;
-	          } else {
-	            delete func.prototype[pair[0]];
-	          }
-	        });
-	        return func;
-	      };
-	    },
-	    'nthArg': function(nthArg) {
-	      return function(n) {
-	        var arity = n < 0 ? 1 : (toInteger(n) + 1);
-	        return curry(nthArg(n), arity);
-	      };
-	    },
-	    'rearg': function(rearg) {
-	      return function(func, indexes) {
-	        var arity = indexes ? indexes.length : 0;
-	        return curry(rearg(func, indexes), arity);
-	      };
-	    },
-	    'runInContext': function(runInContext) {
-	      return function(context) {
-	        return baseConvert(util, runInContext(context), options);
-	      };
-	    }
-	  };
-
-	  /*--------------------------------------------------------------------------*/
-
-	  /**
-	   * Casts `func` to a function with an arity capped iteratee if needed.
-	   *
-	   * @private
-	   * @param {string} name The name of the function to inspect.
-	   * @param {Function} func The function to inspect.
-	   * @returns {Function} Returns the cast function.
-	   */
-	  function castCap(name, func) {
-	    if (config.cap) {
-	      var indexes = mapping.iterateeRearg[name];
-	      if (indexes) {
-	        return iterateeRearg(func, indexes);
-	      }
-	      var n = !isLib && mapping.iterateeAry[name];
-	      if (n) {
-	        return iterateeAry(func, n);
-	      }
-	    }
-	    return func;
-	  }
-
-	  /**
-	   * Casts `func` to a curried function if needed.
-	   *
-	   * @private
-	   * @param {string} name The name of the function to inspect.
-	   * @param {Function} func The function to inspect.
-	   * @param {number} n The arity of `func`.
-	   * @returns {Function} Returns the cast function.
-	   */
-	  function castCurry(name, func, n) {
-	    return (forceCurry || (config.curry && n > 1))
-	      ? curry(func, n)
-	      : func;
-	  }
-
-	  /**
-	   * Casts `func` to a fixed arity function if needed.
-	   *
-	   * @private
-	   * @param {string} name The name of the function to inspect.
-	   * @param {Function} func The function to inspect.
-	   * @param {number} n The arity cap.
-	   * @returns {Function} Returns the cast function.
-	   */
-	  function castFixed(name, func, n) {
-	    if (config.fixed && (forceFixed || !mapping.skipFixed[name])) {
-	      var data = mapping.methodSpread[name],
-	          start = data && data.start;
-
-	      return start  === undefined ? ary(func, n) : flatSpread(func, start);
-	    }
-	    return func;
-	  }
-
-	  /**
-	   * Casts `func` to an rearged function if needed.
-	   *
-	   * @private
-	   * @param {string} name The name of the function to inspect.
-	   * @param {Function} func The function to inspect.
-	   * @param {number} n The arity of `func`.
-	   * @returns {Function} Returns the cast function.
-	   */
-	  function castRearg(name, func, n) {
-	    return (config.rearg && n > 1 && (forceRearg || !mapping.skipRearg[name]))
-	      ? rearg(func, mapping.methodRearg[name] || mapping.aryRearg[n])
-	      : func;
-	  }
-
-	  /**
-	   * Creates a clone of `object` by `path`.
-	   *
-	   * @private
-	   * @param {Object} object The object to clone.
-	   * @param {Array|string} path The path to clone by.
-	   * @returns {Object} Returns the cloned object.
-	   */
-	  function cloneByPath(object, path) {
-	    path = toPath(path);
-
-	    var index = -1,
-	        length = path.length,
-	        lastIndex = length - 1,
-	        result = clone(Object(object)),
-	        nested = result;
-
-	    while (nested != null && ++index < length) {
-	      var key = path[index],
-	          value = nested[key];
-
-	      if (value != null) {
-	        nested[path[index]] = clone(index == lastIndex ? value : Object(value));
-	      }
-	      nested = nested[key];
-	    }
-	    return result;
-	  }
-
-	  /**
-	   * Converts `lodash` to an immutable auto-curried iteratee-first data-last
-	   * version with conversion `options` applied.
-	   *
-	   * @param {Object} [options] The options object. See `baseConvert` for more details.
-	   * @returns {Function} Returns the converted `lodash`.
-	   */
-	  function convertLib(options) {
-	    return _.runInContext.convert(options)(undefined);
-	  }
-
-	  /**
-	   * Create a converter function for `func` of `name`.
-	   *
-	   * @param {string} name The name of the function to convert.
-	   * @param {Function} func The function to convert.
-	   * @returns {Function} Returns the new converter function.
-	   */
-	  function createConverter(name, func) {
-	    var realName = mapping.aliasToReal[name] || name,
-	        methodName = mapping.remap[realName] || realName,
-	        oldOptions = options;
-
-	    return function(options) {
-	      var newUtil = isLib ? pristine : helpers,
-	          newFunc = isLib ? pristine[methodName] : func,
-	          newOptions = assign(assign({}, oldOptions), options);
-
-	      return baseConvert(newUtil, realName, newFunc, newOptions);
-	    };
-	  }
-
-	  /**
-	   * Creates a function that wraps `func` to invoke its iteratee, with up to `n`
-	   * arguments, ignoring any additional arguments.
-	   *
-	   * @private
-	   * @param {Function} func The function to cap iteratee arguments for.
-	   * @param {number} n The arity cap.
-	   * @returns {Function} Returns the new function.
-	   */
-	  function iterateeAry(func, n) {
-	    return overArg(func, function(func) {
-	      return typeof func == 'function' ? baseAry(func, n) : func;
-	    });
-	  }
-
-	  /**
-	   * Creates a function that wraps `func` to invoke its iteratee with arguments
-	   * arranged according to the specified `indexes` where the argument value at
-	   * the first index is provided as the first argument, the argument value at
-	   * the second index is provided as the second argument, and so on.
-	   *
-	   * @private
-	   * @param {Function} func The function to rearrange iteratee arguments for.
-	   * @param {number[]} indexes The arranged argument indexes.
-	   * @returns {Function} Returns the new function.
-	   */
-	  function iterateeRearg(func, indexes) {
-	    return overArg(func, function(func) {
-	      var n = indexes.length;
-	      return baseArity(rearg(baseAry(func, n), indexes), n);
-	    });
-	  }
-
-	  /**
-	   * Creates a function that invokes `func` with its first argument transformed.
-	   *
-	   * @private
-	   * @param {Function} func The function to wrap.
-	   * @param {Function} transform The argument transform.
-	   * @returns {Function} Returns the new function.
-	   */
-	  function overArg(func, transform) {
-	    return function() {
-	      var length = arguments.length;
-	      if (!length) {
-	        return func();
-	      }
-	      var args = Array(length);
-	      while (length--) {
-	        args[length] = arguments[length];
-	      }
-	      var index = config.rearg ? 0 : (length - 1);
-	      args[index] = transform(args[index]);
-	      return func.apply(undefined, args);
-	    };
-	  }
-
-	  /**
-	   * Creates a function that wraps `func` and applys the conversions
-	   * rules by `name`.
-	   *
-	   * @private
-	   * @param {string} name The name of the function to wrap.
-	   * @param {Function} func The function to wrap.
-	   * @returns {Function} Returns the converted function.
-	   */
-	  function wrap(name, func) {
-	    var result,
-	        realName = mapping.aliasToReal[name] || name,
-	        wrapped = func,
-	        wrapper = wrappers[realName];
-
-	    if (wrapper) {
-	      wrapped = wrapper(func);
-	    }
-	    else if (config.immutable) {
-	      if (mapping.mutate.array[realName]) {
-	        wrapped = wrapImmutable(func, cloneArray);
-	      }
-	      else if (mapping.mutate.object[realName]) {
-	        wrapped = wrapImmutable(func, createCloner(func));
-	      }
-	      else if (mapping.mutate.set[realName]) {
-	        wrapped = wrapImmutable(func, cloneByPath);
-	      }
-	    }
-	    each(aryMethodKeys, function(aryKey) {
-	      each(mapping.aryMethod[aryKey], function(otherName) {
-	        if (realName == otherName) {
-	          var data = mapping.methodSpread[realName],
-	              afterRearg = data && data.afterRearg;
-
-	          result = afterRearg
-	            ? castFixed(realName, castRearg(realName, wrapped, aryKey), aryKey)
-	            : castRearg(realName, castFixed(realName, wrapped, aryKey), aryKey);
-
-	          result = castCap(realName, result);
-	          result = castCurry(realName, result, aryKey);
-	          return false;
-	        }
-	      });
-	      return !result;
-	    });
-
-	    result || (result = wrapped);
-	    if (result == func) {
-	      result = forceCurry ? curry(result, 1) : function() {
-	        return func.apply(this, arguments);
-	      };
-	    }
-	    result.convert = createConverter(realName, func);
-	    if (mapping.placeholder[realName]) {
-	      setPlaceholder = true;
-	      result.placeholder = func.placeholder = placeholder;
-	    }
-	    return result;
-	  }
-
-	  /*--------------------------------------------------------------------------*/
-
-	  if (!isObj) {
-	    return wrap(name, func);
-	  }
-	  var _ = func;
-
-	  // Convert methods by ary cap.
-	  var pairs = [];
-	  each(aryMethodKeys, function(aryKey) {
-	    each(mapping.aryMethod[aryKey], function(key) {
-	      var func = _[mapping.remap[key] || key];
-	      if (func) {
-	        pairs.push([key, wrap(key, func)]);
-	      }
-	    });
-	  });
-
-	  // Convert remaining methods.
-	  each(keys(_), function(key) {
-	    var func = _[key];
-	    if (typeof func == 'function') {
-	      var length = pairs.length;
-	      while (length--) {
-	        if (pairs[length][0] == key) {
-	          return;
-	        }
-	      }
-	      func.convert = createConverter(key, func);
-	      pairs.push([key, func]);
-	    }
-	  });
-
-	  // Assign to `_` leaving `_.prototype` unchanged to allow chaining.
-	  each(pairs, function(pair) {
-	    _[pair[0]] = pair[1];
-	  });
-
-	  _.convert = convertLib;
-	  if (setPlaceholder) {
-	    _.placeholder = placeholder;
-	  }
-	  // Assign aliases.
-	  each(keys(_), function(key) {
-	    each(mapping.realToAlias[key] || [], function(alias) {
-	      _[alias] = _[key];
-	    });
-	  });
-
-	  return _;
-	}
-
-	module.exports = baseConvert;
-
-
-/***/ },
-/* 2 */
-/***/ function(module, exports) {
-
-	/** Used to map aliases to their real names. */
-	exports.aliasToReal = {
-
-	  // Lodash aliases.
-	  'each': 'forEach',
-	  'eachRight': 'forEachRight',
-	  'entries': 'toPairs',
-	  'entriesIn': 'toPairsIn',
-	  'extend': 'assignIn',
-	  'extendAll': 'assignInAll',
-	  'extendAllWith': 'assignInAllWith',
-	  'extendWith': 'assignInWith',
-	  'first': 'head',
-
-	  // Methods that are curried variants of others.
-	  'conforms': 'conformsTo',
-	  'matches': 'isMatch',
-	  'property': 'get',
-
-	  // Ramda aliases.
-	  '__': 'placeholder',
-	  'F': 'stubFalse',
-	  'T': 'stubTrue',
-	  'all': 'every',
-	  'allPass': 'overEvery',
-	  'always': 'constant',
-	  'any': 'some',
-	  'anyPass': 'overSome',
-	  'apply': 'spread',
-	  'assoc': 'set',
-	  'assocPath': 'set',
-	  'complement': 'negate',
-	  'compose': 'flowRight',
-	  'contains': 'includes',
-	  'dissoc': 'unset',
-	  'dissocPath': 'unset',
-	  'dropLast': 'dropRight',
-	  'dropLastWhile': 'dropRightWhile',
-	  'equals': 'isEqual',
-	  'identical': 'eq',
-	  'indexBy': 'keyBy',
-	  'init': 'initial',
-	  'invertObj': 'invert',
-	  'juxt': 'over',
-	  'omitAll': 'omit',
-	  'nAry': 'ary',
-	  'path': 'get',
-	  'pathEq': 'matchesProperty',
-	  'pathOr': 'getOr',
-	  'paths': 'at',
-	  'pickAll': 'pick',
-	  'pipe': 'flow',
-	  'pluck': 'map',
-	  'prop': 'get',
-	  'propEq': 'matchesProperty',
-	  'propOr': 'getOr',
-	  'props': 'at',
-	  'symmetricDifference': 'xor',
-	  'symmetricDifferenceBy': 'xorBy',
-	  'symmetricDifferenceWith': 'xorWith',
-	  'takeLast': 'takeRight',
-	  'takeLastWhile': 'takeRightWhile',
-	  'unapply': 'rest',
-	  'unnest': 'flatten',
-	  'useWith': 'overArgs',
-	  'where': 'conformsTo',
-	  'whereEq': 'isMatch',
-	  'zipObj': 'zipObject'
-	};
-
-	/** Used to map ary to method names. */
-	exports.aryMethod = {
-	  '1': [
-	    'assignAll', 'assignInAll', 'attempt', 'castArray', 'ceil', 'create',
-	    'curry', 'curryRight', 'defaultsAll', 'defaultsDeepAll', 'floor', 'flow',
-	    'flowRight', 'fromPairs', 'invert', 'iteratee', 'memoize', 'method', 'mergeAll',
-	    'methodOf', 'mixin', 'nthArg', 'over', 'overEvery', 'overSome','rest', 'reverse',
-	    'round', 'runInContext', 'spread', 'template', 'trim', 'trimEnd', 'trimStart',
-	    'uniqueId', 'words', 'zipAll'
-	  ],
-	  '2': [
-	    'add', 'after', 'ary', 'assign', 'assignAllWith', 'assignIn', 'assignInAllWith',
-	    'at', 'before', 'bind', 'bindAll', 'bindKey', 'chunk', 'cloneDeepWith',
-	    'cloneWith', 'concat', 'conformsTo', 'countBy', 'curryN', 'curryRightN',
-	    'debounce', 'defaults', 'defaultsDeep', 'defaultTo', 'delay', 'difference',
-	    'divide', 'drop', 'dropRight', 'dropRightWhile', 'dropWhile', 'endsWith', 'eq',
-	    'every', 'filter', 'find', 'findIndex', 'findKey', 'findLast', 'findLastIndex',
-	    'findLastKey', 'flatMap', 'flatMapDeep', 'flattenDepth', 'forEach',
-	    'forEachRight', 'forIn', 'forInRight', 'forOwn', 'forOwnRight', 'get',
-	    'groupBy', 'gt', 'gte', 'has', 'hasIn', 'includes', 'indexOf', 'intersection',
-	    'invertBy', 'invoke', 'invokeMap', 'isEqual', 'isMatch', 'join', 'keyBy',
-	    'lastIndexOf', 'lt', 'lte', 'map', 'mapKeys', 'mapValues', 'matchesProperty',
-	    'maxBy', 'meanBy', 'merge', 'mergeAllWith', 'minBy', 'multiply', 'nth', 'omit',
-	    'omitBy', 'overArgs', 'pad', 'padEnd', 'padStart', 'parseInt', 'partial',
-	    'partialRight', 'partition', 'pick', 'pickBy', 'propertyOf', 'pull', 'pullAll',
-	    'pullAt', 'random', 'range', 'rangeRight', 'rearg', 'reject', 'remove',
-	    'repeat', 'restFrom', 'result', 'sampleSize', 'some', 'sortBy', 'sortedIndex',
-	    'sortedIndexOf', 'sortedLastIndex', 'sortedLastIndexOf', 'sortedUniqBy',
-	    'split', 'spreadFrom', 'startsWith', 'subtract', 'sumBy', 'take', 'takeRight',
-	    'takeRightWhile', 'takeWhile', 'tap', 'throttle', 'thru', 'times', 'trimChars',
-	    'trimCharsEnd', 'trimCharsStart', 'truncate', 'union', 'uniqBy', 'uniqWith',
-	    'unset', 'unzipWith', 'without', 'wrap', 'xor', 'zip', 'zipObject',
-	    'zipObjectDeep'
-	  ],
-	  '3': [
-	    'assignInWith', 'assignWith', 'clamp', 'differenceBy', 'differenceWith',
-	    'findFrom', 'findIndexFrom', 'findLastFrom', 'findLastIndexFrom', 'getOr',
-	    'includesFrom', 'indexOfFrom', 'inRange', 'intersectionBy', 'intersectionWith',
-	    'invokeArgs', 'invokeArgsMap', 'isEqualWith', 'isMatchWith', 'flatMapDepth',
-	    'lastIndexOfFrom', 'mergeWith', 'orderBy', 'padChars', 'padCharsEnd',
-	    'padCharsStart', 'pullAllBy', 'pullAllWith', 'rangeStep', 'rangeStepRight',
-	    'reduce', 'reduceRight', 'replace', 'set', 'slice', 'sortedIndexBy',
-	    'sortedLastIndexBy', 'transform', 'unionBy', 'unionWith', 'update', 'xorBy',
-	    'xorWith', 'zipWith'
-	  ],
-	  '4': [
-	    'fill', 'setWith', 'updateWith'
-	  ]
-	};
-
-	/** Used to map ary to rearg configs. */
-	exports.aryRearg = {
-	  '2': [1, 0],
-	  '3': [2, 0, 1],
-	  '4': [3, 2, 0, 1]
-	};
-
-	/** Used to map method names to their iteratee ary. */
-	exports.iterateeAry = {
-	  'dropRightWhile': 1,
-	  'dropWhile': 1,
-	  'every': 1,
-	  'filter': 1,
-	  'find': 1,
-	  'findFrom': 1,
-	  'findIndex': 1,
-	  'findIndexFrom': 1,
-	  'findKey': 1,
-	  'findLast': 1,
-	  'findLastFrom': 1,
-	  'findLastIndex': 1,
-	  'findLastIndexFrom': 1,
-	  'findLastKey': 1,
-	  'flatMap': 1,
-	  'flatMapDeep': 1,
-	  'flatMapDepth': 1,
-	  'forEach': 1,
-	  'forEachRight': 1,
-	  'forIn': 1,
-	  'forInRight': 1,
-	  'forOwn': 1,
-	  'forOwnRight': 1,
-	  'map': 1,
-	  'mapKeys': 1,
-	  'mapValues': 1,
-	  'partition': 1,
-	  'reduce': 2,
-	  'reduceRight': 2,
-	  'reject': 1,
-	  'remove': 1,
-	  'some': 1,
-	  'takeRightWhile': 1,
-	  'takeWhile': 1,
-	  'times': 1,
-	  'transform': 2
-	};
-
-	/** Used to map method names to iteratee rearg configs. */
-	exports.iterateeRearg = {
-	  'mapKeys': [1],
-	  'reduceRight': [1, 0]
-	};
-
-	/** Used to map method names to rearg configs. */
-	exports.methodRearg = {
-	  'assignInAllWith': [1, 0],
-	  'assignInWith': [1, 2, 0],
-	  'assignAllWith': [1, 0],
-	  'assignWith': [1, 2, 0],
-	  'differenceBy': [1, 2, 0],
-	  'differenceWith': [1, 2, 0],
-	  'getOr': [2, 1, 0],
-	  'intersectionBy': [1, 2, 0],
-	  'intersectionWith': [1, 2, 0],
-	  'isEqualWith': [1, 2, 0],
-	  'isMatchWith': [2, 1, 0],
-	  'mergeAllWith': [1, 0],
-	  'mergeWith': [1, 2, 0],
-	  'padChars': [2, 1, 0],
-	  'padCharsEnd': [2, 1, 0],
-	  'padCharsStart': [2, 1, 0],
-	  'pullAllBy': [2, 1, 0],
-	  'pullAllWith': [2, 1, 0],
-	  'rangeStep': [1, 2, 0],
-	  'rangeStepRight': [1, 2, 0],
-	  'setWith': [3, 1, 2, 0],
-	  'sortedIndexBy': [2, 1, 0],
-	  'sortedLastIndexBy': [2, 1, 0],
-	  'unionBy': [1, 2, 0],
-	  'unionWith': [1, 2, 0],
-	  'updateWith': [3, 1, 2, 0],
-	  'xorBy': [1, 2, 0],
-	  'xorWith': [1, 2, 0],
-	  'zipWith': [1, 2, 0]
-	};
-
-	/** Used to map method names to spread configs. */
-	exports.methodSpread = {
-	  'assignAll': { 'start': 0 },
-	  'assignAllWith': { 'start': 0 },
-	  'assignInAll': { 'start': 0 },
-	  'assignInAllWith': { 'start': 0 },
-	  'defaultsAll': { 'start': 0 },
-	  'defaultsDeepAll': { 'start': 0 },
-	  'invokeArgs': { 'start': 2 },
-	  'invokeArgsMap': { 'start': 2 },
-	  'mergeAll': { 'start': 0 },
-	  'mergeAllWith': { 'start': 0 },
-	  'partial': { 'start': 1 },
-	  'partialRight': { 'start': 1 },
-	  'without': { 'start': 1 },
-	  'zipAll': { 'start': 0 }
-	};
-
-	/** Used to identify methods which mutate arrays or objects. */
-	exports.mutate = {
-	  'array': {
-	    'fill': true,
-	    'pull': true,
-	    'pullAll': true,
-	    'pullAllBy': true,
-	    'pullAllWith': true,
-	    'pullAt': true,
-	    'remove': true,
-	    'reverse': true
-	  },
-	  'object': {
-	    'assign': true,
-	    'assignAll': true,
-	    'assignAllWith': true,
-	    'assignIn': true,
-	    'assignInAll': true,
-	    'assignInAllWith': true,
-	    'assignInWith': true,
-	    'assignWith': true,
-	    'defaults': true,
-	    'defaultsAll': true,
-	    'defaultsDeep': true,
-	    'defaultsDeepAll': true,
-	    'merge': true,
-	    'mergeAll': true,
-	    'mergeAllWith': true,
-	    'mergeWith': true,
-	  },
-	  'set': {
-	    'set': true,
-	    'setWith': true,
-	    'unset': true,
-	    'update': true,
-	    'updateWith': true
-	  }
-	};
-
-	/** Used to track methods with placeholder support */
-	exports.placeholder = {
-	  'bind': true,
-	  'bindKey': true,
-	  'curry': true,
-	  'curryRight': true,
-	  'partial': true,
-	  'partialRight': true
-	};
-
-	/** Used to map real names to their aliases. */
-	exports.realToAlias = (function() {
-	  var hasOwnProperty = Object.prototype.hasOwnProperty,
-	      object = exports.aliasToReal,
-	      result = {};
-
-	  for (var key in object) {
-	    var value = object[key];
-	    if (hasOwnProperty.call(result, value)) {
-	      result[value].push(key);
-	    } else {
-	      result[value] = [key];
-	    }
-	  }
-	  return result;
-	}());
-
-	/** Used to map method names to other names. */
-	exports.remap = {
-	  'assignAll': 'assign',
-	  'assignAllWith': 'assignWith',
-	  'assignInAll': 'assignIn',
-	  'assignInAllWith': 'assignInWith',
-	  'curryN': 'curry',
-	  'curryRightN': 'curryRight',
-	  'defaultsAll': 'defaults',
-	  'defaultsDeepAll': 'defaultsDeep',
-	  'findFrom': 'find',
-	  'findIndexFrom': 'findIndex',
-	  'findLastFrom': 'findLast',
-	  'findLastIndexFrom': 'findLastIndex',
-	  'getOr': 'get',
-	  'includesFrom': 'includes',
-	  'indexOfFrom': 'indexOf',
-	  'invokeArgs': 'invoke',
-	  'invokeArgsMap': 'invokeMap',
-	  'lastIndexOfFrom': 'lastIndexOf',
-	  'mergeAll': 'merge',
-	  'mergeAllWith': 'mergeWith',
-	  'padChars': 'pad',
-	  'padCharsEnd': 'padEnd',
-	  'padCharsStart': 'padStart',
-	  'propertyOf': 'get',
-	  'rangeStep': 'range',
-	  'rangeStepRight': 'rangeRight',
-	  'restFrom': 'rest',
-	  'spreadFrom': 'spread',
-	  'trimChars': 'trim',
-	  'trimCharsEnd': 'trimEnd',
-	  'trimCharsStart': 'trimStart',
-	  'zipAll': 'zip'
-	};
-
-	/** Used to track methods that skip fixing their arity. */
-	exports.skipFixed = {
-	  'castArray': true,
-	  'flow': true,
-	  'flowRight': true,
-	  'iteratee': true,
-	  'mixin': true,
-	  'rearg': true,
-	  'runInContext': true
-	};
-
-	/** Used to track methods that skip rearranging arguments. */
-	exports.skipRearg = {
-	  'add': true,
-	  'assign': true,
-	  'assignIn': true,
-	  'bind': true,
-	  'bindKey': true,
-	  'concat': true,
-	  'difference': true,
-	  'divide': true,
-	  'eq': true,
-	  'gt': true,
-	  'gte': true,
-	  'isEqual': true,
-	  'lt': true,
-	  'lte': true,
-	  'matchesProperty': true,
-	  'merge': true,
-	  'multiply': true,
-	  'overArgs': true,
-	  'partial': true,
-	  'partialRight': true,
-	  'propertyOf': true,
-	  'random': true,
-	  'range': true,
-	  'rangeRight': true,
-	  'subtract': true,
-	  'zip': true,
-	  'zipObject': true,
-	  'zipObjectDeep': true
-	};
-
-
-/***/ },
-/* 3 */
-/***/ function(module, exports) {
-
-	/**
-	 * The default argument placeholder value for methods.
-	 *
-	 * @type {Object}
-	 */
-	module.exports = {};
-
-
-/***/ }
-/******/ ])
-});
-;
-
-define('lodash.fp',['lodash', 'lodash.converter', 'converse-core'], function (_, lodashConverter, converse) {
-    var fp = lodashConverter(_.runInContext());
-    converse.env.fp = fp;
-    return fp;
-});
-
 
 define('tpl!add_contact_dropdown', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape;
@@ -45866,12 +46294,6 @@ __p += '<a class="open-chat ';
 __p += ' unread-msgs ';
  } ;
 __p += '"\n   title="' +
-__e(o.title_fullname) +
-': ' +
-__e(o.fullname) +
-' JID: ' +
-__e(o.jid) +
-' ' +
 __e(o.desc_chat) +
 '"\n   href="#">\n    <div class="avatar avatar-' +
 __e(o.chat_status) +
@@ -46252,9 +46674,8 @@ return __p
         renderRosterItem: function renderRosterItem(item) {
           this.el.innerHTML = tpl_roster_item(_.extend(item.toJSON(), {
             'desc_status': STATUSES[item.get('chat_status') || 'offline'],
-            'desc_chat': __('Click to chat with this contact'),
+            'desc_chat': __('Click to chat with %1$s (JID: %2$s)', item.get('fullname'), item.get('jid')),
             'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname')),
-            'title_fullname': __('Name'),
             'allow_contact_removal': _converse.allow_contact_removal,
             'num_unread': item.get('num_unread') || 0
           }));
@@ -47000,8 +47421,14 @@ return __p
       sizzle = _converse$env.sizzle;
 
   function onVCardData(_converse, jid, iq, callback) {
-    var vcard = iq.querySelector('vCard'),
-        img_type = _.get(vcard.querySelector('TYPE'), 'textContent'),
+    var vcard = iq.querySelector('vCard');
+
+    if (_.isNull(vcard)) {
+      // Some servers return an empty IQ
+      return onVCardError(_converse, jid, iq, callback);
+    }
+
+    var img_type = _.get(vcard.querySelector('TYPE'), 'textContent'),
         img = _.get(vcard.querySelector('BINVAL'), 'textContent'),
         url = _.get(vcard.querySelector('URL'), 'textContent'),
         fullname = _.get(vcard.querySelector('FN'), 'textContent');
@@ -47265,7 +47692,7 @@ return __p
         },
         toggleOptions: function toggleOptions(ev) {
           ev.preventDefault();
-          utils.slideInAllElements(document.querySelectorAll('#conversejs .contact-form-container'));
+          utils.slideInAllElements(_converse.root.querySelectorAll('#conversejs .contact-form-container'));
           utils.slideToggleElement(this.el.querySelector("#target dd ul"));
         },
         renderStatusChangeForm: function renderStatusChangeForm(ev) {
@@ -47745,8 +48172,9 @@ return __p
           var tab = ev.target,
               sibling_li = tab.parentNode.nextElementSibling || tab.parentNode.previousElementSibling,
               sibling = sibling_li.firstChild,
-              sibling_panel = document.querySelector(sibling.getAttribute('href')),
-              tab_panel = document.querySelector(tab.getAttribute('href'));
+              sibling_panel = _converse.root.querySelector(sibling.getAttribute('href')),
+              tab_panel = _converse.root.querySelector(tab.getAttribute('href'));
+
           u.hideElement(sibling_panel);
           u.removeClass('current', sibling);
           u.addClass('current', tab);
@@ -47771,6 +48199,8 @@ return __p
       });
       _converse.LoginPanelModel = Backbone.Model.extend({
         defaults: {
+          // Passed-by-reference. Fine in this case because there's
+          // only one such model.
           'errors': []
         }
       });
@@ -47977,7 +48407,8 @@ return __p
           xhr.onload = function () {
             if (xhr.status >= 200 && xhr.status < 400) {
               var data = JSON.parse(xhr.responseText),
-                  ul = document.querySelector('.search-xmpp ul');
+                  ul = _converse.root.querySelector('.search-xmpp ul');
+
               u.removeElement(ul.querySelector('li.found-user'));
               u.removeElement(ul.querySelector('li.chat-info'));
 
@@ -48014,7 +48445,7 @@ return __p
           var input = ev.target.querySelector('input');
           var jid = input.value;
 
-          if (!jid || _.filter(jid.split('@')).length < 2) {
+          if (!jid || _.compact(jid.split('@')).length < 2) {
             this.el.querySelector('.search-xmpp div').innerHTML = this.generateAddContactHTML({
               error_message: __('Please enter a valid XMPP address'),
               label_contact_username: __('e.g. user@example.org'),
@@ -48096,7 +48527,7 @@ return __p
         onClick: function onClick(e) {
           e.preventDefault();
 
-          if (u.isVisible(document.querySelector("#controlbox"))) {
+          if (u.isVisible(_converse.root.querySelector("#controlbox"))) {
             var controlbox = _converse.chatboxes.get('controlbox');
 
             if (_converse.connection.connected) {
@@ -48496,7 +48927,7 @@ __p += '\n        <textarea type="text" class="chat-textarea ';
  if (o.show_send_button) { ;
 __p += 'chat-textarea-send-button';
  } ;
-__p += '"\n                              placeholder="' +
+__p += '"\n                  placeholder="' +
 __e(o.label_message) +
 '"></textarea>\n    ';
  if (o.show_send_button) { ;
@@ -48770,9 +49201,9 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  if (o.use_emoji)  { ;
-__p += '\n    <li class="toggle-smiley icon-happy" title="' +
+__p += '\n<li class="toggle-toolbar-menu toggle-smiley">\n    <a class="icon-happy" title="' +
 __e(o.label_insert_smiley) +
-'">\n        <ul class="emoji-picker"></ul>\n    </li>\n';
+'"></a>\n    <span class="emoji-picker"></span>\n</li>\n';
  } ;
 __p += '\n';
  if (o.show_call_button)  { ;
@@ -49786,7 +50217,7 @@ Strophe.addConnectionPlugin('disco',
 
 /* This is a Converse.js plugin which add support for XEP-0030: Service Discovery */
 
-/*global Backbone, define, window, document */
+/*global Backbone, define, window */
 (function (root, factory) {
   define('converse-disco',["converse-core", "sizzle", "strophe.disco"], factory);
 })(this, function (converse, sizzle) {
@@ -49841,6 +50272,27 @@ Strophe.addConnectionPlugin('disco',
           this.identities = new Backbone.Collection();
           this.identities.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.identities-".concat(this.get('jid'))));
           this.fetchFeatures();
+        },
+        getIdentity: function getIdentity(category, type) {
+          /* Returns a Promise which resolves with a map indicating
+           * whether a given identity is provided.
+           *
+           * Parameters:
+           *    (String) category - The identity category
+           *    (String) type - The identity type
+           */
+          var entity = this;
+          return new Promise(function (resolve, reject) {
+            function fulfillPromise() {
+              var model = entity.identities.findWhere({
+                'category': category,
+                'type': type
+              });
+              resolve(model);
+            }
+
+            entity.waitUntilFeaturesDiscovered.then(fulfillPromise).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          });
         },
         hasFeature: function hasFeature(feature) {
           /* Returns a Promise which resolves with a map indicating
@@ -49914,8 +50366,8 @@ Strophe.addConnectionPlugin('disco',
           _.forEach(stanza.querySelectorAll('identity'), function (identity) {
             _this2.identities.create({
               'category': identity.getAttribute('category'),
-              'type': stanza.getAttribute('type'),
-              'name': stanza.getAttribute('name')
+              'type': identity.getAttribute('type'),
+              'name': identity.getAttribute('name')
             });
           });
 
@@ -50047,7 +50499,28 @@ Strophe.addConnectionPlugin('disco',
               var entity = _converse.api.disco.entities.get(entity_jid, true);
 
               return entity.hasFeature(feature);
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          },
+          'getIdentity': function getIdentity(category, type, entity_jid) {
+            /* Returns a Promise which resolves with a map indicating
+             * whether an identity with a given type is provided by
+             * the entity.
+             *
+             * Parameters:
+             *    (String) category - The identity category.
+             *          In the XML stanza, this is the `category`
+             *          attribute of the `<identity>` element.
+             *          For example: 'pubsub'
+             *    (String) type - The identity type.
+             *          In the XML stanza, this is the `type`
+             *          attribute of the `<identity>` element.
+             *          For example: 'pep'
+             */
+            return _converse.api.waitUntil('discoInitialized').then(function () {
+              var entity = _converse.api.disco.entities.get(entity_jid, true);
+
+              return entity.getIdentity(category, type);
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
           }
         }
       });
@@ -50055,168 +50528,6 @@ Strophe.addConnectionPlugin('disco',
   });
 });
 //# sourceMappingURL=converse-disco.js.map;
-/*!
- * Backbone.Overview 
- *
- * Copyright (c) 2018, JC Brand <jc@opkode.com>
- * Licensed under the Mozilla Public License (MPL) 
- */
-(function (root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    define('backbone.overview',["underscore", "backbone"], factory);
-  } else {
-    // RequireJS isn't being used.
-    // Assume underscore and backbone are loaded in <script> tags
-    factory(_ || root._, Backbone || root.Backbone);
-  }
-})(this, function (_, Backbone) {
-  "use strict";
-
-  var View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
-
-  var Overview = Backbone.Overview = function (options) {
-    /* An Overview is a View that contains and keeps track of sub-views.
-     * Kind of like what a Collection is to a Model.
-     */
-    var that = this;
-    this.views = {};
-    this.keys = _.partial(_.keys, this.views);
-    this.getAll = _.partial(_.identity, this.views);
-
-    this.get = function (id) {
-      return that.views[id];
-    };
-
-    this.xget = function (id) {
-      /* Exclusive get. Returns all instances except the given id. */
-      return _.filter(that.views, function (view, vid) {
-        return vid !== id;
-      });
-    };
-
-    this.add = function (id, view) {
-      that.views[id] = view;
-      return view;
-    };
-
-    this.remove = function (id) {
-      if (typeof id === "undefined") {
-        new View().remove.apply(that);
-      }
-
-      var view = that.views[id];
-
-      if (view) {
-        delete that.views[id];
-        view.remove();
-        return view;
-      }
-    };
-
-    this.removeAll = function () {
-      _.each(_.keys(that.views), that.remove);
-
-      return that;
-    };
-
-    View.apply(this, Array.prototype.slice.apply(arguments));
-  };
-
-  var methods = ['all', 'any', 'chain', 'collect', 'contains', 'detect', 'difference', 'drop', 'each', 'every', 'filter', 'find', 'first', 'foldl', 'foldr', 'forEach', 'head', 'include', 'indexOf', 'initial', 'inject', 'invoke', 'isEmpty', 'last', 'lastIndexOf', 'map', 'max', 'min', 'reduce', 'reduceRight', 'reject', 'rest', 'sample', 'select', 'shuffle', 'size', 'some', 'sortBy', 'tail', 'take', 'toArray', 'without']; // Mix in each Underscore method as a proxy to `Overview#view`.
-
-  _.each(methods, function (method) {
-    Overview.prototype[method] = function () {
-      var args = Array.prototype.slice.call(arguments);
-      args.unshift(this.views);
-      return _[method].apply(_, args);
-    };
-  });
-
-  _.extend(Overview.prototype, View.prototype);
-
-  Overview.extend = View.extend;
-  Backbone.OrderedListView = Backbone.Overview.extend({
-    // The `listItems` attribute denotes the path (from this View) to the
-    // list of items.
-    listItems: 'model',
-    // The `sortEvent` attribute specifies the event which should cause the
-    // ordered list to be sorted.
-    sortEvent: 'change',
-    // The `listSelector` is the selector used to query for the DOM list
-    // element which contains the ordered items.
-    listSelector: '.ordered-items',
-    // The `itemView` is constructor which should be called to create a
-    // View for a new item.
-    ItemView: undefined,
-    initialize: function initialize() {
-      this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
-      this.items = _.get(this, this.listItems);
-      this.items.on('add', this.createItemView, this);
-      this.items.on('add', this.sortEventually, this);
-      this.items.on(this.sortEvent, this.sortEventually, this);
-    },
-    createItemView: function createItemView(item) {
-      var item_view = this.get(item.get('id'));
-
-      if (!item_view) {
-        item_view = new this.ItemView({
-          model: item
-        });
-        this.add(item.get('id'), item_view);
-      } else {
-        item_view.model = item;
-        item_view.initialize();
-      }
-
-      item_view.render();
-      return item_view;
-    },
-    sortAndPositionAllItems: function sortAndPositionAllItems() {
-      var _this = this;
-
-      this.items.sort();
-      this.items.each(function (item) {
-        if (_.isUndefined(_this.get(item.get('id')))) {
-          _this.createItemView(item);
-        }
-
-        _this.positionItem(item, _this.el.querySelector(_this.listSelector));
-      });
-    },
-    positionItem: function positionItem(item, list_el) {
-      /* Place the View's DOM element in the correct alphabetical
-       * position in the list.
-       *
-       * IMPORTANT: there's an important implicit assumption being
-       * made here. And that is that initially this method gets called
-       * for each item in the right positional order.
-       *
-       * In other words, it gets called for the 0th, then the
-       * 1st, then the 2nd, 3rd and so on.
-       *
-       * That's why we call it in the "success" handler after
-       * fetching the items, so that we know we have ALL of
-       * them and that they're sorted.
-       */
-      var view = this.get(item.get('id')),
-          index = this.items.indexOf(item);
-
-      if (index === 0) {
-        list_el.insertAdjacentElement('afterbegin', view.el);
-      } else if (index === this.items.length - 1) {
-        list_el.insertAdjacentElement('beforeend', view.el);
-      } else {
-        var neighbour_el = list_el.querySelector('li:nth-child(' + index + ')');
-        neighbour_el.insertAdjacentElement('afterend', view.el);
-      }
-
-      return view;
-    }
-  });
-  return Backbone.Overview;
-});
-
-//# sourceMappingURL=backbone.overview.js.map;
 /*!
  * Backbone.OrderedListView
  *
@@ -51571,7 +51882,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
         var promises = [_converse.api.waitUntil('roomsAutoJoined')];
 
-        if (!_converse.allow_bookmarks) {
+        if (_converse.allow_bookmarks) {
           promises.push(_converse.api.waitUntil('bookmarksInitialized'));
         }
 
@@ -51733,8 +52044,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           this.el.querySelector('.chat-head-chatroom').innerHTML = this.generateHeadingHTML();
         },
         renderChatArea: function renderChatArea() {
-          /* Render the UI container in which chat room messages will
-           * appear.
+          /* Render the UI container in which chat room messages will appear.
            */
           if (_.isNull(this.el.querySelector('.chat-area'))) {
             var container_el = this.el.querySelector('.chatroom-body');
@@ -51799,9 +52109,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
            *
            * This is instead done in `afterConnected` below.
            */
-          if (this.model.collection && this.model.collection.browserStorage) {
-            // Without a connection, we haven't yet initialized
-            // localstorage
+          if (u.isPersistableModel(this.model)) {
+            this.model.clearUnreadMsgCounter();
             this.model.save();
           }
 
@@ -51829,8 +52138,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         afterConnected: function afterConnected() {
           if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
             this.setChatState(_converse.ACTIVE);
-            this.renderEmojiPicker();
             this.scrollDown();
+            this.renderEmojiPicker();
             this.focus();
           }
         },
@@ -53852,7 +54161,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           var el = evt.target.querySelector('input.invited-contact'),
               jid = el.value;
 
-          if (!jid || _.filter(jid.split('@')).length < 2) {
+          if (!jid || _.compact(jid.split('@')).length < 2) {
             evt.target.outerHTML = tpl_chatroom_invite({
               'error_message': __('Please enter a valid XMPP username'),
               'label_invitation': __('Invite')
@@ -54258,6 +54567,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
          * settings).
          */
         _.each(_converse.auto_join_rooms, function (room) {
+          if (_converse.chatboxes.where({
+            'jid': room
+          }).length) {
+            return;
+          }
+
           if (_.isString(room)) {
             _converse.api.rooms.open(room);
           } else if (_.isObject(room)) {
@@ -54625,24 +54940,32 @@ return __p
           this.model.on('change:bookmarked', this.onBookmarked, this);
           this.setBookmarkState();
         },
-        generateHeadingHTML: function generateHeadingHTML() {
+        renderBookmarkToggle: function renderBookmarkToggle() {
           var _converse = this.__super__._converse,
-              __ = _converse.__,
-              html = this.__super__.generateHeadingHTML.apply(this, arguments);
+              __ = _converse.__;
+          var bookmark_button = tpl_chatroom_bookmark_toggle(_.assignIn(this.model.toJSON(), {
+            info_toggle_bookmark: __('Bookmark this room'),
+            bookmarked: this.model.get('bookmarked')
+          }));
+          var close_button = this.el.querySelector('.close-chatbox-button');
+          close_button.insertAdjacentHTML('afterend', bookmark_button);
+        },
+        renderHeading: function renderHeading() {
+          var _this = this;
+
+          this.__super__.renderHeading.apply(this, arguments);
+
+          var _converse = this.__super__._converse;
 
           if (_converse.allow_bookmarks) {
-            var div = document.createElement('div');
-            div.innerHTML = html;
-            var bookmark_button = tpl_chatroom_bookmark_toggle(_.assignIn(this.model.toJSON(), {
-              info_toggle_bookmark: __('Bookmark this room'),
-              bookmarked: this.model.get('bookmarked')
-            }));
-            var close_button = div.querySelector('.close-chatbox-button');
-            close_button.insertAdjacentHTML('afterend', bookmark_button);
-            return div.innerHTML;
-          }
+            _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then(function (identity) {
+              if (_.isNil(identity)) {
+                return;
+              }
 
-          return html;
+              _this.renderBookmarkToggle();
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          }
         },
         checkForReservedNick: function checkForReservedNick() {
           /* Check if the user has a bookmark with a saved nickanme
@@ -54667,6 +54990,10 @@ return __p
         },
         onBookmarked: function onBookmarked() {
           var icon = this.el.querySelector('.icon-pushpin');
+
+          if (_.isNull(icon)) {
+            return;
+          }
 
           if (this.model.get('bookmarked')) {
             icon.classList.add('button-on');
@@ -54766,6 +55093,7 @@ return __p
 
       _converse.api.settings.update({
         allow_bookmarks: true,
+        allow_public_bookmarks: false,
         hide_open_bookmarks: true
       }); // Promises exposed by this plugin
 
@@ -54922,19 +55250,22 @@ return __p
             room.save('bookmarked', false);
           }
         },
-        onBookmarksReceived: function onBookmarksReceived(deferred, iq) {
-          var _this = this;
+        createBookmarksFromStanza: function createBookmarksFromStanza(stanza) {
+          var _this2 = this;
 
-          var bookmarks = sizzle('items[node="storage:bookmarks"] item[id="current"] storage conference', iq);
+          var bookmarks = sizzle('items[node="storage:bookmarks"] ' + 'item#current ' + 'storage[xmlns="storage:bookmarks"] ' + 'conference', stanza);
 
           _.forEach(bookmarks, function (bookmark) {
-            _this.create({
+            _this2.create({
               'jid': bookmark.getAttribute('jid'),
               'name': bookmark.getAttribute('name'),
               'autojoin': bookmark.getAttribute('autojoin') === 'true',
               'nick': bookmark.querySelector('nick').textContent
             });
           });
+        },
+        onBookmarksReceived: function onBookmarksReceived(deferred, iq) {
+          this.createBookmarksFromStanza(iq);
 
           if (!_.isUndefined(deferred)) {
             return deferred.resolve();
@@ -55022,7 +55353,7 @@ return __p
         insertIntoControlBox: function insertIntoControlBox() {
           var controlboxview = _converse.chatboxviews.get('controlbox');
 
-          if (!_.isUndefined(controlboxview) && !document.body.contains(this.el)) {
+          if (!_.isUndefined(controlboxview) && !_converse.root.contains(this.el)) {
             var container = controlboxview.el.querySelector('#chatrooms');
 
             if (!_.isNull(container)) {
@@ -55088,18 +55419,43 @@ return __p
           return;
         }
 
-        _converse.bookmarks = new _converse.Bookmarks();
+        Promise.all([_converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid), _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', _converse.bare_jid)]).then(function (args) {
+          var identity = args[0],
+              options_support = args[1];
 
-        _converse.bookmarks.fetchBookmarks().then(function () {
-          _converse.bookmarksview = new _converse.BookmarksView({
-            'model': _converse.bookmarks
+          if (_.isNil(identity) || !options_support.supported && !_converse.allow_public_bookmarks) {
+            _converse.emit('bookmarksInitialized');
+
+            return;
+          }
+
+          _converse.bookmarks = new _converse.Bookmarks();
+
+          _converse.bookmarks.fetchBookmarks().then(function () {
+            _converse.bookmarksview = new _converse.BookmarksView({
+              'model': _converse.bookmarks
+            });
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR)).then(function () {
+            _converse.emit('bookmarksInitialized');
           });
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR)).then(function () {
+        }).catch(function (e) {
+          _converse.log(e, Strophe.LogLevel.ERROR);
+
           _converse.emit('bookmarksInitialized');
         });
       };
 
       Promise.all([_converse.api.waitUntil('chatBoxesFetched'), _converse.api.waitUntil('roomsPanelRendered')]).then(initBookmarks).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
+      _converse.on('connected', function () {
+        // Add a handler for bookmarks pushed from other connected clients
+        // (from the same user obviously)
+        _converse.connection.addHandler(function (message) {
+          if (message.querySelector('event[xmlns="' + Strophe.NS.PUBSUB + '#event"]')) {
+            _converse.bookmarks.createBookmarksFromStanza(message);
+          }
+        }, null, 'message', 'headline', null, _converse.bare_jid);
+      });
 
       var afterReconnection = function afterReconnection() {
         if (!_converse.allow_bookmarks) {
@@ -55360,7 +55716,7 @@ return __p
         insertIntoControlBox: function insertIntoControlBox() {
           var controlboxview = _converse.chatboxviews.get('controlbox');
 
-          if (!_.isUndefined(controlboxview) && !document.body.contains(this.el)) {
+          if (!_.isUndefined(controlboxview) && !_converse.root.contains(this.el)) {
             var container = controlboxview.el.querySelector('#chatrooms');
 
             if (!_.isNull(container)) {
@@ -55821,7 +56177,7 @@ Strophe.RSM.prototype = {
         onScroll: function onScroll(ev) {
           var _converse = this.__super__._converse;
 
-          if (ev.target.scrollTop === 0 && this.model.messages.length) {
+          if (this.content.scrollTop === 0 && this.model.messages.length) {
             var oldest_message = this.model.messages.at(0);
             var archive_id = oldest_message.get('archive_id');
 
@@ -56058,6 +56414,66 @@ Strophe.RSM.prototype = {
   });
 });
 //# sourceMappingURL=converse-mam.js.map;
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+(function (root, factory) {
+  define('converse-muc-embedded',["converse-core", "converse-muc"], factory);
+})(this, function (converse) {
+  "use strict";
+
+  var _converse$env = converse.env,
+      Backbone = _converse$env.Backbone,
+      _ = _converse$env._;
+  converse.plugins.add('converse-muc-embedded', {
+    enabled: function enabled(_converse) {
+      return _converse.view_mode === 'embedded';
+    },
+    overrides: {
+      // Overrides mentioned here will be picked up by converse.js's
+      // plugin architecture they will replace existing methods on the
+      // relevant objects or classes.
+      //
+      // New functions which don't exist yet can also be added.
+      ChatBoxViews: {
+        initialize: function initialize() {
+          this.__super__.initialize.apply(this, arguments);
+
+          this.el.classList.add('converse-embedded');
+        }
+      }
+    },
+    initialize: function initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      this._converse.api.settings.update({
+        'allow_logout': false,
+        // No point in logging out when we have auto_login as true.
+        'allow_muc_invitations': false,
+        // Doesn't make sense to allow because only
+        // roster contacts can be invited
+        'hide_muc_server': true // Federation is disabled, so no use in
+        // showing the MUC server.
+
+      });
+
+      var _converse = this._converse;
+
+      if (!_.isArray(_converse.auto_join_rooms)) {
+        throw new Error("converse-muc-embedded: auto_join_rooms must be an Array");
+      }
+
+      if (_converse.auto_join_rooms.length !== 1) {
+        throw new Error("converse-muc-embedded: It doesn't make " + "sense to have the auto_join_rooms setting to zero or " + "more then one, since only one chat room can be open " + "at any time.");
+      }
+    }
+  });
+});
+//# sourceMappingURL=converse-muc-embedded.js.map;
 
 define('tpl!toolbar_otr', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
@@ -56068,9 +56484,7 @@ __p += '\n    <li class="toggle-toolbar-menu toggle-otr ' +
 __e(o.otr_status_class) +
 '" title="' +
 __e(o.otr_tooltip) +
-'">\n        <span class="chat-toolbar-text">' +
-__e(o.otr_translated_status) +
-'</span>\n        ';
+'">\n        ';
  if (o.otr_status == o.UNENCRYPTED) { ;
 __p += '\n            <span class="icon-unlocked"></span>\n        ';
  } ;
@@ -63663,25 +64077,37 @@ CryptoJS.mode.CTR = (function () {
 
           return stanza;
         },
-        onMessageSubmitted: function onMessageSubmitted(text) {
+        parseMessageForCommands: function parseMessageForCommands(text) {
           var _converse = this.__super__._converse;
-
-          if (!_converse.connection.authenticated) {
-            return this.showHelpMessages(['Sorry, the connection has been lost, ' + 'and your message could not be sent'], 'error');
-          }
-
           var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
 
           if (match) {
             if (_converse.allow_otr && match[1] === "endotr") {
-              return this.endOTR();
+              this.endOTR();
+              return true;
             } else if (_converse.allow_otr && match[1] === "otr") {
-              return this.model.initiateOTR();
+              this.model.initiateOTR();
+              return true;
             }
           }
 
-          if (_.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
-            // Off-the-record encryption is active
+          return this.__super__.parseMessageForCommands.apply(this, arguments);
+        },
+        isOTREncryptedSession: function isOTREncryptedSession() {
+          return _.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'));
+        },
+        onMessageSubmitted: function onMessageSubmitted(text, spoiler_hint) {
+          var _converse = this.__super__._converse;
+
+          if (!_converse.connection.authenticated) {
+            this.__super__.onMessageSubmitted.apply(this, arguments);
+          }
+
+          if (this.parseMessageForCommands(text)) {
+            return;
+          }
+
+          if (this.isOTREncryptedSession()) {
             this.model.otr.sendMsg(text);
             this.model.trigger('showSentOTRMessage', text);
           } else {
@@ -63769,9 +64195,10 @@ CryptoJS.mode.CTR = (function () {
         },
         toggleOTRMenu: function toggleOTRMenu(ev) {
           ev.stopPropagation();
+          var _converse = this.__super__._converse;
           var menu = this.el.querySelector('.toggle-otr ul');
 
-          var elements = _.difference(document.querySelectorAll('.toolbar-menu'), [menu]);
+          var elements = _.difference(_converse.root.querySelectorAll('.toolbar-menu'), [menu]);
 
           utils.slideInAllElements(elements).then(_.partial(utils.slideToggleElement, menu));
         },
@@ -63790,15 +64217,10 @@ CryptoJS.mode.CTR = (function () {
             return __('Your contact has closed their end of the private session, you should do the same');
           }
         },
-        renderToolbar: function renderToolbar(toolbar, options) {
+        addOTRToolbarButton: function addOTRToolbarButton(options) {
           var _converse = this.__super__._converse,
-              __ = _converse.__;
-
-          if (!_converse.show_toolbar) {
-            return;
-          }
-
-          var data = this.model.toJSON();
+              __ = _converse.__,
+              data = this.model.toJSON();
           options = _.extend(options || {}, {
             FINISHED: FINISHED,
             UNENCRYPTED: UNENCRYPTED,
@@ -63816,11 +64238,22 @@ CryptoJS.mode.CTR = (function () {
             otr_tooltip: this.getOTRTooltip(),
             otr_translated_status: OTR_TRANSLATED_MAPPING[data.otr_status]
           });
-
-          this.__super__.renderToolbar.apply(this, arguments);
-
           this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', tpl_toolbar_otr(_.extend(this.model.toJSON(), options || {})));
-          return this;
+        },
+        getToolbarOptions: function getToolbarOptions(options) {
+          options = this.__super__.getToolbarOptions();
+
+          if (this.isOTREncryptedSession()) {
+            options.show_spoiler_button = false;
+          }
+
+          return options;
+        },
+        renderToolbar: function renderToolbar(toolbar, options) {
+          var result = this.__super__.renderToolbar.apply(this, arguments);
+
+          this.addOTRToolbarButton(options);
+          return result;
         }
       }
     },
@@ -64946,7 +65379,7 @@ return __p
       };
 
       _converse.isMessageToHiddenChat = function (message) {
-        if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
+        if (_.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode)) {
           var jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
 
           var model = _converse.chatboxes.get(jid);
@@ -65235,7 +65668,7 @@ return __p
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
-/*global define, window */
+/*global define, window, document */
 (function (root, factory) {
   define('converse-minimize',["converse-core", "tpl!chatbox_minimize", "tpl!toggle_chats", "tpl!trimmed_chat", "tpl!chats_panel", "converse-chatview"], factory);
 })(this, function (converse, tpl_chatbox_minimize, tpl_toggle_chats, tpl_trimmed_chat, tpl_chats_panel) {
@@ -65818,7 +66251,7 @@ return __p
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
-/*global define, window */
+/*global define, window, document */
 (function (root, factory) {
   define('converse-dragresize',["converse-core", "tpl!dragresize", "converse-chatview", "converse-muc", // XXX: would like to remove this
   "converse-controlbox"], factory);
@@ -66298,14 +66731,14 @@ return __p
             info_close: '',
             label_personal_message: '',
             show_send_button: false,
-            show_textarea: false,
             show_toolbar: false,
             unread_msgs: ''
           }));
           this.content = this.el.querySelector('.chat-content');
           return this;
         },
-        // Override to avoid the method in converse-chatview.js
+        // Override to avoid the methods in converse-chatview.js
+        'renderMessageForm': _.noop,
         'afterShown': _.noop
       });
 
@@ -66361,7 +66794,7 @@ return __p
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
-/*global Backbone, define, window, document, JSON */
+/*global Backbone, define, window, JSON */
 
 /* converse-singleton
  * ******************
@@ -66402,7 +66835,7 @@ return __p
     // NB: These plugins need to have already been loaded via require.js.
     dependencies: ['converse-muc', 'converse-controlbox', 'converse-rosterview'],
     enabled: function enabled(_converse) {
-      return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
+      return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
     },
     overrides: {
       // overrides mentioned here will be picked up by converse.js's
@@ -66468,6 +66901,15 @@ return __p
           }
         }
       },
+      ChatRoomView: {
+        show: function show(focus) {
+          if (!this.model.get('hidden')) {
+            _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
+
+            return this.__super__.show.apply(this, arguments);
+          }
+        }
+      },
       RosterContactView: {
         openChat: function openChat(ev) {
           /* We only have one chat visible at any one
@@ -66504,7 +66946,7 @@ return __p
       _ = _converse$env._;
   converse.plugins.add('converse-fullscreen', {
     enabled: function enabled(_converse) {
-      return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
+      return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
     },
     overrides: {
       // overrides mentioned here will be picked up by converse.js's
@@ -66517,7 +66959,10 @@ return __p
           return tpl_brand_heading();
         },
         insertBrandHeading: function insertBrandHeading() {
-          var el = document.getElementById('converse-login-panel');
+          var _converse = this.__super__._converse;
+
+          var el = _converse.root.getElementById('converse-login-panel');
+
           el.parentNode.insertAdjacentHTML('afterbegin', this.createBrandHeadingHTML());
         }
       },
@@ -66562,6 +67007,7 @@ if (typeof define !== 'undefined') {
         "converse-roomslist",   // Show currently open chat rooms
         "converse-mam",         // XEP-0313 Message Archive Management
         "converse-muc",         // XEP-0045 Multi-user chat
+        "converse-muc-embedded",
         "converse-vcard",       // XEP-0054 VCard-temp
         "converse-otr",         // Off-the-record encryption for one-on-one messages
         "converse-register",    // XEP-0077 In-band registration
@@ -66570,7 +67016,7 @@ if (typeof define !== 'undefined') {
         "converse-minimize",    // Allows chat boxes to be minimized
         "converse-dragresize",  // Allows chat boxes to be resized by dragging them
         "converse-headline",    // Support for headline messages
-        "converse-fullscreen",
+        "converse-fullscreen"
         /* END: Removable components */
     ], function (converse) {
         return converse;

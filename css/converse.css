@@ -5722,18 +5722,15 @@ body.reset {
     display: block;
     font-weight: normal;
     margin: 1em 0; }
-  #conversejs #controlbox #users .add-converse-contact {
-    margin: 0 0 0.75em 0; }
-  #conversejs #controlbox #users .chatbox-btn {
-    margin: 0; }
   #conversejs #controlbox #chatrooms, #conversejs #controlbox #contacts {
-    margin-top: 0.75em; }
-  #conversejs #controlbox #users .userinfo {
+    margin-top: 0.75em;
+    padding-bottom: 0.75em; }
+  #conversejs #controlbox .controlbox-pane .userinfo {
     padding-bottom: 1em;
     border-bottom: 1px solid #818479; }
-    #conversejs #controlbox #users .userinfo .username {
+    #conversejs #controlbox .controlbox-pane .userinfo .username {
       margin-left: 0.5em; }
-    #conversejs #controlbox #users .userinfo .d-flex {
+    #conversejs #controlbox .controlbox-pane .userinfo .d-flex {
       margin-bottom: 0.2em; }
   #conversejs #controlbox #chatrooms {
     border-bottom: 1px solid #818479; }
@@ -5923,6 +5920,10 @@ body.reset {
     overflow-y: scroll;
     overflow-x: hidden;
     border-radius: 4px; }
+    #conversejs #controlbox .controlbox-pane .add-converse-contact {
+      margin: 0 0 0.75em 0; }
+    #conversejs #controlbox .controlbox-pane .chatbox-btn {
+      margin: 0; }
     #conversejs #controlbox .controlbox-pane .switch-form {
       padding-bottom: 2em; }
       #conversejs #controlbox .controlbox-pane .switch-form p {
@@ -5987,15 +5988,14 @@ body.reset {
     left: 0; }
   #conversejs #controlbox .sidebar {
     display: block; }
-  #conversejs #controlbox #users {
+  #conversejs #controlbox .controlbox-pane {
     position: absolute;
     top: 0;
-    display: none; }
-    #conversejs #controlbox #users.controlbox-pane {
-      width: 100%; }
+    display: none;
+    width: 100%; }
   #conversejs.sidebar-open .chatbox:not(#controlbox) {
     display: none; }
-  #conversejs.sidebar-open #controlbox #users {
+  #conversejs.sidebar-open #controlbox .controlbox-pane {
     display: block; } }
 #conversejs:not(.fullscreen) #controlbox {
   order: -1; }

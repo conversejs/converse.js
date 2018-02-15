@@ -1,7 +1,6 @@
 #conversejs.fullscreen {
     #controlbox {
         margin: 0;
-        // margin-left: -$chat-gutter; // Mystery why this is necessary
 
         .controlbox-pane {
             border-radius: 0;
@@ -51,6 +50,10 @@
             width: 100%;
             z-index: 1;
             background-color: $controlbox-head-color;
+
+            .controlbox-head {
+                display: none;
+            }
         }
 
         #converse-register, #converse-login {

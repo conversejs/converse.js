@@ -1,6 +1,6 @@
 /*global Backbone, _, window */
 const UserPanel = Backbone.NativeView.extend({
-    el: 'div#users',
+    el: '.controlbox-pane',
 
     initialize () {
         this.render();

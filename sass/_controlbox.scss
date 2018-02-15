@@ -157,21 +157,12 @@
 
         }
 
-        #users {
-            .add-converse-contact {
-                margin: 0 0 0.75em 0;
-            }
-
-            .chatbox-btn {
-                margin: 0;
-            }
-        }
-
         #chatrooms, #contacts {
             margin-top: 0.75em;
+            padding-bottom: 0.75em;
         }
 
-        #users {
+        .controlbox-pane {
             .userinfo {
                 padding-bottom: 1em;
                 border-bottom: 1px solid $gray-color;
@@ -420,6 +411,14 @@
             overflow-x: hidden;
             border-radius: $chatbox-border-radius;
 
+            .add-converse-contact {
+                margin: 0 0 0.75em 0;
+            }
+
+            .chatbox-btn {
+                margin: 0;
+            }
+
             .switch-form {
                 padding-bottom: 2em;
                 p {
@@ -521,13 +520,11 @@
                 display: block;
             }
 
-            #users {
+            .controlbox-pane {
                 position: absolute;
                 top: 0;
                 display: none;
-                &.controlbox-pane {
-                    width: 100%;
-                }
+                width: 100%;
             }
 
         }
@@ -537,7 +534,7 @@
                 display: none;
             }
             #controlbox {
-                #users {
+                .controlbox-pane {
                     display: block;
                 }
             }

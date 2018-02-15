@@ -26,7 +26,6 @@
             "tpl!chatroom_password_form",
             "tpl!chatroom_sidebar",
             "tpl!chatroom_toolbar",
-            "tpl!chatrooms_tab",
             "tpl!info",
             "tpl!occupant",
             "tpl!room_description",
@@ -57,7 +56,6 @@
             tpl_chatroom_password_form,
             tpl_chatroom_sidebar,
             tpl_chatroom_toolbar,
-            tpl_chatrooms_tab,
             tpl_info,
             tpl_occupant,
             tpl_room_description,
@@ -69,7 +67,6 @@
     ) {
 
     "use strict";
-    const ROOMS_PANEL_ID = 'chatrooms';
     const CHATROOMS_TYPE = 'chatroom';
 
     const MUC_ROLE_WEIGHTS = {
@@ -160,17 +157,21 @@
             },
 
             ControlBoxView: {
+
                 renderRoomsPanel () {
                     const { _converse } = this.__super__;
                     this.roomspanel = new _converse.RoomsPanel({
-                        'parent': this.el.querySelector('.controlbox-panes'),
                         'model': new (_converse.RoomsPanelModel.extend({
                             id: b64_sha1(`converse.roomspanel${_converse.bare_jid}`), // Required by sessionStorage
                             browserStorage: new Backbone.BrowserStorage[_converse.storage](
                                 b64_sha1(`converse.roomspanel${_converse.bare_jid}`))
                         }))()
                     });
-                    this.roomspanel.insertIntoDOM().model.fetch();
+                    this.roomspanel.model.fetch();
+
+                    this.el.querySelector('.controlbox-pane').insertAdjacentElement(
+                        'beforeEnd', this.roomspanel.render().el);
+
                     if (!this.roomspanel.model.get('nick')) {
                         this.roomspanel.model.save({
                             nick: Strophe.getNodeFromJid(_converse.bare_jid)
@@ -179,9 +180,9 @@
                     _converse.emit('roomsPanelRendered');
                 },
 
-                renderContactsPanel () {
+                renderControlBoxPane () {
                     const { _converse } = this.__super__;
-                    this.__super__.renderContactsPanel.apply(this, arguments);
+                    this.__super__.renderControlBoxPane.apply(this, arguments);
                     if (_converse.allow_muc) {
                         this.renderRoomsPanel();
                     }
@@ -470,6 +471,7 @@
                 },
 
                 render () {
+                    this.setClasses();
                     this.el.setAttribute('id', this.model.get('box_id'));
                     this.el.innerHTML = tpl_chatroom();
                     this.renderHeading();
@@ -478,6 +480,20 @@
                         this.showSpinner();
                     }
                     return this;
+                },
+
+                setClasses () {
+                    if (_converse.view_mode === 'fullscreen') {
+                        this.el.classList.add('col-xl-10');
+                        this.el.classList.add('col-md-9');
+                    } else {
+                        this.el.classList.add('col');
+                        this.el.classList.add('col-lg-4');
+                        this.el.classList.add('col-md-6');
+                        this.el.classList.add('col-sm-8');
+                        this.el.classList.add('col-sx-12');
+                        this.el.classList.add('w-100');
+                    }
                 },
 
                 renderHeading () {
@@ -2556,11 +2572,9 @@
             });
 
             _converse.RoomsPanel = Backbone.NativeView.extend({
-                /* Backbone.NativeView which renders the "Rooms" tab and accompanying
-                 * panel in the control box.
+                /* Backbone.NativeView which renders MUC section of the control box.
                  *
-                 * In this panel, chat rooms can be listed, joined and new rooms
-                 * can be created.
+                 * Chat rooms can be listed, joined and new rooms can be created.
                  */
                 tagName: 'div',
                 className: 'controlbox-pane',
@@ -2576,46 +2590,16 @@
 
                 initialize (cfg) {
                     this.join_form = new _converse.MUCJoinForm({'model': this.model});
-                    this.parent_el = cfg.parent;
-                    this.tab_el = document.createElement('li');
                     this.model.on('change:muc_domain', this.onDomainChange, this);
                     this.model.on('change:nick', this.onNickChange, this);
-                    _converse.chatboxes.on('change:num_unread', this.renderTab, this);
-                    _converse.chatboxes.on('add', _.debounce(this.renderTab, 100), this);
                 },
 
                 render () {
-                    this.el.innerHTML = tpl_room_panel();
+                    this.el.innerHTML = tpl_room_panel({
+                        'title_new_room': __('Click to add a new room')
+                    });
                     this.join_form.setElement(this.el.querySelector('.add-chatroom'));
                     this.join_form.render();
-
-                    this.renderTab();
-                    const controlbox = _converse.chatboxes.get('controlbox');
-                    if (controlbox.get('active-panel') !== ROOMS_PANEL_ID) {
-                        this.el.classList.add('hidden');
-                    } else {
-                        this.el.classList.remove('hidden');
-                    }
-                    return this;
-                },
-
-                renderTab () {
-                    const controlbox = _converse.chatboxes.get('controlbox');
-                    const chatrooms = fp.filter(
-                        _.partial(u.isOfType, CHATROOMS_TYPE),
-                        _converse.chatboxes.models
-                    );
-                    this.tab_el.innerHTML = tpl_chatrooms_tab({
-                        'label_rooms': __('Rooms'),
-                        'is_current': controlbox.get('active-panel') === ROOMS_PANEL_ID,
-                        'num_unread': fp.sum(fp.map(fp.curry(u.getAttribute)('num_unread'), chatrooms))
-                    });
-                },
-
-                insertIntoDOM () {
-                    this.parent_el.appendChild(this.render().el);
-                    this.tabs = this.parent_el.parentNode.querySelector('#controlbox-tabs');
-                    this.tabs.appendChild(this.tab_el);
                     return this;
                 },
 

@@ -129,7 +129,8 @@
             });
 
             _converse.RosterFilterView = Backbone.VDOMView.extend({
-                tagName: 'span',
+                tagName: 'form',
+                className: 'roster-filter-form',
                 events: {
                     "keydown .roster-filter": "liveFilter",
                     "submit form.roster-filter-form": "submitFilter",
@@ -149,9 +150,9 @@
                         _.extend(this.model.toJSON(), {
                             visible: this.shouldBeVisible(),
                             placeholder: __('Filter'),
-                            label_contacts: LABEL_CONTACTS,
-                            label_groups: LABEL_GROUPS,
-                            label_state: __('State'),
+                            title_contact_filter: __('Filter by contact name'),
+                            title_group_filter: __('Filter by group name'),
+                            title_status_filter: __('Filter by status'),
                             label_any: __('Any'),
                             label_unread_messages: __('Unread'),
                             label_online: __('Online'),
@@ -655,22 +656,20 @@
                 },
 
                 render () {
-                    this.el.innerHTML = "";
-                    this.el.appendChild(this.filter_view.render().el);
-                    this.renderRoster();
+                    this.el.innerHTML = tpl_roster({
+                        'heading_contacts': __('Contacts'),
+                        'title_add_contact': __('Add a contact')
+                    });
+                    const form = this.el.querySelector('.roster-filter-form');
+                    this.el.replaceChild(this.filter_view.render().el, form);
+                    this.roster_el = this.el.querySelector('.roster-contacts');
+
                     if (!_converse.allow_contact_requests) {
                         // XXX: if we ever support live editing of config then
                         // we'll need to be able to remove this class on the fly.
                         this.el.classList.add('no-contact-requests');
                     }
                     return this;
-                },
-
-                renderRoster () {
-                    const div = document.createElement('div');
-                    div.insertAdjacentHTML('beforeend', tpl_roster());
-                    this.roster_el = div.firstChild;
-                    this.el.insertAdjacentElement('beforeend', this.roster_el);
                 },
 
                 createRosterFilter () {
@@ -703,16 +702,9 @@
                     if (!u.isVisible(this.roster_el)) {
                         u.showElement(this.roster_el);
                     }
-                    return this.showHideFilter();
-                }, _converse.animate ? 100 : 0),
-
-                showHideFilter () {
-                    if (!u.isVisible(this.el)) {
-                        return;
-                    }
                     this.filter_view.showOrHide();
                     return this;
-                },
+                }, _converse.animate ? 100 : 0),
 
                 filter (query, type) {
                     // First we make sure the filter is restored to its

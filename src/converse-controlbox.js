@@ -12,8 +12,6 @@
             "tpl!add_contact_dropdown",
             "tpl!add_contact_form",
             "tpl!converse_brand_heading",
-            "tpl!contacts_panel",
-            "tpl!contacts_tab",
             "tpl!controlbox",
             "tpl!controlbox_toggle",
             "tpl!login_panel",
@@ -28,8 +26,6 @@
             tpl_add_contact_dropdown,
             tpl_add_contact_form,
             tpl_brand_heading,
-            tpl_contacts_panel,
-            tpl_contacts_tab,
             tpl_controlbox,
             tpl_controlbox_toggle,
             tpl_login_panel,
@@ -37,7 +33,6 @@
         ) {
     "use strict";
 
-    const USERS_PANEL_ID = 'users';
     const CHATBOX_TYPE = 'chatbox';
     const { Strophe, Backbone, Promise, _, moment } = converse.env;
     const u = converse.env.utils;
@@ -91,7 +86,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes"],
+        dependencies: ["converse-chatboxes", "converse-rosterview"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -201,6 +196,7 @@
             },
 
             ChatBoxView: {
+
                 insertIntoDOM () {
                     const view = this.__super__._converse.chatboxviews.get("controlbox");
                     if (view) {
@@ -248,15 +244,15 @@
                 className: 'chatbox',
                 id: 'controlbox',
                 events: {
-                    'click a.close-chatbox-button': 'close',
-                    'click ul#controlbox-tabs li a': 'switchTab',
+                    'click a.close-chatbox-button': 'close'
                 },
 
                 initialize () {
                     if (_.isUndefined(_converse.controlboxtoggle)) {
                         _converse.controlboxtoggle = new _converse.ControlBoxToggle();
-                        _converse.controlboxtoggle.el.insertAdjacentElement('afterend', this.el);
                     }
+                    _converse.controlboxtoggle.el.insertAdjacentElement('afterend', this.el);
+
                     this.model.on('change:connected', this.onConnected, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('hide', this.hide, this);
@@ -277,23 +273,23 @@
                             this.model.set('closed', !_converse.show_controlbox_by_default);
                         }
                     }
-                    if (!this.model.get('closed')) {
-                        this.show();
-                    } else {
-                        this.hide();
-                    }
                     this.el.innerHTML = tpl_controlbox(
                         _.extend(this.model.toJSON(), {
                             'sticky_controlbox': _converse.sticky_controlbox
                         }));
 
+                    if (!this.model.get('closed')) {
+                        this.show();
+                    } else {
+                        this.hide();
+                    }
                     if (!_converse.connection.connected ||
                             !_converse.connection.authenticated ||
                             _converse.connection.disconnecting) {
                         this.renderLoginPanel();
                     } else if (this.model.get('connected') &&
-                            (!this.contactspanel || !u.isVisible(this.contactspanel.el))) {
-                        this.renderContactsPanel();
+                            (!this.controlbox_pane || !u.isVisible(this.controlbox_pane.el))) {
+                        this.renderControlBoxPane();
                     }
                     return this;
                 },
@@ -310,7 +306,7 @@
 
                 insertRoster () {
                     /* Place the rosterview inside the "Contacts" panel. */
-                    this.contactspanel.el.insertAdjacentElement(
+                    this.controlbox_pane.el.insertAdjacentElement(
                         'beforeEnd',
                         _converse.rosterview.el
                     );
@@ -333,6 +329,8 @@
 
                 renderLoginPanel () {
                     this.el.classList.add("logged-out");
+                    this.el.classList.remove("col-xl-2");
+                    this.el.classList.remove("col-md-3");
                     if (_.isNil(this.loginpanel)) {
                         this.loginpanel = new _converse.LoginPanel({
                             'model': new _converse.LoginPanelModel()
@@ -347,7 +345,7 @@
                     return this;
                 },
 
-                renderContactsPanel () {
+                renderControlBoxPane () {
                     /* Renders the "Contacts" panel of the controlbox.
                      *
                      * This will only be called after the user has already been
@@ -358,19 +356,14 @@
                         delete this.loginpanel;
                     }
                     this.el.classList.remove("logged-out");
+                    this.el.classList.add("col-xl-2");
+                    this.el.classList.add("col-md-3");
 
-                    if (_.isUndefined(this.model.get('active-panel'))) {
-                        this.model.save({'active-panel': USERS_PANEL_ID});
-                    }
-                    this.contactspanel = new _converse.ContactsPanel({
-                        'parent_el': this.el.querySelector('.controlbox-panes')
-                    });
-                    this.contactspanel.insertIntoDOM();
-
-                    _converse.xmppstatusview = new _converse.XMPPStatusView({
-                        'model': _converse.xmppstatus
-                    });
-                    _converse.xmppstatusview.render();
+                    this.controlbox_pane = new _converse.ControlBoxPane();
+                    this.el.querySelector('.controlbox-panes').insertAdjacentElement(
+                        'afterBegin',
+                        this.controlbox_pane.el
+                    )
                 },
 
                 close (ev) {
@@ -418,24 +411,6 @@
                     _converse.controlboxtoggle.hide(
                         this.onControlBoxToggleHidden.bind(this)
                     );
-                    return this;
-                },
-
-                switchTab (ev) {
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const tab = ev.target,
-                        sibling_li = tab.parentNode.nextElementSibling || tab.parentNode.previousElementSibling,
-                        sibling = sibling_li.firstChild,
-                        sibling_panel = _converse.root.querySelector(sibling.getAttribute('href')),
-                        tab_panel = _converse.root.querySelector(tab.getAttribute('href'));
-
-                    u.hideElement(sibling_panel);
-                    u.removeClass('current', sibling);
-                    u.addClass('current', tab);
-                    u.removeClass('hidden', tab_panel);
-                    if (!_.isUndefined(_converse.chatboxes.browserStorage)) {
-                        this.model.save({'active-panel': tab.getAttribute('data-id')});
-                    }
                     return this;
                 },
 
@@ -553,10 +528,9 @@
             });
 
 
-            _converse.ContactsPanel = Backbone.NativeView.extend({
+            _converse.ControlBoxPane = Backbone.NativeView.extend({
                 tagName: 'div',
                 className: 'controlbox-pane',
-                id: 'users',
                 events: {
                     'click a.toggle-xmpp-contact-form': 'toggleContactForm',
                     'submit form.add-xmpp-contact': 'addContactFromForm',
@@ -564,57 +538,14 @@
                     'click a.subscribe-to-user': 'addContactFromList'
                 },
 
-                initialize (cfg) {
-                    this.parent_el = cfg.parent_el;
-                    this.tab_el = document.createElement('li');
-                    _converse.chatboxes.on('change:num_unread', this.renderTab, this);
-                    _converse.chatboxes.on('add', _.debounce(this.renderTab, 100), this);
-                },
-
-                render () {
-                    this.renderTab();
-                    let widgets = tpl_contacts_panel({
-                        label_online: __('Online'),
-                        label_busy: __('Busy'),
-                        label_away: __('Away'),
-                        label_offline: __('Offline'),
-                        label_logout: __('Log out'),
-                        include_offline_state: _converse.include_offline_state,
-                        allow_logout: _converse.allow_logout
+                initialize () {
+                    _converse.xmppstatusview = new _converse.XMPPStatusView({
+                        'model': _converse.xmppstatus
                     });
-                    if (_converse.allow_contact_requests) {
-                        widgets += tpl_add_contact_dropdown({
-                            label_click_to_chat: __('Click to add new chat contacts'),
-                            label_add_contact: __('Add a contact')
-                        });
-                    }
-                    this.el.innerHTML = widgets;
-
-                    const controlbox = _converse.chatboxes.get('controlbox');
-                    if (controlbox.get('active-panel') !== USERS_PANEL_ID) {
-                        this.el.classList.add('hidden');
-                    }
-                    return this;
-                },
-
-                renderTab () {
-                    const controlbox = _converse.chatboxes.get('controlbox');
-                    if (_.isNil(controlbox)) {
-                        return;
-                    }
-                    const chats = fp.filter(_.partial(u.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
-                    this.tab_el.innerHTML = tpl_contacts_tab({
-                        'label_contacts': LABEL_CONTACTS,
-                        'is_current': controlbox.get('active-panel') === USERS_PANEL_ID,
-                        'num_unread': fp.sum(fp.map(fp.curry(u.getAttribute)('num_unread'), chats))
-                    });
-                },
-
-                insertIntoDOM () {
-                    this.parent_el.appendChild(this.render().el);
-                    this.tabs = this.parent_el.parentNode.querySelector('#controlbox-tabs');
-                    this.tabs.appendChild(this.tab_el);
-                    return this;
+                    this.el.insertAdjacentElement(
+                        'afterBegin',
+                        _converse.xmppstatusview.render().el
+                    );
                 },
 
                 generateAddContactHTML (settings={}) {
@@ -728,11 +659,10 @@
                 },
 
                 initialize () {
-                    _converse.chatboxviews.el.insertAdjacentElement('afterBegin', this.render().el);
-                    const that = this;
-                    _converse.api.waitUntil('initialized').then(() => {
-                        this.render();
-                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                    _converse.chatboxviews.insertRowColumn(this.render().el);
+                    _converse.api.waitUntil('initialized')
+                        .then(this.render.bind(this))
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                 render () {
@@ -796,7 +726,6 @@
                  */
                 const view = _converse.chatboxviews.get('controlbox');
                 view.model.set({connected:false});
-                view.el.querySelector('#controlbox-tabs').innerHTML = '';
                 view.renderLoginPanel();
             };
             _converse.on('disconnected', disconnect);

@@ -1,0 +1,13 @@
+<div class="userinfo">
+<div class="d-flex">
+    <canvas height="20" width="20" class="avatar align-self-center"></canvas>
+    <span class="username w-100 align-self-center">{{{o.fullname}}}</span>
+    <a class="chatbox-btn fa fa-vcard align-self-center" title="{{{o.title_your_profile}}}" data-toggle="modal" data-target="#userProfileModal"></a>
+    <a class="chatbox-btn fa fa-cog align-self-center" title="{{{o.title_change_status}}}" data-toggle="modal" data-target="#settingsModal"></a>
+</div>
+<div class="d-flex xmpp-status">
+    <span class="{{{o.chat_status}}} w-100 align-self-center" data-value="{{{o.chat_status}}}">
+        <span class="fa fa-circle"></span> {{{o.status_message}}}</span>
+    <a class="chatbox-btn fa fa-pencil" title="{{{o.title_change_status}}}" data-toggle="modal" data-target="#changeStatusModal"></a>
+</div>
+</div>

@@ -9,7 +9,7 @@
 (function (root, factory) {
     define(["converse-core",
             "tpl!change_status_message",
-            "tpl!chat_status",
+            "tpl!profile_view",
             "tpl!choose_status",
             "tpl!status_option",
             "converse-vcard"
@@ -17,7 +17,7 @@
 }(this, function (
             converse,
             tpl_change_status_message,
-            tpl_chat_status,
+            tpl_profile_view,
             tpl_choose_status,
             tpl_status_option
         ) {
@@ -35,8 +35,9 @@
             const { _converse } = this,
                 { __ } = _converse;
 
-            _converse.XMPPStatusView = Backbone.NativeView.extend({
-                el: "form#set-xmpp-status",
+
+            _converse.XMPPStatusView = Backbone.VDOMView.extend({
+                tagName: "div",
                 events: {
                     "click a.choose-xmpp-status": "toggleOptions",
                     "click #fancy-xmpp-status-select a.change-xmpp-status-message": "renderStatusChangeForm",
@@ -50,30 +51,17 @@
                     this.model.on("update-status-ui", this.updateStatusUI, this);
                 },
 
-                render () {
-                    // Replace the default dropdown with something nicer
-                    const options = this.el.querySelectorAll('#select-xmpp-status option');
+                toHTML () {
                     const chat_status = this.model.get('status') || 'offline';
-                    this.el.innerHTML = tpl_choose_status();
-
-                    this.el.querySelector('#fancy-xmpp-status-select')
-                        .innerHTML = tpl_chat_status({
-                            'status_message': this.model.get('status_message') ||
-                                              __("I am %1$s", this.getPrettyStatus(chat_status)),
-                            'chat_status': chat_status,
-                            'desc_custom_status': __('Click here to write a custom status message'),
-                            'desc_change_status': __('Click to change your chat status')
-                        });
-
-                    // iterate through all the <option> elements and add option values
-                    const options_list = _.map(
-                        options,
-                        (el) => tpl_status_option({'value': el.value, 'text': el.text })
-                    );
-                    const options_target = this.el.querySelector(".xmpp-status-menu");
-                    options_target.classList.add('collapsed');
-                    options_target.innerHTML = options_list.join('');
-                    return this;
+                    return tpl_profile_view(_.extend(this.model.toJSON(), {
+                        'fullname': this.model.get('fullname') || _converse.bare_jid,
+                        'status_message': this.model.get('status_message') ||
+                                            __("I am %1$s", this.getPrettyStatus(chat_status)),
+                        'chat_status': chat_status,
+                        'title_change_settings': __('Change settings'),
+                        'title_change_status': __('Click to change your chat status'),
+                        'title_your_profile': __('Your profile')
+                    }));
                 },
 
                 toggleOptions (ev) {
@@ -133,14 +121,7 @@
                     // For translators: the %1$s part gets replaced with the status
                     // Example, I am online
                     const status_message = model.get('status_message') || __("I am %1$s", this.getPrettyStatus(stat));
-                    const fancy_select = this.el.querySelector('#fancy-xmpp-status-select');
-                    fancy_select.classList.remove('no-border');
-                    fancy_select.innerHTML = tpl_chat_status({
-                        'chat_status': stat,
-                        'status_message': status_message,
-                        'desc_custom_status': __('Click here to write a custom status message'),
-                        'desc_change_status': __('Click to change your chat status')
-                    });
+                    // TODO
                 }
             });
         }

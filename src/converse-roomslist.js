@@ -131,7 +131,7 @@
 
             _converse.RoomsListView = Backbone.OrderedListView.extend({
                 tagName: 'div',
-                className: 'open-rooms-list rooms-list-container',
+                className: 'open-rooms-list list-container rooms-list-container',
                 events: {
                     'click .add-bookmark': 'addBookmark',
                     'click .close-room': 'closeRoom',
@@ -177,9 +177,9 @@
                     const controlboxview = _converse.chatboxviews.get('controlbox');
                     if (!_.isUndefined(controlboxview) &&
                             !_converse.root.contains(this.el)) {
-                        const container = controlboxview.el.querySelector('#chatrooms');
-                        if (!_.isNull(container)) {
-                            container.insertBefore(this.el, container.firstChild);
+                        const el = controlboxview.el.querySelector('.open-rooms-list');
+                        if (!_.isNull(el)) {
+                            el.parentNode.replaceChild(this.el, el);
                         }
                     }
                 },

@@ -157,11 +157,6 @@
 
         }
 
-        #chatrooms, #contacts {
-            margin-top: 0.75em;
-            padding-bottom: 0.75em;
-        }
-
         .controlbox-pane {
             .userinfo {
                 padding-bottom: 1em;
@@ -169,6 +164,8 @@
 
                 .username {
                     margin-left: 0.5em;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
                 .d-flex {
                     margin-bottom: 0.2em;
@@ -177,6 +174,7 @@
         }
 
         #chatrooms {
+            padding: 0;
             border-bottom: 1px solid $gray-color;
 
             form.add-chatroom {
@@ -282,6 +280,11 @@
                     }
                 }
             }
+        }
+
+        #chatrooms, #converse-roster {
+            margin-top: 0.75em;
+            padding-bottom: 0.75em;
         }
 
         .dropdown {

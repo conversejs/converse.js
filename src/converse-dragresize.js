@@ -312,8 +312,8 @@
                     return result;
                 },
 
-                renderContactsPanel () {
-                    const result = this.__super__.renderContactsPanel.apply(this, arguments);
+                renderControlBoxPane () {
+                    const result = this.__super__.renderControlBoxPane.apply(this, arguments);
                     this.initDragResize().setDimensions();
                     return result;
                 }

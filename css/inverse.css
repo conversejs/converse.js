@@ -5794,17 +5794,17 @@ body {
     display: block;
     font-weight: normal;
     margin: 1em 0; }
-  #conversejs #controlbox #chatrooms, #conversejs #controlbox #contacts {
-    margin-top: 0.75em;
-    padding-bottom: 0.75em; }
   #conversejs #controlbox .controlbox-pane .userinfo {
     padding-bottom: 1em;
     border-bottom: 1px solid #818479; }
     #conversejs #controlbox .controlbox-pane .userinfo .username {
-      margin-left: 0.5em; }
+      margin-left: 0.5em;
+      overflow: hidden;
+      text-overflow: ellipsis; }
     #conversejs #controlbox .controlbox-pane .userinfo .d-flex {
       margin-bottom: 0.2em; }
   #conversejs #controlbox #chatrooms {
+    padding: 0;
     border-bottom: 1px solid #818479; }
     #conversejs #controlbox #chatrooms form.add-chatroom {
       margin: 0;
@@ -5899,6 +5899,9 @@ body {
           padding: 0.3em 0;
           clear: left;
           width: 100%; }
+  #conversejs #controlbox #chatrooms, #conversejs #controlbox #converse-roster {
+    margin-top: 0.75em;
+    padding-bottom: 0.75em; }
   #conversejs #controlbox .dropdown a {
     width: 143px;
     display: inline-block; }

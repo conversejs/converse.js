@@ -6,9 +6,11 @@
     @include animation-timing-function(ease);
 }
 
-#converse-embedded-chat,
+body.reset {
+    margin: 0;
+}
+
 #conversejs {
-    margin-left: -$chat-gutter; // Mystery why this is necessary
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
     bottom: 0;

@@ -1,13 +1,14 @@
 #conversejs.fullscreen {
     #controlbox {
         margin: 0;
+        // margin-left: -$chat-gutter; // Mystery why this is necessary
 
         .controlbox-pane {
             border-radius: 0;
         }
 
         #login-dialog {
-            border-radius: $chatbox-border-radius;
+            border-radius: 0;
             .converse-form {
                 margin: 0;
                 padding: 3em 2em 3em;

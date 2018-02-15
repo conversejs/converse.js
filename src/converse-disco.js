@@ -7,7 +7,7 @@
 
 /* This is a Converse.js plugin which add support for XEP-0030: Service Discovery */
 
-/*global Backbone, define, window, document */
+/*global Backbone, define, window */
 (function (root, factory) {
     define(["converse-core", "sizzle", "strophe.disco"], factory);
 }(this, function (converse, sizzle) {
@@ -63,6 +63,29 @@
                     );
                     this.fetchFeatures();
 
+                },
+
+                getIdentity (category, type) {
+                    /* Returns a Promise which resolves with a map indicating
+                     * whether a given identity is provided.
+                     *
+                     * Parameters:
+                     *    (String) category - The identity category
+                     *    (String) type - The identity type
+                     */
+                    const entity = this;
+                    return new Promise((resolve, reject) => {
+                        function fulfillPromise () {
+                            const model = entity.identities.findWhere({
+                                'category': category,
+                                'type': type
+                            });
+                            resolve(model);
+                        }
+                        entity.waitUntilFeaturesDiscovered
+                            .then(fulfillPromise)
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                    });
                 },
 
                 hasFeature (feature) {
@@ -130,8 +153,8 @@
                     _.forEach(stanza.querySelectorAll('identity'), (identity) => {
                         this.identities.create({
                             'category': identity.getAttribute('category'),
-                            'type': stanza.getAttribute('type'),
-                            'name': stanza.getAttribute('name')
+                            'type': identity.getAttribute('type'),
+                            'name': identity.getAttribute('name')
                         });
                     });
                     if (stanza.querySelector('feature[var="'+Strophe.NS.DISCO_ITEMS+'"]')) {
@@ -245,7 +268,28 @@
                         return _converse.api.waitUntil('discoInitialized').then(() => {
                             const entity = _converse.api.disco.entities.get(entity_jid, true);
                             return entity.hasFeature(feature);
-                        });
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                    },
+
+                    'getIdentity' (category, type, entity_jid) {
+                        /* Returns a Promise which resolves with a map indicating
+                         * whether an identity with a given type is provided by
+                         * the entity.
+                         *
+                         * Parameters:
+                         *    (String) category - The identity category.
+                         *          In the XML stanza, this is the `category`
+                         *          attribute of the `<identity>` element.
+                         *          For example: 'pubsub'
+                         *    (String) type - The identity type.
+                         *          In the XML stanza, this is the `type`
+                         *          attribute of the `<identity>` element.
+                         *          For example: 'pep'
+                         */
+                        return _converse.api.waitUntil('discoInitialized').then(() => {
+                            const entity = _converse.api.disco.entities.get(entity_jid, true);
+                            return entity.getIdentity(category, type);
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
                 }
             });

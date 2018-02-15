@@ -7,7 +7,7 @@
 /*global define */
 
 (function (root, factory) {
-    define(["converse-core"], factory);
+    define(["converse-core", "backbone.overview"], factory);
 }(this, function (converse) {
     "use strict";
     const { Backbone, Promise, Strophe, b64_sha1, moment, utils, _ } = converse.env;
@@ -117,6 +117,20 @@
                 },
 
                 getMessageAttributes (message, delay, original_stanza) {
+                    /* Parses a passed in message stanza and returns an object
+                     * of attributes.
+                     *
+                     * Parameters:
+                     *    (XMLElement) message - The message stanza
+                     *    (XMLElement) delay - The <delay> node from the
+                     *      stanza, if there was one.
+                     *    (XMLElement) original_stanza - The original stanza,
+                     *      that contains the message stanza, if it was
+                     *      contained, otherwise it's the message stanza itself.
+                     */
+                    const { _converse } = this.__super__,
+                          { __ } = _converse;
+
                     delay = delay || message.querySelector('delay');
                     const type = message.getAttribute('type'),
                         body = this.getMessageBody(message);
@@ -144,7 +158,8 @@
                         sender = 'them';
                         fullname = this.get('fullname') || from;
                     }
-                    return {
+                    const spoiler = message.querySelector(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`);
+                    const attrs = {
                         'type': type,
                         'chat_state': chat_state,
                         'delayed': delayed,
@@ -152,18 +167,26 @@
                         'message': body || undefined,
                         'msgid': message.getAttribute('id'),
                         'sender': sender,
-                        'time': time
+                        'time': time,
+                        'is_spoiler': !_.isNull(spoiler)
                     };
+                    if (spoiler) {
+                        attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
+                    }
+                    return attrs;
                 },
 
                 createMessage (message, delay, original_stanza) {
+                    /* Create a Backbone.Message object inside this chat box
+                     * based on the identified message stanza.
+                     */
                     return this.messages.create(this.getMessageAttributes.apply(this, arguments));
                 },
 
                 newMessageWillBeHidden () {
                     /* Returns a boolean to indicate whether a newly received
-                    * message will be visible to the user or not.
-                    */
+                     * message will be visible to the user or not.
+                     */
                     return this.get('hidden') ||
                         this.get('minimized') ||
                         this.isScrolledUp() ||
@@ -172,8 +195,8 @@
 
                 incrementUnreadMsgCounter (stanza) {
                     /* Given a newly received message, update the unread counter if
-                    * necessary.
-                    */
+                     * necessary.
+                     */
                     if (_.isNull(stanza.querySelector('body'))) {
                         return; // The message has no text
                     }
@@ -256,8 +279,11 @@
 
                 onMessage (message) {
                     /* Handler method for all incoming single-user chat "message"
-                    * stanzas.
-                    */
+                     * stanzas.
+                     *
+                     * Parameters:
+                     *    (XMLElement) message - The incoming message stanza
+                     */
                     let contact_jid, delay, resource,
                         from_jid = message.getAttribute('from'),
                         to_jid = message.getAttribute('to');
@@ -272,7 +298,7 @@
                             Strophe.LogLevel.INFO
                         );
                         return true;
-                    } else if (utils.isHeadlineMessage(message)) {
+                    } else if (utils.isHeadlineMessage(_converse, message)) {
                         // XXX: Ideally we wouldn't have to check for headline
                         // messages, but Prosody sends headline messages with the
                         // wrong type ('chat'), so we need to filter them out here.
@@ -392,16 +418,20 @@
                     * If the #conversejs element doesn't exist, create it.
                     */
                     if (!this.el) {
-                        let el = document.querySelector('#conversejs');
+                        let el = _converse.root.querySelector('#conversejs');
                         if (_.isNull(el)) {
                             el = document.createElement('div');
                             el.setAttribute('id', 'conversejs');
-                            if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
-                                el.classList.add('fullscreen');
+                            const body = _converse.root.querySelector('body');
+                            if (body) {
+                                body.appendChild(el);
+                            } else {
+                                // Perhaps inside a web component?
+                                _converse.root.appendChild(el);
                             }
-                            // Converse.js expects a <body> tag to be present.
-                            document.querySelector('body').appendChild(el);
-
+                        }
+                        if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
+                            el.classList.add('fullscreen');
                         }
                         el.innerHTML = '';
                         this.setElement(el, false);

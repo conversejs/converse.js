@@ -62,7 +62,7 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
- 
+
             ChatBox: {
                 initialize () {
                     this.__super__.initialize.apply(this, arguments);
@@ -118,7 +118,7 @@
                     }
                     return key;
                 },
-                
+
                 getSession (callback) {
                     const { _converse } = this.__super__,
                         { __ } = _converse;
@@ -283,25 +283,34 @@
                     return stanza;
                 },
 
-                onMessageSubmitted (text) {
+                parseMessageForCommands (text) {
                     const { _converse } = this.__super__;
-                    if (!_converse.connection.authenticated) {
-                        return this.showHelpMessages(
-                            ['Sorry, the connection has been lost, '+
-                              'and your message could not be sent'],
-                            'error'
-                        );
-                    }
                     const match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
                     if (match) {
                         if ((_converse.allow_otr) && (match[1] === "endotr")) {
-                            return this.endOTR();
+                            this.endOTR();
+                            return true;
                         } else if ((_converse.allow_otr) && (match[1] === "otr")) {
-                            return this.model.initiateOTR();
+                            this.model.initiateOTR();
+                            return true;
                         }
                     }
-                    if (_.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
-                        // Off-the-record encryption is active
+                    return this.__super__.parseMessageForCommands.apply(this, arguments);
+                },
+
+                isOTREncryptedSession () {
+                    return _.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'));
+                },
+
+                onMessageSubmitted (text, spoiler_hint) {
+                    const { _converse } = this.__super__;
+                    if (!_converse.connection.authenticated) {
+                        this.__super__.onMessageSubmitted.apply(this, arguments);
+                    }
+                    if (this.parseMessageForCommands(text)) {
+                        return;
+                    }
+                    if (this.isOTREncryptedSession()) {
                         this.model.otr.sendMsg(text);
                         this.model.trigger('showSentOTRMessage', text);
                     } else {
@@ -394,16 +403,17 @@
 
                 toggleOTRMenu (ev) {
                     ev.stopPropagation();
+                    const { _converse } = this.__super__;
                     const menu = this.el.querySelector('.toggle-otr ul');
                     const elements = _.difference(
-                        document.querySelectorAll('.toolbar-menu'),
+                        _converse.root.querySelectorAll('.toolbar-menu'),
                         [menu]
                     );
                     utils.slideInAllElements(elements).then(
                         _.partial(utils.slideToggleElement, menu)
                     );
                 },
-                
+
                 getOTRTooltip () {
                     const { _converse } = this.__super__,
                         { __ } = _converse,
@@ -419,13 +429,10 @@
                     }
                 },
 
-                renderToolbar (toolbar, options) {
+                addOTRToolbarButton (options) {
                     const { _converse } = this.__super__,
-                        { __ } = _converse;
-                    if (!_converse.show_toolbar) {
-                        return;
-                    }
-                    const data = this.model.toJSON();
+                          { __ } = _converse,
+                          data = this.model.toJSON();
                     options = _.extend(options || {}, {
                         FINISHED,
                         UNENCRYPTED,
@@ -443,13 +450,25 @@
                         otr_tooltip: this.getOTRTooltip(),
                         otr_translated_status: OTR_TRANSLATED_MAPPING[data.otr_status],
                     });
-                    this.__super__.renderToolbar.apply(this, arguments);
                     this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
-                        'beforeend', 
+                        'beforeend',
                         tpl_toolbar_otr(
                             _.extend(this.model.toJSON(), options || {})
                         ));
-                    return this;
+                },
+
+                getToolbarOptions (options) {
+                    options = this.__super__.getToolbarOptions();
+                    if (this.isOTREncryptedSession()) {
+                        options.show_spoiler_button = false;
+                    }
+                    return options;
+                },
+
+                renderToolbar (toolbar, options) {
+                    const result = this.__super__.renderToolbar.apply(this, arguments);
+                    this.addOTRToolbarButton(options);
+                    return result;
                 }
             }
         },

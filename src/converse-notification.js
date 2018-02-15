@@ -71,7 +71,7 @@
             };
 
             _converse.isMessageToHiddenChat = function (message) {
-                if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
+                if (_.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode)) {
                     const jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
                     const model = _converse.chatboxes.get(jid);
                     if (!_.isNil(model)) {
@@ -93,7 +93,7 @@
                     return false;
                 } else if (message.getAttribute('type') === 'groupchat') {
                     return _converse.shouldNotifyOfGroupMessage(message);
-                } else if (utils.isHeadlineMessage(message)) {
+                } else if (utils.isHeadlineMessage(_converse, message)) {
                     // We want to show notifications for headline messages.
                     return _converse.isMessageToHiddenChat(message);
                 }

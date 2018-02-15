@@ -10,7 +10,7 @@ CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
 CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
 ESLINT		  	?= ./node_modules/.bin/eslint
 HTTPSERVE	   	?= ./node_modules/.bin/http-server
-HTTPSERVE_PORT	        ?= 8000
+HTTPSERVE_PORT  ?= 8000
 PAPER		   	=
 PO2JSON		 	?= ./node_modules/.bin/po2json
 RJS			 	?= ./node_modules/.bin/r.js
@@ -72,7 +72,7 @@ serve_bg: dev
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.3.1 -c
+GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.3.3 -c
 
 .PHONY: pot
 pot: dist/converse-no-dependencies.js
@@ -101,6 +101,7 @@ release:
 	$(SED) -ri s/version\ =\ \'[0-9]\+\.[0-9]\+\.[0-9]\+\'/version\ =\ \'$(VERSION)\'/ docs/source/conf.py
 	$(SED) -ri s/release\ =\ \'[0-9]\+\.[0-9]\+\.[0-9]\+\'/release\ =\ \'$(VERSION)\'/ docs/source/conf.py
 	$(SED) -ri "s/(Unreleased)/`date +%Y-%m-%d`/" CHANGES.md
+	$(SED) -ri "s/cdn.conversejs.org\/[0-9]+\.[0-9]+\.[0-9]+/cdn.conversejs.org\/$(VERSION)/" docs/source/quickstart.rst
 	make pot
 	make po
 	make po2json
@@ -131,21 +132,21 @@ dev: stamp-bundler stamp-npm
 ## Builds
 
 .PHONY: css
-css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css
+css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css css/fonts.css
 
-css/inverse.css:: stamp-bundler sass sass/*
+css/inverse.css:: stamp-bundler sass sass/*.scss
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/inverse/inverse.scss css/inverse.css
 
 css/inverse.min.css:: css/inverse.css
 	$(CLEANCSS) css/inverse.css > css/inverse.min.css
 
-css/converse-muc-embedded.css:: stamp-bundler sass/*
+css/converse-muc-embedded.css:: stamp-bundler sass/*.scss
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/_muc_embedded.scss css/converse-muc-embedded.css
 
-css/converse-muc-embedded.min.css:: stamp-bundler sass css/converse-muc-embedded.css
+css/converse-muc-embedded.min.css:: dev sass css/converse-muc-embedded.css
 	$(CLEANCSS) css/converse-muc-embedded.css > css/converse-muc-embedded.min.css
 
-css/converse.css:: stamp-bundler sass/*
+css/converse.css:: stamp-bundler sass/*.scss
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss css/converse.css
 
 css/converse.min.css:: css/converse.css
@@ -154,8 +155,11 @@ css/converse.min.css:: css/converse.css
 css/theme.min.css:: stamp-npm css/theme.css
 	$(CLEANCSS) css/theme.css > css/theme.min.css
 
-css/mobile.min.css:: stamp-npm sass/*
+css/mobile.min.css:: stamp-npm sass/*.scss
 	$(CLEANCSS) css/mobile.css > css/mobile.min.css
+
+css/fonts.css:: dev sass/*.scss
+	$(SASS) -I $(BOURBON_TEMPLATES) sass/only-fonts.scss css/fonts.css
 
 .PHONY: watch
 watch: stamp-bundler
@@ -219,7 +223,7 @@ eslint: stamp-npm
 
 .PHONY: check
 check: eslint
-	LOG_CR_VERBOSITY=INFO $(CHROMIUM) --no-sandbox http://localhost:$(HTTPSERVE_PORT)/tests.html
+	LOG_CR_VERBOSITY=INFO $(CHROMIUM) --no-sandbox http://localhost:$(HTTPSERVE_PORT)/tests/index.html
 
 ########################################################################
 ## Documentation

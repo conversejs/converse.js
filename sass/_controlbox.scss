@@ -404,7 +404,8 @@
         }
 
         .controlbox-panes {
-            overflow-y: scroll;
+            height: 100%;
+            overflow-y: auto;
         }
 
         .controlbox-pane {

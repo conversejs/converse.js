@@ -24,7 +24,7 @@
     const b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
 
-    const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g;
+    const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
 
     const logger = _.assign({
         'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
@@ -364,7 +364,11 @@
     };
 
     u.isValidJID = function (jid) {
-        return _.filter(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+        return _.compact(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+    };
+
+    u.isValidMUCJID = function (jid) {
+        return !jid.startsWith('@') && !jid.endsWith('@');
     };
 
     u.isSameBareJID = function (jid1, jid2) {
@@ -385,7 +389,7 @@
             return !sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length &&
                    !sizzle('delay[xmlns="'+Strophe.NS.DELAY+'"]', message).length;
         } else {
-            return !message.get('archive_id') && !message.get('delayed');
+            return !message.get('delayed');
         }
     };
 
@@ -395,10 +399,14 @@
         return text && !!text.match(/^\?OTR/);
     };
 
-    u.isHeadlineMessage = function (message) {
+    u.isHeadlineMessage = function (_converse, message) {
         var from_jid = message.getAttribute('from');
         if (message.getAttribute('type') === 'headline') {
             return true;
+        }
+        const chatbox = _converse.chatboxes.get(Strophe.getBareJidFromJid(from_jid));
+        if (chatbox && chatbox.get('type') === 'chatroom') {
+            return false;
         }
         if (message.getAttribute('type') !== 'error' &&
                 !_.isNil(from_jid) &&

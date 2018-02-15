@@ -13,6 +13,7 @@ if (typeof define !== 'undefined') {
         "converse-roomslist",   // Show currently open chat rooms
         "converse-mam",         // XEP-0313 Message Archive Management
         "converse-muc",         // XEP-0045 Multi-user chat
+        "converse-muc-embedded",
         "converse-vcard",       // XEP-0054 VCard-temp
         "converse-otr",         // Off-the-record encryption for one-on-one messages
         "converse-register",    // XEP-0077 In-band registration
@@ -21,7 +22,7 @@ if (typeof define !== 'undefined') {
         "converse-minimize",    // Allows chat boxes to be minimized
         "converse-dragresize",  // Allows chat boxes to be resized by dragging them
         "converse-headline",    // Support for headline messages
-        "converse-fullscreen",
+        "converse-fullscreen"
         /* END: Removable components */
     ], function (converse) {
         return converse;

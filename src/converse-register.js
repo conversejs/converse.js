@@ -334,7 +334,7 @@
                         return;
                     }
                     form.querySelector('input[type=submit]').classList.add('hidden');
-                    this.fetchRegistrationForm(domain);
+                    this.fetchRegistrationForm(domain.trim());
                 },
 
                 fetchRegistrationForm (domain_name) {
@@ -603,7 +603,8 @@
                     if (has_empty_inputs) { return; }
 
                     const inputs = sizzle(':input:not([type=button]):not([type=submit])', form),
-                        iq = $iq({type: "set"}).c("query", {xmlns:Strophe.NS.REGISTER});
+                          iq = $iq({'type': 'set', 'id': _converse.connection.getUniqueId()})
+                                .c("query", {xmlns:Strophe.NS.REGISTER});
 
                     if (this.form_type === 'xform') {
                         iq.c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});

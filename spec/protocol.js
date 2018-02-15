@@ -55,7 +55,7 @@
                     function (done, _converse) {
 
                 var contact, sent_stanza, IQ_id, stanza;
-                test_utils.waitUntilFeatureSupportConfirmed(_converse, 'vcard-temp')
+                test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
                 .then(function () {
                     return test_utils.waitUntil(function () {
                         return _converse.xmppstatus.get('fullname');

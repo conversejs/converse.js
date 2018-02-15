@@ -113,7 +113,6 @@
                                 info_close: '',
                                 label_personal_message: '',
                                 show_send_button: false,
-                                show_textarea: false,
                                 show_toolbar: false,
                                 unread_msgs: ''
                             }
@@ -122,14 +121,15 @@
                     return this;
                 },
 
-                // Override to avoid the method in converse-chatview.js
+                // Override to avoid the methods in converse-chatview.js
+                'renderMessageForm': _.noop,
                 'afterShown': _.noop
             });
 
             function onHeadlineMessage (message) {
                 /* Handler method for all incoming messages of type "headline". */
                 const from_jid = message.getAttribute('from');
-                if (utils.isHeadlineMessage(message)) {
+                if (utils.isHeadlineMessage(_converse, message)) {
                     if (_.includes(from_jid, '@') && !_converse.allow_non_roster_messaging) {
                         return;
                     }
@@ -146,8 +146,7 @@
             }
 
             function registerHeadlineHandler () {
-                _converse.connection.addHandler(
-                        onHeadlineMessage, null, 'message');
+                _converse.connection.addHandler(onHeadlineMessage, null, 'message');
             }
             _converse.on('connected', registerHeadlineHandler);
             _converse.on('reconnected', registerHeadlineHandler);

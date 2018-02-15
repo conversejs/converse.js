@@ -115,11 +115,14 @@
 
             clearSession () {
                 this.__super__.clearSession.apply(this, arguments);
-                const controlbox = this.chatboxes.get('controlbox');
-                if (controlbox &&
-                        controlbox.collection &&
-                        controlbox.collection.browserStorage) {
-                    controlbox.save({'connected': false});
+                const chatboxes = _.get(this, 'chatboxes', null);
+                if (!_.isNil(chatboxes)) {
+                    const controlbox = chatboxes.get('controlbox');
+                    if (controlbox &&
+                            controlbox.collection &&
+                            controlbox.collection.browserStorage) {
+                        controlbox.save({'connected': false});
+                    }
                 }
             },
 
@@ -423,8 +426,8 @@
                     const tab = ev.target,
                         sibling_li = tab.parentNode.nextElementSibling || tab.parentNode.previousElementSibling,
                         sibling = sibling_li.firstChild,
-                        sibling_panel = document.querySelector(sibling.getAttribute('href')),
-                        tab_panel = document.querySelector(tab.getAttribute('href'));
+                        sibling_panel = _converse.root.querySelector(sibling.getAttribute('href')),
+                        tab_panel = _converse.root.querySelector(tab.getAttribute('href'));
 
                     u.hideElement(sibling_panel);
                     u.removeClass('current', sibling);
@@ -448,6 +451,8 @@
 
             _converse.LoginPanelModel = Backbone.Model.extend({
                 defaults: {
+                    // Passed-by-reference. Fine in this case because there's
+                    // only one such model.
                     'errors': [],
                 }
             });
@@ -594,6 +599,9 @@
 
                 renderTab () {
                     const controlbox = _converse.chatboxes.get('controlbox');
+                    if (_.isNil(controlbox)) {
+                        return;
+                    }
                     const chats = fp.filter(_.partial(u.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
                     this.tab_el.innerHTML = tpl_contacts_tab({
                         'label_contacts': LABEL_CONTACTS,
@@ -648,7 +656,7 @@
                     xhr.onload = function () {
                         if (xhr.status >= 200 && xhr.status < 400) {
                             const data = JSON.parse(xhr.responseText),
-                                  ul = document.querySelector('.search-xmpp ul');
+                                  ul = _converse.root.querySelector('.search-xmpp ul');
                             u.removeElement(ul.querySelector('li.found-user'));
                             u.removeElement(ul.querySelector('li.chat-info'));
                             if (!data.length) {
@@ -682,7 +690,7 @@
                     ev.preventDefault();
                     const input = ev.target.querySelector('input');
                     const jid = input.value;
-                    if (!jid || _.filter(jid.split('@')).length < 2) {
+                    if (!jid || _.compact(jid.split('@')).length < 2) {
                         this.el.querySelector('.search-xmpp div').innerHTML =
                             this.generateAddContactHTML({
                                 error_message: __('Please enter a valid XMPP address'),
@@ -761,7 +769,7 @@
 
                 onClick (e) {
                     e.preventDefault();
-                    if (u.isVisible(document.querySelector("#controlbox"))) {
+                    if (u.isVisible(_converse.root.querySelector("#controlbox"))) {
                         const controlbox = _converse.chatboxes.get('controlbox');
                         if (_converse.connection.connected) {
                             controlbox.save({closed: true});

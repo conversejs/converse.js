@@ -185,10 +185,10 @@
                             &.occupant {
                                 cursor: pointer;
                                 .occupant-status {
-									display: inline-block;
+                                    display: inline-block;
                                     margin-right: 0.5em;
-									width: 0.5em;
-									height: 0.5em;
+                                    width: 0.5em;
+                                    height: 0.5em;
                                     &.occupant-online,
                                     &.occupant-chat {
                                         background-color: #1A9707;
@@ -249,7 +249,7 @@
 
         .sendXMPPMessage {
             .chat-toolbar {
-                background-color: $chatroom-toolbar-color;
+                background-color: lighten($chatroom-head-color, 10%);
             }
             .chat-textarea {
                 border-bottom-right-radius: 0;

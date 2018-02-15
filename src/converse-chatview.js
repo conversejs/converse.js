@@ -15,12 +15,15 @@
             "tpl!action",
             "tpl!chatbox",
             "tpl!chatbox_head",
+            "tpl!chatbox_message_form",
             "tpl!emojis",
             "tpl!help_message",
             "tpl!info",
             "tpl!message",
             "tpl!new_day",
             "tpl!spinner",
+            "tpl!spoiler_button",
+            "tpl!spoiler_message",
             "tpl!toolbar"
     ], factory);
 }(this, function (
@@ -31,16 +34,19 @@
             tpl_action,
             tpl_chatbox,
             tpl_chatbox_head,
+            tpl_chatbox_message_form,
             tpl_emojis,
             tpl_help_message,
             tpl_info,
             tpl_message,
             tpl_new_day,
             tpl_spinner,
+            tpl_spoiler_button,
+            tpl_spoiler_message,
             tpl_toolbar
     ) {
     "use strict";
-    const { $msg, Backbone, Strophe, _, b64_sha1, sizzle, moment } = converse.env;
+    const { $msg, Backbone, Promise, Strophe, _, b64_sha1, f, sizzle, moment } = converse.env;
     const u = converse.env.utils;
     const KEY = {
         ENTER: 13,
@@ -58,7 +64,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes"],
+        dependencies: ["converse-chatboxes", "converse-disco"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -68,15 +74,16 @@
             // New functions which don't exist yet can also be added.
             //
             registerGlobalEventHandlers: function () {
+                const { _converse } = this.__super__;
                 this.__super__.registerGlobalEventHandlers();
-                document.addEventListener(
+                _converse.root.addEventListener(
                     'click', function (ev) {
                         if (_.includes(ev.target.classList, 'toggle-toolbar-menu') ||
                             _.includes(ev.target.classList, 'insert-emoji')) {
                             return;
                         }
                         u.slideInAllElements(
-                            document.querySelectorAll('.toolbar-menu')
+                            _converse.root.querySelectorAll('.toolbar-menu')
                         )
                     }
                 );
@@ -113,9 +120,10 @@
                 'show_message_load_animation': false,
                 'time_format': 'HH:mm',
                 'visible_toolbar_buttons': {
-                    'emoji': true,
                     'call': false,
-                    'clear': true
+                    'clear': true,
+                    'emoji': true,
+                    'spoiler': true
                 },
             });
             emojione.imagePathPNG = _converse.emojione_image_path;
@@ -201,7 +209,7 @@
                 },
 
                 setScrollPosition (ev) {
-                    this.model.save('scroll_position', ev.target.scrollTop);
+                    this.model.save('scroll_position', this.content);
                 },
 
                 chooseSkinTone (ev) {
@@ -258,6 +266,7 @@
                 }
             });
 
+
             _converse.ChatBoxView = Backbone.NativeView.extend({
                 length: 200,
                 className: 'chatbox hidden',
@@ -265,13 +274,15 @@
 
                 events: {
                     'click .close-chatbox-button': 'close',
-                    'keypress .chat-textarea': 'keyPressed',
+                    'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .send-button': 'onFormSubmitted',
-                    'click .toggle-smiley': 'toggleEmojiMenu',
-                    'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
-                    'click .toggle-clear': 'clearMessages',
                     'click .toggle-call': 'toggleCall',
-                    'click .new-msgs-indicator': 'viewUnreadMessages'
+                    'click .toggle-clear': 'clearMessages',
+                    'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
+                    'click .toggle-smiley': 'toggleEmojiMenu',
+                    'click .toggle-spoiler': 'toggleSpoilerMessage',
+                    'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
+                    'keypress .chat-textarea': 'keyPressed'
                 },
 
                 initialize () {
@@ -286,8 +297,8 @@
                     this.model.on('change:chat_status', this.onChatStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
-
-                    this.render().renderToolbar().insertHeading().fetchMessages();
+                    this.render();
+                    this.fetchMessages();
                     _converse.emit('chatBoxOpened', this);
                     _converse.emit('chatBoxInitialized', this);
                 },
@@ -296,16 +307,78 @@
                     this.el.setAttribute('id', this.model.get('box_id'));
                     this.el.innerHTML = tpl_chatbox(
                         _.extend(this.model.toJSON(), {
-                                label_personal_message: __('Personal message'),
-                                label_send: __('Send'),
-                                show_send_button: _converse.show_send_button,
-                                show_textarea: true,
-                                show_toolbar: _converse.show_toolbar,
                                 unread_msgs: __('You have unread messages')
                             }
                         ));
                     this.content = this.el.querySelector('.chat-content');
+                    this.renderMessageForm();
+                    this.insertHeading();
                     return this;
+                },
+
+                renderToolbar (toolbar, options) {
+                    if (!_converse.show_toolbar) {
+                        return this;
+                    }
+                    toolbar = toolbar || tpl_toolbar;
+                    options = _.assign(
+                        this.model.toJSON(),
+                        this.getToolbarOptions(options || {})
+                    );
+                    this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
+                    this.addSpoilerButton(options);
+                    this.insertEmojiPicker();
+                    return this;
+                },
+
+                renderMessageForm () {
+                    let placeholder;
+                    if (this.model.get('composing_spoiler')) {
+                        placeholder = __('Hidden message');
+                    } else {
+                        placeholder = __('Personal message');
+                    }
+                    const form_container = this.el.querySelector('.message-form-container');
+                    form_container.innerHTML = tpl_chatbox_message_form(
+                        _.extend(this.model.toJSON(), {
+                            'hint_value': _.get(this.el.querySelector('.spoiler-hint'), 'value'),
+                            'label_personal_message': placeholder,
+                            'label_send': __('Send'),
+                            'label_spoiler_hint': __('Optional hint'),
+                            'message_value': _.get(this.el.querySelector('.chat-textarea'), 'value'),
+                            'show_send_button': _converse.show_send_button,
+                            'show_toolbar': _converse.show_toolbar,
+                            'unread_msgs': __('You have unread messages')
+                        }));
+                    this.renderToolbar();
+                },
+
+                addSpoilerButton (options) {
+                    /* Asynchronously adds a button for writing spoiler
+                     * messages, based on whether the contact's client supports
+                     * it.
+                     */
+                    if (!options.show_spoiler_button || this.model.get('type') === 'chatroom') {
+                        return;
+                    }
+                    const contact_jid = this.model.get('jid');
+                    const resources = this.model.get('resources');
+                    if (_.isEmpty(resources)) {
+                        return;
+                    }
+                    Promise.all(_.map(_.keys(resources), (resource) =>
+                        _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${resource}`)
+                    )).then((results) => {
+                        const supported = _.every(f.map(f.get('supported'))(results));
+                        if (supported) {
+                            const html = tpl_spoiler_button(this.model.toJSON());
+                            if (_converse.visible_toolbar_buttons.emoji) {
+                                this.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
+                            } else {
+                                this.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
+                            }
+                        }
+                    });
                 },
 
                 insertHeading () {
@@ -318,13 +391,22 @@
                     return this;
                 },
 
-                createEmojiPicker () {
-                    if (_.isUndefined(_converse.emojipicker)) {
-                        _converse.emojipicker = new _converse.EmojiPicker();
-                        _converse.emojipicker.fetch();
+                getToolbarOptions (options) {
+                    let label_toggle_spoiler;
+                    if (this.model.get('composing_spoiler')) {
+                        label_toggle_spoiler = __('Click to write as a normal (non-spoiler) message');
+                    } else {
+                        label_toggle_spoiler = __('Click to write your message as a spoiler');
                     }
-                    this.emoji_picker_view = new _converse.EmojiPickerView({
-                        'model': _converse.emojipicker
+                    return _.extend(options || {}, {
+                        'label_clear': __('Clear all messages'),
+                        'label_insert_smiley': __('Insert a smiley'),
+                        'label_start_call': __('Start a call'),
+                        'label_toggle_spoiler': label_toggle_spoiler,
+                        'show_call_button': _converse.visible_toolbar_buttons.call,
+                        'show_clear_button': _converse.visible_toolbar_buttons.clear,
+                        'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
+                        'use_emoji': _converse.visible_toolbar_buttons.emoji,
                     });
                 },
 
@@ -349,7 +431,7 @@
                      * as well as src/converse-muc.js (if those plugins are
                      * enabled).
                      */
-                    const container = document.querySelector('#conversejs');
+                    const container = _converse.root.querySelector('#conversejs');
                     if (this.el.parentNode !== container) {
                         container.insertBefore(this.el, container.firstChild);
                     }
@@ -510,14 +592,18 @@
                     }
                 },
 
-                getExtraMessageTemplateAttributes () {
+                getExtraMessageTemplateAttributes (attrs) {
                     /* Provides a hook for sending more attributes to the
                      * message template.
                      *
                      * Parameters:
                      *  (Object) attrs: An object containing message attributes.
                      */
-                    return {};
+                    if (attrs.is_spoiler) {
+                        return {'label_show': __('Show hidden message')};
+                    } else {
+                        return {}
+                    }
                 },
 
                 getExtraMessageClasses (attrs) {
@@ -526,6 +612,17 @@
                     } else {
                         return attrs.delayed && 'delayed' || '';
                     }
+                },
+
+                renderSpoilerMessage (msg, attrs) {
+                    /* Render a "spoiler" message, as defined in XEP-0382
+                     *
+                     * Parameters:
+                     *  (HTMLElement) msg: The chat message DOM element
+                     *  (Object) attrs: An object containing the message attributes.
+                     */
+                    const hint = msg.querySelector('.spoiler-hint');
+                    hint.appendChild(document.createTextNode(attrs.spoiler_hint || ''));
                 },
 
                 renderMessage (attrs) {
@@ -551,6 +648,8 @@
                         } else {
                             username = attrs.fullname;
                         }
+                    } else if (attrs.is_spoiler) {
+                        template = tpl_spoiler_message;
                     } else  {
                         template = tpl_message;
                         username = attrs.sender === 'me' && __('me') || fullname;
@@ -568,12 +667,16 @@
                         })
                     ));
                     if (_converse.show_message_load_animation) {
-                        window.setTimeout(_.partial(u.removeClass, 'onload', msg), 2000);
+                        window.setTimeout(
+                            _.partial(u.removeClass, 'onload', msg), 2000);
                     }
                     const msg_content = msg.querySelector('.chat-msg-content');
                     msg_content.innerHTML = u.addEmoji(
                         _converse, emojione, u.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))
                     );
+                    if (attrs.is_spoiler) {
+                        this.renderSpoilerMessage(msg, attrs)
+                    }
                     u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
                     return msg;
                 },
@@ -688,13 +791,22 @@
                 },
 
                 createMessageStanza (message) {
-                    return $msg({
-                                from: _converse.connection.jid,
-                                to: this.model.get('jid'),
-                                type: 'chat',
-                                id: message.get('msgid')
+                    const stanza = $msg({
+                            'from': _converse.connection.jid,
+                            'to': this.model.get('jid'),
+                            'type': 'chat',
+                            'id': message.get('msgid')
                         }).c('body').t(message.get('message')).up()
-                            .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+                          .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+
+                    if (message.get('is_spoiler')) {
+                        if (message.get('spoiler_hint')) {
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }, message.get('spoiler_hint'));
+                        } else {
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER });
+                        }
+                    }
+                    return stanza;
                 },
 
                 sendMessage (message) {
@@ -714,31 +826,19 @@
                             .c('forwarded', {'xmlns': Strophe.NS.FORWARD})
                             .c('delay', {
                                 'xmns': Strophe.NS.DELAY,
-                                'stamp': moment.format()
+                                'stamp': moment().format()
                             }).up()
                             .cnode(messageStanza.tree())
                         );
                     }
                 },
 
-                onMessageSubmitted (text) {
-                    /* This method gets called once the user has typed a message
-                     * and then pressed enter in a chat box.
-                     *
-                     *  Parameters:
-                     *    (string) text - The chat message text.
-                     */
-                    if (!_converse.connection.authenticated) {
-                        return this.showHelpMessages(
-                            ['Sorry, the connection has been lost, '+
-                                'and your message could not be sent'],
-                            'error'
-                        );
-                    }
+                parseMessageForCommands (text) {
                     const match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
                     if (match) {
                         if (match[1] === "clear") {
-                            return this.clearMessages();
+                            this.clearMessages();
+                            return true;
                         }
                         else if (match[1] === "help") {
                             const msgs = [
@@ -747,19 +847,52 @@
                                 `<strong>/help</strong>: ${__('Show this menu')}`
                                 ];
                             this.showHelpMessages(msgs);
-                            return;
+                            return true;
                         }
                     }
-                    let fullname = _converse.xmppstatus.get('fullname');
-                    fullname = _.isEmpty(fullname)? _converse.bare_jid: fullname;
+                },
 
-                    const message = this.model.messages.create({
-                        fullname,
-                        sender: 'me',
-                        time: moment().format(),
-                        message: emojione.shortnameToUnicode(text)
-                    });
+                onMessageSubmitted (text, spoiler_hint) {
+                    /* This method gets called once the user has typed a message
+                     * and then pressed enter in a chat box.
+                     *
+                     *  Parameters:
+                     *    (String) text - The chat message text.
+                     *    (String) spoiler_hint - A hint in case the message
+                     *      text is a hidden/spoiler message. See XEP-0382
+                     */
+                    if (!_converse.connection.authenticated) {
+                        return this.showHelpMessages(
+                            ['Sorry, the connection has been lost, '+
+                                'and your message could not be sent'],
+                            'error'
+                        );
+                    }
+                    if (this.parseMessageForCommands(text)) {
+                        return;
+                    }
+                    const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint)
+                    const message = this.model.messages.create(attrs);
                     this.sendMessage(message);
+                },
+
+                getOutgoingMessageAttributes (text, spoiler_hint) {
+                    /* Overridable method which returns the attributes to be
+                     * passed to Backbone.Message's constructor.
+                     */
+                    const fullname = _converse.xmppstatus.get('fullname'),
+                        is_spoiler = this.model.get('composing_spoiler'),
+                        attrs = {
+                            'fullname': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
+                            'sender': 'me',
+                            'time': moment().format(),
+                            'message': emojione.shortnameToUnicode(text),
+                            'is_spoiler': is_spoiler
+                        };
+                    if (is_spoiler) {
+                        attrs.spoiler_hint = spoiler_hint;
+                    }
+                    return attrs;
                 },
 
                 sendChatState () {
@@ -814,10 +947,17 @@
                     ev.preventDefault();
                     const textarea = this.el.querySelector('.chat-textarea'),
                           message = textarea.value;
+
+                    let spoiler_hint;
+                    if (this.model.get('composing_spoiler')) {
+                        const hint_el = this.el.querySelector('form.sendXMPPMessage input.spoiler-hint');
+                        spoiler_hint = hint_el.value;
+                        hint_el.value = '';
+                    }
                     textarea.value = '';
                     textarea.focus();
                     if (message !== '') {
-                        this.onMessageSubmitted(message);
+                        this.onMessageSubmitted(message, spoiler_hint);
                         _converse.emit('messageSend', message);
                     }
                     this.setChatState(_converse.ACTIVE);
@@ -856,6 +996,16 @@
                     textbox_el.focus()
                 },
 
+                createEmojiPicker () {
+                    if (_.isUndefined(_converse.emojipicker)) {
+                        _converse.emojipicker = new _converse.EmojiPicker();
+                        _converse.emojipicker.fetch();
+                    }
+                    this.emoji_picker_view = new _converse.EmojiPickerView({
+                        'model': _converse.emojipicker
+                    });
+                },
+
                 insertEmoji (ev) {
                     ev.stopPropagation();
                     const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
@@ -875,7 +1025,7 @@
                         }
                     }
                     const elements = _.difference(
-                        document.querySelectorAll('.toolbar-menu'),
+                        _converse.root.querySelectorAll('.toolbar-menu'),
                         [this.emoji_picker_view.el]
                     );
                     u.slideInAllElements(elements)
@@ -891,6 +1041,33 @@
                         connection: _converse.connection,
                         model: this.model
                     });
+                },
+
+                toggleComposeSpoilerMessage () {
+                    this.model.set('composing_spoiler', !this.model.get('composing_spoiler'));
+                    this.renderMessageForm();
+                    this.focus();
+                },
+
+                toggleSpoilerMessage (ev) {
+                    if (ev && ev.preventDefault) {
+                        ev.preventDefault();
+                    }
+                    const toggle_el = ev.target;
+                    u.slideToggleElement(
+                        toggle_el.parentElement.querySelector('.spoiler')
+                    );
+                    if (toggle_el.getAttribute("data-toggle-state") == "closed") {
+                        toggle_el.textContent = __('Hide hidden message');
+                        toggle_el.classList.remove("icon-eye");
+                        toggle_el.classList.add("icon-eye-blocked");
+                        toggle_el.setAttribute("data-toggle-state", "open");
+                    } else {
+                        toggle_el.textContent = __('Show hidden message');
+                        toggle_el.classList.remove("icon-eye-blocked");
+                        toggle_el.classList.add("icon-eye");
+                        toggle_el.setAttribute("data-toggle-state", "closed");
+                    }
                 },
 
                 onChatStatusChanged (item) {
@@ -931,33 +1108,16 @@
                     return this;
                 },
 
-                getToolbarOptions (options) {
-                    return _.extend(options || {}, {
-                        'label_clear': __('Clear all messages'),
-                        'label_insert_smiley': __('Insert a smiley'),
-                        'label_start_call': __('Start a call'),
-                        'show_call_button': _converse.visible_toolbar_buttons.call,
-                        'show_clear_button': _converse.visible_toolbar_buttons.clear,
-                        'use_emoji': _converse.visible_toolbar_buttons.emoji,
-                    });
-                },
-
-                renderToolbar (toolbar, options) {
-                    if (!_converse.show_toolbar) { return; }
-                    toolbar = toolbar || tpl_toolbar;
-                    options = _.assign(
-                        this.model.toJSON(),
-                        this.getToolbarOptions(options || {})
-                    );
-                    this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
-
-                    return this;
-                },
-
                 renderEmojiPicker () {
-                    var toggle = this.el.querySelector('.toggle-smiley');
-                    toggle.innerHTML = '';
-                    toggle.appendChild(this.emoji_picker_view.render().el);
+                    this.emoji_picker_view.render();
+                },
+
+                insertEmojiPicker () {
+                    var picker_el = this.el.querySelector('.emoji-picker');
+                    if (!_.isNull(picker_el)) {
+                        picker_el.innerHTML = '';
+                        picker_el.appendChild(this.emoji_picker_view.el);
+                    }
                 },
 
                 focus () {
@@ -976,11 +1136,12 @@
 
                 afterShown (focus) {
                     if (u.isPersistableModel(this.model)) {
+                        this.model.clearUnreadMsgCounter();
                         this.model.save();
                     }
                     this.setChatState(_converse.ACTIVE);
-                    this.renderEmojiPicker();
                     this.scrollDown();
+                    this.renderEmojiPicker();
                     if (focus) {
                         this.focus();
                     }
@@ -992,11 +1153,7 @@
                         if (focus) { this.focus(); }
                         return;
                     }
-                    const that = this;
-                    u.fadeIn(this.el, function () {
-                        that.afterShown();
-                        if (focus) { that.focus(); }
-                    });
+                    u.fadeIn(this.el, _.bind(this.afterShown, this, focus));
                 },
 
                 show (focus) {
@@ -1063,7 +1220,7 @@
                     }
                 },
 
-                onScrolledDown() {
+                onScrolledDown () {
                     this.hideNewMessagesIndicator();
                     if (_converse.windowState !== 'hidden') {
                         this.model.clearUnreadMsgCounter();
@@ -1076,6 +1233,12 @@
                         this.model.clearUnreadMsgCounter();
                     }
                 }
+            });
+
+
+            _converse.on('connected', () => {
+                // Advertise that we support XEP-0382 Message Spoilers
+                _converse.connection.disco.addFeature(Strophe.NS.SPOILER);
             });
         }
     });

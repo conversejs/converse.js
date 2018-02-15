@@ -437,6 +437,39 @@ The **disco** grouping
 This grouping collects API functions related to `service discovery
 <https://xmpp.org/extensions/xep-0030.html>`_.
 
+getIdentity
+~~~~~~~~~~~
+
+Paramters:
+
+* (String) category
+* (String) type
+* (String) entity JID
+
+Get the identity (with the given category and type) for a given disco entity.
+
+For example, when determining support for PEP (personal eventing protocol), you
+want to know whether the user's own JID has an identity with
+``category='pubsub'`` and ``type='pep'`` as explained in this section of
+XEP-0163: https://xmpp.org/extensions/xep-0163.html#support
+
+.. code-block:: javascript
+
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then(
+                function (identity) {
+                    if (_.isNil(identity)) {
+                        // The entity DOES NOT have this identity
+                    } else {
+                        // The entity DOES have this identity
+                    }
+                }
+            ).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        }
+    });
+
 supports
 ~~~~~~~~
 
@@ -450,7 +483,7 @@ Returns a `Promise` which, when resolved, returns a map/object with keys
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            _converse.api.disco.supports(_converse.bare_jid, Strophe.NS.MAM).then(
+            _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
                 function (value) {
                     // `value` is a map with two keys, `supported` and `feature`.
 
@@ -718,35 +751,35 @@ You may also provide the fullname. If not present, we use the jid as fullname:
 The **chats** grouping
 ----------------------
 
-Note, for MUC chat rooms, you need to use the "rooms" grouping instead.
+Note, for MUC chatrooms, you need to use the "rooms" grouping instead.
 
 get
 ~~~
 
-Returns an object representing a chat box. The chat box should already be open.
+Returns an object representing a chatbox. The chatbox should already be open.
 
-To return a single chat box, provide the JID of the contact you're chatting
-with in that chat box:
+To return a single chatbox, provide the JID of the contact you're chatting
+with in that chatbox:
 
 .. code-block:: javascript
 
     _converse.api.chats.get('buddy@example.com')
 
-To return an array of chat boxes, provide an array of JIDs:
+To return an array of chatboxes, provide an array of JIDs:
 
 .. code-block:: javascript
 
     _converse.api.chats.get(['buddy1@example.com', 'buddy2@example.com'])
 
-To return all open chat boxes, call the method without any JIDs::
+To return all open chatboxes, call the method without any JIDs::
 
     _converse.api.chats.get()
 
 open
 ~~~~
 
-Opens a chat box and returns a `Backbone.View <http://backbonejs.org/#View>`_ object
-representing a chat box.
+Opens a chatbox and returns a `Backbone.View <http://backbonejs.org/#View>`_ object
+representing a chatbox.
 
 Note that converse doesn't allow opening chats with users who aren't in your roster
 (unless you have set :ref:`allow_non_roster_messaging` to ``true``).
@@ -754,13 +787,13 @@ Note that converse doesn't allow opening chats with users who aren't in your ros
 Before opening a chat, you should first wait until the roster has been populated.
 This is the :ref:`rosterContactsFetched` event/promise.
 
-Besides that, it's a good idea to also first wait until already opened chat boxes
+Besides that, it's a good idea to also first wait until already opened chatboxes
 (which are cached in sessionStorage) have also been fetched from the cache.
 This is the :ref:`chatBoxesFetched` event/promise.
 
 These two events fire only once per session, so they're also available as promises.
 
-So, to open a single chat box:
+So, to open a single chatbox:
 
 .. code-block:: javascript
 
@@ -777,7 +810,7 @@ So, to open a single chat box:
       }
     });
 
-To return an array of chat boxes, provide an array of JIDs:
+To return an array of chatboxes, provide an array of JIDs:
 
 .. code-block:: javascript
 
@@ -795,14 +828,14 @@ To return an array of chat boxes, provide an array of JIDs:
     });
 
 
-*The returned chat box object contains the following methods:*
+*The returned chatbox object contains the following methods:*
 
 +-------------------+------------------------------------------+
 | Method            | Description                              |
 +===================+==========================================+
-| close             | Close the chat box.                      |
+| close             | Close the chatbox.                      |
 +-------------------+------------------------------------------+
-| focus             | Focuses the chat box textarea            |
+| focus             | Focuses the chatbox textarea            |
 +-------------------+------------------------------------------+
 | model.endOTR      | End an OTR (Off-the-record) session.     |
 +-------------------+------------------------------------------+
@@ -810,13 +843,13 @@ To return an array of chat boxes, provide an array of JIDs:
 +-------------------+------------------------------------------+
 | model.initiateOTR | Start an OTR (off-the-record) session.   |
 +-------------------+------------------------------------------+
-| model.maximize    | Minimize the chat box.                   |
+| model.maximize    | Minimize the chatbox.                   |
 +-------------------+------------------------------------------+
-| model.minimize    | Maximize the chat box.                   |
+| model.minimize    | Maximize the chatbox.                   |
 +-------------------+------------------------------------------+
 | model.set         | Set an attribute (i.e. mutator).         |
 +-------------------+------------------------------------------+
-| show              | Opens/shows the chat box.                |
+| show              | Opens/shows the chatbox.                |
 +-------------------+------------------------------------------+
 
 *The get and set methods can be used to retrieve and change the following attributes:*
@@ -824,9 +857,9 @@ To return an array of chat boxes, provide an array of JIDs:
 +-------------+-----------------------------------------------------+
 | Attribute   | Description                                         |
 +=============+=====================================================+
-| height      | The height of the chat box.                         |
+| height      | The height of the chatbox.                         |
 +-------------+-----------------------------------------------------+
-| url         | The URL of the chat box heading.                    |
+| url         | The URL of the chatbox heading.                    |
 +-------------+-----------------------------------------------------+
 
 .. _`listen-grouping`:
@@ -896,7 +929,7 @@ The **rooms** grouping
 get
 ~~~
 
-Returns an object representing a multi user chat box (room).
+Returns an object representing a multi user chatbox (room).
 It takes 3 parameters:
 
 * the room JID (if not specified, all rooms will be returned).
@@ -928,7 +961,7 @@ It takes 3 parameters:
 open
 ~~~~
 
-Opens a multi user chat box and returns an object representing it.
+Opens a multi user chatbox and returns an object representing it.
 Similar to the ``chats.get`` API.
 
 It takes 2 parameters:
@@ -937,7 +970,7 @@ It takes 2 parameters:
 * A map (object) containing any extra room attributes. For example, if you want
   to specify the nickname, use ``{'nick': 'bloodninja'}``.
 
-To open a single multi user chat box, provide the JID of the room:
+To open a single multi user chatbox, provide the JID of the room:
 
 .. code-block:: javascript
 
@@ -1023,8 +1056,8 @@ For example, opening a room with a specific default configuration:
 close
 ~~~~~
 
-Lets you close open chat rooms. You can call this method without any arguments
-to close all open chat rooms, or you can specify a single JID or an array of
+Lets you close open chatrooms. You can call this method without any arguments
+to close all open chatrooms, or you can specify a single JID or an array of
 JIDs.
 
 .. _`promises-grouping`:

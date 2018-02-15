@@ -2,7 +2,7 @@
  *
  *  An XMPP chat client that runs in the browser.
  *
- *  Version: 3.3.1
+ *  Version: 3.3.3
  */
 
 /* jshint ignore:start */
@@ -2729,6 +2729,11 @@ if ( typeof define === "function" && define.amd ) {
 // EXPOSE
 
 })( window );
+
+define('lodash.fp',['lodash', 'lodash.converter'], function (_, lodashConverter) {
+    var fp = lodashConverter(_.runInContext());
+    return fp;
+});
 
 if (!String.prototype.includes) {
   String.prototype.includes = function(search, start) {
@@ -5699,7 +5704,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   var b64_sha1 = Strophe.SHA1.b64_sha1;
   Strophe = Strophe.Strophe;
-  var URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g;
+  var URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
 
   var logger = _.assign({
     'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
@@ -6064,7 +6069,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   };
 
   u.isValidJID = function (jid) {
-    return _.filter(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+    return _.compact(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+  };
+
+  u.isValidMUCJID = function (jid) {
+    return !jid.startsWith('@') && !jid.endsWith('@');
   };
 
   u.isSameBareJID = function (jid1, jid2) {
@@ -6083,7 +6092,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     if (message instanceof Element) {
       return !sizzle('result[xmlns="' + Strophe.NS.MAM + '"]', message).length && !sizzle('delay[xmlns="' + Strophe.NS.DELAY + '"]', message).length;
     } else {
-      return !message.get('archive_id') && !message.get('delayed');
+      return !message.get('delayed');
     }
   };
 
@@ -6093,11 +6102,17 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     return text && !!text.match(/^\?OTR/);
   };
 
-  u.isHeadlineMessage = function (message) {
+  u.isHeadlineMessage = function (_converse, message) {
     var from_jid = message.getAttribute('from');
 
     if (message.getAttribute('type') === 'headline') {
       return true;
+    }
+
+    var chatbox = _converse.chatboxes.get(Strophe.getBareJidFromJid(from_jid));
+
+    if (chatbox && chatbox.get('type') === 'chatroom') {
+      return false;
     }
 
     if (message.getAttribute('type') !== 'error' && !_.isNil(from_jid) && !_.includes(from_jid, '@')) {
@@ -6827,10 +6842,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
-/*global Backbone, define, window, document, JSON */
+/*global Backbone, define, window, JSON */
 (function (root, factory) {
-  define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "polyfill", "i18n", "utils", "moment", "strophe", "pluggable", "backbone.noconflict", "backbone.nativeview", "backbone.browserStorage"], factory);
-})(this, function (sizzle, Promise, _, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
+  define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "lodash.fp", "polyfill", "i18n", "utils", "moment", "strophe", "pluggable", "backbone.noconflict", "backbone.nativeview", "backbone.browserStorage"], factory);
+})(this, function (sizzle, Promise, _, f, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
   /* Cannot use this due to Safari bug.
    * See https://github.com/jcbrand/converse.js/issues/196
    */
@@ -6856,6 +6871,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
   Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
   Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
+  Strophe.addNamespace('SPOILER', 'urn:xmpp:spoiler:0');
   Strophe.addNamespace('XFORM', 'jabber:x:data'); // Use Mustache style syntax for variable interpolation
 
   /* Configuration of Lodash templates (this config is distinct to the
@@ -6877,7 +6893,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   _.extend(_converse, Backbone.Events);
 
-  _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-profile', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton', 'converse-vcard']; // Make converse pluggable
+  _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-muc-embedded', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-profile', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Make converse pluggable
 
   pluggable.enable(_converse, '_converse', 'pluggable'); // Module-level constants
 
@@ -6957,21 +6973,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     }, console);
 
     if (level === Strophe.LogLevel.ERROR) {
-      if (_converse.debug) {
-        logger.trace("".concat(prefix, " ").concat(moment().format(), " ERROR: ").concat(message), style);
-      } else {
-        logger.error("".concat(prefix, " ERROR: ").concat(message), style);
-      }
+      logger.error("".concat(prefix, " ERROR: ").concat(message), style);
     } else if (level === Strophe.LogLevel.WARN) {
       if (_converse.debug) {
         logger.warn("".concat(prefix, " ").concat(moment().format(), " WARNING: ").concat(message), style);
       }
     } else if (level === Strophe.LogLevel.FATAL) {
-      if (_converse.debug) {
-        logger.trace("".concat(prefix, " ").concat(moment().format(), " FATAL: ").concat(message), style);
-      } else {
-        logger.error("".concat(prefix, " FATAL: ").concat(message), style);
-      }
+      logger.error("".concat(prefix, " FATAL: ").concat(message), style);
     } else if (_converse.debug) {
       if (level === Strophe.LogLevel.DEBUG) {
         logger.debug("".concat(prefix, " ").concat(moment().format(), " DEBUG: ").concat(message), style);
@@ -7094,7 +7102,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       // Seconds after which user status is set to 'away'
       auto_login: false,
       // Currently only used in connection with anonymous login
-      auto_reconnect: false,
+      auto_reconnect: true,
       auto_subscribe: false,
       auto_xa: 0,
       // Seconds after which user status is set to 'xa'
@@ -7114,7 +7122,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       include_offline_state: false,
       jid: undefined,
       keepalive: true,
-      locales_url: '/locale/{{{locale}}}/LC_MESSAGES/converse.json',
+      locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
       locales: ['af', 'ca', 'de', 'es', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'uk', 'zh_CN', 'zh_TW'],
       message_carbons: true,
       message_storage: 'session',
@@ -7123,6 +7131,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       priority: 0,
       registration_domain: '',
       rid: undefined,
+      root: window.document,
       roster_groups: true,
       show_only_online_users: false,
       show_send_button: false,
@@ -7176,7 +7185,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     // ----------------------
 
     this.generateResource = function () {
-      return "/converse.js-".concat(Math.floor(Math.random() * 139749825).toString());
+      return "/converse.js-".concat(Math.floor(Math.random() * 139749528).toString());
     };
 
     this.sendCSI = function (stat) {
@@ -7433,19 +7442,29 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     this.incrementMsgCounter = function () {
       this.msg_counter += 1;
       var unreadMsgCount = this.msg_counter;
+      var title = document.title;
 
-      if (document.title.search(/^Messages \(\d+\) /) === -1) {
-        document.title = "Messages (".concat(unreadMsgCount, ") ").concat(document.title);
+      if (_.isNil(title)) {
+        return;
+      }
+
+      if (title.search(/^Messages \(\d+\) /) === -1) {
+        title = "Messages (".concat(unreadMsgCount, ") ").concat(title);
       } else {
-        document.title = document.title.replace(/^Messages \(\d+\) /, "Messages (".concat(unreadMsgCount, ") "));
+        title = title.replace(/^Messages \(\d+\) /, "Messages (".concat(unreadMsgCount, ")"));
       }
     };
 
     this.clearMsgCounter = function () {
       this.msg_counter = 0;
+      var title = document.title;
 
-      if (document.title.search(/^Messages \(\d+\) /) !== -1) {
-        document.title = document.title.replace(/^Messages \(\d+\) /, "");
+      if (_.isNil(title)) {
+        return;
+      }
+
+      if (title.search(/^Messages \(\d+\) /) !== -1) {
+        title = title.replace(/^Messages \(\d+\) /, "");
       }
     };
 
@@ -7737,10 +7756,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
     this.RosterContact = Backbone.Model.extend({
       defaults: {
-        'bookmarked': false,
         'chat_state': undefined,
         'chat_status': 'offline',
-        'groups': [],
         'image': _converse.DEFAULT_IMAGE,
         'image_type': _converse.DEFAULT_IMAGE_TYPE,
         'num_unread': 0,
@@ -7754,13 +7771,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         var resource = Strophe.getResourceFromJid(jid);
         attributes.jid = bare_jid;
         this.set(_.assignIn({
+          'fullname': bare_jid,
+          'groups': [],
           'id': bare_jid,
           'jid': bare_jid,
-          'fullname': bare_jid,
-          'user_id': Strophe.getNodeFromJid(jid),
-          'resources': resource ? {
-            resource: 0
-          } : {}
+          'resources': {},
+          'user_id': Strophe.getNodeFromJid(jid)
         }, attributes));
         this.on('destroy', function () {
           _this3.removeFromRoster();
@@ -7869,6 +7885,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
         var resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
         resources[resource] = {
+          'name': resource,
           'priority': priority,
           'status': chat_status,
           'timestamp': timestamp
@@ -8749,6 +8766,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
       var whitelist = _converse.core_plugins.concat(_converse.whitelisted_plugins);
 
+      if (_converse.view_mode === 'embedded') {
+        _.forEach([// eslint-disable-line lodash/prefer-map
+        "converse-bookmarks", "converse-controlbox", "converse-dragresize", "converse-headline", "converse-minimize", "converse-otr", "converse-register", "converse-vcard"], function (name) {
+          _converse.blacklisted_plugins.push(name);
+        });
+      }
+
       _converse.pluggable.initializePlugins({
         'updateSettings': function updateSettings() {
           _converse.log("(DEPRECATION) " + "The `updateSettings` method has been deprecated. " + "Please use `_converse.api.settings.update` instead.", Strophe.LogLevel.WARN);
@@ -8792,13 +8816,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     } else {
       i18n.fetchTranslations(_converse.locale, _converse.locales, _.template(_converse.locales_url)({
         'locale': _converse.locale
-      })).then(function () {
-        finishInitialization();
-      }).catch(function (reason) {
-        finishInitialization();
-
-        _converse.log(reason, Strophe.LogLevel.ERROR);
-      });
+      })).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL)).then(finishInitialization).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
     }
 
     return init_promise;
@@ -8962,7 +8980,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     }
   }; // The public API
 
-  return {
+  window.converse = {
     'initialize': function initialize(settings, callback) {
       return _converse.initialize(settings, callback);
     },
@@ -8986,12 +9004,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       'Promise': Promise,
       'Strophe': Strophe,
       '_': _,
+      'f': f,
       'b64_sha1': b64_sha1,
       'moment': moment,
       'sizzle': sizzle,
       'utils': utils
     }
   };
+  window.dispatchEvent(new Event('converse-loaded'));
+  return window.converse;
 });
 //# sourceMappingURL=converse-core.js.map;
 // Converse.js (A browser based XMPP chat client)
@@ -9003,7 +9024,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 /*global define */
 (function (root, factory) {
-  define('converse-chatboxes',["converse-core"], factory);
+  define('converse-chatboxes',["converse-core", "backbone.overview"], factory);
 })(this, function (converse) {
   "use strict";
 
@@ -9104,6 +9125,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           return type === 'error' ? _.propertyOf(message.querySelector('error text'))('textContent') : _.propertyOf(message.querySelector('body'))('textContent');
         },
         getMessageAttributes: function getMessageAttributes(message, delay, original_stanza) {
+          /* Parses a passed in message stanza and returns an object
+           * of attributes.
+           *
+           * Parameters:
+           *    (XMLElement) message - The message stanza
+           *    (XMLElement) delay - The <delay> node from the
+           *      stanza, if there was one.
+           *    (XMLElement) original_stanza - The original stanza,
+           *      that contains the message stanza, if it was
+           *      contained, otherwise it's the message stanza itself.
+           */
+          var _converse = this.__super__._converse,
+              __ = _converse.__;
           delay = delay || message.querySelector('delay');
           var type = message.getAttribute('type'),
               body = this.getMessageBody(message);
@@ -9131,7 +9165,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             fullname = this.get('fullname') || from;
           }
 
-          return {
+          var spoiler = message.querySelector("spoiler[xmlns=\"".concat(Strophe.NS.SPOILER, "\"]"));
+          var attrs = {
             'type': type,
             'chat_state': chat_state,
             'delayed': delayed,
@@ -9139,22 +9174,32 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             'message': body || undefined,
             'msgid': message.getAttribute('id'),
             'sender': sender,
-            'time': time
+            'time': time,
+            'is_spoiler': !_.isNull(spoiler)
           };
+
+          if (spoiler) {
+            attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
+          }
+
+          return attrs;
         },
         createMessage: function createMessage(message, delay, original_stanza) {
+          /* Create a Backbone.Message object inside this chat box
+           * based on the identified message stanza.
+           */
           return this.messages.create(this.getMessageAttributes.apply(this, arguments));
         },
         newMessageWillBeHidden: function newMessageWillBeHidden() {
           /* Returns a boolean to indicate whether a newly received
-          * message will be visible to the user or not.
-          */
+           * message will be visible to the user or not.
+           */
           return this.get('hidden') || this.get('minimized') || this.isScrolledUp() || _converse.windowState === 'hidden';
         },
         incrementUnreadMsgCounter: function incrementUnreadMsgCounter(stanza) {
           /* Given a newly received message, update the unread counter if
-          * necessary.
-          */
+           * necessary.
+           */
           if (_.isNull(stanza.querySelector('body'))) {
             return; // The message has no text
           }
@@ -9235,8 +9280,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         },
         onMessage: function onMessage(message) {
           /* Handler method for all incoming single-user chat "message"
-          * stanzas.
-          */
+           * stanzas.
+           *
+           * Parameters:
+           *    (XMLElement) message - The incoming message stanza
+           */
           var contact_jid,
               delay,
               resource,
@@ -9250,7 +9298,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             _converse.log("onMessage: Ignoring incoming message intended for a different resource: ".concat(to_jid), Strophe.LogLevel.INFO);
 
             return true;
-          } else if (utils.isHeadlineMessage(message)) {
+          } else if (utils.isHeadlineMessage(_converse, message)) {
             // XXX: Ideally we wouldn't have to check for headline
             // messages, but Prosody sends headline messages with the
             // wrong type ('chat'), so we need to filter them out here.
@@ -9379,13 +9427,20 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           * If the #conversejs element doesn't exist, create it.
           */
           if (!this.el) {
-            var el = document.querySelector('#conversejs');
+            var el = _converse.root.querySelector('#conversejs');
 
             if (_.isNull(el)) {
               el = document.createElement('div');
-              el.setAttribute('id', 'conversejs'); // Converse.js expects a <body> tag to be present.
+              el.setAttribute('id', 'conversejs');
 
-              document.querySelector('body').appendChild(el);
+              var body = _converse.root.querySelector('body');
+
+              if (body) {
+                body.appendChild(el);
+              } else {
+                // Perhaps inside a web component?
+                _converse.root.appendChild(el);
+              }
             }
 
             el.innerHTML = '';
@@ -10079,7 +10134,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 }(this.emojione = this.emojione || {}));
 if(typeof module === "object") module.exports = this.emojione;
-
 define("emojione", (function (global) {
     return function () {
         var ret, fn;
@@ -10089,146 +10143,144 @@ define("emojione", (function (global) {
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * 默认配置
+ * default settings
  *
- * @author 老雷<leizongmin@gmail.com>
+ * @author Zongmin Lei<leizongmin@gmail.com>
  */
 
-var FilterCSS = require('cssfilter').FilterCSS;
-var getDefaultCSSWhiteList = require('cssfilter').getDefaultWhiteList;
-var _ = require('./util');
+var FilterCSS = require("cssfilter").FilterCSS;
+var getDefaultCSSWhiteList = require("cssfilter").getDefaultWhiteList;
+var _ = require("./util");
 
-// 默认白名单
-function getDefaultWhiteList () {
+function getDefaultWhiteList() {
   return {
-    a:      ['target', 'href', 'title'],
-    abbr:   ['title'],
+    a: ["target", "href", "title"],
+    abbr: ["title"],
     address: [],
-    area:   ['shape', 'coords', 'href', 'alt'],
+    area: ["shape", "coords", "href", "alt"],
     article: [],
-    aside:  [],
-    audio:  ['autoplay', 'controls', 'loop', 'preload', 'src'],
-    b:      [],
-    bdi:    ['dir'],
-    bdo:    ['dir'],
-    big:    [],
-    blockquote: ['cite'],
-    br:     [],
+    aside: [],
+    audio: ["autoplay", "controls", "loop", "preload", "src"],
+    b: [],
+    bdi: ["dir"],
+    bdo: ["dir"],
+    big: [],
+    blockquote: ["cite"],
+    br: [],
     caption: [],
     center: [],
-    cite:   [],
-    code:   [],
-    col:    ['align', 'valign', 'span', 'width'],
-    colgroup: ['align', 'valign', 'span', 'width'],
-    dd:     [],
-    del:    ['datetime'],
-    details: ['open'],
-    div:    [],
-    dl:     [],
-    dt:     [],
-    em:     [],
-    font:   ['color', 'size', 'face'],
+    cite: [],
+    code: [],
+    col: ["align", "valign", "span", "width"],
+    colgroup: ["align", "valign", "span", "width"],
+    dd: [],
+    del: ["datetime"],
+    details: ["open"],
+    div: [],
+    dl: [],
+    dt: [],
+    em: [],
+    font: ["color", "size", "face"],
     footer: [],
-    h1:     [],
-    h2:     [],
-    h3:     [],
-    h4:     [],
-    h5:     [],
-    h6:     [],
+    h1: [],
+    h2: [],
+    h3: [],
+    h4: [],
+    h5: [],
+    h6: [],
     header: [],
-    hr:     [],
-    i:      [],
-    img:    ['src', 'alt', 'title', 'width', 'height'],
-    ins:    ['datetime'],
-    li:     [],
-    mark:   [],
-    nav:    [],
-    ol:     [],
-    p:      [],
-    pre:    [],
-    s:      [],
-    section:[],
-    small:  [],
-    span:   [],
-    sub:    [],
-    sup:    [],
+    hr: [],
+    i: [],
+    img: ["src", "alt", "title", "width", "height"],
+    ins: ["datetime"],
+    li: [],
+    mark: [],
+    nav: [],
+    ol: [],
+    p: [],
+    pre: [],
+    s: [],
+    section: [],
+    small: [],
+    span: [],
+    sub: [],
+    sup: [],
     strong: [],
-    table:  ['width', 'border', 'align', 'valign'],
-    tbody:  ['align', 'valign'],
-    td:     ['width', 'rowspan', 'colspan', 'align', 'valign'],
-    tfoot:  ['align', 'valign'],
-    th:     ['width', 'rowspan', 'colspan', 'align', 'valign'],
-    thead:  ['align', 'valign'],
-    tr:     ['rowspan', 'align', 'valign'],
-    tt:     [],
-    u:      [],
-    ul:     [],
-    video:  ['autoplay', 'controls', 'loop', 'preload', 'src', 'height', 'width']
+    table: ["width", "border", "align", "valign"],
+    tbody: ["align", "valign"],
+    td: ["width", "rowspan", "colspan", "align", "valign"],
+    tfoot: ["align", "valign"],
+    th: ["width", "rowspan", "colspan", "align", "valign"],
+    thead: ["align", "valign"],
+    tr: ["rowspan", "align", "valign"],
+    tt: [],
+    u: [],
+    ul: [],
+    video: ["autoplay", "controls", "loop", "preload", "src", "height", "width"]
   };
 }
 
-// 默认CSS Filter
 var defaultCSSFilter = new FilterCSS();
 
 /**
- * 匹配到标签时的处理方法
+ * default onTag function
  *
  * @param {String} tag
  * @param {String} html
  * @param {Object} options
  * @return {String}
  */
-function onTag (tag, html, options) {
+function onTag(tag, html, options) {
   // do nothing
 }
 
 /**
- * 匹配到不在白名单上的标签时的处理方法
+ * default onIgnoreTag function
  *
  * @param {String} tag
  * @param {String} html
  * @param {Object} options
  * @return {String}
  */
-function onIgnoreTag (tag, html, options) {
+function onIgnoreTag(tag, html, options) {
   // do nothing
 }
 
 /**
- * 匹配到标签属性时的处理方法
+ * default onTagAttr function
  *
  * @param {String} tag
  * @param {String} name
  * @param {String} value
  * @return {String}
  */
-function onTagAttr (tag, name, value) {
+function onTagAttr(tag, name, value) {
   // do nothing
 }
 
 /**
- * 匹配到不在白名单上的标签属性时的处理方法
+ * default onIgnoreTagAttr function
  *
  * @param {String} tag
  * @param {String} name
  * @param {String} value
  * @return {String}
  */
-function onIgnoreTagAttr (tag, name, value) {
+function onIgnoreTagAttr(tag, name, value) {
   // do nothing
 }
 
 /**
- * HTML转义
+ * default escapeHtml function
  *
  * @param {String} html
  */
-function escapeHtml (html) {
-  return html.replace(REGEXP_LT, '&lt;').replace(REGEXP_GT, '&gt;');
+function escapeHtml(html) {
+  return html.replace(REGEXP_LT, "&lt;").replace(REGEXP_GT, "&gt;");
 }
 
 /**
- * 安全的标签属性值
+ * default safeAttrValue function
  *
  * @param {String} tag
  * @param {String} name
@@ -10236,46 +10288,46 @@ function escapeHtml (html) {
  * @param {Object} cssFilter
  * @return {String}
  */
-function safeAttrValue (tag, name, value, cssFilter) {
-  // 转换为友好的属性值，再做判断
+function safeAttrValue(tag, name, value, cssFilter) {
+  // unescape attribute value firstly
   value = friendlyAttrValue(value);
 
-  if (name === 'href' || name === 'src') {
-    // 过滤 href 和 src 属性
-    // 仅允许 http:// | https:// | mailto: | / | # 开头的地址
+  if (name === "href" || name === "src") {
+    // filter `href` and `src` attribute
+    // only allow the value that starts with `http://` | `https://` | `mailto:` | `/` | `#`
     value = _.trim(value);
-    if (value === '#') return '#';
-    if (!(value.substr(0, 7) === 'http://' ||
-         value.substr(0, 8) === 'https://' ||
-         value.substr(0, 7) === 'mailto:' ||
-         value[0] === '#' ||
-         value[0] === '/')) {
-      return '';
+    if (value === "#") return "#";
+    if (
+      !(
+        value.substr(0, 7) === "http://" ||
+        value.substr(0, 8) === "https://" ||
+        value.substr(0, 7) === "mailto:" ||
+        value.substr(0, 4) === "tel:" ||
+        value[0] === "#" ||
+        value[0] === "/"
+      )
+    ) {
+      return "";
     }
-  } else if (name === 'background') {
-    // 过滤 background 属性 （这个xss漏洞较老了，可能已经不适用）
-    // javascript:
+  } else if (name === "background") {
+    // filter `background` attribute (maybe no use)
+    // `javascript:`
     REGEXP_DEFAULT_ON_TAG_ATTR_4.lastIndex = 0;
     if (REGEXP_DEFAULT_ON_TAG_ATTR_4.test(value)) {
-      return '';
+      return "";
     }
-  } else if (name === 'style') {
-    // /*注释*/
-    /*REGEXP_DEFAULT_ON_TAG_ATTR_3.lastIndex = 0;
-    if (REGEXP_DEFAULT_ON_TAG_ATTR_3.test(value)) {
-      return '';
-    }*/
-    // expression()
+  } else if (name === "style") {
+    // `expression()`
     REGEXP_DEFAULT_ON_TAG_ATTR_7.lastIndex = 0;
     if (REGEXP_DEFAULT_ON_TAG_ATTR_7.test(value)) {
-      return '';
+      return "";
     }
-    // url()
+    // `url()`
     REGEXP_DEFAULT_ON_TAG_ATTR_8.lastIndex = 0;
     if (REGEXP_DEFAULT_ON_TAG_ATTR_8.test(value)) {
       REGEXP_DEFAULT_ON_TAG_ATTR_4.lastIndex = 0;
       if (REGEXP_DEFAULT_ON_TAG_ATTR_4.test(value)) {
-        return '';
+        return "";
       }
     }
     if (cssFilter !== false) {
@@ -10284,161 +10336,166 @@ function safeAttrValue (tag, name, value, cssFilter) {
     }
   }
 
-  // 输出时需要转义<>"
+  // escape `<>"` before returns
   value = escapeAttrValue(value);
   return value;
 }
 
-// 正则表达式
+// RegExp list
 var REGEXP_LT = /</g;
 var REGEXP_GT = />/g;
 var REGEXP_QUOTE = /"/g;
 var REGEXP_QUOTE_2 = /&quot;/g;
-var REGEXP_ATTR_VALUE_1 = /&#([a-zA-Z0-9]*);?/img;
-var REGEXP_ATTR_VALUE_COLON = /&colon;?/img;
-var REGEXP_ATTR_VALUE_NEWLINE = /&newline;?/img;
-var REGEXP_DEFAULT_ON_TAG_ATTR_3 = /\/\*|\*\//mg;
-var REGEXP_DEFAULT_ON_TAG_ATTR_4 = /((j\s*a\s*v\s*a|v\s*b|l\s*i\s*v\s*e)\s*s\s*c\s*r\s*i\s*p\s*t\s*|m\s*o\s*c\s*h\s*a)\:/ig;
-var REGEXP_DEFAULT_ON_TAG_ATTR_5 = /^[\s"'`]*(d\s*a\s*t\s*a\s*)\:/ig;
-var REGEXP_DEFAULT_ON_TAG_ATTR_6 = /^[\s"'`]*(d\s*a\s*t\s*a\s*)\:\s*image\//ig;
-var REGEXP_DEFAULT_ON_TAG_ATTR_7 = /e\s*x\s*p\s*r\s*e\s*s\s*s\s*i\s*o\s*n\s*\(.*/ig;
-var REGEXP_DEFAULT_ON_TAG_ATTR_8 = /u\s*r\s*l\s*\(.*/ig;
+var REGEXP_ATTR_VALUE_1 = /&#([a-zA-Z0-9]*);?/gim;
+var REGEXP_ATTR_VALUE_COLON = /&colon;?/gim;
+var REGEXP_ATTR_VALUE_NEWLINE = /&newline;?/gim;
+var REGEXP_DEFAULT_ON_TAG_ATTR_3 = /\/\*|\*\//gm;
+var REGEXP_DEFAULT_ON_TAG_ATTR_4 = /((j\s*a\s*v\s*a|v\s*b|l\s*i\s*v\s*e)\s*s\s*c\s*r\s*i\s*p\s*t\s*|m\s*o\s*c\s*h\s*a)\:/gi;
+var REGEXP_DEFAULT_ON_TAG_ATTR_5 = /^[\s"'`]*(d\s*a\s*t\s*a\s*)\:/gi;
+var REGEXP_DEFAULT_ON_TAG_ATTR_6 = /^[\s"'`]*(d\s*a\s*t\s*a\s*)\:\s*image\//gi;
+var REGEXP_DEFAULT_ON_TAG_ATTR_7 = /e\s*x\s*p\s*r\s*e\s*s\s*s\s*i\s*o\s*n\s*\(.*/gi;
+var REGEXP_DEFAULT_ON_TAG_ATTR_8 = /u\s*r\s*l\s*\(.*/gi;
 
 /**
- * 对双引号进行转义
+ * escape doube quote
  *
  * @param {String} str
  * @return {String} str
  */
-function escapeQuote (str) {
-  return str.replace(REGEXP_QUOTE, '&quot;');
+function escapeQuote(str) {
+  return str.replace(REGEXP_QUOTE, "&quot;");
 }
 
 /**
- * 对双引号进行转义
+ * unescape double quote
  *
  * @param {String} str
  * @return {String} str
  */
-function unescapeQuote (str) {
+function unescapeQuote(str) {
   return str.replace(REGEXP_QUOTE_2, '"');
 }
 
 /**
- * 对html实体编码进行转义
+ * escape html entities
  *
  * @param {String} str
  * @return {String}
  */
-function escapeHtmlEntities (str) {
-  return str.replace(REGEXP_ATTR_VALUE_1, function replaceUnicode (str, code) {
-    return (code[0] === 'x' || code[0] === 'X')
-            ? String.fromCharCode(parseInt(code.substr(1), 16))
-            : String.fromCharCode(parseInt(code, 10));
+function escapeHtmlEntities(str) {
+  return str.replace(REGEXP_ATTR_VALUE_1, function replaceUnicode(str, code) {
+    return code[0] === "x" || code[0] === "X"
+      ? String.fromCharCode(parseInt(code.substr(1), 16))
+      : String.fromCharCode(parseInt(code, 10));
   });
 }
 
 /**
- * 对html5新增的危险实体编码进行转义
+ * escape html5 new danger entities
  *
  * @param {String} str
  * @return {String}
  */
-function escapeDangerHtml5Entities (str) {
-  return str.replace(REGEXP_ATTR_VALUE_COLON, ':')
-            .replace(REGEXP_ATTR_VALUE_NEWLINE, ' ');
+function escapeDangerHtml5Entities(str) {
+  return str
+    .replace(REGEXP_ATTR_VALUE_COLON, ":")
+    .replace(REGEXP_ATTR_VALUE_NEWLINE, " ");
 }
 
 /**
- * 清除不可见字符
+ * clear nonprintable characters
  *
  * @param {String} str
  * @return {String}
  */
-function clearNonPrintableCharacter (str) {
-  var str2 = '';
+function clearNonPrintableCharacter(str) {
+  var str2 = "";
   for (var i = 0, len = str.length; i < len; i++) {
-    str2 += str.charCodeAt(i) < 32 ? ' ' : str.charAt(i);
+    str2 += str.charCodeAt(i) < 32 ? " " : str.charAt(i);
   }
   return _.trim(str2);
 }
 
 /**
- * 将标签的属性值转换成一般字符，便于分析
+ * get friendly attribute value
  *
  * @param {String} str
  * @return {String}
  */
-function friendlyAttrValue (str) {
-  str = unescapeQuote(str);             // 双引号
-  str = escapeHtmlEntities(str);         // 转换HTML实体编码
-  str = escapeDangerHtml5Entities(str);  // 转换危险的HTML5新增实体编码
-  str = clearNonPrintableCharacter(str); // 清除不可见字符
+function friendlyAttrValue(str) {
+  str = unescapeQuote(str);
+  str = escapeHtmlEntities(str);
+  str = escapeDangerHtml5Entities(str);
+  str = clearNonPrintableCharacter(str);
   return str;
 }
 
 /**
- * 转义用于输出的标签属性值
+ * unescape attribute value
  *
  * @param {String} str
  * @return {String}
  */
-function escapeAttrValue (str) {
+function escapeAttrValue(str) {
   str = escapeQuote(str);
   str = escapeHtml(str);
   return str;
 }
 
 /**
- * 去掉不在白名单中的标签onIgnoreTag处理方法
+ * `onIgnoreTag` function for removing all the tags that are not in whitelist
  */
-function onIgnoreTagStripAll () {
-  return '';
+function onIgnoreTagStripAll() {
+  return "";
 }
 
 /**
- * 删除标签体
+ * remove tag body
+ * specify a `tags` list, if the tag is not in the `tags` list then process by the specify function (optional)
  *
- * @param {array} tags 要删除的标签列表
- * @param {function} next 对不在列表中的标签的处理函数，可选
+ * @param {array} tags
+ * @param {function} next
  */
-function StripTagBody (tags, next) {
-  if (typeof(next) !== 'function') {
-    next = function () {};
+function StripTagBody(tags, next) {
+  if (typeof next !== "function") {
+    next = function() {};
   }
 
   var isRemoveAllTag = !Array.isArray(tags);
-  function isRemoveTag (tag) {
+  function isRemoveTag(tag) {
     if (isRemoveAllTag) return true;
-    return (_.indexOf(tags, tag) !== -1);
+    return _.indexOf(tags, tag) !== -1;
   }
 
-  var removeList = [];   // 要删除的位置范围列表
-  var posStart = false;  // 当前标签开始位置
+  var removeList = [];
+  var posStart = false;
 
   return {
-    onIgnoreTag: function (tag, html, options) {
+    onIgnoreTag: function(tag, html, options) {
       if (isRemoveTag(tag)) {
         if (options.isClosing) {
-          var ret = '[/removed]';
+          var ret = "[/removed]";
           var end = options.position + ret.length;
-          removeList.push([posStart !== false ? posStart : options.position, end]);
+          removeList.push([
+            posStart !== false ? posStart : options.position,
+            end
+          ]);
           posStart = false;
           return ret;
         } else {
           if (!posStart) {
             posStart = options.position;
           }
-          return '[removed]';
+          return "[removed]";
         }
       } else {
         return next(tag, html, options);
       }
     },
-    remove: function (html) {
-      var rethtml = '';
+    remove: function(html) {
+      var rethtml = "";
       var lastPos = 0;
-      _.forEach(removeList, function (pos) {
+      _.forEach(removeList, function(pos) {
         rethtml += html.slice(lastPos, pos[0]);
         lastPos = pos[1];
       });
@@ -10449,25 +10506,25 @@ function StripTagBody (tags, next) {
 }
 
 /**
- * 去除备注标签
+ * remove html comments
  *
  * @param {String} html
  * @return {String}
  */
-function stripCommentTag (html) {
-  return html.replace(STRIP_COMMENT_TAG_REGEXP, '');
+function stripCommentTag(html) {
+  return html.replace(STRIP_COMMENT_TAG_REGEXP, "");
 }
 var STRIP_COMMENT_TAG_REGEXP = /<!--[\s\S]*?-->/g;
 
 /**
- * 去除不可见字符
+ * remove invisible characters
  *
  * @param {String} html
  * @return {String}
  */
-function stripBlankChar (html) {
-  var chars = html.split('');
-  chars = chars.filter(function (char) {
+function stripBlankChar(html) {
+  var chars = html.split("");
+  chars = chars.filter(function(char) {
     var c = char.charCodeAt(0);
     if (c === 127) return false;
     if (c <= 31) {
@@ -10476,9 +10533,8 @@ function stripBlankChar (html) {
     }
     return true;
   });
-  return chars.join('');
+  return chars.join("");
 }
-
 
 exports.whiteList = getDefaultWhiteList();
 exports.getDefaultWhiteList = getDefaultWhiteList;
@@ -10504,131 +10560,126 @@ exports.getDefaultCSSWhiteList = getDefaultCSSWhiteList;
 
 },{"./util":4,"cssfilter":8}],2:[function(require,module,exports){
 /**
- * 模块入口
+ * xss
  *
- * @author 老雷<leizongmin@gmail.com>
+ * @author Zongmin Lei<leizongmin@gmail.com>
  */
 
-var DEFAULT = require('./default');
-var parser = require('./parser');
-var FilterXSS = require('./xss');
-
+var DEFAULT = require("./default");
+var parser = require("./parser");
+var FilterXSS = require("./xss");
 
 /**
- * XSS过滤
+ * filter xss function
  *
- * @param {String} html 要过滤的HTML代码
- * @param {Object} options 选项：whiteList, onTag, onTagAttr, onIgnoreTag, onIgnoreTagAttr, safeAttrValue, escapeHtml
+ * @param {String} html
+ * @param {Object} options { whiteList, onTag, onTagAttr, onIgnoreTag, onIgnoreTagAttr, safeAttrValue, escapeHtml }
  * @return {String}
  */
-function filterXSS (html, options) {
+function filterXSS(html, options) {
   var xss = new FilterXSS(options);
   return xss.process(html);
 }
 
-
-// 输出
 exports = module.exports = filterXSS;
 exports.FilterXSS = FilterXSS;
 for (var i in DEFAULT) exports[i] = DEFAULT[i];
 for (var i in parser) exports[i] = parser[i];
 
-
-// 在浏览器端使用
-if (typeof window !== 'undefined') {
+// using `xss` on the browser, output `filterXSS` to the globals
+if (typeof window !== "undefined") {
   window.filterXSS = module.exports;
 }
 
 },{"./default":1,"./parser":3,"./xss":5}],3:[function(require,module,exports){
 /**
- * 简单 HTML Parser
+ * Simple HTML Parser
  *
- * @author 老雷<leizongmin@gmail.com>
+ * @author Zongmin Lei<leizongmin@gmail.com>
  */
 
-var _ = require('./util');
+var _ = require("./util");
 
 /**
- * 获取标签的名称
+ * get tag name
  *
- * @param {String} html 如：'<a hef="#">'
+ * @param {String} html e.g. '<a hef="#">'
  * @return {String}
  */
-function getTagName (html) {
-  var i = html.indexOf(' ');
+function getTagName(html) {
+  var i = _.spaceIndex(html);
   if (i === -1) {
     var tagName = html.slice(1, -1);
   } else {
     var tagName = html.slice(1, i + 1);
   }
   tagName = _.trim(tagName).toLowerCase();
-  if (tagName.slice(0, 1) === '/') tagName = tagName.slice(1);
-  if (tagName.slice(-1) === '/') tagName = tagName.slice(0, -1);
+  if (tagName.slice(0, 1) === "/") tagName = tagName.slice(1);
+  if (tagName.slice(-1) === "/") tagName = tagName.slice(0, -1);
   return tagName;
 }
 
 /**
- * 是否为闭合标签
+ * is close tag?
  *
  * @param {String} html 如：'<a hef="#">'
  * @return {Boolean}
  */
-function isClosing (html) {
-  return (html.slice(0, 2) === '</');
+function isClosing(html) {
+  return html.slice(0, 2) === "</";
 }
 
 /**
- * 分析HTML代码，调用相应的函数处理，返回处理后的HTML
+ * parse input html and returns processed html
  *
  * @param {String} html
- * @param {Function} onTag 处理标签的函数
- *   参数格式： function (sourcePosition, position, tag, html, isClosing)
- * @param {Function} escapeHtml 对HTML进行转义的函数
+ * @param {Function} onTag e.g. function (sourcePosition, position, tag, html, isClosing)
+ * @param {Function} escapeHtml
  * @return {String}
  */
-function parseTag (html, onTag, escapeHtml) {
-  'user strict';
+function parseTag(html, onTag, escapeHtml) {
+  "user strict";
 
-  var rethtml = '';        // 待返回的HTML
-  var lastPos = 0;         // 上一个标签结束位置
-  var tagStart = false;    // 当前标签开始位置
-  var quoteStart = false;  // 引号开始位置
-  var currentPos = 0;      // 当前位置
-  var len = html.length;   // HTML长度
-  var currentHtml = '';    // 当前标签的HTML代码
-  var currentTagName = ''; // 当前标签的名称
+  var rethtml = "";
+  var lastPos = 0;
+  var tagStart = false;
+  var quoteStart = false;
+  var currentPos = 0;
+  var len = html.length;
+  var currentTagName = "";
+  var currentHtml = "";
 
-  // 逐个分析字符
   for (currentPos = 0; currentPos < len; currentPos++) {
     var c = html.charAt(currentPos);
     if (tagStart === false) {
-      if (c === '<') {
+      if (c === "<") {
         tagStart = currentPos;
         continue;
       }
     } else {
       if (quoteStart === false) {
-        if (c === '<') {
+        if (c === "<") {
           rethtml += escapeHtml(html.slice(lastPos, currentPos));
           tagStart = currentPos;
           lastPos = currentPos;
           continue;
         }
-        if (c === '>') {
+        if (c === ">") {
           rethtml += escapeHtml(html.slice(lastPos, tagStart));
           currentHtml = html.slice(tagStart, currentPos + 1);
           currentTagName = getTagName(currentHtml);
-          rethtml += onTag(tagStart,
-                           rethtml.length,
-                           currentTagName,
-                           currentHtml,
-                           isClosing(currentHtml));
+          rethtml += onTag(
+            tagStart,
+            rethtml.length,
+            currentTagName,
+            currentHtml,
+            isClosing(currentHtml)
+          );
           lastPos = currentPos + 1;
           tagStart = false;
           continue;
         }
-        // HTML标签内的引号仅当前一个字符是等于号时才有效
-        if ((c === '"' || c === "'") && html.charAt(currentPos - 1) === '=') {
+        if ((c === '"' || c === "'") && html.charAt(currentPos - 1) === "=") {
           quoteStart = c;
           continue;
         }
@@ -10647,45 +10698,46 @@ function parseTag (html, onTag, escapeHtml) {
   return rethtml;
 }
 
-// 不符合属性名称规则的正则表达式
-var REGEXP_ATTR_NAME = /[^a-zA-Z0-9_:\.\-]/img;
+var REGEXP_ILLEGAL_ATTR_NAME = /[^a-zA-Z0-9_:\.\-]/gim;
 
 /**
- * 分析标签HTML代码，调用相应的函数处理，返回HTML
+ * parse input attributes and returns processed attributes
  *
- * @param {String} html 如标签'<a href="#" target="_blank">' 则为 'href="#" target="_blank"'
- * @param {Function} onAttr 处理属性值的函数
- *   函数格式： function (name, value)
+ * @param {String} html e.g. `href="#" target="_blank"`
+ * @param {Function} onAttr e.g. `function (name, value)`
  * @return {String}
  */
-function parseAttr (html, onAttr) {
-  'user strict';
+function parseAttr(html, onAttr) {
+  "user strict";
 
-  var lastPos = 0;        // 当前位置
-  var retAttrs = [];      // 待返回的属性列表
-  var tmpName = false;    // 临时属性名称
-  var len = html.length;  // HTML代码长度
+  var lastPos = 0;
+  var retAttrs = [];
+  var tmpName = false;
+  var len = html.length;
 
-  function addAttr (name, value) {
+  function addAttr(name, value) {
     name = _.trim(name);
-    name = name.replace(REGEXP_ATTR_NAME, '').toLowerCase();
+    name = name.replace(REGEXP_ILLEGAL_ATTR_NAME, "").toLowerCase();
     if (name.length < 1) return;
-    var ret = onAttr(name, value || '');
+    var ret = onAttr(name, value || "");
     if (ret) retAttrs.push(ret);
-  };
+  }
 
   // 逐个分析字符
   for (var i = 0; i < len; i++) {
     var c = html.charAt(i);
     var v, j;
-    if (tmpName === false && c === '=') {
+    if (tmpName === false && c === "=") {
       tmpName = html.slice(lastPos, i);
       lastPos = i + 1;
       continue;
     }
     if (tmpName !== false) {
-      // HTML标签内的引号仅当前一个字符是等于号时才有效
-      if (i === lastPos && (c === '"' || c === "'") && html.charAt(i - 1) === '=') {
+      if (
+        i === lastPos &&
+        (c === '"' || c === "'") &&
+        html.charAt(i - 1) === "="
+      ) {
         j = html.indexOf(c, i + 1);
         if (j === -1) {
           break;
@@ -10699,7 +10751,8 @@ function parseAttr (html, onAttr) {
         }
       }
     }
-    if (c === ' ') {
+    if (/\s|\n|\t/.test(c)) {
+      html = html.replace(/\s|\n|\t/g, " ");
       if (tmpName === false) {
         j = findNextEqual(html, i);
         if (j === -1) {
@@ -10736,51 +10789,52 @@ function parseAttr (html, onAttr) {
     }
   }
 
-  return _.trim(retAttrs.join(' '));
+  return _.trim(retAttrs.join(" "));
 }
 
-function findNextEqual (str, i) {
+function findNextEqual(str, i) {
   for (; i < str.length; i++) {
     var c = str[i];
-    if (c === ' ') continue;
-    if (c === '=') return i;
+    if (c === " ") continue;
+    if (c === "=") return i;
     return -1;
   }
 }
 
-function findBeforeEqual (str, i) {
+function findBeforeEqual(str, i) {
   for (; i > 0; i--) {
     var c = str[i];
-    if (c === ' ') continue;
-    if (c === '=') return i;
+    if (c === " ") continue;
+    if (c === "=") return i;
     return -1;
   }
 }
 
-function isQuoteWrapString (text) {
-  if ((text[0] === '"' && text[text.length - 1] === '"') ||
-      (text[0] === '\'' && text[text.length - 1] === '\'')) {
+function isQuoteWrapString(text) {
+  if (
+    (text[0] === '"' && text[text.length - 1] === '"') ||
+    (text[0] === "'" && text[text.length - 1] === "'")
+  ) {
     return true;
   } else {
     return false;
   }
-};
+}
 
-function stripQuoteWrap (text) {
+function stripQuoteWrap(text) {
   if (isQuoteWrapString(text)) {
     return text.substr(1, text.length - 2);
   } else {
     return text;
   }
-};
-
+}
 
 exports.parseTag = parseTag;
 exports.parseAttr = parseAttr;
 
 },{"./util":4}],4:[function(require,module,exports){
 module.exports = {
-  indexOf: function (arr, item) {
+  indexOf: function(arr, item) {
     var i, j;
     if (Array.prototype.indexOf) {
       return arr.indexOf(item);
@@ -10792,7 +10846,7 @@ module.exports = {
     }
     return -1;
   },
-  forEach: function (arr, fn, scope) {
+  forEach: function(arr, fn, scope) {
     var i, j;
     if (Array.prototype.forEach) {
       return arr.forEach(fn, scope);
@@ -10801,71 +10855,75 @@ module.exports = {
       fn.call(scope, arr[i], i, arr);
     }
   },
-  trim: function (str) {
+  trim: function(str) {
     if (String.prototype.trim) {
       return str.trim();
     }
-    return str.replace(/(^\s*)|(\s*$)/g, '');
+    return str.replace(/(^\s*)|(\s*$)/g, "");
+  },
+  spaceIndex: function(str) {
+    var reg = /\s|\n|\t/;
+    var match = reg.exec(str);
+    return match ? match.index : -1;
   }
 };
 
 },{}],5:[function(require,module,exports){
 /**
- * 过滤XSS
+ * filter xss
  *
- * @author 老雷<leizongmin@gmail.com>
+ * @author Zongmin Lei<leizongmin@gmail.com>
  */
 
-var FilterCSS = require('cssfilter').FilterCSS;
-var DEFAULT = require('./default');
-var parser = require('./parser');
+var FilterCSS = require("cssfilter").FilterCSS;
+var DEFAULT = require("./default");
+var parser = require("./parser");
 var parseTag = parser.parseTag;
 var parseAttr = parser.parseAttr;
-var _ = require('./util');
-
+var _ = require("./util");
 
 /**
- * 返回值是否为空
+ * returns `true` if the input value is `undefined` or `null`
  *
  * @param {Object} obj
  * @return {Boolean}
  */
-function isNull (obj) {
-  return (obj === undefined || obj === null);
+function isNull(obj) {
+  return obj === undefined || obj === null;
 }
 
 /**
- * 取标签内的属性列表字符串
+ * get attributes for a tag
  *
  * @param {String} html
  * @return {Object}
  *   - {String} html
  *   - {Boolean} closing
  */
-function getAttrs (html) {
-  var i = html.indexOf(' ');
+function getAttrs(html) {
+  var i = _.spaceIndex(html);
   if (i === -1) {
     return {
-      html:    '',
-      closing: (html[html.length - 2] === '/')
+      html: "",
+      closing: html[html.length - 2] === "/"
     };
   }
   html = _.trim(html.slice(i + 1, -1));
-  var isClosing = (html[html.length - 1] === '/');
+  var isClosing = html[html.length - 1] === "/";
   if (isClosing) html = _.trim(html.slice(0, -1));
   return {
-    html:    html,
+    html: html,
     closing: isClosing
   };
 }
 
 /**
- * 浅拷贝对象
+ * shallow copy
  *
  * @param {Object} obj
  * @return {Object}
  */
-function shallowCopyObject (obj) {
+function shallowCopyObject(obj) {
   var ret = {};
   for (var i in obj) {
     ret[i] = obj[i];
@@ -10874,20 +10932,22 @@ function shallowCopyObject (obj) {
 }
 
 /**
- * XSS过滤对象
+ * FilterXSS class
  *
  * @param {Object} options
- *   选项：whiteList, onTag, onTagAttr, onIgnoreTag,
+ *        whiteList, onTag, onTagAttr, onIgnoreTag,
  *        onIgnoreTagAttr, safeAttrValue, escapeHtml
  *        stripIgnoreTagBody, allowCommentTag, stripBlankChar
- *        css{whiteList, onAttr, onIgnoreAttr} css=false表示禁用cssfilter
+ *        css{whiteList, onAttr, onIgnoreAttr} `css=false` means don't use `cssfilter`
  */
-function FilterXSS (options) {
+function FilterXSS(options) {
   options = shallowCopyObject(options || {});
 
   if (options.stripIgnoreTag) {
     if (options.onIgnoreTag) {
-      console.error('Notes: cannot use these two options "stripIgnoreTag" and "onIgnoreTag" at the same time');
+      console.error(
+        'Notes: cannot use these two options "stripIgnoreTag" and "onIgnoreTag" at the same time'
+      );
     }
     options.onIgnoreTag = DEFAULT.onIgnoreTagStripAll;
   }
@@ -10910,16 +10970,16 @@ function FilterXSS (options) {
 }
 
 /**
- * 开始处理
+ * start process and returns result
  *
  * @param {String} html
  * @return {String}
  */
-FilterXSS.prototype.process = function (html) {
-  // 兼容各种奇葩输入
-  html = html || '';
+FilterXSS.prototype.process = function(html) {
+  // compatible with the input
+  html = html || "";
   html = html.toString();
-  if (!html) return '';
+  if (!html) return "";
 
   var me = this;
   var options = me.options;
@@ -10932,93 +10992,92 @@ FilterXSS.prototype.process = function (html) {
   var escapeHtml = options.escapeHtml;
   var cssFilter = me.cssFilter;
 
-  // 是否清除不可见字符
+  // remove invisible characters
   if (options.stripBlankChar) {
     html = DEFAULT.stripBlankChar(html);
   }
 
-  // 是否禁止备注标签
+  // remove html comments
   if (!options.allowCommentTag) {
     html = DEFAULT.stripCommentTag(html);
   }
 
-  // 如果开启了stripIgnoreTagBody
+  // if enable stripIgnoreTagBody
   var stripIgnoreTagBody = false;
   if (options.stripIgnoreTagBody) {
-    var stripIgnoreTagBody = DEFAULT.StripTagBody(options.stripIgnoreTagBody, onIgnoreTag);
+    var stripIgnoreTagBody = DEFAULT.StripTagBody(
+      options.stripIgnoreTagBody,
+      onIgnoreTag
+    );
     onIgnoreTag = stripIgnoreTagBody.onIgnoreTag;
   }
 
-  var retHtml = parseTag(html, function (sourcePosition, position, tag, html, isClosing) {
-    var info = {
-      sourcePosition: sourcePosition,
-      position:       position,
-      isClosing:      isClosing,
-      isWhite:        (tag in whiteList)
-    };
+  var retHtml = parseTag(
+    html,
+    function(sourcePosition, position, tag, html, isClosing) {
+      var info = {
+        sourcePosition: sourcePosition,
+        position: position,
+        isClosing: isClosing,
+        isWhite: whiteList.hasOwnProperty(tag)
+      };
 
-    // 调用onTag处理
-    var ret = onTag(tag, html, info);
-    if (!isNull(ret)) return ret;
-
-    // 默认标签处理方法
-    if (info.isWhite) {
-      // 白名单标签，解析标签属性
-      // 如果是闭合标签，则不需要解析属性
-      if (info.isClosing) {
-        return '</' + tag + '>';
-      }
-
-      var attrs = getAttrs(html);
-      var whiteAttrList = whiteList[tag];
-      var attrsHtml = parseAttr(attrs.html, function (name, value) {
-
-        // 调用onTagAttr处理
-        var isWhiteAttr = (_.indexOf(whiteAttrList, name) !== -1);
-        var ret = onTagAttr(tag, name, value, isWhiteAttr);
-        if (!isNull(ret)) return ret;
-
-        // 默认的属性处理方法
-        if (isWhiteAttr) {
-          // 白名单属性，调用safeAttrValue过滤属性值
-          value = safeAttrValue(tag, name, value, cssFilter);
-          if (value) {
-            return name + '="' + value + '"';
-          } else {
-            return name;
-          }
-        } else {
-          // 非白名单属性，调用onIgnoreTagAttr处理
-          var ret = onIgnoreTagAttr(tag, name, value, isWhiteAttr);
-          if (!isNull(ret)) return ret;
-          return;
-        }
-      });
-
-      // 构造新的标签代码
-      var html = '<' + tag;
-      if (attrsHtml) html += ' ' + attrsHtml;
-      if (attrs.closing) html += ' /';
-      html += '>';
-      return html;
-
-    } else {
-      // 非白名单标签，调用onIgnoreTag处理
-      var ret = onIgnoreTag(tag, html, info);
+      // call `onTag()`
+      var ret = onTag(tag, html, info);
       if (!isNull(ret)) return ret;
-      return escapeHtml(html);
-    }
 
-  }, escapeHtml);
+      if (info.isWhite) {
+        if (info.isClosing) {
+          return "</" + tag + ">";
+        }
 
-  // 如果开启了stripIgnoreTagBody，需要对结果再进行处理
+        var attrs = getAttrs(html);
+        var whiteAttrList = whiteList[tag];
+        var attrsHtml = parseAttr(attrs.html, function(name, value) {
+          // call `onTagAttr()`
+          var isWhiteAttr = _.indexOf(whiteAttrList, name) !== -1;
+          var ret = onTagAttr(tag, name, value, isWhiteAttr);
+          if (!isNull(ret)) return ret;
+
+          if (isWhiteAttr) {
+            // call `safeAttrValue()`
+            value = safeAttrValue(tag, name, value, cssFilter);
+            if (value) {
+              return name + '="' + value + '"';
+            } else {
+              return name;
+            }
+          } else {
+            // call `onIgnoreTagAttr()`
+            var ret = onIgnoreTagAttr(tag, name, value, isWhiteAttr);
+            if (!isNull(ret)) return ret;
+            return;
+          }
+        });
+
+        // build new tag html
+        var html = "<" + tag;
+        if (attrsHtml) html += " " + attrsHtml;
+        if (attrs.closing) html += " /";
+        html += ">";
+        return html;
+      } else {
+        // call `onIgnoreTag()`
+        var ret = onIgnoreTag(tag, html, info);
+        if (!isNull(ret)) return ret;
+        return escapeHtml(html);
+      }
+    },
+    escapeHtml
+  );
+
+  // if enable stripIgnoreTagBody
   if (stripIgnoreTagBody) {
     retHtml = stripIgnoreTagBody.remove(retHtml);
   }
 
   return retHtml;
 };
-
 
 module.exports = FilterXSS;
 
@@ -11063,14 +11122,16 @@ function shallowCopyObject (obj) {
  *
  * @param {Object} options
  *   - {Object} whiteList
- *   - {Object} onAttr
- *   - {Object} onIgnoreAttr
+ *   - {Function} onAttr
+ *   - {Function} onIgnoreAttr
+ *   - {Function} safeAttrValue
  */
 function FilterCSS (options) {
   options = shallowCopyObject(options || {});
   options.whiteList = options.whiteList || DEFAULT.whiteList;
   options.onAttr = options.onAttr || DEFAULT.onAttr;
   options.onIgnoreAttr = options.onIgnoreAttr || DEFAULT.onIgnoreAttr;
+  options.safeAttrValue = options.safeAttrValue || DEFAULT.safeAttrValue;
   this.options = options;
 }
 
@@ -11085,6 +11146,7 @@ FilterCSS.prototype.process = function (css) {
   var whiteList = options.whiteList;
   var onAttr = options.onAttr;
   var onIgnoreAttr = options.onIgnoreAttr;
+  var safeAttrValue = options.safeAttrValue;
 
   var retCSS = parseStyle(css, function (sourcePosition, position, name, value, source) {
 
@@ -11094,6 +11156,10 @@ FilterCSS.prototype.process = function (css) {
     else if (typeof check === 'function') isWhite = check(value);
     else if (check instanceof RegExp) isWhite = check.test(value);
     if (isWhite !== true) isWhite = false;
+
+    // 如果过滤后 value 为空则直接忽略
+    value = safeAttrValue(name, value);
+    if (!value) return;
 
     var opts = {
       position: position,
@@ -11506,11 +11572,26 @@ function onIgnoreAttr (name, value, options) {
   // do nothing
 }
 
+var REGEXP_URL_JAVASCRIPT = /javascript\s*\:/img;
+
+/**
+ * 过滤属性值
+ *
+ * @param {String} name
+ * @param {String} value
+ * @return {String}
+ */
+function safeAttrValue(name, value) {
+  if (REGEXP_URL_JAVASCRIPT.test(value)) return '';
+  return value;
+}
+
 
 exports.whiteList = getDefaultWhiteList();
 exports.getDefaultWhiteList = getDefaultWhiteList;
 exports.onAttr = onAttr;
 exports.onIgnoreAttr = onIgnoreAttr;
+exports.safeAttrValue = safeAttrValue;
 
 },{}],8:[function(require,module,exports){
 /**
@@ -11853,35 +11934,13 @@ return __p
 
 
 define('tpl!chatbox', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<div class="flyout box-flyout">\n    <div class="chat-body">\n        <div class="chat-content ';
  if (o.show_send_button) { ;
 __p += 'chat-content-sendbutton';
  } ;
-__p += '"></div>\n        <div class="new-msgs-indicator hidden">▼ ' +
-__e( o.unread_msgs ) +
-' ▼</div>\n        ';
- if (o.show_textarea) { ;
-__p += '\n        <form class="sendXMPPMessage">\n            ';
- if (o.show_toolbar) { ;
-__p += '\n                <ul class="chat-toolbar no-text-select"></ul>\n            ';
- } ;
-__p += '\n            <textarea\n                type="text"\n                class="chat-textarea ';
- if (o.show_send_button) { ;
-__p += 'chat-textarea-send-button';
- } ;
-__p += '"\n                placeholder="' +
-__e(o.label_personal_message) +
-'"></textarea>\n            ';
- if (o.show_send_button) { ;
-__p += '\n                <button type="submit" class="pure-button send-button">' +
-__e( o.label_send ) +
-'</button>\n            ';
- } ;
-__p += '\n        </form>\n        ';
- } ;
-__p += '\n    </div>\n</div>\n';
+__p += '"></div>\n        <div class="message-form-container"/>\n    </div>\n</div>\n';
 return __p
 };});
 
@@ -11918,6 +11977,46 @@ __p += '\n            </a>\n        ';
 __p += '\n        <p class="user-custom-message">' +
 __e( o.status ) +
 '</p>\n    </div>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!chatbox_message_form', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<div class="message-form-container">\n<div class="new-msgs-indicator hidden">▼ ' +
+__e( o.unread_msgs ) +
+' ▼</div>\n<form class="sendXMPPMessage">\n    ';
+ if (o.show_toolbar) { ;
+__p += '\n        <ul class="chat-toolbar no-text-select"></ul>\n    ';
+ } ;
+__p += '\n    <input type="text" placeholder="' +
+((__t = (o.label_spoiler_hint)) == null ? '' : __t) +
+'" value="' +
+((__t = ( o.hint_value )) == null ? '' : __t) +
+'"\n           class="';
+ if (!o.composing_spoiler) { ;
+__p += ' hidden ';
+ } ;
+__p += ' spoiler-hint"/>\n    <textarea\n        type="text"\n        class="chat-textarea\n            ';
+ if (o.show_send_button) { ;
+__p += ' chat-textarea-send-button ';
+ } ;
+__p += '\n            ';
+ if (o.composing_spoiler) { ;
+__p += ' spoiler ';
+ } ;
+__p += '"\n        placeholder="' +
+__e(o.label_personal_message) +
+'">' +
+((__t = ( o.message_value )) == null ? '' : __t) +
+'</textarea>\n    ';
+ if (o.show_send_button) { ;
+__p += '\n        <button type="submit" class="pure-button send-button">' +
+__e( o.label_send ) +
+'</button>\n    ';
+ } ;
+__p += '\n</form>\n</div>\n';
 return __p
 };});
 
@@ -12047,14 +12146,53 @@ return __p
 };});
 
 
+define('tpl!spoiler_button', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<li class="toggle-compose-spoiler">\n    <a class="\n        ';
+ if (o.composing_spoiler)  { ;
+__p += ' icon-eye-blocked ';
+ } ;
+__p += '\n        ';
+ if (!o.composing_spoiler)  { ;
+__p += ' icon-eye ';
+ } ;
+__p += '"\n        title="' +
+((__t = ( o.label_toggle_spoiler )) == null ? '' : __t) +
+'"></a>\n</li>\n';
+return __p
+};});
+
+
+define('tpl!spoiler_message', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<div class="message chat-message ' +
+__e(o.extra_classes) +
+'" data-isodate="' +
+__e(o.isodate) +
+'" data-msgid="' +
+__e(o.msgid) +
+'">\n    <span class="chat-msg-author chat-msg-' +
+__e(o.sender) +
+'">' +
+__e(o.time) +
+' ' +
+__e(o.username) +
+':&nbsp;</span>\n    <div class="spoiler-hint"><!-- message gets added here via renderMessage --></div>\n    <a class="icon-eye toggle-spoiler" data-toggle-state="closed" href="#">' +
+__e(o.label_show) +
+'</a>\n    <div class="chat-msg-content spoiler collapsed"><!-- message gets added here via renderMessage --></div>\n</div>\n';
+return __p
+};});
+
+
 define('tpl!toolbar', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  if (o.use_emoji)  { ;
-__p += '\n    <li class="toggle-toolbar-menu toggle-smiley icon-happy" title="' +
+__p += '\n<li class="toggle-toolbar-menu toggle-smiley">\n    <a class="icon-happy" title="' +
 __e(o.label_insert_smiley) +
-'">\n        <ul class="emoji-picker"></ul>\n    </li>\n';
+'"></a>\n    <span class="emoji-picker"></span>\n</li>\n';
  } ;
 __p += '\n';
  if (o.show_call_button)  { ;
@@ -12064,7 +12202,7 @@ __e(o.label_start_call) +
  } ;
 __p += '\n';
  if (o.show_clear_button)  { ;
-__p += '\n<li class="toggle-clear"><a class="icon-trash" title="' +
+__p += '\n<li class="toggle-clear"><a class="icon-remove" title="' +
 __e(o.label_clear) +
 '"></a></li>\n';
  } ;
@@ -12081,16 +12219,18 @@ return __p
 
 /*global define */
 (function (root, factory) {
-  define('converse-chatview',["converse-core", "converse-chatboxes", "emojione", "xss", "tpl!action", "tpl!chatbox", "tpl!chatbox_head", "tpl!emojis", "tpl!help_message", "tpl!info", "tpl!message", "tpl!new_day", "tpl!spinner", "tpl!toolbar"], factory);
-})(this, function (converse, dummy, emojione, xss, tpl_action, tpl_chatbox, tpl_chatbox_head, tpl_emojis, tpl_help_message, tpl_info, tpl_message, tpl_new_day, tpl_spinner, tpl_toolbar) {
+  define('converse-chatview',["converse-core", "converse-chatboxes", "emojione", "xss", "tpl!action", "tpl!chatbox", "tpl!chatbox_head", "tpl!chatbox_message_form", "tpl!emojis", "tpl!help_message", "tpl!info", "tpl!message", "tpl!new_day", "tpl!spinner", "tpl!spoiler_button", "tpl!spoiler_message", "tpl!toolbar"], factory);
+})(this, function (converse, dummy, emojione, xss, tpl_action, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_help_message, tpl_info, tpl_message, tpl_new_day, tpl_spinner, tpl_spoiler_button, tpl_spoiler_message, tpl_toolbar) {
   "use strict";
 
   var _converse$env = converse.env,
       $msg = _converse$env.$msg,
       Backbone = _converse$env.Backbone,
+      Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
       _ = _converse$env._,
       b64_sha1 = _converse$env.b64_sha1,
+      f = _converse$env.f,
       sizzle = _converse$env.sizzle,
       moment = _converse$env.moment;
   var u = converse.env.utils;
@@ -12109,7 +12249,7 @@ return __p
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-chatboxes"],
+    dependencies: ["converse-chatboxes", "converse-disco"],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -12118,14 +12258,16 @@ return __p
       // New functions which don't exist yet can also be added.
       //
       registerGlobalEventHandlers: function registerGlobalEventHandlers() {
+        var _converse = this.__super__._converse;
+
         this.__super__.registerGlobalEventHandlers();
 
-        document.addEventListener('click', function (ev) {
+        _converse.root.addEventListener('click', function (ev) {
           if (_.includes(ev.target.classList, 'toggle-toolbar-menu') || _.includes(ev.target.classList, 'insert-emoji')) {
             return;
           }
 
-          u.slideInAllElements(document.querySelectorAll('.toolbar-menu'));
+          u.slideInAllElements(_converse.root.querySelectorAll('.toolbar-menu'));
         });
       },
       ChatBoxViews: {
@@ -12161,9 +12303,10 @@ return __p
         'show_message_load_animation': false,
         'time_format': 'HH:mm',
         'visible_toolbar_buttons': {
-          'emoji': true,
           'call': false,
-          'clear': true
+          'clear': true,
+          'emoji': true,
+          'spoiler': true
         }
       });
 
@@ -12245,7 +12388,7 @@ return __p
           }
         },
         setScrollPosition: function setScrollPosition(ev) {
-          this.model.save('scroll_position', ev.target.scrollTop);
+          this.model.save('scroll_position', this.content);
         },
         chooseSkinTone: function chooseSkinTone(ev) {
           ev.preventDefault();
@@ -12304,13 +12447,15 @@ return __p
         // Leaky abstraction from MUC
         events: {
           'click .close-chatbox-button': 'close',
-          'keypress .chat-textarea': 'keyPressed',
+          'click .new-msgs-indicator': 'viewUnreadMessages',
           'click .send-button': 'onFormSubmitted',
-          'click .toggle-smiley': 'toggleEmojiMenu',
-          'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
-          'click .toggle-clear': 'clearMessages',
           'click .toggle-call': 'toggleCall',
-          'click .new-msgs-indicator': 'viewUnreadMessages'
+          'click .toggle-clear': 'clearMessages',
+          'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
+          'click .toggle-smiley': 'toggleEmojiMenu',
+          'click .toggle-spoiler': 'toggleSpoilerMessage',
+          'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
+          'keypress .chat-textarea': 'keyPressed'
         },
         initialize: function initialize() {
           this.scrollDown = _.debounce(this._scrollDown, 250);
@@ -12324,7 +12469,8 @@ return __p
           this.model.on('change:chat_status', this.onChatStatusChanged, this);
           this.model.on('showHelpMessages', this.showHelpMessages, this);
           this.model.on('sendMessage', this.sendMessage, this);
-          this.render().renderToolbar().insertHeading().fetchMessages();
+          this.render();
+          this.fetchMessages();
 
           _converse.emit('chatBoxOpened', this);
 
@@ -12333,15 +12479,80 @@ return __p
         render: function render() {
           this.el.setAttribute('id', this.model.get('box_id'));
           this.el.innerHTML = tpl_chatbox(_.extend(this.model.toJSON(), {
-            label_personal_message: __('Personal message'),
-            label_send: __('Send'),
-            show_send_button: _converse.show_send_button,
-            show_textarea: true,
-            show_toolbar: _converse.show_toolbar,
             unread_msgs: __('You have unread messages')
           }));
           this.content = this.el.querySelector('.chat-content');
+          this.renderMessageForm();
+          this.insertHeading();
           return this;
+        },
+        renderToolbar: function renderToolbar(toolbar, options) {
+          if (!_converse.show_toolbar) {
+            return this;
+          }
+
+          toolbar = toolbar || tpl_toolbar;
+          options = _.assign(this.model.toJSON(), this.getToolbarOptions(options || {}));
+          this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
+          this.addSpoilerButton(options);
+          this.insertEmojiPicker();
+          return this;
+        },
+        renderMessageForm: function renderMessageForm() {
+          var placeholder;
+
+          if (this.model.get('composing_spoiler')) {
+            placeholder = __('Hidden message');
+          } else {
+            placeholder = __('Personal message');
+          }
+
+          var form_container = this.el.querySelector('.message-form-container');
+          form_container.innerHTML = tpl_chatbox_message_form(_.extend(this.model.toJSON(), {
+            'hint_value': _.get(this.el.querySelector('.spoiler-hint'), 'value'),
+            'label_personal_message': placeholder,
+            'label_send': __('Send'),
+            'label_spoiler_hint': __('Optional hint'),
+            'message_value': _.get(this.el.querySelector('.chat-textarea'), 'value'),
+            'show_send_button': _converse.show_send_button,
+            'show_toolbar': _converse.show_toolbar,
+            'unread_msgs': __('You have unread messages')
+          }));
+          this.renderToolbar();
+        },
+        addSpoilerButton: function addSpoilerButton(options) {
+          var _this2 = this;
+
+          /* Asynchronously adds a button for writing spoiler
+           * messages, based on whether the contact's client supports
+           * it.
+           */
+          if (!options.show_spoiler_button || this.model.get('type') === 'chatroom') {
+            return;
+          }
+
+          var contact_jid = this.model.get('jid');
+          var resources = this.model.get('resources');
+
+          if (_.isEmpty(resources)) {
+            return;
+          }
+
+          Promise.all(_.map(_.keys(resources), function (resource) {
+            return _converse.api.disco.supports(Strophe.NS.SPOILER, "".concat(contact_jid, "/").concat(resource));
+          })).then(function (results) {
+            var supported = _.every(f.map(f.get('supported'))(results));
+
+            if (supported) {
+              var html = tpl_spoiler_button(_this2.model.toJSON());
+
+              if (_converse.visible_toolbar_buttons.emoji) {
+                _this2.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
+              } else {
+                _this2.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
+              }
+            }
+          });
         },
         insertHeading: function insertHeading() {
           this.heading = new _converse.ChatBoxHeading({
@@ -12353,15 +12564,24 @@ return __p
           flyout.insertBefore(this.heading.el, flyout.querySelector('.chat-body'));
           return this;
         },
-        createEmojiPicker: function createEmojiPicker() {
-          if (_.isUndefined(_converse.emojipicker)) {
-            _converse.emojipicker = new _converse.EmojiPicker();
+        getToolbarOptions: function getToolbarOptions(options) {
+          var label_toggle_spoiler;
 
-            _converse.emojipicker.fetch();
+          if (this.model.get('composing_spoiler')) {
+            label_toggle_spoiler = __('Click to write as a normal (non-spoiler) message');
+          } else {
+            label_toggle_spoiler = __('Click to write your message as a spoiler');
           }
 
-          this.emoji_picker_view = new _converse.EmojiPickerView({
-            'model': _converse.emojipicker
+          return _.extend(options || {}, {
+            'label_clear': __('Clear all messages'),
+            'label_insert_smiley': __('Insert a smiley'),
+            'label_start_call': __('Start a call'),
+            'label_toggle_spoiler': label_toggle_spoiler,
+            'show_call_button': _converse.visible_toolbar_buttons.call,
+            'show_clear_button': _converse.visible_toolbar_buttons.clear,
+            'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
+            'use_emoji': _converse.visible_toolbar_buttons.emoji
           });
         },
         afterMessagesFetched: function afterMessagesFetched() {
@@ -12384,7 +12604,7 @@ return __p
            * as well as src/converse-muc.js (if those plugins are
            * enabled).
            */
-          var container = document.querySelector('#conversejs');
+          var container = _converse.root.querySelector('#conversejs');
 
           if (this.el.parentNode !== container) {
             container.insertBefore(this.el, container.firstChild);
@@ -12542,14 +12762,20 @@ return __p
             this.scrollDown();
           }
         },
-        getExtraMessageTemplateAttributes: function getExtraMessageTemplateAttributes() {
+        getExtraMessageTemplateAttributes: function getExtraMessageTemplateAttributes(attrs) {
           /* Provides a hook for sending more attributes to the
            * message template.
            *
            * Parameters:
            *  (Object) attrs: An object containing message attributes.
            */
-          return {};
+          if (attrs.is_spoiler) {
+            return {
+              'label_show': __('Show hidden message')
+            };
+          } else {
+            return {};
+          }
         },
         getExtraMessageClasses: function getExtraMessageClasses(attrs) {
           if (_converse.show_message_load_animation) {
@@ -12557,6 +12783,16 @@ return __p
           } else {
             return attrs.delayed && 'delayed' || '';
           }
+        },
+        renderSpoilerMessage: function renderSpoilerMessage(msg, attrs) {
+          /* Render a "spoiler" message, as defined in XEP-0382
+           *
+           * Parameters:
+           *  (HTMLElement) msg: The chat message DOM element
+           *  (Object) attrs: An object containing the message attributes.
+           */
+          var hint = msg.querySelector('.spoiler-hint');
+          hint.appendChild(document.createTextNode(attrs.spoiler_hint || ''));
         },
         renderMessage: function renderMessage(attrs) {
           /* Renders a chat message based on the passed in attributes.
@@ -12583,6 +12819,8 @@ return __p
             } else {
               username = attrs.fullname;
             }
+          } else if (attrs.is_spoiler) {
+            template = tpl_spoiler_message;
           } else {
             template = tpl_message;
             username = attrs.sender === 'me' && __('me') || fullname;
@@ -12606,14 +12844,19 @@ return __p
           msg_content.innerHTML = u.addEmoji(_converse, emojione, u.addHyperlinks(xss.filterXSS(text, {
             'whiteList': {}
           })));
+
+          if (attrs.is_spoiler) {
+            this.renderSpoilerMessage(msg, attrs);
+          }
+
           u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
           return msg;
         },
         showHelpMessages: function showHelpMessages(msgs, type, spinner) {
-          var _this2 = this;
+          var _this3 = this;
 
           _.each(msgs, function (msg) {
-            _this2.content.insertAdjacentHTML('beforeend', tpl_help_message({
+            _this3.content.insertAdjacentHTML('beforeend', tpl_help_message({
               'isodate': moment().format(),
               'type': type || 'info',
               'message': xss.filterXSS(msg, {
@@ -12721,14 +12964,28 @@ return __p
           });
         },
         createMessageStanza: function createMessageStanza(message) {
-          return $msg({
-            from: _converse.connection.jid,
-            to: this.model.get('jid'),
-            type: 'chat',
-            id: message.get('msgid')
+          var stanza = $msg({
+            'from': _converse.connection.jid,
+            'to': this.model.get('jid'),
+            'type': 'chat',
+            'id': message.get('msgid')
           }).c('body').t(message.get('message')).up().c(_converse.ACTIVE, {
             'xmlns': Strophe.NS.CHATSTATES
           }).up();
+
+          if (message.get('is_spoiler')) {
+            if (message.get('spoiler_hint')) {
+              stanza.c('spoiler', {
+                'xmlns': Strophe.NS.SPOILER
+              }, message.get('spoiler_hint'));
+            } else {
+              stanza.c('spoiler', {
+                'xmlns': Strophe.NS.SPOILER
+              });
+            }
+          }
+
+          return stanza;
         },
         sendMessage: function sendMessage(message) {
           /* Responsible for sending off a text message.
@@ -12752,43 +13009,64 @@ return __p
               'xmlns': Strophe.NS.FORWARD
             }).c('delay', {
               'xmns': Strophe.NS.DELAY,
-              'stamp': moment.format()
+              'stamp': moment().format()
             }).up().cnode(messageStanza.tree()));
           }
         },
-        onMessageSubmitted: function onMessageSubmitted(text) {
+        parseMessageForCommands: function parseMessageForCommands(text) {
+          var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
+
+          if (match) {
+            if (match[1] === "clear") {
+              this.clearMessages();
+              return true;
+            } else if (match[1] === "help") {
+              var msgs = ["<strong>/clear</strong>: ".concat(__('Remove messages')), "<strong>/me</strong>: ".concat(__('Write in the third person')), "<strong>/help</strong>: ".concat(__('Show this menu'))];
+              this.showHelpMessages(msgs);
+              return true;
+            }
+          }
+        },
+        onMessageSubmitted: function onMessageSubmitted(text, spoiler_hint) {
           /* This method gets called once the user has typed a message
            * and then pressed enter in a chat box.
            *
            *  Parameters:
-           *    (string) text - The chat message text.
+           *    (String) text - The chat message text.
+           *    (String) spoiler_hint - A hint in case the message
+           *      text is a hidden/spoiler message. See XEP-0382
            */
           if (!_converse.connection.authenticated) {
             return this.showHelpMessages(['Sorry, the connection has been lost, ' + 'and your message could not be sent'], 'error');
           }
 
-          var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
-
-          if (match) {
-            if (match[1] === "clear") {
-              return this.clearMessages();
-            } else if (match[1] === "help") {
-              var msgs = ["<strong>/clear</strong>: ".concat(__('Remove messages')), "<strong>/me</strong>: ".concat(__('Write in the third person')), "<strong>/help</strong>: ".concat(__('Show this menu'))];
-              this.showHelpMessages(msgs);
-              return;
-            }
+          if (this.parseMessageForCommands(text)) {
+            return;
           }
 
-          var fullname = _converse.xmppstatus.get('fullname');
-
-          fullname = _.isEmpty(fullname) ? _converse.bare_jid : fullname;
-          var message = this.model.messages.create({
-            fullname: fullname,
-            sender: 'me',
-            time: moment().format(),
-            message: emojione.shortnameToUnicode(text)
-          });
+          var attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
+          var message = this.model.messages.create(attrs);
           this.sendMessage(message);
+        },
+        getOutgoingMessageAttributes: function getOutgoingMessageAttributes(text, spoiler_hint) {
+          /* Overridable method which returns the attributes to be
+           * passed to Backbone.Message's constructor.
+           */
+          var fullname = _converse.xmppstatus.get('fullname'),
+              is_spoiler = this.model.get('composing_spoiler'),
+              attrs = {
+            'fullname': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
+            'sender': 'me',
+            'time': moment().format(),
+            'message': emojione.shortnameToUnicode(text),
+            'is_spoiler': is_spoiler
+          };
+
+          if (is_spoiler) {
+            attrs.spoiler_hint = spoiler_hint;
+          }
+
+          return attrs;
         },
         sendChatState: function sendChatState() {
           /* Sends a message with the status of the user in this chat session
@@ -12839,11 +13117,19 @@ return __p
           ev.preventDefault();
           var textarea = this.el.querySelector('.chat-textarea'),
               message = textarea.value;
+          var spoiler_hint;
+
+          if (this.model.get('composing_spoiler')) {
+            var hint_el = this.el.querySelector('form.sendXMPPMessage input.spoiler-hint');
+            spoiler_hint = hint_el.value;
+            hint_el.value = '';
+          }
+
           textarea.value = '';
           textarea.focus();
 
           if (message !== '') {
-            this.onMessageSubmitted(message);
+            this.onMessageSubmitted(message, spoiler_hint);
 
             _converse.emit('messageSend', message);
           }
@@ -12888,6 +13174,17 @@ return __p
           textbox_el.value = existing + value + ' ';
           textbox_el.focus();
         },
+        createEmojiPicker: function createEmojiPicker() {
+          if (_.isUndefined(_converse.emojipicker)) {
+            _converse.emojipicker = new _converse.EmojiPicker();
+
+            _converse.emojipicker.fetch();
+          }
+
+          this.emoji_picker_view = new _converse.EmojiPickerView({
+            'model': _converse.emojipicker
+          });
+        },
         insertEmoji: function insertEmoji(ev) {
           ev.stopPropagation();
           var target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
@@ -12906,7 +13203,7 @@ return __p
             }
           }
 
-          var elements = _.difference(document.querySelectorAll('.toolbar-menu'), [this.emoji_picker_view.el]);
+          var elements = _.difference(_converse.root.querySelectorAll('.toolbar-menu'), [this.emoji_picker_view.el]);
 
           u.slideInAllElements(elements).then(_.partial(u.slideToggleElement, this.emoji_picker_view.el)).then(this.focus.bind(this));
         },
@@ -12917,6 +13214,31 @@ return __p
             connection: _converse.connection,
             model: this.model
           });
+        },
+        toggleComposeSpoilerMessage: function toggleComposeSpoilerMessage() {
+          this.model.set('composing_spoiler', !this.model.get('composing_spoiler'));
+          this.renderMessageForm();
+          this.focus();
+        },
+        toggleSpoilerMessage: function toggleSpoilerMessage(ev) {
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          var toggle_el = ev.target;
+          u.slideToggleElement(toggle_el.parentElement.querySelector('.spoiler'));
+
+          if (toggle_el.getAttribute("data-toggle-state") == "closed") {
+            toggle_el.textContent = __('Hide hidden message');
+            toggle_el.classList.remove("icon-eye");
+            toggle_el.classList.add("icon-eye-blocked");
+            toggle_el.setAttribute("data-toggle-state", "open");
+          } else {
+            toggle_el.textContent = __('Show hidden message');
+            toggle_el.classList.remove("icon-eye-blocked");
+            toggle_el.classList.add("icon-eye");
+            toggle_el.setAttribute("data-toggle-state", "closed");
+          }
         },
         onChatStatusChanged: function onChatStatusChanged(item) {
           var chat_status = item.get('chat_status');
@@ -12963,30 +13285,16 @@ return __p
 
           return this;
         },
-        getToolbarOptions: function getToolbarOptions(options) {
-          return _.extend(options || {}, {
-            'label_clear': __('Clear all messages'),
-            'label_insert_smiley': __('Insert a smiley'),
-            'label_start_call': __('Start a call'),
-            'show_call_button': _converse.visible_toolbar_buttons.call,
-            'show_clear_button': _converse.visible_toolbar_buttons.clear,
-            'use_emoji': _converse.visible_toolbar_buttons.emoji
-          });
-        },
-        renderToolbar: function renderToolbar(toolbar, options) {
-          if (!_converse.show_toolbar) {
-            return;
-          }
-
-          toolbar = toolbar || tpl_toolbar;
-          options = _.assign(this.model.toJSON(), this.getToolbarOptions(options || {}));
-          this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
-          return this;
-        },
         renderEmojiPicker: function renderEmojiPicker() {
-          var toggle = this.el.querySelector('.toggle-smiley');
-          toggle.innerHTML = '';
-          toggle.appendChild(this.emoji_picker_view.render().el);
+          this.emoji_picker_view.render();
+        },
+        insertEmojiPicker: function insertEmojiPicker() {
+          var picker_el = this.el.querySelector('.emoji-picker');
+
+          if (!_.isNull(picker_el)) {
+            picker_el.innerHTML = '';
+            picker_el.appendChild(this.emoji_picker_view.el);
+          }
         },
         focus: function focus() {
           var textarea_el = this.el.querySelector('.chat-textarea');
@@ -13005,12 +13313,13 @@ return __p
         },
         afterShown: function afterShown(focus) {
           if (u.isPersistableModel(this.model)) {
+            this.model.clearUnreadMsgCounter();
             this.model.save();
           }
 
           this.setChatState(_converse.ACTIVE);
-          this.renderEmojiPicker();
           this.scrollDown();
+          this.renderEmojiPicker();
 
           if (focus) {
             this.focus();
@@ -13026,14 +13335,7 @@ return __p
             return;
           }
 
-          var that = this;
-          u.fadeIn(this.el, function () {
-            that.afterShown();
-
-            if (focus) {
-              that.focus();
-            }
-          });
+          u.fadeIn(this.el, _.bind(this.afterShown, this, focus));
         },
         show: function show(focus) {
           if (_.isUndefined(this.debouncedShow)) {
@@ -13117,17 +13419,16 @@ return __p
           }
         }
       });
+
+      _converse.on('connected', function () {
+        // Advertise that we support XEP-0382 Message Spoilers
+        _converse.connection.disco.addFeature(Strophe.NS.SPOILER);
+      });
     }
   });
   return converse;
 });
 //# sourceMappingURL=converse-chatview.js.map;
-define('lodash.fp',['lodash', 'lodash.converter', 'converse-core'], function (_, lodashConverter, converse) {
-    var fp = lodashConverter(_.runInContext());
-    converse.env.fp = fp;
-    return fp;
-});
-
 
 define('tpl!add_contact_dropdown', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape;
@@ -13480,12 +13781,6 @@ __p += '<a class="open-chat ';
 __p += ' unread-msgs ';
  } ;
 __p += '"\n   title="' +
-__e(o.title_fullname) +
-': ' +
-__e(o.fullname) +
-' JID: ' +
-__e(o.jid) +
-' ' +
 __e(o.desc_chat) +
 '"\n   href="#">\n    <div class="avatar avatar-' +
 __e(o.chat_status) +
@@ -13866,9 +14161,8 @@ return __p
         renderRosterItem: function renderRosterItem(item) {
           this.el.innerHTML = tpl_roster_item(_.extend(item.toJSON(), {
             'desc_status': STATUSES[item.get('chat_status') || 'offline'],
-            'desc_chat': __('Click to chat with this contact'),
+            'desc_chat': __('Click to chat with %1$s (JID: %2$s)', item.get('fullname'), item.get('jid')),
             'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname')),
-            'title_fullname': __('Name'),
             'allow_contact_removal': _converse.allow_contact_removal,
             'num_unread': item.get('num_unread') || 0
           }));
@@ -14543,8 +14837,14 @@ return __p
       sizzle = _converse$env.sizzle;
 
   function onVCardData(_converse, jid, iq, callback) {
-    var vcard = iq.querySelector('vCard'),
-        img_type = _.get(vcard.querySelector('TYPE'), 'textContent'),
+    var vcard = iq.querySelector('vCard');
+
+    if (_.isNull(vcard)) {
+      // Some servers return an empty IQ
+      return onVCardError(_converse, jid, iq, callback);
+    }
+
+    var img_type = _.get(vcard.querySelector('TYPE'), 'textContent'),
         img = _.get(vcard.querySelector('BINVAL'), 'textContent'),
         url = _.get(vcard.querySelector('URL'), 'textContent'),
         fullname = _.get(vcard.querySelector('FN'), 'textContent');
@@ -14784,7 +15084,7 @@ return __p
         },
         render: function render() {
           // Replace the default dropdown with something nicer
-          var select = this.el.querySelector('select#select-xmpp-status');
+          var options = this.el.querySelectorAll('#select-xmpp-status option');
           var chat_status = this.model.get('status') || 'offline';
           this.el.innerHTML = tpl_choose_status();
           this.el.querySelector('#fancy-xmpp-status-select').innerHTML = tpl_chat_status({
@@ -14794,21 +15094,21 @@ return __p
             'desc_change_status': __('Click to change your chat status')
           }); // iterate through all the <option> elements and add option values
 
-          var options_list = _.map(select.querySelectorAll('option'), function (el) {
+          var options_list = _.map(options, function (el) {
             return tpl_status_option({
               'value': el.value,
               'text': el.text
             });
           });
 
-          var options_target = this.el.querySelector("#target dd ul");
+          var options_target = this.el.querySelector(".xmpp-status-menu");
           options_target.classList.add('collapsed');
           options_target.innerHTML = options_list.join('');
           return this;
         },
         toggleOptions: function toggleOptions(ev) {
           ev.preventDefault();
-          utils.slideInAllElements(document.querySelectorAll('#conversejs .contact-form-container'));
+          utils.slideInAllElements(_converse.root.querySelectorAll('#conversejs .contact-form-container'));
           utils.slideToggleElement(this.el.querySelector("#target dd ul"));
         },
         renderStatusChangeForm: function renderStatusChangeForm(ev) {
@@ -14963,12 +15263,16 @@ return __p
       clearSession: function clearSession() {
         this.__super__.clearSession.apply(this, arguments);
 
-        var controlbox = this.chatboxes.get('controlbox');
+        var chatboxes = _.get(this, 'chatboxes', null);
 
-        if (controlbox && controlbox.collection && controlbox.collection.browserStorage) {
-          controlbox.save({
-            'connected': false
-          });
+        if (!_.isNil(chatboxes)) {
+          var controlbox = chatboxes.get('controlbox');
+
+          if (controlbox && controlbox.collection && controlbox.collection.browserStorage) {
+            controlbox.save({
+              'connected': false
+            });
+          }
         }
       },
       ChatBoxes: {
@@ -15284,8 +15588,9 @@ return __p
           var tab = ev.target,
               sibling_li = tab.parentNode.nextElementSibling || tab.parentNode.previousElementSibling,
               sibling = sibling_li.firstChild,
-              sibling_panel = document.querySelector(sibling.getAttribute('href')),
-              tab_panel = document.querySelector(tab.getAttribute('href'));
+              sibling_panel = _converse.root.querySelector(sibling.getAttribute('href')),
+              tab_panel = _converse.root.querySelector(tab.getAttribute('href'));
+
           u.hideElement(sibling_panel);
           u.removeClass('current', sibling);
           u.addClass('current', tab);
@@ -15310,6 +15615,8 @@ return __p
       });
       _converse.LoginPanelModel = Backbone.Model.extend({
         defaults: {
+          // Passed-by-reference. Fine in this case because there's
+          // only one such model.
           'errors': []
         }
       });
@@ -15461,6 +15768,10 @@ return __p
         renderTab: function renderTab() {
           var controlbox = _converse.chatboxes.get('controlbox');
 
+          if (_.isNil(controlbox)) {
+            return;
+          }
+
           var chats = fp.filter(_.partial(u.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
           this.tab_el.innerHTML = tpl_contacts_tab({
             'label_contacts': LABEL_CONTACTS,
@@ -15512,7 +15823,8 @@ return __p
           xhr.onload = function () {
             if (xhr.status >= 200 && xhr.status < 400) {
               var data = JSON.parse(xhr.responseText),
-                  ul = document.querySelector('.search-xmpp ul');
+                  ul = _converse.root.querySelector('.search-xmpp ul');
+
               u.removeElement(ul.querySelector('li.found-user'));
               u.removeElement(ul.querySelector('li.chat-info'));
 
@@ -15549,7 +15861,7 @@ return __p
           var input = ev.target.querySelector('input');
           var jid = input.value;
 
-          if (!jid || _.filter(jid.split('@')).length < 2) {
+          if (!jid || _.compact(jid.split('@')).length < 2) {
             this.el.querySelector('.search-xmpp div').innerHTML = this.generateAddContactHTML({
               error_message: __('Please enter a valid XMPP address'),
               label_contact_username: __('e.g. user@example.org'),
@@ -15631,7 +15943,7 @@ return __p
         onClick: function onClick(e) {
           e.preventDefault();
 
-          if (u.isVisible(document.querySelector("#controlbox"))) {
+          if (u.isVisible(_converse.root.querySelector("#controlbox"))) {
             var controlbox = _converse.chatboxes.get('controlbox');
 
             if (_converse.connection.connected) {
@@ -16031,7 +16343,7 @@ __p += '\n        <textarea type="text" class="chat-textarea ';
  if (o.show_send_button) { ;
 __p += 'chat-textarea-send-button';
  } ;
-__p += '"\n                              placeholder="' +
+__p += '"\n                  placeholder="' +
 __e(o.label_message) +
 '"></textarea>\n    ';
  if (o.show_send_button) { ;
@@ -16305,9 +16617,9 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  if (o.use_emoji)  { ;
-__p += '\n    <li class="toggle-smiley icon-happy" title="' +
+__p += '\n<li class="toggle-toolbar-menu toggle-smiley">\n    <a class="icon-happy" title="' +
 __e(o.label_insert_smiley) +
-'">\n        <ul class="emoji-picker"></ul>\n    </li>\n';
+'"></a>\n    <span class="emoji-picker"></span>\n</li>\n';
  } ;
 __p += '\n';
  if (o.show_call_button)  { ;
@@ -16541,7 +16853,7 @@ return __p
 
 /* This is a Converse.js plugin which add support for XEP-0030: Service Discovery */
 
-/*global Backbone, define, window, document */
+/*global Backbone, define, window */
 (function (root, factory) {
   define('converse-disco',["converse-core", "sizzle", "strophe.disco"], factory);
 })(this, function (converse, sizzle) {
@@ -16596,6 +16908,27 @@ return __p
           this.identities = new Backbone.Collection();
           this.identities.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.identities-".concat(this.get('jid'))));
           this.fetchFeatures();
+        },
+        getIdentity: function getIdentity(category, type) {
+          /* Returns a Promise which resolves with a map indicating
+           * whether a given identity is provided.
+           *
+           * Parameters:
+           *    (String) category - The identity category
+           *    (String) type - The identity type
+           */
+          var entity = this;
+          return new Promise(function (resolve, reject) {
+            function fulfillPromise() {
+              var model = entity.identities.findWhere({
+                'category': category,
+                'type': type
+              });
+              resolve(model);
+            }
+
+            entity.waitUntilFeaturesDiscovered.then(fulfillPromise).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          });
         },
         hasFeature: function hasFeature(feature) {
           /* Returns a Promise which resolves with a map indicating
@@ -16669,8 +17002,8 @@ return __p
           _.forEach(stanza.querySelectorAll('identity'), function (identity) {
             _this2.identities.create({
               'category': identity.getAttribute('category'),
-              'type': stanza.getAttribute('type'),
-              'name': stanza.getAttribute('name')
+              'type': identity.getAttribute('type'),
+              'name': identity.getAttribute('name')
             });
           });
 
@@ -16802,7 +17135,28 @@ return __p
               var entity = _converse.api.disco.entities.get(entity_jid, true);
 
               return entity.hasFeature(feature);
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          },
+          'getIdentity': function getIdentity(category, type, entity_jid) {
+            /* Returns a Promise which resolves with a map indicating
+             * whether an identity with a given type is provided by
+             * the entity.
+             *
+             * Parameters:
+             *    (String) category - The identity category.
+             *          In the XML stanza, this is the `category`
+             *          attribute of the `<identity>` element.
+             *          For example: 'pubsub'
+             *    (String) type - The identity type.
+             *          In the XML stanza, this is the `type`
+             *          attribute of the `<identity>` element.
+             *          For example: 'pep'
+             */
+            return _converse.api.waitUntil('discoInitialized').then(function () {
+              var entity = _converse.api.disco.entities.get(entity_jid, true);
+
+              return entity.getIdentity(category, type);
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
           }
         }
       });
@@ -16888,7 +17242,7 @@ return __p
       this.items.sort();
       var list_el = this.el.querySelector(this.listSelector);
       var div = document.createElement('div');
-      list_el.replaceWith(div);
+      list_el.parentNode.replaceChild(div, list_el);
       this.items.each(function (item) {
         var view = _this.get(item.get(_this.subviewIndex));
 
@@ -16898,7 +17252,7 @@ return __p
 
         list_el.insertAdjacentElement('beforeend', view.el);
       });
-      div.replaceWith(list_el);
+      div.parentNode.replaceChild(list_el, div);
     }
   });
   return Backbone.OrderedListView;
@@ -18158,13 +18512,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       _converse.api.promises.add(['roomsPanelRendered', 'roomsAutoJoined']);
 
       function openRoom(jid) {
-        if (!u.isValidJID(jid)) {
-          return converse.log("Invalid JID \"".concat(jid, "\" provided in URL fragment"), Strophe.LogLevel.WARN);
+        if (!u.isValidMUCJID(jid)) {
+          return _converse.log("Invalid JID \"".concat(jid, "\" provided in URL fragment"), Strophe.LogLevel.WARN);
         }
 
         var promises = [_converse.api.waitUntil('roomsAutoJoined')];
 
-        if (!_converse.allow_bookmarks) {
+        if (_converse.allow_bookmarks) {
           promises.push(_converse.api.waitUntil('bookmarksInitialized'));
         }
 
@@ -18273,7 +18627,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           'click .new-msgs-indicator': 'viewUnreadMessages',
           'click .occupant': 'onOccupantClicked',
           'keypress .chat-textarea': 'keyPressed',
-          'click .send-button': 'onSendButtonClicked'
+          'click .send-button': 'onFormSubmitted'
         },
         initialize: function initialize() {
           var _this = this;
@@ -18326,8 +18680,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           this.el.querySelector('.chat-head-chatroom').innerHTML = this.generateHeadingHTML();
         },
         renderChatArea: function renderChatArea() {
-          /* Render the UI container in which chat room messages will
-           * appear.
+          /* Render the UI container in which chat room messages will appear.
            */
           if (_.isNull(this.el.querySelector('.chat-area'))) {
             var container_el = this.el.querySelector('.chatroom-body');
@@ -18386,19 +18739,23 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             description: this.model.get('description') || ''
           }));
         },
-        afterShown: function afterShown() {
+        afterShown: function afterShown(focus) {
           /* Override from converse-chatview, specifically to avoid
            * the 'active' chat state from being sent out prematurely.
            *
            * This is instead done in `afterConnected` below.
            */
-          if (this.model.collection && this.model.collection.browserStorage) {
-            // Without a connection, we haven't yet initialized
-            // localstorage
+          if (u.isPersistableModel(this.model)) {
+            this.model.clearUnreadMsgCounter();
             this.model.save();
           }
 
           this.occupantsview.setOccupantsHeight();
+          this.scrollDown();
+
+          if (focus) {
+            this.focus();
+          }
         },
         show: function show(focus) {
           if (u.isVisible(this.el)) {
@@ -18412,17 +18769,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 
           u.showElement(this.el);
-          this.afterShown();
-
-          if (focus) {
-            this.focus();
-          }
+          this.afterShown(focus);
         },
         afterConnected: function afterConnected() {
           if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
             this.setChatState(_converse.ACTIVE);
-            this.renderEmojiPicker();
             this.scrollDown();
+            this.renderEmojiPicker();
             this.focus();
           }
         },
@@ -19084,9 +19437,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           }
 
           var room = this.model.get('jid');
-          var node = Strophe.getNodeFromJid(room);
-          var domain = Strophe.getDomainFromJid(room);
-          return node + "@" + domain + (nick !== null ? "/".concat(nick) : "");
+          var jid = Strophe.getBareJidFromJid(room);
+          return jid + (nick !== null ? "/".concat(nick) : "");
         },
         registerHandlers: function registerHandlers() {
           /* Register presence and message handlers for this chat
@@ -20445,7 +20797,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           var el = evt.target.querySelector('input.invited-contact'),
               jid = el.value;
 
-          if (!jid || _.filter(jid.split('@')).length < 2) {
+          if (!jid || _.compact(jid.split('@')).length < 2) {
             evt.target.outerHTML = tpl_chatroom_invite({
               'error_message': __('Please enter a valid XMPP username'),
               'label_invitation': __('Invite')
@@ -20600,6 +20952,17 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           input_el.classList.remove('hidden');
           this.removeSpinner();
         },
+        roomStanzaItemToHTMLElement: function roomStanzaItemToHTMLElement(room) {
+          var name = Strophe.unescapeNode(room.getAttribute('name') || room.getAttribute('jid'));
+          var div = document.createElement('div');
+          div.innerHTML = tpl_room_item({
+            'name': name,
+            'jid': room.getAttribute('jid'),
+            'open_title': __('Click to open this room'),
+            'info_title': __('Show more information on this room')
+          });
+          return div.firstChild;
+        },
         onRoomsFound: function onRoomsFound(iq) {
           /* Handle the IQ stanza returned from the server, containing
            * all its public rooms.
@@ -20613,19 +20976,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             available_chatrooms.innerHTML = tpl_rooms_results({
               'feedback_text': __('Rooms found')
             });
-            var div = document.createElement('div');
             var fragment = document.createDocumentFragment();
 
-            for (var i = 0; i < this.rooms.length; i++) {
-              var name = Strophe.unescapeNode(this.rooms[i].getAttribute('name') || this.rooms[i].getAttribute('jid'));
-              div.innerHTML = tpl_room_item({
-                'name': name,
-                'jid': this.rooms[i].getAttribute('jid'),
-                'open_title': __('Click to open this room'),
-                'info_title': __('Show more information on this room')
-              });
-              fragment.appendChild(div.firstChild);
-            }
+            var children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil);
+
+            _.each(children, function (child) {
+              return fragment.appendChild(child);
+            });
 
             available_chatrooms.appendChild(fragment);
             var input_el = this.el.querySelector('input#show-rooms');
@@ -20760,7 +21117,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
           return {
             'jid': jid,
-            'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid))
+            'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
           };
         },
         openChatRoom: function openChatRoom(ev) {
@@ -20846,6 +21203,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
          * settings).
          */
         _.each(_converse.auto_join_rooms, function (room) {
+          if (_converse.chatboxes.where({
+            'jid': room
+          }).length) {
+            return;
+          }
+
           if (_.isString(room)) {
             _converse.api.rooms.open(room);
           } else if (_.isObject(room)) {
@@ -21213,24 +21576,32 @@ return __p
           this.model.on('change:bookmarked', this.onBookmarked, this);
           this.setBookmarkState();
         },
-        generateHeadingHTML: function generateHeadingHTML() {
+        renderBookmarkToggle: function renderBookmarkToggle() {
           var _converse = this.__super__._converse,
-              __ = _converse.__,
-              html = this.__super__.generateHeadingHTML.apply(this, arguments);
+              __ = _converse.__;
+          var bookmark_button = tpl_chatroom_bookmark_toggle(_.assignIn(this.model.toJSON(), {
+            info_toggle_bookmark: __('Bookmark this room'),
+            bookmarked: this.model.get('bookmarked')
+          }));
+          var close_button = this.el.querySelector('.close-chatbox-button');
+          close_button.insertAdjacentHTML('afterend', bookmark_button);
+        },
+        renderHeading: function renderHeading() {
+          var _this = this;
+
+          this.__super__.renderHeading.apply(this, arguments);
+
+          var _converse = this.__super__._converse;
 
           if (_converse.allow_bookmarks) {
-            var div = document.createElement('div');
-            div.innerHTML = html;
-            var bookmark_button = tpl_chatroom_bookmark_toggle(_.assignIn(this.model.toJSON(), {
-              info_toggle_bookmark: __('Bookmark this room'),
-              bookmarked: this.model.get('bookmarked')
-            }));
-            var close_button = div.querySelector('.close-chatbox-button');
-            close_button.insertAdjacentHTML('afterend', bookmark_button);
-            return div.innerHTML;
-          }
+            _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then(function (identity) {
+              if (_.isNil(identity)) {
+                return;
+              }
 
-          return html;
+              _this.renderBookmarkToggle();
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          }
         },
         checkForReservedNick: function checkForReservedNick() {
           /* Check if the user has a bookmark with a saved nickanme
@@ -21255,6 +21626,10 @@ return __p
         },
         onBookmarked: function onBookmarked() {
           var icon = this.el.querySelector('.icon-pushpin');
+
+          if (_.isNull(icon)) {
+            return;
+          }
 
           if (this.model.get('bookmarked')) {
             icon.classList.add('button-on');
@@ -21354,6 +21729,7 @@ return __p
 
       _converse.api.settings.update({
         allow_bookmarks: true,
+        allow_public_bookmarks: false,
         hide_open_bookmarks: true
       }); // Promises exposed by this plugin
 
@@ -21510,19 +21886,22 @@ return __p
             room.save('bookmarked', false);
           }
         },
-        onBookmarksReceived: function onBookmarksReceived(deferred, iq) {
-          var _this = this;
+        createBookmarksFromStanza: function createBookmarksFromStanza(stanza) {
+          var _this2 = this;
 
-          var bookmarks = sizzle('items[node="storage:bookmarks"] item[id="current"] storage conference', iq);
+          var bookmarks = sizzle('items[node="storage:bookmarks"] ' + 'item#current ' + 'storage[xmlns="storage:bookmarks"] ' + 'conference', stanza);
 
           _.forEach(bookmarks, function (bookmark) {
-            _this.create({
+            _this2.create({
               'jid': bookmark.getAttribute('jid'),
               'name': bookmark.getAttribute('name'),
               'autojoin': bookmark.getAttribute('autojoin') === 'true',
               'nick': bookmark.querySelector('nick').textContent
             });
           });
+        },
+        onBookmarksReceived: function onBookmarksReceived(deferred, iq) {
+          this.createBookmarksFromStanza(iq);
 
           if (!_.isUndefined(deferred)) {
             return deferred.resolve();
@@ -21610,7 +21989,7 @@ return __p
         insertIntoControlBox: function insertIntoControlBox() {
           var controlboxview = _converse.chatboxviews.get('controlbox');
 
-          if (!_.isUndefined(controlboxview) && !document.body.contains(this.el)) {
+          if (!_.isUndefined(controlboxview) && !_converse.root.contains(this.el)) {
             var container = controlboxview.el.querySelector('#chatrooms');
 
             if (!_.isNull(container)) {
@@ -21676,18 +22055,43 @@ return __p
           return;
         }
 
-        _converse.bookmarks = new _converse.Bookmarks();
+        Promise.all([_converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid), _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', _converse.bare_jid)]).then(function (args) {
+          var identity = args[0],
+              options_support = args[1];
 
-        _converse.bookmarks.fetchBookmarks().then(function () {
-          _converse.bookmarksview = new _converse.BookmarksView({
-            'model': _converse.bookmarks
+          if (_.isNil(identity) || !options_support.supported && !_converse.allow_public_bookmarks) {
+            _converse.emit('bookmarksInitialized');
+
+            return;
+          }
+
+          _converse.bookmarks = new _converse.Bookmarks();
+
+          _converse.bookmarks.fetchBookmarks().then(function () {
+            _converse.bookmarksview = new _converse.BookmarksView({
+              'model': _converse.bookmarks
+            });
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR)).then(function () {
+            _converse.emit('bookmarksInitialized');
           });
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR)).then(function () {
+        }).catch(function (e) {
+          _converse.log(e, Strophe.LogLevel.ERROR);
+
           _converse.emit('bookmarksInitialized');
         });
       };
 
       Promise.all([_converse.api.waitUntil('chatBoxesFetched'), _converse.api.waitUntil('roomsPanelRendered')]).then(initBookmarks).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
+      _converse.on('connected', function () {
+        // Add a handler for bookmarks pushed from other connected clients
+        // (from the same user obviously)
+        _converse.connection.addHandler(function (message) {
+          if (message.querySelector('event[xmlns="' + Strophe.NS.PUBSUB + '#event"]')) {
+            _converse.bookmarks.createBookmarksFromStanza(message);
+          }
+        }, null, 'message', 'headline', null, _converse.bare_jid);
+      });
 
       var afterReconnection = function afterReconnection() {
         if (!_converse.allow_bookmarks) {
@@ -21948,7 +22352,7 @@ return __p
         insertIntoControlBox: function insertIntoControlBox() {
           var controlboxview = _converse.chatboxviews.get('controlbox');
 
-          if (!_.isUndefined(controlboxview) && !document.body.contains(this.el)) {
+          if (!_.isUndefined(controlboxview) && !_converse.root.contains(this.el)) {
             var container = controlboxview.el.querySelector('#chatrooms');
 
             if (!_.isNull(container)) {
@@ -22141,6 +22545,11 @@ return __p
     var messages = [];
 
     var message_handler = _converse.connection.addHandler(function (message) {
+      if (options.groupchat && message.getAttribute('from') !== options['with']) {
+        // eslint-disable-line dot-notation
+        return true;
+      }
+
       var result = message.querySelector('result');
 
       if (!_.isNull(result) && result.getAttribute('queryid') === queryid) {
@@ -22323,7 +22732,7 @@ return __p
         onScroll: function onScroll(ev) {
           var _converse = this.__super__._converse;
 
-          if (ev.target.scrollTop === 0 && this.model.messages.length) {
+          if (this.content.scrollTop === 0 && this.model.messages.length) {
             var oldest_message = this.model.messages.at(0);
             var archive_id = oldest_message.get('archive_id');
 
@@ -22560,6 +22969,66 @@ return __p
   });
 });
 //# sourceMappingURL=converse-mam.js.map;
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+(function (root, factory) {
+  define('converse-muc-embedded',["converse-core", "converse-muc"], factory);
+})(this, function (converse) {
+  "use strict";
+
+  var _converse$env = converse.env,
+      Backbone = _converse$env.Backbone,
+      _ = _converse$env._;
+  converse.plugins.add('converse-muc-embedded', {
+    enabled: function enabled(_converse) {
+      return _converse.view_mode === 'embedded';
+    },
+    overrides: {
+      // Overrides mentioned here will be picked up by converse.js's
+      // plugin architecture they will replace existing methods on the
+      // relevant objects or classes.
+      //
+      // New functions which don't exist yet can also be added.
+      ChatBoxViews: {
+        initialize: function initialize() {
+          this.__super__.initialize.apply(this, arguments);
+
+          this.el.classList.add('converse-embedded');
+        }
+      }
+    },
+    initialize: function initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      this._converse.api.settings.update({
+        'allow_logout': false,
+        // No point in logging out when we have auto_login as true.
+        'allow_muc_invitations': false,
+        // Doesn't make sense to allow because only
+        // roster contacts can be invited
+        'hide_muc_server': true // Federation is disabled, so no use in
+        // showing the MUC server.
+
+      });
+
+      var _converse = this._converse;
+
+      if (!_.isArray(_converse.auto_join_rooms)) {
+        throw new Error("converse-muc-embedded: auto_join_rooms must be an Array");
+      }
+
+      if (_converse.auto_join_rooms.length !== 1) {
+        throw new Error("converse-muc-embedded: It doesn't make " + "sense to have the auto_join_rooms setting to zero or " + "more then one, since only one chat room can be open " + "at any time.");
+      }
+    }
+  });
+});
+//# sourceMappingURL=converse-muc-embedded.js.map;
 
 define('tpl!toolbar_otr', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
@@ -22570,9 +23039,7 @@ __p += '\n    <li class="toggle-toolbar-menu toggle-otr ' +
 __e(o.otr_status_class) +
 '" title="' +
 __e(o.otr_tooltip) +
-'">\n        <span class="chat-toolbar-text">' +
-__e(o.otr_translated_status) +
-'</span>\n        ';
+'">\n        ';
  if (o.otr_status == o.UNENCRYPTED) { ;
 __p += '\n            <span class="icon-unlocked"></span>\n        ';
  } ;
@@ -22926,25 +23393,37 @@ return __p
 
           return stanza;
         },
-        onMessageSubmitted: function onMessageSubmitted(text) {
+        parseMessageForCommands: function parseMessageForCommands(text) {
           var _converse = this.__super__._converse;
-
-          if (!_converse.connection.authenticated) {
-            return this.showHelpMessages(['Sorry, the connection has been lost, ' + 'and your message could not be sent'], 'error');
-          }
-
           var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
 
           if (match) {
             if (_converse.allow_otr && match[1] === "endotr") {
-              return this.endOTR();
+              this.endOTR();
+              return true;
             } else if (_converse.allow_otr && match[1] === "otr") {
-              return this.model.initiateOTR();
+              this.model.initiateOTR();
+              return true;
             }
           }
 
-          if (_.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
-            // Off-the-record encryption is active
+          return this.__super__.parseMessageForCommands.apply(this, arguments);
+        },
+        isOTREncryptedSession: function isOTREncryptedSession() {
+          return _.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'));
+        },
+        onMessageSubmitted: function onMessageSubmitted(text, spoiler_hint) {
+          var _converse = this.__super__._converse;
+
+          if (!_converse.connection.authenticated) {
+            this.__super__.onMessageSubmitted.apply(this, arguments);
+          }
+
+          if (this.parseMessageForCommands(text)) {
+            return;
+          }
+
+          if (this.isOTREncryptedSession()) {
             this.model.otr.sendMsg(text);
             this.model.trigger('showSentOTRMessage', text);
           } else {
@@ -23032,9 +23511,10 @@ return __p
         },
         toggleOTRMenu: function toggleOTRMenu(ev) {
           ev.stopPropagation();
+          var _converse = this.__super__._converse;
           var menu = this.el.querySelector('.toggle-otr ul');
 
-          var elements = _.difference(document.querySelectorAll('.toolbar-menu'), [menu]);
+          var elements = _.difference(_converse.root.querySelectorAll('.toolbar-menu'), [menu]);
 
           utils.slideInAllElements(elements).then(_.partial(utils.slideToggleElement, menu));
         },
@@ -23053,15 +23533,10 @@ return __p
             return __('Your contact has closed their end of the private session, you should do the same');
           }
         },
-        renderToolbar: function renderToolbar(toolbar, options) {
+        addOTRToolbarButton: function addOTRToolbarButton(options) {
           var _converse = this.__super__._converse,
-              __ = _converse.__;
-
-          if (!_converse.show_toolbar) {
-            return;
-          }
-
-          var data = this.model.toJSON();
+              __ = _converse.__,
+              data = this.model.toJSON();
           options = _.extend(options || {}, {
             FINISHED: FINISHED,
             UNENCRYPTED: UNENCRYPTED,
@@ -23079,11 +23554,22 @@ return __p
             otr_tooltip: this.getOTRTooltip(),
             otr_translated_status: OTR_TRANSLATED_MAPPING[data.otr_status]
           });
-
-          this.__super__.renderToolbar.apply(this, arguments);
-
           this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', tpl_toolbar_otr(_.extend(this.model.toJSON(), options || {})));
-          return this;
+        },
+        getToolbarOptions: function getToolbarOptions(options) {
+          options = this.__super__.getToolbarOptions();
+
+          if (this.isOTREncryptedSession()) {
+            options.show_spoiler_button = false;
+          }
+
+          return options;
+        },
+        renderToolbar: function renderToolbar(toolbar, options) {
+          var result = this.__super__.renderToolbar.apply(this, arguments);
+
+          this.addOTRToolbarButton(options);
+          return result;
         }
       }
     },
@@ -23202,7 +23688,7 @@ __p += '<span class="spinner login-submit"></span>\n<p class="info">' +
 __e(o.__("Hold tight, we're fetching the registration form…")) +
 '</p>\n';
  if (o.cancel) { ;
-__p += '\n	<button class="pure-button button-cancel hor_centered">' +
+__p += '\n    <button class="pure-button button-cancel hor_centered">' +
 __e(o.__('Cancel')) +
 '</button>\n';
  } ;
@@ -23541,7 +24027,7 @@ return __p
           }
 
           form.querySelector('input[type=submit]').classList.add('hidden');
-          this.fetchRegistrationForm(domain);
+          this.fetchRegistrationForm(domain.trim());
         },
         fetchRegistrationForm: function fetchRegistrationForm(domain_name) {
           /* This is called with a domain name based on which, it fetches a
@@ -23798,7 +24284,8 @@ return __p
 
           var inputs = sizzle(':input:not([type=button]):not([type=submit])', form),
               iq = $iq({
-            type: "set"
+            'type': 'set',
+            'id': _converse.connection.getUniqueId()
           }).c("query", {
             xmlns: Strophe.NS.REGISTER
           });
@@ -24116,7 +24603,7 @@ return __p
       };
 
       _converse.isMessageToHiddenChat = function (message) {
-        if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
+        if (_.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode)) {
           var jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
 
           var model = _converse.chatboxes.get(jid);
@@ -24144,7 +24631,7 @@ return __p
           return false;
         } else if (message.getAttribute('type') === 'groupchat') {
           return _converse.shouldNotifyOfGroupMessage(message);
-        } else if (utils.isHeadlineMessage(message)) {
+        } else if (utils.isHeadlineMessage(_converse, message)) {
           // We want to show notifications for headline messages.
           return _converse.isMessageToHiddenChat(message);
         }
@@ -24405,7 +24892,7 @@ return __p
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
-/*global define, window */
+/*global define, window, document */
 (function (root, factory) {
   define('converse-minimize',["converse-core", "tpl!chatbox_minimize", "tpl!toggle_chats", "tpl!trimmed_chat", "tpl!chats_panel", "converse-chatview"], factory);
 })(this, function (converse, tpl_chatbox_minimize, tpl_toggle_chats, tpl_trimmed_chat, tpl_chats_panel) {
@@ -24988,7 +25475,7 @@ return __p
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
-/*global define, window */
+/*global define, window, document */
 (function (root, factory) {
   define('converse-dragresize',["converse-core", "tpl!dragresize", "converse-chatview", "converse-muc", // XXX: would like to remove this
   "converse-controlbox"], factory);
@@ -25157,7 +25644,11 @@ return __p
             height = "";
           }
 
-          this.el.querySelector('.box-flyout').style.height = height;
+          var flyout_el = this.el.querySelector('.box-flyout');
+
+          if (!_.isNull(flyout_el)) {
+            flyout_el.style.height = height;
+          }
         },
         setChatBoxWidth: function setChatBoxWidth(width) {
           var _converse = this.__super__._converse;
@@ -25169,7 +25660,11 @@ return __p
           }
 
           this.el.style.width = width;
-          this.el.querySelector('.box-flyout').style.width = width;
+          var flyout_el = this.el.querySelector('.box-flyout');
+
+          if (!_.isNull(flyout_el)) {
+            flyout_el.style.width = width;
+          }
         },
         adjustToViewport: function adjustToViewport() {
           /* Event handler called when viewport gets resized. We remove
@@ -25460,14 +25955,14 @@ return __p
             info_close: '',
             label_personal_message: '',
             show_send_button: false,
-            show_textarea: false,
             show_toolbar: false,
             unread_msgs: ''
           }));
           this.content = this.el.querySelector('.chat-content');
           return this;
         },
-        // Override to avoid the method in converse-chatview.js
+        // Override to avoid the methods in converse-chatview.js
+        'renderMessageForm': _.noop,
         'afterShown': _.noop
       });
 
@@ -25475,7 +25970,7 @@ return __p
         /* Handler method for all incoming messages of type "headline". */
         var from_jid = message.getAttribute('from');
 
-        if (utils.isHeadlineMessage(message)) {
+        if (utils.isHeadlineMessage(_converse, message)) {
           if (_.includes(from_jid, '@') && !_converse.allow_non_roster_messaging) {
             return;
           }
@@ -25523,7 +26018,7 @@ return __p
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
-/*global Backbone, define, window, document, JSON */
+/*global Backbone, define, window, JSON */
 
 /* converse-singleton
  * ******************
@@ -25564,7 +26059,7 @@ return __p
     // NB: These plugins need to have already been loaded via require.js.
     dependencies: ['converse-muc', 'converse-controlbox', 'converse-rosterview'],
     enabled: function enabled(_converse) {
-      return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
+      return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
     },
     overrides: {
       // overrides mentioned here will be picked up by converse.js's
@@ -25630,6 +26125,15 @@ return __p
           }
         }
       },
+      ChatRoomView: {
+        show: function show(focus) {
+          if (!this.model.get('hidden')) {
+            _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
+
+            return this.__super__.show.apply(this, arguments);
+          }
+        }
+      },
       RosterContactView: {
         openChat: function openChat(ev) {
           /* We only have one chat visible at any one
@@ -25666,7 +26170,7 @@ return __p
       _ = _converse$env._;
   converse.plugins.add('converse-fullscreen', {
     enabled: function enabled(_converse) {
-      return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
+      return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
     },
     overrides: {
       // overrides mentioned here will be picked up by converse.js's
@@ -25679,7 +26183,10 @@ return __p
           return tpl_brand_heading();
         },
         insertBrandHeading: function insertBrandHeading() {
-          var el = document.getElementById('converse-login-panel');
+          var _converse = this.__super__._converse;
+
+          var el = _converse.root.getElementById('converse-login-panel');
+
           el.parentNode.insertAdjacentHTML('afterbegin', this.createBrandHeadingHTML());
         }
       },
@@ -25724,6 +26231,7 @@ if (typeof define !== 'undefined') {
         "converse-roomslist",   // Show currently open chat rooms
         "converse-mam",         // XEP-0313 Message Archive Management
         "converse-muc",         // XEP-0045 Multi-user chat
+        "converse-muc-embedded",
         "converse-vcard",       // XEP-0054 VCard-temp
         "converse-otr",         // Off-the-record encryption for one-on-one messages
         "converse-register",    // XEP-0077 In-band registration
@@ -25732,7 +26240,7 @@ if (typeof define !== 'undefined') {
         "converse-minimize",    // Allows chat boxes to be minimized
         "converse-dragresize",  // Allows chat boxes to be resized by dragging them
         "converse-headline",    // Support for headline messages
-        "converse-fullscreen",
+        "converse-fullscreen"
         /* END: Removable components */
     ], function (converse) {
         return converse;

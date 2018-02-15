@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define, window */
+/*global define, window, document */
 
 (function (root, factory) {
     define(["converse-core",
@@ -175,7 +175,10 @@
                     } else {
                         height = "";
                     }
-                    this.el.querySelector('.box-flyout').style.height = height;
+                    const flyout_el = this.el.querySelector('.box-flyout');
+                    if (!_.isNull(flyout_el)) {
+                        flyout_el.style.height = height;
+                    }
                 },
 
                 setChatBoxWidth (width) {
@@ -186,9 +189,11 @@
                         width = "";
                     }
                     this.el.style.width = width;
-                    this.el.querySelector('.box-flyout').style.width = width;
+                    const flyout_el = this.el.querySelector('.box-flyout');
+                    if (!_.isNull(flyout_el)) {
+                        flyout_el.style.width = width;
+                    }
                 },
-
 
                 adjustToViewport () {
                     /* Event handler called when viewport gets resized. We remove

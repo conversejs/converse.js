@@ -7,10 +7,16 @@
 /*global define */
 
 (function (root, factory) {
-    define(["converse-core", "backbone.overview"], factory);
-}(this, function (converse) {
+    define([
+        "converse-core",
+        "tpl!chatboxes",
+        "backbone.overview"
+    ], factory);
+}(this, function (converse, tpl_chatboxes) {
     "use strict";
+
     const { Backbone, Promise, Strophe, b64_sha1, moment, utils, _ } = converse.env;
+
 
     converse.plugins.add('converse-chatboxes', {
 
@@ -411,6 +417,12 @@
                 initialize () {
                     this.model.on("add", this.onChatBoxAdded, this);
                     this.model.on("destroy", this.removeChat, this);
+                    this.render();
+                },
+
+                render () {
+                    this.el.innerHTML = tpl_chatboxes();
+                    this.row_el = this.el.querySelector('.row');
                 },
 
                 _ensureElement () {
@@ -438,6 +450,13 @@
                     } else {
                         this.setElement(_.result(this, 'el'), false);
                     }
+                },
+
+                insertRowColumn (el) {
+                    /* Add a new DOM element (likely a chat box) into the
+                     * the row managed by this overview.
+                     */
+                    this.row_el.insertAdjacentElement('afterBegin', el);
                 },
 
                 onChatBoxAdded (item) {

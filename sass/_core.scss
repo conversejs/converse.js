@@ -48,6 +48,10 @@ body.reset {
         background-color: $highlight-color;
     }
 
+    a:hover {
+        text-decoration: none;
+    }
+
      canvas {
         background: $text-color;
         border-radius: $chatbox-border-radius;

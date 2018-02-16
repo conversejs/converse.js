@@ -4789,6 +4789,8 @@ body.reset {
     background-color: #DCF9F6; }
   #conversejs ::-moz-selection {
     background-color: #DCF9F6; }
+  #conversejs a:hover {
+    text-decoration: none; }
   #conversejs canvas {
     background: #777;
     border-radius: 4px; }

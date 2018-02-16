@@ -6234,17 +6234,8 @@ body {
         line-height: 16px;
         height: 30px;
         width: 100%; }
-        #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a {
+        #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a.fa {
           width: 2em; }
-        #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact :not(.open-chat) {
-          margin-top: 0.5em; }
-        #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact .request-actions {
-          padding: 0 0 0 0.3em;
-          float: right; }
-        #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact .open-chat {
-          max-width: 70%; }
-          #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact .open-chat .req-contact-name {
-            width: 100%; }
         #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact .req-contact-name {
           width: 69%;
           padding: 0; }

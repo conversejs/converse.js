@@ -1,12 +1,12 @@
 {[ if (o.allow_chat_pending_contacts)  { ]}
 <a class="open-chat"href="#">
 {[ } ]}
-<span class="req-contact-name" title="Name: {{{o.fullname}}}
+<span class="req-contact-name w-100" title="Name: {{{o.fullname}}}
 JID: {{{o.jid}}}">{{{o.fullname}}}</span>
 {[ if (o.allow_chat_pending_contacts)  { ]}
 </a>
 {[ } ]}
-<span class="request-actions">
-    <a class="accept-xmpp-request icon-checkmark" aria-label="{{{o.desc_accept}}}" title="{{{o.desc_accept}}}" href="#"></a>
-    <a class="decline-xmpp-request icon-close" aria-label="{{{o.desc_decline}}}" title="{{{o.desc_decline}}}" href="#"></a>
-</span>
+<a class="accept-xmpp-request fa fa-check align-self-center"
+   aria-label="{{{o.desc_accept}}}" title="{{{o.desc_accept}}}" href="#"></a>
+<a class="decline-xmpp-request fa fa-times align-self-center"
+   aria-label="{{{o.desc_decline}}}" title="{{{o.desc_decline}}}" href="#"></a>

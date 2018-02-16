@@ -12,7 +12,7 @@
    title="{{{o.info_leave_room}}}" href="#">&nbsp;</a>
 
 {[ if (o.allow_bookmarks) { ]}
-<a class="fa fa-bookmark-o align-self-center {[ if (o.bookmarked) { ]} remove-bookmark button-on {[ } else { ]} add-bookmark {[ } ]}"
+<a class="fa align-self-center {[ if (o.bookmarked) { ]} fa-bookmark remove-bookmark button-on {[ } else { ]} add-bookmark fa-bookmark-o {[ } ]}"
    data-room-jid="{{{o.jid}}}" data-bookmark-name="{{{o.name}}}"
    title="{[ if (o.bookmarked) { ]} {{{o.info_remove_bookmark}}} {[ } else { ]} {{{o.info_add_bookmark}}} {[ } ]}"
    href="#">&nbsp;</a>

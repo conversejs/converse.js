@@ -122,21 +122,8 @@
                 width: 100%;
 
                 &.requesting-xmpp-contact {
-                    a {
+                    a.fa {
                         width: 2em;
-                    }
-                    :not(.open-chat) {
-                        margin-top: 0.5em;
-                    }
-                    .request-actions {
-                        padding: 0 0 0 0.3em;
-                        float: right;
-                    }
-                    .open-chat {
-                        max-width: 70%;
-                        .req-contact-name {
-                            width: 100%;
-                        }
                     }
                     .req-contact-name {
                         width: 69%;

@@ -3,6 +3,7 @@
 ## 3.3.4 (Unreleased)
 
 - Avoid `eval` (via `_.template` from lodash).
+- Bugfix. Avatars weren't being shown.
 
 ## 3.3.3 (2018-02-14)
 

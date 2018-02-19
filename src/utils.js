@@ -655,6 +655,9 @@
     }
 
     u.isVisible = function (el) {
+        if (u.hasClass('hidden', el)) {
+            return false;
+        }
         // XXX: Taken from jQuery's "visible" implementation
         return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
     };

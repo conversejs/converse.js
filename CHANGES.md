@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.3.4 (Unreleased)
+
+- Avoid `eval` (via `_.template` from lodash).
+
 ## 3.3.3 (2018-02-14)
 
 ### Bugfixes

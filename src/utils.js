@@ -646,6 +646,14 @@
         return promise;
     };
 
+    u.interpolate = function (string, o) {
+        return string.replace(/{{{([^{}]*)}}}/g,
+            (a, b) => {
+                var r = o[b];
+                return typeof r === 'string' || typeof r === 'number' ? r : a;
+            });
+    };
+
     u.safeSave = function (model, attributes) {
         if (u.isPersistableModel(model)) {
             model.save(attributes);
@@ -655,6 +663,9 @@
     }
 
     u.isVisible = function (el) {
+        if (u.hasClass('hidden', el)) {
+            return false;
+        }
         // XXX: Taken from jQuery's "visible" implementation
         return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
     };

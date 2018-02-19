@@ -6106,21 +6106,17 @@ body.reset {
         overflow-y: hidden;
         text-shadow: 0 1px 0 #FAFAFA;
         line-height: 14px;
-        height: 30px;
-        width: 100%; }
+        width: 100%;
+        margin-top: 0.5em; }
         #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a.fa {
-          width: 2em; }
+          width: 1.5em; }
         #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact .req-contact-name {
-          width: 69%;
-          padding: 0; }
+          padding: 0 0.2em 0 0; }
         #conversejs #converse-roster .roster-contacts .roster-group li a:hover {
           color: #206485; }
         #conversejs #converse-roster .roster-contacts .roster-group li .open-chat {
-          margin: auto;
-          margin-top: 0.5em;
-          margin-bottom: 0;
-          padding: 0;
-          width: 85%; }
+          margin: 0;
+          padding: 0; }
           #conversejs #converse-roster .roster-contacts .roster-group li .open-chat.unread-msgs {
             font-weight: bold; }
             #conversejs #converse-roster .roster-contacts .roster-group li .open-chat.unread-msgs .contact-name {
@@ -6175,7 +6171,6 @@ body.reset {
           #conversejs #converse-roster .roster-contacts .roster-group li a.remove-xmpp-contact:hover {
             color: #818479; }
   #conversejs #converse-roster span.pending-contact-name {
-    margin-top: 0.5em;
     line-height: 16px;
     width: 100%; }
 

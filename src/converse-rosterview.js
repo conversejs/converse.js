@@ -356,9 +356,19 @@
                 },
 
                 renderRosterItem (item) {
+                    let status_icon = 'fa-times-circle';
+                    const chat_status = item.get('chat_status') || 'offline';
+                    if (chat_status === 'online') {
+                        status_icon = 'fa-circle';
+                    } else if (chat_status === 'away' || chat_status === 'dnd') {
+                        status_icon = 'fa-circle-o';
+                    } else if (chat_status === 'busy') {
+                        status_icon = 'fa-minus-circle';
+                    }
                     this.el.innerHTML = tpl_roster_item(
                         _.extend(item.toJSON(), {
-                            'desc_status': STATUSES[item.get('chat_status')||'offline'],
+                            'desc_status': STATUSES[chat_status],
+                            'status_icon': status_icon,
                             'desc_chat': __('Click to chat with %1$s (JID: %2$s)', item.get('fullname'), item.get('jid')),
                             'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname')),
                             'allow_contact_removal': _converse.allow_contact_removal,

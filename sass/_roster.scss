@@ -118,16 +118,15 @@
                 overflow-y: hidden;
                 text-shadow: 0 1px 0 $text-shadow-color;
                 line-height: $font-size;
-                height: 30px;
                 width: 100%;
+                margin-top: 0.5em;
 
                 &.requesting-xmpp-contact {
                     a.fa {
-                        width: 2em;
+                        width: 1.5em;
                     }
                     .req-contact-name {
-                        width: 69%;
-                        padding: 0;
+                        padding: 0 0.2em 0 0;
                     }
                 }
 
@@ -136,11 +135,8 @@
                 }
 
                 .open-chat {
-                    margin: auto;
-                    margin-top: 0.5em;
-                    margin-bottom: 0;
+                    margin: 0;
                     padding: 0;
-                    width: 85%;
                     &.unread-msgs {
                         font-weight: bold;
                         .contact-name {
@@ -219,7 +215,6 @@
     }
     span {
         &.pending-contact-name {
-            margin-top: 0.5em;
             line-height: $line-height;
             width: 100%;
         }

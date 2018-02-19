@@ -57,6 +57,10 @@ body.reset {
         border-radius: $chatbox-border-radius;
     }
 
+    .selected {
+        color: $link-color !important;
+    }
+
     .circle {
         border-radius: 50%;
     }
@@ -166,8 +170,8 @@ body.reset {
     }
 
     .hidden {
-        opacity: 0;
-        display: none;
+        opacity: 0 !important;
+        display: none !important;
     }
     .collapsed {
         height: 0 !important;
@@ -223,18 +227,6 @@ body.reset {
         clear: both;
     }
 
-    .button-group,
-    .input-button-group {
-        display: table;
-    }
-    .button-group {
-        width: 100%;
-    }
-    .input-button-group button,
-    .input-button-group input {
-        display: table-cell;
-    }
-
     .error {
         color: $error-color;
     }
@@ -258,9 +250,6 @@ body.reset {
     }
     .pure-form-message {
         padding: 0.5em 0;
-    }
-    .pure-button {
-        border-radius: $button-border-radius;
     }
     .button-primary {
         color: white;

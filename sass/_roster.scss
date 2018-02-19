@@ -29,24 +29,16 @@
     }
 
     .roster-filter-form {
-        margin: 0.2em 0 0;
         width: 100%;
 
         span {
-            margin: 0;
-            padding: 0.2em;
+            padding: 0.3em;
             color: #888;
             cursor: pointer;
         }
 
         .roster-filter {
-            float: left;
-            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABNSURBVHjaXI7BDcAwCAMvyQjMyQ6dAbZiKfqoUK34g2zJh1dENIC7M8pMAPYdzAVY3d0ajNz9aypS/b5R6o+ZPdqoKgCq6h80KH3xDgBqNR97p8oAGQAAAABJRU5ErkJggg== ) no-repeat right -20px center;
-            border: 1px solid #999;
-            font-size: $font-size;
-            height: $controlbox-dropdown-height;
-            margin: 0.2em 0.2em 0.2em 0;
-            width: 60%;
+            width: 100%;
         }
         /* (dynamically added) if input has value: */
         .roster-filter.x {
@@ -56,32 +48,10 @@
         .roster-filter.onX {
             cursor: pointer;
         }
-        .roster-filter-state {
-            display: none;
-        }
         .state-type {
-            float: left;
-            border: 1px solid #999;
             font-size: calc(#{$font-size} - 2px);
             height: $controlbox-dropdown-height;
-            margin: 0;
-            padding: 0;
-            padding-left: 0.4em;
-            width: 53%;
-            display: none;
-        }
-        .state-type-state {
-            display: inline-block;
-        }
-        .filter-type {
-            display: table-cell;
-            float: right;
-            font-size: calc(#{$font-size} - 2px);
-            height: $controlbox-dropdown-height;
-            padding: 0;
-            width: 47%;
-            border-radius: 0;
-            border: 1px solid;
+            width: 100%;
         }
     }
 

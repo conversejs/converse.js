@@ -1,10 +1,10 @@
 <form class="roster-filter-form input-button-group {[ if (!o.visible) { ]} hidden {[ } ]}">
-    <div class="form-group form-inline">
+    <div class="form-inline flex-nowrap">
         <input value="{{{o.filter_text}}}"
-               class="roster-filter form-control roster-filter-{{{o.filter_type}}}"
+               class="roster-filter form-control {[ if (o.filter_type === 'state') { ]} hidden {[ } ]}"
                placeholder="{{{o.placeholder}}}">
 
-        <select class="state-type state-type-{{{o.filter_type}}}">
+        <select class="form-control state-type {[ if (o.filter_type !== 'state') { ]} hidden {[ } ]}">
             <option value="">{{{o.label_any}}}</option>
             <option {[ if (o.chat_state === 'unread_messages') { ]} selected="selected" {[ } ]}
                 value="unread_messages">{{{o.label_unread_messages}}}</option>
@@ -22,10 +22,10 @@
                 value="offline">{{{o.label_offline}}}</option>
         </select>
 
-        <div class="filter-by">
-            <span class="fa fa-user" data-type="contact" title="{{{o.title_contact_filter}}}"></span>
-            <span class="fa fa-users" data-type="group" title="{{{o.title_group_filter}}}"></span>
-            <span class="fa fa-circle" data-type="status" title="{{{o.title_status_filter}}}"></span>
+        <div class="filter-by d-flex flex-nowrap">
+            <span class="fa fa-user {[ if (o.filter_type === 'contacts') { ]} selected {[ } ]}" data-type="contacts" title="{{{o.title_contact_filter}}}"></span>
+            <span class="fa fa-users {[ if (o.filter_type === 'groups') { ]} selected {[ } ]}" data-type="groups" title="{{{o.title_group_filter}}}"></span>
+            <span class="fa fa-circle {[ if (o.filter_type === 'state') { ]} selected {[ } ]}" data-type="state" title="{{{o.title_status_filter}}}"></span>
         </div>
     </div>
 </form>

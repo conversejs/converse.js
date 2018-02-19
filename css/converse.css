@@ -4794,6 +4794,8 @@ body.reset {
   #conversejs canvas {
     background: #777;
     border-radius: 4px; }
+  #conversejs .selected {
+    color: #578EA9 !important; }
   #conversejs .circle {
     border-radius: 50%; }
   #conversejs .sidebar {
@@ -4921,8 +4923,8 @@ body.reset {
     -moz-animation-timing-function: ease;
     animation-timing-function: ease; }
   #conversejs .hidden {
-    opacity: 0;
-    display: none; }
+    opacity: 0 !important;
+    display: none !important; }
   #conversejs .collapsed {
     height: 0 !important;
     overflow: hidden !important;
@@ -4979,14 +4981,6 @@ body.reset {
     display: block;
     margin: 0 auto;
     clear: both; }
-  #conversejs .button-group,
-  #conversejs .input-button-group {
-    display: table; }
-  #conversejs .button-group {
-    width: 100%; }
-  #conversejs .input-button-group button,
-  #conversejs .input-button-group input {
-    display: table-cell; }
   #conversejs .error {
     color: #A53214; }
   #conversejs .info {
@@ -5003,8 +4997,6 @@ body.reset {
     display: block !important; }
   #conversejs .pure-form-message {
     padding: 0.5em 0; }
-  #conversejs .pure-button {
-    border-radius: 5px; }
   #conversejs .button-primary {
     color: white;
     background-color: #3AA569; }
@@ -6034,50 +6026,23 @@ body.reset {
   #conversejs #converse-roster .search-xmpp ul li.chat-info {
     padding-left: 10px; }
   #conversejs #converse-roster .roster-filter-form {
-    margin: 0.2em 0 0;
     width: 100%;
     /* (dynamically added) if input has value: */
     /* (dynamically added) if mouse is over the 'x' input area*/ }
     #conversejs #converse-roster .roster-filter-form span {
-      margin: 0;
-      padding: 0.2em;
+      padding: 0.3em;
       color: #888;
       cursor: pointer; }
     #conversejs #converse-roster .roster-filter-form .roster-filter {
-      float: left;
-      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABNSURBVHjaXI7BDcAwCAMvyQjMyQ6dAbZiKfqoUK34g2zJh1dENIC7M8pMAPYdzAVY3d0ajNz9aypS/b5R6o+ZPdqoKgCq6h80KH3xDgBqNR97p8oAGQAAAABJRU5ErkJggg==) no-repeat right -20px center;
-      border: 1px solid #999;
-      font-size: 14px;
-      height: 25px;
-      margin: 0.2em 0.2em 0.2em 0;
-      width: 60%; }
+      width: 100%; }
     #conversejs #converse-roster .roster-filter-form .roster-filter.x {
       background-position: right 3px center; }
     #conversejs #converse-roster .roster-filter-form .roster-filter.onX {
       cursor: pointer; }
-    #conversejs #converse-roster .roster-filter-form .roster-filter-state {
-      display: none; }
     #conversejs #converse-roster .roster-filter-form .state-type {
-      float: left;
-      border: 1px solid #999;
       font-size: calc(14px - 2px);
       height: 25px;
-      margin: 0;
-      padding: 0;
-      padding-left: 0.4em;
-      width: 53%;
-      display: none; }
-    #conversejs #converse-roster .roster-filter-form .state-type-state {
-      display: inline-block; }
-    #conversejs #converse-roster .roster-filter-form .filter-type {
-      display: table-cell;
-      float: right;
-      font-size: calc(14px - 2px);
-      height: 25px;
-      padding: 0;
-      width: 47%;
-      border-radius: 0;
-      border: 1px solid; }
+      width: 100%; }
   #conversejs #converse-roster .roster-contacts {
     padding: 0;
     margin: 0.2em 0;

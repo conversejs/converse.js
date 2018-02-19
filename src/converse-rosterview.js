@@ -136,7 +136,7 @@
                     "submit form.roster-filter-form": "submitFilter",
                     "click .onX": "clearFilter",
                     "mousemove .x": "toggleX",
-                    "change .filter-type": "changeTypeFilter",
+                    "click .filter-by span": "changeTypeFilter",
                     "change .state-type": "changeChatStateFilter"
                 },
 
@@ -195,7 +195,7 @@
 
                 changeTypeFilter (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const type = ev.target.value;
+                    const type = ev.target.dataset.type;
                     if (type === 'state') {
                         this.model.save({
                             'filter_type': type,
@@ -211,7 +211,6 @@
 
                 liveFilter: _.debounce(function (ev) {
                     this.model.save({
-                        'filter_type': this.el.querySelector('.filter-type').value,
                         'filter_text': this.el.querySelector('.roster-filter').value
                     });
                 }, 250),

@@ -5744,14 +5744,22 @@ body.reset {
     #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list {
       margin: 0.5em 0;
       text-align: left; }
-      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list dt {
-        border: none;
-        color: #777;
-        font-weight: normal;
-        padding: 0;
-        padding-bottom: 0.5em;
-        text-shadow: 0 1px 0 #FAFAFA;
-        word-wrap: break-word; }
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .room-info {
+        font-size: 12px;
+        font-style: normal;
+        font-weight: normal; }
+        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .room-info li.room-info {
+          display: block;
+          margin-left: 5px; }
+        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .room-info p.room-info {
+          line-height: 16px;
+          margin: 0;
+          display: block;
+          white-space: normal; }
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list div.room-info {
+        padding: 0.3em 0;
+        clear: left;
+        width: 100%; }
       #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom,
       #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom {
         border: none;
@@ -5800,26 +5808,6 @@ body.reset {
             #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .add-bookmark.button-on:hover,
             #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .remove-bookmark.button-on:hover {
               color: #206485; }
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom .room-info,
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .room-info {
-          font-size: 12px;
-          font-style: normal;
-          font-weight: normal; }
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom li.room-info,
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom li.room-info {
-          display: block;
-          margin-left: 5px; }
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom p.room-info,
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom p.room-info {
-          line-height: 16px;
-          margin: 0;
-          display: block;
-          white-space: normal; }
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom div.room-info,
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom div.room-info {
-          padding: 0.3em 0;
-          clear: left;
-          width: 100%; }
   #conversejs #controlbox #chatrooms, #conversejs #controlbox #converse-roster {
     margin-top: 0.75em;
     padding-bottom: 0.75em; }

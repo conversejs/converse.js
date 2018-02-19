@@ -199,15 +199,28 @@
                 .rooms-list {
                     margin: 0.5em 0;
                     text-align: left;
-                    dt {
-                        border: none;
-                        color: $text-color;
+
+                    .room-info {
+                        font-size: $font-size-small;
+                        font-style: normal;
                         font-weight: normal;
-                        padding: 0;
-                        padding-bottom: 0.5em;
-                        text-shadow: 0 1px 0 $text-shadow-color;
-                        word-wrap: break-word;
+                        li.room-info {
+                            display: block;
+                            margin-left: 5px;
+                        }
+                        p.room-info {
+                            line-height: $line-height;
+                            margin: 0;
+                            display: block;
+                            white-space: normal;
+                        }
                     }
+                    div.room-info {
+                        padding: 0.3em 0;
+                        clear: left;
+                        width: 100%;
+                    }
+
                     .available-chatroom,
                     .open-chatroom {
                         border: none;
@@ -255,26 +268,6 @@
                                 }
                             }
                             color: $subdued-color;
-                        }
-                        .room-info {
-                            font-size: $font-size-small;
-                            font-style: normal;
-                            font-weight: normal;
-                        }
-                        li.room-info {
-                            display: block;
-                            margin-left: 5px;
-                        }
-                        p.room-info {
-                            line-height: $line-height;
-                            margin: 0;
-                            display: block;
-                            white-space: normal;
-                        }
-                        div.room-info {
-                            padding: 0.3em 0;
-                            clear: left;
-                            width: 100%;
                         }
                     }
                 }

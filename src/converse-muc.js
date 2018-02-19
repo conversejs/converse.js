@@ -2717,7 +2717,9 @@
                      *      info.
                      */
                     // All MUC features found here: http://xmpp.org/registrar/disco-features.html
-                    el.querySelector('span.spinner').outerHTML =
+                    el.querySelector('span.spinner').remove();
+                    el.insertAdjacentHTML(
+                        'beforeEnd', 
                         tpl_room_description({
                             'jid': stanza.getAttribute('from'),
                             'desc': _.get(_.head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
@@ -2748,13 +2750,13 @@
                             'label_semi_anon':  __('Semi-anonymous'),
                             'label_temp_room':  __('Temporary room'),
                             'label_unmoderated': __('Unmoderated')
-                        })
+                        }));
                 },
 
                 toggleRoomInfo (ev) {
                     /* Show/hide extra information about a room in the listing.
                      */
-                    const parent_el = ev.target.parentElement,
+                    const parent_el = ev.target.parentElement.parentElement,
                         div_el = parent_el.querySelector('div.room-info');
                     if (div_el) {
                         u.slideIn(div_el).then(u.removeElement)

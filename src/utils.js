@@ -646,6 +646,14 @@
         return promise;
     };
 
+    u.interpolate = function (string, o) {
+        return string.replace(/{{{([^{}]*)}}}/g,
+            (a, b) => {
+                var r = o[b];
+                return typeof r === 'string' || typeof r === 'number' ? r : a;
+            });
+    };
+
     u.safeSave = function (model, attributes) {
         if (u.isPersistableModel(model)) {
             model.save(attributes);

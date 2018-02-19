@@ -1862,7 +1862,7 @@
             i18n.fetchTranslations(
                 _converse.locale,
                 _converse.locales,
-                _.template(_converse.locales_url)({'locale': _converse.locale}))
+                u.interpolate(_converse.locales_url, {'locale': _converse.locale}))
             .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             .then(finishInitialization)
             .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));

@@ -4993,6 +4993,8 @@ body.reset {
     display: block;
     text-align: center;
     width: 100%; }
+  #conversejs .avatar {
+    border-radius: 25%; }
   #conversejs .activated {
     display: block !important; }
   #conversejs .pure-form-message {
@@ -5183,7 +5185,6 @@ body {
   #converse-embedded-chat .chat-head .avatar,
   #conversejs .chat-head .avatar {
     margin-right: 0.5em;
-    border-radius: 25%;
     float: left; }
   #converse-embedded-chat .chat-head .chatbox-buttons,
   #conversejs .chat-head .chatbox-buttons {

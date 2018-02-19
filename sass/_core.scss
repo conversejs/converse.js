@@ -245,12 +245,18 @@ body.reset {
         width: 100%;
     }
 
+    .avatar {
+        border-radius: 25%;
+    }
+
     .activated {
         display: block !important;
     }
+
     .pure-form-message {
         padding: 0.5em 0;
     }
+
     .button-primary {
         color: white;
         background-color: $primary-color;

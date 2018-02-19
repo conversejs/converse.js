@@ -46,9 +46,7 @@
                 },
 
                 initialize () {
-                    this.model.on("change:status", this.render, this);
-                    this.model.on("change:status_message", this.render, this);
-                    this.model.on("update-status-ui", this.render, this);
+                    this.model.on("change", this.render, this);
                 },
 
                 toHTML () {

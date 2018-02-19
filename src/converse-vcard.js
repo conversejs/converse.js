@@ -158,7 +158,7 @@
                 }
             });
 
-            _converse.on('chatBoxInitialized', function (chatbox) {
+            _converse.on('chatBoxInitialized', (chatbox) => {
                 if (!_converse.use_vcards || chatbox.model.get('type') === 'headline') {
                     return;
                 }
@@ -183,17 +183,15 @@
 
             _converse.on('statusInitialized', function fetchOwnVCard () {
                 if (_.isNil(_converse.xmppstatus.get('fullname'))) {
-                    _converse.api.disco.supports(Strophe.NS.VCARD, _converse.domain).then(
-                        (result) => {
+                    _converse.api.disco.supports(Strophe.NS.VCARD, _converse.domain)
+                        .then((result) => {
                             if (result.supported) {
-                                _converse.api.vcard.get(_converse.bare_jid).then((vcard) => {
-                                    _converse.xmppstatus.save({'fullname': vcard.fullname || ''});
-                                });
-                            }
-                        }
-                    ).catch((msg) => {
-                        _converse.log(msg, Strophe.LogLevel.FATAL);
-                    });
+                                _converse.api.vcard.get(_converse.bare_jid)
+                                    .then((vcard) => {
+                                        _converse.xmppstatus.save(vcard);
+                                    });
+                            }})
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 }
             });
 

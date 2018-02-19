@@ -20,7 +20,7 @@
             "backbone.nativeview",
             "backbone.browserStorage"
     ], factory);
-}(this, function (sizzle, Promise, _, f, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
+}(this, function (sizzle, Promise, _, f, polyfill, i18n, u, moment, Strophe, pluggable, Backbone) {
 
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -217,7 +217,7 @@
         /* Private function, used to add a new promise to the ones already
          * available via the `waitUntil` api method.
          */
-        _converse.promises[promise] = utils.getResolveablePromise();
+        _converse.promises[promise] = u.getResolveablePromise();
     }
 
     _converse.emit = function (name) {
@@ -235,7 +235,7 @@
     _converse.initialize = function (settings, callback) {
         "use strict";
         settings = !_.isUndefined(settings) ? settings : {};
-        const init_promise = utils.getResolveablePromise();
+        const init_promise = u.getResolveablePromise();
 
         _.each(PROMISES, addPromise);
 
@@ -617,7 +617,7 @@
 
         this.initStatus = () =>
             new Promise((resolve, reject) => {
-                const promise = new utils.getResolveablePromise();
+                const promise = new u.getResolveablePromise();
                 this.xmppstatus = new this.XMPPStatus();
                 const id = b64_sha1(`converse.xmppstatus-${_converse.bare_jid}`);
                 this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
@@ -1142,7 +1142,7 @@
             },
 
             isSelf (jid) {
-                return utils.isSameBareJID(jid, _converse.connection.jid);
+                return u.isSameBareJID(jid, _converse.connection.jid);
             },
 
             addAndSubscribe (jid, name, groups, message, attributes) {
@@ -1921,9 +1921,9 @@
         },
         'settings': {
             'update' (settings) {
-                utils.merge(_converse.default_settings, settings);
-                utils.merge(_converse, settings);
-                utils.applyUserSettings(_converse, settings, _converse.user_settings);
+                u.merge(_converse.default_settings, settings);
+                u.merge(_converse, settings);
+                u.applyUserSettings(_converse, settings, _converse.user_settings);
             },
             'get' (key) {
                 if (_.includes(_.keys(_converse.default_settings), key)) {
@@ -2045,7 +2045,7 @@
             'b64_sha1':  b64_sha1,
             'moment': moment,
             'sizzle': sizzle,
-            'utils': utils
+            'utils': u
         }
     };
     window.dispatchEvent(new Event('converse-loaded'));

@@ -5184,8 +5184,7 @@ body {
     background-color: #3AA569; }
   #converse-embedded-chat .chat-head .avatar,
   #conversejs .chat-head .avatar {
-    margin-right: 0.5em;
-    float: left; }
+    margin-right: 0.5em; }
   #converse-embedded-chat .chat-head .chatbox-buttons,
   #conversejs .chat-head .chatbox-buttons {
     flex-direction: row-reverse;
@@ -5622,7 +5621,6 @@ body {
 #conversejs.fullscreen .flyout {
   border: 1.2em solid #3AA569;
   border-top: 0.8em solid #3AA569;
-  border-radius: 0;
   bottom: 0; }
 #conversejs.fullscreen .chat-head {
   font-size: 20px;
@@ -6057,6 +6055,8 @@ body {
 #conversejs.fullscreen #controlbox {
   margin: 0; }
   #conversejs.fullscreen #controlbox .controlbox-pane {
+    border-radius: 0; }
+  #conversejs.fullscreen #controlbox .flyout {
     border-radius: 0; }
   #conversejs.fullscreen #controlbox #login-dialog {
     border-radius: 0; }

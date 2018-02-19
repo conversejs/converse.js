@@ -5128,8 +5128,7 @@ body.reset {
     background-color: #3AA569; }
   #converse-embedded-chat .chat-head .avatar,
   #conversejs .chat-head .avatar {
-    margin-right: 0.5em;
-    float: left; }
+    margin-right: 0.5em; }
   #converse-embedded-chat .chat-head .chatbox-buttons,
   #conversejs .chat-head .chatbox-buttons {
     flex-direction: row-reverse;

@@ -90,6 +90,7 @@
             _converse.ChatBox = Backbone.Model.extend({
                 defaults: {
                     'type': 'chatbox',
+                    'show_avatar': true,
                     'bookmarked': false,
                     'chat_state': undefined,
                     'num_unread': 0,

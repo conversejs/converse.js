@@ -46,9 +46,9 @@
                 },
 
                 initialize () {
-                    this.model.on("change:status", this.updateStatusUI, this);
-                    this.model.on("change:status_message", this.updateStatusUI, this);
-                    this.model.on("update-status-ui", this.updateStatusUI, this);
+                    this.model.on("change:status", this.render, this);
+                    this.model.on("change:status_message", this.render, this);
+                    this.model.on("update-status-ui", this.render, this);
                 },
 
                 toHTML () {
@@ -114,14 +114,6 @@
                     } else {
                         return __(stat) || __('online');
                     }
-                },
-
-                updateStatusUI (model) {
-                    const stat = model.get('status');
-                    // For translators: the %1$s part gets replaced with the status
-                    // Example, I am online
-                    const status_message = model.get('status_message') || __("I am %1$s", this.getPrettyStatus(stat));
-                    // TODO
                 }
             });
         }

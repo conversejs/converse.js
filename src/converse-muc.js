@@ -2756,8 +2756,8 @@
                 toggleRoomInfo (ev) {
                     /* Show/hide extra information about a room in the listing.
                      */
-                    const parent_el = ev.target.parentElement.parentElement,
-                        div_el = parent_el.querySelector('div.room-info');
+                    const parent_el = u.ancestor(ev.target, '.room-item'),
+                          div_el = parent_el.querySelector('div.room-info');
                     if (div_el) {
                         u.slideIn(div_el).then(u.removeElement)
                     } else {

@@ -148,6 +148,14 @@
         return el;
     }
 
+    u.ancestor = function (el, selector) {
+        let parent = el;
+        while (!_.isNil(parent) && !sizzle.matchesSelector(parent, selector)) {
+            parent = parent.parentElement;
+        }
+        return parent;
+    }
+
     u.nextUntil = function (el, selector, include_self=false) {
         /* Return the element's siblings until one matches the selector. */
         const matches = [];

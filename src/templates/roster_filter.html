@@ -1,8 +1,11 @@
 <form class="roster-filter-form input-button-group {[ if (!o.visible) { ]} hidden {[ } ]}">
     <div class="form-inline flex-nowrap">
-        <input value="{{{o.filter_text}}}"
-               class="roster-filter form-control {[ if (o.filter_type === 'state') { ]} hidden {[ } ]}"
-               placeholder="{{{o.placeholder}}}">
+        <div class="btn-group">
+            <input value="{{{o.filter_text}}}"
+                class="roster-filter form-control {[ if (o.filter_type === 'state') { ]} hidden {[ } ]}"
+                placeholder="{{{o.placeholder}}}">
+            <span class="clear-roster-filter fa fa-times {[ if (!o.filter_text) { ]} hidden {[ } ]}"></span>
+        </div>
 
         <select class="form-control state-type {[ if (o.filter_type !== 'state') { ]} hidden {[ } ]}">
             <option value="">{{{o.label_any}}}</option>

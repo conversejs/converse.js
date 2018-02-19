@@ -224,8 +224,7 @@
                         &.unread-msgs {
                             .available-room,
                             .open-room {
-                                max-width: 55%;
-                                width: auto;
+                                width: 100%;
                                 font-weight: bold;
                             }
                         }

@@ -5769,8 +5769,7 @@ body.reset {
         #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom.unread-msgs .open-room,
         #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom.unread-msgs .available-room,
         #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom.unread-msgs .open-room {
-          max-width: 55%;
-          width: auto;
+          width: 100%;
           font-weight: bold; }
         #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom a.room-info:before,
         #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom a.room-info:before {
@@ -6026,19 +6025,20 @@ body.reset {
   #conversejs #converse-roster .search-xmpp ul li.chat-info {
     padding-left: 10px; }
   #conversejs #converse-roster .roster-filter-form {
-    width: 100%;
-    /* (dynamically added) if input has value: */
-    /* (dynamically added) if mouse is over the 'x' input area*/ }
+    width: 100%; }
+    #conversejs #converse-roster .roster-filter-form .button-group {
+      padding: 0.2em; }
     #conversejs #converse-roster .roster-filter-form span {
       padding: 0.3em;
       color: #888;
       cursor: pointer; }
     #conversejs #converse-roster .roster-filter-form .roster-filter {
       width: 100%; }
-    #conversejs #converse-roster .roster-filter-form .roster-filter.x {
-      background-position: right 3px center; }
-    #conversejs #converse-roster .roster-filter-form .roster-filter.onX {
-      cursor: pointer; }
+    #conversejs #converse-roster .roster-filter-form .clear-roster-filter {
+      position: absolute;
+      right: 0.2em;
+      cursor: pointer;
+      font-size: 0.75rem; }
     #conversejs #converse-roster .roster-filter-form .state-type {
       font-size: calc(14px - 2px);
       height: 25px;

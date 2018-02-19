@@ -31,6 +31,10 @@
     .roster-filter-form {
         width: 100%;
 
+        .button-group {
+            padding: 0.2em;
+        }
+
         span {
             padding: 0.3em;
             color: #888;
@@ -40,13 +44,11 @@
         .roster-filter {
             width: 100%;
         }
-        /* (dynamically added) if input has value: */
-        .roster-filter.x {
-            background-position: right 3px center;
-        }
-        /* (dynamically added) if mouse is over the 'x' input area*/
-        .roster-filter.onX {
+        .clear-roster-filter {
+            position: absolute;
+            right: 0.2em;
             cursor: pointer;
+            font-size: 0.75rem;
         }
         .state-type {
             font-size: calc(#{$font-size} - 2px);

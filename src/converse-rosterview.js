@@ -134,15 +134,14 @@
                 events: {
                     "keydown .roster-filter": "liveFilter",
                     "submit form.roster-filter-form": "submitFilter",
-                    "click .onX": "clearFilter",
-                    "mousemove .x": "toggleX",
+                    "click .clear-roster-filter": "clearFilter",
                     "click .filter-by span": "changeTypeFilter",
                     "change .state-type": "changeChatStateFilter"
                 },
 
                 initialize () {
                     this.model.on('change:filter_type', this.render, this);
-                    this.model.on('change:filter_text', this.renderClearButton, this);
+                    this.model.on('change:filter_text', this.render, this);
                 },
 
                 toHTML () {
@@ -162,28 +161,6 @@
                             label_xa: __('Extended Away'),
                             label_offline: __('Offline')
                         }));
-                },
-
-                afterRender () {
-                    this.renderClearButton();
-                },
-
-                renderClearButton () {
-                    const roster_filter = this.el.querySelector('.roster-filter');
-                    if (_.isNull(roster_filter)) {
-                        return;
-                    }
-                    roster_filter.classList[this.tog(roster_filter.value)]('x');
-                },
-
-                tog (v) {
-                    return v?'add':'remove';
-                },
-
-                toggleX (ev) {
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const el = ev.target;
-                    el.classList[this.tog(el.offsetWidth-18 < ev.clientX-el.getBoundingClientRect().left)]('onX');
                 },
 
                 changeChatStateFilter (ev) {
@@ -264,10 +241,10 @@
                 clearFilter (ev) {
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
-                        ev.target.classList.remove('x');
-                        ev.target.classList.remove('onX');
-                        ev.target.value = '';
+                        u.hideElement(this.el.querySelector('.clear-roster-filter'));
                     }
+                    const roster_filter = this.el.querySelector('.roster-filter');
+                    roster_filter.value = '';
                     this.model.save({'filter_text': ''});
                 }
             });
@@ -359,9 +336,9 @@
                     const chat_status = item.get('chat_status') || 'offline';
                     if (chat_status === 'online') {
                         status_icon = 'fa-circle';
-                    } else if (chat_status === 'away' || chat_status === 'dnd') {
+                    } else if (chat_status === 'away' || chat_status === 'xa') {
                         status_icon = 'fa-circle-o';
-                    } else if (chat_status === 'busy') {
+                    } else if (chat_status === 'dnd') {
                         status_icon = 'fa-minus-circle';
                     }
                     this.el.innerHTML = tpl_roster_item(
@@ -558,10 +535,18 @@
 
                 filter (q, type) {
                     /* Filter the group's contacts based on the query "q".
-                     * The query is matched against the contact's full name.
+                     * 
                      * If all contacts are filtered out (i.e. hidden), then the
                      * group must be filtered out as well.
                      */
+                    if (_.isNil(q)) {
+                        type = type || _converse.rosterview.filter_view.model.get('filter_type');
+                        if (type === 'state') {
+                            q = _converse.rosterview.filter_view.model.get('chat_state');
+                        } else {
+                            q = _converse.rosterview.filter_view.model.get('filter_text');
+                        }
+                    }
                     this.filterOutContacts(this.getFilterMatches(q, type));
                 },
 
@@ -577,10 +562,7 @@
                         ev.target.classList.remove("icon-closed");
                         ev.target.classList.add("icon-opened");
                         this.model.save({state: _converse.OPENED});
-                        this.filter(
-                            _converse.rosterview.el.querySelector('.roster-filter').value,
-                            _converse.rosterview.el.querySelector('.filter-type').value
-                        );
+                        this.filter();
                         u.showElement(this.el);
                         u.slideOut(this.contacts_el);
                     }

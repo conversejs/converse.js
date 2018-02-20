@@ -42,7 +42,8 @@
                     "click a.choose-xmpp-status": "toggleOptions",
                     "click #fancy-xmpp-status-select a.change-xmpp-status-message": "renderStatusChangeForm",
                     "submit": "setStatusMessage",
-                    "click .dropdown dd ul li a": "setStatus"
+                    "click .dropdown dd ul li a": "setStatus",
+                    "click .logout": "logOut"
                 },
 
                 initialize () {
@@ -88,15 +89,18 @@
                     this.model.setStatusMessage(ev.target.querySelector('input').value);
                 },
 
+                logOut (ev) {
+                    ev.preventDefault();
+                    const result = confirm(__("Are you sure you want to log out?"));
+                    if (result === true) {
+                        _converse.logOut();
+                    }
+                },
+
                 setStatus (ev) {
                     ev.preventDefault();
                     const value = ev.target.getAttribute('data-value');
-                    if (value === 'logout') {
-                        _converse.logOut();
-                    } else {
-                        this.model.setStatus(value);
-                    }
-                    utils.slideIn(this.el.querySelector("#target dd ul"));
+                    this.model.setStatus(value);
                 },
 
                 getPrettyStatus (stat) {

@@ -20,6 +20,18 @@
             text-overflow: ellipsis;
         }
 
+        a, a:visited, a:hover, a:not([href]):not([tabindex]) {
+            &.chatbox-btn {
+                &.fa {
+                    color: $chat-head-text-color;
+                    &.button-on {
+                        background-color: $chat-head-text-color;
+                        color: $chatroom-head-color;
+                    }
+                }
+            }
+        }
+
         .chatbox-btn {
             &.button-on {
                 background-color: $chat-head-text-color;

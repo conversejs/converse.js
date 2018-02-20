@@ -18,6 +18,22 @@
             bottom: 0;
         }
     }
+
+    .chatbox-btn {
+        border-radius: 25%;
+        border: none;
+        cursor: pointer;
+        font-size: $box-close-font-size;
+        margin: 0 0.2em;
+        padding: 0.3em;
+        text-decoration: none;
+
+        &:active {
+            position: relative;
+            top: 1px;
+        }
+    }
+
     .chat-head {
         flex-wrap: nowrap;
         color: #ffffff;
@@ -37,7 +53,6 @@
 
         .chatbox-buttons {
             flex-direction: row-reverse;
-            float: right;
         }
 
         .user-custom-message {
@@ -50,27 +65,35 @@
             margin: 0;
             padding-top: 0.2em;
         }
-    }
-    .chatbox-btn {
-        border-radius: 25%;
-        border: none;
-        color: white;
-        cursor: pointer;
-        display: inline-block;
-        float: right;
-        font-size: $box-close-font-size;
-        margin: 0 0.2em;
-        padding: 0.3em;
-        text-decoration: none;
-        &:active {
-            position: relative;
-            top: 1px;
+
+        a, a:visited, a:hover, a:not([href]):not([tabindex]) {
+            &.chatbox-btn {
+                &.fa {
+                    color: white;
+                    &.button-on {
+                        background-color: white;
+                        color: $chat-head-color;
+                    }
+                }
+            }
         }
-        &.button-on {
-            background-color: white;
-            color: $chat-head-color;
+
+        .chatbox-btn {
+            color: white;
+            &.fa  {
+                color: white;
+            }
+            &:active {
+                position: relative;
+                top: 1px;
+            }
+            &.button-on {
+                background-color: white;
+                color: $chat-head-color;
+            }
         }
     }
+
     .chatbox {
         text-align: left;
         margin: 0 $chat-gutter;

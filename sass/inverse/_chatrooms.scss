@@ -3,9 +3,6 @@
     .chat-head-chatroom {
         height: $chatroom-head-height;
         font-size: 20px;
-        .close-chatbox-button:before {
-            content: "\e601"; // Leave icon
-        }
         .chat-title {
             .chatroom-description {
                 font-size: 65%;

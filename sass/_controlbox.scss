@@ -491,8 +491,8 @@
     }
 
     .xmpp-status, .xmpp-status-menu {
-        .online {
-            color: $green;
+        .online, .fa-circle {
+            color: darken($green, 5%);
         }
         .dnd {
             color: $red

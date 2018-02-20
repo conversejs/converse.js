@@ -5119,6 +5119,19 @@ body.reset {
     #converse-embedded-chat .flyout,
     #conversejs .flyout {
       bottom: 0; } }
+#converse-embedded-chat .chatbox-btn,
+#conversejs .chatbox-btn {
+  border-radius: 25%;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  margin: 0 0.2em;
+  padding: 0.3em;
+  text-decoration: none; }
+  #converse-embedded-chat .chatbox-btn:active,
+  #conversejs .chatbox-btn:active {
+    position: relative;
+    top: 1px; }
 #converse-embedded-chat .chat-head,
 #conversejs .chat-head {
   flex-wrap: nowrap;
@@ -5136,8 +5149,7 @@ body.reset {
     margin-right: 0.5em; }
   #converse-embedded-chat .chat-head .chatbox-buttons,
   #conversejs .chat-head .chatbox-buttons {
-    flex-direction: row-reverse;
-    float: right; }
+    flex-direction: row-reverse; }
   #converse-embedded-chat .chat-head .user-custom-message,
   #conversejs .chat-head .user-custom-message {
     color: white;
@@ -5148,26 +5160,33 @@ body.reset {
     white-space: nowrap;
     margin: 0;
     padding-top: 0.2em; }
-#converse-embedded-chat .chatbox-btn,
-#conversejs .chatbox-btn {
-  border-radius: 25%;
-  border: none;
-  color: white;
-  cursor: pointer;
-  display: inline-block;
-  float: right;
-  font-size: 12px;
-  margin: 0 0.2em;
-  padding: 0.3em;
-  text-decoration: none; }
-  #converse-embedded-chat .chatbox-btn:active,
-  #conversejs .chatbox-btn:active {
-    position: relative;
-    top: 1px; }
-  #converse-embedded-chat .chatbox-btn.button-on,
-  #conversejs .chatbox-btn.button-on {
-    background-color: white;
-    color: #3AA569; }
+  #converse-embedded-chat .chat-head a.chatbox-btn.fa, #converse-embedded-chat .chat-head a:visited.chatbox-btn.fa, #converse-embedded-chat .chat-head a:hover.chatbox-btn.fa, #converse-embedded-chat .chat-head a:not([href]):not([tabindex]).chatbox-btn.fa,
+  #conversejs .chat-head a.chatbox-btn.fa,
+  #conversejs .chat-head a:visited.chatbox-btn.fa,
+  #conversejs .chat-head a:hover.chatbox-btn.fa,
+  #conversejs .chat-head a:not([href]):not([tabindex]).chatbox-btn.fa {
+    color: white; }
+    #converse-embedded-chat .chat-head a.chatbox-btn.fa.button-on, #converse-embedded-chat .chat-head a:visited.chatbox-btn.fa.button-on, #converse-embedded-chat .chat-head a:hover.chatbox-btn.fa.button-on, #converse-embedded-chat .chat-head a:not([href]):not([tabindex]).chatbox-btn.fa.button-on,
+    #conversejs .chat-head a.chatbox-btn.fa.button-on,
+    #conversejs .chat-head a:visited.chatbox-btn.fa.button-on,
+    #conversejs .chat-head a:hover.chatbox-btn.fa.button-on,
+    #conversejs .chat-head a:not([href]):not([tabindex]).chatbox-btn.fa.button-on {
+      background-color: white;
+      color: #3AA569; }
+  #converse-embedded-chat .chat-head .chatbox-btn,
+  #conversejs .chat-head .chatbox-btn {
+    color: white; }
+    #converse-embedded-chat .chat-head .chatbox-btn.fa,
+    #conversejs .chat-head .chatbox-btn.fa {
+      color: white; }
+    #converse-embedded-chat .chat-head .chatbox-btn:active,
+    #conversejs .chat-head .chatbox-btn:active {
+      position: relative;
+      top: 1px; }
+    #converse-embedded-chat .chat-head .chatbox-btn.button-on,
+    #conversejs .chat-head .chatbox-btn.button-on {
+      background-color: white;
+      color: #3AA569; }
 #converse-embedded-chat .chatbox,
 #conversejs .chatbox {
   text-align: left;
@@ -5965,8 +5984,8 @@ body.reset {
   padding: 10px 8px 0 8px; }
   #conversejs .toggle-controlbox span {
     color: white; }
-#conversejs .xmpp-status .online, #conversejs .xmpp-status-menu .online {
-  color: #3AA569; }
+#conversejs .xmpp-status .online, #conversejs .xmpp-status .fa-circle, #conversejs .xmpp-status-menu .online, #conversejs .xmpp-status-menu .fa-circle {
+  color: #33925d; }
 #conversejs .xmpp-status .dnd, #conversejs .xmpp-status-menu .dnd {
   color: #E77051; }
 #conversejs .xmpp-status .away, #conversejs .xmpp-status-menu .away {
@@ -6150,6 +6169,19 @@ body.reset {
     white-space: nowrap;
     overflow-y: hidden;
     text-overflow: ellipsis; }
+  #converse-embedded-chat .chat-head-chatroom a.chatbox-btn.fa, #converse-embedded-chat .chat-head-chatroom a:visited.chatbox-btn.fa, #converse-embedded-chat .chat-head-chatroom a:hover.chatbox-btn.fa, #converse-embedded-chat .chat-head-chatroom a:not([href]):not([tabindex]).chatbox-btn.fa,
+  #conversejs .chat-head-chatroom a.chatbox-btn.fa,
+  #conversejs .chat-head-chatroom a:visited.chatbox-btn.fa,
+  #conversejs .chat-head-chatroom a:hover.chatbox-btn.fa,
+  #conversejs .chat-head-chatroom a:not([href]):not([tabindex]).chatbox-btn.fa {
+    color: white; }
+    #converse-embedded-chat .chat-head-chatroom a.chatbox-btn.fa.button-on, #converse-embedded-chat .chat-head-chatroom a:visited.chatbox-btn.fa.button-on, #converse-embedded-chat .chat-head-chatroom a:hover.chatbox-btn.fa.button-on, #converse-embedded-chat .chat-head-chatroom a:not([href]):not([tabindex]).chatbox-btn.fa.button-on,
+    #conversejs .chat-head-chatroom a.chatbox-btn.fa.button-on,
+    #conversejs .chat-head-chatroom a:visited.chatbox-btn.fa.button-on,
+    #conversejs .chat-head-chatroom a:hover.chatbox-btn.fa.button-on,
+    #conversejs .chat-head-chatroom a:not([href]):not([tabindex]).chatbox-btn.fa.button-on {
+      background-color: white;
+      color: #E77051; }
   #converse-embedded-chat .chat-head-chatroom .chatbox-btn.button-on,
   #conversejs .chat-head-chatroom .chatbox-btn.button-on {
     background-color: white;

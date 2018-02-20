@@ -4,6 +4,7 @@
         margin: 0 0.3em;
     }
     .flyout {
+        border-radius: 0;
         border: $flyout-padding solid $chat-head-color;
         border-top: 0.8em solid $chat-head-color;
         bottom: 0;

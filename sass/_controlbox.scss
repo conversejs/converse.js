@@ -234,6 +234,9 @@
                         a:hover {
                             color: $dark-link-color;
                         }
+                        a.fa:hover {
+                            color: $gray-color;
+                        }
                         &.unread-msgs {
                             .available-room,
                             .open-room {

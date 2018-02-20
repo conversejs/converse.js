@@ -296,52 +296,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale; }
 
-@media screen and (max-width: 480px) {
-  #conversejs {
-    margin: 0;
-    right: 10px;
-    left: 10px;
-    bottom: 5px; } }
-@media screen and (max-height: 450px) {
-  #conversejs {
-    margin: 0;
-    right: 10px;
-    left: 10px;
-    bottom: 5px; } }
-#conversejs ul li {
-  height: auto; }
-#conversejs div, #conversejs span, #conversejs h1, #conversejs h2, #conversejs h3, #conversejs h4, #conversejs h5, #conversejs h6, #conversejs p, #conversejs blockquote,
-#conversejs pre, #conversejs a, #conversejs em, #conversejs img, #conversejs strong, #conversejs dl, #conversejs dt, #conversejs dd, #conversejs ol, #conversejs ul, #conversejs li,
-#conversejs fieldset, #conversejs form, #conversejs label, #conversejs legend, #conversejs table, #conversejs caption, #conversejs tbody,
-#conversejs tfoot, #conversejs thead, #conversejs tr, #conversejs th, #conversejs td, #conversejs article, #conversejs aside, #conversejs canvas, #conversejs details,
-#conversejs embed, #conversejs figure, #conversejs figcaption, #conversejs footer, #conversejs header, #conversejs hgroup, #conversejs menu,
-#conversejs nav, #conversejs output, #conversejs ruby, #conversejs section, #conversejs summary, #conversejs time, #conversejs mark, #conversejs audio, #conversejs video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font: inherit;
-  vertical-align: baseline; }
-#conversejs textarea,
-#conversejs input[type=submit], #conversejs input[type=button],
-#conversejs input[type=text], #conversejs input[type=password],
-#conversejs button {
-  font-size: 16px;
-  padding: 0.25em;
-  min-height: 0; }
-#conversejs strong {
-  font-weight: 700; }
-#conversejs ol, #conversejs ul {
-  list-style: none; }
-#conversejs li {
-  height: 10px; }
-#conversejs ul, #conversejs ol, #conversejs dl {
-  font: inherit;
-  margin: 0; }
-#conversejs a, #conversejs a:visited {
-  text-decoration: none;
-  color: #578EA9;
-  text-shadow: none; }
-
 #conversejs :root {
   --blue: #387592;
   --indigo: #6610f2;
@@ -4789,11 +4743,62 @@ body.reset {
     background-color: #DCF9F6; }
   #conversejs ::-moz-selection {
     background-color: #DCF9F6; }
-  #conversejs a:hover {
-    text-decoration: none; }
+  @media screen and (max-width: 480px) {
+    #conversejs {
+      margin: 0;
+      right: 10px;
+      left: 10px;
+      bottom: 5px; } }
+  @media screen and (max-height: 450px) {
+    #conversejs {
+      margin: 0;
+      right: 10px;
+      left: 10px;
+      bottom: 5px; } }
+  #conversejs ul li {
+    height: auto; }
+  #conversejs div, #conversejs span, #conversejs h1, #conversejs h2, #conversejs h3, #conversejs h4, #conversejs h5, #conversejs h6, #conversejs p, #conversejs blockquote,
+  #conversejs pre, #conversejs a, #conversejs em, #conversejs img, #conversejs strong, #conversejs dl, #conversejs dt, #conversejs dd, #conversejs ol, #conversejs ul, #conversejs li,
+  #conversejs fieldset, #conversejs form, #conversejs label, #conversejs legend, #conversejs table, #conversejs caption, #conversejs tbody,
+  #conversejs tfoot, #conversejs thead, #conversejs tr, #conversejs th, #conversejs td, #conversejs article, #conversejs aside, #conversejs canvas, #conversejs details,
+  #conversejs embed, #conversejs figure, #conversejs figcaption, #conversejs footer, #conversejs header, #conversejs hgroup, #conversejs menu,
+  #conversejs nav, #conversejs output, #conversejs ruby, #conversejs section, #conversejs summary, #conversejs time, #conversejs mark, #conversejs audio, #conversejs video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    vertical-align: baseline; }
+  #conversejs textarea,
+  #conversejs input[type=submit], #conversejs input[type=button],
+  #conversejs input[type=text], #conversejs input[type=password],
+  #conversejs button {
+    font-size: 16px;
+    padding: 0.25em;
+    min-height: 0; }
+  #conversejs strong {
+    font-weight: 700; }
+  #conversejs ol, #conversejs ul {
+    list-style: none; }
+  #conversejs li {
+    height: 10px; }
+  #conversejs ul, #conversejs ol, #conversejs dl {
+    font: inherit;
+    margin: 0; }
+  #conversejs a, #conversejs a:visited, #conversejs a:hover, #conversejs a:not([href]):not([tabindex]) {
+    text-decoration: none;
+    color: #578EA9;
+    text-shadow: none; }
+    #conversejs a.fa, #conversejs a:visited.fa, #conversejs a:hover.fa, #conversejs a:not([href]):not([tabindex]).fa {
+      color: #A8ABA1; }
+      #conversejs a.fa:hover, #conversejs a:visited.fa:hover, #conversejs a:hover.fa:hover, #conversejs a:not([href]):not([tabindex]).fa:hover {
+        color: #818479; }
   #conversejs canvas {
     background: #777;
     border-radius: 4px; }
+  #conversejs .fa {
+    color: #A8ABA1; }
+  #conversejs .fa:hover {
+    color: #818479; }
   #conversejs .selected {
     color: #578EA9 !important; }
   #conversejs .circle {
@@ -5844,6 +5849,9 @@ body {
         #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom a:hover,
         #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom a:hover {
           color: #206485; }
+        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom a.fa:hover,
+        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom a.fa:hover {
+          color: #818479; }
         #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom.unread-msgs .available-room,
         #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom.unread-msgs .open-room,
         #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom.unread-msgs .available-room,
@@ -6145,10 +6153,10 @@ body {
       padding: 0.2em; }
     #conversejs #converse-roster .roster-filter-form span {
       padding: 0.3em;
-      color: #888;
       cursor: pointer; }
     #conversejs #converse-roster .roster-filter-form .roster-filter {
-      width: 100%; }
+      width: 100%;
+      margin: 0.2em; }
     #conversejs #converse-roster .roster-filter-form .clear-roster-filter {
       position: absolute;
       right: 0.2em;
@@ -6194,6 +6202,8 @@ body {
           padding: 0 0.2em 0 0; }
         #conversejs #converse-roster .roster-contacts .roster-group li a:hover {
           color: #206485; }
+        #conversejs #converse-roster .roster-contacts .roster-group li a.fa:hover {
+          color: #818479; }
         #conversejs #converse-roster .roster-contacts .roster-group li .open-chat {
           margin: 0;
           padding: 0; }
@@ -6244,12 +6254,9 @@ body {
           float: right;
           margin: 0;
           padding: 0;
-          color: #A8ABA1;
           width: 2em; }
           #conversejs #converse-roster .roster-contacts .roster-group li a.remove-xmpp-contact:before {
             font-size: 16px; }
-          #conversejs #converse-roster .roster-contacts .roster-group li a.remove-xmpp-contact:hover {
-            color: #818479; }
   #conversejs #converse-roster span.pending-contact-name {
     line-height: 22px;
     width: 100%; }

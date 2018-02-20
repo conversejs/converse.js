@@ -58,6 +58,7 @@
                         'chat_status': chat_status,
                         'title_change_settings': __('Change settings'),
                         'title_change_status': __('Click to change your chat status'),
+                        'title_log_out': __('Log out'),
                         'title_your_profile': __('Your profile')
                     }));
                 },

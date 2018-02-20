@@ -37,12 +37,12 @@
 
         span {
             padding: 0.3em;
-            color: #888;
             cursor: pointer;
         }
 
         .roster-filter {
             width: 100%;
+            margin: 0.2em;
         }
         .clear-roster-filter {
             position: absolute;
@@ -101,9 +101,11 @@
                         padding: 0 0.2em 0 0;
                     }
                 }
-
                 a:hover {
                     color: $dark-link-color;
+                }
+                a.fa:hover {
+                    color: $gray-color;
                 }
 
                 .open-chat {
@@ -172,13 +174,9 @@
                         float: right;
                         margin: 0;
                         padding: 0;
-                        color: $subdued-color;
                         width: 2em;
                         &:before {
                             font-size: $font-size;
-                        }
-                        &:hover {
-                            color: $gray-color;
                         }
                     }
                 }

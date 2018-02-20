@@ -2718,6 +2718,7 @@
                      */
                     // All MUC features found here: http://xmpp.org/registrar/disco-features.html
                     el.querySelector('span.spinner').remove();
+                    el.querySelector('a.room-info').classList.add('selected');
                     el.insertAdjacentHTML(
                         'beforeEnd', 
                         tpl_room_description({
@@ -2760,6 +2761,7 @@
                           div_el = parent_el.querySelector('div.room-info');
                     if (div_el) {
                         u.slideIn(div_el).then(u.removeElement)
+                        parent_el.querySelector('a.room-info').classList.remove('selected');
                     } else {
                         parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
                         _converse.connection.disco.info(

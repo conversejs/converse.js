@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-14 16:51+0100\n"
-"PO-Revision-Date: 2017-11-12 19:56+0100\n"
+"PO-Revision-Date: 2018-02-20 16:37+0100\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -69,9 +69,8 @@ msgid "You have unread messages"
 msgstr "U het ongelese boodskappe"
 
 #: dist/converse-no-dependencies.js:12505
-#, fuzzy
 msgid "Hidden message"
-msgstr "Persoonlike boodskap"
+msgstr "Verskuilde boodskap"
 
 #: dist/converse-no-dependencies.js:12507
 msgid "Personal message"
@@ -87,14 +86,12 @@ msgid "Optional hint"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:12571
-#, fuzzy
 msgid "Click to write as a normal (non-spoiler) message"
-msgstr "Klik hier om jou eie statusboodskap te skryf"
+msgstr "Klik om 'n gewone (nie-verskuilde) boodskap te skryf"
 
 #: dist/converse-no-dependencies.js:12573
-#, fuzzy
 msgid "Click to write your message as a spoiler"
-msgstr "Klik hier om jou eie statusboodskap te skryf"
+msgstr "Klik om 'n verskuilde boodskap te skryf"
 
 #: dist/converse-no-dependencies.js:12577
 msgid "Clear all messages"
@@ -111,9 +108,8 @@ msgstr "Begin 'n oproep"
 # The last three values are needed by Jed (a Javascript translations library)
 #: dist/converse-no-dependencies.js:12774
 #: dist/converse-no-dependencies.js:13237
-#, fuzzy
 msgid "Show hidden message"
-msgstr "Vertoon hierdie keuselys"
+msgstr "Vertoon verskuilde boodskap"
 
 #: dist/converse-no-dependencies.js:12826
 msgid "me"
@@ -531,51 +527,44 @@ msgid "%1$s has been removed because of an affiliation change"
 msgstr "%1$s is verwyder a.g.v 'n verandering van affiliasie"
 
 #: dist/converse-no-dependencies.js:18483
-#, javascript-format
 msgid "%1$s has been removed for not being a member"
 msgstr "%1$s is nie 'n lid nie, en dus verwyder"
 
 #: dist/converse-no-dependencies.js:18486
-#, fuzzy, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr "U bynaam is outomaties gestel na: %1$s"
+msgstr "U bynaam is outomaties gestel na %1$s"
 
 #: dist/converse-no-dependencies.js:18487
-#, fuzzy, javascript-format
 msgid "Your nickname has been changed to %1$s"
-msgstr "U bynaam is verander na: %1$s"
+msgstr "U bynaam is verander na %1$s"
 
 #: dist/converse-no-dependencies.js:18688
 msgid "Message"
 msgstr "Boodskap"
 
 #: dist/converse-no-dependencies.js:18717
-#, fuzzy, javascript-format
 msgid "%1$s is no longer a moderator."
-msgstr "Hierdie gebruiker is 'n moderator."
+msgstr "%1$s is nie meer 'n moderator nie."
 
 #: dist/converse-no-dependencies.js:18721
-#, fuzzy, javascript-format
 msgid "%1$s has been given a voice again."
-msgstr "%1$s is uitgeskop"
+msgstr "%1$s het nou weer 'n stem."
 
 #: dist/converse-no-dependencies.js:18725
-#, fuzzy, javascript-format
 msgid "%1$s has been muted."
-msgstr "%1$s is verban"
+msgstr "%1$s is nou stemloos."
 
 #: dist/converse-no-dependencies.js:18729
-#, fuzzy, javascript-format
 msgid "%1$s is now a moderator."
-msgstr "Hierdie gebruiker is 'n moderator."
+msgstr "%1$s is nou 'n moderator."
 
 #: dist/converse-no-dependencies.js:18737
 msgid "Close and leave this room"
-msgstr "Sluit en verlaat hierdie kletskamer"
+msgstr "Verlaat en sluit hierdie kletskamer"
 
 #: dist/converse-no-dependencies.js:18738
 msgid "Configure this room"
-msgstr "Konfigureer hierdie kletskamer"
+msgstr "Verstel hierdie kletskamer"
 
 #: dist/converse-no-dependencies.js:18795
 msgid "Hide the list of occupants"
@@ -607,7 +596,6 @@ msgid "Ban user from room"
 msgstr "Verban gebruiker uit hierdie kletskamer"
 
 #: dist/converse-no-dependencies.js:19307
-#, fuzzy
 msgid "Change user role to participant"
 msgstr "Verander gebruiker se rol na lid"
 
@@ -691,20 +679,17 @@ msgid "Password: "
 msgstr "Wagwoord: "
 
 #: dist/converse-no-dependencies.js:20107
-#, fuzzy, javascript-format
 msgid "This action was done by %1$s."
-msgstr "Hierdie aksie is uitgevoer deur: %1$s."
+msgstr "Hierdie aksie is uitgevoer deur %1$s."
 
 #: dist/converse-no-dependencies.js:20111
 #: dist/converse-no-dependencies.js:20127
-#, fuzzy, javascript-format
 msgid "The reason given is: \"%1$s\"."
-msgstr "Die gegewe rede is: \"%1$s\"."
+msgstr "Die gegewe rede is \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:20143
-#, fuzzy, javascript-format
 msgid "%1$s has left and re-entered the room."
-msgstr " het die kletskamer verlaat"
+msgstr "%1$s het die kletskamer verlaat"
 
 #: dist/converse-no-dependencies.js:20149
 #, fuzzy, javascript-format
@@ -854,9 +839,8 @@ msgid "Unmoderated"
 msgstr "Ongemodereer"
 
 #: dist/converse-no-dependencies.js:20631
-#, fuzzy
 msgid "No password"
-msgstr "wagwoord"
+msgstr "Geen wagwoord"
 
 #: dist/converse-no-dependencies.js:20632
 msgid "This room is not publicly searchable"
@@ -944,9 +928,8 @@ msgid "Rooms"
 msgstr "Kletskamers"
 
 #: dist/converse-no-dependencies.js:20949
-#, fuzzy
 msgid "No rooms found"
-msgstr "Geen gebruikers gevind"
+msgstr "Geen kletskamers gevind"
 
 #: dist/converse-no-dependencies.js:20961
 #: dist/converse-no-dependencies.js:21946
@@ -961,9 +944,8 @@ msgid "Show more information on this room"
 msgstr "Wys meer inligting aangaande hierdie kletskamer"
 
 #: dist/converse-no-dependencies.js:20977
-#, fuzzy
 msgid "Rooms found"
-msgstr "Kletskamers op %1$s"
+msgstr "Kletskamers gevind"
 
 #: dist/converse-no-dependencies.js:21054
 msgid "Description:"

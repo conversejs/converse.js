@@ -4,6 +4,7 @@
 
 - Avoid `eval` (via `_.template` from lodash).
 - Bugfix. Avatars weren't being shown.
+- Add LibreJS support
 
 ## 3.3.3 (2018-02-14)
 
@@ -42,9 +43,6 @@
 - New configuration setting [allow_public_bookmarks](https://conversejs.org/docs/html/configurations.html#allow-public-bookmarks)
 - New configuration setting [root](https://conversejs.org/docs/html/configurations.html#root)
 - The [view_mode](https://conversejs.org/docs/html/configurations.html#view-mode) setting now has a new possible value: `embedded`
-
-### LibreJS
-- Add LibreJS support
 
 ### Translation updates
 - Chinese (Traditional), French, German, Portuguese (Brazil), Russian, Ukrainian

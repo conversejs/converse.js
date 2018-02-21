@@ -415,21 +415,10 @@
 
             _converse.ChatBoxViews = Backbone.Overview.extend({
 
-                initialize () {
-                    this.model.on("add", this.onChatBoxAdded, this);
-                    this.model.on("destroy", this.removeChat, this);
-                    this.render();
-                },
-
-                render () {
-                    this.el.innerHTML = tpl_chatboxes();
-                    this.row_el = this.el.querySelector('.row');
-                },
-
                 _ensureElement () {
                     /* Override method from backbone.js
-                    * If the #conversejs element doesn't exist, create it.
-                    */
+                     * If the #conversejs element doesn't exist, create it.
+                     */
                     if (!this.el) {
                         let el = _converse.root.querySelector('#conversejs');
                         if (_.isNull(el)) {
@@ -451,6 +440,17 @@
                     } else {
                         this.setElement(_.result(this, 'el'), false);
                     }
+                },
+
+                initialize () {
+                    this.model.on("add", this.onChatBoxAdded, this);
+                    this.model.on("destroy", this.removeChat, this);
+                    this.render();
+                },
+
+                render () {
+                    this.el.innerHTML = tpl_chatboxes();
+                    this.row_el = this.el.querySelector('.row');
                 },
 
                 insertRowColumn (el) {
@@ -507,7 +507,13 @@
                 }
             });
 
-            // BEGIN: Event handlers
+            // TODO: move to converse-chatboxviews.js and use there in the API
+            _converse.getViewForChatBox = function (chatbox) {
+                if (!chatbox) { return; }
+                return _converse.chatboxviews.get(chatbox.get('id'));
+            };
+
+            /************************ BEGIN Event Handlers ************************/
             _converse.api.listen.on('pluginsInitialized', () => {
                 _converse.chatboxes = new _converse.ChatBoxes();
                 _converse.chatboxviews = new _converse.ChatBoxViews({
@@ -520,33 +526,36 @@
                 _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
                 delete _converse.chatboxes.browserStorage;
             });
-            // END: Event handlers
+            /************************ END Event Handlers ************************/
 
-            _converse.getViewForChatBox = function (chatbox) {
-                if (!chatbox) { return; }
-                return _converse.chatboxviews.get(chatbox.get('id'));
-            };
 
-            /* We extend the default converse.js API */
+            /************************ BEGIN API ************************/
             _.extend(_converse.api, {
                 'chats': {
+                    'create' (jids, attrs) {
+                        if (_.isUndefined(jids)) {
+                            _converse.log("chats.create: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+                            return null;
+                        } else if (_.isString(jids)) {
+                            const chatbox = _converse.chatboxes.getChatBox(jids, attrs, true);
+                            if (_.isNil(chatbox)) {
+                                _converse.log("Could not open chatbox for JID: "+jids, Strophe.LogLevel.ERROR);
+                                return;
+                            }
+                            return chatbox;
+                        }
+                        return _.map(jids, (jid) => _converse.chatboxes.getChatBox(jid, attrs, true).trigger('show'));
+                    },
                     'open' (jids, attrs) {
                         if (_.isUndefined(jids)) {
                             _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
                             return null;
                         } else if (_.isString(jids)) {
-                            const chatbox = _converse.chatboxes.getChatBox(jids, true, attrs);
-                            if (_.isNil(chatbox)) {
-                                _converse.log("Could not open chatbox for JID: "+jids);
-                                return;
-                            }
-                            return _converse.getViewForChatBox(chatbox.trigger('show'));
+                            const chatbox = _converse.api.chats.create(jids, attrs);
+                            chatbox.trigger('show');
+                            return chatbox;
                         }
-                        return _.map(jids, (jid) =>
-                            _converse.getViewForChatBox(
-                                _converse.chatboxes.getChatBox(jid, true, attrs).trigger('show')
-                            )
-                        );
+                        return _.map(jids, (jid) => _converse.api.chats.create(jid, attrs).trigger('show'));
                     },
                     'get' (jids) {
                         if (_.isUndefined(jids)) {
@@ -555,21 +564,14 @@
                                 // FIXME: Leaky abstraction from MUC. We need to add a
                                 // base type for chat boxes, and check for that.
                                 if (chatbox.get('type') !== 'chatroom') {
-                                    result.push(_converse.getViewForChatBox(chatbox));
+                                    result.push(chatbox);
                                 }
                             });
                             return result;
                         } else if (_.isString(jids)) {
-                            return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids));
+                            return _converse.chatboxes.getChatBox(jids);
                         }
-                        return _.map(jids,
-                            _.partial(
-                                _.flow(
-                                    _converse.chatboxes.getChatBox.bind(_converse.chatboxes),
-                                    _converse.getViewForChatBox.bind(_converse)
-                                ), _, true
-                            )
-                        );
+                        return _.map(jids, _.partial(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _, {}, true));
                     }
                 }
             });

@@ -11,86 +11,60 @@
  */
 (function (root, factory) {
     define([
-            "form-utils",
-            "converse-core",
-            "lodash.fp",
-            "tpl!chatarea",
-            "tpl!chatroom",
-            "tpl!chatroom_disconnect",
-            "tpl!chatroom_features",
-            "tpl!chatroom_form",
-            "tpl!chatroom_head",
-            "tpl!chatroom_invite",
-            "tpl!chatroom_join_form",
-            "tpl!chatroom_nickname_form",
-            "tpl!chatroom_password_form",
-            "tpl!chatroom_sidebar",
-            "tpl!chatroom_toolbar",
-            "tpl!info",
-            "tpl!occupant",
-            "tpl!room_description",
-            "tpl!room_item",
-            "tpl!room_panel",
-            "tpl!rooms_results",
-            "tpl!spinner",
-            "awesomplete",
-            "converse-chatview",
-            "converse-disco",
-            "backbone.overview",
-            "backbone.orderedlistview",
-            "backbone.vdomview"
+        "converse-core",
+        "bootstrap.native",
+        "tpl!add_chatroom_modal",
+        "tpl!chatarea",
+        "tpl!chatroom",
+        "tpl!chatroom_disconnect",
+        "tpl!chatroom_features",
+        "tpl!chatroom_form",
+        "tpl!chatroom_head",
+        "tpl!chatroom_invite",
+        "tpl!chatroom_join_form",
+        "tpl!chatroom_nickname_form",
+        "tpl!chatroom_password_form",
+        "tpl!chatroom_sidebar",
+        "tpl!chatroom_toolbar",
+        "tpl!info",
+        "tpl!occupant",
+        "tpl!room_description",
+        "tpl!room_item",
+        "tpl!room_panel",
+        "tpl!rooms_results",
+        "tpl!spinner",
+        "awesomplete",
     ], factory);
 }(this, function (
-            u,
-            converse,
-            fp,
-            tpl_chatarea,
-            tpl_chatroom,
-            tpl_chatroom_disconnect,
-            tpl_chatroom_features,
-            tpl_chatroom_form,
-            tpl_chatroom_head,
-            tpl_chatroom_invite,
-            tpl_chatroom_join_form,
-            tpl_chatroom_nickname_form,
-            tpl_chatroom_password_form,
-            tpl_chatroom_sidebar,
-            tpl_chatroom_toolbar,
-            tpl_info,
-            tpl_occupant,
-            tpl_room_description,
-            tpl_room_item,
-            tpl_room_panel,
-            tpl_rooms_results,
-            tpl_spinner,
-            Awesomplete
-    ) {
-
+    converse,
+    bootstrap,
+    tpl_add_chatroom_modal,
+    tpl_chatarea,
+    tpl_chatroom,
+    tpl_chatroom_disconnect,
+    tpl_chatroom_features,
+    tpl_chatroom_form,
+    tpl_chatroom_head,
+    tpl_chatroom_invite,
+    tpl_chatroom_join_form,
+    tpl_chatroom_nickname_form,
+    tpl_chatroom_password_form,
+    tpl_chatroom_sidebar,
+    tpl_chatroom_toolbar,
+    tpl_info,
+    tpl_occupant,
+    tpl_room_description,
+    tpl_room_item,
+    tpl_room_panel,
+    tpl_rooms_results,
+    tpl_spinner,
+    Awesomplete
+) {
     "use strict";
-    const CHATROOMS_TYPE = 'chatroom';
 
-    const MUC_ROLE_WEIGHTS = {
-        'moderator':    1,
-        'participant':  2,
-        'visitor':      3,
-        'none':         4,
-    };
+    const { Backbone, Promise, Strophe, b64_sha1, moment, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
+    const u = converse.env.utils;
 
-    const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, _, moment } = converse.env;
-
-    // Add Strophe Namespaces
-    Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
-    Strophe.addNamespace('MUC_OWNER', Strophe.NS.MUC + "#owner");
-    Strophe.addNamespace('MUC_REGISTER', "jabber:iq:register");
-    Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
-    Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
-
-    const ROOM_FEATURES = [
-        'passwordprotected', 'unsecured', 'hidden',
-        'publicroom', 'membersonly', 'open', 'persistent',
-        'temporary', 'nonanonymous', 'semianonymous',
-        'moderated', 'unmoderated', 'mam_enabled'
-    ];
     const ROOM_FEATURES_MAP = {
         'passwordprotected': 'unsecured',
         'unsecured': 'passwordprotected',
@@ -106,55 +80,23 @@
         'unmoderated': 'moderated'
     };
 
-    converse.ROOMSTATUS = {
-        CONNECTED: 0,
-        CONNECTING: 1,
-        NICKNAME_REQUIRED: 2,
-        PASSWORD_REQUIRED: 3,
-        DISCONNECTED: 4,
-        ENTERED: 5
-    };
 
-    converse.plugins.add('converse-muc', {
-        /* Optional dependencies are other plugins which might be
+    converse.plugins.add('converse-muc-views', {
+        /* Dependencies are other plugins which might be
          * overridden or relied upon, and therefore need to be loaded before
-         * this plugin. They are called "optional" because they might not be
+         * this plugin. They are "optional" because they might not be
          * available, in which case any overrides applicable to them will be
          * ignored.
          *
-         * It's possible however to make optional dependencies non-optional.
+         * NB: These plugins need to have already been loaded via require.js.
+         *
+         * It's possible to make these dependencies "non-optional".
          * If the setting "strict_plugin_dependencies" is set to true,
          * an error will be raised if the plugin is not found.
-         *
-         * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-controlbox", "converse-chatview"],
+        dependencies: ["converse-controlbox"],
 
         overrides: {
-            // Overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
-            // relevant objects or classes.
-            //
-            // New functions which don't exist yet can also be added.
-
-            _tearDown () {
-                const rooms = this.chatboxes.where({'type': CHATROOMS_TYPE});
-                _.each(rooms, function (room) {
-                    u.safeSave(room, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
-                });
-                this.__super__._tearDown.call(this, arguments);
-            },
-
-            ChatBoxes: {
-                model (attrs, options) {
-                    const { _converse } = this.__super__;
-                    if (attrs.type == CHATROOMS_TYPE) {
-                        return new _converse.ChatRoom(attrs, options);
-                    } else {
-                        return this.__super__.model.apply(this, arguments);
-                    }
-                },
-            },
 
             ControlBoxView: {
 
@@ -187,14 +129,13 @@
                         this.renderRoomsPanel();
                     }
                 },
-
             },
 
             ChatBoxViews: {
                 onChatBoxAdded (item) {
                     const { _converse } = this.__super__;
                     let view = this.get(item.get('id'));
-                    if (!view && item.get('type') === CHATROOMS_TYPE) {
+                    if (!view && item.get('type') === converse.CHATROOMS_TYPE) {
                         view = new _converse.ChatRoomView({'model': item});
                         return this.add(item.get('id'), view);
                     } else {
@@ -205,230 +146,183 @@
         },
 
         initialize () {
-            /* The initialize function gets called as soon as the plugin is
-             * loaded by converse.js's plugin machinery.
-             */
             const { _converse } = this,
                   { __ } = _converse;
 
-            function ___ (str) {
-                /* This is part of a hack to get gettext to scan strings to be
-                * translated. Strings we cannot send to the function above because
-                * they require variable interpolation and we don't yet have the
-                * variables at scan time.
-                *
-                * See actionInfoMessages further below.
-                */
-                return str;
-            }
+            _converse.api.promises.add(['roomsPanelRendered']);
 
-            // XXX: Inside plugins, all calls to the translation machinery
-            // (e.g. u.__) should only be done in the initialize function.
-            // If called before, we won't know what language the user wants,
-            // and it'll fall back to English.
 
-            /* http://xmpp.org/extensions/xep-0045.html
-             * ----------------------------------------
-             * 100 message      Entering a room         Inform user that any occupant is allowed to see the user's full JID
-             * 101 message (out of band)                Affiliation change  Inform user that his or her affiliation changed while not in the room
-             * 102 message      Configuration change    Inform occupants that room now shows unavailable members
-             * 103 message      Configuration change    Inform occupants that room now does not show unavailable members
-             * 104 message      Configuration change    Inform occupants that a non-privacy-related room configuration change has occurred
-             * 110 presence     Any room presence       Inform user that presence refers to one of its own room occupants
-             * 170 message or initial presence          Configuration change    Inform occupants that room logging is now enabled
-             * 171 message      Configuration change    Inform occupants that room logging is now disabled
-             * 172 message      Configuration change    Inform occupants that the room is now non-anonymous
-             * 173 message      Configuration change    Inform occupants that the room is now semi-anonymous
-             * 174 message      Configuration change    Inform occupants that the room is now fully-anonymous
-             * 201 presence     Entering a room         Inform user that a new room has been created
-             * 210 presence     Entering a room         Inform user that the service has assigned or modified the occupant's roomnick
-             * 301 presence     Removal from room       Inform user that he or she has been banned from the room
-             * 303 presence     Exiting a room          Inform all occupants of new room nickname
-             * 307 presence     Removal from room       Inform user that he or she has been kicked from the room
-             * 321 presence     Removal from room       Inform user that he or she is being removed from the room because of an affiliation change
-             * 322 presence     Removal from room       Inform user that he or she is being removed from the room because the room has been changed to members-only and the user is not a member
-             * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
-             */
-            _converse.muc = {
-                info_messages: {
-                    100: __('This room is not anonymous'),
-                    102: __('This room now shows unavailable members'),
-                    103: __('This room does not show unavailable members'),
-                    104: __('The room configuration has changed'),
-                    170: __('Room logging is now enabled'),
-                    171: __('Room logging is now disabled'),
-                    172: __('This room is now no longer anonymous'),
-                    173: __('This room is now semi-anonymous'),
-                    174: __('This room is now fully-anonymous'),
-                    201: __('A new room has been created')
+            _converse.AddChatRoomModal = Backbone.VDOMView.extend({
+                events: {
                 },
 
-                disconnect_messages: {
-                    301: __('You have been banned from this room'),
-                    307: __('You have been kicked from this room'),
-                    321: __("You have been removed from this room because of an affiliation change"),
-                    322: __("You have been removed from this room because the room has changed to members-only and you're not a member"),
-                    332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down")
-                },
-
-                action_info_messages: {
-                    /* XXX: Note the triple underscore function and not double
-                    * underscore.
-                    *
-                    * This is a hack. We can't pass the strings to __ because we
-                    * don't yet know what the variable to interpolate is.
-                    *
-                    * Triple underscore will just return the string again, but we
-                    * can then at least tell gettext to scan for it so that these
-                    * strings are picked up by the translation machinery.
-                    */
-                    301: ___("%1$s has been banned"),
-                    303: ___("%1$s's nickname has changed"),
-                    307: ___("%1$s has been kicked out"),
-                    321: ___("%1$s has been removed because of an affiliation change"),
-                    322: ___("%1$s has been removed for not being a member")
-                },
-
-                new_nickname_messages: {
-                    210: ___('Your nickname has been automatically set to %1$s'),
-                    303: ___('Your nickname has been changed to %1$s')
-                }
-            };
-
-            // Configuration values for this plugin
-            // ====================================
-            // Refer to docs/source/configuration.rst for explanations of these
-            // configuration settings.
-            _converse.api.settings.update({
-                allow_muc: true,
-                allow_muc_invitations: true,
-                auto_join_on_invite: false,
-                auto_join_rooms: [],
-                auto_list_rooms: false,
-                hide_muc_server: false,
-                muc_disable_moderator_commands: false,
-                muc_domain: undefined,
-                muc_history_max_stanzas: undefined,
-                muc_instant_rooms: true,
-                muc_nickname_from_jid: false,
-                muc_show_join_leave: true,
-                visible_toolbar_buttons: {
-                    'toggle_occupants': true
-                },
-            });
-            _converse.api.promises.add(['roomsPanelRendered', 'roomsAutoJoined']);
-
-
-            function openRoom (jid) {
-                if (!u.isValidMUCJID(jid)) {
-                    return _converse.log(
-                        `Invalid JID "${jid}" provided in URL fragment`,
-                        Strophe.LogLevel.WARN
-                    );
-                }
-                const promises = [_converse.api.waitUntil('roomsAutoJoined')]
-                if (_converse.allow_bookmarks) {
-                    promises.push( _converse.api.waitUntil('bookmarksInitialized'));
-                }
-                Promise.all(promises).then(() => {
-                    _converse.api.rooms.open(jid);
-                });
-            }
-            _converse.router.route('converse/room?jid=:jid', openRoom);
-
-
-            function openChatRoom (settings, bring_to_foreground) {
-                /* Opens a chat room, making sure that certain attributes
-                 * are correct, for example that the "type" is set to
-                 * "chatroom".
-                 */
-                if (_.isUndefined(settings.jid)) {
-                    throw new Error("openChatRoom needs to be called with a JID");
-                }
-                settings.type = CHATROOMS_TYPE;
-                settings.id = settings.jid;
-                settings.box_id = b64_sha1(settings.jid)
-                return _converse.chatboxviews.showChat(settings, bring_to_foreground);
-            }
-
-            _converse.ChatRoom = _converse.ChatBox.extend({
-
-                defaults () {
-                    return _.assign(
-                        _.clone(_converse.ChatBox.prototype.defaults),
-                        _.zipObject(ROOM_FEATURES, _.map(ROOM_FEATURES, _.stubFalse)),
-                        {
-                          // For group chats, we distinguish between generally unread
-                          // messages and those ones that specifically mention the
-                          // user.
-                          //
-                          // To keep things simple, we reuse `num_unread` from
-                          // _converse.ChatBox to indicate unread messages which
-                          // mention the user and `num_unread_general` to indicate
-                          // generally unread messages (which *includes* mentions!).
-                          'num_unread_general': 0,
-
-                          'affiliation': null,
-                          'connection_status': converse.ROOMSTATUS.DISCONNECTED,
-                          'name': '',
-                          'description': '',
-                          'features_fetched': false,
-                          'roomconfig': {},
-                          'type': CHATROOMS_TYPE,
-                        }
-                    );
-                },
-
-                isUserMentioned (message) {
-                    /* Returns a boolean to indicate whether the current user
-                     * was mentioned in a message.
-                     *
-                     * Parameters:
-                     *  (String): The text message
-                     */
-                    return (new RegExp(`\\b${this.get('nick')}\\b`)).test(message);
-                },
-
-                incrementUnreadMsgCounter (stanza) {
-                    /* Given a newly received message, update the unread counter if
-                     * necessary.
-                     *
-                     * Parameters:
-                     *  (XMLElement): The <messsage> stanza
-                     */
-                    const body = stanza.querySelector('body');
-                    if (_.isNull(body)) {
-                        return; // The message has no text
-                    }
-                    if (u.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
-                        this.save({'num_unread_general': this.get('num_unread_general') + 1});
-                        if (this.isUserMentioned(body.textContent)) {
-                            this.save({'num_unread': this.get('num_unread') + 1});
-                            _converse.incrementMsgCounter();
-                        }
-                    }
-                },
-
-                clearUnreadMsgCounter() {
-                    u.safeSave(this, {
-                        'num_unread': 0,
-                        'num_unread_general': 0
+                initialize () {
+                    this.render().insertIntoDOM();
+                    this.modal = new bootstrap.Modal(this.el, {
+                        backdrop: 'static',
+                        keyboard: true
                     });
+                },
+
+                toHTML () {
+                    return tpl_add_chatroom_modal(_.extend(this.model.toJSON(), {
+                        'heading_new_chatroom': __('Enter a new Chatroom'),
+                        'label_room_name': __('Room'),
+                    }));
                 }
             });
 
 
-            _converse.ChatRoomOccupant = Backbone.Model.extend({
-                initialize (attributes) {
-                    this.set(_.extend({
-                        'id': _converse.connection.getUniqueId(),
-                    }, attributes));
-                }
-            });
+            _converse.ChatRoomView = _converse.ChatBoxView.extend({
+                /* Backbone.NativeView which renders a chat room, based upon the view
+                 * for normal one-on-one chat boxes.
+                 */
+                length: 300,
+                tagName: 'div',
+                className: 'chatbox chatroom hidden',
+                is_chatroom: true,
+                events: {
+                    'click .close-chatbox-button': 'close',
+                    'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
+                    'click .toggle-smiley': 'toggleEmojiMenu',
+                    'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
+                    'click .toggle-clear': 'clearChatRoomMessages',
+                    'click .toggle-call': 'toggleCall',
+                    'click .toggle-occupants a': 'toggleOccupants',
+                    'click .new-msgs-indicator': 'viewUnreadMessages',
+                    'click .occupant': 'onOccupantClicked',
+                    'keypress .chat-textarea': 'keyPressed',
+                    'click .send-button': 'onFormSubmitted'
+                },
 
+                initialize () {
+                    this.scrollDown = _.debounce(this._scrollDown, 250);
+                    this.markScrolled = _.debounce(this._markScrolled, 100);
 
-            _converse.ChatRoomOccupants = Backbone.Collection.extend({
-                model: _converse.ChatRoomOccupant,
+                    this.model.messages.on('add', this.onMessageAdded, this);
+                    this.model.on('show', this.show, this);
+                    this.model.on('destroy', this.hide, this);
+                    this.model.on('change:connection_status', this.afterConnected, this);
+                    this.model.on('change:affiliation', this.renderHeading, this);
+                    this.model.on('change:chat_state', this.sendChatState, this);
+                    this.model.on('change:description', this.renderHeading, this);
+                    this.model.on('change:name', this.renderHeading, this);
+
+                    this.createEmojiPicker();
+                    this.createOccupantsView();
+                    this.render().insertIntoDOM();
+                    this.registerHandlers();
+
+                    if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
+                        const handler = () => {
+                            this.join();
+                            this.fetchMessages();
+                            _converse.emit('chatRoomOpened', this);
+                        }
+                        this.getRoomFeatures().then(handler, handler);
+                    } else {
+                        this.fetchMessages();
+                        _converse.emit('chatRoomOpened', this);
+                    }
+                },
+
+                render () {
+                    this.setClasses();
+                    this.el.setAttribute('id', this.model.get('box_id'));
+                    this.el.innerHTML = tpl_chatroom();
+                    this.renderHeading();
+                    this.renderChatArea();
+                    if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
+                        this.showSpinner();
+                    }
+                    return this;
+                },
+
+                setClasses () {
+                    if (_converse.view_mode === 'fullscreen') {
+                        this.el.classList.add('col-xl-10');
+                        this.el.classList.add('col-md-9');
+                    } else {
+                        this.el.classList.add('col');
+                        this.el.classList.add('col-lg-4');
+                        this.el.classList.add('col-md-6');
+                        this.el.classList.add('col-sm-8');
+                        this.el.classList.add('col-sx-12');
+                        this.el.classList.add('w-100');
+                    }
+                },
+
+                renderHeading () {
+                    /* Render the heading UI of the chat room. */
+                    this.el.querySelector('.chat-head-chatroom').innerHTML = this.generateHeadingHTML();
+                },
+
+                renderChatArea () {
+                    /* Render the UI container in which chat room messages will appear.
+                     */
+                    if (_.isNull(this.el.querySelector('.chat-area'))) {
+                        const container_el = this.el.querySelector('.chatroom-body');
+                        container_el.innerHTML = tpl_chatarea({
+                            'label_message': __('Message'),
+                            'label_send': __('Send'),
+                            'show_send_button': _converse.show_send_button,
+                            'show_toolbar': _converse.show_toolbar,
+                            'unread_msgs': __('You have unread messages')
+                        });
+                        container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
+                        this.renderToolbar(tpl_chatroom_toolbar);
+                        this.content = this.el.querySelector('.chat-content');
+                        this.toggleOccupants(null, true);
+                    }
+                    return this;
+                },
+
+                createOccupantsView () {
+                    /* Create the ChatRoomOccupantsView Backbone.NativeView
+                     */
+                    const model = new _converse.ChatRoomOccupants();
+                    model.chatroomview = this;
+                    this.occupantsview = new _converse.ChatRoomOccupantsView({'model': model});
+                    this.occupantsview.model.on('change:role', this.informOfOccupantsRoleChange, this);
+                    return this;
+                },
+
+                informOfOccupantsRoleChange (occupant, changed) {
+                    const previous_role = occupant._previousAttributes.role;
+                    if (previous_role === 'moderator') {
+                        this.showStatusNotification(
+                            __("%1$s is no longer a moderator.", occupant.get('nick')),
+                            false, true)
+                    }
+                    if (previous_role === 'visitor') {
+                        this.showStatusNotification(
+                            __("%1$s has been given a voice again.", occupant.get('nick')),
+                            false, true)
+                    }
+
+                    if (occupant.get('role') === 'visitor') {
+                        this.showStatusNotification(
+                            __("%1$s has been muted.", occupant.get('nick')),
+                            false, true)
+                    }
+                    if (occupant.get('role') === 'moderator') {
+                        this.showStatusNotification(
+                            __("%1$s is now a moderator.", occupant.get('nick')),
+                            false, true)
+                    }
+                },
+
+                generateHeadingHTML () {
+                    /* Returns the heading HTML to be rendered.
+                     */
+                    return tpl_chatroom_head(
+                        _.extend(this.model.toJSON(), {
+                            Strophe: Strophe,
+                            info_close: __('Close and leave this room'),
+                            info_configure: __('Configure this room'),
+                            description: this.model.get('description') || ''
+                    }));
+                },
 
                 afterShown (focus) {
                     /* Override from converse-chatview, specifically to avoid
@@ -2067,13 +1961,267 @@
                 }
             });
 
-            _converse.ChatRoomOccupant = Backbone.Model.extend({
-                initialize (attributes) {
-                    this.set(_.extend({
-                        'id': _converse.connection.getUniqueId(),
-                    }, attributes));
+
+            _converse.MUCJoinForm = Backbone.VDOMView.extend({
+                initialize () {
+                    this.model.on('change:muc_domain', this.render, this);
+                },
+
+                toHTML () {
+                    return tpl_chatroom_join_form(_.assign(this.model.toJSON(), {
+                        'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
+                        'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
+                        'label_room_name': __('Room name'),
+                        'label_nickname': __('Nickname'),
+                        'label_server': __('Server'),
+                        'label_join': __('Join Room'),
+                        'label_show_rooms': __('Show rooms')
+                    }));
                 }
             });
+
+
+            _converse.RoomsPanel = Backbone.NativeView.extend({
+                /* Backbone.NativeView which renders MUC section of the control box.
+                 *
+                 * Chat rooms can be listed, joined and new rooms can be created.
+                 */
+                tagName: 'div',
+                className: 'controlbox-pane',
+                id: 'chatrooms',
+                events: {
+                    'submit form.add-chatroom': 'openChatRoom',
+                    'click input#show-rooms': 'showRooms',
+                    'click a.room-info': 'toggleRoomInfo',
+                    'change input[name=server]': 'setDomain',
+                    'change input[name=nick]': 'setNick'
+                },
+
+                initialize (cfg) {
+                    this.join_form = new _converse.MUCJoinForm({'model': this.model});
+                    this.model.on('change:muc_domain', this.onDomainChange, this);
+                    this.model.on('change:nick', this.onNickChange, this);
+                },
+
+                render () {
+                    this.el.innerHTML = tpl_room_panel({
+                        'heading_chatrooms': __('Chatrooms'),
+                        'title_new_room': __('Click to add a new room')
+                    });
+                    this.join_form.setElement(this.el.querySelector('.add-chatroom'));
+                    this.join_form.render();
+                    return this;
+                },
+
+                onDomainChange (model) {
+                    if (_converse.auto_list_rooms) {
+                        this.updateRoomsList();
+                    }
+                },
+
+                onNickChange (model) {
+                    const nick = this.el.querySelector('input.new-chatroom-nick');
+                    if (!_.isNull(nick)) {
+                        nick.value = model.get('nick');
+                    }
+                },
+
+                removeSpinner () {
+                    _.each(this.el.querySelectorAll('span.spinner'),
+                        (el) => el.parentNode.removeChild(el)
+                    );
+                },
+
+                informNoRoomsFound () {
+                    const chatrooms_el = this.el.querySelector('#available-chatrooms');
+                    chatrooms_el.innerHTML = tpl_rooms_results({
+                        'feedback_text': __('No rooms found')
+                    });
+                    const input_el = this.el.querySelector('input#show-rooms');
+                    input_el.classList.remove('hidden')
+                    this.removeSpinner();
+                },
+
+                roomStanzaItemToHTMLElement (room) {
+                    const name = Strophe.unescapeNode(
+                        room.getAttribute('name') ||
+                            room.getAttribute('jid')
+                    );
+                    const div = document.createElement('div');
+                    div.innerHTML = tpl_room_item({
+                        'name': name,
+                        'jid': room.getAttribute('jid'),
+                        'open_title': __('Click to open this room'),
+                        'info_title': __('Show more information on this room')
+                    });
+                    return div.firstChild;
+                },
+
+                onRoomsFound (iq) {
+                    /* Handle the IQ stanza returned from the server, containing
+                     * all its public rooms.
+                     */
+                    const available_chatrooms = this.el.querySelector('#available-chatrooms');
+                    this.rooms = iq.querySelectorAll('query item');
+                    if (this.rooms.length) {
+                        // For translators: %1$s is a variable and will be
+                        // replaced with the XMPP server name
+                        available_chatrooms.innerHTML = tpl_rooms_results({
+                            'feedback_text': __('Rooms found')
+                        });
+                        const fragment = document.createDocumentFragment();
+                        const children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil)
+                        _.each(children, (child) => fragment.appendChild(child));
+                        available_chatrooms.appendChild(fragment);
+                        const input_el = this.el.querySelector('input#show-rooms');
+                        input_el.classList.remove('hidden')
+                        this.removeSpinner();
+                    } else {
+                        this.informNoRoomsFound();
+                    }
+                    return true;
+                },
+
+                updateRoomsList () {
+                    /* Send an IQ stanza to the server asking for all rooms
+                     */
+                    _converse.connection.sendIQ(
+                        $iq({
+                            to: this.model.get('muc_domain'),
+                            from: _converse.connection.jid,
+                            type: "get"
+                        }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS}),
+                        this.onRoomsFound.bind(this),
+                        this.informNoRoomsFound.bind(this),
+                        5000
+                    );
+                },
+
+                showRooms () {
+                    const chatrooms_el = this.el.querySelector('#available-chatrooms');
+                    const server_el = this.el.querySelector('input.new-chatroom-server');
+                    const server = server_el.value;
+                    if (!server) {
+                        server_el.classList.add('error');
+                        return;
+                    }
+                    this.el.querySelector('input.new-chatroom-name').classList.remove('error');
+                    server_el.classList.remove('error');
+                    chatrooms_el.innerHTML = '';
+
+                    const input_el = this.el.querySelector('input#show-rooms');
+                    input_el.classList.add('hidden')
+                    input_el.insertAdjacentHTML('afterend', tpl_spinner());
+
+                    this.model.save({muc_domain: server});
+                    this.updateRoomsList();
+                },
+
+                insertRoomInfo (el, stanza) {
+                    /* Insert room info (based on returned #disco IQ stanza)
+                     *
+                     * Parameters:
+                     *  (HTMLElement) el: The HTML DOM element that should
+                     *      contain the info.
+                     *  (XMLElement) stanza: The IQ stanza containing the room
+                     *      info.
+                     */
+                    // All MUC features found here: http://xmpp.org/registrar/disco-features.html
+                    el.querySelector('span.spinner').remove();
+                    el.querySelector('a.room-info').classList.add('selected');
+                    el.insertAdjacentHTML(
+                        'beforeEnd', 
+                        tpl_room_description({
+                            'jid': stanza.getAttribute('from'),
+                            'desc': _.get(_.head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
+                            'occ': _.get(_.head(sizzle('field[var="muc#roominfo_occupants"] value', stanza)), 'textContent'),
+                            'hidden': sizzle('feature[var="muc_hidden"]', stanza).length,
+                            'membersonly': sizzle('feature[var="muc_membersonly"]', stanza).length,
+                            'moderated': sizzle('feature[var="muc_moderated"]', stanza).length,
+                            'nonanonymous': sizzle('feature[var="muc_nonanonymous"]', stanza).length,
+                            'open': sizzle('feature[var="muc_open"]', stanza).length,
+                            'passwordprotected': sizzle('feature[var="muc_passwordprotected"]', stanza).length,
+                            'persistent': sizzle('feature[var="muc_persistent"]', stanza).length,
+                            'publicroom': sizzle('feature[var="muc_publicroom"]', stanza).length,
+                            'semianonymous': sizzle('feature[var="muc_semianonymous"]', stanza).length,
+                            'temporary': sizzle('feature[var="muc_temporary"]', stanza).length,
+                            'unmoderated': sizzle('feature[var="muc_unmoderated"]', stanza).length,
+                            'label_desc': __('Description:'),
+                            'label_jid': __('Room Address (JID):'),
+                            'label_occ': __('Occupants:'),
+                            'label_features': __('Features:'),
+                            'label_requires_auth': __('Requires authentication'),
+                            'label_hidden': __('Hidden'),
+                            'label_requires_invite': __('Requires an invitation'),
+                            'label_moderated': __('Moderated'),
+                            'label_non_anon': __('Non-anonymous'),
+                            'label_open_room': __('Open room'),
+                            'label_permanent_room': __('Permanent room'),
+                            'label_public': __('Public'),
+                            'label_semi_anon':  __('Semi-anonymous'),
+                            'label_temp_room':  __('Temporary room'),
+                            'label_unmoderated': __('Unmoderated')
+                        }));
+                },
+
+                toggleRoomInfo (ev) {
+                    /* Show/hide extra information about a room in the listing.
+                     */
+                    const parent_el = u.ancestor(ev.target, '.room-item'),
+                          div_el = parent_el.querySelector('div.room-info');
+                    if (div_el) {
+                        u.slideIn(div_el).then(u.removeElement)
+                        parent_el.querySelector('a.room-info').classList.remove('selected');
+                    } else {
+                        parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
+                        _converse.connection.disco.info(
+                            ev.target.getAttribute('data-room-jid'),
+                            null,
+                            _.partial(this.insertRoomInfo, parent_el)
+                        );
+                    }
+                },
+
+                parseRoomDataFromEvent (ev) {
+                    let jid;
+                    const name_el = this.el.querySelector('input.new-chatroom-name');
+                    const server_el= this.el.querySelector('input.new-chatroom-server');
+                    const server = server_el.value;
+                    const name = name_el.value.trim();
+                    name_el.value = ''; // Clear the input
+                    if (name && server) {
+                        jid = Strophe.escapeNode(name.toLowerCase()) + '@' + server.toLowerCase();
+                        name_el.classList.remove('error');
+                        server_el.classList.remove('error');
+                        this.model.save({muc_domain: server});
+                    } else {
+                        if (!name) { name_el.classList.add('error'); }
+                        if (!server) { server_el.classList.add('error'); }
+                        return;
+                    }
+                    return {
+                        'jid': jid,
+                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
+                    }
+                },
+
+                openChatRoom (ev) {
+                    ev.preventDefault();
+                    const data = this.parseRoomDataFromEvent(ev);
+                    if (!_.isUndefined(data)) {
+                        _converse.api.rooms.open(data.jid, data);
+                    }
+                },
+
+                setDomain (ev) {
+                    this.model.save({muc_domain: ev.target.value});
+                },
+
+                setNick (ev) {
+                    this.model.save({nick: ev.target.value});
+                }
+            });
+
 
             _converse.ChatRoomOccupantView = Backbone.VDOMView.extend({
                 tagName: 'li',
@@ -2101,21 +2249,6 @@
                 }
             });
 
-            _converse.ChatRoomOccupants = Backbone.Collection.extend({
-                model: _converse.ChatRoomOccupant,
-
-                comparator (occupant1, occupant2) {
-                    const role1 = occupant1.get('role') || 'none';
-                    const role2 = occupant2.get('role') || 'none';
-                    if (MUC_ROLE_WEIGHTS[role1] === MUC_ROLE_WEIGHTS[role2]) {
-                        const nick1 = occupant1.get('nick').toLowerCase();
-                        const nick2 = occupant2.get('nick').toLowerCase();
-                        return nick1 < nick2 ? -1 : (nick1 > nick2? 1 : 0);
-                    } else  {
-                        return MUC_ROLE_WEIGHTS[role1] < MUC_ROLE_WEIGHTS[role2] ? -1 : 1;
-                    }
-                },
-            });
 
             _converse.ChatRoomOccupantsView = Backbone.OrderedListView.extend({
                 tagName: 'div',
@@ -2192,7 +2325,7 @@
                 },
 
                 renderRoomFeatures () {
-                    const picks = _.pick(this.chatroomview.model.attributes, ROOM_FEATURES),
+                    const picks = _.pick(this.chatroomview.model.attributes, converse.ROOM_FEATURES),
                         iteratee = (a, v) => a || v,
                         el = this.el.querySelector('.chatroom-features');
 
@@ -2408,476 +2541,21 @@
             });
 
 
-            _converse.MUCJoinForm = Backbone.VDOMView.extend({
-                initialize () {
-                    this.model.on('change:muc_domain', this.render, this);
-                },
-
-                toHTML () {
-                    return tpl_chatroom_join_form(_.assign(this.model.toJSON(), {
-                        'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
-                        'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
-                        'label_room_name': __('Room name'),
-                        'label_nickname': __('Nickname'),
-                        'label_server': __('Server'),
-                        'label_join': __('Join Room'),
-                        'label_show_rooms': __('Show rooms')
-                    }));
-                }
-            });
-
-
-            _converse.RoomsPanelModel = Backbone.Model.extend({
-                defaults: {
-                    'muc_domain': '',
-                },
-            });
-
-            _converse.RoomsPanel = Backbone.NativeView.extend({
-                /* Backbone.NativeView which renders MUC section of the control box.
-                 *
-                 * Chat rooms can be listed, joined and new rooms can be created.
-                 */
-                tagName: 'div',
-                className: 'controlbox-pane',
-                id: 'chatrooms',
-                events: {
-                    'submit form.add-chatroom': 'openChatRoom',
-                    'click input#show-rooms': 'showRooms',
-                    'click a.open-room': 'openChatRoom',
-                    'click a.room-info': 'toggleRoomInfo',
-                    'change input[name=server]': 'setDomain',
-                    'change input[name=nick]': 'setNick'
-                },
-
-                initialize (cfg) {
-                    this.join_form = new _converse.MUCJoinForm({'model': this.model});
-                    this.model.on('change:muc_domain', this.onDomainChange, this);
-                    this.model.on('change:nick', this.onNickChange, this);
-                },
-
-                render () {
-                    this.el.innerHTML = tpl_room_panel({
-                        'title_new_room': __('Click to add a new room')
-                    });
-                    this.join_form.setElement(this.el.querySelector('.add-chatroom'));
-                    this.join_form.render();
-                    return this;
-                },
-
-                onDomainChange (model) {
-                    if (_converse.auto_list_rooms) {
-                        this.updateRoomsList();
-                    }
-                },
-
-                onNickChange (model) {
-                    const nick = this.el.querySelector('input.new-chatroom-nick');
-                    if (!_.isNull(nick)) {
-                        nick.value = model.get('nick');
-                    }
-                },
-
-                removeSpinner () {
-                    _.each(this.el.querySelectorAll('span.spinner'),
-                        (el) => el.parentNode.removeChild(el)
-                    );
-                },
-
-                informNoRoomsFound () {
-                    const chatrooms_el = this.el.querySelector('#available-chatrooms');
-                    chatrooms_el.innerHTML = tpl_rooms_results({
-                        'feedback_text': __('No rooms found')
-                    });
-                    const input_el = this.el.querySelector('input#show-rooms');
-                    input_el.classList.remove('hidden')
-                    this.removeSpinner();
-                },
-
-                roomStanzaItemToHTMLElement (room) {
-                    const name = Strophe.unescapeNode(
-                        room.getAttribute('name') ||
-                            room.getAttribute('jid')
-                    );
-                    const div = document.createElement('div');
-                    div.innerHTML = tpl_room_item({
-                        'name': name,
-                        'jid': room.getAttribute('jid'),
-                        'open_title': __('Click to open this room'),
-                        'info_title': __('Show more information on this room')
-                    });
-                    return div.firstChild;
-                },
-
-                onRoomsFound (iq) {
-                    /* Handle the IQ stanza returned from the server, containing
-                     * all its public rooms.
-                     */
-                    const available_chatrooms = this.el.querySelector('#available-chatrooms');
-                    this.rooms = iq.querySelectorAll('query item');
-                    if (this.rooms.length) {
-                        // For translators: %1$s is a variable and will be
-                        // replaced with the XMPP server name
-                        available_chatrooms.innerHTML = tpl_rooms_results({
-                            'feedback_text': __('Rooms found')
-                        });
-                        const fragment = document.createDocumentFragment();
-                        const children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil)
-                        _.each(children, (child) => fragment.appendChild(child));
-                        available_chatrooms.appendChild(fragment);
-                        const input_el = this.el.querySelector('input#show-rooms');
-                        input_el.classList.remove('hidden')
-                        this.removeSpinner();
-                    } else {
-                        this.informNoRoomsFound();
-                    }
-                    return true;
-                },
-
-                updateRoomsList () {
-                    /* Send an IQ stanza to the server asking for all rooms
-                     */
-                    _converse.connection.sendIQ(
-                        $iq({
-                            to: this.model.get('muc_domain'),
-                            from: _converse.connection.jid,
-                            type: "get"
-                        }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS}),
-                        this.onRoomsFound.bind(this),
-                        this.informNoRoomsFound.bind(this),
-                        5000
-                    );
-                },
-
-                showRooms () {
-                    const chatrooms_el = this.el.querySelector('#available-chatrooms');
-                    const server_el = this.el.querySelector('input.new-chatroom-server');
-                    const server = server_el.value;
-                    if (!server) {
-                        server_el.classList.add('error');
-                        return;
-                    }
-                    this.el.querySelector('input.new-chatroom-name').classList.remove('error');
-                    server_el.classList.remove('error');
-                    chatrooms_el.innerHTML = '';
-
-                    const input_el = this.el.querySelector('input#show-rooms');
-                    input_el.classList.add('hidden')
-                    input_el.insertAdjacentHTML('afterend', tpl_spinner());
-
-                    this.model.save({muc_domain: server});
-                    this.updateRoomsList();
-                },
-
-                insertRoomInfo (el, stanza) {
-                    /* Insert room info (based on returned #disco IQ stanza)
-                     *
-                     * Parameters:
-                     *  (HTMLElement) el: The HTML DOM element that should
-                     *      contain the info.
-                     *  (XMLElement) stanza: The IQ stanza containing the room
-                     *      info.
-                     */
-                    // All MUC features found here: http://xmpp.org/registrar/disco-features.html
-                    el.querySelector('span.spinner').remove();
-                    el.querySelector('a.room-info').classList.add('selected');
-                    el.insertAdjacentHTML(
-                        'beforeEnd', 
-                        tpl_room_description({
-                            'jid': stanza.getAttribute('from'),
-                            'desc': _.get(_.head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
-                            'occ': _.get(_.head(sizzle('field[var="muc#roominfo_occupants"] value', stanza)), 'textContent'),
-                            'hidden': sizzle('feature[var="muc_hidden"]', stanza).length,
-                            'membersonly': sizzle('feature[var="muc_membersonly"]', stanza).length,
-                            'moderated': sizzle('feature[var="muc_moderated"]', stanza).length,
-                            'nonanonymous': sizzle('feature[var="muc_nonanonymous"]', stanza).length,
-                            'open': sizzle('feature[var="muc_open"]', stanza).length,
-                            'passwordprotected': sizzle('feature[var="muc_passwordprotected"]', stanza).length,
-                            'persistent': sizzle('feature[var="muc_persistent"]', stanza).length,
-                            'publicroom': sizzle('feature[var="muc_publicroom"]', stanza).length,
-                            'semianonymous': sizzle('feature[var="muc_semianonymous"]', stanza).length,
-                            'temporary': sizzle('feature[var="muc_temporary"]', stanza).length,
-                            'unmoderated': sizzle('feature[var="muc_unmoderated"]', stanza).length,
-                            'label_desc': __('Description:'),
-                            'label_jid': __('Room Address (JID):'),
-                            'label_occ': __('Occupants:'),
-                            'label_features': __('Features:'),
-                            'label_requires_auth': __('Requires authentication'),
-                            'label_hidden': __('Hidden'),
-                            'label_requires_invite': __('Requires an invitation'),
-                            'label_moderated': __('Moderated'),
-                            'label_non_anon': __('Non-anonymous'),
-                            'label_open_room': __('Open room'),
-                            'label_permanent_room': __('Permanent room'),
-                            'label_public': __('Public'),
-                            'label_semi_anon':  __('Semi-anonymous'),
-                            'label_temp_room':  __('Temporary room'),
-                            'label_unmoderated': __('Unmoderated')
-                        }));
-                },
-
-                toggleRoomInfo (ev) {
-                    /* Show/hide extra information about a room in the listing.
-                     */
-                    const parent_el = u.ancestor(ev.target, '.room-item'),
-                          div_el = parent_el.querySelector('div.room-info');
-                    if (div_el) {
-                        u.slideIn(div_el).then(u.removeElement)
-                        parent_el.querySelector('a.room-info').classList.remove('selected');
-                    } else {
-                        parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
-                        _converse.connection.disco.info(
-                            ev.target.getAttribute('data-room-jid'),
-                            null,
-                            _.partial(this.insertRoomInfo, parent_el)
-                        );
-                    }
-                },
-
-                parseRoomDataFromEvent (ev) {
-                    let name, jid;
-                    if (ev.type === 'click') {
-                        name = ev.target.textContent;
-                        jid = ev.target.getAttribute('data-room-jid');
-                    } else {
-                        const name_el = this.el.querySelector('input.new-chatroom-name');
-                        const server_el= this.el.querySelector('input.new-chatroom-server');
-                        const server = server_el.value;
-                        name = name_el.value.trim();
-                        name_el.value = ''; // Clear the input
-                        if (name && server) {
-                            jid = Strophe.escapeNode(name.toLowerCase()) + '@' + server.toLowerCase();
-                            name_el.classList.remove('error');
-                            server_el.classList.remove('error');
-                            this.model.save({muc_domain: server});
-                        } else {
-                            if (!name) { name_el.classList.add('error'); }
-                            if (!server) { server_el.classList.add('error'); }
-                            return;
-                        }
-                    }
-                    return {
-                        'jid': jid,
-                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
-                    }
-                },
-
-                openChatRoom (ev) {
-                    ev.preventDefault();
-                    const data = this.parseRoomDataFromEvent(ev);
-                    if (!_.isUndefined(data)) {
-                        openChatRoom(data);
-                    }
-                },
-
-                setDomain (ev) {
-                    this.model.save({muc_domain: ev.target.value});
-                },
-
-                setNick (ev) {
-                    this.model.save({nick: ev.target.value});
-                }
-            });
-            /************************ End of ChatRoomView **********************/
-
-
-            _converse.onDirectMUCInvitation = function (message) {
-                /* A direct MUC invitation to join a room has been received
-                 * See XEP-0249: Direct MUC invitations.
-                 *
-                 * Parameters:
-                 *  (XMLElement) message: The message stanza containing the
-                 *        invitation.
-                 */
-                const x_el = message.querySelector('x[xmlns="jabber:x:conference"]'),
-                    from = Strophe.getBareJidFromJid(message.getAttribute('from')),
-                    room_jid = x_el.getAttribute('jid'),
-                    reason = x_el.getAttribute('reason');
-
-                let contact = _converse.roster.get(from),
-                    result;
-
-                if (_converse.auto_join_on_invite) {
-                    result = true;
-                } else {
-                    // Invite request might come from someone not your roster list
-                    contact = contact? contact.get('fullname'): Strophe.getNodeFromJid(from);
-                    if (!reason) {
-                        result = confirm(
-                            __("%1$s has invited you to join a chat room: %2$s", contact, room_jid)
-                        );
-                    } else {
-                        result = confirm(
-                            __('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"',
-                                contact, room_jid, reason)
-                        );
-                    }
-                }
-                if (result === true) {
-                    const chatroom = openChatRoom({
-                        'jid': room_jid,
-                        'password': x_el.getAttribute('password')
-                    });
-                    if (chatroom.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
-                        _converse.chatboxviews.get(room_jid).join();
-                    }
-                }
-            };
-
-            if (_converse.allow_muc_invitations) {
-                const registerDirectInvitationHandler = function () {
-                    _converse.connection.addHandler(
-                        function (message) {
-                            _converse.onDirectMUCInvitation(message);
-                            return true;
-                        }, 'jabber:x:conference', 'message');
-                };
-                _converse.on('connected', registerDirectInvitationHandler);
-                _converse.on('reconnected', registerDirectInvitationHandler);
+            function setMUCDomain (domain, controlboxview) {
+                _converse.muc_domain = domain;
+                controlboxview.roomspanel.model.save({'muc_domain': domain});
             }
-
-            function autoJoinRooms () {
-                /* Automatically join chat rooms, based on the
-                 * "auto_join_rooms" configuration setting, which is an array
-                 * of strings (room JIDs) or objects (with room JID and other
-                 * settings).
-                 */
-                _.each(_converse.auto_join_rooms, function (room) {
-                    if (_converse.chatboxes.where({'jid': room}).length) {
-                        return;
-                    }
-                    if (_.isString(room)) {
-                        _converse.api.rooms.open(room);
-                    } else if (_.isObject(room)) {
-                        _converse.api.rooms.open(room.jid, room.nick);
-                    } else {
-                        _converse.log(
-                            'Invalid room criteria specified for "auto_join_rooms"',
-                            Strophe.LogLevel.ERROR);
-                    }
-                });
-                _converse.emit('roomsAutoJoined');
-            }
-            _converse.on('chatBoxesFetched', autoJoinRooms);
-
-            _converse.getChatRoom = function (jid, attrs, fetcher) {
-                jid = jid.toLowerCase();
-                return _converse.getViewForChatBox(
-                    fetcher(_.extend({
-                            'id': jid,
-                            'jid': jid,
-                            'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                            'type': CHATROOMS_TYPE,
-                            'box_id': b64_sha1(jid)
-                        }, attrs),
-                        attrs.bring_to_foreground
-                    ));
-            };
-
-            /* We extend the default converse.js API to add methods specific to MUC
-             * chat rooms.
-             */
-            _.extend(_converse.api, {
-                'rooms': {
-                    'close' (jids) {
-                        if (_.isUndefined(jids)) {
-                            _converse.chatboxviews.each(function (view) {
-                                if (view.is_chatroom && view.model) {
-                                    view.close();
-                                }
-                            });
-                        } else if (_.isString(jids)) {
-                            const view = _converse.chatboxviews.get(jids);
-                            if (view) { view.close(); }
-                        } else {
-                            _.each(jids, function (jid) {
-                                const view = _converse.chatboxviews.get(jid);
-                                if (view) { view.close(); }
-                            });
-                        }
-                    },
-                    'open' (jids, attrs) {
-                        if (_.isString(attrs)) {
-                            attrs = {'nick': attrs};
-                        } else if (_.isUndefined(attrs)) {
-                            attrs = {};
-                        }
-                        if (_.isUndefined(attrs.maximize)) {
-                            attrs.maximize = false;
-                        }
-                        if (!attrs.nick && _converse.muc_nickname_from_jid) {
-                            attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
-                        }
-                        if (_.isUndefined(jids)) {
-                            throw new TypeError('rooms.open: You need to provide at least one JID');
-                        } else if (_.isString(jids)) {
-                            return _converse.getChatRoom(jids, attrs, openChatRoom);
-                        }
-                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, openChatRoom));
-                    },
-                    'get' (jids, attrs, create) {
-                        if (_.isString(attrs)) {
-                            attrs = {'nick': attrs};
-                        } else if (_.isUndefined(attrs)) {
-                            attrs = {};
-                        }
-                        if (_.isUndefined(jids)) {
-                            const result = [];
-                            _converse.chatboxes.each(function (chatbox) {
-                                if (chatbox.get('type') === CHATROOMS_TYPE) {
-                                    result.push(_converse.getViewForChatBox(chatbox));
-                                }
-                            });
-                            return result;
-                        }
-                        const fetcher = _.partial(_converse.chatboxviews.getChatBox.bind(_converse.chatboxviews), _, create);
-                        if (!attrs.nick) {
-                            attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
-                        }
-                        if (_.isString(jids)) {
-                            return _converse.getChatRoom(jids, attrs, fetcher);
-                        }
-                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, fetcher));
-                    }
-                }
-            });
-
-            /* Event handlers */
-            _converse.on('addClientFeatures', () => {
-                if (_converse.allow_muc) {
-                    _converse.connection.disco.addFeature(Strophe.NS.MUC);
-                }
-                if (_converse.allow_muc_invitations) {
-                    _converse.connection.disco.addFeature('jabber:x:conference'); // Invites
-                }
-            });
-
-            _converse.on('reconnected', function reconnectToChatRooms () {
-                /* Upon a reconnection event from converse, join again
-                 * all the open chat rooms.
-                 */
-                _converse.chatboxviews.each(function (view) {
-                    if (view.model.get('type') === CHATROOMS_TYPE) {
-                        view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-                        view.registerHandlers();
-                        view.join();
-                        view.fetchMessages();
-                    }
-                });
-            });
-
 
             function setMUCDomainFromDisco (controlboxview) {
                 /* Check whether service discovery for the user's domain
-                    * returned MUC information and use that to automatically
-                    * set the MUC domain for the "Rooms" panel of the controlbox.
-                    */
+                 * returned MUC information and use that to automatically
+                 * set the MUC domain for the "Rooms" panel of the controlbox.
+                 */
                 function featureAdded (feature) {
                     if ((feature.get('var') === Strophe.NS.MUC)) {
                         setMUCDomain(feature.get('from'), controlboxview);
                     }
                 }
-
                 _converse.api.waitUntil('discoInitialized').then(() => {
                     _converse.api.listen.on('serviceDiscovered', featureAdded);
                     // Features could have been added before the controlbox was
@@ -2889,11 +2567,6 @@
                         }
                     });
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-            }
-
-            function setMUCDomain (domain, controlboxview) {
-                _converse.muc_domain = domain;
-                controlboxview.roomspanel.model.save({'muc_domain': domain});
             }
 
             function fetchAndSetMUCDomain (controlboxview) {
@@ -2908,27 +2581,15 @@
                 }
             }
 
-            _converse.on('controlboxInitialized', function (view) {
+            /************************ BEGIN Event Handlers ************************/
+            _converse.on('controlboxInitialized', (view) => {
                 if (!_converse.allow_muc) {
                     return;
                 }
                 fetchAndSetMUCDomain(view);
                 view.model.on('change:connected', _.partial(fetchAndSetMUCDomain, view));
             });
-
-            function disconnectChatRooms () {
-                /* When disconnecting, or reconnecting, mark all chat rooms as
-                 * disconnected, so that they will be properly entered again
-                 * when fetched from session storage.
-                 */
-                _converse.chatboxes.each(function (model) {
-                    if (model.get('type') === CHATROOMS_TYPE) {
-                        model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-                    }
-                });
-            }
-            _converse.on('reconnecting', disconnectChatRooms);
-            _converse.on('disconnecting', disconnectChatRooms);
+            /************************ END Event Handlers ************************/
         }
     });
 }));

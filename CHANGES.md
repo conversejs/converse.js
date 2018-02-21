@@ -43,6 +43,9 @@
 - New configuration setting [root](https://conversejs.org/docs/html/configurations.html#root)
 - The [view_mode](https://conversejs.org/docs/html/configurations.html#view-mode) setting now has a new possible value: `embedded`
 
+### LibreJS
+- Add LibreJS support
+
 ### Translation updates
 - Chinese (Traditional), French, German, Portuguese (Brazil), Russian, Ukrainian
 

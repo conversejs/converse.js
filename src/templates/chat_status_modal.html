@@ -8,39 +8,44 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <form class="pure-form set-xmpp-status" id="set-xmpp-status">
-                    <ul class="xmpp-status-menu form-group">
-                        <li>
-                            <a href="#" class="online" data-value="online">
-                                <span class="fa fa-circle"></span> {{{o.label_online}}}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="dnd" data-value="dnd">
-                                <span class="fa fa-minus-circle"></span> {{{o.label_busy}}}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="away" data-value="away">
-                                <span class="fa fa-circle-o"></span> {{{o.label_away}}}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="logout" data-value="logout">
-                                <span class="fa fa-times-circle"></span> {{{o.label_offline}}}
-                            </a>
-                        </li>
-                    </ul>
+            <form class="set-xmpp-status" id="set-xmpp-status">
+                <div class="modal-body">
                     <div class="form-group">
-                        <input type="text" class="form-control" value="" placeholder="{{{o.placeholder_status_message}}}">
+                        <div class="custom-control custom-radio">
+                            <input {[ if (o.status === 'online') { ]} checked="checked" {[ } ]}
+                                   type="radio" id="radio-online" value="online" name="chat_status" class="custom-control-input">
+                            <label class="custom-control-label" for="radio-online">
+                                <span class="fa fa-circle"></span>&nbsp;{{{o.label_online}}}</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input {[ if (o.status === 'busy') { ]} checked="checked" {[ } ]}
+                                   type="radio" id="radio-busy" value="busy" name="chat_status" class="custom-control-input">
+                            <label class="custom-control-label" for="radio-busy">
+                                <span class="fa fa-minus-circle"></span>&nbsp;{{{o.label_busy}}}</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input {[ if (o.status === 'away') { ]} checked="checked" {[ } ]}
+                                   type="radio" id="radio-away" value="away" name="chat_status" class="custom-control-input">
+                            <label class="custom-control-label" for="radio-away">
+                                <span class="fa fa-dot-circle-o"></span>&nbsp;{{{o.label_away}}}</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input {[ if (o.status === 'xa') { ]} checked="checked" {[ } ]}
+                                   type="radio" id="radio-xa" value="xa" name="chat_status" class="custom-control-input">
+                            <label class="custom-control-label" for="radio-xa">
+                                <span class="fa fa-circle-o"></span>&nbsp;{{{o.label_xa}}}</label>
+                        </div>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">{{{o.label_save}}}</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{{o.label_cancel}}}</button>
-            </div>
+                    <div class="btn-group w-100">
+                        <input name="status_message" type="text" class="form-control" 
+                               value="{{{o.status_message}}}" placeholder="{{{o.placeholder_status_message}}}">
+                        <span class="clear-input fa fa-times {[ if (!o.status_message) { ]} hidden {[ } ]}"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">{{{o.label_save}}}</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

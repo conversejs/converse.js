@@ -1,10 +1,35 @@
 #conversejs {
+
+    .set-xmpp-status, .xmpp-status, .roster-contacts {
+        .fa-circle {
+            color: $green;
+        }
+        .fa-minus-circle {
+            color: $red
+        }
+        .fa-dot-circle-o {
+            color: $orange,
+        }
+        .fa-circle-o {
+            color: $subdued-color;
+        }
+        .fa-times-circle {
+            color: $subdued-color;
+        }
+    }
+
+
+    #converse-modals {
+        .set-xmpp-status {
+            margin: 1em;
+            .custom-control-label {
+                margin-top: 0.25em;
+            }
+        }
+    }
+
     #controlbox {
         margin-right: 3*$chat-gutter;
-
-        .pure-form.converse-form {
-            padding: 0;
-        }
 
         &.logged-out {
             .box-flyout {
@@ -114,13 +139,13 @@
             }
         }
 
-		#login-dialog {
+        #login-dialog {
             flex-direction: column;
 
-			.brand-heading {
+            .brand-heading {
                 color: $global-background-color;
             }
-		}
+        }
 
         .toggle-register-login {
             font-weight: bold;
@@ -328,70 +353,6 @@
             }
         }
 
-        #select-xmpp-status {
-            display: none;
-            float: right;
-            margin-right: 0.5em;
-        }
-
-        .fancy-dropdown {
-            border: 1px solid $light-background-border-color;
-            height: $controlbox-dropdown-height;
-            border-radius: $button-border-radius;
-            text-align: left;
-
-            .choose-xmpp-status,
-            .toggle-xmpp-contact-form {
-                line-height: $controlbox-dropdown-height;
-                text-shadow: 0 1px 0 #ffffff;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                display: inline-block;
-                &:hover {
-                    color: $dark-link-color;
-                }
-            }
-            .toggle-xmpp-contact-form {
-                padding: 0 0.5em;
-                width: 100%;
-            }
-            &.no-border {
-                border: 0;
-            }
-
-        }
-        #fancy-xmpp-status-select {
-            .xmpp-status {
-                padding: 0 0.5em;
-            }
-            a.change-xmpp-status-message {
-                line-height: $controlbox-dropdown-height;
-                float: right;
-                clear: right;
-                width: 12px;
-                color: $link-color;
-                &:hover {
-                    color: $dark-link-color;
-                }
-            }
-            fieldset {
-                padding: 0;
-                margin-top: -1px;
-            }
-            input {
-                height: $controlbox-dropdown-height + 1px;
-                @include calc(width, '100% - 40px');
-                padding: 0 0 0 0.5em;
-            }
-            input[type=submit] {
-                height: $controlbox-dropdown-height + 1px;
-                width: 40px;
-                padding: 1px;
-                float: right;
-            }
-        }
-
         .controlbox-panes {
             height: 100%;
             overflow-y: auto;
@@ -447,33 +408,6 @@
                 width: 100%;
             }
         }
-
-        .xmpp-status-menu {
-            text-align: left;
-            box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4);
-            &.collapsed {
-                box-shadow: none;
-            }
-            li {
-                padding: 2px;
-                a {
-                    width: 100%;
-                    padding: 0.3em;
-                }
-            }
-        }
-        .xmpp-status-menu li a.logout,
-        .xmpp-status-menu li a.logout span {
-            color: $warning-color;
-        }
-
-        .set-xmpp-status {
-            background: none;
-            margin: 1em 0 0.5em 0em;
-            .dropdown dd ul {
-                z-index: 22;
-            }
-        }
     }
 
     .toggle-controlbox {
@@ -487,21 +421,6 @@
         padding: 10px 8px 0 8px;
         span {
             color: $inverse-link-color;
-        }
-    }
-
-    .xmpp-status, .xmpp-status-menu {
-        .online, .fa-circle {
-            color: darken($green, 5%);
-        }
-        .dnd {
-            color: $red
-        }
-        .away {
-            color: $light-blue;
-        }
-        .logout, .offline {
-            color: $gray-color;
         }
     }
 }

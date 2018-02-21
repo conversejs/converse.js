@@ -11,7 +11,6 @@
             "bootstrap.native",
             "tpl!chat_status_modal",
             "tpl!profile_view",
-            "tpl!choose_status",
             "tpl!status_option",
             "converse-vcard"
     ], factory);
@@ -20,12 +19,12 @@
             bootstrap,
             tpl_chat_status_modal,
             tpl_profile_view,
-            tpl_choose_status,
             tpl_status_option
         ) {
     "use strict";
 
     const { Strophe, Backbone, Promise, utils, _, moment } = converse.env;
+    const u = converse.env.utils;
 
 
     converse.plugins.add('converse-profile', {
@@ -41,7 +40,8 @@
             _converse.ChatStatusModal = Backbone.VDOMView.extend({
                 id: "modal-status-change",
                 events: {
-                    "submit.set-xmpp-status .logout": "onFormSubmitted"
+                    "submit form#set-xmpp-status": "onFormSubmitted",
+                    "click .clear-input": "clearStatusMessage"
                 },
 
                 initialize () {
@@ -50,15 +50,6 @@
                         backdrop: 'static', // we don't want to dismiss Modal when Modal or backdrop is the click event target
                         keyboard: true // we want to dismiss Modal on pressing Esc key
                     });
-                },
-
-                show () {
-                    this.modal.show();
-                },
-
-                insertIntoDOM () {
-                    const container_el = _converse.chatboxviews.el.querySelector('#converse-modals');
-                    container_el.insertAdjacentElement('beforeEnd', this.el);
                 },
 
                 toHTML () {
@@ -77,17 +68,40 @@
                     }));
                 },
 
+                insertIntoDOM () {
+                    const container_el = _converse.chatboxviews.el.querySelector('#converse-modals');
+                    container_el.insertAdjacentElement('beforeEnd', this.el);
+                },
+
+                show () {
+                    this.render();
+                    this.modal.show();
+                },
+
+                clearStatusMessage (ev) {
+                    if (ev && ev.preventDefault) {
+                        ev.preventDefault();
+                        u.hideElement(this.el.querySelector('.clear-input'));
+                    }
+                    const roster_filter = this.el.querySelector('input[name="status_message"]');
+                    roster_filter.value = '';
+                },
+
                 onFormSubmitted (ev) {
                     ev.preventDefault();
-                    debugger;
-                    this.model.save('status_message', ev.target.querySelector('input').value);
+                    const data = new FormData(ev.target);
+                    this.model.save({
+                        'status_message': data.get('status_message'),
+                        'status': data.get('chat_status')
+                    });
+                    this.modal.hide();
                 }
             });
 
             _converse.XMPPStatusView = Backbone.VDOMView.extend({
                 tagName: "div",
                 events: {
-                    "click a.change-status": this.status_modal.show.bind(this.status_modal),
+                    "click a.change-status": "showStatusChangeModal",
                     "click .dropdown dd ul li a": "setStatus",
                     "click .logout": "logOut"
                 },
@@ -109,6 +123,10 @@
                         'title_log_out': __('Log out'),
                         'title_your_profile': __('Your profile')
                     }));
+                },
+
+               showStatusChangeModal (ev) {
+                    this.status_modal.show();
                 },
 
                 logOut (ev) {

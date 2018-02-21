@@ -134,7 +134,7 @@
                 events: {
                     "keydown .roster-filter": "liveFilter",
                     "submit form.roster-filter-form": "submitFilter",
-                    "click .clear-roster-filter": "clearFilter",
+                    "click .clear-input": "clearFilter",
                     "click .filter-by span": "changeTypeFilter",
                     "change .state-type": "changeChatStateFilter"
                 },
@@ -241,7 +241,7 @@
                 clearFilter (ev) {
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
-                        u.hideElement(this.el.querySelector('.clear-roster-filter'));
+                        u.hideElement(this.el.querySelector('.clear-input'));
                     }
                     const roster_filter = this.el.querySelector('.roster-filter');
                     roster_filter.value = '';
@@ -336,7 +336,9 @@
                     const chat_status = item.get('chat_status') || 'offline';
                     if (chat_status === 'online') {
                         status_icon = 'fa-circle';
-                    } else if (chat_status === 'away' || chat_status === 'xa') {
+                    } else if (chat_status === 'away') {
+                        status_icon = 'fa-dot-circle-o';
+                    } else if (chat_status === 'xa') {
                         status_icon = 'fa-circle-o';
                     } else if (chat_status === 'dnd') {
                         status_icon = 'fa-minus-circle';

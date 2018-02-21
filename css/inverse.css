@@ -5013,6 +5013,11 @@ body.reset {
   #conversejs .button-cancel {
     color: white;
     background-color: #777; }
+  #conversejs form .clear-input {
+    position: absolute;
+    right: 0.2em;
+    cursor: pointer;
+    font-size: 0.75rem; }
   #conversejs form.pure-form.converse-form {
     background: white;
     padding: 1em; }
@@ -5700,10 +5705,22 @@ body {
 @media screen and (max-width: 767px) {
   #conversejs.fullscreen .chatbox {
     width: calc(100% - 50px); } }
+#conversejs .set-xmpp-status .fa-circle, #conversejs .xmpp-status .fa-circle, #conversejs .roster-contacts .fa-circle {
+  color: #3AA569; }
+#conversejs .set-xmpp-status .fa-minus-circle, #conversejs .xmpp-status .fa-minus-circle, #conversejs .roster-contacts .fa-minus-circle {
+  color: #E77051; }
+#conversejs .set-xmpp-status .fa-dot-circle-o, #conversejs .xmpp-status .fa-dot-circle-o, #conversejs .roster-contacts .fa-dot-circle-o {
+  color: #E7A151; }
+#conversejs .set-xmpp-status .fa-circle-o, #conversejs .xmpp-status .fa-circle-o, #conversejs .roster-contacts .fa-circle-o {
+  color: #A8ABA1; }
+#conversejs .set-xmpp-status .fa-times-circle, #conversejs .xmpp-status .fa-times-circle, #conversejs .roster-contacts .fa-times-circle {
+  color: #A8ABA1; }
+#conversejs #converse-modals .set-xmpp-status {
+  margin: 1em; }
+  #conversejs #converse-modals .set-xmpp-status .custom-control-label {
+    margin-top: 0.25em; }
 #conversejs #controlbox {
   margin-right: 1.5em; }
-  #conversejs #controlbox .pure-form.converse-form {
-    padding: 0; }
   #conversejs #controlbox.logged-out .box-flyout .controlbox-pane {
     overflow-y: auto; }
   #conversejs #controlbox form.search-xmpp-contact {
@@ -5941,54 +5958,6 @@ body {
     cursor: pointer;
     display: block;
     padding: 4px 7px 0 5px; }
-  #conversejs #controlbox #select-xmpp-status {
-    display: none;
-    float: right;
-    margin-right: 0.5em; }
-  #conversejs #controlbox .fancy-dropdown {
-    border: 1px solid #B1BFC4;
-    height: 30px;
-    border-radius: 5px;
-    text-align: left; }
-    #conversejs #controlbox .fancy-dropdown .choose-xmpp-status,
-    #conversejs #controlbox .fancy-dropdown .toggle-xmpp-contact-form {
-      line-height: 30px;
-      text-shadow: 0 1px 0 #ffffff;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      display: inline-block; }
-      #conversejs #controlbox .fancy-dropdown .choose-xmpp-status:hover,
-      #conversejs #controlbox .fancy-dropdown .toggle-xmpp-contact-form:hover {
-        color: #206485; }
-    #conversejs #controlbox .fancy-dropdown .toggle-xmpp-contact-form {
-      padding: 0 0.5em;
-      width: 100%; }
-    #conversejs #controlbox .fancy-dropdown.no-border {
-      border: 0; }
-  #conversejs #controlbox #fancy-xmpp-status-select .xmpp-status {
-    padding: 0 0.5em; }
-  #conversejs #controlbox #fancy-xmpp-status-select a.change-xmpp-status-message {
-    line-height: 30px;
-    float: right;
-    clear: right;
-    width: 12px;
-    color: #578EA9; }
-    #conversejs #controlbox #fancy-xmpp-status-select a.change-xmpp-status-message:hover {
-      color: #206485; }
-  #conversejs #controlbox #fancy-xmpp-status-select fieldset {
-    padding: 0;
-    margin-top: -1px; }
-  #conversejs #controlbox #fancy-xmpp-status-select input {
-    height: 31px;
-    width: -webkit-calc(100% - 40px);
-    width: calc(100% - 40px);
-    padding: 0 0 0 0.5em; }
-  #conversejs #controlbox #fancy-xmpp-status-select input[type=submit] {
-    height: 31px;
-    width: 40px;
-    padding: 1px;
-    float: right; }
   #conversejs #controlbox .controlbox-panes {
     height: 100%;
     overflow-y: auto;
@@ -6027,24 +5996,6 @@ body {
       width: 100%; }
     #conversejs #controlbox .add-xmpp-contact button {
       width: 100%; }
-  #conversejs #controlbox .xmpp-status-menu {
-    text-align: left;
-    box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4); }
-    #conversejs #controlbox .xmpp-status-menu.collapsed {
-      box-shadow: none; }
-    #conversejs #controlbox .xmpp-status-menu li {
-      padding: 2px; }
-      #conversejs #controlbox .xmpp-status-menu li a {
-        width: 100%;
-        padding: 0.3em; }
-  #conversejs #controlbox .xmpp-status-menu li a.logout,
-  #conversejs #controlbox .xmpp-status-menu li a.logout span {
-    color: #D24E2B; }
-  #conversejs #controlbox .set-xmpp-status {
-    background: none;
-    margin: 1em 0 0.5em 0em; }
-    #conversejs #controlbox .set-xmpp-status .dropdown dd ul {
-      z-index: 22; }
 #conversejs .toggle-controlbox {
   background-color: #578EA9;
   border-top-left-radius: 5px;
@@ -6056,14 +6007,6 @@ body {
   padding: 10px 8px 0 8px; }
   #conversejs .toggle-controlbox span {
     color: white; }
-#conversejs .xmpp-status .online, #conversejs .xmpp-status .fa-circle, #conversejs .xmpp-status-menu .online, #conversejs .xmpp-status-menu .fa-circle {
-  color: #33925d; }
-#conversejs .xmpp-status .dnd, #conversejs .xmpp-status-menu .dnd {
-  color: #E77051; }
-#conversejs .xmpp-status .away, #conversejs .xmpp-status-menu .away {
-  color: #578EA9; }
-#conversejs .xmpp-status .logout, #conversejs .xmpp-status .offline, #conversejs .xmpp-status-menu .logout, #conversejs .xmpp-status-menu .offline {
-  color: #818479; }
 
 @media screen and (max-width: 767px) {
   #conversejs #controlbox .box-flyout {
@@ -6177,11 +6120,6 @@ body {
     #conversejs #converse-roster .roster-filter-form .roster-filter {
       width: 100%;
       margin: 0.2em; }
-    #conversejs #converse-roster .roster-filter-form .clear-roster-filter {
-      position: absolute;
-      right: 0.2em;
-      cursor: pointer;
-      font-size: 0.75rem; }
     #conversejs #converse-roster .roster-filter-form .state-type {
       font-size: calc(16px - 2px);
       height: 30px;

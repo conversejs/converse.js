@@ -44,12 +44,6 @@
             width: 100%;
             margin: 0.2em;
         }
-        .clear-roster-filter {
-            position: absolute;
-            right: 0.2em;
-            cursor: pointer;
-            font-size: 0.75rem;
-        }
         .state-type {
             font-size: calc(#{$font-size} - 2px);
             height: $controlbox-dropdown-height;

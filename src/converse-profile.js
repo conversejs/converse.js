@@ -8,7 +8,8 @@
 
 (function (root, factory) {
     define(["converse-core",
-            "tpl!change_status_message",
+            "bootstrap.native",
+            "tpl!chat_status_modal",
             "tpl!profile_view",
             "tpl!choose_status",
             "tpl!status_option",
@@ -16,7 +17,8 @@
     ], factory);
 }(this, function (
             converse,
-            tpl_change_status_message,
+            bootstrap,
+            tpl_chat_status_modal,
             tpl_profile_view,
             tpl_choose_status,
             tpl_status_option
@@ -36,11 +38,47 @@
                 { __ } = _converse;
 
 
+            _converse.ChatStatusModal = Backbone.VDOMView.extend({
+                id: "modal-status-change",
+
+                initialize () {
+                    this.render().insertIntoDOM();
+                    this.modal = new bootstrap.Modal(this.el, {
+                        backdrop: 'static', // we don't want to dismiss Modal when Modal or backdrop is the click event target
+                        keyboard: true // we want to dismiss Modal on pressing Esc key
+                    });
+                },
+
+                show () {
+                    this.modal.show();
+                },
+
+                insertIntoDOM () {
+                    const container_el = _converse.chatboxviews.el.querySelector('#converse-modals');
+                    container_el.insertAdjacentElement('beforeEnd', this.el);
+                },
+
+                toHTML () {
+                    return tpl_chat_status_modal(_.extend(this.model.toJSON(), {
+                        'label_away': __('Away'),
+                        'label_close': __('Close'),
+                        'label_busy': __('Busy'),
+                        'label_cancel': __('Cancel'),
+                        'label_custom_status': __('Custom status'),
+                        'label_offline': __('Offline'),
+                        'label_online': __('Online'),
+                        'label_save': __('Save'),
+                        'label_xa': __('Away for long'),
+                        'modal_title': __('Change chat status'),
+                        'placeholder_status_message': __('Personal status message')
+                    }));
+                }
+            });
+
             _converse.XMPPStatusView = Backbone.VDOMView.extend({
                 tagName: "div",
                 events: {
-                    "click a.choose-xmpp-status": "toggleOptions",
-                    "click #fancy-xmpp-status-select a.change-xmpp-status-message": "renderStatusChangeForm",
+                    "click a.change-status": "renderStatusChangeForm",
                     "submit": "setStatusMessage",
                     "click .dropdown dd ul li a": "setStatus",
                     "click .logout": "logOut"
@@ -48,6 +86,7 @@
 
                 initialize () {
                     this.model.on("change", this.render, this);
+                    this.status_modal = new _converse.ChatStatusModal({model: this.model});
                 },
 
                 toHTML () {
@@ -64,24 +103,8 @@
                     }));
                 },
 
-                toggleOptions (ev) {
-                    ev.preventDefault();
-                    utils.slideInAllElements(
-                        _converse.root.querySelectorAll('#conversejs .contact-form-container')
-                    );
-                    utils.slideToggleElement(this.el.querySelector("#target dd ul"));
-                },
-
                 renderStatusChangeForm (ev) {
-                    ev.preventDefault();
-                    const xmppstatus = this.el.querySelector('.xmpp-status');
-                    xmppstatus.parentNode.classList.add('no-border');
-                    xmppstatus.outerHTML = tpl_change_status_message({
-                        'status_message': _converse.xmppstatus.get('status_message') || '',
-                        'label_custom_status': __('Custom status'),
-                        'label_save': __('Save')
-                    });
-                    this.el.querySelector('.custom-xmpp-status').focus();
+                    this.status_modal.show();
                 },
 
                 setStatusMessage (ev) {

@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.0.0 (Unreleased)
+
+* Removed the `xhr_custom_status` and `xhr_custom_status_url` configuration
+  settings. If you relied on these settings, you can instead listen for the
+  [statusMessageChanged](https://conversejs.org/docs/html/events.html#contactstatusmessagechanged)
+  event and make the XMLHttpRequest yourself.
+
+
 ## 3.3.4 (Unreleased)
 
 - Avoid `eval` (via `_.template` from lodash).

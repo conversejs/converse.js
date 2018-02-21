@@ -329,9 +329,7 @@
             synchronize_availability: true,
             view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
             websocket_url: undefined,
-            whitelisted_plugins: [],
-            xhr_custom_status: false,
-            xhr_custom_status_url: '',
+            whitelisted_plugins: []
         };
         _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
@@ -401,7 +399,7 @@
                 _converse.auto_changed_status = false;
                 // XXX: we should really remember the original state here, and
                 // then set it back to that...
-                _converse.xmppstatus.setStatus(_converse.default_state);
+                _converse.xmppstatus.set('status', _converse.default_state);
             }
         };
 
@@ -414,7 +412,7 @@
                 // This can happen when the connection reconnects.
                 return;
             }
-            const stat = _converse.xmppstatus.getStatus();
+            const stat = _converse.xmppstatus.get('status');
             _converse.idle_seconds++;
             if (_converse.csi_waiting_time > 0 &&
                     _converse.idle_seconds > _converse.csi_waiting_time &&
@@ -425,12 +423,12 @@
                     _converse.idle_seconds > _converse.auto_away &&
                     stat !== 'away' && stat !== 'xa' && stat !== 'dnd') {
                 _converse.auto_changed_status = true;
-                _converse.xmppstatus.setStatus('away');
+                _converse.xmppstatus.set('status', 'away');
             } else if (_converse.auto_xa > 0 &&
                     _converse.idle_seconds > _converse.auto_xa &&
                     stat !== 'xa' && stat !== 'dnd') {
                 _converse.auto_changed_status = true;
-                _converse.xmppstatus.setStatus('xa');
+                _converse.xmppstatus.set('status', 'xa');
             }
         };
 
@@ -1482,18 +1480,21 @@
         this.connfeedback = new this.ConnectionFeedback();
 
         this.XMPPStatus = Backbone.Model.extend({
+            defaults: {
+                "status":  _converse.default_state
+            },
 
             initialize () {
-                this.set({
-                    'status' : this.getStatus()
+                this.on('change:status', (item) => {
+                    const status = this.get('status');
+                    this.sendPresence(status);
+                    _converse.emit('statusChanged', status);
                 });
-                this.on('change', (item) => {
-                    if (_.has(item.changed, 'status')) {
-                        _converse.emit('statusChanged', this.get('status'));
-                    }
-                    if (_.has(item.changed, 'status_message')) {
-                        _converse.emit('statusMessageChanged', this.get('status_message'));
-                    }
+
+                this.on('change:status_message', () => {
+                    const status_message = this.get('status_message');
+                    this.sendPresence(this.get('status'), status_message);
+                    _converse.emit('statusMessageChanged', status_message);
                 });
             },
 
@@ -1529,30 +1530,6 @@
 
             sendPresence (type, status_message) {
                 _converse.connection.send(this.constructPresence(type, status_message));
-            },
-
-            setStatus (value) {
-                this.sendPresence(value);
-                this.save({'status': value});
-            },
-
-            getStatus () {
-                return this.get('status') || _converse.default_state;
-            },
-
-            setStatusMessage (status_message) {
-                this.sendPresence(this.getStatus(), status_message);
-                this.save({'status_message': status_message});
-                if (this.xhr_custom_status) {
-                    const xhr = new XMLHttpRequest();
-                    xhr.open('POST', this.xhr_custom_status_url, true);
-                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-                    xhr.send({'msg': status_message});
-                }
-                const prev_status = this.get('status_message');
-                if (prev_status === status_message) {
-                    this.trigger("update-status-ui", this);
-                }
             }
         });
 

@@ -35,11 +35,14 @@
              * loaded by converse.js's plugin machinery.
              */
             const { _converse } = this,
-                { __ } = _converse;
+                  { __ } = _converse;
 
 
             _converse.ChatStatusModal = Backbone.VDOMView.extend({
                 id: "modal-status-change",
+                events: {
+                    "submit.set-xmpp-status .logout": "onFormSubmitted"
+                },
 
                 initialize () {
                     this.render().insertIntoDOM();
@@ -72,14 +75,19 @@
                         'modal_title': __('Change chat status'),
                         'placeholder_status_message': __('Personal status message')
                     }));
+                },
+
+                onFormSubmitted (ev) {
+                    ev.preventDefault();
+                    debugger;
+                    this.model.save('status_message', ev.target.querySelector('input').value);
                 }
             });
 
             _converse.XMPPStatusView = Backbone.VDOMView.extend({
                 tagName: "div",
                 events: {
-                    "click a.change-status": "renderStatusChangeForm",
-                    "submit": "setStatusMessage",
+                    "click a.change-status": this.status_modal.show.bind(this.status_modal),
                     "click .dropdown dd ul li a": "setStatus",
                     "click .logout": "logOut"
                 },
@@ -103,15 +111,6 @@
                     }));
                 },
 
-                renderStatusChangeForm (ev) {
-                    this.status_modal.show();
-                },
-
-                setStatusMessage (ev) {
-                    ev.preventDefault();
-                    this.model.setStatusMessage(ev.target.querySelector('input').value);
-                },
-
                 logOut (ev) {
                     ev.preventDefault();
                     const result = confirm(__("Are you sure you want to log out?"));
@@ -123,7 +122,7 @@
                 setStatus (ev) {
                     ev.preventDefault();
                     const value = ev.target.getAttribute('data-value');
-                    this.model.setStatus(value);
+                    this.model.set('status', value);
                 },
 
                 getPrettyStatus (stat) {

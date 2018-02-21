@@ -1526,32 +1526,6 @@ An example from `the embedded room demo <https://conversejs.org/demo/embedded.ht
     });
 
 
-xhr_custom_status
------------------
-
-* Default:  ``false``
-
-.. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
-
-This option will let converse.js make an AJAX POST with your changed custom chat status to a
-remote server.
-
-xhr_custom_status_url
----------------------
-
-.. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
-
-* Default:  Empty string
-
-Used only in conjunction with ``xhr_custom_status``.
-
-This is the URL to which the AJAX POST request to set the user's custom status
-message will be made.
-
-The message itself is sent in the request under the key ``msg``.
-
 xhr_user_search
 ---------------
 

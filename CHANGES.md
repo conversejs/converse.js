@@ -4,6 +4,7 @@
 
 - Avoid `eval` (via `_.template` from lodash).
 - Bugfix. Avatars weren't being shown.
+- Add LibreJS support
 
 ## 3.3.3 (2018-02-14)
 

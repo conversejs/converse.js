@@ -153,7 +153,7 @@ a:focus {
 .brand-heading {
   font-size: 2em;
   text-align: center;
-  margin-top: 3em;
+  margin-top: 2.5em;
 }
 .brand-heading-embedded {
     margin-top: 1.5em;
@@ -285,7 +285,7 @@ a:focus {
   font-size: 26px;
 }
 .banner-social-buttons {
-    padding-top: 5em;
+    padding-top: 3em;
 }
 ::-moz-selection {
   text-shadow: none;

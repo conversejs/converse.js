@@ -36,9 +36,25 @@ body.reset {
     :-moz-placeholder { /* Firefox 18- */
         color: $subdued-color;
     }
-
     ::placeholder {
         color: $subdued-color;
+    }
+    .form-control {
+        &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+            color: $subdued-color;
+        }
+        &::-moz-placeholder { /* Firefox 19+ */
+            color: $subdued-color;
+        }
+        &:-ms-input-placeholder { /* IE 10+ */
+            color: $subdued-color;
+        }
+        &:-moz-placeholder { /* Firefox 18- */
+            color: $subdued-color;
+        }
+        &::placeholder {
+            color: $subdued-color;
+        }
     }
 
     ::selection {

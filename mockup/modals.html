@@ -143,7 +143,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="chatroomsModalLabel">New Chatroom</h5>
+                <h5 class="modal-title" id="chatroomsModalLabel">Enter a new Chatroom</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -151,18 +151,11 @@
             <div class="modal-body">
                 <form class="pure-form pure-form-stacked converse-form add-chatroom">
                     <div class="form-group">
-                        <label for="chatroom">Room name</label>
-                        <input type="text" name="chatroom" class="form-control" placeholder="Room name">
+                        <label for="chatroom">Room address</label>
+                        <input type="text" name="chatroom" class="form-control" placeholder="room@conference.example.org">
+                        <input type="submit" class="btn btn-primary" name="join" value="Join">
                     </div>
-                    <div class="form-group">
-                        <label for="server">Server</label>
-                        <input type="text" name="server" class="form-control" placeholder="Server">
-                    </div>
-                    <input type="submit" class="btn btn-primary" name="join" value="Join">
                 </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>

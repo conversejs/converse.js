@@ -135,6 +135,8 @@ require.config({
 
     // define module dependencies for modules not using define
     shim: {
+        'backbone.overview':        { deps: ['backbone.nativeview'] },
+        'backbone.orderedlistview': { deps: ['backbone.nativeview'] },
         'awesomplete':              { exports: 'Awesomplete'},
         'emojione':                 { exports: 'emojione'},
         'xss':  {

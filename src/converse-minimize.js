@@ -65,6 +65,8 @@
             ChatBox: {
                 initialize () {
                     this.__super__.initialize.apply(this, arguments);
+                    this.on('show', this.maximize, this);
+
                     if (this.get('id') === 'controlbox') {
                         return;
                     }
@@ -112,11 +114,6 @@
                 isNewMessageHidden () {
                     return this.model.get('minimized') ||
                         this.__super__.isNewMessageHidden.apply(this, arguments);
-                },
-
-                shouldShowOnTextMessage () {
-                    return !this.model.get('minimized') &&
-                        this.__super__.shouldShowOnTextMessage.apply(this, arguments);
                 },
 
                 setChatBoxHeight (height) {
@@ -211,17 +208,6 @@
             },
 
             ChatBoxViews: {
-                showChat (attrs) {
-                    /* Find the chat box and show it. If it doesn't exist, create it.
-                     */
-                    const chatbox = this.__super__.showChat.apply(this, arguments);
-                    const maximize = _.isUndefined(attrs.maximize) ? true : attrs.maximize;
-                    if (chatbox.get('minimized') && maximize) {
-                        chatbox.maximize();
-                    }
-                    return chatbox;
-                },
-
                 getChatBoxWidth (view) {
                     if (!view.model.get('minimized') && u.isVisible(view.el)) {
                         return u.getOuterWidth(view.el, true);

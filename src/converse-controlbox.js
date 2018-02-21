@@ -86,7 +86,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes", "converse-rosterview"],
+        dependencies: ["converse-chatboxes", "converse-rosterview", "converse-chatview"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -125,15 +125,6 @@
                 chatBoxMayBeShown (chatbox) {
                     return this.__super__.chatBoxMayBeShown.apply(this, arguments) &&
                            chatbox.get('id') !== 'controlbox';
-                },
-
-                onChatBoxesFetched (collection, resp) {
-                    this.__super__.onChatBoxesFetched.apply(this, arguments);
-                    const { _converse } = this.__super__;
-                    if (!_.includes(_.map(collection, 'id'), 'controlbox')) {
-                        _converse.addControlBox();
-                    }
-                    this.get('controlbox').save({connected:true});
                 },
             },
 
@@ -715,8 +706,10 @@
             Promise.all([
                 _converse.api.waitUntil('connectionInitialized'),
                 _converse.api.waitUntil('chatBoxesInitialized')
-            ]).then(_converse.addControlBox)
-              .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            ]).then(() => {
+                _converse.addControlBox();
+                _converse.chatboxes.get('controlbox').save({connected:true});
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
             const disconnect =  function () {
                 /* Upon disconnection, set connected to `false`, so that if

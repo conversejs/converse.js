@@ -95,11 +95,13 @@
 
             _converse.ChatBox = Backbone.Model.extend({
                 defaults: {
-                    'type': 'chatbox',
-                    'show_avatar': true,
                     'bookmarked': false,
                     'chat_state': undefined,
+                    'image': _converse.DEFAULT_IMAGE,
+                    'image_type': _converse.DEFAULT_IMAGE_TYPE,
                     'num_unread': 0,
+                    'show_avatar': true,
+                    'type': 'chatbox',
                     'url': ''
                 },
 
@@ -244,11 +246,7 @@
                 },
 
                 onChatBoxesFetched (collection) {
-                    /* Show chat boxes upon receiving them from sessionStorage
-                    *
-                    * This method gets overridden entirely in src/converse-controlbox.js
-                    * if the controlbox plugin is active.
-                    */
+                    /* Show chat boxes upon receiving them from sessionStorage */
                     collection.each((chatbox) => {
                         if (this.chatBoxMayBeShown(chatbox)) {
                             chatbox.trigger('show');
@@ -344,8 +342,8 @@
                         resource = from_resource;
                     }
                     // Get chat box, but only create a new one when the message has a body.
-                    const chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body'))),
-                        msgid = message.getAttribute('id');
+                    const chatbox = this.getChatBox(contact_jid, {}, !_.isNull(message.querySelector('body'))),
+                          msgid = message.getAttribute('id');
 
                     if (chatbox) {
                         const messages = msgid && chatbox.messages.findWhere({msgid}) || [];
@@ -360,54 +358,30 @@
                     return true;
                 },
 
-                createChatBox (jid, attrs) {
-                    /* Creates a chat box
-                    *
-                    * Parameters:
-                    *    (String) jid - The JID of the user for whom a chat box
-                    *      gets created.
-                    *    (Object) attrs - Optional chat box atributes.
-                    */
-                    const bare_jid = Strophe.getBareJidFromJid(jid),
-                        roster_item = _converse.roster.get(bare_jid);
-                    let roster_info = {};
-
-                    if (! _.isUndefined(roster_item)) {
-                        roster_info = {
-                            'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
-                            'image_type': roster_item.get('image_type'),
-                            'image': roster_item.get('image'),
-                            'url': roster_item.get('url'),
-                        };
-                    } else if (!_converse.allow_non_roster_messaging) {
-                        _converse.log(`Could not get roster item for JID ${bare_jid}`+
-                            ' and allow_non_roster_messaging is set to false',
-                            Strophe.LogLevel.ERROR);
-                        return;
-                    }
-                    return this.create(_.assignIn({
-                            'id': bare_jid,
-                            'jid': bare_jid,
-                            'fullname': jid,
-                            'image_type': _converse.DEFAULT_IMAGE_TYPE,
-                            'image': _converse.DEFAULT_IMAGE,
-                            'url': '',
-                        }, roster_info, attrs || {}));
-                },
-
-                getChatBox (jid, create, attrs) {
+                getChatBox (jid, attrs={}, create) {
                     /* Returns a chat box or optionally return a newly
-                    * created one if one doesn't exist.
-                    *
-                    * Parameters:
-                    *    (String) jid - The JID of the user whose chat box we want
-                    *    (Boolean) create - Should a new chat box be created if none exists?
-                    *    (Object) attrs - Optional chat box atributes.
-                    */
+                     * created one if one doesn't exist.
+                     *
+                     * Parameters:
+                     *    (String) jid - The JID of the user whose chat box we want
+                     *    (Boolean) create - Should a new chat box be created if none exists?
+                     *    (Object) attrs - Optional chat box atributes.
+                     */
+                    if (_.isObject(jid)) {
+                        create = attrs;
+                        attrs = jid;
+                        jid = attrs.jid;
+                    } else {
+                        attrs.jid = jid;
+                    }
                     jid = jid.toLowerCase();
                     let  chatbox = this.get(Strophe.getBareJidFromJid(jid));
                     if (!chatbox && create) {
-                        chatbox = this.createChatBox(jid, attrs);
+                        chatbox = this.create(attrs, {
+                            'error' (model, response) {
+                                _converse.log(response.responseText);
+                            }
+                        });
                     }
                     return chatbox;
                 }
@@ -449,7 +423,12 @@
                 },
 
                 render () {
-                    this.el.innerHTML = tpl_chatboxes();
+                    try {
+                        this.el.innerHTML = tpl_chatboxes();
+                    } catch (e) {
+                        this._ensureElement();
+                        this.el.innerHTML = tpl_chatboxes();
+                    }
                     this.row_el = this.el.querySelector('.row');
                 },
 
@@ -481,29 +460,6 @@
 
                 chatBoxMayBeShown (chatbox) {
                     return this.model.chatBoxMayBeShown(chatbox);
-                },
-
-                getChatBox (attrs, create) {
-                    let chatbox  = this.model.get(attrs.jid);
-                    if (!chatbox && create) {
-                        chatbox = this.model.create(attrs, {
-                            'error' (model, response) {
-                                _converse.log(response.responseText);
-                            }
-                        });
-                    }
-                    return chatbox;
-                },
-
-                showChat (attrs) {
-                    /* Find the chat box and show it (if it may be shown).
-                     * If it doesn't exist, create it.
-                     */
-                    const chatbox = this.getChatBox(attrs, true);
-                    if (this.chatBoxMayBeShown(chatbox)) {
-                        chatbox.trigger('show', true);
-                    }
-                    return chatbox;
                 }
             });
 
@@ -575,6 +531,7 @@
                     }
                 }
             });
+            /************************ END API ************************/
         }
     });
     return converse;

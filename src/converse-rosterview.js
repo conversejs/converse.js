@@ -379,7 +379,8 @@
 
                 openChat (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    return _converse.chatboxviews.showChat(this.model.attributes, true);
+                    const attrs = this.model.attributes;
+                    _converse.api.chats.open(attrs.jid, attrs);
                 },
 
                 removeContact (ev) {

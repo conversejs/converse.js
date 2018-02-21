@@ -17,7 +17,7 @@
             "tpl!rooms_list_item"
         ], factory);
 }(this, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
-    const { Backbone, Promise, b64_sha1, sizzle, _ } = converse.env;
+    const { Backbone, Promise, Strophe, b64_sha1, sizzle, _ } = converse.env;
     const u = converse.env.utils;
 
     converse.plugins.add('converse-roomslist', {
@@ -137,6 +137,7 @@
                     'click .close-room': 'closeRoom',
                     'click .open-rooms-toggle': 'toggleRoomsList',
                     'click .remove-bookmark': 'removeBookmark',
+                    'click a.open-room': 'openRoom',
                 },
                 listSelector: '.rooms-list',
                 ItemView: _converse.RoomsListElementView,
@@ -190,6 +191,16 @@
 
                 show () {
                     u.showElement(this.el);
+                },
+
+                openRoom (ev) {
+                    ev.preventDefault();
+                    const name = ev.target.textContent;
+                    const jid = ev.target.getAttribute('data-room-jid');
+                    const data = {
+                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
+                    }
+                    _converse.api.rooms.open(jid, data);
                 },
 
                 closeRoom (ev) {

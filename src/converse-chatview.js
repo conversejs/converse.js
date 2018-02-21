@@ -737,10 +737,6 @@
                     return message;
                 },
 
-                shouldShowOnTextMessage () {
-                    return !u.isVisible(this.el);
-                },
-
                 handleTextMessage (message) {
                     this.showMessage(_.clone(message.attributes));
                     if (u.isNewMessage(message)) {
@@ -754,11 +750,7 @@
                             this.showNewMessagesIndicator();
                         }
                     }
-                    if (this.shouldShowOnTextMessage()) {
-                        this.show();
-                    } else {
-                        this.scrollDown();
-                    }
+                    this.scrollDown();
                 },
 
                 handleErrorMessage (message) {

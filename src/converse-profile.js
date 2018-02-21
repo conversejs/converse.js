@@ -47,8 +47,8 @@
                 initialize () {
                     this.render().insertIntoDOM();
                     this.modal = new bootstrap.Modal(this.el, {
-                        backdrop: 'static', // we don't want to dismiss Modal when Modal or backdrop is the click event target
-                        keyboard: true // we want to dismiss Modal on pressing Esc key
+                        backdrop: 'static',
+                        keyboard: true
                     });
                 },
 

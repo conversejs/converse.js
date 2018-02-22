@@ -348,13 +348,11 @@
                     this.el.classList.add("col-xl-2");
                     this.el.classList.add("col-md-3");
 
-                    if (!this.controlbox_pane) {
-                        this.controlbox_pane = new _converse.ControlBoxPane();
-                        this.el.querySelector('.controlbox-panes').insertAdjacentElement(
-                            'afterBegin',
-                            this.controlbox_pane.el
-                        )
-                    }
+                    this.controlbox_pane = new _converse.ControlBoxPane();
+                    this.el.querySelector('.controlbox-panes').insertAdjacentElement(
+                        'afterBegin',
+                        this.controlbox_pane.el
+                    )
                 },
 
                 close (ev) {

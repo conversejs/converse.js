@@ -42,7 +42,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes", "converse-muc"],
+        dependencies: ["converse-chatboxes", "converse-muc", "converse-muc-views"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -269,7 +269,10 @@
 
                 openBookmarkedRoom (bookmark) {
                     if (bookmark.get('autojoin')) {
-                        _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
+                        const room = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
+                        if (!room.get('hidden')) {
+                            room.trigger('show');
+                        }
                     }
                     return bookmark;
                 },
@@ -566,6 +569,8 @@
             ]).then(initBookmarks)
               .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
+            _converse.on('reconnected', initBookmarks);
+
             _converse.on('connected', () => {
                 // Add a handler for bookmarks pushed from other connected clients
                 // (from the same user obviously)
@@ -576,13 +581,6 @@
                 }, null, 'message', 'headline', null, _converse.bare_jid);
             });
 
-            const afterReconnection = function () {
-                if (!_converse.allow_bookmarks) {
-                    return;
-                }
-                initBookmarks();
-            };
-            _converse.on('reconnected', afterReconnection);
         }
     });
 }));

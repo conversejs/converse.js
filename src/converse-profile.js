@@ -8,7 +8,7 @@
 
 (function (root, factory) {
     define(["converse-core",
-            "bootstrap.native",
+            "bootstrap",
             "tpl!chat_status_modal",
             "tpl!profile_view",
             "tpl!status_option",

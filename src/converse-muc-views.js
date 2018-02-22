@@ -1,10 +1,9 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2018, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define */
 
 /* This is a Converse.js plugin which add support for multi-user chat rooms, as
  * specified in XEP-0045 Multi-user chat.
@@ -12,7 +11,7 @@
 (function (root, factory) {
     define([
         "converse-core",
-        "bootstrap.native",
+        "bootstrap",
         "tpl!add_chatroom_modal",
         "tpl!chatarea",
         "tpl!chatroom",
@@ -34,6 +33,7 @@
         "tpl!rooms_results",
         "tpl!spinner",
         "awesomplete",
+        "converse-modal"
     ], factory);
 }(this, function (
     converse,
@@ -93,7 +93,7 @@
          * If the setting "strict_plugin_dependencies" is set to true,
          * an error will be raised if the plugin is not found.
          */
-        dependencies: ["converse-controlbox"],
+        dependencies: ["converse-modal", "converse-controlbox"],
 
         overrides: {
 
@@ -216,7 +216,8 @@
             }
 
             
-            _converse.ListChatRoomsModal = Backbone.VDOMView.extend({
+            _converse.ListChatRoomsModal = _converse.BootstrapModal.extend({
+
                 events: {
                     'submit form': 'showRooms',
                     'click a.room-info': 'toggleRoomInfo',
@@ -226,11 +227,7 @@
                 },
 
                 initialize () {
-                    this.render().insertIntoDOM();
-                    this.modal = new bootstrap.Modal(this.el, {
-                        backdrop: 'static',
-                        keyboard: true
-                    });
+                    _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
                     this.model.on('change:muc_domain', this.onDomainChange, this);
                 },
 
@@ -241,16 +238,6 @@
                         'label_query': __('Show rooms'),
                         'server_placeholder': __('conference.example.org')
                     }));
-                },
-
-                insertIntoDOM () {
-                    const container_el = _converse.chatboxviews.el.querySelector('#converse-modals');
-                    container_el.insertAdjacentElement('beforeEnd', this.el);
-                },
-
-                show () {
-                    this.render();
-                    this.modal.show();
                 },
 
                 openRoom (ev) {
@@ -357,17 +344,10 @@
             });
 
 
-            _converse.AddChatRoomModal = Backbone.VDOMView.extend({
+            _converse.AddChatRoomModal = _converse.BootstrapModal.extend({
+
                 events: {
                     'submit form.add-chatroom': 'openChatRoom'
-                },
-
-                initialize () {
-                    this.render().insertIntoDOM();
-                    this.modal = new bootstrap.Modal(this.el, {
-                        backdrop: 'static',
-                        keyboard: true
-                    });
                 },
 
                 toHTML () {
@@ -378,16 +358,6 @@
                         'chatroom_placeholder': __('name@conference.example.org'),
                         'label_join': __('Join'),
                     }));
-                },
-
-                insertIntoDOM () {
-                    const container_el = _converse.chatboxviews.el.querySelector('#converse-modals');
-                    container_el.insertAdjacentElement('beforeEnd', this.el);
-                },
-
-                show () {
-                    this.render();
-                    this.modal.show();
                 },
 
                 parseRoomDataFromEvent (form) {
@@ -2235,12 +2205,12 @@
 
                 showAddRoomModal (ev) {
                     ev.preventDefault();
-                    this.add_room_modal.show();
+                    this.add_room_modal.show(ev);
                 },
 
                 showListRoomsModal(ev) {
                     ev.preventDefault();
-                    this.list_rooms_modal.show();
+                    this.list_rooms_modal.show(ev);
                 }
             });
 

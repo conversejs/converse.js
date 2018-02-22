@@ -78,6 +78,7 @@
         'converse-headline',
         'converse-mam',
         'converse-minimize',
+        'converse-modal',
         'converse-muc',
         'converse-muc-embedded',
         'converse-muc-views',

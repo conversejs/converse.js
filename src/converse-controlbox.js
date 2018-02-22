@@ -229,6 +229,14 @@
                     closed: !_converse.show_controlbox_by_default
                 })
 
+
+            _converse.AddContactModal = Backbone.VDOMView.extend({
+                events: {
+                    'submit form': 'addContact'
+                },
+            });
+
+
             _converse.ControlBoxView = _converse.ChatBoxView.extend({
                 tagName: 'div',
                 className: 'chatbox',

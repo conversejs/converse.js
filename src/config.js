@@ -137,6 +137,7 @@ require.config({
     shim: {
         'backbone.overview':        { deps: ['backbone.nativeview'] },
         'backbone.orderedlistview': { deps: ['backbone.nativeview'] },
+        'backbone.vdomview':        { deps: ['backbone.nativeview'] },
         'awesomplete':              { exports: 'Awesomplete'},
         'emojione':                 { exports: 'emojione'},
         'xss':  {

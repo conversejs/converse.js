@@ -221,14 +221,13 @@
 
             const LABEL_CONTACTS = __('Contacts');
 
-            _converse.addControlBox = () => {
+            _converse.addControlBox = () =>
                 _converse.chatboxes.add({
                     id: 'controlbox',
                     box_id: 'controlbox',
                     type: 'controlbox',
                     closed: !_converse.show_controlbox_by_default
                 })
-            };
 
             _converse.ControlBoxView = _converse.ChatBoxView.extend({
                 tagName: 'div',
@@ -291,7 +290,6 @@
                         _converse.api.waitUntil('rosterViewInitialized')
                             .then(this.insertRoster.bind(this))
                             .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                        this.model.save();
                     }
                 },
 
@@ -350,11 +348,13 @@
                     this.el.classList.add("col-xl-2");
                     this.el.classList.add("col-md-3");
 
-                    this.controlbox_pane = new _converse.ControlBoxPane();
-                    this.el.querySelector('.controlbox-panes').insertAdjacentElement(
-                        'afterBegin',
-                        this.controlbox_pane.el
-                    )
+                    if (!this.controlbox_pane) {
+                        this.controlbox_pane = new _converse.ControlBoxPane();
+                        this.el.querySelector('.controlbox-panes').insertAdjacentElement(
+                            'afterBegin',
+                            this.controlbox_pane.el
+                        )
+                    }
                 },
 
                 close (ev) {
@@ -706,34 +706,23 @@
             Promise.all([
                 _converse.api.waitUntil('connectionInitialized'),
                 _converse.api.waitUntil('chatBoxesInitialized')
-            ]).then(() => {
-                _converse.addControlBox();
-                _converse.chatboxes.get('controlbox').save({connected:true});
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            ]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
+            _converse.on('chatBoxesFetched', () => {
+                const controlbox = _converse.chatboxes.get('controlbox') || _converse.addControlBox();
+                controlbox.save({connected:true});
+            });
 
             const disconnect =  function () {
                 /* Upon disconnection, set connected to `false`, so that if
-                 * we reconnect,
-                 * "onConnected" will be called, to fetch the roster again and
-                 * to send out a presence stanza.
+                 * we reconnect, "onConnected" will be called,
+                 * to fetch the roster again and to send out a presence stanza.
                  */
                 const view = _converse.chatboxviews.get('controlbox');
                 view.model.set({connected:false});
                 view.renderLoginPanel();
             };
             _converse.on('disconnected', disconnect);
-
-            const afterReconnected = function () {
-                /* After reconnection makes sure the controlbox is aware.
-                 */
-                const view = _converse.chatboxviews.get('controlbox');
-                if (view.model.get('connected')) {
-                    _converse.chatboxviews.get("controlbox").onConnected();
-                } else {
-                    view.model.set({connected:true});
-                }
-            };
-            _converse.on('reconnected', afterReconnected);
         }
     });
 }));

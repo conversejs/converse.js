@@ -614,19 +614,24 @@
             }
         };
 
-        this.initStatus = () =>
-            new Promise((resolve, reject) => {
-                const promise = new u.getResolveablePromise();
+        this.initStatus = (reconnecting) => {
+
+            // If there's no xmppstatus obj, then we were never connected to
+            // begin with, so we set reconnecting to false.
+            reconnecting = _.isUndefined(_converse.xmppstatus) ? false : reconnecting;
+            if (reconnecting) {
+                _converse.onStatusInitialized(reconnecting);
+            } else {
                 this.xmppstatus = new this.XMPPStatus();
                 const id = b64_sha1(`converse.xmppstatus-${_converse.bare_jid}`);
                 this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
                 this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
                 this.xmppstatus.fetch({
-                    success: resolve,
-                    error: resolve
+                    success: _.partial(_converse.onStatusInitialized, reconnecting),
+                    error: _.partial(_converse.onStatusInitialized, reconnecting)
                 });
-                _converse.emit('statusInitialized');
-            });
+            }
+        }
 
         this.initSession = function () {
             _converse.session = new Backbone.Model();
@@ -808,6 +813,7 @@
              * populating the roster etc.) necessary once the connection has
              * been established.
              */
+            _converse.emit('statusInitialized');
             if (reconnecting) {
                 // No need to recreate the roster, otherwise we lose our
                 // cached data. However we still emit an event, to give
@@ -821,9 +827,12 @@
             _converse.roster.onConnected();
             _converse.populateRoster(reconnecting);
             _converse.registerPresenceHandler();
-            if (!reconnecting) {
+            if (reconnecting) {
+                _converse.emit('reconnected');
+            } else {
                 init_promise.resolve();
                 _converse.emit('initialized');
+                _converse.emit('connected');
             }
         };
 
@@ -838,28 +847,11 @@
             /* Called as soon as a new connection has been established, either
              * by logging in or by attaching to an existing BOSH session.
              */
-            // Solves problem of returned PubSub BOSH response not received
-            // by browser.
-            _converse.connection.flush();
-
+            _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
             _converse.setUserJid();
             _converse.initSession();
             _converse.enableCarbons();
-
-            // If there's no xmppstatus obj, then we were never connected to
-            // begin with, so we set reconnecting to false.
-            reconnecting = _.isUndefined(_converse.xmppstatus) ? false : reconnecting;
-            if (reconnecting) {
-                _converse.onStatusInitialized(true);
-                _converse.emit('reconnected');
-            } else {
-                _converse.initStatus()
-                    .then(
-                        _.partial(_converse.onStatusInitialized, false),
-                        _.partial(_converse.onStatusInitialized, false))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                _converse.emit('connected');
-            }
+            _converse.initStatus(reconnecting)
         };
 
         this.RosterContact = Backbone.Model.extend({

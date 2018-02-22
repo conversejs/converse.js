@@ -41,12 +41,6 @@
                 const { _converse } = this.__super__;
                 _converse.chatboxviews.closeAllChatBoxes();
                 return this.__super__.initStatus.apply(this, arguments);
-            },
-
-            onStatusInitialized: function () {
-                const { _converse } = this.__super__;
-                _converse.chatboxes.onConnected();
-                return this.__super__.onStatusInitialized.apply(this, arguments);
             }
         },
 
@@ -482,6 +476,8 @@
                 _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
                 delete _converse.chatboxes.browserStorage;
             });
+
+            _converse.api.listen.on('statusInitialized', () => _converse.chatboxes.onConnected());
             /************************ END Event Handlers ************************/
 
 

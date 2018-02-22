@@ -546,25 +546,17 @@
                         return;
                     }
                     _converse.bookmarks = new _converse.Bookmarks();
-                    _converse.bookmarks.fetchBookmarks().then(() => {
-                        _converse.bookmarksview = new _converse.BookmarksView(
-                            {'model': _converse.bookmarks}
-                        );
-                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR))
-                      .then(() => {
-                          _converse.emit('bookmarksInitialized');
-                      });
-                }).catch((e) => {
-                    _converse.log(e, Strophe.LogLevel.ERROR);
-                    _converse.emit('bookmarksInitialized');
+                    _converse.bookmarksview = new _converse.BookmarksView({'model': _converse.bookmarks});
+                    _converse.bookmarks.fetchBookmarks()
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+                        .then(() => _converse.emit('bookmarksInitialized'));
                 });
-            };
+            }
 
-            Promise.all([
-                _converse.api.waitUntil('chatBoxesFetched'),
-                _converse.api.waitUntil('roomsPanelRendered')
-            ]).then(initBookmarks)
-              .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            u.onMultipleEvents([
+                    {'object': _converse, 'event': 'chatBoxesFetched'},
+                    {'object': _converse, 'event': 'roomsPanelRendered'}
+                ], initBookmarks);
 
             _converse.on('connected', () => {
                 // Add a handler for bookmarks pushed from other connected clients

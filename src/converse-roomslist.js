@@ -237,18 +237,18 @@
                 );
             };
 
-            Promise.all([
-                _converse.api.waitUntil('chatBoxesFetched'),
-                _converse.api.waitUntil('roomsPanelRendered')
-            ]).then(() => {
-                if (_converse.allow_bookmarks) {
-                    _converse.api.waitUntil('bookmarksInitialized').then(
-                        initRoomsListView
-                    );
-                } else {
-                    initRoomsListView();
-                }
-            });
+            if (_converse.allow_bookmarks) {
+                u.onMultipleEvents([
+                        {'object': _converse, 'event': 'chatBoxesFetched'},
+                        {'object': _converse, 'event': 'roomsPanelRendered'},
+                        {'object': _converse, 'event': 'bookmarksInitialized'}
+                    ], initRoomsListView);
+            } else {
+                u.onMultipleEvents([
+                        {'object': _converse, 'event': 'chatBoxesFetched'},
+                        {'object': _converse, 'event': 'roomsPanelRendered'}
+                    ], initRoomsListView);
+            }
 
             _converse.api.listen.on('reconnected', initRoomsListView);
         }

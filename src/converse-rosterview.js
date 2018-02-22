@@ -210,11 +210,11 @@
                 },
 
                 shouldBeVisible () {
-                    return _converse.roster.length >= 7 || this.isActive();
+                    return _converse.roster.length >= 5 || this.isActive();
                 },
 
                 showOrHide () {
-                    if (this.shouldBeVisible) {
+                    if (this.shouldBeVisible()) {
                         this.show();
                     } else {
                         this.hide();

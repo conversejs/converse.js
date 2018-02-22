@@ -5,6 +5,7 @@
 - Avoid `eval` (via `_.template` from lodash).
 - Bugfix. Avatars weren't being shown.
 - Bugfix. Bookmarks list and open rooms list weren't recreated after logging in for a 2nd time (without reloading the browser).
+- Don't show bookmark toggles when PEP bookmarking not supported by the XMPP server.
 - Add LibreJS support
 
 ## 3.3.3 (2018-02-14)

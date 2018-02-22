@@ -87,11 +87,10 @@
                     this.__super__.renderHeading.apply(this, arguments);
                     const { _converse } = this.__super__;
                     if (_converse.allow_bookmarks) {
-                        _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then((identity) => {
-                            if (_.isNil(identity)) {
-                                return;
+                        _converse.checkBookmarksSupport().then((supported) => {
+                            if (supported) {
+                                this.renderBookmarkToggle();
                             }
-                            this.renderBookmarkToggle();
                         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
                 },
@@ -530,26 +529,31 @@
                 }
             });
 
+            _converse.checkBookmarksSupport = function () {
+                return new Promise((resolve, reject) => {
+                    Promise.all([
+                        _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid),
+                        _converse.api.disco.supports(Strophe.NS.PUBSUB+'#publish-options', _converse.bare_jid)
+                    ]).then((args) => {
+                        resolve(args[0] && (args[1].supported || _converse.allow_public_bookmarks));
+                    });
+                });
+            }
+
             const initBookmarks = function () {
                 if (!_converse.allow_bookmarks) {
                     return;
                 }
-                Promise.all([
-                    _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid),
-                    _converse.api.disco.supports(Strophe.NS.PUBSUB+'#publish-options', _converse.bare_jid)
-                ]).then((args) => {
-                    const identity = args[0],
-                          options_support = args[1];
-
-                    if (_.isNil(identity) || (!options_support.supported && !_converse.allow_public_bookmarks)) {
+                _converse.checkBookmarksSupport().then((supported) => {
+                    if (supported) {
+                        _converse.bookmarks = new _converse.Bookmarks();
+                        _converse.bookmarksview = new _converse.BookmarksView({'model': _converse.bookmarks});
+                        _converse.bookmarks.fetchBookmarks()
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+                            .then(() => _converse.emit('bookmarksInitialized'));
+                    } else {
                         _converse.emit('bookmarksInitialized');
-                        return;
                     }
-                    _converse.bookmarks = new _converse.Bookmarks();
-                    _converse.bookmarksview = new _converse.BookmarksView({'model': _converse.bookmarks});
-                    _converse.bookmarks.fetchBookmarks()
-                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
-                        .then(() => _converse.emit('bookmarksInitialized'));
                 });
             }
 

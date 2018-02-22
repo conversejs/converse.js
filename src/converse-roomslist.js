@@ -118,7 +118,11 @@
                 toHTML () {
                     return tpl_rooms_list_item(
                         _.extend(this.model.toJSON(), {
-                            'allow_bookmarks': _converse.allow_bookmarks,
+                            // XXX: By the time this renders, the _converse.bookmarks
+                            // collection should already exist if bookmarks are
+                            // supported by the XMPP server. So we can use it
+                            // as a check for support (other ways of checking are async).
+                            'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
                             'info_leave_room': __('Leave this room'),
                             'info_remove_bookmark': __('Unbookmark this room'),
                             'info_add_bookmark': __('Bookmark this room'),

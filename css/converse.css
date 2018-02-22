@@ -4993,8 +4993,7 @@ body.reset {
   #conversejs .centered {
     text-align: center;
     display: block;
-    margin: 0;
-    padding: 10% 0; }
+    margin: 0; }
   #conversejs .hor_centered {
     text-align: center;
     display: block;
@@ -5653,6 +5652,22 @@ body.reset {
   color: #A8ABA1; }
 #conversejs .set-xmpp-status .fa-times-circle, #conversejs .xmpp-status .fa-times-circle, #conversejs .roster-contacts .fa-times-circle {
   color: #A8ABA1; }
+#conversejs .room-info {
+  font-size: 12px;
+  font-style: normal;
+  font-weight: normal; }
+  #conversejs .room-info li.room-info {
+    display: block;
+    margin-left: 5px; }
+  #conversejs .room-info p.room-info {
+    line-height: 16px;
+    margin: 0;
+    display: block;
+    white-space: normal; }
+#conversejs div.room-info {
+  padding: 0.3em 0;
+  clear: left;
+  width: 100%; }
 #conversejs #converse-modals .set-xmpp-status {
   margin: 1em; }
   #conversejs #converse-modals .set-xmpp-status .custom-control-label {
@@ -5795,22 +5810,6 @@ body.reset {
     #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list {
       margin: 0.5em 0;
       text-align: left; }
-      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .room-info {
-        font-size: 12px;
-        font-style: normal;
-        font-weight: normal; }
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .room-info li.room-info {
-          display: block;
-          margin-left: 5px; }
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .room-info p.room-info {
-          line-height: 16px;
-          margin: 0;
-          display: block;
-          white-space: normal; }
-      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list div.room-info {
-        padding: 0.3em 0;
-        clear: left;
-        width: 100%; }
       #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom,
       #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom {
         border: none;

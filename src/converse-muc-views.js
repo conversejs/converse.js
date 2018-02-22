@@ -26,6 +26,7 @@
         "tpl!chatroom_sidebar",
         "tpl!chatroom_toolbar",
         "tpl!info",
+        "tpl!list_chatrooms_modal",
         "tpl!occupant",
         "tpl!room_description",
         "tpl!room_item",
@@ -50,6 +51,7 @@
     tpl_chatroom_sidebar,
     tpl_chatroom_toolbar,
     tpl_info,
+    tpl_list_chatrooms_modal,
     tpl_occupant,
     tpl_room_description,
     tpl_room_item,
@@ -77,7 +79,6 @@
         'moderated': 'unmoderated',
         'unmoderated': 'moderated'
     };
-
 
     converse.plugins.add('converse-muc-views', {
         /* Dependencies are other plugins which might be
@@ -150,6 +151,212 @@
             _converse.api.promises.add(['roomsPanelRendered']);
 
 
+            function insertRoomInfo (el, stanza) {
+                /* Insert room info (based on returned #disco IQ stanza)
+                 *
+                 * Parameters:
+                 *  (HTMLElement) el: The HTML DOM element that should
+                 *      contain the info.
+                 *  (XMLElement) stanza: The IQ stanza containing the room
+                 *      info.
+                 */
+                // All MUC features found here: http://xmpp.org/registrar/disco-features.html
+                el.querySelector('span.spinner').remove();
+                el.querySelector('a.room-info').classList.add('selected');
+                el.insertAdjacentHTML(
+                    'beforeEnd', 
+                    tpl_room_description({
+                        'jid': stanza.getAttribute('from'),
+                        'desc': _.get(_.head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
+                        'occ': _.get(_.head(sizzle('field[var="muc#roominfo_occupants"] value', stanza)), 'textContent'),
+                        'hidden': sizzle('feature[var="muc_hidden"]', stanza).length,
+                        'membersonly': sizzle('feature[var="muc_membersonly"]', stanza).length,
+                        'moderated': sizzle('feature[var="muc_moderated"]', stanza).length,
+                        'nonanonymous': sizzle('feature[var="muc_nonanonymous"]', stanza).length,
+                        'open': sizzle('feature[var="muc_open"]', stanza).length,
+                        'passwordprotected': sizzle('feature[var="muc_passwordprotected"]', stanza).length,
+                        'persistent': sizzle('feature[var="muc_persistent"]', stanza).length,
+                        'publicroom': sizzle('feature[var="muc_publicroom"]', stanza).length,
+                        'semianonymous': sizzle('feature[var="muc_semianonymous"]', stanza).length,
+                        'temporary': sizzle('feature[var="muc_temporary"]', stanza).length,
+                        'unmoderated': sizzle('feature[var="muc_unmoderated"]', stanza).length,
+                        'label_desc': __('Description:'),
+                        'label_jid': __('Room Address (JID):'),
+                        'label_occ': __('Occupants:'),
+                        'label_features': __('Features:'),
+                        'label_requires_auth': __('Requires authentication'),
+                        'label_hidden': __('Hidden'),
+                        'label_requires_invite': __('Requires an invitation'),
+                        'label_moderated': __('Moderated'),
+                        'label_non_anon': __('Non-anonymous'),
+                        'label_open_room': __('Open room'),
+                        'label_permanent_room': __('Permanent room'),
+                        'label_public': __('Public'),
+                        'label_semi_anon':  __('Semi-anonymous'),
+                        'label_temp_room':  __('Temporary room'),
+                        'label_unmoderated': __('Unmoderated')
+                    }));
+            }
+
+            function toggleRoomInfo (ev) {
+                /* Show/hide extra information about a room in a listing. */
+                const parent_el = u.ancestor(ev.target, '.room-item'),
+                        div_el = parent_el.querySelector('div.room-info');
+                if (div_el) {
+                    u.slideIn(div_el).then(u.removeElement)
+                    parent_el.querySelector('a.room-info').classList.remove('selected');
+                } else {
+                    parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
+                    _converse.connection.disco.info(
+                        ev.target.getAttribute('data-room-jid'),
+                        null,
+                        _.partial(insertRoomInfo, parent_el)
+                    );
+                }
+            }
+
+            
+            _converse.ListChatRoomsModal = Backbone.VDOMView.extend({
+                events: {
+                    'submit form': 'showRooms',
+                    'click a.room-info': 'toggleRoomInfo',
+                    'change input[name=nick]': 'setNick',
+                    'change input[name=server]': 'setDomain',
+                    'click .open-room': 'openRoom'
+                },
+
+                initialize () {
+                    this.render().insertIntoDOM();
+                    this.modal = new bootstrap.Modal(this.el, {
+                        backdrop: 'static',
+                        keyboard: true
+                    });
+                    this.model.on('change:muc_domain', this.onDomainChange, this);
+                },
+
+                toHTML () {
+                    return tpl_list_chatrooms_modal(_.extend(this.model.toJSON(), {
+                        'heading_list_chatrooms': __('Query for Chatrooms'),
+                        'label_server_address': __('Server address'),
+                        'label_query': __('Show rooms'),
+                        'server_placeholder': __('conference.example.org')
+                    }));
+                },
+
+                insertIntoDOM () {
+                    const container_el = _converse.chatboxviews.el.querySelector('#converse-modals');
+                    container_el.insertAdjacentElement('beforeEnd', this.el);
+                },
+
+                show () {
+                    this.render();
+                    this.modal.show();
+                },
+
+                openRoom (ev) {
+                    ev.preventDefault();
+                    const jid = ev.target.getAttribute('data-room-jid');
+                    this.modal.hide();
+                    _converse.api.rooms.open(jid);
+                },
+
+                toggleRoomInfo (ev) {
+                    ev.preventDefault();
+                    toggleRoomInfo(ev);
+                },
+
+                onDomainChange (model) {
+                    if (_converse.auto_list_rooms) {
+                        this.updateRoomsList();
+                    }
+                },
+
+                roomStanzaItemToHTMLElement (room) {
+                    const name = Strophe.unescapeNode(
+                        room.getAttribute('name') ||
+                            room.getAttribute('jid')
+                    );
+                    const div = document.createElement('div');
+                    div.innerHTML = tpl_room_item({
+                        'name': name,
+                        'jid': room.getAttribute('jid'),
+                        'open_title': __('Click to open this room'),
+                        'info_title': __('Show more information on this room')
+                    });
+                    return div.firstChild;
+                },
+
+                removeSpinner () {
+                    _.each(this.el.querySelectorAll('span.spinner'),
+                        (el) => el.parentNode.removeChild(el)
+                    );
+                },
+
+                informNoRoomsFound () {
+                    const chatrooms_el = this.el.querySelector('.available-chatrooms');
+                    chatrooms_el.innerHTML = tpl_rooms_results({
+                        'feedback_text': __('No rooms found')
+                    });
+                    const input_el = this.el.querySelector('input#show-rooms');
+                    input_el.classList.remove('hidden')
+                    this.removeSpinner();
+                },
+
+                onRoomsFound (iq) {
+                    /* Handle the IQ stanza returned from the server, containing
+                     * all its public rooms.
+                     */
+                    const available_chatrooms = this.el.querySelector('.available-chatrooms');
+                    this.rooms = iq.querySelectorAll('query item');
+                    if (this.rooms.length) {
+                        // For translators: %1$s is a variable and will be
+                        // replaced with the XMPP server name
+                        available_chatrooms.innerHTML = tpl_rooms_results({
+                            'feedback_text': __('Rooms found')
+                        });
+                        const fragment = document.createDocumentFragment();
+                        const children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil)
+                        _.each(children, (child) => fragment.appendChild(child));
+                        available_chatrooms.appendChild(fragment);
+                        this.removeSpinner();
+                    } else {
+                        this.informNoRoomsFound();
+                    }
+                    return true;
+                },
+
+                updateRoomsList () {
+                    /* Send an IQ stanza to the server asking for all rooms
+                     */
+                    _converse.connection.sendIQ(
+                        $iq({
+                            to: this.model.get('muc_domain'),
+                            from: _converse.connection.jid,
+                            type: "get"
+                        }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS}),
+                        this.onRoomsFound.bind(this),
+                        this.informNoRoomsFound.bind(this),
+                        5000
+                    );
+                },
+
+                showRooms (ev) {
+                    ev.preventDefault();
+                    const data = new FormData(ev.target);
+                    this.model.save('muc_domain', data.get('server'));
+                    this.updateRoomsList();
+                },
+
+                setDomain (ev) {
+                    this.model.save({muc_domain: ev.target.value});
+                },
+
+                setNick (ev) {
+                    this.model.save({nick: ev.target.value});
+                }
+            });
+
+
             _converse.AddChatRoomModal = Backbone.VDOMView.extend({
                 events: {
                     'submit form.add-chatroom': 'openChatRoom'
@@ -161,14 +368,15 @@
                         backdrop: 'static',
                         keyboard: true
                     });
-                    this.model.on('change:muc_domain', this.render, this);
                 },
 
                 toHTML () {
                     return tpl_add_chatroom_modal(_.extend(this.model.toJSON(), {
                         'heading_new_chatroom': __('Enter a new Chatroom'),
                         'label_room_address': __('Room address'),
-                        'label_nickname': __('Optional nickname')
+                        'label_nickname': __('Optional nickname'),
+                        'chatroom_placeholder': __('name@conference.example.org'),
+                        'label_join': __('Join'),
                     }));
                 },
 
@@ -2002,24 +2210,27 @@
                 id: 'chatrooms',
                 events: {
                     'click a.chatbox-btn.fa-users': 'showAddRoomModal',
-                    'change input[name=nick]': 'setNick',
-                    'change input[name=server]': 'setDomain',
-                    'click a.room-info': 'toggleRoomInfo',
-                    'click input#show-rooms': 'showRooms',
+                    'click a.chatbox-btn.fa-list-ul': 'showListRoomsModal',
+                    'click a.room-info': 'toggleRoomInfo'
                 },
 
                 initialize (cfg) {
                     this.add_room_modal = new _converse.AddChatRoomModal({'model': this.model});
-                    this.model.on('change:muc_domain', this.onDomainChange, this);
-                    this.model.on('change:nick', this.onNickChange, this);
+                    this.list_rooms_modal = new _converse.ListChatRoomsModal({'model': this.model});
                 },
 
                 render () {
                     this.el.innerHTML = tpl_room_panel({
                         'heading_chatrooms': __('Chatrooms'),
-                        'title_new_room': __('Click to add a new room')
+                        'title_new_room': __('Add a new room'),
+                        'title_list_rooms': __('Query for rooms')
                     });
                     return this;
+                },
+
+                toggleRoomInfo (ev) {
+                    ev.preventDefault();
+                    toggleRoomInfo(ev);
                 },
 
                 showAddRoomModal (ev) {
@@ -2027,182 +2238,9 @@
                     this.add_room_modal.show();
                 },
 
-
-                onDomainChange (model) {
-                    if (_converse.auto_list_rooms) {
-                        this.updateRoomsList();
-                    }
-                },
-
-                onNickChange (model) {
-                    const nick = this.el.querySelector('input.new-chatroom-nick');
-                    if (!_.isNull(nick)) {
-                        nick.value = model.get('nick');
-                    }
-                },
-
-                removeSpinner () {
-                    _.each(this.el.querySelectorAll('span.spinner'),
-                        (el) => el.parentNode.removeChild(el)
-                    );
-                },
-
-                informNoRoomsFound () {
-                    const chatrooms_el = this.el.querySelector('#available-chatrooms');
-                    chatrooms_el.innerHTML = tpl_rooms_results({
-                        'feedback_text': __('No rooms found')
-                    });
-                    const input_el = this.el.querySelector('input#show-rooms');
-                    input_el.classList.remove('hidden')
-                    this.removeSpinner();
-                },
-
-                roomStanzaItemToHTMLElement (room) {
-                    const name = Strophe.unescapeNode(
-                        room.getAttribute('name') ||
-                            room.getAttribute('jid')
-                    );
-                    const div = document.createElement('div');
-                    div.innerHTML = tpl_room_item({
-                        'name': name,
-                        'jid': room.getAttribute('jid'),
-                        'open_title': __('Click to open this room'),
-                        'info_title': __('Show more information on this room')
-                    });
-                    return div.firstChild;
-                },
-
-                onRoomsFound (iq) {
-                    /* Handle the IQ stanza returned from the server, containing
-                     * all its public rooms.
-                     */
-                    const available_chatrooms = this.el.querySelector('#available-chatrooms');
-                    this.rooms = iq.querySelectorAll('query item');
-                    if (this.rooms.length) {
-                        // For translators: %1$s is a variable and will be
-                        // replaced with the XMPP server name
-                        available_chatrooms.innerHTML = tpl_rooms_results({
-                            'feedback_text': __('Rooms found')
-                        });
-                        const fragment = document.createDocumentFragment();
-                        const children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil)
-                        _.each(children, (child) => fragment.appendChild(child));
-                        available_chatrooms.appendChild(fragment);
-                        const input_el = this.el.querySelector('input#show-rooms');
-                        input_el.classList.remove('hidden')
-                        this.removeSpinner();
-                    } else {
-                        this.informNoRoomsFound();
-                    }
-                    return true;
-                },
-
-                updateRoomsList () {
-                    /* Send an IQ stanza to the server asking for all rooms
-                     */
-                    _converse.connection.sendIQ(
-                        $iq({
-                            to: this.model.get('muc_domain'),
-                            from: _converse.connection.jid,
-                            type: "get"
-                        }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS}),
-                        this.onRoomsFound.bind(this),
-                        this.informNoRoomsFound.bind(this),
-                        5000
-                    );
-                },
-
-                showRooms () {
-                    const chatrooms_el = this.el.querySelector('#available-chatrooms');
-                    const server_el = this.el.querySelector('input.new-chatroom-server');
-                    const server = server_el.value;
-                    if (!server) {
-                        server_el.classList.add('error');
-                        return;
-                    }
-                    this.el.querySelector('input.new-chatroom-name').classList.remove('error');
-                    server_el.classList.remove('error');
-                    chatrooms_el.innerHTML = '';
-
-                    const input_el = this.el.querySelector('input#show-rooms');
-                    input_el.classList.add('hidden')
-                    input_el.insertAdjacentHTML('afterend', tpl_spinner());
-
-                    this.model.save({muc_domain: server});
-                    this.updateRoomsList();
-                },
-
-                insertRoomInfo (el, stanza) {
-                    /* Insert room info (based on returned #disco IQ stanza)
-                     *
-                     * Parameters:
-                     *  (HTMLElement) el: The HTML DOM element that should
-                     *      contain the info.
-                     *  (XMLElement) stanza: The IQ stanza containing the room
-                     *      info.
-                     */
-                    // All MUC features found here: http://xmpp.org/registrar/disco-features.html
-                    el.querySelector('span.spinner').remove();
-                    el.querySelector('a.room-info').classList.add('selected');
-                    el.insertAdjacentHTML(
-                        'beforeEnd', 
-                        tpl_room_description({
-                            'jid': stanza.getAttribute('from'),
-                            'desc': _.get(_.head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
-                            'occ': _.get(_.head(sizzle('field[var="muc#roominfo_occupants"] value', stanza)), 'textContent'),
-                            'hidden': sizzle('feature[var="muc_hidden"]', stanza).length,
-                            'membersonly': sizzle('feature[var="muc_membersonly"]', stanza).length,
-                            'moderated': sizzle('feature[var="muc_moderated"]', stanza).length,
-                            'nonanonymous': sizzle('feature[var="muc_nonanonymous"]', stanza).length,
-                            'open': sizzle('feature[var="muc_open"]', stanza).length,
-                            'passwordprotected': sizzle('feature[var="muc_passwordprotected"]', stanza).length,
-                            'persistent': sizzle('feature[var="muc_persistent"]', stanza).length,
-                            'publicroom': sizzle('feature[var="muc_publicroom"]', stanza).length,
-                            'semianonymous': sizzle('feature[var="muc_semianonymous"]', stanza).length,
-                            'temporary': sizzle('feature[var="muc_temporary"]', stanza).length,
-                            'unmoderated': sizzle('feature[var="muc_unmoderated"]', stanza).length,
-                            'label_desc': __('Description:'),
-                            'label_jid': __('Room Address (JID):'),
-                            'label_occ': __('Occupants:'),
-                            'label_features': __('Features:'),
-                            'label_requires_auth': __('Requires authentication'),
-                            'label_hidden': __('Hidden'),
-                            'label_requires_invite': __('Requires an invitation'),
-                            'label_moderated': __('Moderated'),
-                            'label_non_anon': __('Non-anonymous'),
-                            'label_open_room': __('Open room'),
-                            'label_permanent_room': __('Permanent room'),
-                            'label_public': __('Public'),
-                            'label_semi_anon':  __('Semi-anonymous'),
-                            'label_temp_room':  __('Temporary room'),
-                            'label_unmoderated': __('Unmoderated')
-                        }));
-                },
-
-                toggleRoomInfo (ev) {
-                    /* Show/hide extra information about a room in the listing.
-                     */
-                    const parent_el = u.ancestor(ev.target, '.room-item'),
-                          div_el = parent_el.querySelector('div.room-info');
-                    if (div_el) {
-                        u.slideIn(div_el).then(u.removeElement)
-                        parent_el.querySelector('a.room-info').classList.remove('selected');
-                    } else {
-                        parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
-                        _converse.connection.disco.info(
-                            ev.target.getAttribute('data-room-jid'),
-                            null,
-                            _.partial(this.insertRoomInfo, parent_el)
-                        );
-                    }
-                },
-
-                setDomain (ev) {
-                    this.model.save({muc_domain: ev.target.value});
-                },
-
-                setNick (ev) {
-                    this.model.save({nick: ev.target.value});
+                showListRoomsModal(ev) {
+                    ev.preventDefault();
+                    this.list_rooms_modal.show();
                 }
             });
 

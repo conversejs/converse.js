@@ -11,14 +11,14 @@
             <div class="modal-body">
                 <form class="converse-form add-chatroom">
                     <div class="form-group">
-                        <label for="chatroom">{{{o.label_room_address}}}:</label>
-                        <input type="text" required="required" name="chatroom" class="form-control" placeholder="name@conference.example.org">
+                        <label for="server">{{{o.label_room_address}}}:</label>
+                        <input type="text" value="{{{o.muc_domain}}}" required="required" name="chatroom" class="form-control" placeholder="{{{o.chatroom_placeholder}}}">
                     </div>
                     <div class="form-group">
                         <label for="chatroom">{{{o.label_nickname}}}:</label>
-                        <input type="text" name="nickname" class="form-control">
+                        <input type="text" name="nickname" value="{{{o.nick}}}" class="form-control">
                     </div>
-                    <input type="submit" class="btn btn-primary" name="join" value="Join">
+                    <input type="submit" class="btn btn-primary" name="join" value="{{{o.label_join}}}">
                 </form>
             </div>
         </div>

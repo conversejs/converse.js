@@ -5804,7 +5804,7 @@ body.reset {
     #conversejs #controlbox #chatrooms .rooms-list-container .rooms-toggle {
       display: block;
       color: #777;
-      margin-top: 1em; }
+      margin: 0.5em 0 0.5em 0; }
       #conversejs #controlbox #chatrooms .rooms-list-container .rooms-toggle:hover {
         color: #585B51; }
     #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list {
@@ -6007,7 +6007,7 @@ body.reset {
       width: 100%; }
   #conversejs #converse-roster .roster-contacts {
     padding: 0;
-    margin: 0.2em 0;
+    margin: 0 0 0.2em 0;
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto; }
@@ -6016,7 +6016,7 @@ body.reset {
       color: #777;
       font-weight: normal;
       text-shadow: 0 1px 0 #FAFAFA;
-      margin: 1em 0 0 0; }
+      margin: 0.5em 0 0.5em 0; }
       #conversejs #converse-roster .roster-contacts .roster-group .group-toggle {
         color: #777;
         display: block;

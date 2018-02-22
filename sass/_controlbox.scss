@@ -237,7 +237,7 @@
                 .rooms-toggle {
                     display: block;
                     color: $text-color;
-                    margin-top: 1em;
+                    margin: 0.5em 0 0.5em 0;
                     &:hover {
                         color: $dark-gray-color;
                     }

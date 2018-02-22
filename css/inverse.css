@@ -4773,7 +4773,7 @@ body.reset {
     height: auto; }
   #conversejs div, #conversejs span, #conversejs h1, #conversejs h2, #conversejs h3, #conversejs h4, #conversejs h5, #conversejs h6, #conversejs p, #conversejs blockquote,
   #conversejs pre, #conversejs a, #conversejs em, #conversejs img, #conversejs strong, #conversejs dl, #conversejs dt, #conversejs dd, #conversejs ol, #conversejs ul, #conversejs li,
-  #conversejs fieldset, #conversejs form, #conversejs label, #conversejs legend, #conversejs table, #conversejs caption, #conversejs tbody,
+  #conversejs fieldset, #conversejs form, #conversejs legend, #conversejs table, #conversejs caption, #conversejs tbody,
   #conversejs tfoot, #conversejs thead, #conversejs tr, #conversejs th, #conversejs td, #conversejs article, #conversejs aside, #conversejs canvas, #conversejs details,
   #conversejs embed, #conversejs figure, #conversejs figcaption, #conversejs footer, #conversejs header, #conversejs hgroup, #conversejs menu,
   #conversejs nav, #conversejs output, #conversejs ruby, #conversejs section, #conversejs summary, #conversejs time, #conversejs mark, #conversejs audio, #conversejs video {
@@ -5016,8 +5016,6 @@ body.reset {
     border-radius: 25%; }
   #conversejs .activated {
     display: block !important; }
-  #conversejs .pure-form-message {
-    padding: 0.5em 0; }
   #conversejs .button-primary {
     color: white;
     background-color: #E7A151; }
@@ -5032,46 +5030,44 @@ body.reset {
     right: 0.2em;
     cursor: pointer;
     font-size: 0.75rem; }
-  #conversejs form.pure-form.converse-form {
+  #conversejs form.converse-form {
     background: white;
     padding: 1em; }
-    #conversejs form.pure-form.converse-form legend {
+    #conversejs form.converse-form legend {
       color: #777;
       font-size: 125%;
       margin-bottom: 1.5em; }
-    #conversejs form.pure-form.converse-form input[type=checkbox] {
+    #conversejs form.converse-form input[type=checkbox] {
       display: block; }
-    #conversejs form.pure-form.converse-form select,
-    #conversejs form.pure-form.converse-form input[type=password],
-    #conversejs form.pure-form.converse-form input[type=number],
-    #conversejs form.pure-form.converse-form input[type=text] {
+    #conversejs form.converse-form select,
+    #conversejs form.converse-form input[type=password],
+    #conversejs form.converse-form input[type=number],
+    #conversejs form.converse-form input[type=text] {
       min-width: 50%; }
-    #conversejs form.pure-form.converse-form label {
-      font-size: 18px; }
-    #conversejs form.pure-form.converse-form input[type=text],
-    #conversejs form.pure-form.converse-form input[type=password],
-    #conversejs form.pure-form.converse-form input[type=number],
-    #conversejs form.pure-form.converse-form input[type=button],
-    #conversejs form.pure-form.converse-form input[type=submit] {
+    #conversejs form.converse-form input[type=text],
+    #conversejs form.converse-form input[type=password],
+    #conversejs form.converse-form input[type=number],
+    #conversejs form.converse-form input[type=button],
+    #conversejs form.converse-form input[type=submit] {
       padding: 0.5em; }
-    #conversejs form.pure-form.converse-form input[type=button],
-    #conversejs form.pure-form.converse-form input[type=submit] {
+    #conversejs form.converse-form input[type=button],
+    #conversejs form.converse-form input[type=submit] {
       padding-left: 1em;
       padding-right: 1em;
       margin: 0.5em 0;
       border: none; }
-    #conversejs form.pure-form.converse-form input.error {
+    #conversejs form.converse-form input.error {
       border: 1px solid #A53214;
       color: #777; }
-    #conversejs form.pure-form.converse-form .form-help {
+    #conversejs form.converse-form .form-help {
       color: gray;
       font-size: 85%;
       padding-top: 0.5em; }
-      #conversejs form.pure-form.converse-form .form-help:hover {
+      #conversejs form.converse-form .form-help:hover {
         color: #777; }
-      #conversejs form.pure-form.converse-form .form-help.error {
+      #conversejs form.converse-form .form-help.error {
         color: #A53214; }
-  #conversejs form.pure-form.converse-centered-form {
+  #conversejs form.converse-centered-form {
     text-align: center;
     width: 100%; }
   #conversejs .chat-textarea-chatbox-selected {
@@ -5155,20 +5151,20 @@ body {
         padding-right: 10%;
         font-size: 120%; }
 
-#conversejs.fullscreen form.pure-form.converse-form {
+#conversejs.fullscreen form.converse-form {
   margin: 1em; }
-  #conversejs.fullscreen form.pure-form.converse-form input[type=checkbox] {
+  #conversejs.fullscreen form.converse-form input[type=checkbox] {
     margin-left: 1em;
     display: inline;
     margin-bottom: 2em; }
-  #conversejs.fullscreen form.pure-form.converse-form input[type=text],
-  #conversejs.fullscreen form.pure-form.converse-form input[type=password],
-  #conversejs.fullscreen form.pure-form.converse-form input[type=number],
-  #conversejs.fullscreen form.pure-form.converse-form input[type=button],
-  #conversejs.fullscreen form.pure-form.converse-form input[type=submit] {
+  #conversejs.fullscreen form.converse-form input[type=text],
+  #conversejs.fullscreen form.converse-form input[type=password],
+  #conversejs.fullscreen form.converse-form input[type=number],
+  #conversejs.fullscreen form.converse-form input[type=button],
+  #conversejs.fullscreen form.converse-form input[type=submit] {
     height: 2.2em; }
-  #conversejs.fullscreen form.pure-form.converse-form input[type=button],
-  #conversejs.fullscreen form.pure-form.converse-form input[type=submit] {
+  #conversejs.fullscreen form.converse-form input[type=button],
+  #conversejs.fullscreen form.converse-form input[type=submit] {
     padding-left: 1em;
     padding-right: 1em;
     margin-right: 1em; }
@@ -5645,7 +5641,7 @@ body {
 @media screen and (max-width: 767px) {
   #conversejs > .row {
     flex-direction: row-reverse; }
-  #conversejs #login-dialog .pure-form.converse-form {
+  #conversejs #login-dialog .converse-form {
     padding: 3em 2em 3em; }
   #conversejs .sidebar {
     display: block; }

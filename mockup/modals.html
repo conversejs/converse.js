@@ -149,12 +149,16 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form class="pure-form pure-form-stacked converse-form add-chatroom">
+                <form class="converse-form add-chatroom">
                     <div class="form-group">
-                        <label for="chatroom">Room address</label>
+                        <label for="chatroom">Room address:</label>
                         <input type="text" name="chatroom" class="form-control" placeholder="room@conference.example.org">
-                        <input type="submit" class="btn btn-primary" name="join" value="Join">
                     </div>
+                    <div class="form-group">
+                        <label for="chatroom">Nickname:</label>
+                        <input type="text" name="nickname" class="form-control">
+                    </div>
+                    <input type="submit" class="btn btn-primary" name="join" value="Join">
                 </form>
             </div>
         </div>

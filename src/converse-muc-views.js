@@ -21,7 +21,6 @@
         "tpl!chatroom_form",
         "tpl!chatroom_head",
         "tpl!chatroom_invite",
-        "tpl!chatroom_join_form",
         "tpl!chatroom_nickname_form",
         "tpl!chatroom_password_form",
         "tpl!chatroom_sidebar",
@@ -46,7 +45,6 @@
     tpl_chatroom_form,
     tpl_chatroom_head,
     tpl_chatroom_invite,
-    tpl_chatroom_join_form,
     tpl_chatroom_nickname_form,
     tpl_chatroom_password_form,
     tpl_chatroom_sidebar,
@@ -154,6 +152,7 @@
 
             _converse.AddChatRoomModal = Backbone.VDOMView.extend({
                 events: {
+                    'submit form.add-chatroom': 'openChatRoom'
                 },
 
                 initialize () {
@@ -162,13 +161,44 @@
                         backdrop: 'static',
                         keyboard: true
                     });
+                    this.model.on('change:muc_domain', this.render, this);
                 },
 
                 toHTML () {
                     return tpl_add_chatroom_modal(_.extend(this.model.toJSON(), {
                         'heading_new_chatroom': __('Enter a new Chatroom'),
-                        'label_room_name': __('Room'),
+                        'label_room_address': __('Room address'),
+                        'label_nickname': __('Optional nickname')
                     }));
+                },
+
+                insertIntoDOM () {
+                    const container_el = _converse.chatboxviews.el.querySelector('#converse-modals');
+                    container_el.insertAdjacentElement('beforeEnd', this.el);
+                },
+
+                show () {
+                    this.render();
+                    this.modal.show();
+                },
+
+                parseRoomDataFromEvent (form) {
+                    const data = new FormData(form);
+                    const jid = data.get('chatroom');
+                    const server = Strophe.getDomainFromJid(jid);
+                    this.model.save('muc_domain', server);
+                    return {
+                        'jid': jid,
+                        'nick': data.get('nickname')
+                    }
+                },
+
+                openChatRoom (ev) {
+                    ev.preventDefault();
+                    const data = this.parseRoomDataFromEvent(ev.target);
+                    _converse.api.rooms.open(data.jid, data);
+                    this.modal.hide();
+                    ev.target.reset();
                 }
             });
 
@@ -1962,25 +1992,6 @@
             });
 
 
-            _converse.MUCJoinForm = Backbone.VDOMView.extend({
-                initialize () {
-                    this.model.on('change:muc_domain', this.render, this);
-                },
-
-                toHTML () {
-                    return tpl_chatroom_join_form(_.assign(this.model.toJSON(), {
-                        'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
-                        'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
-                        'label_room_name': __('Room name'),
-                        'label_nickname': __('Nickname'),
-                        'label_server': __('Server'),
-                        'label_join': __('Join Room'),
-                        'label_show_rooms': __('Show rooms')
-                    }));
-                }
-            });
-
-
             _converse.RoomsPanel = Backbone.NativeView.extend({
                 /* Backbone.NativeView which renders MUC section of the control box.
                  *
@@ -1990,15 +2001,15 @@
                 className: 'controlbox-pane',
                 id: 'chatrooms',
                 events: {
-                    'submit form.add-chatroom': 'openChatRoom',
-                    'click input#show-rooms': 'showRooms',
-                    'click a.room-info': 'toggleRoomInfo',
+                    'click a.chatbox-btn.fa-users': 'showAddRoomModal',
+                    'change input[name=nick]': 'setNick',
                     'change input[name=server]': 'setDomain',
-                    'change input[name=nick]': 'setNick'
+                    'click a.room-info': 'toggleRoomInfo',
+                    'click input#show-rooms': 'showRooms',
                 },
 
                 initialize (cfg) {
-                    this.join_form = new _converse.MUCJoinForm({'model': this.model});
+                    this.add_room_modal = new _converse.AddChatRoomModal({'model': this.model});
                     this.model.on('change:muc_domain', this.onDomainChange, this);
                     this.model.on('change:nick', this.onNickChange, this);
                 },
@@ -2008,10 +2019,14 @@
                         'heading_chatrooms': __('Chatrooms'),
                         'title_new_room': __('Click to add a new room')
                     });
-                    this.join_form.setElement(this.el.querySelector('.add-chatroom'));
-                    this.join_form.render();
                     return this;
                 },
+
+                showAddRoomModal (ev) {
+                    ev.preventDefault();
+                    this.add_room_modal.show();
+                },
+
 
                 onDomainChange (model) {
                     if (_converse.auto_list_rooms) {
@@ -2179,37 +2194,6 @@
                             null,
                             _.partial(this.insertRoomInfo, parent_el)
                         );
-                    }
-                },
-
-                parseRoomDataFromEvent (ev) {
-                    let jid;
-                    const name_el = this.el.querySelector('input.new-chatroom-name');
-                    const server_el= this.el.querySelector('input.new-chatroom-server');
-                    const server = server_el.value;
-                    const name = name_el.value.trim();
-                    name_el.value = ''; // Clear the input
-                    if (name && server) {
-                        jid = Strophe.escapeNode(name.toLowerCase()) + '@' + server.toLowerCase();
-                        name_el.classList.remove('error');
-                        server_el.classList.remove('error');
-                        this.model.save({muc_domain: server});
-                    } else {
-                        if (!name) { name_el.classList.add('error'); }
-                        if (!server) { server_el.classList.add('error'); }
-                        return;
-                    }
-                    return {
-                        'jid': jid,
-                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
-                    }
-                },
-
-                openChatRoom (ev) {
-                    ev.preventDefault();
-                    const data = this.parseRoomDataFromEvent(ev);
-                    if (!_.isUndefined(data)) {
-                        _converse.api.rooms.open(data.jid, data);
                     }
                 },
 

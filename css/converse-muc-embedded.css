@@ -15,7 +15,7 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box; }
-  #conversejs.converse-embedded form.pure-form.converse-centered-form {
+  #conversejs.converse-embedded form.converse-centered-form {
     position: absolute;
     top: 30%;
     transform: translateY(-50%); }

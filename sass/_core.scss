@@ -80,7 +80,7 @@ body.reset {
     ul li { height: auto; }
     div, span, h1, h2, h3, h4, h5, h6, p, blockquote,
     pre, a, em, img, strong, dl, dt, dd, ol, ul, li,
-    fieldset, form, label, legend, table, caption, tbody,
+    fieldset, form, legend, table, caption, tbody,
     tfoot, thead, tr, th, td, article, aside, canvas, details,
     embed, figure, figcaption, footer, header, hgroup, menu,
     nav, output, ruby, section, summary, time, mark, audio, video {
@@ -338,10 +338,6 @@ body.reset {
         display: block !important;
     }
 
-    .pure-form-message {
-        padding: 0.5em 0;
-    }
-
     .button-primary {
         color: white;
         background-color: $primary-color;
@@ -363,7 +359,7 @@ body.reset {
             font-size: 0.75rem;
         }
 
-        &.pure-form.converse-form {
+        &.converse-form {
             background: white;
             padding: 1em;
             legend {
@@ -379,9 +375,6 @@ body.reset {
             input[type=number],
             input[type=text] {
                 min-width: 50%;
-            }
-            label {
-                font-size: $font-size-large;
             }
             input[type=text],
             input[type=password],
@@ -413,7 +406,7 @@ body.reset {
                 }
             }
         }
-        &.pure-form.converse-centered-form {
+        &.converse-centered-form {
             text-align: center;
             width: 100%;
         }

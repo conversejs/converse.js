@@ -38,7 +38,6 @@
 
 
             _converse.ChatStatusModal = Backbone.VDOMView.extend({
-                id: "modal-status-change",
                 events: {
                     "submit form#set-xmpp-status": "onFormSubmitted",
                     "click .clear-input": "clearStatusMessage"
@@ -126,6 +125,7 @@
                 },
 
                showStatusChangeModal (ev) {
+                    ev.preventDefault();
                     this.status_modal.show();
                 },
 

@@ -662,6 +662,28 @@
             });
     };
 
+    u.onMultipleEvents = function (events=[], callback) {
+        /* Call the callback once all the events have been triggered
+         *
+         * Parameters:
+         *  (Array) events: An array of objects, with keys `object` and
+         *      `event`, representing the event name and the object it's
+         *      triggered upon.
+         *  (Function) callback: The function to call once all events have
+         *      been triggered.
+         */
+        let triggered = [];
+
+        function handler (result) {
+            triggered.push(result)
+            if (events.length === triggered.length) {
+                callback(triggered);
+                triggered = [];
+            }
+        }
+        _.each(events, (map) => map.object.on(map.event, handler));
+    };
+
     u.safeSave = function (model, attributes) {
         if (u.isPersistableModel(model)) {
             model.save(attributes);

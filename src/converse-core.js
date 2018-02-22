@@ -654,6 +654,9 @@
             } else {
                 _converse._tearDown();
             }
+            // Recreate all the promises
+            _.each(_.keys(_converse.promises), addPromise);
+
             _converse.emit('logout');
         };
 

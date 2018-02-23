@@ -10,6 +10,7 @@
     define(["converse-core",
             "bootstrap",
             "tpl!chat_status_modal",
+            "tpl!profile_modal",
             "tpl!profile_view",
             "tpl!status_option",
             "converse-vcard",
@@ -19,6 +20,7 @@
             converse,
             bootstrap,
             tpl_chat_status_modal,
+            tpl_profile_modal,
             tpl_profile_view,
             tpl_status_option
         ) {
@@ -38,6 +40,17 @@
              */
             const { _converse } = this,
                   { __ } = _converse;
+
+
+            _converse.ProfileModal = _converse.BootstrapModal.extend({
+
+                toHTML () {
+                    return tpl_profile_modal(_.extend(this.model.toJSON(), {
+                        'heading_profile': __('Your profile'),
+                        'label_close': __('Close')
+                    }));
+                },
+            });
 
 
             _converse.ChatStatusModal = _converse.BootstrapModal.extend({
@@ -85,6 +98,7 @@
             _converse.XMPPStatusView = Backbone.VDOMView.extend({
                 tagName: "div",
                 events: {
+                    "click a.show-profile": "showProfileModal",
                     "click a.change-status": "showStatusChangeModal",
                     "click .dropdown dd ul li a": "setStatus",
                     "click .logout": "logOut"
@@ -108,7 +122,14 @@
                     }));
                 },
 
-               showStatusChangeModal (ev) {
+                showProfileModal (ev) {
+                    if (_.isUndefined(this.profile_modal)) {
+                        this.profile_modal = new _converse.ProfileModal({model: this.model});
+                    }
+                    this.profile_modal.show(ev);
+                },
+
+                showStatusChangeModal (ev) {
                     if (_.isUndefined(this.status_modal)) {
                         this.status_modal = new _converse.ChatStatusModal({model: this.model});
                     }

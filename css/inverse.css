@@ -5171,6 +5171,9 @@ body {
     padding-right: 1em;
     margin-right: 1em; }
 
+#conversejs label {
+  font-weight: bold; }
+
 #converse-embedded-chat .flyout,
 #conversejs .flyout {
   border-radius: 4px;

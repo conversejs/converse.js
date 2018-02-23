@@ -46,7 +46,7 @@
 
                 toHTML () {
                     return tpl_profile_modal(_.extend(this.model.toJSON(), {
-                        'heading_profile': __('Your profile'),
+                        'heading_profile': __('Your Profile'),
                         'label_close': __('Close')
                     }));
                 },

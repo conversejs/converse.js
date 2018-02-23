@@ -5115,6 +5115,9 @@ body.reset {
 #conversejs > .row {
   flex-direction: row-reverse; }
 
+#conversejs label {
+  font-weight: bold; }
+
 #converse-embedded-chat .flyout,
 #conversejs .flyout {
   border-radius: 4px;

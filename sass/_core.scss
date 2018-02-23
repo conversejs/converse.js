@@ -242,6 +242,11 @@ body.reset {
         100% { opacity: 1 }
     }
 
+    .fade {
+        opacity: 0;
+        transition: opacity 0.20s linear;
+    }
+
     .fade-in {
         @include fade-in;
     }

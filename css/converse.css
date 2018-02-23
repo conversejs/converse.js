@@ -4911,6 +4911,9 @@ body.reset {
     opacity: 0; }
   100% {
     opacity: 1; } }
+  #conversejs .fade {
+    opacity: 0;
+    transition: opacity 0.20s linear; }
   #conversejs .fade-in {
     opacity: 0;
     /* make things invisible upon start */

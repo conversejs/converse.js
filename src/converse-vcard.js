@@ -11,6 +11,7 @@
 }(this, function (converse) {
     "use strict";
     const { Promise, Strophe, _, moment, sizzle } = converse.env;
+    const u = converse.env.utils;
 
 
     function onVCardData (_converse, jid, iq, callback) {
@@ -24,7 +25,7 @@
             url = _.get(vcard.querySelector('URL'), 'textContent'),
             fullname = _.get(vcard.querySelector('FN'), 'textContent');
 
-        if (jid) {
+        if (!u.isSameBareJID(jid, _converse.bare_jid)) {
             const contact = _converse.roster.get(jid);
             if (contact) {
                 contact.save({
@@ -39,8 +40,7 @@
         if (callback) {
             callback({
                 'stanza': iq,
-                'jid': jid,
-                'fullname': fullname || jid,
+                'fullname': fullname,
                 'image': img,
                 'image_type': img_type,
                 'url': url
@@ -63,16 +63,14 @@
          *    (String) jid - The Jabber ID of the user whose VCard
          *      is being requested.
          */
-        if (Strophe.getBareJidFromJid(jid) === _converse.bare_jid) {
-            jid = null; // No 'to' attr when getting one's own vCard
-        }
+        const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
         return new Promise((resolve, reject) => {
             if (!_converse.use_vcards) {
                 if (resolve) { resolve({'jid': jid}); }
             } else {
                 _converse.connection.vcard.get(
                     _.partial(onVCardData, _converse, jid, _, resolve),
-                    jid,
+                    to,
                     _.partial(onVCardError, _converse, jid, _, resolve)
                 );
             }
@@ -182,14 +180,12 @@
             });
 
             _converse.on('statusInitialized', function fetchOwnVCard () {
-                if (_.isNil(_converse.xmppstatus.get('fullname'))) {
+                if (_.isNil(_converse.xmppstatus.get('vcard_updated'))) {
                     _converse.api.disco.supports(Strophe.NS.VCARD, _converse.domain)
                         .then((result) => {
                             if (result.supported) {
                                 _converse.api.vcard.get(_converse.bare_jid)
-                                    .then((vcard) => {
-                                        _converse.xmppstatus.save(vcard);
-                                    });
+                                    .then((vcard) => _converse.xmppstatus.save(vcard));
                             }})
                         .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 }

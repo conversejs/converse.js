@@ -1477,8 +1477,13 @@
         this.connfeedback = new this.ConnectionFeedback();
 
         this.XMPPStatus = Backbone.Model.extend({
-            defaults: {
-                "status":  _converse.default_state
+
+            defaults () {
+                return {
+                    "status":  _converse.default_state,
+                    "jid": _converse.bare_jid,
+                    "vcard_updated": null
+                }
             },
 
             initialize () {

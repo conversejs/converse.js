@@ -38,9 +38,9 @@
                 },
 
                 show (ev) {
+                    ev.preventDefault();
                     this.trigger_el = ev.target;
                     this.trigger_el.classList.add('selected');
-                    this.render();
                     this.modal.show();
                 }
             });

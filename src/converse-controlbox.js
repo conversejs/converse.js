@@ -9,13 +9,10 @@
 (function (root, factory) {
     define(["converse-core",
             "lodash.fp",
-            "tpl!add_contact_dropdown",
-            "tpl!add_contact_form",
             "tpl!converse_brand_heading",
             "tpl!controlbox",
             "tpl!controlbox_toggle",
             "tpl!login_panel",
-            "tpl!search_contact",
             "converse-chatview",
             "converse-rosterview",
             "converse-profile"
@@ -23,13 +20,10 @@
 }(this, function (
             converse,
             fp,
-            tpl_add_contact_dropdown,
-            tpl_add_contact_form,
             tpl_brand_heading,
             tpl_controlbox,
             tpl_controlbox_toggle,
-            tpl_login_panel,
-            tpl_search_contact
+            tpl_login_panel
         ) {
     "use strict";
 
@@ -86,7 +80,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes", "converse-rosterview", "converse-chatview"],
+        dependencies: ["converse-modal", "converse-chatboxes", "converse-rosterview", "converse-chatview"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -212,9 +206,7 @@
                 default_domain: undefined,
                 locked_domain: undefined,
                 show_controlbox_by_default: false,
-                sticky_controlbox: false,
-                xhr_user_search: false,
-                xhr_user_search_url: ''
+                sticky_controlbox: false
             });
 
             _converse.api.promises.add('controlboxInitialized');
@@ -228,13 +220,6 @@
                     type: 'controlbox',
                     closed: !_converse.show_controlbox_by_default
                 })
-
-
-            _converse.AddContactModal = Backbone.VDOMView.extend({
-                events: {
-                    'submit form': 'addContact'
-                },
-            });
 
 
             _converse.ControlBoxView = _converse.ChatBoxView.extend({
@@ -528,12 +513,6 @@
             _converse.ControlBoxPane = Backbone.NativeView.extend({
                 tagName: 'div',
                 className: 'controlbox-pane',
-                events: {
-                    'click a.toggle-xmpp-contact-form': 'toggleContactForm',
-                    'submit form.add-xmpp-contact': 'addContactFromForm',
-                    'submit form.search-xmpp-contact': 'searchContacts',
-                    'click a.subscribe-to-user': 'addContactFromList'
-                },
 
                 initialize () {
                     _converse.xmppstatusview = new _converse.XMPPStatusView({
@@ -543,103 +522,6 @@
                         'afterBegin',
                         _converse.xmppstatusview.render().el
                     );
-                },
-
-                generateAddContactHTML (settings={}) {
-                    if (_converse.xhr_user_search) {
-                        return tpl_search_contact({
-                            label_contact_name: __('Contact name'),
-                            label_search: __('Search')
-                        });
-                    } else {
-                        return tpl_add_contact_form(_.assign({
-                            error_message: null,
-                            label_contact_username: __('e.g. user@example.org'),
-                            label_add: __('Add'),
-                            value: ''
-                        }, settings));
-                    }
-                },
-
-                toggleContactForm (ev) {
-                    ev.preventDefault();
-                    this.el.querySelector('.search-xmpp div').innerHTML = this.generateAddContactHTML();
-                    var dropdown = this.el.querySelector('.contact-form-container');
-                    u.slideToggleElement(dropdown).then(() => {
-                        if (u.isVisible(dropdown)) {
-                            dropdown.querySelector('input.username').focus();
-                        }
-                    });
-                },
-
-                searchContacts (ev) {
-                    ev.preventDefault();
-                    const search_query= ev.target.querySelector('input.username').value,
-                          url = _converse.xhr_user_search_url+ "?q=" + search_query,
-                          xhr = new XMLHttpRequest();
-
-                    xhr.open('GET', url, true);
-                    xhr.setRequestHeader('Accept', "application/json, text/javascript");
-
-                    xhr.onload = function () {
-                        if (xhr.status >= 200 && xhr.status < 400) {
-                            const data = JSON.parse(xhr.responseText),
-                                  ul = _converse.root.querySelector('.search-xmpp ul');
-                            u.removeElement(ul.querySelector('li.found-user'));
-                            u.removeElement(ul.querySelector('li.chat-info'));
-                            if (!data.length) {
-                                const no_users_text = __('No users found');
-                                ul.insertAdjacentHTML('beforeEnd', `<li class="chat-info">${no_users_text}</li>`);
-                            }
-                            else {
-                                const title_subscribe = __('Click to add as a chat contact');
-                                _.each(data, function (obj) {
-                                    const li = u.stringToElement('<li class="found-user"></li>'),
-                                          a = u.stringToElement(`<a class="subscribe-to-user" href="#" title="${title_subscribe}"></a>`),
-                                          jid = Strophe.getNodeFromJid(obj.id)+"@"+Strophe.getDomainFromJid(obj.id);
-
-                                    a.setAttribute('data-recipient', jid);
-                                    a.textContent = obj.fullname;
-                                    li.appendChild(a);
-                                    u.appendChild(li)
-                                });
-                            }
-                        } else {
-                            xhr.onerror();
-                        }
-                    };
-                    xhr.onerror = function () {
-                        _converse.log('Could not fetch contacts via XHR', Strophe.LogLevel.ERROR);
-                    };
-                    xhr.send();
-                },
-
-                addContactFromForm (ev) {
-                    ev.preventDefault();
-                    const input = ev.target.querySelector('input');
-                    const jid = input.value;
-                    if (!jid || _.compact(jid.split('@')).length < 2) {
-                        this.el.querySelector('.search-xmpp div').innerHTML =
-                            this.generateAddContactHTML({
-                                error_message: __('Please enter a valid XMPP address'),
-                                label_contact_username: __('e.g. user@example.org'),
-                                label_add: __('Add'),
-                                value: jid
-                            });
-                        return;
-                    }
-                    _converse.roster.addAndSubscribe(jid);
-                    u.slideIn(this.el.querySelector('.contact-form-container'));
-                },
-
-                addContactFromList (ev) {
-                    ev.preventDefault();
-                    const jid = ev.target.getAttribute('data-recipient'),
-                        name = ev.target.textContent;
-                    _converse.roster.addAndSubscribe(jid, name);
-                    const parent = ev.target.parentNode;
-                    parent.parentNode.removeChild(parent);
-                    u.slideIn(this.el.querySelector('.contact-form-container'));
                 }
             });
 

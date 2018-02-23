@@ -8,28 +8,36 @@
 
 (function (root, factory) {
     define(["converse-core",
+            "tpl!add_contact_modal",
             "tpl!group_header",
             "tpl!pending_contact",
             "tpl!requesting_contact",
             "tpl!roster",
             "tpl!roster_filter",
             "tpl!roster_item",
-            "converse-chatboxes"
+            "tpl!search_contact",
+            "converse-chatboxes",
+            "converse-modal"
     ], factory);
 }(this, function (
             converse, 
+            tpl_add_contact_modal,
             tpl_group_header,
             tpl_pending_contact,
             tpl_requesting_contact,
             tpl_roster,
             tpl_roster_filter,
-            tpl_roster_item) {
+            tpl_roster_item,
+            tpl_search_contact
+    ) {
     "use strict";
     const { Backbone, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
     const u = converse.env.utils;
 
 
     converse.plugins.add('converse-rosterview', {
+
+        dependencies: ["converse-modal"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -116,6 +124,47 @@
                     return (a === HEADER_REQUESTING_CONTACTS) ? -1 : 1;
                 }
             };
+
+
+            _converse.AddContactModal = _converse.BootstrapModal.extend({
+                events: {
+                    'click a.subscribe-to-user': 'addContactFromList',
+                    'submit form': 'addContactFromForm',
+                    'submit form.search-xmpp-contact': 'searchContacts'
+                },
+
+                initialize () {
+                    _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                    this.model.on('change', this.render, this);
+                },
+
+                toHTML () {
+                    return tpl_add_contact_modal(_.extend(this.model.toJSON(), {
+                        'heading_new_contact': __('Add a Contact'),
+                        'label_xmpp_address': __('XMPP Address'),
+                        'label_nickname': __('Optional nickname'),
+                        'contact_placeholder': __('name@example.org'),
+                        'label_add': __('Add'),
+                    }));
+                },
+
+                addContactFromForm (ev) {
+                    ev.preventDefault();
+                    const data = new FormData(ev.target),
+                          jid = data.get('jid');
+
+                    if (!jid || _.compact(jid.split('@')).length < 2) {
+                        this.model.set({
+                            'error_message': __('Please enter a valid XMPP address'),
+                            'jid': jid
+                        })
+                    } else {
+                        _converse.roster.addAndSubscribe(jid);
+                        this.model.clear();
+                        this.modal.hide();
+                    }
+                }
+            });
 
 
             _converse.RosterFilter = Backbone.Model.extend({
@@ -620,6 +669,11 @@
                 sortEvent: null, // Groups are immutable, so they don't get re-sorted
                 subviewIndex: 'name',
 
+                events: {
+                    'click a.chatbox-btn.add-contact': 'showAddContactModal',
+
+                },
+
                 initialize () {
                     Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
 
@@ -664,6 +718,13 @@
                         this.el.classList.add('no-contact-requests');
                     }
                     return this;
+                },
+
+                showAddContactModal (ev) {
+                    if (_.isUndefined(this.add_contact_modal)) {
+                        this.add_contact_modal = new _converse.AddContactModal({'model': new Backbone.Model()});
+                    }
+                    this.add_contact_modal.show(ev);
                 },
 
                 createRosterFilter () {

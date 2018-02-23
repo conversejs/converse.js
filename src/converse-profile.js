@@ -12,7 +12,8 @@
             "tpl!chat_status_modal",
             "tpl!profile_view",
             "tpl!status_option",
-            "converse-vcard"
+            "converse-vcard",
+            "converse-modal"
     ], factory);
 }(this, function (
             converse,
@@ -29,6 +30,8 @@
 
     converse.plugins.add('converse-profile', {
 
+        dependencies: ["converse-modal"],
+
         initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
@@ -37,18 +40,10 @@
                   { __ } = _converse;
 
 
-            _converse.ChatStatusModal = Backbone.VDOMView.extend({
+            _converse.ChatStatusModal = _converse.BootstrapModal.extend({
                 events: {
                     "submit form#set-xmpp-status": "onFormSubmitted",
                     "click .clear-input": "clearStatusMessage"
-                },
-
-                initialize () {
-                    this.render().insertIntoDOM();
-                    this.modal = new bootstrap.Modal(this.el, {
-                        backdrop: 'static',
-                        keyboard: true
-                    });
                 },
 
                 toHTML () {
@@ -65,16 +60,6 @@
                         'modal_title': __('Change chat status'),
                         'placeholder_status_message': __('Personal status message')
                     }));
-                },
-
-                insertIntoDOM () {
-                    const container_el = _converse.chatboxviews.el.querySelector('#converse-modals');
-                    container_el.insertAdjacentElement('beforeEnd', this.el);
-                },
-
-                show () {
-                    this.render();
-                    this.modal.show();
                 },
 
                 clearStatusMessage (ev) {
@@ -107,7 +92,6 @@
 
                 initialize () {
                     this.model.on("change", this.render, this);
-                    this.status_modal = new _converse.ChatStatusModal({model: this.model});
                 },
 
                 toHTML () {
@@ -125,8 +109,10 @@
                 },
 
                showStatusChangeModal (ev) {
-                    ev.preventDefault();
-                    this.status_modal.show();
+                    if (_.isUndefined(this.status_modal)) {
+                        this.status_modal = new _converse.ChatStatusModal({model: this.model});
+                    }
+                    this.status_modal.show(ev);
                 },
 
                 logOut (ev) {

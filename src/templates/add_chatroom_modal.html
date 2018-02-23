@@ -1,9 +1,9 @@
-<div class="modal fade" id="chatroomsModal" tabindex="-1" role="dialog" aria-labelledby="chatroomsModalLabel" aria-hidden="true">
+<div class="modal fade" id="add-chatroom-modal" tabindex="-1" role="dialog" aria-labelledby="add-chatroom-modal-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"
-                    id="chatroomsModalLabel">{{{o.heading_new_chatroom}}}</h5>
+                    id="add-chatroom-modal-label">{{{o.heading_new_chatroom}}}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -11,11 +11,11 @@
             <div class="modal-body">
                 <form class="converse-form add-chatroom">
                     <div class="form-group">
-                        <label for="server">{{{o.label_room_address}}}:</label>
-                        <input type="text" value="{{{o.muc_domain}}}" required="required" name="chatroom" class="form-control" placeholder="{{{o.chatroom_placeholder}}}">
+                        <label for="chatroom">{{{o.label_room_address}}}:</label>
+                        <input type="text" required="required" name="chatroom" class="form-control" placeholder="{{{o.chatroom_placeholder}}}">
                     </div>
                     <div class="form-group">
-                        <label for="chatroom">{{{o.label_nickname}}}:</label>
+                        <label for="nickname">{{{o.label_nickname}}}:</label>
                         <input type="text" name="nickname" value="{{{o.nick}}}" class="form-control">
                     </div>
                     <input type="submit" class="btn btn-primary" name="join" value="{{{o.label_join}}}">

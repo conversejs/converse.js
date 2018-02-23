@@ -2184,11 +2184,6 @@
                     'click a.room-info': 'toggleRoomInfo'
                 },
 
-                initialize (cfg) {
-                    this.add_room_modal = new _converse.AddChatRoomModal({'model': this.model});
-                    this.list_rooms_modal = new _converse.ListChatRoomsModal({'model': this.model});
-                },
-
                 render () {
                     this.el.innerHTML = tpl_room_panel({
                         'heading_chatrooms': __('Chatrooms'),
@@ -2204,12 +2199,16 @@
                 },
 
                 showAddRoomModal (ev) {
-                    ev.preventDefault();
+                    if (_.isUndefined(this.add_room_modal)) {
+                        this.add_room_modal = new _converse.AddChatRoomModal({'model': this.model});
+                    }
                     this.add_room_modal.show(ev);
                 },
 
                 showListRoomsModal(ev) {
-                    ev.preventDefault();
+                    if (_.isUndefined(this.list_rooms_modal)) {
+                        this.list_rooms_modal = new _converse.ListChatRoomsModal({'model': this.model});
+                    }
                     this.list_rooms_modal.show(ev);
                 }
             });

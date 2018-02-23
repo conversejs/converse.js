@@ -2,10 +2,21 @@
 
 ## 4.0.0 (Unreleased)
 
+## Removed configuration settings
+
+Due to rewriting parts of the code, we regrettably had to remove certain
+lesser-used configuration settings because the cost of adding them to the
+new code was too high.
+
+If you relied on any of these settings, you can reproduce their
+functionality in your own 3rd party plugins, or you can [contact us](http://opkode.com/contact.html)
+with regards to sponsoring development on reintroducing them.
+
 * Removed the `xhr_custom_status` and `xhr_custom_status_url` configuration
   settings. If you relied on these settings, you can instead listen for the
   [statusMessageChanged](https://conversejs.org/docs/html/events.html#contactstatusmessagechanged)
   event and make the XMLHttpRequest yourself.
+* Removed the `xhr_user_search` and `xhr_user_search_url` configuration options.
 
 
 ## 3.3.4 (Unreleased)

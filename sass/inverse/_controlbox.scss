@@ -10,7 +10,7 @@
             border-radius: 0;
         }
 
-        #login-dialog {
+        #converse-login-panel {
             border-radius: 0;
             .converse-form {
                 margin: 0;
@@ -68,13 +68,6 @@
             input[type=submit],
             input[type=button] {
                 width: auto;
-            }
-            input {
-                width: 100%;
-                margin: 1em 0;
-                &.pure-button {
-                    margin: 1em 0.5em;
-                }
             }
         }
         @media screen and (max-width: $mobile-portrait-length) {

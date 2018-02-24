@@ -19,17 +19,18 @@
             <div id="controlbox" class="chatbox">
                 <div class="flyout box-flyout">
                     <div class="controlbox-panes">
-                        <div id="login-dialog" class="controlbox-pane">
+                        <div id="converse-login-panel" class="controlbox-pane fade-in">
                             <div class="row">
                                 <div class="brand-heading-container col-12">
                                     <h1 class="brand-heading"><i class="icon-conversejs"></i> inVerse</h1>
-                                    <p><a href="https://conversejs.org">Open Source</a> XMPP chat client</p>
+                                    <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client</p>
+                                    <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> into your own language</p>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-sm-8 offset-sm-2 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
-                                    <form id="converse-login" class="pure-form converse-form">
+                                    <form id="converse-login" class="converse-form" method="post">
                                         <div class="form-group">
                                             <label for="jid">XMPP Username:</label>
                                             <input type="text" name="jid" class="form-control" placeholder="user@server" autocomplete="off">

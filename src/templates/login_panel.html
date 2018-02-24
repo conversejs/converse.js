@@ -1,33 +1,39 @@
 <div id="converse-login-panel" class="controlbox-pane fade-in">
-    <form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">
-        <legend>{{{o.__("Login")}}}</legend>
-        <div class="conn-feedback fade-in {[ if (!o.conn_feedback_subject) { ]} hidden {[ } ]} {{{o.conn_feedback_class}}}">
-            <p class="feedback-subject">{{{ o.conn_feedback_subject }}}</p>
-            <p class="feedback-message {[ if (!o.conn_feedback_message) { ]} hidden {[ } ]}">{{{o.conn_feedback_message}}}</p>
-        </div>
-        {[ if (o.auto_login || o._converse.CONNECTION_STATUS[o.connection_status] === 'CONNECTING') { ]}
-            <span class="spinner centered"/>
-        {[ } else { ]}
-            {[ if (o.authentication == o.LOGIN || o.authentication == o.EXTERNAL) { ]}
-                <label>{{{o.__("Jabber ID:")}}}</label>
-                <input autofocus required
-                    type="text"
-                    name="jid"
-                    placeholder="{{{o.placeholder_username}}}">
-                {[ if (o.authentication !== o.EXTERNAL) { ]}
-                    <label>{{{o.__("Password:")}}}</label>
-                    <input required
-                        type="password" name="password"
-                        placeholder="{{{o.__('password')}}}">
+    <div class="row">
+        <div class="col-sm-8 offset-sm-2 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+            <form id="converse-login" class="converse-form" method="post">
+                <legend>{{{o.__("Login")}}}</legend>
+                <div class="conn-feedback fade-in {[ if (!o.conn_feedback_subject) { ]} hidden {[ } ]} {{{o.conn_feedback_class}}}">
+                    <p class="feedback-subject">{{{ o.conn_feedback_subject }}}</p>
+                    <p class="feedback-message {[ if (!o.conn_feedback_message) { ]} hidden {[ } ]}">{{{o.conn_feedback_message}}}</p>
+                </div>
+                {[ if (o.auto_login || o._converse.CONNECTION_STATUS[o.connection_status] === 'CONNECTING') { ]}
+                    <span class="spinner centered"/>
+                {[ } else { ]}
+                    {[ if (o.authentication == o.LOGIN || o.authentication == o.EXTERNAL) { ]}
+                        <div class="form-group">
+                            <label for="jid">{{{o.__("XMPP Username:")}}}</label>
+                            <input class="form-control" autofocus required="required" type="text" name="jid" placeholder="{{{o.placeholder_username}}}">
+                        </div>
+                        {[ if (o.authentication !== o.EXTERNAL) { ]}
+                        <div class="form-group">
+                            <label for="password">{{{o.__("Password:")}}}</label>
+                            <input class="form-control" required="required" type="password" name="password" placeholder="{{{o.__('password')}}}">
+                        </div>
+                        {[ } ]}
+                        <fieldset class="buttons">
+                            <input class="btn btn-primary" type="submit" value="{{{o.__('Submit')}}}">
+                        </fieldset>
+                    {[ } ]}
+                    {[ if (o.authentication == o.ANONYMOUS) { ]}
+                        <input class="pure-button button-primary login-anon" type="submit" value="{{{o.__('Click here to log in anonymously')}}}"/>
+                    {[ } ]}
+                    {[ if (o.authentication == o.PREBIND) { ]}
+                        <p>Disconnected.</p>
+                    {[ } ]}
                 {[ } ]}
-                <input class="pure-button button-primary" type="submit" value="{{{o.__('Submit')}}}">
-            {[ } ]}
-            {[ if (o.authentication == o.ANONYMOUS) { ]}
-                <input class="pure-button button-primary login-anon" type="submit" value="{{{o.__('Click here to log in anonymously')}}}"/>
-            {[ } ]}
-            {[ if (o.authentication == o.PREBIND) { ]}
-                <p>Disconnected.</p>
-            {[ } ]}
-        {[ } ]}
-    </form>
+                </fieldset>
+            </form>
+        </div>
+    </div>
 </div>

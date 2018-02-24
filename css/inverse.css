@@ -5159,19 +5159,13 @@ body {
     margin-left: 1em;
     display: inline;
     margin-bottom: 2em; }
-  #conversejs.fullscreen form.converse-form input[type=text],
-  #conversejs.fullscreen form.converse-form input[type=password],
-  #conversejs.fullscreen form.converse-form input[type=number],
-  #conversejs.fullscreen form.converse-form input[type=button],
-  #conversejs.fullscreen form.converse-form input[type=submit] {
-    height: 2.2em; }
   #conversejs.fullscreen form.converse-form input[type=button],
   #conversejs.fullscreen form.converse-form input[type=submit] {
     padding-left: 1em;
     padding-right: 1em;
     margin-right: 1em; }
 
-#conversejs label {
+#conversejs #user-profile-modal label {
   font-weight: bold; }
 
 #converse-embedded-chat .flyout,
@@ -5646,7 +5640,7 @@ body {
 @media screen and (max-width: 767px) {
   #conversejs > .row {
     flex-direction: row-reverse; }
-  #conversejs #login-dialog .converse-form {
+  #conversejs #converse-login-panel .converse-form {
     padding: 3em 2em 3em; }
   #conversejs .sidebar {
     display: block; }
@@ -5835,9 +5829,9 @@ body {
     text-align: center; }
   #conversejs #controlbox .brand-heading-container .brand-name {
     font-size: 120%; }
-  #conversejs #controlbox #login-dialog {
+  #conversejs #controlbox #converse-login-panel {
     flex-direction: column; }
-    #conversejs #controlbox #login-dialog .brand-heading {
+    #conversejs #controlbox #converse-login-panel .brand-heading {
       color: #578EA9; }
   #conversejs #controlbox .toggle-register-login {
     font-weight: bold; }
@@ -5846,6 +5840,10 @@ body {
     color: #777; }
     #conversejs #controlbox .oauth-login .icon-social:before {
       font-size: 18px; }
+  #conversejs #controlbox #converse-register legend, #conversejs #controlbox #converse-login legend {
+    width: 100%;
+    text-align: center;
+    margin: 0 auto 1em auto; }
   #conversejs #controlbox #converse-register fieldset.buttons, #conversejs #controlbox #converse-login fieldset.buttons {
     text-align: center; }
   #conversejs #controlbox #converse-register .login-anon, #conversejs #controlbox #converse-login .login-anon {
@@ -5855,7 +5853,7 @@ body {
     color: #3AA569; }
   #conversejs #controlbox #converse-register input, #conversejs #controlbox #converse-login input {
     width: 100%;
-    margin: 1em 0; }
+    margin: 0 0 2em 0; }
   #conversejs #controlbox #converse-register .form-url, #conversejs #controlbox #converse-login .form-url {
     display: block;
     font-weight: normal;
@@ -5995,10 +5993,6 @@ body {
       padding-bottom: 2em; }
       #conversejs #controlbox .controlbox-pane .switch-form p {
         margin-top: 0.5em; }
-    #conversejs #controlbox .controlbox-pane label {
-      font-size: 16px;
-      font-weight: bold;
-      height: auto; }
     #conversejs #controlbox .controlbox-pane dd {
       margin-left: 0;
       margin-bottom: 0; }
@@ -6044,9 +6038,9 @@ body {
     border-radius: 0; }
   #conversejs.fullscreen #controlbox .flyout {
     border-radius: 0; }
-  #conversejs.fullscreen #controlbox #login-dialog {
+  #conversejs.fullscreen #controlbox #converse-login-panel {
     border-radius: 0; }
-    #conversejs.fullscreen #controlbox #login-dialog .converse-form {
+    #conversejs.fullscreen #controlbox #converse-login-panel .converse-form {
       margin: 0;
       padding: 3em 2em 3em; }
   #conversejs.fullscreen #controlbox .toggle-register-login {
@@ -6098,11 +6092,6 @@ body {
     #conversejs.fullscreen #controlbox #converse-register input[type=button], #conversejs.fullscreen #controlbox #converse-login input[type=submit],
     #conversejs.fullscreen #controlbox #converse-login input[type=button] {
       width: auto; }
-    #conversejs.fullscreen #controlbox #converse-register input, #conversejs.fullscreen #controlbox #converse-login input {
-      width: 100%;
-      margin: 1em 0; }
-      #conversejs.fullscreen #controlbox #converse-register input.pure-button, #conversejs.fullscreen #controlbox #converse-login input.pure-button {
-        margin: 1em 0.5em; }
   @media screen and (max-width: 480px) {
     #conversejs.fullscreen #controlbox #converse-register,
     #conversejs.fullscreen #controlbox #converse-login {

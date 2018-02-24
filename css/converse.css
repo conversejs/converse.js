@@ -5115,7 +5115,7 @@ body.reset {
 #conversejs > .row {
   flex-direction: row-reverse; }
 
-#conversejs label {
+#conversejs #user-profile-modal label {
   font-weight: bold; }
 
 #converse-embedded-chat .flyout,
@@ -5590,7 +5590,7 @@ body.reset {
 @media screen and (max-width: 767px) {
   #conversejs > .row {
     flex-direction: row-reverse; }
-  #conversejs #login-dialog .converse-form {
+  #conversejs #converse-login-panel .converse-form {
     padding: 3em 2em 3em; }
   #conversejs .sidebar {
     display: block; }
@@ -5763,9 +5763,9 @@ body.reset {
     text-align: center; }
   #conversejs #controlbox .brand-heading-container .brand-name {
     font-size: 120%; }
-  #conversejs #controlbox #login-dialog {
+  #conversejs #controlbox #converse-login-panel {
     flex-direction: column; }
-    #conversejs #controlbox #login-dialog .brand-heading {
+    #conversejs #controlbox #converse-login-panel .brand-heading {
       color: #578EA9; }
   #conversejs #controlbox .toggle-register-login {
     font-weight: bold; }
@@ -5774,6 +5774,10 @@ body.reset {
     color: #777; }
     #conversejs #controlbox .oauth-login .icon-social:before {
       font-size: 16px; }
+  #conversejs #controlbox #converse-register legend, #conversejs #controlbox #converse-login legend {
+    width: 100%;
+    text-align: center;
+    margin: 0 auto 1em auto; }
   #conversejs #controlbox #converse-register fieldset.buttons, #conversejs #controlbox #converse-login fieldset.buttons {
     text-align: center; }
   #conversejs #controlbox #converse-register .login-anon, #conversejs #controlbox #converse-login .login-anon {
@@ -5783,7 +5787,7 @@ body.reset {
     color: #3AA569; }
   #conversejs #controlbox #converse-register input, #conversejs #controlbox #converse-login input {
     width: 100%;
-    margin: 1em 0; }
+    margin: 0 0 2em 0; }
   #conversejs #controlbox #converse-register .form-url, #conversejs #controlbox #converse-login .form-url {
     display: block;
     font-weight: normal;
@@ -5923,10 +5927,6 @@ body.reset {
       padding-bottom: 2em; }
       #conversejs #controlbox .controlbox-pane .switch-form p {
         margin-top: 0.5em; }
-    #conversejs #controlbox .controlbox-pane label {
-      font-size: 14px;
-      font-weight: bold;
-      height: auto; }
     #conversejs #controlbox .controlbox-pane dd {
       margin-left: 0;
       margin-bottom: 0; }

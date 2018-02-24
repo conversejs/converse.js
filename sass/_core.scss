@@ -398,12 +398,12 @@ body.reset {
                 border: 1px solid $error-color;
                 color: $text-color;
             }
-            .form-help {
-                color: gray;
+            .text-muted {
+                color: $subdued-color !important;
                 font-size: 85%;
                 padding-top: 0.5em;
-                &:hover {
-                    color: $text-color;
+                a {
+                    color: lighten($link-color, 10%);
                 }
                 &.error {
                     color: $error-color;

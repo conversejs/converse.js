@@ -2,6 +2,10 @@
     #controlbox {
         margin: 0;
 
+        .controlbox-panes {
+            overflow-y: hidden;
+        }
+
         .controlbox-pane {
             border-radius: 0;
         }
@@ -61,19 +65,12 @@
         }
 
         #converse-register, #converse-login {
-            margin: 2em 30% 3em 30%;
             .title, .instructions {
                 margin: 1em 0;
             }
             input[type=submit],
             input[type=button] {
                 width: auto;
-            }
-        }
-        @media screen and (max-width: $mobile-portrait-length) {
-            #converse-register,
-            #converse-login {
-                margin: 3em 10% 3em 10%;
             }
         }
     }

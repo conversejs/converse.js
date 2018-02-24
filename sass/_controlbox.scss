@@ -107,9 +107,6 @@
                 width: 178px;
                 margin-bottom: 8px;
             }
-            .title, .instructions, label {
-                margin: 0.5em 0 0 0;
-            }
             .form-help .url {
                 font-weight: bold;
                 color: $link-color;
@@ -186,6 +183,9 @@
                 text-align: center;
                 margin: 0 auto 1em auto;
             }
+            label {
+                margin-top: 2em;
+            }
             fieldset.buttons {
                 text-align: center;
             }
@@ -198,7 +198,6 @@
             }
             input {
                 width: 100%;
-                margin: 0 0 2em 0;
             }
             .form-url {
                 display: block;
@@ -385,7 +384,7 @@
             }
 
             .switch-form {
-                padding-bottom: 2em;
+                padding: 2em 0;
                 p {
                     margin-top: 0.5em;
                 }

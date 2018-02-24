@@ -5061,13 +5061,13 @@ body.reset {
     #conversejs form.converse-form input.error {
       border: 1px solid #A53214;
       color: #777; }
-    #conversejs form.converse-form .form-help {
-      color: gray;
+    #conversejs form.converse-form .text-muted {
+      color: #A8ABA1 !important;
       font-size: 85%;
       padding-top: 0.5em; }
-      #conversejs form.converse-form .form-help:hover {
-        color: #777; }
-      #conversejs form.converse-form .form-help.error {
+      #conversejs form.converse-form .text-muted a {
+        color: #79a5ba; }
+      #conversejs form.converse-form .text-muted.error {
         color: #A53214; }
   #conversejs form.converse-centered-form {
     text-align: center;
@@ -5730,8 +5730,6 @@ body.reset {
     #conversejs #controlbox #converse-register .provider-score {
       width: 178px;
       margin-bottom: 8px; }
-    #conversejs #controlbox #converse-register .title, #conversejs #controlbox #converse-register .instructions, #conversejs #controlbox #converse-register label {
-      margin: 0.5em 0 0 0; }
     #conversejs #controlbox #converse-register .form-help .url {
       font-weight: bold;
       color: #578EA9; }
@@ -5778,6 +5776,8 @@ body.reset {
     width: 100%;
     text-align: center;
     margin: 0 auto 1em auto; }
+  #conversejs #controlbox #converse-register label, #conversejs #controlbox #converse-login label {
+    margin-top: 2em; }
   #conversejs #controlbox #converse-register fieldset.buttons, #conversejs #controlbox #converse-login fieldset.buttons {
     text-align: center; }
   #conversejs #controlbox #converse-register .login-anon, #conversejs #controlbox #converse-login .login-anon {
@@ -5786,8 +5786,7 @@ body.reset {
   #conversejs #controlbox #converse-register .save-submit, #conversejs #controlbox #converse-login .save-submit {
     color: #3AA569; }
   #conversejs #controlbox #converse-register input, #conversejs #controlbox #converse-login input {
-    width: 100%;
-    margin: 0 0 2em 0; }
+    width: 100%; }
   #conversejs #controlbox #converse-register .form-url, #conversejs #controlbox #converse-login .form-url {
     display: block;
     font-weight: normal;
@@ -5924,7 +5923,7 @@ body.reset {
     #conversejs #controlbox .controlbox-pane .chatbox-btn {
       margin: 0; }
     #conversejs #controlbox .controlbox-pane .switch-form {
-      padding-bottom: 2em; }
+      padding: 2em 0; }
       #conversejs #controlbox .controlbox-pane .switch-form p {
         margin-top: 0.5em; }
     #conversejs #controlbox .controlbox-pane dd {

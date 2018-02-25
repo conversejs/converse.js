@@ -6021,12 +6021,12 @@ body.reset {
       color: #777;
       font-weight: normal;
       text-shadow: 0 1px 0 #FAFAFA;
-      margin: 0.5em 0 0.5em 0; }
+      margin: 0.75em 0 0.75em 0; }
       #conversejs #converse-roster .roster-contacts .roster-group .group-toggle {
         color: #777;
         display: block;
         width: 100%;
-        line-height: 16px; }
+        padding: 0 0 0.5em 0; }
         #conversejs #converse-roster .roster-contacts .roster-group .group-toggle:hover {
           color: #585B51; }
       #conversejs #converse-roster .roster-contacts .roster-group li {

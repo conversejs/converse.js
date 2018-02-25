@@ -63,7 +63,7 @@
             color: $text-color;
             font-weight: normal;
             text-shadow: 0 1px 0 $text-shadow-color;
-            margin: 0.5em 0 0.5em 0;
+            margin: 0.75em 0 0.75em 0;
 
             .group-toggle {
                 &:hover {
@@ -72,7 +72,7 @@
                 color: $text-color;
                 display: block;
                 width: 100%;
-                line-height: $line-height;
+                padding: 0 0 0.5em 0;
             }
 
             li {

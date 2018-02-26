@@ -50,7 +50,7 @@ Here follows the different events that are emitted:
 afterMessagesFetched
 ~~~~~~~~~~~~~~~~~~~~
 
-Emitted whenever a chat box has fetched its messages from ``sessionStorage`` and
+Emitted whenever a chatbox has fetched its messages from ``sessionStorage`` and
 **NOT** from the server.
 
 This event is listened to by the ``converse-mam`` plugin to know when it can
@@ -83,7 +83,7 @@ See also the `roster`_ event further down.
 callButtonClicked
 ~~~~~~~~~~~~~~~~~
 
-When a call button (i.e. with class .toggle-call) on a chat box has been clicked.
+When a call button (i.e. with class .toggle-call) on a chatbox has been clicked.
 
 ``_converse.on('callButtonClicked', function (connection, model) { ... });``
 
@@ -92,10 +92,10 @@ When a call button (i.e. with class .toggle-call) on a chat box has been clicked
 chatBoxesFetched
 ~~~~~~~~~~~~~~~~
 
-Any open chat boxes (from this current session) has been retrieved from the local cache (`sessionStorage`).
+Any open chatboxes (from this current session) has been retrieved from the local cache (`sessionStorage`).
 
 You should wait for this event or promise before attempting to do things
-related to open chat boxes.
+related to open chatboxes.
 
 ``_converse.on('chatBoxesFetched', function (items) { ... });``
 
@@ -110,42 +110,42 @@ Also available as an `ES2015 Promise <http://es6-features.org/#PromiseUsage>`_:
 chatBoxInitialized
 ~~~~~~~~~~~~~~~~~~
 
-When a chat box has been initialized. Relevant to converse-chatview.js plugin.
+When a chatbox has been initialized. Relevant to converse-chatview.js plugin.
 
 ``_converse.on('chatBoxInitialized', function (chatbox) { ... });``
 
 chatBoxOpened
 ~~~~~~~~~~~~~
 
-When a chat box has been opened. Relevant to converse-chatview.js plugin.
+When a chatbox has been opened. Relevant to converse-chatview.js plugin.
 
 ``_converse.on('chatBoxOpened', function (chatbox) { ... });``
 
 chatRoomOpened
 ~~~~~~~~~~~~~~
 
-When a chat room has been opened. Relevant to converse-chatview.js plugin.
+When a chatroom has been opened. Relevant to converse-chatview.js plugin.
 
 ``_converse.on('chatRoomOpened', function (chatbox) { ... });``
 
 chatBoxClosed
 ~~~~~~~~~~~~~
 
-When a chat box has been closed. Relevant to converse-chatview.js plugin.
+When a chatbox has been closed. Relevant to converse-chatview.js plugin.
 
 ``_converse.on('chatBoxClosed', function (chatbox) { ... });``
 
 chatBoxFocused
 ~~~~~~~~~~~~~~
 
-When the focus has been moved to a chat box. Relevant to converse-chatview.js plugin.
+When the focus has been moved to a chatbox. Relevant to converse-chatview.js plugin.
 
 ``_converse.on('chatBoxFocused', function (chatbox) { ... });``
 
 chatBoxToggled
 ~~~~~~~~~~~~~~
 
-When a chat box has been minimized or maximized. Relevant to converse-chatview.js plugin.
+When a chatbox has been minimized or maximized. Relevant to converse-chatview.js plugin.
 
 ``_converse.on('chatBoxToggled', function (chatbox) { ... });``
 
@@ -239,15 +239,15 @@ The user has logged out.
 messageAdded
 ~~~~~~~~~~~~
 
-Once a message has been added to a chat box. The passed in data object contains
-a `chatbox` attribute, referring to the chat box receiving the message, as well
+Once a message has been added to a chatbox. The passed in data object contains
+a `chatbox` attribute, referring to the chatbox receiving the message, as well
 as a `message` attribute which refers to the Message model.
 
 .. code-block:: javascript
 
     _converse.on('messageAdded', function (data) {
         // The message is at `data.message`
-        // The original chat box is at `data.chatbox`.
+        // The original chatbox is at `data.chatbox`.
     });
 
 messageSend

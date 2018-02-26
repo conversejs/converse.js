@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define, window */
+/*global define, window, document */
 
 (function (root, factory) {
     define(["converse-core",
@@ -536,7 +536,6 @@
                 const new_html = tpl_chatbox_minimize(
                     {info_minimize: __('Minimize this chat box')}
                 );
-
                 const el = view.el.querySelector('.toggle-chatbox-button');
                 if (el) {
                     el.outerHTML = new_html;
@@ -553,11 +552,6 @@
                     _converse.chatboxviews.trimChats(chatbox);
                 }
             });
-
-            const logOut = function () {
-                _converse.minimized_chats.remove();
-            };
-            _converse.on('logout', logOut);
         }
     });
 }));

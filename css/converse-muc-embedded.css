@@ -3,7 +3,7 @@
     https://coolors.co/app/264653-2a9d8f-e9c46a-f4a261-e76f51
     http://paletton.com/#uid=70a0u0kkNs+b4JOgryLpxqpsbkI
  */
-#converse-embedded-chat {
+#conversejs.converse-embedded {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -11,56 +11,56 @@
   right: auto;
   position: relative;
   width: 100%; }
-  #converse-embedded-chat *, #converse-embedded-chat *:before, #converse-embedded-chat *:after {
+  #conversejs.converse-embedded *, #conversejs.converse-embedded *:before, #conversejs.converse-embedded *:after {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box; }
-  #converse-embedded-chat form.pure-form.converse-centered-form {
+  #conversejs.converse-embedded form.pure-form.converse-centered-form {
     position: absolute;
     top: 30%;
     transform: translateY(-50%); }
-  #converse-embedded-chat .chatroom {
+  #conversejs.converse-embedded .chatroom {
     width: auto; }
-  #converse-embedded-chat .flyout {
+  #conversejs.converse-embedded .flyout {
     bottom: auto;
     display: block;
     position: relative; }
-  #converse-embedded-chat .chatbox {
+  #conversejs.converse-embedded .chatbox {
     float: none; }
-    #converse-embedded-chat .chatbox .box-flyout {
+    #conversejs.converse-embedded .chatbox .box-flyout {
       box-shadow: none; }
-    #converse-embedded-chat .chatbox .chat-title {
+    #conversejs.converse-embedded .chatbox .chat-title {
       padding: 0.3em;
       font-size: 120%; }
-  #converse-embedded-chat .chatbox-btn {
+  #conversejs.converse-embedded .chatbox-btn {
     display: none; }
-  #converse-embedded-chat .chatroom .box-flyout {
+  #conversejs.converse-embedded .chatroom .box-flyout {
     min-width: auto;
     width: 100%;
     height: 55vh; }
-    #converse-embedded-chat .chatroom .box-flyout .chat-body {
+    #conversejs.converse-embedded .chatroom .box-flyout .chat-body {
       height: -webkit-calc(100% - 55px);
       height: calc(100% - 55px); }
-    #converse-embedded-chat .chatroom .box-flyout .occupants-heading {
+    #conversejs.converse-embedded .chatroom .box-flyout .occupants-heading {
       font-size: 120%; }
-    #converse-embedded-chat .chatroom .box-flyout .chat-content {
+    #conversejs.converse-embedded .chatroom .box-flyout .chat-content {
       height: calc(100% - 97px); }
-      #converse-embedded-chat .chatroom .box-flyout .chat-content .chat-message {
+      #conversejs.converse-embedded .chatroom .box-flyout .chat-content .chat-message {
         margin: 0.5em;
         font-size: 120%; }
-    #converse-embedded-chat .chatroom .box-flyout .sendXMPPMessage .chat-textarea {
+    #conversejs.converse-embedded .chatroom .box-flyout .sendXMPPMessage .chat-textarea {
       padding: 0.5em;
       font-size: 110%; }
-    #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container {
+    #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container {
       font-size: 180%;
       float: left;
       height: 100%;
       position: relative; }
-      #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container input {
+      #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container input {
         font-size: 60%; }
-    #converse-embedded-chat .chatroom .box-flyout .occupants .occupant-list {
+    #conversejs.converse-embedded .chatroom .box-flyout .occupants .occupant-list {
       padding-left: 0.3em; }
-      #converse-embedded-chat .chatroom .box-flyout .occupants .occupant-list li.occupant {
+      #conversejs.converse-embedded .chatroom .box-flyout .occupants .occupant-list li.occupant {
         font-size: 120%; }
 
 /*# sourceMappingURL=converse-muc-embedded.css.map */

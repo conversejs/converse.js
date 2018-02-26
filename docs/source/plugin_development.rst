@@ -340,7 +340,7 @@ method of the plugin:
     });
 
 In this case, the plugin waits for the ``chatBoxOpened`` event, before it then
-calls ``renderMinimizeButton``, which adds a new button to the chat box (which
+calls ``renderMinimizeButton``, which adds a new button to the chatbox (which
 enables you to minimize it).
 
 Finding the right promises and/or events to listen to, can be a bit

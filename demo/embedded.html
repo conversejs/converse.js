@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Converse.js: A free chat client for your website" />
+    <meta name="description" content="Converse.js: An XMPP chat client which can be integrated into any website" />
     <meta name="author" content="JC Brand" />
     <meta name="keywords" content="xmpp chat webchat converse.js" />
     <link rel="shortcut icon" type="image/ico" href="../css/images/favicon.ico"/>
@@ -16,8 +16,8 @@
     <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/css/converse-muc-embedded.min.css" />
     <script type="text/javascript" src="https://cdn.conversejs.org/analytics.js"></script>
     <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
-    <![if gte IE 9]>
-        <script src="https://cdn.conversejs.org/dist/converse-muc-embedded.min.js"></script>
+    <![if gte IE 11]>
+        <script src="https://cdn.conversejs.org/dist/converse.min.js"></script>
     <![endif]>
 </head>
 
@@ -41,10 +41,10 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-8 col-md-offset-2">
-                        <h1 class="brand-heading brand-heading-embedded"><a style="color: white;" href="/"><i class="icon-conversejs"></i>Converse.js</a></h1>
+                        <h1 class="brand-heading brand-heading-embedded"><a style="color: white;" href="/"><i class="icon-conversejs"></i>Converse</a></h1>
                         <p class="intro-text">Embedded MUC chat demo</p>
 
-                        <div id="converse-embedded-chat"></div>
+                        <div id="conversejs"></div>
                     </div>
                 </div>
             </div>
@@ -54,44 +54,19 @@
 
 <script>
     converse.initialize({
-        allow_logout: false, // No point in logging out when we have auto_login as true.
-        allow_muc_invitations: false, // Doesn't make sense to allow because only
-                                        // roster contacts can be invited
-        allow_contact_requests: false, // Contacts from other servers cannot,
-                                        // be added and anonymous users don't
-                                        // know one another's JIDs, so disabling.
-        auto_reconnect: true,
         authentication: 'anonymous',
         auto_login: true,
         auto_join_rooms: [
             'anonymous@conference.nomnom.im',
         ],
-        // Whitelist non-core plugins that we need
-        whitelisted_plugins: ['converse-muc-embedded'],
-        // Blacklist plugins which aren't included in the build file, 
-        // so that other code cannot register their own plugins under
-        // those names.
-        blacklisted_plugins: [
-            "converse-bookmarks",
-            "converse-controlbox",
-            "converse-dragresize",
-            "converse-headline",
-            "converse-minimize",
-            "converse-otr",
-            "converse-register",
-            "converse-vcard",
-        ],
+        bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+        jid: 'nomnom.im', // XMPP server which allows anonymous login (doesn't
+                          // allow chatting with other XMPP servers).
         notify_all_room_messages: [
             'anonymous@conference.nomnom.im',
         ],
-        bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
-        jid: 'nomnom.im', // XMPP server which allows anonymous login (doesn't
-                            // allow chatting with other XMPP servers).
-        keepalive: true,
-        hide_muc_server: true, // Federation is disabled, so no use in
-                                // showing the MUC server.
-        play_sounds: true,
-        strict_plugin_dependencies: false
+        locales_url: "../locale/{{{locale}}}/LC_MESSAGES/converse.json",
+        view_mode: 'embedded',
     });
 </script>
 </html>

@@ -11,6 +11,11 @@
     const { Backbone, _ } = converse.env;
 
     converse.plugins.add('converse-muc-embedded', {
+
+        enabled (_converse) {
+            return _converse.view_mode === 'embedded';
+        },
+
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -18,33 +23,10 @@
             //
             // New functions which don't exist yet can also be added.
 
-            ChatBoxes: {
-                onConnected () {
-                    // Override to avoid storing or fetching chat boxes from session
-                    // storage.
-                    const { _converse } = this.__super__;
-                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                        converse.env.b64_sha1(`converse.chatboxes-${_converse.bare_jid}`));
-                    this.registerMessageHandler();
-                    /* This is disabled:
-                     *
-                     * this.fetch({
-                     *      add: true,
-                     *      success: this.onChatBoxesFetched.bind(this)
-                     *  });
-                     */
-                     this.onChatBoxesFetched(new Backbone.Collection());
-                }
-            },
-
-            ChatRoomView: {
-                insertIntoDOM () {
-                    if (!document.body.contains(this.el)) {
-                        const container = document.querySelector('#converse-embedded-chat');
-                        container.innerHTML = '';
-                        container.appendChild(this.el);
-                    }
-                    return this;
+            ChatBoxViews: {
+                initialize () {
+                    this.__super__.initialize.apply(this, arguments);
+                    this.el.classList.add('converse-embedded');
                 }
             }
         },
@@ -53,6 +35,13 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
+            this._converse.api.settings.update({
+                'allow_logout': false, // No point in logging out when we have auto_login as true.
+                'allow_muc_invitations': false, // Doesn't make sense to allow because only
+                                                // roster contacts can be invited
+                'hide_muc_server': true, // Federation is disabled, so no use in
+                                         // showing the MUC server.
+            });
             const { _converse } = this;
             if (!_.isArray(_converse.auto_join_rooms)) {
                 throw new Error("converse-muc-embedded: auto_join_rooms must be an Array");

@@ -59,6 +59,9 @@
                         <a href="/docs/html/index.html">Documentation</a>
                     </li>
                     <li>
+                        <a href="jslicenses.html" rel="jslicense">Licences</a>
+                    </li>
+                    <li>
                         <a href="https://github.com/jcbrand/converse.js/releases" class="button" target="_blank" rel="noopener">Download</a>
                     </li>
                 </ul>
@@ -74,9 +77,14 @@
             <div class="col-md-8 col-md-offset-2">
                 <p class="intro-text">A free and open-source XMPP chat client in your browser</p>
                 <p>Now also available in a fullscreen version.
-                Check out <a href="https://inverse.chat" target="_blank" rel="noopener">inverse.chat</a> </br>
-                Please support this project via <a href="https://www.patreon.com/jcbrand" target="_blank" rel="noopener">Patreon</a> or <a href="https://liberapay.com/jcbrand" target="_blank" rel="noopener">Liberapay</a>
+                Check out <a href="https://inverse.chat" target="_blank" rel="noopener">inverse.chat</a>
                 </p>
+
+                <p>
+                <a href="https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org"
+                   target="_blank" rel="noopener"><img src="https://inverse.chat/badge.svg?room=discuss@conference.conversejs.org"/></a>
+                </p>
+
                 <div class="page-scroll">
                     <a href="#about" class="btn btn-default btn-lg"><span class="btn-text">Learn More</span></a>
                 </div>
@@ -113,7 +121,7 @@
     <section class="features-section content-section" id="features">
         <div class="container">
             <div class="row">
-                <div class="col-lg-4">
+                <div class="col-lg-6">
                     <section>
                         <span class="feature-icon page-scroll"><a class="fa fa-globe" href="#features" title="Integration"></a></span>
                         <header>
@@ -132,7 +140,7 @@
                         </ul>
                     </section>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-6">
                     <section>
                         <span class="feature-icon page-scroll"><a class="fa fa-check-square-o" href="#features" title="Features"></a></span>
                     </section>
@@ -166,31 +174,6 @@
                             <li>Translated into 17 languages</li>
                         </ul>
                 </div>
-                <div class="col-lg-4">
-                    <section>
-                        <span class="feature-icon page-scroll"><a class="fa fa-video-camera" href="#features" title="Screencasts"></a></span>
-                        <header>
-                            <h2>Screencasts</h2>
-                        </header>
-                        <ul class="screencasts">
-                            <li>
-                                <a href="https://opkode.com/blog/2012/07/30/instant-messaging-for-plone-with-javascript-and-xmpp" target="_blank" rel="noopener">
-                                    In a Plone site
-                                </a>
-                            </li>
-                            <li>
-                                <a href="http://opkode.com/media/blog/2013/04/02/converse.js-xmpp-instant-messaging-with-javascript" target="_blank" rel="noopener">
-                                    Chatting with buddies from Jabber.org and Gmail
-                                </a>
-                            </li>
-                            <li>
-                                <a href="https://opkode.com/media/blog/2013/11/11/conversejs-otr-support" target="_blank" rel="noopener">
-                                    Off-the-record encryption
-                                </a>
-                            </li>
-                        </ul>
-                    </section>
-                </div>
             </div>
         </div>
     </section>
@@ -201,10 +184,11 @@
                 <div class="col-lg-8 col-lg-offset-2">
                     <h2>Contact</h2>
                     <ul class="contact">
-                        <li>Follow me on <a href="http://twitter.com/jcopkode" target="_blank" rel="noopener">Twitter</a> or chat with me via XMPP at <a href="xmpp:jc@opkode.com" class="xmpp JSnocheck" title="XMPP/Jabber">jc@opkode.com</a>.</li>
+                        <li>Follow me on <a href="http://twitter.com/jcopkode" target="_blank" rel="noopener">Twitter</a>
+                            or <a href="https://mastodon.xyz/@jcbrand" target="_blank" rel="noopener">Mastodon</a>
+                        <li>Chat with me via XMPP at <a href="xmpp:jc@opkode.com" class="xmpp JSnocheck" title="XMPP/Jabber">jc@opkode.com</a></li>
                         <li>For technical support, you can ask on <a href="http://stackoverflow.com/questions/tagged/converse.js">Stack Overflow</a>
-                            or if you have a more simple question you can ask in the Converse.js chat room:
-                            <a href="xmpp:discuss@conference.conversejs.org" class="xmpp JSnocheck" title="Converse.js chat room">discuss@conference.conversejs.org</a>.</li>
+                        <li>The Converse.js XMPP chatroom: <a href="xmpp:discuss@conference.conversejs.org" class="xmpp JSnocheck" title="Converse.js chat room">discuss@conference.conversejs.org</a>.</li>
                         <li>Please file bugs and feature requests on <a target="_blank" rel="noopener" href="https://github.com/jcbrand/converse.js/issues">Github</a>.</li>
                     </ul>
                 </div>
@@ -238,7 +222,7 @@
 
                     <p class="sponsors-text">Converse.js is a software commons; available at no cost to you or anyone else.
                        Sponsorships allow us to fund further development and improvements and are greatly appreciated.
-                       If you'd like to sponsor this project, please visit <a href="https://www.patreon.com/jcbrand" target="_blank" rel="noopener">Patreon page</a>
+                       If you'd like to sponsor this project, please visit <a href="https://www.patreon.com/jcbrand" target="_blank" rel="noopener">Patreon</a>
                        or <a href="https://liberapay.com/jcbrand" target="_blank" rel="noopener">Liberapay</a>.
                     </p>
                 </div>
@@ -248,6 +232,34 @@
 </body>
 
 <script>
+    /*
+    @licstart
+    This is free and unencumbered software released into the public domain.
+
+    Anyone is free to copy, modify, publish, use, compile, sell, or
+    distribute this software, either in source code form or as a compiled
+    binary, for any purpose, commercial or non-commercial, and by any
+    means.
+
+    In jurisdictions that recognize copyright laws, the author or authors
+    of this software dedicate any and all copyright interest in the
+    software to the public domain. We make this dedication for the benefit
+    of the public at large and to the detriment of our heirs and
+    successors. We intend this dedication to be an overt act of
+    relinquishment in perpetuity of all present and future rights to this
+    software under copyright law.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+    OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+    OTHER DEALINGS IN THE SOFTWARE.
+
+    For more information, please refer to <http://unlicense.org/>
+    @licend
+    */
     converse.initialize({
         // Please use this connection manager only for testing purposes
         bosh_service_url: 'https://conversejs.org/http-bind/',

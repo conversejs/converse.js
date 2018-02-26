@@ -646,6 +646,36 @@
         return promise;
     };
 
+    u.interpolate = function (string, o) {
+        return string.replace(/{{{([^{}]*)}}}/g,
+            (a, b) => {
+                var r = o[b];
+                return typeof r === 'string' || typeof r === 'number' ? r : a;
+            });
+    };
+
+    u.onMultipleEvents = function (events=[], callback) {
+        /* Call the callback once all the events have been triggered
+         *
+         * Parameters:
+         *  (Array) events: An array of objects, with keys `object` and
+         *      `event`, representing the event name and the object it's
+         *      triggered upon.
+         *  (Function) callback: The function to call once all events have
+         *      been triggered.
+         */
+        let triggered = [];
+
+        function handler (result) {
+            triggered.push(result)
+            if (events.length === triggered.length) {
+                callback(triggered);
+                triggered = [];
+            }
+        }
+        _.each(events, (map) => map.object.on(map.event, handler));
+    };
+
     u.safeSave = function (model, attributes) {
         if (u.isPersistableModel(model)) {
             model.save(attributes);
@@ -655,6 +685,9 @@
     }
 
     u.isVisible = function (el) {
+        if (u.hasClass('hidden', el)) {
+            return false;
+        }
         // XXX: Taken from jQuery's "visible" implementation
         return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
     };

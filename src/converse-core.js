@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window, document, JSON */
+/*global Backbone, define, window, JSON */
 (function (root, factory) {
     define(["sizzle",
             "es6-promise",
@@ -20,7 +20,7 @@
             "backbone.nativeview",
             "backbone.browserStorage"
     ], factory);
-}(this, function (sizzle, Promise, _, f, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
+}(this, function (sizzle, Promise, _, f, polyfill, i18n, u, moment, Strophe, pluggable, Backbone) {
 
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -79,6 +79,7 @@
         'converse-mam',
         'converse-minimize',
         'converse-muc',
+        'converse-muc-embedded',
         'converse-notification',
         'converse-otr',
         'converse-ping',
@@ -87,8 +88,8 @@
         'converse-roomslist',
         'converse-rosterview',
         'converse-singleton',
-        'converse-vcard',
-        'converse-spoilers'
+        'converse-spoilers',
+        'converse-vcard'
     ];
 
     // Make converse pluggable
@@ -216,7 +217,7 @@
         /* Private function, used to add a new promise to the ones already
          * available via the `waitUntil` api method.
          */
-        _converse.promises[promise] = utils.getResolveablePromise();
+        _converse.promises[promise] = u.getResolveablePromise();
     }
 
     _converse.emit = function (name) {
@@ -234,7 +235,7 @@
     _converse.initialize = function (settings, callback) {
         "use strict";
         settings = !_.isUndefined(settings) ? settings : {};
-        const init_promise = utils.getResolveablePromise();
+        const init_promise = u.getResolveablePromise();
 
         _.each(PROMISES, addPromise);
 
@@ -288,7 +289,7 @@
             authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
             auto_away: 0, // Seconds after which user status is set to 'away'
             auto_login: false, // Currently only used in connection with anonymous login
-            auto_reconnect: false,
+            auto_reconnect: true,
             auto_subscribe: false,
             auto_xa: 0, // Seconds after which user status is set to 'xa'
             blacklisted_plugins: [],
@@ -318,6 +319,7 @@
             priority: 0,
             registration_domain: '',
             rid: undefined,
+            root: window.document,
             roster_groups: true,
             show_only_online_users: false,
             show_send_button: false,
@@ -591,25 +593,31 @@
         this.incrementMsgCounter = function () {
             this.msg_counter += 1;
             const unreadMsgCount = this.msg_counter;
-            if (document.title.search(/^Messages \(\d+\) /) === -1) {
-                document.title = `Messages (${unreadMsgCount}) ${document.title}`;
+            let title = document.title;
+            if (_.isNil(title)) {
+                return;
+            }
+            if (title.search(/^Messages \(\d+\) /) === -1) {
+                title = `Messages (${unreadMsgCount}) ${title}`;
             } else {
-                document.title = document.title.replace(
-                    /^Messages \(\d+\) /, `Messages (${unreadMsgCount}) `
-                );
+                title = title.replace(/^Messages \(\d+\) /, `Messages (${unreadMsgCount})`);
             }
         };
 
         this.clearMsgCounter = function () {
             this.msg_counter = 0;
-            if (document.title.search(/^Messages \(\d+\) /) !== -1) {
-                document.title = document.title.replace(/^Messages \(\d+\) /, "");
+            let title = document.title;
+            if (_.isNil(title)) {
+                return;
+            }
+            if (title.search(/^Messages \(\d+\) /) !== -1) {
+                title = title.replace(/^Messages \(\d+\) /, "");
             }
         };
 
         this.initStatus = () =>
             new Promise((resolve, reject) => {
-                const promise = new utils.getResolveablePromise();
+                const promise = new u.getResolveablePromise();
                 this.xmppstatus = new this.XMPPStatus();
                 const id = b64_sha1(`converse.xmppstatus-${_converse.bare_jid}`);
                 this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
@@ -646,6 +654,9 @@
             } else {
                 _converse._tearDown();
             }
+            // Recreate all the promises
+            _.each(_.keys(_converse.promises), addPromise);
+
             _converse.emit('logout');
         };
 
@@ -1134,7 +1145,7 @@
             },
 
             isSelf (jid) {
-                return utils.isSameBareJID(jid, _converse.connection.jid);
+                return u.isSameBareJID(jid, _converse.connection.jid);
             },
 
             addAndSubscribe (jid, name, groups, message, attributes) {
@@ -1795,6 +1806,21 @@
             const whitelist = _converse.core_plugins.concat(
                 _converse.whitelisted_plugins);
 
+            if (_converse.view_mode === 'embedded') {
+                _.forEach([ // eslint-disable-line lodash/prefer-map
+                    "converse-bookmarks",
+                    "converse-controlbox",
+                    "converse-dragresize",
+                    "converse-headline",
+                    "converse-minimize",
+                    "converse-otr",
+                    "converse-register",
+                    "converse-vcard",
+                ], (name) => {
+                    _converse.blacklisted_plugins.push(name)
+                });
+            }
+
             _converse.pluggable.initializePlugins({
                 'updateSettings' () {
                     _converse.log(
@@ -1839,13 +1865,10 @@
             i18n.fetchTranslations(
                 _converse.locale,
                 _converse.locales,
-                _.template(_converse.locales_url)({'locale': _converse.locale})
-            ).then(() => {
-                finishInitialization();
-            }).catch((reason) => {
-                finishInitialization();
-                _converse.log(reason, Strophe.LogLevel.ERROR);
-            });
+                u.interpolate(_converse.locales_url, {'locale': _converse.locale}))
+            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+            .then(finishInitialization)
+            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }
         return init_promise;
     };
@@ -1901,9 +1924,9 @@
         },
         'settings': {
             'update' (settings) {
-                utils.merge(_converse.default_settings, settings);
-                utils.merge(_converse, settings);
-                utils.applyUserSettings(_converse, settings, _converse.user_settings);
+                u.merge(_converse.default_settings, settings);
+                u.merge(_converse, settings);
+                u.applyUserSettings(_converse, settings, _converse.user_settings);
             },
             'get' (key) {
                 if (_.includes(_.keys(_converse.default_settings), key)) {
@@ -1996,7 +2019,7 @@
     };
 
     // The public API
-    return {
+    window.converse = {
         'initialize' (settings, callback) {
             return _converse.initialize(settings, callback);
         },
@@ -2025,7 +2048,9 @@
             'b64_sha1':  b64_sha1,
             'moment': moment,
             'sizzle': sizzle,
-            'utils': utils
+            'utils': u
         }
     };
+    window.dispatchEvent(new Event('converse-loaded'));
+    return window.converse;
 }));

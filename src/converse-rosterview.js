@@ -358,9 +358,8 @@
                     this.el.innerHTML = tpl_roster_item(
                         _.extend(item.toJSON(), {
                             'desc_status': STATUSES[item.get('chat_status')||'offline'],
-                            'desc_chat': __('Click to chat with this contact'),
+                            'desc_chat': __('Click to chat with %1$s (JID: %2$s)', item.get('fullname'), item.get('jid')),
                             'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname')),
-                            'title_fullname': __('Name'),
                             'allow_contact_removal': _converse.allow_contact_removal,
                             'num_unread': item.get('num_unread') || 0
                         })

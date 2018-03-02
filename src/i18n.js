@@ -29,6 +29,7 @@
         'moment/locale/pl',
         'moment/locale/pt-br',
         'moment/locale/ru',
+        'moment/locale/tr',
         'moment/locale/uk',
         'moment/locale/zh-cn',
         'moment/locale/zh-tw'

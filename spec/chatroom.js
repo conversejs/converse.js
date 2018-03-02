@@ -3142,26 +3142,41 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                var sendIQ = _converse.connection.sendIQ;
+                var sent_stanza, IQ_id;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+
                 test_utils.openControlBox();
                 var panel = _converse.chatboxviews.get('controlbox').roomspanel;
                 $(panel.tabs).find('li').last().find('a')[0].click(); // Click the chatrooms tab
                 panel.model.set({'muc_domain': 'muc.localhost'}); // Make sure the domain is set
                 // See: http://xmpp.org/extensions/xep-0045.html#disco-rooms
-                expect($('#available-chatrooms').children('dt').length).toBe(0);
-                expect($('#available-chatrooms').children('dd').length).toBe(0);
+                expect(document.querySelectorAll('#available-chatrooms dt').length).toBe(0);
+                expect(document.querySelectorAll('#available-chatrooms dd').length).toBe(0);
+                document.querySelector('input#show-rooms').click();
+
+                expect(sent_stanza.toLocaleString()).toBe(
+                    "<iq to='muc.localhost' from='dummy@localhost/resource' type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                        "<query xmlns='http://jabber.org/protocol/disco#items'/>"+
+                    "</iq>"
+                );
 
                 var iq = $iq({
                     from:'muc.localhost',
                     to:'dummy@localhost/pda',
+                    id: IQ_id,
                     type:'result'
                 }).c('query')
                   .c('item', { jid:'heath@chat.shakespeare.lit', name:'A Lonely Heath'}).up()
                   .c('item', { jid:'coven@chat.shakespeare.lit', name:'A Dark Cave'}).up()
                   .c('item', { jid:'forres@chat.shakespeare.lit', name:'The Palace'}).up()
                   .c('item', { jid:'inverness@chat.shakespeare.lit', name:'Macbeth&apos;s Castle'}).nodeTree;
+                _converse.connection._dataRecv(test_utils.createRequest(iq));
 
-                panel.onRoomsFound(iq);
-                expect($(panel.el.querySelector('#available-chatrooms')).children('dt').length).toBe(1);
+                expect(document.querySelectorAll('#available-chatrooms dt').length).toBe(1);
                 expect($(panel.el.querySelector('#available-chatrooms')).children('dt').first().text()).toBe("Rooms found");
                 expect($(panel.el.querySelector('#available-chatrooms')).children('dd').length).toBe(4);
                 done();

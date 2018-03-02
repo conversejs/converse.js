@@ -1503,7 +1503,7 @@
             constructPresence (type, status_message) {
                 let presence;
                 type = _.isString(type) ? type : (this.get('status') || _converse.default_state);
-                status_message = _.isString(status_message) ? status_message : undefined;
+                status_message = _.isString(status_message) ? status_message : this.get('status_message');
                 // Most of these presence types are actually not explicitly sent,
                 // but I add all of them here for reference and future proofing.
                 if ((type === 'unavailable') ||

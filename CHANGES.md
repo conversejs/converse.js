@@ -9,6 +9,7 @@
 
 - Avatars weren't being shown.
 - Bookmarks list and open rooms list weren't recreated after logging in for a 2nd time (without reloading the browser).
+- #1022 Status message not sent out on subsequent presences
 - #1024 null reference on MUC Invite
 - #1025 OTR lock icon disappears
 - #1027 `new Event` not supported in IE11

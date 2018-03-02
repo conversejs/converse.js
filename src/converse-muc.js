@@ -13,6 +13,7 @@
     define([
             "form-utils",
             "converse-core",
+            "emojione",
             "lodash.fp",
             "tpl!chatarea",
             "tpl!chatroom",
@@ -44,6 +45,7 @@
 }(this, function (
             u,
             converse,
+            emojione,
             fp,
             tpl_chatarea,
             tpl_chatroom,
@@ -969,6 +971,7 @@
                      * Parameters:
                      *  (String) text: The message text to be sent.
                      */
+                    text = emojione.shortnameToUnicode(text)
                     const msgid = _converse.connection.getUniqueId();
                     const msg = $msg({
                         to: this.model.get('jid'),

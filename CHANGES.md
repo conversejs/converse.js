@@ -5,6 +5,7 @@
 - Avoid `eval` (via `_.template` from lodash).
 - Don't show bookmark toggles when PEP bookmarking not supported by the XMPP server.
 - Add LibreJS support
+- Emojis are now sent in unicode instead of short names (also in MUCs)
 
 ### Bugfixes
 

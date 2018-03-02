@@ -149,8 +149,8 @@
 #converse-embedded-chat .icon-legal:before,
 #conversejs .icon-legal:before {
   content: "\f0e3"; }
-#converse-embedded-chat .icon-lock-2:before,
-#conversejs .icon-lock-2:before {
+#converse-embedded-chat .icon-lock:before,
+#conversejs .icon-lock:before {
   content: "\e027"; }
 #converse-embedded-chat .icon-minus:before,
 #conversejs .icon-minus:before {

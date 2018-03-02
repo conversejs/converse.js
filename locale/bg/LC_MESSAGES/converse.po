@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-14 16:51+0100\n"
-"PO-Revision-Date: 2018-03-02 11:12+0000\n"
+"PO-Revision-Date: 2018-03-02 14:54+0000\n"
 "Last-Translator: Тони <toni@neshtoto.club>\n"
 "Language-Team: Bulgarian "
 "<https://hosted.weblate.org/projects/conversejs/translations/bg/>\n"
@@ -508,32 +508,32 @@ msgstr "%1$s беше лишен от достъп"
 #: dist/converse-no-dependencies.js:18480
 #, javascript-format
 msgid "%1$s's nickname has changed"
-msgstr ""
+msgstr "Краткото име на %1$s се промени"
 
 #: dist/converse-no-dependencies.js:18481
 #, javascript-format
 msgid "%1$s has been kicked out"
-msgstr ""
+msgstr "%1$s беше изведен"
 
 #: dist/converse-no-dependencies.js:18482
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr ""
+msgstr "%1$s беше премахнат заради промяна на членство"
 
 #: dist/converse-no-dependencies.js:18483
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr ""
+msgstr "%1$s беше премахнат, защото не е член"
 
 #: dist/converse-no-dependencies.js:18486
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr ""
+msgstr "Вашето кратко име беше автоматично установено на %1$s"
 
 #: dist/converse-no-dependencies.js:18487
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
-msgstr "Прякорът ви беше променен на %1$s"
+msgstr "Краткото ви име беше променено на %1$s"
 
 #: dist/converse-no-dependencies.js:18688
 msgid "Message"
@@ -577,105 +577,107 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
-"Грешка: командата “%1$s” приема два аргумента, прякорът на потребителя и по "
-"желание – причина."
+"Грешка: командата “%1$s” приема два аргумента – краткото име на потребителя "
+"и, по желание, причина."
 
 #: dist/converse-no-dependencies.js:19245
 msgid "Are you sure you want to clear the messages from this room?"
-msgstr ""
+msgstr "Сигурни ли сте, че искате да изчистите съобщенията от тази стая?"
 
 #: dist/converse-no-dependencies.js:19254
 msgid "Error: could not execute the command"
-msgstr ""
+msgstr "Грешка: невъзможност за изпълнение на командата"
 
 #: dist/converse-no-dependencies.js:19307
 msgid "Change user's affiliation to admin"
-msgstr ""
+msgstr "Промяна на ролята на потребителя на администратор"
 
 #: dist/converse-no-dependencies.js:19307
 msgid "Ban user from room"
-msgstr ""
+msgstr "Спиране на достъпа на потребителя до стаята"
 
 #: dist/converse-no-dependencies.js:19307
 msgid "Change user role to participant"
-msgstr ""
+msgstr "Промяна на ролята на потребителя на участник"
 
 #: dist/converse-no-dependencies.js:19307
 msgid "Kick user from room"
-msgstr ""
+msgstr "Извеждане на потребителя от стаята"
 
 #: dist/converse-no-dependencies.js:19307
 msgid "Write in 3rd person"
-msgstr ""
+msgstr "Писане в трето лице"
 
 #: dist/converse-no-dependencies.js:19307
 msgid "Grant membership to a user"
-msgstr ""
+msgstr "Приемане на членство на потребител"
 
 #: dist/converse-no-dependencies.js:19307
 msgid "Remove user's ability to post messages"
-msgstr ""
+msgstr "Премахване на допуска на потребителя да публикува съобщения"
 
 #: dist/converse-no-dependencies.js:19307
 msgid "Change your nickname"
-msgstr ""
+msgstr "Промяна на краткото ви име"
 
 #: dist/converse-no-dependencies.js:19307
 msgid "Grant moderator role to user"
-msgstr ""
+msgstr "Даване на роля модератор на потребителя"
 
 #: dist/converse-no-dependencies.js:19307
 msgid "Grant ownership of this room"
-msgstr ""
+msgstr "Даване на собствеността на тази стая"
 
 #: dist/converse-no-dependencies.js:19307
 msgid "Revoke user's membership"
-msgstr ""
+msgstr "Спиране на членството на потребителя"
 
 #: dist/converse-no-dependencies.js:19307
 msgid "Set room subject"
-msgstr ""
+msgstr "Задаване на тема на стаята"
 
 #: dist/converse-no-dependencies.js:19307
 msgid "Set room subject (alias for /subject)"
-msgstr ""
+msgstr "Задаване на тема на стаята (псевдоним за /тема)"
 
 #: dist/converse-no-dependencies.js:19307
 msgid "Allow muted user to post messages"
-msgstr ""
+msgstr "Позволяване заглушен потребител да публикува съобщения"
 
 #: dist/converse-no-dependencies.js:19596
 #: dist/converse-no-dependencies.js:21676
 #: dist/converse-no-dependencies.js:23692
 msgid "Cancel"
-msgstr ""
+msgstr "Отмяна"
 
 #: dist/converse-no-dependencies.js:19915
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
+"Краткото име, което избрахте, е запазено или понастоящем се ползва, моля "
+"изберете друго."
 
 #: dist/converse-no-dependencies.js:19941
 msgid "Please choose your nickname"
-msgstr ""
+msgstr "Моля изберете краткото си име"
 
 #: dist/converse-no-dependencies.js:19942
 #: dist/converse-no-dependencies.js:20854
 msgid "Nickname"
-msgstr ""
+msgstr "Кратко име"
 
 #: dist/converse-no-dependencies.js:19943
 msgid "Enter room"
-msgstr ""
+msgstr "Влизане в стаята"
 
 #: dist/converse-no-dependencies.js:19964
 msgid "This chatroom requires a password"
-msgstr ""
+msgstr "Тази чат стая изисква парола"
 
 #: dist/converse-no-dependencies.js:19965
 msgid "Password: "
-msgstr ""
+msgstr "Парола: "
 
 #: dist/converse-no-dependencies.js:20107
 #, javascript-format

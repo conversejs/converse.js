@@ -1423,16 +1423,15 @@
                     var from_jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
                     var room_jid = 'lounge@localhost';
                     var reason = "Please join this chat room";
-                    var message = $(
-                        "<message from='"+from_jid+"' to='"+_converse.bare_jid+"'>" +
-                            "<x xmlns='jabber:x:conference'" +
-                                "jid='"+room_jid+"'" +
-                                "reason='"+reason+"'/>"+
-                        "</message>"
-                    )[0];
+
                     expect(_converse.chatboxes.models.length).toBe(1);
                     expect(_converse.chatboxes.models[0].id).toBe("controlbox");
-                    _converse.onDirectMUCInvitation(message);
+
+                    var stanza = Strophe.xmlHtmlNode(
+                        '<message xmlns="jabber:client" to="'+_converse.bare_jid+'" from="'+from_jid+'" id="9bceb415-f34b-4fa4-80d5-c0d076a24231">'+
+                            '<x xmlns="jabber:x:conference" jid="'+room_jid+'" reason="'+reason+'"/>'+
+                        '</message>').firstChild;
+                    _converse.onDirectMUCInvitation(stanza);
                     expect(window.confirm).toHaveBeenCalledWith(
                         name + ' has invited you to join a chat room: '+ room_jid +
                         ', and left the following reason: "'+reason+'"');

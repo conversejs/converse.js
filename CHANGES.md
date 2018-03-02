@@ -3,10 +3,15 @@
 ## 3.3.4 (Unreleased)
 
 - Avoid `eval` (via `_.template` from lodash).
-- Bugfix. Avatars weren't being shown.
-- Bugfix. Bookmarks list and open rooms list weren't recreated after logging in for a 2nd time (without reloading the browser).
 - Don't show bookmark toggles when PEP bookmarking not supported by the XMPP server.
 - Add LibreJS support
+
+### Bugfixes
+
+- Avatars weren't being shown.
+- Bookmarks list and open rooms list weren't recreated after logging in for a 2nd time (without reloading the browser).
+- #1024 null reference on MUC Invite
+- #1025 OTR lock icon disappears
 
 ## 3.3.3 (2018-02-14)
 

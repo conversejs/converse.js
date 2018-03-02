@@ -2,10 +2,8 @@
 
 ## 3.3.4 (Unreleased)
 
-- Avoid `eval` (via `_.template` from lodash).
 - Don't show bookmark toggles when PEP bookmarking not supported by the XMPP server.
 - Emojis are now sent in unicode instead of short names (also in MUCs)
-
 
 ### Bugfixes
 
@@ -14,6 +12,11 @@
 - #1024 null reference on MUC Invite
 - #1025 OTR lock icon disappears
 - #1027 `new Event` not supported in IE11
+- #1028 Avoid `eval` (crept in via `_.template` from lodash).
+
+### Translation changes
+
+- Updated German, Bulgarian, Russian, Chinese (traditional), Norwegian Bokmål and French translations.
 
 ## 3.3.3 (2018-02-14)
 

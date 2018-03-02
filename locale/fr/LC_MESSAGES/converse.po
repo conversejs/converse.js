@@ -7,16 +7,16 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-14 16:51+0100\n"
-"PO-Revision-Date: 2018-02-07 20:36+0000\n"
+"PO-Revision-Date: 2018-02-17 17:06+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
-"translations/fr/>\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/conversejs/translations/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2.19-dev\n"
+"X-Generator: Weblate 2.19\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -77,9 +77,8 @@ msgid "You have unread messages"
 msgstr "Vous avez de nouveaux messages"
 
 #: dist/converse-no-dependencies.js:12505
-#, fuzzy
 msgid "Hidden message"
-msgstr "Message personnel"
+msgstr "Message caché"
 
 #: dist/converse-no-dependencies.js:12507
 msgid "Personal message"
@@ -92,17 +91,15 @@ msgstr "Envoyer"
 
 #: dist/converse-no-dependencies.js:12515
 msgid "Optional hint"
-msgstr ""
+msgstr "Indice optionnel"
 
 #: dist/converse-no-dependencies.js:12571
-#, fuzzy
 msgid "Click to write as a normal (non-spoiler) message"
-msgstr "Cliquez ici pour indiquer votre statut personnel"
+msgstr "Cliquez pour écrire un message sans spoiler"
 
 #: dist/converse-no-dependencies.js:12573
-#, fuzzy
 msgid "Click to write your message as a spoiler"
-msgstr "Cliquez ici pour indiquer votre statut personnel"
+msgstr "Cliquez pour écrire votre message en tant que spoiler"
 
 #: dist/converse-no-dependencies.js:12577
 msgid "Clear all messages"
@@ -118,9 +115,8 @@ msgstr "Démarrer un appel"
 
 #: dist/converse-no-dependencies.js:12774
 #: dist/converse-no-dependencies.js:13237
-#, fuzzy
 msgid "Show hidden message"
-msgstr "Afficher ce menu"
+msgstr "Afficher le message caché"
 
 #: dist/converse-no-dependencies.js:12826
 msgid "me"
@@ -168,7 +164,7 @@ msgstr "Voulez-vous vraiment supprimer les messages de cette conversation ?"
 
 #: dist/converse-no-dependencies.js:13232
 msgid "Hide hidden message"
-msgstr ""
+msgstr "Cacher le message caché"
 
 #: dist/converse-no-dependencies.js:13250
 #: dist/converse-no-dependencies.js:24731
@@ -316,9 +312,9 @@ msgid "Click to decline the contact request from %1$s"
 msgstr "Cliquez pour décliner la demande d’ajout de contact de %1$s"
 
 #: dist/converse-no-dependencies.js:14164
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to chat with %1$s (JID: %2$s)"
-msgstr "Cliquez pour discuter avec ce contact"
+msgstr "Cliquez pour discuter avec %1$s (JID : %2$s)"
 
 #: dist/converse-no-dependencies.js:14209
 msgid "Are you sure you want to remove this contact?"

@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-14 16:51+0100\n"
-"PO-Revision-Date: 2018-01-18 10:53+0100\n"
-"Last-Translator: gensitu <pstew892@protonmail.com>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"conversejs/translations/zh_Hans/>\n"
+"PO-Revision-Date: 2018-02-16 14:35+0000\n"
+"Last-Translator: Iru Cai (vimacs) <mytbk920423@gmail.com>\n"
+"Language-Team: Chinese (Simplified) "
+"<https://hosted.weblate.org/projects/conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.19-dev\n"
+"X-Generator: Weblate 2.19\n"
 
 #: dist/converse-no-dependencies.js:7312
 msgid "The connection has dropped, attempting to reconnect."
@@ -240,7 +240,7 @@ msgstr "联系人请求"
 
 #: dist/converse-no-dependencies.js:13897
 msgid "Ungrouped"
-msgstr ""
+msgstr "未分组的"
 
 #: dist/converse-no-dependencies.js:13956
 msgid "Filter"
@@ -248,11 +248,11 @@ msgstr "筛选"
 
 #: dist/converse-no-dependencies.js:13959
 msgid "State"
-msgstr ""
+msgstr "状态"
 
 #: dist/converse-no-dependencies.js:13960
 msgid "Any"
-msgstr ""
+msgstr "任意"
 
 #: dist/converse-no-dependencies.js:13961
 msgid "Unread"
@@ -450,19 +450,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:18456
 msgid "This room is now no longer anonymous"
-msgstr ""
+msgstr "这个聊天室现在不再匿名"
 
 #: dist/converse-no-dependencies.js:18457
 msgid "This room is now semi-anonymous"
-msgstr ""
+msgstr "这个聊天室现在半匿名"
 
 #: dist/converse-no-dependencies.js:18458
 msgid "This room is now fully-anonymous"
-msgstr ""
+msgstr "这个聊天室现在完全匿名"
 
 #: dist/converse-no-dependencies.js:18459
 msgid "A new room has been created"
-msgstr ""
+msgstr "已经创建一个聊天室"
 
 #: dist/converse-no-dependencies.js:18462
 msgid "You have been banned from this room"

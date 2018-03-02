@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-14 16:51+0100\n"
-"PO-Revision-Date: 2018-01-26 23:35+0000\n"
+"PO-Revision-Date: 2018-02-14 17:41+0000\n"
 "Last-Translator: Nathan Follens <nathan@email.is>\n"
-"Language-Team: Dutch <https://hosted.weblate.org/projects/conversejs/"
-"translations/nl/>\n"
+"Language-Team: Dutch "
+"<https://hosted.weblate.org/projects/conversejs/translations/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -67,9 +67,8 @@ msgid "You have unread messages"
 msgstr "Je hebt ongelezen berichten"
 
 #: dist/converse-no-dependencies.js:12505
-#, fuzzy
 msgid "Hidden message"
-msgstr "Persoonlijk bericht"
+msgstr "Verborgen bericht"
 
 #: dist/converse-no-dependencies.js:12507
 msgid "Personal message"
@@ -82,17 +81,15 @@ msgstr "Verzenden"
 
 #: dist/converse-no-dependencies.js:12515
 msgid "Optional hint"
-msgstr ""
+msgstr "Facultatieve tip"
 
 #: dist/converse-no-dependencies.js:12571
-#, fuzzy
 msgid "Click to write as a normal (non-spoiler) message"
-msgstr "Klik hier om een aangepast statusbericht te schrijven"
+msgstr "Klik hier om een gewoon (niet-verborgen) bericht te schrijven"
 
 #: dist/converse-no-dependencies.js:12573
-#, fuzzy
 msgid "Click to write your message as a spoiler"
-msgstr "Klik hier om een aangepast statusbericht te schrijven"
+msgstr "Klik hier om een verborgen bericht te schrijven"
 
 #: dist/converse-no-dependencies.js:12577
 msgid "Clear all messages"
@@ -108,9 +105,8 @@ msgstr "Plaats een oproep"
 
 #: dist/converse-no-dependencies.js:12774
 #: dist/converse-no-dependencies.js:13237
-#, fuzzy
 msgid "Show hidden message"
-msgstr "Toon dit menu"
+msgstr "Verborgen bericht tonen"
 
 #: dist/converse-no-dependencies.js:12826
 msgid "me"
@@ -158,7 +154,7 @@ msgstr "Weet je zeker dat je de berichten in dit gespreksvenster wil wissen?"
 
 #: dist/converse-no-dependencies.js:13232
 msgid "Hide hidden message"
-msgstr ""
+msgstr "Verborgen bericht verbergen"
 
 #: dist/converse-no-dependencies.js:13250
 #: dist/converse-no-dependencies.js:24731
@@ -306,9 +302,9 @@ msgid "Click to decline the contact request from %1$s"
 msgstr "Klik om het contactverzoek van %1$s te weigeren"
 
 #: dist/converse-no-dependencies.js:14164
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to chat with %1$s (JID: %2$s)"
-msgstr "Klik om te chatten met dit contact"
+msgstr "Klik om te chatten met %1$s (JID: %2$s)"
 
 #: dist/converse-no-dependencies.js:14209
 msgid "Are you sure you want to remove this contact?"

@@ -2051,6 +2051,6 @@
             'utils': u
         }
     };
-    window.dispatchEvent(new Event('converse-loaded'));
+    window.dispatchEvent(new CustomEvent('converse-loaded'));
     return window.converse;
 }));

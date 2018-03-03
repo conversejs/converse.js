@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-14 16:51+0100\n"
-"PO-Revision-Date: 2018-03-03 10:46+0000\n"
+"PO-Revision-Date: 2018-03-04 05:44+0000\n"
 "Last-Translator: Тони <toni@neshtoto.club>\n"
 "Language-Team: Bulgarian "
 "<https://hosted.weblate.org/projects/conversejs/translations/bg/>\n"
@@ -1071,11 +1071,11 @@ msgstr "Повторно установяване на криптирана се
 #. We need to generate a new key and instance tag
 #: dist/converse-no-dependencies.js:23222
 msgid "Generating private key."
-msgstr ""
+msgstr "Създава се частен ключ."
 
 #: dist/converse-no-dependencies.js:23222
 msgid "Your browser might become unresponsive."
-msgstr ""
+msgstr "Браузърът ви може да спре да реагира."
 
 #: dist/converse-no-dependencies.js:23265
 #, javascript-format
@@ -1087,28 +1087,36 @@ msgid ""
 "\n"
 "%2$s"
 msgstr ""
+"Заявка за удостоверяване от %1$s\n"
+"\n"
+"Чат контактът ви опитва да провери вашата самоличността, като ви задава "
+"следния въпрос.\n"
+"\n"
+"%2$s"
 
 #: dist/converse-no-dependencies.js:23274
 msgid "Could not verify this user's identify."
-msgstr ""
+msgstr "Неуспех при проверка на самоличността на този потребител."
 
 #: dist/converse-no-dependencies.js:23328
 msgid "Exchanging private key with contact."
-msgstr ""
+msgstr "Обменя се частен ключ с контакта."
 
 #: dist/converse-no-dependencies.js:23443
 msgid "Your messages are not encrypted anymore"
-msgstr ""
+msgstr "Съобщенията ви вече не се криптират"
 
 #: dist/converse-no-dependencies.js:23445
 msgid ""
 "Your messages are now encrypted but your contact's identity has not been "
 "verified."
 msgstr ""
+"Съобщенията ви вече се криптират, но самоличността на събеседника ви не е "
+"удостоверена."
 
 #: dist/converse-no-dependencies.js:23447
 msgid "Your contact's identify has been verified."
-msgstr ""
+msgstr "Самоличността на събеседника ви беше удостоверена."
 
 #: dist/converse-no-dependencies.js:23449
 msgid "Your contact has ended encryption on their end, you should do the same."

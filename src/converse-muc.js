@@ -46,7 +46,7 @@
             u,
             converse,
             emojione,
-            fp,
+            f,
             tpl_chatarea,
             tpl_chatroom,
             tpl_chatroom_disconnect,
@@ -2534,6 +2534,7 @@
 
 
             _converse.MUCJoinForm = Backbone.VDOMView.extend({
+
                 initialize () {
                     this.model.on('change:muc_domain', this.render, this);
                 },
@@ -2604,14 +2605,14 @@
 
                 renderTab () {
                     const controlbox = _converse.chatboxes.get('controlbox');
-                    const chatrooms = fp.filter(
+                    const chatrooms = f.filter(
                         _.partial(u.isOfType, CHATROOMS_TYPE),
                         _converse.chatboxes.models
                     );
                     this.tab_el.innerHTML = tpl_chatrooms_tab({
                         'label_rooms': __('Rooms'),
                         'is_current': controlbox.get('active-panel') === ROOMS_PANEL_ID,
-                        'num_unread': fp.sum(fp.map(fp.curry(u.getAttribute)('num_unread'), chatrooms))
+                        'num_unread': f.sum(f.map(f.curry(u.getAttribute)('num_unread'), chatrooms))
                     });
                 },
 
@@ -3022,11 +3023,13 @@
 
             function setMUCDomainFromDisco (controlboxview) {
                 /* Check whether service discovery for the user's domain
-                    * returned MUC information and use that to automatically
-                    * set the MUC domain for the "Rooms" panel of the controlbox.
-                    */
+                 * returned MUC information and use that to automatically
+                 * set the MUC domain for the "Rooms" panel of the controlbox.
+                 */
                 function featureAdded (feature) {
-                    if ((feature.get('var') === Strophe.NS.MUC)) {
+                    if (feature.get('var') === Strophe.NS.MUC &&
+                            f.includes('conference', feature.entity.identities.pluck('category'))) {
+
                         setMUCDomain(feature.get('from'), controlboxview);
                     }
                 }

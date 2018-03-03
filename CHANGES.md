@@ -7,6 +7,7 @@
 
 ### Bugfixes
 
+- Server field in `Rooms` tab showed MUC supporting clients instead of only components.
 - Avatars weren't being shown.
 - Bookmarks list and open rooms list weren't recreated after logging in for a 2nd time (without reloading the browser).
 - #1022 Status message not sent out on subsequent presences

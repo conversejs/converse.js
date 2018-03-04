@@ -308,9 +308,9 @@
             keepalive: true,
             locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
             locales: [
-                'af', 'ca', 'de', 'es', 'en', 'fr', 'he',
+                'af', 'bg', 'ca', 'de', 'es', 'en', 'fr', 'he',
                 'hu', 'id', 'it', 'ja', 'nb', 'nl',
-                'pl', 'pt_BR', 'ru', 'uk', 'zh_CN', 'zh_TW'
+                'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'
             ],
             message_carbons: true,
             message_storage: 'session',

@@ -18,7 +18,8 @@
 
 ### Translation changes
 
-- Updated German, Bulgarian, Russian, Chinese (traditional), Norwegian Bokmål and French translations.
+- New locale: Bulgarian
+- Updated German, Russian, Chinese (traditional), Norwegian Bokmål and French translations.
 
 ## 3.3.3 (2018-02-14)
 

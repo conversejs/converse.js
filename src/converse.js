@@ -14,6 +14,7 @@ if (typeof define !== 'undefined') {
         "converse-mam",         // XEP-0313 Message Archive Management
         "converse-muc",         // XEP-0045 Multi-user chat
         "converse-muc-embedded",
+        "converse-muc-views",
         "converse-vcard",       // XEP-0054 VCard-temp
         "converse-otr",         // Off-the-record encryption for one-on-one messages
         "converse-register",    // XEP-0077 In-band registration

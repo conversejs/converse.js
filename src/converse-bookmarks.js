@@ -42,7 +42,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes", "converse-muc"],
+        dependencies: ["converse-chatboxes", "converse-muc", "converse-muc-views"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

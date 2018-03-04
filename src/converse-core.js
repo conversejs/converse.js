@@ -878,9 +878,10 @@
             },
 
             initialize (attributes) {
-                const { jid } = attributes;
-                const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
-                const resource = Strophe.getResourceFromJid(jid);
+                const { jid } = attributes,
+                      bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase(),
+                      resource = Strophe.getResourceFromJid(jid);
+
                 attributes.jid = bare_jid;
                 this.set(_.assignIn({
                     'fullname': bare_jid,

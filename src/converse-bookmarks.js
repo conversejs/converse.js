@@ -539,8 +539,8 @@
                         _converse.api.disco.supports(Strophe.NS.PUBSUB+'#publish-options', _converse.bare_jid)
                     ]).then((args) => {
                         resolve(args[0] && (args[1].supported || _converse.allow_public_bookmarks));
-                    });
-                });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }
 
             const initBookmarks = function () {

@@ -55,7 +55,7 @@
                     this.features.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                         b64_sha1(`converse.features-${this.get('jid')}`)
                     );
-                    this.features.on('add', this.onFeatureAdded);
+                    this.features.on('add', this.onFeatureAdded, this);
 
                     this.identities = new Backbone.Collection();
                     this.identities.browserStorage = new Backbone.BrowserStorage[_converse.storage](
@@ -118,6 +118,7 @@
                 },
 
                 onFeatureAdded (feature) {
+                    feature.entity = this;
                     _converse.emit('serviceDiscovered', feature);
                 },
 

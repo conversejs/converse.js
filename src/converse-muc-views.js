@@ -12,6 +12,7 @@
     define([
         "converse-core",
         "bootstrap",
+        "emojione",
         "tpl!add_chatroom_modal",
         "tpl!chatarea",
         "tpl!chatroom",
@@ -38,6 +39,7 @@
 }(this, function (
     converse,
     bootstrap,
+    emojione,
     tpl_add_chatroom_modal,
     tpl_chatarea,
     tpl_chatroom,
@@ -93,7 +95,7 @@
          * If the setting "strict_plugin_dependencies" is set to true,
          * an error will be raised if the plugin is not found.
          */
-        dependencies: ["converse-modal", "converse-controlbox"],
+        dependencies: ["converse-modal", "converse-controlbox", "converse-chatview"],
 
         overrides: {
 
@@ -109,7 +111,6 @@
                         }))()
                     });
                     this.roomspanel.model.fetch();
-
                     this.el.querySelector('.controlbox-pane').insertAdjacentElement(
                         'beforeEnd', this.roomspanel.render().el);
 
@@ -949,6 +950,7 @@
                      * Parameters:
                      *  (String) text: The message text to be sent.
                      */
+                    text = emojione.shortnameToUnicode(text)
                     const msgid = _converse.connection.getUniqueId();
                     const msg = $msg({
                         to: this.model.get('jid'),

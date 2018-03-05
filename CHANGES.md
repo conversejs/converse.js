@@ -19,13 +19,26 @@ with regards to sponsoring development on reintroducing them.
 * Removed the `xhr_user_search` and `xhr_user_search_url` configuration options.
 
 
-## 3.3.4 (Unreleased)
+## 3.3.4 (2018-03-05)
 
-- Avoid `eval` (via `_.template` from lodash).
-- Bugfix. Avatars weren't being shown.
-- Bugfix. Bookmarks list and open rooms list weren't recreated after logging in for a 2nd time (without reloading the browser).
 - Don't show bookmark toggles when PEP bookmarking not supported by the XMPP server.
-- Add LibreJS support
+- Emojis are now sent in unicode instead of short names (also in MUCs)
+
+### Bugfixes
+
+- Server field in `Rooms` tab showed MUC supporting clients instead of only components.
+- Avatars weren't being shown.
+- Bookmarks list and open rooms list weren't recreated after logging in for a 2nd time (without reloading the browser).
+- #1022 Status message not sent out on subsequent presences
+- #1024 null reference on MUC Invite
+- #1025 OTR lock icon disappears
+- #1027 `new Event` not supported in IE11
+- #1028 Avoid `eval` (crept in via `_.template` from lodash).
+
+### Translation changes
+
+- New locale: Bulgarian
+- Updated German, Russian, Chinese (traditional), Norwegian Bokmål and French translations.
 
 ## 3.3.3 (2018-02-14)
 

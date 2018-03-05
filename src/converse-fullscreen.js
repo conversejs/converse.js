@@ -21,7 +21,7 @@
     converse.plugins.add('converse-fullscreen', {
 
         enabled (_converse) {
-            return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
+            return _.includes(['fullscreen', 'embedded'], _converse.view_mode);
         },
 
         overrides: {

@@ -13,14 +13,13 @@
     define([
             "form-utils",
             "converse-core",
-            "lodash.fp",
             "converse-chatview",
             "converse-disco",
             "backbone.overview",
             "backbone.orderedlistview",
             "backbone.vdomview"
     ], factory);
-}(this, function (u, converse, fp) {
+}(this, function (u, converse) {
     "use strict";
 
     const MUC_ROLE_WEIGHTS = {
@@ -353,7 +352,7 @@
                  *  (XMLElement) message: The message stanza containing the
                  *        invitation.
                  */
-                const x_el = message.querySelector('x[xmlns="jabber:x:conference"]'),
+                const x_el = sizzle('x[xmlns="jabber:x:conference"]', message).pop(),
                     from = Strophe.getBareJidFromJid(message.getAttribute('from')),
                     room_jid = x_el.getAttribute('jid'),
                     reason = x_el.getAttribute('reason');

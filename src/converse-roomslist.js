@@ -141,7 +141,7 @@
                     'click .close-room': 'closeRoom',
                     'click .open-rooms-toggle': 'toggleRoomsList',
                     'click .remove-bookmark': 'removeBookmark',
-                    'click a.open-room': 'openRoom',
+                    'click .open-room': 'openRoom',
                 },
                 listSelector: '.rooms-list',
                 ItemView: _converse.RoomsListElementView,

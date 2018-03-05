@@ -249,6 +249,7 @@
                 render () {
                     this.el.innerHTML = tpl_chatbox_head(
                         _.extend(this.model.toJSON(), {
+                            '_converse': _converse,
                             'avatar_width': _converse.chatview_avatar_width,
                             'avatar_height': _converse.chatview_avatar_height,
                             'info_close': __('Close this chat box'),

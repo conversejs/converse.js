@@ -45,6 +45,33 @@
                 "</presence>"
             );
         }));
+
+        it("includes the saved status message",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
+            test_utils.openControlBox();
+            var view = _converse.xmppstatusview;
+            spyOn(view.model, 'sendPresence').and.callThrough();
+            spyOn(_converse.connection, 'send').and.callThrough();
+
+            view.el.querySelector('a.change-xmpp-status-message').click();
+            var msg = 'My custom status';
+            view.el.querySelector('input.custom-xmpp-status').value = msg;
+            view.el.querySelector('[type="submit"]').click();
+            expect(view.model.sendPresence).toHaveBeenCalled();
+
+            expect(_converse.connection.send.calls.mostRecent().args[0].toLocaleString())
+                .toBe("<presence xmlns='jabber:client'><status>My custom status</status><priority>0</priority></presence>")
+
+            view.el.querySelector('a.choose-xmpp-status').click();
+            view.el.querySelectorAll('.dropdown dd ul li a')[1].click(); // Change status to "dnd"
+
+            expect(_converse.connection.send.calls.mostRecent().args[0].toLocaleString())
+                .toBe("<presence xmlns='jabber:client'><show>dnd</show><status>My custom status</status><priority>0</priority></presence>")
+            done();
+        }));
     });
 
     describe("A received presence stanza", function () {

@@ -2,7 +2,7 @@
  *
  *  An XMPP chat client that runs in the browser.
  *
- *  Version: 3.3.3
+ *  Version: 3.3.4
  */
 
 /* jshint ignore:start */
@@ -2735,6 +2735,17 @@ define('lodash.fp',['lodash', 'lodash.converter'], function (_, lodashConverter)
     return fp;
 });
 
+function CustomEvent ( event, params ) {
+    params = params || { bubbles: false, cancelable: false, detail: undefined };
+    var evt = document.createEvent( 'CustomEvent' );
+    evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+    return evt;
+}
+if ( typeof window.CustomEvent !== "function" ) {
+    CustomEvent.prototype = window.Event.prototype;
+    window.CustomEvent = CustomEvent;
+}
+
 if (!String.prototype.includes) {
   String.prototype.includes = function(search, start) {
         'use strict';
@@ -3882,6 +3893,97 @@ var af = moment.defineLocale('af', {
 });
 
 return af;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Bulgarian [bg]
+//! author : Krasen Borisov : https://github.com/kraz
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/bg',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var bg = moment.defineLocale('bg', {
+    months : 'януари_февруари_март_април_май_юни_юли_август_септември_октомври_ноември_декември'.split('_'),
+    monthsShort : 'янр_фев_мар_апр_май_юни_юли_авг_сеп_окт_ное_дек'.split('_'),
+    weekdays : 'неделя_понеделник_вторник_сряда_четвъртък_петък_събота'.split('_'),
+    weekdaysShort : 'нед_пон_вто_сря_чет_пет_съб'.split('_'),
+    weekdaysMin : 'нд_пн_вт_ср_чт_пт_сб'.split('_'),
+    longDateFormat : {
+        LT : 'H:mm',
+        LTS : 'H:mm:ss',
+        L : 'D.MM.YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY H:mm',
+        LLLL : 'dddd, D MMMM YYYY H:mm'
+    },
+    calendar : {
+        sameDay : '[Днес в] LT',
+        nextDay : '[Утре в] LT',
+        nextWeek : 'dddd [в] LT',
+        lastDay : '[Вчера в] LT',
+        lastWeek : function () {
+            switch (this.day()) {
+                case 0:
+                case 3:
+                case 6:
+                    return '[В изминалата] dddd [в] LT';
+                case 1:
+                case 2:
+                case 4:
+                case 5:
+                    return '[В изминалия] dddd [в] LT';
+            }
+        },
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'след %s',
+        past : 'преди %s',
+        s : 'няколко секунди',
+        m : 'минута',
+        mm : '%d минути',
+        h : 'час',
+        hh : '%d часа',
+        d : 'ден',
+        dd : '%d дни',
+        M : 'месец',
+        MM : '%d месеца',
+        y : 'година',
+        yy : '%d години'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}-(ев|ен|ти|ви|ри|ми)/,
+    ordinal : function (number) {
+        var lastDigit = number % 10,
+            last2Digits = number % 100;
+        if (number === 0) {
+            return number + '-ев';
+        } else if (last2Digits === 0) {
+            return number + '-ен';
+        } else if (last2Digits > 10 && last2Digits < 20) {
+            return number + '-ти';
+        } else if (lastDigit === 1) {
+            return number + '-ви';
+        } else if (lastDigit === 2) {
+            return number + '-ри';
+        } else if (lastDigit === 7 || lastDigit === 8) {
+            return number + '-ми';
+        } else {
+            return number + '-ти';
+        }
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 7  // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return bg;
 
 })));
 
@@ -5175,6 +5277,97 @@ return ru;
 })));
 
 //! moment.js locale configuration
+//! locale : Turkish [tr]
+//! authors : Erhan Gundogan : https://github.com/erhangundogan,
+//!           Burak Yiğit Kaya: https://github.com/BYK
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/tr',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var suffixes = {
+    1: '\'inci',
+    5: '\'inci',
+    8: '\'inci',
+    70: '\'inci',
+    80: '\'inci',
+    2: '\'nci',
+    7: '\'nci',
+    20: '\'nci',
+    50: '\'nci',
+    3: '\'üncü',
+    4: '\'üncü',
+    100: '\'üncü',
+    6: '\'ncı',
+    9: '\'uncu',
+    10: '\'uncu',
+    30: '\'uncu',
+    60: '\'ıncı',
+    90: '\'ıncı'
+};
+
+var tr = moment.defineLocale('tr', {
+    months : 'Ocak_Şubat_Mart_Nisan_Mayıs_Haziran_Temmuz_Ağustos_Eylül_Ekim_Kasım_Aralık'.split('_'),
+    monthsShort : 'Oca_Şub_Mar_Nis_May_Haz_Tem_Ağu_Eyl_Eki_Kas_Ara'.split('_'),
+    weekdays : 'Pazar_Pazartesi_Salı_Çarşamba_Perşembe_Cuma_Cumartesi'.split('_'),
+    weekdaysShort : 'Paz_Pts_Sal_Çar_Per_Cum_Cts'.split('_'),
+    weekdaysMin : 'Pz_Pt_Sa_Ça_Pe_Cu_Ct'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD.MM.YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd, D MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay : '[bugün saat] LT',
+        nextDay : '[yarın saat] LT',
+        nextWeek : '[haftaya] dddd [saat] LT',
+        lastDay : '[dün] LT',
+        lastWeek : '[geçen hafta] dddd [saat] LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : '%s sonra',
+        past : '%s önce',
+        s : 'birkaç saniye',
+        m : 'bir dakika',
+        mm : '%d dakika',
+        h : 'bir saat',
+        hh : '%d saat',
+        d : 'bir gün',
+        dd : '%d gün',
+        M : 'bir ay',
+        MM : '%d ay',
+        y : 'bir yıl',
+        yy : '%d yıl'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}'(inci|nci|üncü|ncı|uncu|ıncı)/,
+    ordinal : function (number) {
+        if (number === 0) {  // special case for zero
+            return number + '\'ıncı';
+        }
+        var a = number % 10,
+            b = number % 100 - a,
+            c = number >= 100 ? 100 : null;
+        return number + (suffixes[a] || suffixes[b] || suffixes[c]);
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 7  // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return tr;
+
+})));
+
+//! moment.js locale configuration
 //! locale : Ukrainian [uk]
 //! author : zemlanin : https://github.com/zemlanin
 //! Author : Menelion Elensúle : https://github.com/Oire
@@ -5554,7 +5747,7 @@ return zhTw;
 
 /*global define */
 (function (root, factory) {
-  define('i18n',["es6-promise", "jed", "lodash.noconflict", "moment", 'moment/locale/af', 'moment/locale/ca', 'moment/locale/de', 'moment/locale/es', 'moment/locale/fr', 'moment/locale/he', 'moment/locale/hu', 'moment/locale/id', 'moment/locale/it', 'moment/locale/ja', 'moment/locale/nb', 'moment/locale/nl', 'moment/locale/pl', 'moment/locale/pt-br', 'moment/locale/ru', 'moment/locale/uk', 'moment/locale/zh-cn', 'moment/locale/zh-tw'], factory);
+  define('i18n',["es6-promise", "jed", "lodash.noconflict", "moment", 'moment/locale/af', 'moment/locale/bg', 'moment/locale/ca', 'moment/locale/de', 'moment/locale/es', 'moment/locale/fr', 'moment/locale/he', 'moment/locale/hu', 'moment/locale/id', 'moment/locale/it', 'moment/locale/ja', 'moment/locale/nb', 'moment/locale/nl', 'moment/locale/pl', 'moment/locale/pt-br', 'moment/locale/ru', 'moment/locale/tr', 'moment/locale/uk', 'moment/locale/zh-cn', 'moment/locale/zh-tw'], factory);
 })(this, function (Promise, Jed, _, moment) {
   'use strict';
 
@@ -6356,6 +6549,42 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     return promise;
   };
 
+  u.interpolate = function (string, o) {
+    return string.replace(/{{{([^{}]*)}}}/g, function (a, b) {
+      var r = o[b];
+      return typeof r === 'string' || typeof r === 'number' ? r : a;
+    });
+  };
+
+  u.onMultipleEvents = function () {
+    var events = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var callback = arguments.length > 1 ? arguments[1] : undefined;
+
+    /* Call the callback once all the events have been triggered
+     *
+     * Parameters:
+     *  (Array) events: An array of objects, with keys `object` and
+     *      `event`, representing the event name and the object it's
+     *      triggered upon.
+     *  (Function) callback: The function to call once all events have
+     *      been triggered.
+     */
+    var triggered = [];
+
+    function handler(result) {
+      triggered.push(result);
+
+      if (events.length === triggered.length) {
+        callback(triggered);
+        triggered = [];
+      }
+    }
+
+    _.each(events, function (map) {
+      return map.object.on(map.event, handler);
+    });
+  };
+
   u.safeSave = function (model, attributes) {
     if (u.isPersistableModel(model)) {
       model.save(attributes);
@@ -6365,7 +6594,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   };
 
   u.isVisible = function (el) {
-    // XXX: Taken from jQuery's "visible" implementation
+    if (u.hasClass('hidden', el)) {
+      return false;
+    } // XXX: Taken from jQuery's "visible" implementation
+
+
     return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
   };
 
@@ -6845,7 +7078,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 /*global Backbone, define, window, JSON */
 (function (root, factory) {
   define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "lodash.fp", "polyfill", "i18n", "utils", "moment", "strophe", "pluggable", "backbone.noconflict", "backbone.nativeview", "backbone.browserStorage"], factory);
-})(this, function (sizzle, Promise, _, f, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
+})(this, function (sizzle, Promise, _, f, polyfill, i18n, u, moment, Strophe, pluggable, Backbone) {
   /* Cannot use this due to Safari bug.
    * See https://github.com/jcbrand/converse.js/issues/196
    */
@@ -7017,7 +7250,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     /* Private function, used to add a new promise to the ones already
      * available via the `waitUntil` api method.
      */
-    _converse.promises[promise] = utils.getResolveablePromise();
+    _converse.promises[promise] = u.getResolveablePromise();
   }
 
   _converse.emit = function (name) {
@@ -7039,7 +7272,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     var _this = this;
 
     settings = !_.isUndefined(settings) ? settings : {};
-    var init_promise = utils.getResolveablePromise();
+    var init_promise = u.getResolveablePromise();
 
     _.each(PROMISES, addPromise);
 
@@ -7123,7 +7356,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       jid: undefined,
       keepalive: true,
       locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
-      locales: ['af', 'ca', 'de', 'es', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'uk', 'zh_CN', 'zh_TW'],
+      locales: ['af', 'bg', 'ca', 'de', 'es', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
       message_carbons: true,
       message_storage: 'session',
       password: undefined,
@@ -7470,7 +7703,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
     this.initStatus = function () {
       return new Promise(function (resolve, reject) {
-        var promise = new utils.getResolveablePromise();
+        var promise = new u.getResolveablePromise();
         _this.xmppstatus = new _this.XMPPStatus();
         var id = b64_sha1("converse.xmppstatus-".concat(_converse.bare_jid));
         _this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
@@ -7515,7 +7748,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         _converse.connection.disconnect();
       } else {
         _converse._tearDown();
-      }
+      } // Recreate all the promises
+
+
+      _.each(_.keys(_converse.promises), addPromise);
 
       _converse.emit('logout');
     };
@@ -7766,9 +8002,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       initialize: function initialize(attributes) {
         var _this3 = this;
 
-        var jid = attributes.jid;
-        var bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
-        var resource = Strophe.getResourceFromJid(jid);
+        var jid = attributes.jid,
+            bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase(),
+            resource = Strophe.getResourceFromJid(jid);
         attributes.jid = bare_jid;
         this.set(_.assignIn({
           'fullname': bare_jid,
@@ -8041,7 +8277,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         return true;
       },
       isSelf: function isSelf(jid) {
-        return utils.isSameBareJID(jid, _converse.connection.jid);
+        return u.isSameBareJID(jid, _converse.connection.jid);
       },
       addAndSubscribe: function addAndSubscribe(jid, name, groups, message, attributes) {
         /* Add a roster contact and then once we have confirmation from
@@ -8445,7 +8681,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       constructPresence: function constructPresence(type, status_message) {
         var presence;
         type = _.isString(type) ? type : this.get('status') || _converse.default_state;
-        status_message = _.isString(status_message) ? status_message : undefined; // Most of these presence types are actually not explicitly sent,
+        status_message = _.isString(status_message) ? status_message : this.get('status_message'); // Most of these presence types are actually not explicitly sent,
         // but I add all of them here for reference and future proofing.
 
         if (type === 'unavailable' || type === 'probe' || type === 'error' || type === 'unsubscribe' || type === 'unsubscribed' || type === 'subscribe' || type === 'subscribed') {
@@ -8814,7 +9050,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     } else if (_.isUndefined(i18n)) {
       finishInitialization();
     } else {
-      i18n.fetchTranslations(_converse.locale, _converse.locales, _.template(_converse.locales_url)({
+      i18n.fetchTranslations(_converse.locale, _converse.locales, u.interpolate(_converse.locales_url, {
         'locale': _converse.locale
       })).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL)).then(finishInitialization).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
     }
@@ -8882,9 +9118,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     },
     'settings': {
       'update': function update(settings) {
-        utils.merge(_converse.default_settings, settings);
-        utils.merge(_converse, settings);
-        utils.applyUserSettings(_converse, settings, _converse.user_settings);
+        u.merge(_converse.default_settings, settings);
+        u.merge(_converse, settings);
+        u.applyUserSettings(_converse, settings, _converse.user_settings);
       },
       'get': function get(key) {
         if (_.includes(_.keys(_converse.default_settings), key)) {
@@ -9008,10 +9244,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       'b64_sha1': b64_sha1,
       'moment': moment,
       'sizzle': sizzle,
-      'utils': utils
+      'utils': u
     }
   };
-  window.dispatchEvent(new Event('converse-loaded'));
+  window.dispatchEvent(new CustomEvent('converse-loaded'));
   return window.converse;
 });
 //# sourceMappingURL=converse-core.js.map;
@@ -9104,6 +9340,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       _converse.ChatBox = Backbone.Model.extend({
         defaults: {
           'type': 'chatbox',
+          'show_avatar': true,
           'bookmarked': false,
           'chat_state': undefined,
           'num_unread': 0,
@@ -11957,9 +12194,9 @@ __e(o.avatar_height) +
 'px" width="' +
 __e(o.avatar_width) +
 'px"\n            src="data:' +
-__e(o.image_type) +
+__e(o.image_type || o._converse.DEFAULT_IMAGE_TYPE) +
 ';base64,' +
-__e(o.image) +
+__e(o.image || o._converse.DEFAULT_IMAGE) +
 '"/>\n    ';
  } ;
 __p += '\n    <div class="chat-title">\n        ';
@@ -12425,6 +12662,7 @@ return __p
         },
         render: function render() {
           this.el.innerHTML = tpl_chatbox_head(_.extend(this.model.toJSON(), {
+            '_converse': _converse,
             'avatar_width': _converse.chatview_avatar_width,
             'avatar_height': _converse.chatview_avatar_height,
             'info_close': __('Close this chat box')
@@ -15585,7 +15823,7 @@ return __p
             ev.preventDefault();
           }
 
-          var tab = ev.target,
+          var tab = u.hasClass('msgs-indicator', ev.target) ? ev.target.parentNode : ev.target,
               sibling_li = tab.parentNode.nextElementSibling || tab.parentNode.previousElementSibling,
               sibling = sibling_li.firstChild,
               sibling_panel = _converse.root.querySelector(sibling.getAttribute('href')),
@@ -16385,7 +16623,7 @@ __p += '\n<ul class="features-list">\n';
  if (o.passwordprotected) { ;
 __p += '\n<li class="feature" title="' +
 __e( o.tt_passwordprotected ) +
-'"><span class="icon-lock-2"></span>' +
+'"><span class="icon-lock"></span>' +
 __e( o.label_passwordprotected ) +
 '</li>\n';
  } ;
@@ -16904,7 +17142,7 @@ return __p
           this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
           this.features = new Backbone.Collection();
           this.features.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.features-".concat(this.get('jid'))));
-          this.features.on('add', this.onFeatureAdded);
+          this.features.on('add', this.onFeatureAdded, this);
           this.identities = new Backbone.Collection();
           this.identities.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.identities-".concat(this.get('jid'))));
           this.fetchFeatures();
@@ -16961,6 +17199,8 @@ return __p
           });
         },
         onFeatureAdded: function onFeatureAdded(feature) {
+          feature.entity = this;
+
           _converse.emit('serviceDiscovered', feature);
         },
         fetchFeatures: function fetchFeatures() {
@@ -17217,10 +17457,14 @@ return __p
       var item_view = this.get(item.get(this.subviewIndex));
 
       if (!item_view) {
-        item_view = new this.ItemView({
-          model: item
-        });
-        this.add(item.get(this.subviewIndex), item_view);
+            try {
+                item_view = new this.ItemView({model: item});
+                this.add(item.get(this.subviewIndex), item_view);
+            } catch (e) {
+                debugger;
+                item_view = new this.ItemView({model: item});
+                this.add(item.get(this.subviewIndex), item_view);
+            }
       } else {
         item_view.model = item;
         item_view.initialize();
@@ -17258,7 +17502,8 @@ return __p
   return Backbone.OrderedListView;
 });
 
-//# sourceMappingURL=backbone.orderedlistview.js.map;
+//# sourceMappingURL=backbone.orderedlistview.js.map
+;
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define('snabbdom',[],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.snabbdom = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -18256,8 +18501,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  * specified in XEP-0045 Multi-user chat.
  */
 (function (root, factory) {
-  define('converse-muc',["form-utils", "converse-core", "lodash.fp", "tpl!chatarea", "tpl!chatroom", "tpl!chatroom_disconnect", "tpl!chatroom_features", "tpl!chatroom_form", "tpl!chatroom_head", "tpl!chatroom_invite", "tpl!chatroom_join_form", "tpl!chatroom_nickname_form", "tpl!chatroom_password_form", "tpl!chatroom_sidebar", "tpl!chatroom_toolbar", "tpl!chatrooms_tab", "tpl!info", "tpl!occupant", "tpl!room_description", "tpl!room_item", "tpl!room_panel", "tpl!rooms_results", "tpl!spinner", "awesomplete", "converse-chatview", "converse-disco", "backbone.overview", "backbone.orderedlistview", "backbone.vdomview"], factory);
-})(this, function (u, converse, fp, tpl_chatarea, tpl_chatroom, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_join_form, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_chatrooms_tab, tpl_info, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
+  define('converse-muc',["form-utils", "converse-core", "emojione", "lodash.fp", "tpl!chatarea", "tpl!chatroom", "tpl!chatroom_disconnect", "tpl!chatroom_features", "tpl!chatroom_form", "tpl!chatroom_head", "tpl!chatroom_invite", "tpl!chatroom_join_form", "tpl!chatroom_nickname_form", "tpl!chatroom_password_form", "tpl!chatroom_sidebar", "tpl!chatroom_toolbar", "tpl!chatrooms_tab", "tpl!info", "tpl!occupant", "tpl!room_description", "tpl!room_item", "tpl!room_panel", "tpl!rooms_results", "tpl!spinner", "awesomplete", "converse-chatview", "converse-disco", "backbone.overview", "backbone.orderedlistview", "backbone.vdomview"], factory);
+})(this, function (u, converse, emojione, f, tpl_chatarea, tpl_chatroom, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_join_form, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_chatrooms_tab, tpl_info, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
   "use strict";
 
   var ROOMS_PANEL_ID = 'chatrooms';
@@ -19184,6 +19429,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
            * Parameters:
            *  (String) text: The message text to be sent.
            */
+          text = emojione.shortnameToUnicode(text);
+
           var msgid = _converse.connection.getUniqueId();
 
           var msg = $msg({
@@ -20913,11 +21160,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         renderTab: function renderTab() {
           var controlbox = _converse.chatboxes.get('controlbox');
 
-          var chatrooms = fp.filter(_.partial(u.isOfType, CHATROOMS_TYPE), _converse.chatboxes.models);
+          var chatrooms = f.filter(_.partial(u.isOfType, CHATROOMS_TYPE), _converse.chatboxes.models);
           this.tab_el.innerHTML = tpl_chatrooms_tab({
             'label_rooms': __('Rooms'),
             'is_current': controlbox.get('active-panel') === ROOMS_PANEL_ID,
-            'num_unread': fp.sum(fp.map(fp.curry(u.getAttribute)('num_unread'), chatrooms))
+            'num_unread': f.sum(f.map(f.curry(u.getAttribute)('num_unread'), chatrooms))
           });
         },
         insertIntoDOM: function insertIntoDOM() {
@@ -21149,7 +21396,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
          *  (XMLElement) message: The message stanza containing the
          *        invitation.
          */
-        var x_el = message.querySelector('x[xmlns="jabber:x:conference"]'),
+        var x_el = sizzle('x[xmlns="jabber:x:conference"]', message).pop(),
             from = Strophe.getBareJidFromJid(message.getAttribute('from')),
             room_jid = x_el.getAttribute('jid'),
             reason = x_el.getAttribute('reason');
@@ -21353,11 +21600,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
       function setMUCDomainFromDisco(controlboxview) {
         /* Check whether service discovery for the user's domain
-            * returned MUC information and use that to automatically
-            * set the MUC domain for the "Rooms" panel of the controlbox.
-            */
+         * returned MUC information and use that to automatically
+         * set the MUC domain for the "Rooms" panel of the controlbox.
+         */
         function featureAdded(feature) {
-          if (feature.get('var') === Strophe.NS.MUC) {
+          if (feature.get('var') === Strophe.NS.MUC && f.includes('conference', feature.entity.identities.pluck('category'))) {
             setMUCDomain(feature.get('from'), controlboxview);
           }
         }
@@ -21594,12 +21841,10 @@ return __p
           var _converse = this.__super__._converse;
 
           if (_converse.allow_bookmarks) {
-            _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then(function (identity) {
-              if (_.isNil(identity)) {
-                return;
+            _converse.checkBookmarksSupport().then(function (supported) {
+              if (supported) {
+                _this.renderBookmarkToggle();
               }
-
-              _this.renderBookmarkToggle();
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
           }
         },
@@ -22050,38 +22295,42 @@ return __p
         }
       });
 
+      _converse.checkBookmarksSupport = function () {
+        return new Promise(function (resolve, reject) {
+          Promise.all([_converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid), _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', _converse.bare_jid)]).then(function (args) {
+            resolve(args[0] && (args[1].supported || _converse.allow_public_bookmarks));
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+      };
+
       var initBookmarks = function initBookmarks() {
         if (!_converse.allow_bookmarks) {
           return;
         }
 
-        Promise.all([_converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid), _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', _converse.bare_jid)]).then(function (args) {
-          var identity = args[0],
-              options_support = args[1];
-
-          if (_.isNil(identity) || !options_support.supported && !_converse.allow_public_bookmarks) {
-            _converse.emit('bookmarksInitialized');
-
-            return;
-          }
-
-          _converse.bookmarks = new _converse.Bookmarks();
-
-          _converse.bookmarks.fetchBookmarks().then(function () {
+        _converse.checkBookmarksSupport().then(function (supported) {
+          if (supported) {
+            _converse.bookmarks = new _converse.Bookmarks();
             _converse.bookmarksview = new _converse.BookmarksView({
               'model': _converse.bookmarks
             });
-          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR)).then(function () {
-            _converse.emit('bookmarksInitialized');
-          });
-        }).catch(function (e) {
-          _converse.log(e, Strophe.LogLevel.ERROR);
 
-          _converse.emit('bookmarksInitialized');
+            _converse.bookmarks.fetchBookmarks().catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL)).then(function () {
+              return _converse.emit('bookmarksInitialized');
+            });
+          } else {
+            _converse.emit('bookmarksInitialized');
+          }
         });
       };
 
-      Promise.all([_converse.api.waitUntil('chatBoxesFetched'), _converse.api.waitUntil('roomsPanelRendered')]).then(initBookmarks).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+      u.onMultipleEvents([{
+        'object': _converse,
+        'event': 'chatBoxesFetched'
+      }, {
+        'object': _converse,
+        'event': 'roomsPanelRendered'
+      }], initBookmarks);
 
       _converse.on('connected', function () {
         // Add a handler for bookmarks pushed from other connected clients
@@ -22300,7 +22549,11 @@ return __p
         },
         toHTML: function toHTML() {
           return tpl_rooms_list_item(_.extend(this.model.toJSON(), {
-            'allow_bookmarks': _converse.allow_bookmarks,
+            // XXX: By the time this renders, the _converse.bookmarks
+            // collection should already exist if bookmarks are
+            // supported by the XMPP server. So we can use it
+            // as a check for support (other ways of checking are async).
+            'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
             'info_leave_room': __('Leave this room'),
             'info_remove_bookmark': __('Unbookmark this room'),
             'info_add_bookmark': __('Bookmark this room'),
@@ -22421,13 +22674,26 @@ return __p
         });
       };
 
-      Promise.all([_converse.api.waitUntil('chatBoxesFetched'), _converse.api.waitUntil('roomsPanelRendered')]).then(function () {
-        if (_converse.allow_bookmarks) {
-          _converse.api.waitUntil('bookmarksInitialized').then(initRoomsListView);
-        } else {
-          initRoomsListView();
-        }
-      });
+      if (_converse.allow_bookmarks) {
+        u.onMultipleEvents([{
+          'object': _converse,
+          'event': 'chatBoxesFetched'
+        }, {
+          'object': _converse,
+          'event': 'roomsPanelRendered'
+        }, {
+          'object': _converse,
+          'event': 'bookmarksInitialized'
+        }], initRoomsListView);
+      } else {
+        u.onMultipleEvents([{
+          'object': _converse,
+          'event': 'chatBoxesFetched'
+        }, {
+          'object': _converse,
+          'event': 'roomsPanelRendered'
+        }], initRoomsListView);
+      }
 
       _converse.api.listen.on('reconnected', initRoomsListView);
     }
@@ -23039,7 +23305,9 @@ __p += '\n    <li class="toggle-toolbar-menu toggle-otr ' +
 __e(o.otr_status_class) +
 '" title="' +
 __e(o.otr_tooltip) +
-'">\n        ';
+'">\n        <span class="chat-toolbar-text">' +
+__e(o.otr_translated_status) +
+'</span>\n        ';
  if (o.otr_status == o.UNENCRYPTED) { ;
 __p += '\n            <span class="icon-unlocked"></span>\n        ';
  } ;
@@ -23554,7 +23822,7 @@ return __p
             otr_tooltip: this.getOTRTooltip(),
             otr_translated_status: OTR_TRANSLATED_MAPPING[data.otr_status]
           });
-          this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', tpl_toolbar_otr(_.extend(this.model.toJSON(), options || {})));
+          this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', tpl_toolbar_otr(_.extend(data, options || {})));
         },
         getToolbarOptions: function getToolbarOptions(options) {
           options = this.__super__.getToolbarOptions();
@@ -25451,12 +25719,6 @@ return __p
           _converse.chatboxviews.trimChats(chatbox);
         }
       });
-
-      var logOut = function logOut() {
-        _converse.minimized_chats.remove();
-      };
-
-      _converse.on('logout', logOut);
     }
   });
 });
@@ -26170,7 +26432,7 @@ return __p
       _ = _converse$env._;
   converse.plugins.add('converse-fullscreen', {
     enabled: function enabled(_converse) {
-      return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
+      return _.includes(['fullscreen', 'embedded'], _converse.view_mode);
     },
     overrides: {
       // overrides mentioned here will be picked up by converse.js's

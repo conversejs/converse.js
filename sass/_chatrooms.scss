@@ -68,6 +68,8 @@
         }
 
         .box-flyout {
+            overflow-y: hidden;
+
             width: 100%;
             @media screen and (max-height: $mobile-landscape-height) {
                 height: $mobile-chat-height;
@@ -135,6 +137,9 @@
                     }
                 }
                 .occupants {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
                     overflow-x: hidden;
                     overflow-y: hidden;
                     vertical-align: top;
@@ -142,14 +147,23 @@
                     border-left: 1px solid $text-color;
                     border-bottom-right-radius: $chatbox-border-radius;
                     padding: 0.5em;
+
                     .occupants-heading {
                         padding: 0.3em 0;
                         font-weight: bold;
                     }
-                    .chatroom-features {
-                        bottom: 0.5em;
-                        width: 100%;
 
+                    ul {
+                        li {
+                            &.feature {
+                                font-size: $font-size-small;
+                                width: 100%;
+                            }
+                        }
+                    }
+
+                    .chatroom-features {
+                        width: 100%;
                         .feature {
                             float: left;
                             margin-right: 0.5em;
@@ -175,7 +189,8 @@
 
                         &.occupant-list {
                             overflow-y: auto;
-                            @include calc(height, '100% - 220px');
+                            flex-basis: 0;
+                            flex-grow: 1;
                         }
                         &.features-list {
                             padding-top: 0;

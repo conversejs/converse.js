@@ -5915,7 +5915,6 @@ body.reset {
     font-size: 14px;
     left: 0;
     text-align: left;
-    overflow-y: scroll;
     overflow-x: hidden;
     border-radius: 4px; }
     #conversejs #controlbox .controlbox-pane .add-converse-contact {
@@ -6169,6 +6168,7 @@ body.reset {
       width: 100%; } }
   #converse-embedded-chat .chatroom .box-flyout,
   #conversejs .chatroom .box-flyout {
+    overflow-y: hidden;
     width: 100%; }
     @media screen and (max-height: 450px) {
       #converse-embedded-chat .chatroom .box-flyout,
@@ -6235,6 +6235,9 @@ body.reset {
             min-width: 100%; }
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants,
       #conversejs .chatroom .box-flyout .chatroom-body .occupants {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         overflow-x: hidden;
         overflow-y: hidden;
         vertical-align: top;
@@ -6246,9 +6249,12 @@ body.reset {
         #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-heading {
           padding: 0.3em 0;
           font-weight: bold; }
+        #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li.feature,
+        #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.feature {
+          font-size: 12px;
+          width: 100%; }
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants .chatroom-features,
         #conversejs .chatroom .box-flyout .chatroom-body .occupants .chatroom-features {
-          bottom: 0.5em;
           width: 100%; }
           #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants .chatroom-features .feature,
           #conversejs .chatroom .box-flyout .chatroom-body .occupants .chatroom-features .feature {
@@ -6273,8 +6279,8 @@ body.reset {
           #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul.occupant-list,
           #conversejs .chatroom .box-flyout .chatroom-body .occupants ul.occupant-list {
             overflow-y: auto;
-            height: -webkit-calc(100% - 220px);
-            height: calc(100% - 220px); }
+            flex-basis: 0;
+            flex-grow: 1; }
           #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul.features-list,
           #conversejs .chatroom .box-flyout .chatroom-body .occupants ul.features-list {
             padding-top: 0; }

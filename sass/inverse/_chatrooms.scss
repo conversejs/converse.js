@@ -45,19 +45,9 @@
                     .occupants-heading {
                         font-size: $font-size-large;
                     }
-                    .chatroom-features {
-                        bottom: $padding;
-                    }
                     ul {
                         &.occupant-list {
-                            @include calc(height, '100% - 212px');
                             li {
-                                font-size: $font-size-small;
-                                width: 100%;
-                            }
-                        }
-                        li {
-                            &.feature {
                                 font-size: $font-size-small;
                             }
                         }

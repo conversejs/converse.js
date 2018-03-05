@@ -4813,6 +4813,8 @@ body.reset {
     color: #A8ABA1; }
   #conversejs .fa:hover {
     color: #818479; }
+  #conversejs .modal {
+    background-color: rgba(0, 0, 0, 0.4); }
   #conversejs .selected {
     color: #578EA9 !important; }
   #conversejs .circle {

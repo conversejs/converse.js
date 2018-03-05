@@ -142,6 +142,10 @@ body.reset {
         color: $gray-color;
     }
 
+    .modal {
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
     .selected {
         color: $link-color !important;
     }
@@ -150,7 +154,7 @@ body.reset {
         border-radius: 50%;
     }
 
-     .sidebar {
+    .sidebar {
         display: none;
         width: 50px;
         height: 100vh;

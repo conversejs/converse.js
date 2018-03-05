@@ -22,8 +22,8 @@ The latest versions of these files are available at these URLs:
 
 To load a specific version of Converse.js you can put the version in the URL, like so:
 
-* https://cdn.conversejs.org/3.3.3/dist/converse.min.js
-* https://cdn.conversejs.org/3.3.3/css/converse.min.css
+* https://cdn.conversejs.org/3.3.4/dist/converse.min.js
+* https://cdn.conversejs.org/3.3.4/css/converse.min.css
 
 You can include these two URLs inside the *<head>* element of your website
 via the *script* and *link* tags:

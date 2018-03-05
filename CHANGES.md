@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.3.4 (Unreleased)
+## 3.3.4 (2018-03-05)
 
 - Don't show bookmark toggles when PEP bookmarking not supported by the XMPP server.
 - Emojis are now sent in unicode instead of short names (also in MUCs)

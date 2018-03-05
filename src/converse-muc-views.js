@@ -2245,7 +2245,7 @@
 
             _converse.ChatRoomOccupantsView = Backbone.OrderedListView.extend({
                 tagName: 'div',
-                className: 'occupants',
+                className: 'occupants col-md-3 col-4',
                 listItems: 'model',
                 sortEvent: 'change:role',
                 listSelector: '.occupant-list',

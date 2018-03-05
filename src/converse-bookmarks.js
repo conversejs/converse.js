@@ -439,7 +439,8 @@
                 events: {
                     'click .add-bookmark': 'addBookmark',
                     'click .bookmarks-toggle': 'toggleBookmarksList',
-                    'click .remove-bookmark': 'removeBookmark'
+                    'click .remove-bookmark': 'removeBookmark',
+                    'click .open-room': 'openRoom',
                 },
                 listSelector: '.rooms-list',
                 ItemView: _converse.BookmarkView,
@@ -486,6 +487,16 @@
                             el.parentNode.replaceChild(this.el, el);
                         }
                     }
+                },
+
+                openRoom (ev) {
+                    ev.preventDefault();
+                    const name = ev.target.textContent;
+                    const jid = ev.target.getAttribute('data-room-jid');
+                    const data = {
+                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
+                    }
+                    _converse.api.rooms.open(jid, data);
                 },
 
                 removeBookmark: _converse.removeBookmarkViaEvent,

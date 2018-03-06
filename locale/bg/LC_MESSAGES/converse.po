@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-03-04 05:44+0000\n"
+"PO-Revision-Date: 2018-03-06 02:53+0000\n"
 "Last-Translator: Тони <toni@neshtoto.club>\n"
-"Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
-"translations/bg/>\n"
+"Language-Team: Bulgarian "
+"<https://hosted.weblate.org/projects/conversejs/translations/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1121,18 +1121,20 @@ msgstr "Самоличността на събеседника ви беше у�
 #: dist/converse-no-dependencies.js:23717
 msgid "Your contact has ended encryption on their end, you should do the same."
 msgstr ""
+"Събеседникът ви спря криптирането от своя страна, нормално е да направите "
+"същото от ваша."
 
 #: dist/converse-no-dependencies.js:23727
 msgid "Your message could not be sent"
-msgstr ""
+msgstr "Съобщението ви не можа бъде изпратено"
 
 #: dist/converse-no-dependencies.js:23729
 msgid "We received an unencrypted message"
-msgstr ""
+msgstr "Получихме некриптирано съобщение"
 
 #: dist/converse-no-dependencies.js:23731
 msgid "We received an unreadable encrypted message"
-msgstr ""
+msgstr "Получихме нечитаемо криптирано съобщение"
 
 #: dist/converse-no-dependencies.js:23757
 #, javascript-format
@@ -1147,6 +1149,14 @@ msgid ""
 "If you have confirmed that the fingerprints match, click OK, otherwise click "
 "Cancel."
 msgstr ""
+"Това са отпечатъците, моля проверете си ги с %1$s, извън този чат.\n"
+"\n"
+"Отпечатък за вас, %2$s: %3$s\n"
+"\n"
+"Отпечатък за %1$s: %4$s\n"
+"\n"
+"Ако сте се уверили, че отпечатъците съответстват, натиснете Добре, иначе "
+"натиснете Отмяна."
 
 #: dist/converse-no-dependencies.js:23769
 msgid ""
@@ -1156,60 +1166,69 @@ msgid ""
 "Your contact will then be prompted the same question and if they type the "
 "exact same answer (case sensitive), their identity will be verified."
 msgstr ""
+"Ще бъдете поканени да въведете удостоверителен въпрос и след това – отговор "
+"на този въпрос.\n"
+"\n"
+"Тогава на вашия събеседник ще бъде зададен същият въпрос и ако той въведе "
+"точно същия отговор (съблюдавайки главни и малки букви), самоличността му ще "
+"бъде удостоверена."
 
 #: dist/converse-no-dependencies.js:23770
 msgid "What is your security question?"
-msgstr ""
+msgstr "Какъв е удостоверителният ви въпрос?"
 
 #: dist/converse-no-dependencies.js:23773
 msgid "What is the answer to the security question?"
-msgstr ""
+msgstr "Какъв е отговорът на удостоверителния въпрос?"
 
 #: dist/converse-no-dependencies.js:23777
 msgid "Invalid authentication scheme provided"
-msgstr ""
+msgstr "Заявена е невалидна удостоверителна схема"
 
 #: dist/converse-no-dependencies.js:23795
 msgid "Your messages are not encrypted. Click here to enable OTR encryption."
 msgstr ""
+"Съобщенията ви не се криптират. Натиснете тук за да включите OTR криптиране."
 
 #: dist/converse-no-dependencies.js:23797
 msgid "Your messages are encrypted, but your contact has not been verified."
-msgstr ""
+msgstr "Съобщенията ви се криптират, но събеседникът ви не е удостоверен."
 
 #: dist/converse-no-dependencies.js:23799
 msgid "Your messages are encrypted and your contact verified."
-msgstr ""
+msgstr "Съобщенията ви се криптират и събеседникът ви е удостоверен."
 
 #: dist/converse-no-dependencies.js:23801
 msgid ""
 "Your contact has closed their end of the private session, you should do the "
 "same"
 msgstr ""
+"Събеседникът ви затвори поверителната сесия от своя страна, нормално е да "
+"направите същото"
 
 #: dist/converse-no-dependencies.js:23815
 msgid "End encrypted conversation"
-msgstr ""
+msgstr "Приключване на криптирания разговор"
 
 #: dist/converse-no-dependencies.js:23816
 msgid "Refresh encrypted conversation"
-msgstr ""
+msgstr "Опресняване на криптирания разговор"
 
 #: dist/converse-no-dependencies.js:23817
 msgid "Start encrypted conversation"
-msgstr ""
+msgstr "Започване на криптиран разговор"
 
 #: dist/converse-no-dependencies.js:23818
 msgid "Verify with fingerprints"
-msgstr ""
+msgstr "Проверяване с отпечатъци"
 
 #: dist/converse-no-dependencies.js:23819
 msgid "Verify with SMP"
-msgstr ""
+msgstr "Проверяване с SMP"
 
 #: dist/converse-no-dependencies.js:23820
 msgid "What's this?"
-msgstr ""
+msgstr "Какво е това?"
 
 #. Translation aware constants
 #. ---------------------------
@@ -1219,85 +1238,87 @@ msgstr ""
 #. the module.
 #: dist/converse-no-dependencies.js:23863
 msgid "unencrypted"
-msgstr ""
+msgstr "некриптиран"
 
 #: dist/converse-no-dependencies.js:23864
 msgid "unverified"
-msgstr ""
+msgstr "неудостоверен"
 
 #: dist/converse-no-dependencies.js:23865
 msgid "verified"
-msgstr ""
+msgstr "удостоверен"
 
 #: dist/converse-no-dependencies.js:23866
 msgid "finished"
-msgstr ""
+msgstr "приключен"
 
 #: dist/converse-no-dependencies.js:23882
 msgid "Don't have a chat account?"
-msgstr ""
+msgstr "Нямате чат допуск?"
 
 #: dist/converse-no-dependencies.js:23884
 msgid "Create an account"
-msgstr ""
+msgstr "Създаване на допуск"
 
 #: dist/converse-no-dependencies.js:23896
 msgid "Create your account"
-msgstr ""
+msgstr "Създаване на допуска ви"
 
 #: dist/converse-no-dependencies.js:23898
 msgid "Please enter the XMPP provider to register with:"
-msgstr ""
+msgstr "Моля въведете XMPP доставчик за записване:"
 
 #: dist/converse-no-dependencies.js:23920
 msgid "Already have a chat account?"
-msgstr ""
+msgstr "Вече имате чат допуск?"
 
 #: dist/converse-no-dependencies.js:23922
 msgid "Log in here"
-msgstr ""
+msgstr "Влизане тук"
 
 #: dist/converse-no-dependencies.js:23932
 msgid "Account Registration:"
-msgstr ""
+msgstr "Записване за допуск:"
 
 #: dist/converse-no-dependencies.js:23940
 msgid "Register"
-msgstr ""
+msgstr "Записване"
 
 #: dist/converse-no-dependencies.js:23944
 msgid "Choose a different provider"
-msgstr ""
+msgstr "Избиране на друг доставчик"
 
 #: dist/converse-no-dependencies.js:23956
 msgid "Hold tight, we're fetching the registration form…"
-msgstr ""
+msgstr "Дръжте се здраво, изтегляме формуляра за записване…"
 
 #: dist/converse-no-dependencies.js:24091
 msgid " e.g. conversejs.org"
-msgstr ""
+msgstr " например conversejs.org"
 
 #: dist/converse-no-dependencies.js:24137
 msgid "Fetch registration form"
-msgstr ""
+msgstr "Изтегляне на форумляр за записване"
 
 #: dist/converse-no-dependencies.js:24138
 msgid "Tip: A list of public XMPP providers is available"
-msgstr ""
+msgstr "Съвет: Наличен е списък на публични XMPP доставчици"
 
 #: dist/converse-no-dependencies.js:24139
 msgid "here"
-msgstr ""
+msgstr "тук"
 
 #: dist/converse-no-dependencies.js:24187
 msgid "Sorry, we're unable to connect to your chosen provider."
-msgstr ""
+msgstr "Извинете, не можем да се свържем с избраният от вас доставчик."
 
 #: dist/converse-no-dependencies.js:24203
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
 msgstr ""
+"Извинете, даденият доставчик не поддържа пряко записване за допуск. Моля "
+"опитайте друг начин или с друг доставчик."
 
 #: dist/converse-no-dependencies.js:24227
 #, javascript-format
@@ -1305,52 +1326,56 @@ msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
 msgstr ""
+"Нещо се обърка при установяване на връзка с „%1$s“. Сигурни ли сте, че "
+"съществува?"
 
 #: dist/converse-no-dependencies.js:24390
 msgid "Now logging you in"
-msgstr ""
+msgstr "Сега бивате вписани"
 
 #: dist/converse-no-dependencies.js:24394
 msgid "Registered successfully"
-msgstr ""
+msgstr "Записани сте успешно"
 
 #: dist/converse-no-dependencies.js:24503
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
 msgstr ""
+"Доставчикът отказа опита ви за записване. Моля проверете точността на "
+"данните, които въведохте."
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:24949
 #: dist/converse-no-dependencies.js:24955
 #, javascript-format
 msgid "Notification from %1$s"
-msgstr ""
+msgstr "Известие от %1$s"
 
 #: dist/converse-no-dependencies.js:24957
 #: dist/converse-no-dependencies.js:24968
 #: dist/converse-no-dependencies.js:24971
 #, javascript-format
 msgid "%1$s says"
-msgstr ""
+msgstr "%1$s казва"
 
 #: dist/converse-no-dependencies.js:25005
 msgid "has come online"
-msgstr ""
+msgstr "се включи"
 
 #: dist/converse-no-dependencies.js:25022
 msgid "wants to be your contact"
-msgstr ""
+msgstr "иска да се свърже с вас"
 
 #: dist/converse-no-dependencies.js:25347
 #: dist/converse-no-dependencies.js:25703
 msgid "Minimize this chat box"
-msgstr ""
+msgstr "Минимизиране на това чат прозорче"
 
 #: dist/converse-no-dependencies.js:25493
 msgid "Click to restore this chat"
-msgstr ""
+msgstr "Натисне за възстановяване на този чат"
 
 #: dist/converse-no-dependencies.js:25680
 msgid "Minimized"
-msgstr ""
+msgstr "Минимизирано"

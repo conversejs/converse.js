@@ -397,7 +397,7 @@
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-clear': 'clearChatRoomMessages',
                     'click .toggle-call': 'toggleCall',
-                    'click .toggle-occupants a': 'toggleOccupants',
+                    'click .toggle-occupants': 'toggleOccupants',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant': 'onOccupantClicked',
                     'keypress .chat-textarea': 'keyPressed',
@@ -545,6 +545,7 @@
                     }
                     this.occupantsview.setOccupantsHeight();
                     this.scrollDown();
+                    this.renderEmojiPicker();
                     if (focus) { this.focus(); }
                 },
 
@@ -563,7 +564,6 @@
                     if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                         this.setChatState(_converse.ACTIVE);
                         this.scrollDown();
-                        this.renderEmojiPicker();
                         this.focus();
                     }
                 },
@@ -599,20 +599,11 @@
                 },
 
                 setOccupantsVisibility () {
+                    const icon_el = this.el.querySelector('.toggle-occupants');
                     if (this.model.get('hidden_occupants')) {
-                        const icon_el = this.el.querySelector('.icon-hide-users');
-                        if (!_.isNull(icon_el)) {
-                            icon_el.classList.remove('icon-hide-users');
-                            icon_el.classList.add('icon-show-users');
-                        }
                         this.el.querySelector('.chat-area').classList.add('full');
                         u.hideElement(this.el.querySelector('.occupants'));
                     } else {
-                        const icon_el = this.el.querySelector('.icon-show-users');
-                        if (!_.isNull(icon_el)) {
-                            icon_el.classList.remove('icon-show-users');
-                            icon_el.classList.add('icon-hide-users');
-                        }
                         this.el.querySelector('.chat-area').classList.remove('full');
                         this.el.querySelector('.occupants').classList.remove('hidden');
                     }

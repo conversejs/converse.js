@@ -5396,6 +5396,7 @@ body.reset {
     border-bottom-right-radius: 4px;
     border-bottom-left-radius: 4px;
     background-clip: padding-box;
+    background-color: white;
     border-top: 1px solid #BBB;
     border: 0;
     margin: 0;
@@ -5445,14 +5446,14 @@ body.reset {
       padding: 0.25em;
       height: 25px;
       display: block;
-      background-color: #50c282;
-      color: white; }
-      #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar a,
-      #conversejs .chatbox .sendXMPPMessage .chat-toolbar a {
-        color: white;
-        font-size: 16px;
-        text-decoration: none;
-        text-shadow: none; }
+      border-top: 8px solid #3AA569;
+      background-color: white;
+      color: #3AA569; }
+      #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar .fa, #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar .fa:hover,
+      #conversejs .chatbox .sendXMPPMessage .chat-toolbar .fa,
+      #conversejs .chatbox .sendXMPPMessage .chat-toolbar .fa:hover {
+        color: #3AA569;
+        font-size: 16px; }
       #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar .unencrypted a,
       #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar .unencrypted,
       #conversejs .chatbox .sendXMPPMessage .chat-toolbar .unencrypted a,
@@ -5541,9 +5542,6 @@ body.reset {
             #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu ul li a:hover,
             #conversejs .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu ul li a:hover {
               color: #8f2831; }
-        #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-toolbar-menu,
-        #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-toolbar-menu {
-          color: white; }
         #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker li:hover,
         #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-skintone-picker li:hover,
         #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker li:hover,
@@ -6363,7 +6361,13 @@ body.reset {
           background-color: #E77051; }
   #converse-embedded-chat .chatroom .sendXMPPMessage .chat-toolbar,
   #conversejs .chatroom .sendXMPPMessage .chat-toolbar {
-    background-color: #ed957e; }
+    background-color: white;
+    border-top: 8px solid #E77051;
+    color: #E77051; }
+    #converse-embedded-chat .chatroom .sendXMPPMessage .chat-toolbar .fa, #converse-embedded-chat .chatroom .sendXMPPMessage .chat-toolbar .fa:hover,
+    #conversejs .chatroom .sendXMPPMessage .chat-toolbar .fa,
+    #conversejs .chatroom .sendXMPPMessage .chat-toolbar .fa:hover {
+      color: #E77051; }
   #converse-embedded-chat .chatroom .sendXMPPMessage .chat-textarea,
   #conversejs .chatroom .sendXMPPMessage .chat-textarea {
     border-bottom-right-radius: 0; }

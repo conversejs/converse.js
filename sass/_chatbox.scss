@@ -284,6 +284,7 @@
             -webkit-background-clip: padding-box;
             @include border-bottom-radius($chatbox-border-radius);
             background-clip: padding-box;
+            background-color: white;
             border-top: 1px solid #BBB;
             border: 0;
             margin: 0;
@@ -332,13 +333,12 @@
                 padding: 0.25em;
                 height: $toolbar-height;
                 display: block;
-                background-color: lighten($chat-head-color, 10%);
-                color: white;
-                a {
-                    color: white;
+                border-top: 8px solid $chat-head-color;
+                background-color: white;
+                color: $chat-head-color;
+                .fa, .fa:hover {
+                    color: $chat-head-color;
                     font-size: $font-size-large;
-                    text-decoration: none;
-                    text-shadow: none;
                 }
                 .unencrypted a,
                 .unencrypted {
@@ -426,9 +426,6 @@
                                 }
                             }
                         }
-                    }
-                    &.toggle-toolbar-menu {
-                        color: white;
                     }
                     &.toggle-smiley {
                         .emoji-toolbar {

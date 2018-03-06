@@ -276,7 +276,12 @@
 
         .sendXMPPMessage {
             .chat-toolbar {
-                background-color: lighten($chatroom-head-color, 10%);
+                background-color: white;
+                border-top: 8px solid $chatroom-head-color;
+                color: $chatroom-head-color;
+                .fa, .fa:hover {
+                    color: $chatroom-head-color;
+                }
             }
             .chat-textarea {
                 border-bottom-right-radius: 0;

@@ -20,7 +20,6 @@ SED				?= sed
 SPHINXOPTS	  	=
 
 
-
 # In the case user wishes to use RVM 
 USE_RVM                 ?= false
 RVM_RUBY_VERSION        ?= 2.4.2
@@ -40,21 +39,17 @@ help:
 	@echo ""
 	@echo " all           A synonym for 'make dev'."
 	@echo " build         Create minified builds of converse.js and all its dependencies."
-	@echo " changes       Make an overview of all changed/added/deprecated items added to the documentation."
-	@echo " clean         Remove downloaded the stamp-* guard files as well as all NPM and Ruby packages."
+	@echo " clean         Remove all NPM and Ruby packages."
 	@echo " css           Generate CSS from the Sass files."
 	@echo " dev           Set up the development environment. To force a fresh start, run 'make clean' first."
-	@echo " epub          Export the documentation to epub."
 	@echo " html          Make standalone HTML files of the documentation."
-	@echo " doc           Same as "doc". Make standalone HTML files of the documentation."
-	@echo " linkcheck     Check all documentation external links for integrity."
 	@echo " po            Generate gettext PO files for each i18n language."
 	@echo " po2json       Generate JSON files from the language PO files."
 	@echo " pot           Generate a gettext POT file to be used for translations."
 	@echo " release       Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
 	@echo " serve         Serve this directory via a webserver on port 8000."
-	@echo " stamp-npm     Install NPM dependencies and create the guard file stamp-npm which will prevent those dependencies from being installed again."
-	@echo " stamp-bundler Install Bundler (Ruby) dependencies and create the guard file stamp-bundler which will prevent those dependencies from being installed again."
+	@echo " node_modules  Install NPM dependencies
+	@echo " gems		  Install Bundler (Ruby) dependencies
 	@echo " watch         Tells Sass to watch the .scss files for changes and then automatically update the CSS files."
 
 
@@ -110,23 +105,30 @@ release:
 ########################################################################
 ## Install dependencies
 
-stamp-npm: package.json
-	npm install && touch stamp-npm
+node_modules: package.json package-lock.json
+	npm install
 
-stamp-bundler: Gemfile
+.bundle: Gemfile 
 	mkdir -p .bundle
 	$(RVM_USE)
 	gem install --user bundler --bindir .bundle/bin
 	$(BUNDLE) install --path .bundle --binstubs .bundle/bin
-	touch stamp-bundler
+
+.PHONY: gems
+gems: .bundle
 
 .PHONY: clean
 clean:
-	-rm -f stamp-npm stamp-bundler package-lock.json
-	-rm -rf node_modules .bundle
+	rm -rf node_modules .bundle
+	rm dist/*.min.js
+	rm css/theme.min.css
+	rm css/converse.min.css
+	rm css/mobile.min.css
+	rm css/converse-muc-embedded.css
+	rm css/*.map
 
 .PHONY: dev
-dev: stamp-bundler stamp-npm
+dev: gems node_modules
 
 ########################################################################
 ## Builds
@@ -134,42 +136,31 @@ dev: stamp-bundler stamp-npm
 .PHONY: css
 css: dev sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css css/fonts.css
 
-css/inverse.css:: stamp-bundler sass sass/*.scss
+css/inverse.css:: gems sass sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/inverse/inverse.scss css/inverse.css
 
-css/inverse.min.css:: css/inverse.css
-	$(CLEANCSS) css/inverse.css > css/inverse.min.css
-
-css/converse-muc-embedded.css:: stamp-bundler sass/*.scss
+css/converse-muc-embedded.css:: gems sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/_muc_embedded.scss css/converse-muc-embedded.css
 
-css/converse-muc-embedded.min.css:: dev sass css/converse-muc-embedded.css
-	$(CLEANCSS) css/converse-muc-embedded.css > css/converse-muc-embedded.min.css
-
-css/converse.css:: stamp-bundler sass/*.scss
+css/converse.css:: gems sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss css/converse.css
 
-css/converse.min.css:: css/converse.css
-	$(CLEANCSS) css/converse.css > css/converse.min.css
+css/fonts.css:: dev sass
+	$(SASS) -I $(BOURBON) sass/only-fonts.scss $@
 
-css/theme.min.css:: stamp-npm css/theme.css
-	$(CLEANCSS) css/theme.css > css/theme.min.css
-
-css/mobile.min.css:: stamp-npm sass/*.scss
-	$(CLEANCSS) css/mobile.css > css/mobile.min.css
-
-css/fonts.css:: dev sass/*.scss
-	$(SASS) -I $(BOURBON_TEMPLATES) sass/only-fonts.scss css/fonts.css
+css/%.min.css:: css/%.css
+	make dev
+	$(CLEANCSS) $< > $@
 
 .PHONY: watch
-watch: stamp-bundler
+watch: gems
 	$(SASS) --watch -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css sass/inverse/inverse.scss:css/inverse.css
 
 .PHONY: watchjs
-watchjs: stamp-npm
+watchjs: node_modules 
 	$(BABEL) --source-maps --watch=./src --out-dir=./builds
 
-transpile: stamp-npm src
+transpile: node_modules src
 	$(BABEL) --source-maps --out-dir=./builds ./src
 	$(BABEL) --source-maps --out-dir=./builds ./node_modules/backbone.vdomview/backbone.vdomview.js
 	touch transpile
@@ -217,7 +208,7 @@ build:: dev css transpile $(BUILDS)
 ## Tests
 
 .PHONY: eslint
-eslint: stamp-npm
+eslint: node_modules
 	$(ESLINT) src/
 	$(ESLINT) spec/
 

@@ -56,7 +56,7 @@
     "jshint": "^2.9.4",
     "lodash": "4.17.4",
     "lodash-template-loader": "^2.0.0",
-    "moment": "~2.18.1",
+    "moment": "~> 2.19.3 ",
     "otr": "jcbrand/otr",
     "pluggable.js": "2.0.0",
     "po2json": "^0.4.4",

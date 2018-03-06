@@ -113,7 +113,7 @@
                 },
 
                 onBookmarked () {
-                    const icon = this.el.querySelector('.icon-pushpin');
+                    const icon = this.el.querySelector('.toggle-bookmark');
                     if (_.isNull(icon)) {
                         return;
                     }
@@ -198,7 +198,7 @@
                         _.forEach(models, function (model) {
                             model.destroy();
                         });
-                        this.el.querySelector('.icon-pushpin').classList.remove('button-on');
+                        this.el.querySelector('.toggle-bookmark').classList.remove('button-on');
                     }
                 }
             }

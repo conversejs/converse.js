@@ -1,5 +1,5 @@
 <div class="chat-head chat-head-chatbox row no-gutters">
-    <div class="col-9">
+    <div class="col">
         <div class="row no-gutters">
             {[ if (o.show_avatar) { ]}
             <div class="col-auto">
@@ -21,8 +21,10 @@
             </div>
         </div>
     </div>
-    <div class="col-3">
-        <a class="chatbox-btn close-chatbox-button fa fa-close" title={{{o.info_close}}}></a>
-        <a class="chatbox-btn fa fa-vcard" title="Contact profile" data-toggle="modal" data-target="#contactProfileModal"></a>
+    <div class="col-sm-3 col-lg-2">
+        <div class="chatbox-buttons row no-gutters">
+            <a class="chatbox-btn close-chatbox-button fa fa-close" title={{{o.info_close}}}></a>
+            <a class="chatbox-btn fa fa-vcard" title="Contact profile" data-toggle="modal" data-target="#contactProfileModal"></a>
+        </div>
     </div>
 </div>

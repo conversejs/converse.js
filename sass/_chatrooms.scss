@@ -153,15 +153,6 @@
                         font-weight: bold;
                     }
 
-                    ul {
-                        li {
-                            &.feature {
-                                font-size: $font-size-small;
-                                width: 100%;
-                            }
-                        }
-                    }
-
                     .chatroom-features {
                         width: 100%;
                         .feature {
@@ -194,6 +185,12 @@
                         }
                         &.features-list {
                             padding-top: 0;
+                            .feature {
+                                width: 100%;
+                                .fa {
+                                    color: $text-color;
+                                }
+                            }
                         }
                         li {
                             cursor: default;
@@ -203,8 +200,8 @@
                             padding: 0.2em 0.5em 0.2em 0;
                             text-overflow: ellipsis;
                             white-space: nowrap;
-                            [class^="icon-"], [class*=" icon-"] {
-                                padding-right: 0.5em;
+                            .fa {
+                                margin-right: 0.5em;
                             }
                             &.feature {
                                 font-size: $font-size-tiny;

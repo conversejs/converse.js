@@ -6366,10 +6366,6 @@ body {
         #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-heading {
           padding: 0.3em 0;
           font-weight: bold; }
-        #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li.feature,
-        #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.feature {
-          font-size: 14px;
-          width: 100%; }
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants .chatroom-features,
         #conversejs .chatroom .box-flyout .chatroom-body .occupants .chatroom-features {
           width: 100%; }
@@ -6401,6 +6397,12 @@ body {
           #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul.features-list,
           #conversejs .chatroom .box-flyout .chatroom-body .occupants ul.features-list {
             padding-top: 0; }
+            #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul.features-list .feature,
+            #conversejs .chatroom .box-flyout .chatroom-body .occupants ul.features-list .feature {
+              width: 100%; }
+              #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul.features-list .feature .fa,
+              #conversejs .chatroom .box-flyout .chatroom-body .occupants ul.features-list .feature .fa {
+                color: #777; }
           #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li,
           #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li {
             cursor: default;
@@ -6410,10 +6412,9 @@ body {
             padding: 0.2em 0.5em 0.2em 0;
             text-overflow: ellipsis;
             white-space: nowrap; }
-            #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li [class^="icon-"], #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li [class*=" icon-"],
-            #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li [class^="icon-"],
-            #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li [class*=" icon-"] {
-              padding-right: 0.5em; }
+            #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li .fa,
+            #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li .fa {
+              margin-right: 0.5em; }
             #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li.feature,
             #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.feature {
               font-size: 10px; }

@@ -43,11 +43,9 @@
       height: calc(100% - 55px); }
     #conversejs.converse-embedded .chatroom .box-flyout .occupants-heading {
       font-size: 120%; }
-    #conversejs.converse-embedded .chatroom .box-flyout .chat-content {
-      height: calc(100% - 97px); }
-      #conversejs.converse-embedded .chatroom .box-flyout .chat-content .chat-message {
-        margin: 0.5em;
-        font-size: 120%; }
+    #conversejs.converse-embedded .chatroom .box-flyout .chat-content .chat-message {
+      margin: 0.5em;
+      font-size: 120%; }
     #conversejs.converse-embedded .chatroom .box-flyout .sendXMPPMessage .chat-textarea {
       padding: 0.5em;
       font-size: 110%; }

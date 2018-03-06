@@ -112,6 +112,9 @@
         }
 
         .box-flyout {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             background-color: white;
             box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
             height: $chat-height;
@@ -144,7 +147,11 @@
             }
         }
         .chat-body {
-            background-color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            background-color: $chat-head-color;
             border-bottom-left-radius: $chatbox-border-radius;
             border-bottom-right-radius: $chatbox-border-radius;
             @media screen and (max-height: $mobile-landscape-height) {
@@ -156,8 +163,6 @@
                 border-bottom-right-radius: 0;
             }
             border-top: 0;
-            height: 289px;
-            @include calc(height, '100% - #{$chat-head-height}');
             p {
                 color: $text-color;
                 font-size: $font-size;
@@ -250,7 +255,6 @@
             white-space: nowrap;
         }
         .chat-content {
-            position: relative;
             padding: 0.5em;
             font-size: 13px;
             color: $text-color;
@@ -258,8 +262,6 @@
             border: 0;
             background-color: #ffffff;
             line-height: 1.3em;
-            height: 206px;
-            height: calc(100% - #{$toolbar-height + $chat-textarea-height +1px});
 
             .toggle-spoiler:before {
                 padding-right: 0.25em;
@@ -267,7 +269,7 @@
             }
         }
         .chat-content-sendbutton {
-            height: calc(100% - #{$toolbar-height + $chat-textarea-height + $send-button-height + 2*$send-button-margin});
+            height: calc(100% - #{$chat-textarea-height + $send-button-height + 2*$send-button-margin});
         }
 
         .dropdown { /* status dropdown styles */
@@ -285,12 +287,9 @@
             @include border-bottom-radius($chatbox-border-radius);
             background-clip: padding-box;
             background-color: white;
-            border-top: 1px solid #BBB;
             border: 0;
             margin: 0;
             padding: 0;
-            position: relative;
-            height: #{$chat-textarea-height + $toolbar-height};
             @media screen and (max-height: $mobile-landscape-height) {
                 width: 100%;
             }
@@ -306,11 +305,10 @@
                 border-top-left-radius: 0;
                 border-top-right-radius: 0;
                 @include border-bottom-radius($chatbox-border-radius);
-                height: $chat-textarea-height;
                 padding: 0.5em;
                 width: 100%;
                 border: none;
-                resize: none;
+                min-height: $chat-textarea-height;
                 &.spoiler {
                     height: 42px;
                 }
@@ -331,7 +329,6 @@
                 box-sizing: border-box;
                 margin: 0;
                 padding: 0.25em;
-                height: $toolbar-height;
                 display: block;
                 border-top: 8px solid $chat-head-color;
                 background-color: white;

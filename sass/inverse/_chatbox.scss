@@ -13,7 +13,7 @@
         font-size: 20px;
         padding: 0;
         .user-custom-message {
-            font-size: 66%;
+            font-size: 50%;
             height: auto;
             line-height: $line-height;
         }
@@ -55,6 +55,7 @@
             }
         }
         .chat-content {
+            height: 100%;
             padding: 0 $padding $padding $padding;
             border-top-left-radius: $chatbox-border-radius;
             border-top-right-radius: $chatbox-border-radius;

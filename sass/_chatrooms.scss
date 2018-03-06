@@ -82,6 +82,7 @@
                 height: 100vh;
             }
             .chatroom-body {
+                flex-direction: row;
                 @include border-bottom-radius($chatbox-border-radius);
                 background-color: white;
                 border-top: 0;
@@ -120,6 +121,8 @@
                     padding: 2em 2em 0 2em;
                 }
                 .chat-area {
+                    display: flex;
+                    flex-direction: column;
                     word-wrap: break-word; 
                     min-width: $chat-width;
                     .new-msgs-indicator {
@@ -127,6 +130,7 @@
                         max-width: 70%;
                     }
                     .chat-content {
+                        height: 100%;
                         padding: 0.5em;
                     }
                     &.full {
@@ -246,7 +250,6 @@
                     font-size: $font-size;
                     height: 289px;
                     width: 100%;
-                    @include calc(height, '100% - #{$chat-head-height}');
                     overflow-y: auto;
                     position: absolute;
 

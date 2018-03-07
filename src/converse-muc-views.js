@@ -11,7 +11,6 @@
 (function (root, factory) {
     define([
         "converse-core",
-        "emojione",
         "tpl!add_chatroom_modal",
         "tpl!chatarea",
         "tpl!chatroom",
@@ -35,11 +34,12 @@
         "tpl!rooms_results",
         "tpl!spinner",
         "awesomplete",
-        "converse-chatview"
+        "converse-chatview",
+        "backbone.orderedlistview",
+        "backbone.vdomview"
     ], factory);
 }(this, function (
     converse,
-    emojione,
     tpl_add_chatroom_modal,
     tpl_chatarea,
     tpl_chatroom,
@@ -167,7 +167,7 @@
                 el.querySelector('span.spinner').remove();
                 el.querySelector('a.room-info').classList.add('selected');
                 el.insertAdjacentHTML(
-                    'beforeEnd', 
+                    'beforeEnd',
                     tpl_room_description({
                         'jid': stanza.getAttribute('from'),
                         'desc': _.get(_.head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
@@ -311,7 +311,7 @@
                 createOccupantsView () {
                     /* Create the ChatRoomOccupantsView Backbone.NativeView
                      */
-                    const model = new _converse.ChatRoomOccupants();
+                    const model = this.occupants;
                     model.chatroomview = this;
                     this.occupantsview = new _converse.ChatRoomOccupantsView({'model': model});
                     this.occupantsview.model.on('change:role', this.informOfOccupantsRoleChange, this);
@@ -765,32 +765,6 @@
                     );
                 },
 
-                sendChatRoomMessage (text) {
-                    /* Constuct a message stanza to be sent to this chat room,
-                     * and send it to the server.
-                     *
-                     * Parameters:
-                     *  (String) text: The message text to be sent.
-                     */
-                    text = emojione.shortnameToUnicode(text)
-                    const msgid = _converse.connection.getUniqueId();
-                    const msg = $msg({
-                        to: this.model.get('jid'),
-                        from: _converse.connection.jid,
-                        type: 'groupchat',
-                        id: msgid
-                    }).c("body").t(text).up()
-                    .c("x", {xmlns: "jabber:x:event"}).c(_converse.COMPOSING);
-                    _converse.connection.send(msg);
-                    this.model.messages.create({
-                        fullname: this.model.get('nick'),
-                        sender: 'me',
-                        time: moment().format(),
-                        message: text,
-                        msgid
-                    });
-                },
-
                 modifyRole(room, nick, role, reason, onSuccess, onError) {
                     const item = $build("item", {nick, role});
                     const iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
@@ -837,7 +811,7 @@
                      *    (String) text - The message text.
                      */
                     if (_converse.muc_disable_moderator_commands) {
-                        return this.sendChatRoomMessage(text);
+                        return this.model.sendChatRoomMessage(text);
                     }
                     const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
                         args = match[2] && match[2].splitOnce(' ') || [],
@@ -908,7 +882,7 @@
                         case 'nick':
                             _converse.connection.send($pres({
                                 from: _converse.connection.jid,
-                                to: this.getRoomJIDAndNick(match[2]),
+                                to: this.model.getRoomJIDAndNick(match[2]),
                                 id: _converse.connection.getUniqueId()
                             }).tree());
                             break;
@@ -949,7 +923,7 @@
                                     undefined, this.onCommandError.bind(this));
                             break;
                         default:
-                            this.sendChatRoomMessage(text);
+                            this.model.sendChatRoomMessage(text);
                         break;
                     }
                 },
@@ -972,25 +946,6 @@
                     }
                     _.flow(this.showStatusMessages.bind(this), this.onChatRoomMessage.bind(this))(stanza);
                     return true;
-                },
-
-                getRoomJIDAndNick (nick) {
-                    /* Utility method to construct the JID for the current user
-                     * as occupant of the room.
-                     *
-                     * This is the room JID, with the user's nick added at the
-                     * end.
-                     *
-                     * For example: room@conference.example.org/nickname
-                     */
-                    if (nick) {
-                        this.model.save({'nick': nick});
-                    } else {
-                        nick = this.model.get('nick');
-                    }
-                    const room = this.model.get('jid');
-                    const jid = Strophe.getBareJidFromJid(room);
-                    return jid + (nick !== null ? `/${nick}` : "");
                 },
 
                 registerHandlers () {
@@ -1038,30 +993,14 @@
                     if (!nick) {
                         return this.checkForReservedNick();
                     }
-                    if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
-                        // We have restored a chat room from session storage,
-                        // so we don't send out a presence stanza again.
-                        return this;
-                    }
-
-                    const stanza = $pres({
-                        'from': _converse.connection.jid,
-                        'to': this.getRoomJIDAndNick(nick)
-                    }).c("x", {'xmlns': Strophe.NS.MUC})
-                      .c("history", {'maxstanzas': _converse.muc_history_max_stanzas}).up();
-                    if (password) {
-                        stanza.cnode(Strophe.xmlElement("password", [], password));
-                    }
-                    this.model.save('connection_status', converse.ROOMSTATUS.CONNECTING);
-                    _converse.connection.send(stanza);
-                    return this;
+                    return this.model.join(nick, password);
                 },
 
                 sendUnavailablePresence (exit_msg) {
                     const presence = $pres({
                         type: "unavailable",
                         from: _converse.connection.jid,
-                        to: this.getRoomJIDAndNick()
+                        to: this.model.getRoomJIDAndNick()
                     });
                     if (exit_msg !== null) {
                         presence.c("status", exit_msg);
@@ -1150,29 +1089,6 @@
                     );
                 },
 
-                sendConfiguration(config, onSuccess, onError) {
-                    /* Send an IQ stanza with the room configuration.
-                     *
-                     * Parameters:
-                     *  (Array) config: The room configuration
-                     *  (Function) onSuccess: Callback upon succesful IQ response
-                     *      The first parameter passed in is IQ containing the
-                     *      room configuration.
-                     *      The second is the response IQ from the server.
-                     *  (Function) onError: Callback upon error IQ response
-                     *      The first parameter passed in is IQ containing the
-                     *      room configuration.
-                     *      The second is the response IQ from the server.
-                     */
-                    const iq = $iq({to: this.model.get('jid'), type: "set"})
-                        .c("query", {xmlns: Strophe.NS.MUC_OWNER})
-                        .c("x", {xmlns: Strophe.NS.XFORM, type: "submit"});
-                    _.each(config || [], function (node) { iq.cnode(node).up(); });
-                    onSuccess = _.isUndefined(onSuccess) ? _.noop : _.partial(onSuccess, iq.nodeTree);
-                    onError = _.isUndefined(onError) ? _.noop : _.partial(onError, iq.nodeTree);
-                    return _converse.connection.sendIQ(iq, onSuccess, onError);
-                },
-
                 saveConfiguration (form) {
                     /* Submit the room configuration form by sending an IQ
                      * stanza to the server.
@@ -1186,54 +1102,8 @@
                     return new Promise((resolve, reject) => {
                         const inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
                               configArray = _.map(inputs, u.webForm2xForm);
-                        this.sendConfiguration(configArray, resolve, reject);
+                        this.model.sendConfiguration(configArray, resolve, reject);
                         this.closeForm();
-                    });
-                },
-
-                autoConfigureChatRoom () {
-                    /* Automatically configure room based on the
-                     * 'roomconfig' data on this view's model.
-                     *
-                     * Returns a promise which resolves once a response IQ has
-                     * been received.
-                     *
-                     * Parameters:
-                     *  (XMLElement) stanza: IQ stanza from the server,
-                     *       containing the configuration.
-                     */
-                    const that = this;
-                    return new Promise((resolve, reject) => {
-                        this.fetchRoomConfiguration().then(function (stanza) {
-                            const configArray = [],
-                                fields = stanza.querySelectorAll('field'),
-                                config = that.model.get('roomconfig');
-                            let count = fields.length;
-
-                            _.each(fields, function (field) {
-                                const fieldname = field.getAttribute('var').replace('muc#roomconfig_', ''),
-                                    type = field.getAttribute('type');
-                                let value;
-                                if (fieldname in config) {
-                                    switch (type) {
-                                        case 'boolean':
-                                            value = config[fieldname] ? 1 : 0;
-                                            break;
-                                        case 'list-multi':
-                                            // TODO: we don't yet handle "list-multi" types
-                                            value = field.innerHTML;
-                                            break;
-                                        default:
-                                            value = config[fieldname];
-                                    }
-                                    field.innerHTML = $build('value').t(value);
-                                }
-                                configArray.push(field);
-                                if (!--count) {
-                                    that.sendConfiguration(configArray, resolve, reject);
-                                }
-                            });
-                        });
                     });
                 },
 
@@ -1245,81 +1115,11 @@
                     this.renderAfterTransition();
                 },
 
-                fetchRoomConfiguration (handler) {
-                    /* Send an IQ stanza to fetch the room configuration data.
-                     * Returns a promise which resolves once the response IQ
-                     * has been received.
-                     *
-                     * Parameters:
-                     *  (Function) handler: The handler for the response IQ
-                     */
-                    return new Promise((resolve, reject) => {
-                        _converse.connection.sendIQ(
-                            $iq({
-                                'to': this.model.get('jid'),
-                                'type': "get"
-                            }).c("query", {xmlns: Strophe.NS.MUC_OWNER}),
-                            (iq) => {
-                                if (handler) {
-                                    handler.apply(this, arguments);
-                                }
-                                resolve(iq);
-                            },
-                            reject // errback
-                        );
-                    });
-                },
-
-                parseRoomFeatures (iq) {
-                    /* See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
-                     *
-                     *  <identity
-                     *      category='conference'
-                     *      name='A Dark Cave'
-                     *      type='text'/>
-                     *  <feature var='http://jabber.org/protocol/muc'/>
-                     *  <feature var='muc_passwordprotected'/>
-                     *  <feature var='muc_hidden'/>
-                     *  <feature var='muc_temporary'/>
-                     *  <feature var='muc_open'/>
-                     *  <feature var='muc_unmoderated'/>
-                     *  <feature var='muc_nonanonymous'/>
-                     *  <feature var='urn:xmpp:mam:0'/>
-                     */
-                    const features = {
-                        'features_fetched': true,
-                        'name': iq.querySelector('identity').getAttribute('name')
-                    }
-                    _.each(iq.querySelectorAll('feature'), function (field) {
-                        const fieldname = field.getAttribute('var');
-                        if (!fieldname.startsWith('muc_')) {
-                            if (fieldname === Strophe.NS.MAM) {
-                                features.mam_enabled = true;
-                            }
-                            return;
-                        }
-                        features[fieldname.replace('muc_', '')] = true;
-                    });
-                    const desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
-                    if (!_.isNull(desc_field)) {
-                        features.description = desc_field.textContent;
-                    }
-                    this.model.save(features);
-                },
-
                 getRoomFeatures () {
                     /* Fetch the room disco info, parse it and then
                      * save it on the Backbone.Model of this chat rooms.
                      */
-                    return new Promise((resolve, reject) => {
-                        _converse.connection.disco.info(
-                            this.model.get('jid'),
-                            null,
-                            _.flow(this.parseRoomFeatures.bind(this), resolve),
-                            () => { reject(new Error("Could not parse the room features")) },
-                            5000
-                        );
-                    });
+                    return this.model.getRoomFeatures();
                 },
 
                 getAndRenderConfigurationForm (ev) {
@@ -1338,7 +1138,7 @@
                      *      the settings.
                      */
                     this.showSpinner();
-                    this.fetchRoomConfiguration()
+                    this.model.fetchRoomConfiguration()
                         .then(this.renderConfigurationForm.bind(this))
                         .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                 },
@@ -1541,27 +1341,6 @@
                         return __(_converse.muc.new_nickname_messages[code], nick);
                     }
                     return;
-                },
-
-                saveAffiliationAndRole (pres) {
-                    /* Parse the presence stanza for the current user's
-                     * affiliation.
-                     *
-                     * Parameters:
-                     *  (XMLElement) pres: A <presence> stanza.
-                     */
-                    const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, pres).pop();
-                    const is_self = pres.querySelector("status[code='110']");
-                    if (is_self && !_.isNil(item)) {
-                        const affiliation = item.getAttribute('affiliation');
-                        const role = item.getAttribute('role');
-                        if (affiliation) {
-                            this.model.save({'affiliation': affiliation});
-                        }
-                        if (role) {
-                            this.model.save({'role': role});
-                        }
-                    }
                 },
 
                 parseXUserElement (x, stanza, is_self) {
@@ -1842,12 +1621,12 @@
                      * Parameters:
                      *  (XMLElement) pres: The stanza
                      */
-                    this.saveAffiliationAndRole(pres);
+                    this.model.saveAffiliationAndRole(pres);
 
                     const locked_room = pres.querySelector("status[code='201']");
                     if (locked_room) {
                         if (this.model.get('auto_configure')) {
-                            this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+                            this.model.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
                         } else if (_converse.muc_instant_rooms) {
                             // Accept default configuration
                             this.saveConfiguration().then(this.getRoomFeatures.bind(this));
@@ -1862,7 +1641,7 @@
                         // otherwise the features would have been fetched in
                         // the "initialize" method already.
                         if (this.model.get('affiliation') === 'owner' && this.model.get('auto_configure')) {
-                            this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+                            this.model.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
                         } else {
                             this.getRoomFeatures();
                         }
@@ -1876,24 +1655,13 @@
                      * Parameters:
                      *  (XMLElement) pres: The stanza
                      */
+                    var res = this.model.onChatRoomPresence(pres);
                     if (pres.getAttribute('type') === 'error') {
-                        this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         this.showErrorMessage(pres);
-                        return true;
-                    }
-                    const is_self = pres.querySelector("status[code='110']");
-                    if (is_self && pres.getAttribute('type') !== 'unavailable') {
-                        this.onOwnChatRoomPresence(pres);
+                        return res;
                     }
                     this.hideSpinner().showStatusMessages(pres);
-                    // This must be called after showStatusMessages so that
-                    // "join" messages are correctly shown.
-                    this.occupantsview.updateOccupantsOnPresence(pres);
-                    if (this.model.get('role') !== 'none' &&
-                            this.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
-                        this.model.save('connection_status', converse.ROOMSTATUS.CONNECTED);
-                    }
-                    return true;
+                    return res;
                 },
 
                 setChatRoomSubject (sender, subject) {
@@ -1908,48 +1676,6 @@
                             'message': __('Topic set by %1$s to: %2$s', sender, subject)
                         }));
                     this.scrollDown();
-                },
-
-                isDuplicateBasedOnTime (message) {
-                    /* Checks whether a received messages is actually a
-                     * duplicate based on whether it has a "ts" attribute
-                     * with a unix timestamp.
-                     *
-                     * This is used for better integration with Slack's XMPP
-                     * gateway, which doesn't use message IDs but instead the
-                     * aforementioned "ts" attributes.
-                     */
-                    const entity = _converse.disco_entities.get(_converse.domain);
-                    if (entity.identities.where({'name': "Slack-XMPP"})) {
-                        const ts = message.getAttribute('ts');
-                        if (_.isNull(ts)) {
-                            return false;
-                        } else {
-                            return this.model.messages.where({
-                                'sender': 'me',
-                                'message': this.model.getMessageBody(message)
-                            }).filter(
-                                (msg) => Math.abs(moment(msg.get('time')).diff(moment.unix(ts))) < 5000
-                            ).length > 0;
-                        }
-                    }
-                    return false;
-                },
-
-                isDuplicate (message, original_stanza) {
-                    const msgid = message.getAttribute('id'),
-                          jid = message.getAttribute('from'),
-                          resource = Strophe.getResourceFromJid(jid),
-                          sender = resource && Strophe.unescapeNode(resource) || '';
-                    if (msgid) {
-                        return this.model.messages.filter(
-                            // Some bots (like HAL in the prosody chatroom)
-                            // respond to commands with the same ID as the
-                            // original message. So we also check the sender.
-                            (msg) => msg.get('msgid') === msgid && msg.get('fullname') === sender
-                        ).length > 0;
-                    }
-                    return this.isDuplicateBasedOnTime(message);
                 },
 
                 onChatRoomMessage (message) {
@@ -2459,87 +2185,6 @@
                     const el = this.el.querySelector('.chatroom-features');
                     this.el.querySelector('.occupant-list').style.cssText =
                         `height: calc(100% - ${el.offsetHeight}px - 5em);`;
-                },
-
-                parsePresence (pres) {
-                    const id = Strophe.getResourceFromJid(pres.getAttribute("from"));
-                    const data = {
-                        nick: id,
-                        type: pres.getAttribute("type"),
-                        states: []
-                    };
-                    _.each(pres.childNodes, function (child) {
-                        switch (child.nodeName) {
-                            case "status":
-                                data.status = child.textContent || null;
-                                break;
-                            case "show":
-                                data.show = child.textContent || 'online';
-                                break;
-                            case "x":
-                                if (child.getAttribute("xmlns") === Strophe.NS.MUC_USER) {
-                                    _.each(child.childNodes, function (item) {
-                                        switch (item.nodeName) {
-                                            case "item":
-                                                data.affiliation = item.getAttribute("affiliation");
-                                                data.role = item.getAttribute("role");
-                                                data.jid = item.getAttribute("jid");
-                                                data.nick = item.getAttribute("nick") || data.nick;
-                                                break;
-                                            case "status":
-                                                if (item.getAttribute("code")) {
-                                                    data.states.push(item.getAttribute("code"));
-                                                }
-                                        }
-                                    });
-                                }
-                        }
-                    });
-                    return data;
-                },
-
-                findOccupant (data) {
-                    /* Try to find an existing occupant based on the passed in
-                     * data object.
-                     *
-                     * If we have a JID, we use that as lookup variable,
-                     * otherwise we use the nick. We don't always have both,
-                     * but should have at least one or the other.
-                     */
-                    const jid = Strophe.getBareJidFromJid(data.jid);
-                    if (jid !== null) {
-                        return this.model.where({'jid': jid}).pop();
-                    } else {
-                        return this.model.where({'nick': data.nick}).pop();
-                    }
-                },
-
-                updateOccupantsOnPresence (pres) {
-                    /* Given a presence stanza, update the occupant models
-                     * based on its contents.
-                     *
-                     * Parameters:
-                     *  (XMLElement) pres: The presence stanza
-                     */
-                    const data = this.parsePresence(pres);
-                    if (data.type === 'error') {
-                        return true;
-                    }
-                    const occupant = this.findOccupant(data);
-                    if (data.type === 'unavailable') {
-                        if (occupant) { occupant.destroy(); }
-                    } else {
-                        const jid = Strophe.getBareJidFromJid(data.jid);
-                        const attributes = _.extend(data, {
-                            'jid': jid ? jid : undefined,
-                            'resource': data.jid ? Strophe.getResourceFromJid(data.jid) : undefined
-                        });
-                        if (occupant) {
-                            occupant.save(attributes);
-                        } else {
-                            this.model.create(attributes);
-                        }
-                    }
                 },
 
                 promptForInvite (suggestion) {

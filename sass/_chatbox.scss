@@ -173,7 +173,10 @@
                 line-height: $line-height-small;
                 color: $chat-head-color;
                 font-size: $font-size-small;
-                margin: 0.3em;
+                margin: 0.5em;
+                &.badge {
+                    color: $chat-head-text-color;
+                }
                 &.chat-event {
                     clear: left;
                     font-style: italic;

@@ -83,6 +83,7 @@
             }
             .chatroom-body {
                 flex-direction: row;
+                flex-flow: nowrap;
                 @include border-bottom-radius($chatbox-border-radius);
                 background-color: white;
                 border-top: 0;
@@ -92,9 +93,11 @@
                 .row {
                     flex-direction: row;
                 }
-
+                .chat-topic {
+                    font-weight: bold;
+                    color: $chatroom-head-color;
+                }
                 .chat-info {
-                    color: white;
                     line-height: normal;
                 }
                 .mentioned {

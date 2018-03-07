@@ -1795,6 +1795,7 @@
                             tpl_info({
                                 'data': '',
                                 'isodate': moment().format(),
+                                'extra_classes': 'chat-event',
                                 'message': message
                             }));
                     });
@@ -1817,6 +1818,7 @@
                             tpl_info({
                                 'data': `data-leavejoin="${nick}"`,
                                 'isodate': moment().format(),
+                                'extra_classes': 'chat-event',
                                 'message': __('%1$s has left and re-entered the room.', nick)
                             });
                     } else {
@@ -1829,6 +1831,7 @@
                         const data = {
                             'data': `data-join="${nick}"`,
                             'isodate': moment().format(),
+                            'extra_classes': 'chat-event',
                             'message': message
                         };
                         if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
@@ -1861,6 +1864,7 @@
                             tpl_info({
                                 'data': `data-joinleave="${nick}"`,
                                 'isodate': moment().format(),
+                                'extra_classes': 'chat-event',
                                 'message': message
                             });
                     } else {
@@ -1873,6 +1877,7 @@
                         const data = {
                             'message': message,
                             'isodate': moment().format(),
+                            'extra_classes': 'chat-event',
                             'data': `data-leave="${nick}"`
                         }
                         if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
@@ -2074,7 +2079,16 @@
                         tpl_info({
                             'data': '',
                             'isodate': moment().format(),
-                            'message': __('Topic set by %1$s to: %2$s', sender, subject)
+                            'extra_classes': 'chat-event',
+                            'message': __('Topic set by %1$s', sender)
+                        }));
+                    this.content.insertAdjacentHTML(
+                        'beforeend',
+                        tpl_info({
+                            'data': '',
+                            'isodate': moment().format(),
+                            'extra_classes': 'chat-topic',
+                            'message': subject
                         }));
                     this.scrollDown();
                 },

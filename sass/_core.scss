@@ -295,12 +295,8 @@ body.reset {
         @include animation(spin 2s infinite, linear);
         display: block;
         text-align: center;
-        margin: 1em;
-        &:before {
-            font-size: 24px;
-            font-family: 'Converse-js' !important;
-            content: "\231b";
-        }
+        margin: 2em;
+        font-size: 24px;
     }
     .left {
         float: left;
@@ -311,7 +307,6 @@ body.reset {
     .centered {
         text-align: center;
         display: block;
-        margin: 0;
     }
     .hor_centered {
         text-align: center;

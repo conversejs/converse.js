@@ -4700,19 +4700,15 @@ body.reset {
     animation: spin 2s infinite, linear;
     display: block;
     text-align: center;
-    margin: 1em; }
-    #conversejs .spinner:before {
-      font-size: 24px;
-      font-family: 'Converse-js' !important;
-      content: "\231b"; }
+    margin: 2em;
+    font-size: 24px; }
   #conversejs .left {
     float: left; }
   #conversejs .right {
     float: right; }
   #conversejs .centered {
     text-align: center;
-    display: block;
-    margin: 0; }
+    display: block; }
   #conversejs .hor_centered {
     text-align: center;
     display: block;
@@ -6032,7 +6028,11 @@ body {
         color: #E77051; }
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chat-info,
       #conversejs .chatroom .box-flyout .chatroom-body .chat-info {
+        color: #E77051;
         line-height: normal; }
+        #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chat-info.badge,
+        #conversejs .chatroom .box-flyout .chatroom-body .chat-info.badge {
+          color: white; }
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .mentioned,
       #conversejs .chatroom .box-flyout .chatroom-body .mentioned {
         font-weight: bold; }

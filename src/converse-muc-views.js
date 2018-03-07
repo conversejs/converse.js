@@ -1819,14 +1819,14 @@
                                 'data': `data-leavejoin="${nick}"`,
                                 'isodate': moment().format(),
                                 'extra_classes': 'chat-event',
-                                'message': __('%1$s has left and re-entered the room.', nick)
+                                'message': __('%1$s has left and re-entered the room', nick)
                             });
                     } else {
                         let  message;
                         if (_.get(stat, 'textContent')) {
                             message = __('%1$s has entered the room. "%2$s"', nick, stat.textContent);
                         } else {
-                            message = __('%1$s has entered the room.', nick);
+                            message = __('%1$s has entered the room', nick);
                         }
                         const data = {
                             'data': `data-join="${nick}"`,
@@ -1858,7 +1858,7 @@
                         if (_.get(stat, 'textContent')) {
                             message = __('%1$s has entered and left the room. "%2$s"', nick, stat.textContent);
                         } else {
-                            message = __('%1$s has entered and left the room.', nick);
+                            message = __('%1$s has entered and left the room', nick);
                         }
                         last_el.outerHTML =
                             tpl_info({
@@ -1872,7 +1872,7 @@
                         if (_.get(stat, 'textContent')) {
                             message = __('%1$s has left the room. "%2$s"', nick, stat.textContent);
                         } else {
-                            message = __('%1$s has left the room.', nick);
+                            message = __('%1$s has left the room', nick);
                         }
                         const data = {
                             'message': message,

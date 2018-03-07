@@ -98,7 +98,11 @@
                     color: $chatroom-head-color;
                 }
                 .chat-info {
+                    color: $chatroom-head-color;
                     line-height: normal;
+                    &.badge {
+                        color: $chat-head-text-color;
+                    }
                 }
                 .mentioned {
                     font-weight: bold;

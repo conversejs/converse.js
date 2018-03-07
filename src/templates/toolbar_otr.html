@@ -2,15 +2,15 @@
     <li class="toggle-toolbar-menu toggle-otr {{{o.otr_status_class}}}" title="{{{o.otr_tooltip}}}">
         <span class="chat-toolbar-text">{{{o.otr_translated_status}}}</span>
         {[ if (o.otr_status == o.UNENCRYPTED) { ]}
-            <span class="icon-unlocked"></span>
+            <span class="fa fa-unlock"></span>
         {[ } ]}
         {[ if (o.otr_status == o.UNVERIFIED) { ]}
-            <span class="icon-lock"></span>
+            <span class="fa fa-lock"></span>
         {[ } ]}
         {[ if (o.otr_status == o.VERIFIED) { ]}
-            <span class="icon-lock"></span>
+            <span class="fa fa-lock"></span>
         {[ } ]} {[ if (o.otr_status == o.FINISHED) { ]}
-            <span class="icon-unlocked"></span>
+            <span class="fa fa-unlock"></span>
         {[ } ]}
         <ul class="toolbar-menu collapsed">
             {[ if (o.otr_status == o.UNENCRYPTED) { ]}

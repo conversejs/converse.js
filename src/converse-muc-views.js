@@ -64,7 +64,7 @@
 ) {
     "use strict";
 
-    const { Backbone, Promise, Strophe, b64_sha1, moment, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
+    const { Backbone, Promise, Strophe, b64_sha1, moment, f, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
     const u = converse.env.utils;
 
     const ROOM_FEATURES_MAP = {
@@ -2550,7 +2550,9 @@
                  * set the MUC domain for the "Rooms" panel of the controlbox.
                  */
                 function featureAdded (feature) {
-                    if ((feature.get('var') === Strophe.NS.MUC)) {
+                    if (feature.get('var') === Strophe.NS.MUC &&
+                            f.includes('conference', feature.entity.identities.pluck('category'))) {
+
                         setMUCDomain(feature.get('from'), controlboxview);
                     }
                 }

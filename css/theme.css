@@ -260,30 +260,6 @@ a:focus {
     padding: 100px 0;
   }
 }
-.btn {
-  text-transform: uppercase;
-  font-family: FontAwesome;
-  font-weight: 400;
-  -webkit-transition: all 0.3s ease-in-out;
-  -moz-transition: all 0.3s ease-in-out;
-  transition: all 0.3s ease-in-out;
-}
-.btn-default {
-  border: 1px solid #82B397;
-  color: #82B397;
-  background-color: transparent;
-}
-.btn-default:hover,
-.btn-default:focus {
-  border: 1px solid #82B397;
-  outline: none;
-  color: #211018;
-  background-color: #82B397;
-}
-.btn-huge {
-  padding: 25px;
-  font-size: 26px;
-}
 .banner-social-buttons {
     padding-top: 3em;
 }

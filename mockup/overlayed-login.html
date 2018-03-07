@@ -10,19 +10,20 @@
 </head>
 
 <body style="background-color: #578EA9">
-	<div class="converse-bg container">
-		<h1 class="brand-heading">Converse</h1>
-	</div>
+    <div class="converse-bg container">
+        <h1 class="brand-heading">Converse</h1>
+    </div>
 
-	<div id="conversejs">
+    <div id="conversejs">
         <div class="row no-gutters">
-            <div id="controlbox" class="chatbox col col-lg-2 col-md-3 col-sm-4 col-sx-12">
+            <div id="controlbox" class="chatbox">
                 <div class="flyout box-flyout">
+                    <div class="chat-head controlbox-head">
+                        <a class="chatbox-btn close-chatbox-button fa fa-close"></a>
+                        <div class="brand-heading"><i class="icon-conversejs"></i><span class="brand-name">converse</span></div>
+                    </div>
                     <div class="controlbox-panes">
                         <div id="login-dialog" class="controlbox-pane row">
-                            <div class="brand-heading-container">
-                                <h1 class="brand-heading"><i class="icon-conversejs"></i> converse</h1>
-                            </div>
                             <form id="converse-login" class="pure-form converse-form">
                                 <div class="form-group">
                                     <label for="jid">XMPP Username:</label>
@@ -42,7 +43,7 @@
             </div>
         </div>
         <div class="modals"></div>
-	</div>
+    </div>
 
 <script type="text/javascript" src="../../node_modules/lodash/lodash.js"></script>
 <script type="text/javascript" src="../../node_modules/backbone/backbone.js"></script>

@@ -5562,6 +5562,9 @@ body {
       text-align: center; }
     #conversejs #controlbox .brand-heading-container .brand-name {
       font-size: 120%; }
+  #conversejs #controlbox #converse-login-panel, #conversejs #controlbox #converse-register-panel {
+    padding-top: 0;
+    padding-bottom: 0; }
   #conversejs #controlbox #converse-login-panel {
     flex-direction: column; }
     #conversejs #controlbox #converse-login-panel .brand-heading {
@@ -5576,7 +5579,7 @@ body {
   #conversejs #controlbox #converse-register legend, #conversejs #controlbox #converse-login legend {
     width: 100%;
     text-align: center;
-    margin: 0 auto 1em auto; }
+    margin: 0 auto 0.5em auto; }
   #conversejs #controlbox #converse-register label, #conversejs #controlbox #converse-login label {
     margin-top: 2em; }
   #conversejs #controlbox #converse-register fieldset.buttons, #conversejs #controlbox #converse-login fieldset.buttons {

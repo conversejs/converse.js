@@ -1,9 +1,50 @@
 #conversejs:not(.fullscreen) {
     #controlbox {
         order: -1;
+        @include make-col-ready();
+        @include media-breakpoint-up(xs) {
+            @include make-col(12);
+        }
+        @include media-breakpoint-up(sm) {
+            @include make-col(4);
+        }
+        @include media-breakpoint-up(md) {
+            @include make-col(3);
+        }
+        @include media-breakpoint-up(lg) {
+            @include make-col(2);
+        }
+        @include media-breakpoint-up(xl) {
+            @include make-col(2);
+        }
+
+        .controlbox-head {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+
+            .brand-heading {
+                @include make-col-ready();
+                @include make-col(8);
+
+                order: 1;
+                color: $text-color;
+                font-size: 2em;
+            }
+
+            .close-chatbox-button {
+                order: 2;
+            }
+            .chatbox-btn {
+                color: $controlbox-head-color;
+                margin: 0;
+            }
+        }
 
         #converse-register, #converse-login {
             @include make-col(12);
+            padding-bottom: 0;
         }
 
         #converse-register {
@@ -14,13 +55,6 @@
 
         .controlbox-panes {
             border-radius: $chatbox-border-radius;
-        }
-
-        .brand-heading-container {
-            .brand-heading {
-                font-size: 2em;
-                margin: 1em 0;
-            }
         }
     }
 }

@@ -5495,6 +5495,9 @@ body.reset {
       text-align: center; }
     #conversejs #controlbox .brand-heading-container .brand-name {
       font-size: 120%; }
+  #conversejs #controlbox #converse-login-panel, #conversejs #controlbox #converse-register-panel {
+    padding-top: 0;
+    padding-bottom: 0; }
   #conversejs #controlbox #converse-login-panel {
     flex-direction: column; }
     #conversejs #controlbox #converse-login-panel .brand-heading {
@@ -5509,7 +5512,7 @@ body.reset {
   #conversejs #controlbox #converse-register legend, #conversejs #controlbox #converse-login legend {
     width: 100%;
     text-align: center;
-    margin: 0 auto 1em auto; }
+    margin: 0 auto 0.5em auto; }
   #conversejs #controlbox #converse-register label, #conversejs #controlbox #converse-login label {
     margin-top: 2em; }
   #conversejs #controlbox #converse-register fieldset.buttons, #conversejs #controlbox #converse-login fieldset.buttons {
@@ -5699,17 +5702,59 @@ body.reset {
   #conversejs.sidebar-open #controlbox .controlbox-pane {
     display: block; } }
 #conversejs:not(.fullscreen) #controlbox {
-  order: -1; }
+  order: -1;
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px;
+  flex: 0 0 100%;
+  max-width: 100%; }
+  @media (min-width: 576px) {
+    #conversejs:not(.fullscreen) #controlbox {
+      flex: 0 0 33.3333333333%;
+      max-width: 33.3333333333%; } }
+  @media (min-width: 768px) {
+    #conversejs:not(.fullscreen) #controlbox {
+      flex: 0 0 25%;
+      max-width: 25%; } }
+  @media (min-width: 992px) {
+    #conversejs:not(.fullscreen) #controlbox {
+      flex: 0 0 16.6666666667%;
+      max-width: 16.6666666667%; } }
+  @media (min-width: 1200px) {
+    #conversejs:not(.fullscreen) #controlbox {
+      flex: 0 0 16.6666666667%;
+      max-width: 16.6666666667%; } }
+  #conversejs:not(.fullscreen) #controlbox .controlbox-head {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between; }
+    #conversejs:not(.fullscreen) #controlbox .controlbox-head .brand-heading {
+      position: relative;
+      width: 100%;
+      min-height: 1px;
+      padding-right: 15px;
+      padding-left: 15px;
+      flex: 0 0 66.6666666667%;
+      max-width: 66.6666666667%;
+      order: 1;
+      color: #777;
+      font-size: 2em; }
+    #conversejs:not(.fullscreen) #controlbox .controlbox-head .close-chatbox-button {
+      order: 2; }
+    #conversejs:not(.fullscreen) #controlbox .controlbox-head .chatbox-btn {
+      color: #578EA9;
+      margin: 0; }
   #conversejs:not(.fullscreen) #controlbox #converse-register, #conversejs:not(.fullscreen) #controlbox #converse-login {
     flex: 0 0 100%;
-    max-width: 100%; }
+    max-width: 100%;
+    padding-bottom: 0; }
   #conversejs:not(.fullscreen) #controlbox #converse-register .button-cancel {
     font-size: 90%; }
   #conversejs:not(.fullscreen) #controlbox .controlbox-panes {
     border-radius: 4px; }
-  #conversejs:not(.fullscreen) #controlbox .brand-heading-container .brand-heading {
-    font-size: 2em;
-    margin: 1em 0; }
 
 #conversejs #controlbox .available-chatroom.unread-msgs .msgs-indicator {
   border-radius: 10%;

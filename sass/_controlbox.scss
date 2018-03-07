@@ -159,6 +159,11 @@
             }
         }
 
+        #converse-login-panel, #converse-register-panel {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
         #converse-login-panel {
             flex-direction: column;
 
@@ -183,7 +188,7 @@
             legend {
                 width: 100%;
                 text-align: center;
-                margin: 0 auto 1em auto;
+                margin: 0 auto 0.5em auto;
             }
             label {
                 margin-top: 2em;

@@ -103,6 +103,7 @@
                     this.messages = new _converse.Messages();
                     this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
                         b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
+
                     this.save({
                         // The chat_state will be set to ACTIVE once the chat box is opened
                         // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.

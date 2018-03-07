@@ -80,12 +80,13 @@
     function updateChatBoxFromVCard (_converse, jid) {
         _converse.api.vcard.get(jid)
             .then((vcard) => {
-                const chatbox = _converse.chatboxes.getChatBox(vcard.jid);
+                const chatbox = _converse.chatboxes.getChatBox(jid);
                 if (!_.isUndefined(chatbox)) {
                     chatbox.save(_.pick(vcard, ['fullname', 'url', 'image_type', 'image', 'vcard_updated']));
                 }
             })
-            .catch(() => {
+            .catch((e) => {
+                _converse.log(e, Strophe.LogLevel.ERROR);
                 _converse.log(
                     "updateChatBoxFromVCard: Error occured while attempting to update chatbox with VCard data",
                     Strophe.LogLevel.ERROR

@@ -251,6 +251,7 @@
                 },
 
                 render () {
+                    this.setClasses();
                     if (this.model.get('connected')) {
                         if (_.isUndefined(this.model.get('closed'))) {
                             this.model.set('closed', !_converse.show_controlbox_by_default);
@@ -275,6 +276,17 @@
                         this.renderControlBoxPane();
                     }
                     return this;
+                },
+
+                setClasses () {
+                    if (_converse.view_mode !== 'fullscreen') {
+                        this.el.classList.add('col');
+                        this.el.classList.add('col-lg-2');
+                        this.el.classList.add('col-md-3');
+                        this.el.classList.add('col-sm-4');
+                        this.el.classList.add('col-sx-12');
+                        this.el.classList.add('w-100');
+                    }
                 },
 
                 onConnected () {

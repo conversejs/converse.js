@@ -11,7 +11,7 @@
 
 <body>
     <div class="container converse-bg">
-        <h1 class="brand-heading"><i class="icon-conversejs"></i>&nbsp;inVerse</h1>
+        <h1 class="brand-heading">inVerse</h1>
     </div>
 
     <div id="conversejs" class="fullscreen">
@@ -20,7 +20,7 @@
                 <div class="flyout box-flyout">
                     <div class="controlbox-panes">
                         <div class="row">
-                            <div class="brand-heading-container col-12">
+                            <div class="brand-heading-container">
                                 <h1 class="brand-heading"><i class="icon-conversejs"></i> inVerse</h1>
                                 <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client</p>
                                 <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> into your own language</p>
@@ -28,25 +28,23 @@
                         </div>
 
                         <div id="converse-login-panel" class="controlbox-pane fade-in row">
-                            <div class="col-sm-8 offset-sm-2 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
-                                <form id="converse-login" class="converse-form" method="post">
-                                    <div class="form-group">
-                                        <label for="jid">XMPP Username:</label>
-                                        <input type="text" name="jid" class="form-control" placeholder="user@server" autocomplete="off">
+                            <form id="converse-login" class="converse-form" method="post">
+                                <div class="form-group">
+                                    <label for="jid">XMPP Username:</label>
+                                    <input type="text" name="jid" class="form-control" placeholder="user@server" autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password:</label>
+                                    <input type="password" name="password" class="form-control" placeholder="password" autocomplete="off">
+                                </div>
+                                <fieldset class="buttons">
+                                    <p><input class="btn btn-primary" type="submit" value="Log In"></p>
+                                    <div class="switch-form">
+                                        <p>Don't have an XMPP account?</p>
+                                        <p>Click <a href="#" data-toggle="modal" data-target="#registerModal">here</a> to register.</p>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="password">Password:</label>
-                                        <input type="password" name="password" class="form-control" placeholder="password" autocomplete="off">
-                                    </div>
-                                    <fieldset class="buttons">
-                                        <p><input class="btn btn-primary" type="submit" value="Log In"></p>
-                                        <div class="switch-form">
-                                            <p>Don't have an XMPP account?</p>
-                                            <p>Click <a href="#" data-toggle="modal" data-target="#registerModal">here</a> to register.</p>
-                                        </div>
-                                    </fieldset>
-                                </form>
-                            </div>
+                                </fieldset>
+                            </form>
                         </div>
                     </div>
                 </div>

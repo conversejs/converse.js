@@ -4426,6 +4426,28 @@
 body.reset {
   margin: 0; }
 
+@font-face {
+  font-family: 'Converse-js';
+  src: url("../fonticons/fonts/icomoon.eot?wvi0ht");
+  src: url("../fonticons/fonts/icomoon.eot?wvi0ht#iefix") format("embedded-opentype"), url("../fonticons/fonts/icomoon.ttf?wvi0ht") format("truetype"), url("../fonticons/fonts/icomoon.woff?wvi0ht") format("woff"), url("../fonticons/fonts/icomoon.svg?wvi0ht#icomoon") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+.icon-conversejs {
+  padding-right: 0.2em;
+  font-family: 'Converse-js';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+.icon-conversejs:before {
+  content: "\e600"; }
+
 #conversejs {
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
@@ -5466,10 +5488,13 @@ body.reset {
       padding-bottom: 0.5em; }
       #conversejs #controlbox .conn-feedback p.feedback-subject.error {
         font-weight: bold; }
-  #conversejs #controlbox .brand-heading-container .brand-heading {
-    text-align: center; }
-  #conversejs #controlbox .brand-heading-container .brand-name {
-    font-size: 120%; }
+  #conversejs #controlbox .brand-heading-container {
+    flex: 0 0 100%;
+    max-width: 100%; }
+    #conversejs #controlbox .brand-heading-container .brand-heading {
+      text-align: center; }
+    #conversejs #controlbox .brand-heading-container .brand-name {
+      font-size: 120%; }
   #conversejs #controlbox #converse-login-panel {
     flex-direction: column; }
     #conversejs #controlbox #converse-login-panel .brand-heading {
@@ -5675,6 +5700,9 @@ body.reset {
     display: block; } }
 #conversejs:not(.fullscreen) #controlbox {
   order: -1; }
+  #conversejs:not(.fullscreen) #controlbox #converse-register, #conversejs:not(.fullscreen) #controlbox #converse-login {
+    flex: 0 0 100%;
+    max-width: 100%; }
   #conversejs:not(.fullscreen) #controlbox #converse-register .button-cancel {
     font-size: 90%; }
   #conversejs:not(.fullscreen) #controlbox .controlbox-panes {

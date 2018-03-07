@@ -11,7 +11,7 @@
 
 <body style="background-color: #578EA9">
 	<div class="converse-bg container">
-		<h1 class="brand-heading"><i class="icon-conversejs"></i>Converse.js</h1>
+		<h1 class="brand-heading">Converse</h1>
 	</div>
 
 	<div id="conversejs">
@@ -20,25 +20,22 @@
                 <div class="flyout box-flyout">
                     <div class="controlbox-panes">
                         <div id="login-dialog" class="controlbox-pane row">
-                            <div class="brand-heading-container col-12">
+                            <div class="brand-heading-container">
                                 <h1 class="brand-heading"><i class="icon-conversejs"></i> converse</h1>
                             </div>
-
-                            <div class="col-12">
-                                <form id="converse-login" class="pure-form converse-form">
-                                    <div class="form-group">
-                                        <label for="jid">XMPP Username:</label>
-                                        <input type="text" name="jid" class="form-control" placeholder="user@server" autocomplete="off">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="password">Password:</label>
-                                        <input type="password" name="password" class="form-control" placeholder="password" autocomplete="off">
-                                    </div>
-                                    <p></p>
-                                    <p><input class="btn btn-primary" type="submit" value="Log In"></p>
-                                    <p>Click <a href="#" data-toggle="modal" data-target="#registerModal">here</a> to register.</p>
-                                </form>
-                            </div>
+                            <form id="converse-login" class="pure-form converse-form">
+                                <div class="form-group">
+                                    <label for="jid">XMPP Username:</label>
+                                    <input type="text" name="jid" class="form-control" placeholder="user@server" autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password:</label>
+                                    <input type="password" name="password" class="form-control" placeholder="password" autocomplete="off">
+                                </div>
+                                <p></p>
+                                <p><input class="btn btn-primary" type="submit" value="Log In"></p>
+                                <p>Click <a href="#" data-toggle="modal" data-target="#registerModal">here</a> to register.</p>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -61,7 +58,6 @@
     document.addEventListener("DOMContentLoaded", function(event) { 
         new Modals();
         new Sidebar();
-        new UserPanel();    
     });
 </script>
 

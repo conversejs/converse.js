@@ -13,7 +13,6 @@
         #converse-login-panel {
             border-radius: 0;
             .converse-form {
-                margin: 0;
                 padding: 3em 2em 3em;
             }
         }
@@ -61,6 +60,22 @@
         }
 
         #converse-register, #converse-login {
+            @include make-col-ready();
+            @include make-col(8);
+            @include make-col-offset(2);
+
+            @include media-breakpoint-up(sm) {
+                @include make-col(8);
+                @include make-col-offset(2);
+            }
+            @include media-breakpoint-up(md) {
+                @include make-col(8);
+                @include make-col-offset(2);
+            }
+            @include media-breakpoint-up(lg) {
+                @include make-col(6);
+                @include make-col-offset(3);
+            }
             .title, .instructions {
                 margin: 1em 0;
             }

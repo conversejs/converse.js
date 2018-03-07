@@ -2,6 +2,10 @@
     #controlbox {
         order: -1;
 
+        #converse-register, #converse-login {
+            @include make-col(12);
+        }
+
         #converse-register {
             .button-cancel {
                 font-size: 90%;

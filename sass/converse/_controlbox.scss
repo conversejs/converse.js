@@ -27,14 +27,8 @@
             .brand-heading {
                 @include make-col-ready();
                 @include make-col(8);
-
-                order: 1;
                 color: $text-color;
                 font-size: 2em;
-            }
-
-            .close-chatbox-button {
-                order: 2;
             }
             .chatbox-btn {
                 color: $controlbox-head-color;

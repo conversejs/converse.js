@@ -69,6 +69,7 @@
 
         .box-flyout {
             overflow-y: hidden;
+            background-color: $chatroom-head-color;
 
             width: 100%;
             @media screen and (max-height: $mobile-landscape-height) {

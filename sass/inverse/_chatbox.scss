@@ -33,7 +33,7 @@
             @include make-col(9);
         }
         @include media-breakpoint-up(xl) {
-            @include make-col(9);
+            @include make-col(10);
         }
 
         .box-flyout {
@@ -64,7 +64,6 @@
             }
         }
         .chat-content {
-            height: 100%;
             padding: 0 $padding $padding $padding;
             border-top-left-radius: $chatbox-border-radius;
             border-top-right-radius: $chatbox-border-radius;

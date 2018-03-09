@@ -5014,7 +5014,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background-color: white;
+    background-color: #3AA569;
     box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
     height: 100%;
     min-height: 50%;
@@ -5153,6 +5153,7 @@ body {
     white-space: nowrap; }
   #converse-embedded-chat .chatbox .chat-content,
   #conversejs .chatbox .chat-content {
+    height: 100%;
     padding: 0.5em;
     font-size: 13px;
     color: #777;
@@ -5417,8 +5418,8 @@ body {
       max-width: 75%; } }
   @media (min-width: 1200px) {
     #conversejs.fullscreen .chatbox {
-      flex: 0 0 75%;
-      max-width: 75%; } }
+      flex: 0 0 83.3333333333%;
+      max-width: 83.3333333333%; } }
   #conversejs.fullscreen .chatbox .box-flyout {
     background-color: #3AA569;
     height: 100vh;
@@ -5440,7 +5441,6 @@ body {
           height: 22px;
           margin-bottom: -5.5px; }
   #conversejs.fullscreen .chatbox .chat-content {
-    height: 100%;
     padding: 0 1em 1em 1em;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px; }
@@ -5492,6 +5492,8 @@ body {
     margin-top: 0.25em; }
 #conversejs #controlbox {
   margin-right: 1.5em; }
+  #conversejs #controlbox .box-flyout {
+    background-color: white; }
   #conversejs #controlbox.logged-out .box-flyout .controlbox-pane {
     overflow-y: auto; }
   #conversejs #controlbox form.search-xmpp-contact {
@@ -5783,6 +5785,11 @@ body {
   #conversejs.sidebar-open #controlbox .controlbox-pane {
     display: block; } }
 #conversejs.fullscreen #controlbox {
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px;
   margin: 0; }
   @media (min-width: 768px) {
     #conversejs.fullscreen #controlbox {
@@ -5817,6 +5824,8 @@ body {
       #conversejs.fullscreen #controlbox .brand-heading-container .brand-heading {
         font-size: 400%; } }
   #conversejs.fullscreen #controlbox.logged-out {
+    flex: 0 0 100%;
+    max-width: 100%;
     opacity: 0;
     /* make things invisible upon start */
     -webkit-animation-name: fadein;
@@ -6069,6 +6078,7 @@ body {
   #converse-embedded-chat .chatroom .box-flyout,
   #conversejs .chatroom .box-flyout {
     overflow-y: hidden;
+    background-color: #E77051;
     width: 100%; }
     @media screen and (max-height: 450px) {
       #converse-embedded-chat .chatroom .box-flyout,

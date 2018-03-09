@@ -18,6 +18,8 @@ with regards to sponsoring development on reintroducing them.
   event and make the XMLHttpRequest yourself.
 * Removed the `xhr_user_search` and `xhr_user_search_url` configuration options.
 
+## Updated UI
+
 The UI is now rewritten with Bootstrap4 and Flexbox is used pretty much
 everywhere. Unfortunately this means that in the overlayed view_mode, chat
 boxes can no longer be resized horizontally (or diagonally). Perhaps a solution

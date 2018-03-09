@@ -256,10 +256,7 @@
                             this.model.set('closed', !_converse.show_controlbox_by_default);
                         }
                     }
-                    this.el.innerHTML = tpl_controlbox(
-                        _.extend(this.model.toJSON(), {
-                            'sticky_controlbox': _converse.sticky_controlbox
-                        }));
+                    this.el.innerHTML = tpl_controlbox(_.extend(this.model.toJSON()));
 
                     if (!this.model.get('closed')) {
                         this.show();
@@ -296,17 +293,14 @@
                 },
 
                  createBrandHeadingHTML () {
-                    return tpl_brand_heading();
+                    return tpl_brand_heading({
+                        'sticky_controlbox': _converse.sticky_controlbox
+                    });
                 },
 
                 insertBrandHeading () {
-                    const heading_el = this.el.querySelector('.brand-heading-container');
-                    if (_.isNull(heading_el)) {
-                        const el = this.el.querySelector('.controlbox-head');
-                        el.insertAdjacentHTML('beforeend', this.createBrandHeadingHTML());
-                    } else {
-                        heading_el.outerHTML = this.createBrandHeadingHTML();
-                    }
+                    const panes_el = this.el.querySelector('.controlbox-panes');
+                    panes_el.insertAdjacentHTML('beforeBegin', this.createBrandHeadingHTML());
                 },
 
                 renderLoginPanel () {

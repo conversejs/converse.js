@@ -4964,7 +4964,7 @@ body.reset {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background-color: white;
+    background-color: #3AA569;
     box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
     height: 450px;
     min-height: 225px;
@@ -5103,6 +5103,7 @@ body.reset {
     white-space: nowrap; }
   #converse-embedded-chat .chatbox .chat-content,
   #conversejs .chatbox .chat-content {
+    height: 100%;
     padding: 0.5em;
     font-size: 13px;
     color: #777;
@@ -5436,6 +5437,8 @@ body.reset {
     margin-top: 0.25em; }
 #conversejs #controlbox {
   margin-right: 1.5em; }
+  #conversejs #controlbox .box-flyout {
+    background-color: white; }
   #conversejs #controlbox.logged-out .box-flyout .controlbox-pane {
     overflow-y: auto; }
   #conversejs #controlbox form.search-xmpp-contact {
@@ -5764,11 +5767,8 @@ body.reset {
       padding-left: 15px;
       flex: 0 0 66.6666666667%;
       max-width: 66.6666666667%;
-      order: 1;
       color: #777;
       font-size: 2em; }
-    #conversejs:not(.fullscreen) #controlbox .controlbox-head .close-chatbox-button {
-      order: 2; }
     #conversejs:not(.fullscreen) #controlbox .controlbox-head .chatbox-btn {
       color: #578EA9;
       margin: 0; }
@@ -5976,6 +5976,7 @@ body.reset {
   #converse-embedded-chat .chatroom .box-flyout,
   #conversejs .chatroom .box-flyout {
     overflow-y: hidden;
+    background-color: #E77051;
     width: 100%; }
     @media screen and (max-height: 450px) {
       #converse-embedded-chat .chatroom .box-flyout,

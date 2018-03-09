@@ -1,5 +1,6 @@
 #conversejs.fullscreen {
     #controlbox {
+        @include make-col-ready();
         @include media-breakpoint-up(md) {
             @include make-col(3);
         }
@@ -49,6 +50,7 @@
         }
 
         &.logged-out {
+            @include make-col(12);
             @include fade-in;
             width: 100%;
             .box-flyout {

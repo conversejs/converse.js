@@ -1,0 +1,18 @@
+#conversejs {
+    .chatbox {
+        &.chatroom {
+            @include media-breakpoint-up(xs) {
+                @include make-col(12);
+            }
+            @include media-breakpoint-up(sm) {
+                @include make-col(8);
+            }
+            @include media-breakpoint-up(md) {
+                @include make-col(6);
+            }
+            @include media-breakpoint-up(lg) {
+                @include make-col(4);
+            }
+        }
+    }
+}

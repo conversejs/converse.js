@@ -115,7 +115,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            background-color: white;
+            background-color: $chat-head-color;
             box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
             height: $chat-height;
             min-height: $chat-height/2;
@@ -258,6 +258,7 @@
             white-space: nowrap;
         }
         .chat-content {
+            height: 100%;
             padding: 0.5em;
             font-size: 13px;
             color: $text-color;

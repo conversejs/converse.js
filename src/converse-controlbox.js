@@ -305,8 +305,6 @@
 
                 renderLoginPanel () {
                     this.el.classList.add("logged-out");
-                    this.el.classList.remove("col-xl-2");
-                    this.el.classList.remove("col-md-3");
                     if (_.isNil(this.loginpanel)) {
                         this.loginpanel = new _converse.LoginPanel({
                             'model': new _converse.LoginPanelModel()
@@ -332,9 +330,6 @@
                         delete this.loginpanel;
                     }
                     this.el.classList.remove("logged-out");
-                    this.el.classList.add("col-xl-2");
-                    this.el.classList.add("col-md-3");
-
                     this.controlbox_pane = new _converse.ControlBoxPane();
                     this.el.querySelector('.controlbox-panes').insertAdjacentElement(
                         'afterBegin',

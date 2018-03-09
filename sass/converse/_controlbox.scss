@@ -1,23 +1,12 @@
 #conversejs:not(.fullscreen) {
     #controlbox {
         order: -1;
-        @include make-col-ready();
-        @include media-breakpoint-up(xs) {
-            @include make-col(12);
+        min-width: $controlbox-width !important;
+        width: $controlbox-width;
+        .box-flyout {
+            min-width: $controlbox-width !important;
+            width: $controlbox-width;
         }
-        @include media-breakpoint-up(sm) {
-            @include make-col(4);
-        }
-        @include media-breakpoint-up(md) {
-            @include make-col(3);
-        }
-        @include media-breakpoint-up(lg) {
-            @include make-col(2);
-        }
-        @include media-breakpoint-up(xl) {
-            @include make-col(2);
-        }
-
         .controlbox-head {
             display: flex;
             flex-direction: row;

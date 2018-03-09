@@ -67,10 +67,16 @@
                             that.resizing.chatbox.height,
                             that.resizing.chatbox.model.get('default_height')
                     );
+                    const width = that.applyDragResistance(
+                            that.resizing.chatbox.width,
+                            that.resizing.chatbox.model.get('default_width')
+                    );
                     if (that.connection.connected) {
                         that.resizing.chatbox.model.save({'height': height});
+                        that.resizing.chatbox.model.save({'width': width});
                     } else {
                         that.resizing.chatbox.model.set({'height': height});
+                        that.resizing.chatbox.model.set({'width': width});
                     }
                     that.resizing = null;
                 });
@@ -82,9 +88,12 @@
                 initialize () {
                     const { _converse } = this.__super__;
                     const result = this.__super__.initialize.apply(this, arguments),
-                        height = this.get('height'),
+                        height = this.get('height'), width = this.get('width'),
                         save = this.get('id') === 'controlbox' ? this.set.bind(this) : this.save.bind(this);
-                    save('height', _converse.applyDragResistance(height, this.get('default_height')));
+                    save({
+                        'height': _converse.applyDragResistance(height, this.get('default_height')),
+                        'width': _converse.applyDragResistance(width, this.get('default_width')),
+                    });
                     return result;
                 }
             },
@@ -92,6 +101,8 @@
             ChatBoxView: {
                 events: {
                     'mousedown .dragresize-top': 'onStartVerticalResize',
+                    'mousedown .dragresize-left': 'onStartHorizontalResize',
+                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
                 },
 
                 initialize () {
@@ -102,7 +113,16 @@
                 render () {
                     const result = this.__super__.render.apply(this, arguments);
                     renderDragResizeHandles(this.__super__._converse, this);
+                    this.setWidth();
                     return result;
+                },
+
+                setWidth () {
+                    // If a custom width is applied (due to drag-resizing),
+                    // then we need to set the width of the .chatbox element as well.
+                    if (this.model.get('width')) {
+                        this.el.style.width = this.model.get('width');
+                    }
                 },
 
                 _show () {
@@ -119,25 +139,32 @@
                           style = window.getComputedStyle(flyout);
 
                     if (_.isUndefined(this.model.get('height'))) {
-                        const height = parseInt(style.height.replace(/px$/, ''), 10);
+                        const height = parseInt(style.height.replace(/px$/, ''), 10),
+                              width = parseInt(style.width.replace(/px$/, ''), 10);
                         this.model.set('height', height);
                         this.model.set('default_height', height);
+                        this.model.set('width', width);
+                        this.model.set('default_width', width);
                     }
+                    const min_width = style['min-width'];
                     const min_height = style['min-height'];
+                    this.model.set('min_width', min_width.endsWith('px') ? Number(min_width.replace(/px$/, '')) :0);
                     this.model.set('min_height', min_height.endsWith('px') ? Number(min_height.replace(/px$/, '')) :0);
                     // Initialize last known mouse position
                     this.prev_pageY = 0;
                     this.prev_pageX = 0;
                     if (_converse.connection.connected) {
                         this.height = this.model.get('height');
+                        this.width = this.model.get('width');
                     }
                     return this;
                 },
 
                 setDimensions () {
-                    // Make sure the chat box has the right height
+                    // Make sure the chat box has the right height and width.
                     this.adjustToViewport();
                     this.setChatBoxHeight(this.model.get('height'));
+                    this.setChatBoxWidth(this.model.get('width'));
                 },
 
                 setChatBoxHeight (height) {
@@ -153,10 +180,32 @@
                     }
                 },
 
+                setChatBoxWidth (width) {
+                    const { _converse } = this.__super__;
+                    if (width) {
+                        width = _converse.applyDragResistance(width, this.model.get('default_width'))+'px';
+                    } else {
+                        width = "";
+                    }
+                    this.el.style.width = width;
+                    const flyout_el = this.el.querySelector('.box-flyout');
+                    if (!_.isNull(flyout_el)) {
+                        flyout_el.style.width = width;
+                    }
+                },
+
                 adjustToViewport () {
-                    /* Event handler called when viewport gets resized. We remove the custom height from chat boxes. */
+                    /* Event handler called when viewport gets resized. We remove
+                     * custom width/height from chat boxes.
+                     */
+                    const viewport_width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
                     const viewport_height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-                    if (viewport_height <= this.model.get('height')) {
+                    if (viewport_width <= 480) {
+                        this.model.set('height', undefined);
+                        this.model.set('width', undefined);
+                    } else if (viewport_width <= this.model.get('width')) {
+                        this.model.set('width', undefined);
+                    } else if (viewport_height <= this.model.get('height')) {
                         this.model.set('height', undefined);
                     }
                 },
@@ -175,6 +224,26 @@
                     this.prev_pageY = ev.pageY;
                 },
 
+                onStartHorizontalResize (ev) {
+                    const { _converse } = this.__super__;
+                    if (!_converse.allow_dragresize) { return true; }
+                    const flyout = this.el.querySelector('.box-flyout'),
+                          style = window.getComputedStyle(flyout);
+                    this.width = parseInt(style.width.replace(/px$/, ''), 10);
+                    _converse.resizing = {
+                        'chatbox': this,
+                        'direction': 'left'
+                    };
+                    this.prev_pageX = ev.pageX;
+                },
+
+                onStartDiagonalResize (ev) {
+                    const { _converse } = this.__super__;
+                    this.onStartHorizontalResize(ev);
+                    this.onStartVerticalResize(ev);
+                    _converse.resizing.direction = 'topleft';
+                },
+
                 resizeChatBox (ev) {
                     let diff;
                     const { _converse } = this.__super__;
@@ -186,12 +255,22 @@
                             this.setChatBoxHeight(this.height);
                         }
                     }
+                    if (_.includes(_converse.resizing.direction, 'left')) {
+                        diff = this.prev_pageX - ev.pageX;
+                        if (diff) {
+                            this.width = ((this.width+diff) > (this.model.get('min_width') || 0)) ? (this.width+diff) : this.model.get('min_width');
+                            this.prev_pageX = ev.pageX;
+                            this.setChatBoxWidth(this.width);
+                        }
+                    }
                 }
             },
 
             HeadlinesBoxView: {
                 events: {
                     'mousedown .dragresize-top': 'onStartVerticalResize',
+                    'mousedown .dragresize-left': 'onStartHorizontalResize',
+                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
                 },
 
                 initialize () {
@@ -202,6 +281,7 @@
                 render () {
                     const result = this.__super__.render.apply(this, arguments);
                     renderDragResizeHandles(this.__super__._converse, this);
+                    this.setWidth();
                     return result;
                 }
             },
@@ -210,6 +290,7 @@
                 events: {
                     'mousedown .dragresize-top': 'onStartVerticalResize',
                     'mousedown .dragresize-left': 'onStartHorizontalResize',
+                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
                 },
 
                 initialize () {
@@ -220,6 +301,7 @@
                 render () {
                     const result = this.__super__.render.apply(this, arguments);
                     renderDragResizeHandles(this.__super__._converse, this);
+                    this.setWidth();
                     return result;
                 },
 
@@ -239,6 +321,8 @@
             ChatRoomView: {
                 events: {
                     'mousedown .dragresize-top': 'onStartVerticalResize',
+                    'mousedown .dragresize-left': 'onStartHorizontalResize',
+                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
                 },
 
                 initialize () {
@@ -249,6 +333,7 @@
                 render () {
                     const result = this.__super__.render.apply(this, arguments);
                     renderDragResizeHandles(this.__super__._converse, this);
+                    this.setWidth();
                     return result;
                 }
             }

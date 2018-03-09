@@ -109,8 +109,8 @@ $line-height-small:  14px !default;
 $line-height:  16px !default;
 $line-height-large:  20px !default;
 
-$controlbox-width: 200px !default;
-$chat-width: 200px !default;
+$controlbox-width: 250px !default;
+$chat-width: 250px !default;
 $chat-height: 450px !default;
 $chat-gutter: 0.5em !default;
 $minimized-chats-width: 130px !default;
@@ -121,7 +121,7 @@ $small-mobile-chat-height: 300px !default;
 
 $font-path: "../fonticons/fonts/" !default;
 
-$chatroom-width: 300px !default;
+$chatroom-width: 400px !default;
 $chatroom-head-color: $red !default;
 $chatroom-color-light: $light-red !default;
 $chatroom-color-lightest: $light-red !default;
@@ -135,4 +135,4 @@ $box-close-button-padding-top: 4px !default;
 $box-close-button-padding-bottom: 4px !default;
 $box-close-button-padding-left: 4px !default;
 $box-close-button-padding-right: 4px !default;
-$box-close-font-size: 12px !default;
+$box-close-font-size: 16px !default;

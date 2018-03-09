@@ -8,6 +8,10 @@
             @include make-col(2);
         }
 
+        &.logged-out {
+            @include make-col(12);
+        }
+
         margin: 0;
 
         .controlbox-pane {

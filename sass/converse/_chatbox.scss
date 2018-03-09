@@ -13,18 +13,12 @@
         }
     }
     .chatbox {
-        @include make-col-ready();
-        @include media-breakpoint-up(xs) {
-            @include make-col(12);
-        }
-        @include media-breakpoint-up(sm) {
-            @include make-col(4);
-        }
-        @include media-breakpoint-up(md) {
-            @include make-col(3);
-        }
-        @include media-breakpoint-up(lg) {
-            @include make-col(2);
+        min-width: $chat-width!important;
+        width: $chat-width;
+
+        .box-flyout {
+            min-width: $chat-width!important;
+            width: $chat-width;
         }
 
         .chat-body {

@@ -36,6 +36,9 @@ body {
 
 #conversejs.fullscreen {
 
+    // XXX: why is this neccessary?
+    margin-left: -15px;
+
     form {
         &.converse-form {
             margin: 1em;

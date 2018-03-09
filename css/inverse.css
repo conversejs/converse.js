@@ -4451,17 +4451,17 @@ body.reset {
 #conversejs {
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
-  bottom: 0;
-  height: auto;
-  width: 100vw;
   color: #777;
-  direction: ltr;
-  display: block;
   font-family: "Helvetica", "Arial", sans-serif;
   font-size: 16px;
-  position: fixed;
-  z-index: 1031;
-  margin-left: -15px; }
+  direction: ltr;
+  display: block;
+  z-index: 1031; }
+  #conversejs .converse-chatboxes {
+    position: fixed;
+    bottom: 0;
+    height: auto;
+    width: 100vw; }
   #conversejs ::-webkit-input-placeholder {
     /* Chrome/Opera/Safari */
     color: #A8ABA1; }
@@ -4884,17 +4884,19 @@ body {
         padding-right: 10%;
         font-size: 120%; }
 
-#conversejs.fullscreen form.converse-form {
-  margin: 1em; }
-  #conversejs.fullscreen form.converse-form input[type=checkbox] {
-    margin-left: 1em;
-    display: inline;
-    margin-bottom: 2em; }
-  #conversejs.fullscreen form.converse-form input[type=button],
-  #conversejs.fullscreen form.converse-form input[type=submit] {
-    padding-left: 1em;
-    padding-right: 1em;
-    margin-right: 1em; }
+#conversejs.fullscreen {
+  margin-left: -15px; }
+  #conversejs.fullscreen form.converse-form {
+    margin: 1em; }
+    #conversejs.fullscreen form.converse-form input[type=checkbox] {
+      margin-left: 1em;
+      display: inline;
+      margin-bottom: 2em; }
+    #conversejs.fullscreen form.converse-form input[type=button],
+    #conversejs.fullscreen form.converse-form input[type=submit] {
+      padding-left: 1em;
+      padding-right: 1em;
+      margin-right: 1em; }
 
 #conversejs #user-profile-modal label {
   font-weight: bold; }
@@ -5805,6 +5807,9 @@ body {
     #conversejs.fullscreen #controlbox {
       flex: 0 0 16.6666666667%;
       max-width: 16.6666666667%; } }
+  #conversejs.fullscreen #controlbox.logged-out {
+    flex: 0 0 100%;
+    max-width: 100%; }
   #conversejs.fullscreen #controlbox .controlbox-pane {
     border-radius: 0; }
   #conversejs.fullscreen #controlbox .flyout {

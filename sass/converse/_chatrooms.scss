@@ -1,17 +1,21 @@
 #conversejs {
     .chatbox {
         &.chatroom {
-            @include media-breakpoint-up(xs) {
-                @include make-col(12);
+            min-width: $chatroom-width !important;
+            width: $chatroom-width;
+            .box-flyout {
+                min-width: $chatroom-width !important;
+                width: $chatroom-width;
             }
-            @include media-breakpoint-up(sm) {
-                @include make-col(8);
-            }
-            @include media-breakpoint-up(md) {
-                @include make-col(6);
-            }
-            @include media-breakpoint-up(lg) {
-                @include make-col(4);
+
+            .chatroom-body {
+                .occupants {
+                    .chatroom-features {
+                        .feature {
+                            font-size: $font-size-small;
+                        }
+                    }
+                }
             }
         }
     }

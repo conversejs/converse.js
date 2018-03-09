@@ -985,11 +985,12 @@
                 },
 
                 toggleEmojiMenu (ev) {
-                    if (_.isUndefined(this.dropdown)) {
+                    if (_.isUndefined(this.emoji_dropdown)) {
+                        ev.stopPropagation();
                         this.renderEmojiPicker();
                         const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
-                        this.dropdown = new bootstrap.Dropdown(dropdown_el, true);
-                        this.dropdown.toggle();
+                        this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
+                        this.emoji_dropdown.toggle();
                     }
                 },
 

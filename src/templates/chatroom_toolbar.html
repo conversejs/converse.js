@@ -1,5 +1,6 @@
 {[ if (o.use_emoji)  { ]}
-<li class="toggle-toolbar-menu toggle-smiley fa fa-smile-o dropup">
+<li class="toggle-toolbar-menu toggle-smiley dropup">
+    <a class="btn toggle-smiley fa fa-smile-o" title="{{{o.label_insert_smiley}}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a> 
     <div class="emoji-picker dropdown-menu toolbar-menu"></div>
 </li>
 {[ } ]}
@@ -10,6 +11,6 @@
 <li class="toggle-occupants fa fa-users" title="{{{o.label_hide_occupants}}}"></li>
 {[ } ]}
 {[ if (o.show_clear_button)  { ]}
-<li class="toggle-clear fa fa-eraser" title="{{{o.label_clear}}}"></li>
+<li class="toggle-clear right fa fa-eraser" title="{{{o.label_clear}}}"></li>
 {[ } ]}
 

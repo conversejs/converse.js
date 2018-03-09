@@ -454,12 +454,6 @@ body.reset {
         border: 2px solid $link-color;
         margin: 0;
     }
-
-    .dropdown dt,
-    .dropdown ul {
-        margin: 0;
-        padding: 0;
-    }
 }
 
 @media screen and (max-width: 575px) {

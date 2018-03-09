@@ -4813,10 +4813,6 @@ body.reset {
   #conversejs .chat-textarea-chatroom-selected {
     border: 2px solid #578EA9;
     margin: 0; }
-  #conversejs .dropdown dt,
-  #conversejs .dropdown ul {
-    margin: 0;
-    padding: 0; }
 
 @media screen and (max-width: 575px) {
   body .brand-heading {
@@ -5208,19 +5204,14 @@ body.reset {
       #conversejs .chatbox .sendXMPPMessage .chat-toolbar .private {
         color: #4b7003; }
       #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar .toggle-occupants,
-      #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar .toggle-clear,
-      #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar .toggle-otr,
-      #conversejs .chatbox .sendXMPPMessage .chat-toolbar .toggle-occupants,
-      #conversejs .chatbox .sendXMPPMessage .chat-toolbar .toggle-clear,
-      #conversejs .chatbox .sendXMPPMessage .chat-toolbar .toggle-otr {
+      #conversejs .chatbox .sendXMPPMessage .chat-toolbar .toggle-occupants {
         float: right; }
       #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li,
       #conversejs .chatbox .sendXMPPMessage .chat-toolbar li {
         cursor: pointer;
         display: inline-block;
         list-style: none;
-        margin-top: 1px;
-        padding: 0 3px 0 3px; }
+        padding: 0 0.5em; }
         #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li:hover,
         #conversejs .chatbox .sendXMPPMessage .chat-toolbar li:hover {
           cursor: pointer; }
@@ -5235,6 +5226,14 @@ body.reset {
           right: 0;
           top: auto;
           z-index: 1000; }
+          #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu.otr-menu,
+          #conversejs .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu.otr-menu {
+            left: -6em;
+            min-width: 15rem; }
+            #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu.otr-menu.show,
+            #conversejs .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu.otr-menu.show {
+              display: flex;
+              flex-direction: column; }
           #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu a,
           #conversejs .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu a {
             color: #578EA9; }

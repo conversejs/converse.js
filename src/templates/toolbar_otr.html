@@ -1,5 +1,7 @@
 {[ if (o.allow_otr)  { ]}
-    <li class="toggle-toolbar-menu toggle-otr {{{o.otr_status_class}}}" title="{{{o.otr_tooltip}}}">
+    <li class="toggle-toolbar-menu dropup right" title="{{{o.otr_tooltip}}}">
+        <a class="toggle-otr {{{o.otr_status_class}}}" title="{{{o.label_insert_smiley}}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
         <span class="chat-toolbar-text">{{{o.otr_translated_status}}}</span>
         {[ if (o.otr_status == o.UNENCRYPTED) { ]}
             <span class="fa fa-unlock"></span>
@@ -12,19 +14,21 @@
         {[ } ]} {[ if (o.otr_status == o.FINISHED) { ]}
             <span class="fa fa-unlock"></span>
         {[ } ]}
-        <ul class="toolbar-menu collapsed">
+        </a> 
+
+        <ul class="otr-menu toolbar-menu dropdown-menu">
             {[ if (o.otr_status == o.UNENCRYPTED) { ]}
-               <li><a class="start-otr" href="#">{{{o.label_start_encrypted_conversation}}}</a></li>
+               <li class="dropdown-item"><a class="start-otr" href="#">{{{o.label_start_encrypted_conversation}}}</a></li>
             {[ } ]}
             {[ if (o.otr_status != o.UNENCRYPTED) { ]}
-               <li><a class="start-otr" href="#">{{{o.label_refresh_encrypted_conversation}}}</a></li>
-               <li><a class="end-otr" href="#">{{{o.label_end_encrypted_conversation}}}</a></li>
-               <li><a class="auth-otr" data-scheme="smp" href="#">{{{o.label_verify_with_smp}}}</a></li>
+               <li class="dropdown-item"><a class="start-otr" href="#">{{{o.label_refresh_encrypted_conversation}}}</a></li>
+               <li class="dropdown-item"><a class="end-otr" href="#">{{{o.label_end_encrypted_conversation}}}</a></li>
+               <li class="dropdown-item"><a class="auth-otr" data-scheme="smp" href="#">{{{o.label_verify_with_smp}}}</a></li>
             {[ } ]}
             {[ if (o.otr_status == o.UNVERIFIED) { ]}
-               <li><a class="auth-otr" data-scheme="fingerprint" href="#">{{{o.label_verify_with_fingerprints}}}</a></li>
+               <li class="dropdown-item"><a class="auth-otr" data-scheme="fingerprint" href="#">{{{o.label_verify_with_fingerprints}}}</a></li>
             {[ } ]}
-            <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank" rel="noopener">{{{o.label_whats_this}}}</a></li>
+            <li class="dropdown-item"><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank" rel="noopener">{{{o.label_whats_this}}}</a></li>
         </ul>
     </li>
 {[ } ]}

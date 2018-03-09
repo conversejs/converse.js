@@ -358,18 +358,14 @@
                 .private {
                     color: #4b7003;
                 }
-                .toggle-occupants,
-                .toggle-clear,
-                .toggle-otr {
-
+                .toggle-occupants {
                     float: right;
                 }
                 li {
                     cursor: pointer;
                     display: inline-block;
                     list-style: none;
-                    margin-top: 1px;
-                    padding: 0 3px 0 3px;
+                    padding: 0 0.5em;
                     &:hover {
                         cursor: pointer;
                     }
@@ -383,6 +379,16 @@
                         right: 0;
                         top: auto;
                         z-index: $zindex-dropdown;
+
+                        &.otr-menu {
+                            left: -6em;
+                            min-width: 15rem;
+
+                            &.show {
+                                display: flex;
+                                flex-direction: column;
+                            }
+                        }
 
                         a {
                             color: $link-color;

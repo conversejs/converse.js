@@ -10,6 +10,7 @@
     define([
             "converse-core",
             "converse-chatboxes",
+            "bootstrap",
             "emojione",
             "xss",
             "tpl!action",
@@ -29,6 +30,7 @@
 }(this, function (
             converse,
             dummy,
+            bootstrap,
             emojione,
             xss,
             tpl_action,
@@ -150,7 +152,7 @@
             });
 
             _converse.EmojiPickerView = Backbone.NativeView.extend({
-                className: 'emoji-picker-container toolbar-menu collapsed',
+                className: 'emoji-picker-container',
                 events: {
                     'click .emoji-category-picker li.emoji-category': 'chooseCategory',
                     'click .emoji-skintone-picker li.emoji-skintone': 'chooseSkinTone'
@@ -1003,6 +1005,12 @@
                 },
 
                 toggleEmojiMenu (ev) {
+                    const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
+                    const dropdown = new bootstrap.Dropdown(dropdown_el, true);
+                    dropdown.toggle();
+                    return;
+
+
                     if (u.hasClass('insert-emoji', ev.target)) {
                         return;
                     }

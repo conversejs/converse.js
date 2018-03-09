@@ -11,7 +11,6 @@
 (function (root, factory) {
     define([
         "converse-core",
-        "bootstrap",
         "emojione",
         "tpl!add_chatroom_modal",
         "tpl!chatarea",
@@ -38,7 +37,6 @@
     ], factory);
 }(this, function (
     converse,
-    bootstrap,
     emojione,
     tpl_add_chatroom_modal,
     tpl_chatarea,

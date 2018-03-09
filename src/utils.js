@@ -321,6 +321,7 @@
                  steps = duration/17; // We assume 17ms per animation which is ~60FPS
             let height = original_height;
 
+            debugger;
             el.style.overflow = 'hidden';
 
             function draw () { 

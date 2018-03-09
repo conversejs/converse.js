@@ -9,7 +9,6 @@
 (function (root, factory) {
     define([
             "converse-core",
-            "converse-chatboxes",
             "bootstrap",
             "emojione",
             "xss",
@@ -25,11 +24,11 @@
             "tpl!spinner",
             "tpl!spoiler_button",
             "tpl!spoiler_message",
-            "tpl!toolbar"
+            "tpl!toolbar",
+            "converse-chatboxes"
     ], factory);
 }(this, function (
             converse,
-            dummy,
             bootstrap,
             emojione,
             xss,
@@ -66,7 +65,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes", "converse-disco"],
+        dependencies: ["converse-chatboxes", "converse-disco", "converse-dropdown"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -80,6 +79,8 @@
                 this.__super__.registerGlobalEventHandlers();
                 _converse.root.addEventListener(
                     'click', function (ev) {
+                        // FIXME
+                        return;
                         if (_.includes(ev.target.classList, 'toggle-toolbar-menu') ||
                             _.includes(ev.target.classList, 'insert-emoji')) {
                             return;
@@ -151,7 +152,7 @@
                 }
             });
 
-            _converse.EmojiPickerView = Backbone.NativeView.extend({
+            _converse.EmojiPickerView = Backbone.VDOMView.extend({
                 className: 'emoji-picker-container',
                 events: {
                     'click .emoji-category-picker li.emoji-category': 'chooseCategory',
@@ -161,11 +162,10 @@
                 initialize () {
                     this.model.on('change:current_skintone', this.render, this);
                     this.model.on('change:current_category', this.render, this);
-                    this.setScrollPosition = _.debounce(this.setScrollPosition, 50);
                 },
 
-                render () {
-                    var emojis_html = tpl_emojis(
+                toHTML () {
+                    return tpl_emojis(
                         _.extend(
                             this.model.toJSON(), {
                                 'transform': _converse.use_emojione ? emojione.shortnameToImage : emojione.shortnameToUnicode,
@@ -175,12 +175,6 @@
                                 'shouldBeHidden': this.shouldBeHidden
                             }
                         ));
-                    this.el.innerHTML = emojis_html;
-                    _.forEach(this.el.querySelectorAll('.emoji-picker'), (el) => {
-                        el.addEventListener('scroll', this.setScrollPosition.bind(this));
-                    });
-                    this.restoreScrollPosition();
-                    return this;
                 },
 
                 shouldBeHidden (shortname, current_skintone, toned_emojis) {
@@ -198,20 +192,6 @@
                         }
                     }
                     return false;
-                },
-
-                restoreScrollPosition () {
-                    const current_picker = _.difference(
-                        this.el.querySelectorAll('.emoji-picker'),
-                        this.el.querySelectorAll('.emoji-picker.hidden')
-                    );
-                    if (current_picker.length === 1 && this.model.get('scroll_position')) {
-                        current_picker[0].scrollTop = this.model.get('scroll_position');
-                    }
-                },
-
-                setScrollPosition (ev) {
-                    this.model.save('scroll_position', this.content);
                 },
 
                 chooseSkinTone (ev) {
@@ -1005,32 +985,12 @@
                 },
 
                 toggleEmojiMenu (ev) {
-                    const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
-                    const dropdown = new bootstrap.Dropdown(dropdown_el, true);
-                    dropdown.toggle();
-                    return;
-
-
-                    if (u.hasClass('insert-emoji', ev.target)) {
-                        return;
+                    if (_.isUndefined(this.dropdown)) {
+                        this.renderEmojiPicker();
+                        const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
+                        this.dropdown = new bootstrap.Dropdown(dropdown_el, true);
+                        this.dropdown.toggle();
                     }
-                    if (!_.isUndefined(ev)) {
-                        ev.stopPropagation();
-                        if (ev.target.classList.contains('emoji-category-picker') ||
-                            ev.target.classList.contains('emoji-skintone-picker') ||
-                                ev.target.classList.contains('emoji-category')) {
-                            return;
-                        }
-                    }
-                    const elements = _.difference(
-                        _converse.root.querySelectorAll('.toolbar-menu'),
-                        [this.emoji_picker_view.el]
-                    );
-                    u.slideInAllElements(elements)
-                        .then(_.partial(
-                                u.slideToggleElement,
-                                this.emoji_picker_view.el))
-                        .then(this.focus.bind(this));
                 },
 
                 toggleCall (ev) {
@@ -1139,7 +1099,6 @@
                     }
                     this.setChatState(_converse.ACTIVE);
                     this.scrollDown();
-                    this.renderEmojiPicker();
                     if (focus) {
                         this.focus();
                     }

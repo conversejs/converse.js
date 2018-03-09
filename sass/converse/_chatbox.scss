@@ -42,6 +42,8 @@
             .chat-toolbar {
                 li {
                     .toolbar-menu {
+                        min-width: 15rem;
+
                         ul {
                             &.emoji-toolbar {
                                 width: 100%;

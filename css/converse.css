@@ -5377,15 +5377,18 @@ body.reset {
       #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-content .emojione,
       #conversejs:not(.fullscreen) .chatbox .chat-body .chat-message .chat-msg-content .emojione {
         margin-bottom: -5px; }
-#converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar,
-#conversejs:not(.fullscreen) .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar {
-  width: 100%; }
-  #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar .emoji-category,
-  #conversejs:not(.fullscreen) .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar .emoji-category {
-    float: left; }
-  #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar li,
-  #conversejs:not(.fullscreen) .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar li {
-    padding: 2px; }
+#converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu,
+#conversejs:not(.fullscreen) .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu {
+  min-width: 15rem; }
+  #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar,
+  #conversejs:not(.fullscreen) .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar {
+    width: 100%; }
+    #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar .emoji-category,
+    #conversejs:not(.fullscreen) .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar .emoji-category {
+      float: left; }
+    #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar li,
+    #conversejs:not(.fullscreen) .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar li {
+      padding: 2px; }
 #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li.toggle-smiley ul li,
 #conversejs:not(.fullscreen) .chatbox form.sendXMPPMessage .chat-toolbar li.toggle-smiley ul li {
   padding: 2px; }

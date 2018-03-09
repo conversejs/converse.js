@@ -1,5 +1,8 @@
 #conversejs:not(.fullscreen) {
     #minimized-chats {
+        @include make-col-ready();
+        @include make-col(1);
+
         margin-bottom: -2*$chat-gutter;
         border-top-left-radius: $chatbox-border-radius;
         border-top-right-radius: $chatbox-border-radius;

@@ -4460,7 +4460,8 @@ body.reset {
   font-family: "Helvetica", "Arial", sans-serif;
   font-size: 16px;
   position: fixed;
-  z-index: 1031; }
+  z-index: 1031;
+  margin-left: -15px; }
   #conversejs ::-webkit-input-placeholder {
     /* Chrome/Opera/Safari */
     color: #A8ABA1; }
@@ -5404,7 +5405,20 @@ body {
 #conversejs.fullscreen .chatbox {
   width: 100%;
   height: 100%;
-  margin: 0; }
+  margin: 0;
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px; }
+  @media (min-width: 768px) {
+    #conversejs.fullscreen .chatbox {
+      flex: 0 0 75%;
+      max-width: 75%; } }
+  @media (min-width: 1200px) {
+    #conversejs.fullscreen .chatbox {
+      flex: 0 0 75%;
+      max-width: 75%; } }
   #conversejs.fullscreen .chatbox .box-flyout {
     background-color: #3AA569;
     height: 100vh;
@@ -5770,6 +5784,14 @@ body {
     display: block; } }
 #conversejs.fullscreen #controlbox {
   margin: 0; }
+  @media (min-width: 768px) {
+    #conversejs.fullscreen #controlbox {
+      flex: 0 0 25%;
+      max-width: 25%; } }
+  @media (min-width: 1200px) {
+    #conversejs.fullscreen #controlbox {
+      flex: 0 0 16.6666666667%;
+      max-width: 16.6666666667%; } }
   #conversejs.fullscreen #controlbox .controlbox-pane {
     border-radius: 0; }
   #conversejs.fullscreen #controlbox .flyout {

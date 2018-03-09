@@ -305,7 +305,6 @@
                 },
 
                 render () {
-                    this.setClasses();
                     this.el.setAttribute('id', this.model.get('box_id'));
                     this.el.innerHTML = tpl_chatbox(
                         _.extend(this.model.toJSON(), {
@@ -316,20 +315,6 @@
                     this.renderMessageForm();
                     this.insertHeading();
                     return this;
-                },
-
-                setClasses () {
-                    if (_converse.view_mode === 'fullscreen') {
-                        this.el.classList.add('col-xl-10');
-                        this.el.classList.add('col-md-9');
-                    } else {
-                        this.el.classList.add('col');
-                        this.el.classList.add('col-lg-2');
-                        this.el.classList.add('col-md-3');
-                        this.el.classList.add('col-sm-4');
-                        this.el.classList.add('col-sx-12');
-                        this.el.classList.add('w-100');
-                    }
                 },
 
                 renderToolbar (toolbar, options) {

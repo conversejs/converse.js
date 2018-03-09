@@ -53,6 +53,8 @@ body.reset {
     position: fixed;
     z-index: 1031; // One more than bootstrap navbar
 
+    margin-left: -15px; // XXX: why is this necessary?
+
     ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
         color: $subdued-color;
     }

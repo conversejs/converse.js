@@ -7,11 +7,19 @@
             min-width: $controlbox-width !important;
             width: $controlbox-width;
         }
+
+        &:not(.logged-out) {
+            .controlbox-head {
+                height: 15px;
+            }
+        }
+
         .controlbox-head {
             display: flex;
-            flex-direction: row;
+            flex-direction: row-reverse;
             flex-wrap: nowrap;
             justify-content: space-between;
+
 
             .brand-heading {
                 @include make-col-ready();

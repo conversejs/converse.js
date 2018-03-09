@@ -34,6 +34,7 @@
         }
 
         .brand-heading-container {
+            @include make-col(12);
             text-align: center;
             .brand-heading {
                 font-size: 150%;

@@ -4929,7 +4929,7 @@ body {
   cursor: pointer;
   font-size: 16px;
   margin: 0 0.2em;
-  padding: 0.3em;
+  padding: 0 0 0 0.5em;
   text-decoration: none; }
   #converse-embedded-chat .chatbox-btn:active,
   #conversejs .chatbox-btn:active {
@@ -5579,13 +5579,10 @@ body {
       padding-bottom: 0.5em; }
       #conversejs #controlbox .conn-feedback p.feedback-subject.error {
         font-weight: bold; }
-  #conversejs #controlbox .brand-heading-container {
-    flex: 0 0 100%;
-    max-width: 100%; }
-    #conversejs #controlbox .brand-heading-container .brand-heading {
-      text-align: center; }
-    #conversejs #controlbox .brand-heading-container .brand-name {
-      font-size: 120%; }
+  #conversejs #controlbox .brand-heading-container .brand-heading {
+    text-align: center; }
+  #conversejs #controlbox .brand-heading-container .brand-name {
+    font-size: 120%; }
   #conversejs #controlbox #converse-login-panel, #conversejs #controlbox #converse-register-panel {
     padding-top: 0;
     padding-bottom: 0; }
@@ -5820,6 +5817,8 @@ body {
   #conversejs.fullscreen #controlbox .toggle-register-login {
     line-height: 26px; }
   #conversejs.fullscreen #controlbox .brand-heading-container {
+    flex: 0 0 100%;
+    max-width: 100%;
     text-align: center; }
     #conversejs.fullscreen #controlbox .brand-heading-container .brand-heading {
       font-size: 150%;

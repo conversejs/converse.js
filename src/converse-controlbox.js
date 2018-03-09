@@ -299,8 +299,13 @@
                 },
 
                 insertBrandHeading () {
-                    const panes_el = this.el.querySelector('.controlbox-panes');
-                    panes_el.insertAdjacentHTML('beforeBegin', this.createBrandHeadingHTML());
+                    const heading_el = this.el.querySelector('.brand-heading-container');
+                    if (_.isNull(heading_el)) {
+                        const el = this.el.querySelector('.controlbox-head');
+                        el.insertAdjacentHTML('beforeend', this.createBrandHeadingHTML());
+                    } else {
+                        heading_el.outerHTML = this.createBrandHeadingHTML();
+                    }
                 },
 
                 renderLoginPanel () {

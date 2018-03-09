@@ -19,8 +19,6 @@
             border-top-left-radius: $chatbox-border-radius;
             border-top-right-radius: $chatbox-border-radius;
             background-color: $link-color;
-            border: 1px solid white;
-            border-bottom: none;
             padding: 0.5em 0;
             text-align: center;
             color: white;
@@ -28,7 +26,7 @@
             overflow-y: hidden;
             text-overflow: ellipsis;
             display: block;
-            height: 50px;
+            height: 45px;
         }
 
         a.restore-chat {
@@ -50,7 +48,7 @@
 
         .minimized-chats-flyout {
             flex-direction: column-reverse;
-            bottom: 34px;
+            bottom: 30px;
             width: $minimized-chats-width;
 
             .chat-head {

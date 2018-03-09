@@ -4877,7 +4877,7 @@ body.reset {
   cursor: pointer;
   font-size: 16px;
   margin: 0 0.2em;
-  padding: 0.3em;
+  padding: 0 0 0 0.5em;
   text-decoration: none; }
   #converse-embedded-chat .chatbox-btn:active,
   #conversejs .chatbox-btn:active {
@@ -5509,13 +5509,10 @@ body.reset {
       padding-bottom: 0.5em; }
       #conversejs #controlbox .conn-feedback p.feedback-subject.error {
         font-weight: bold; }
-  #conversejs #controlbox .brand-heading-container {
-    flex: 0 0 100%;
-    max-width: 100%; }
-    #conversejs #controlbox .brand-heading-container .brand-heading {
-      text-align: center; }
-    #conversejs #controlbox .brand-heading-container .brand-name {
-      font-size: 120%; }
+  #conversejs #controlbox .brand-heading-container .brand-heading {
+    text-align: center; }
+  #conversejs #controlbox .brand-heading-container .brand-name {
+    font-size: 120%; }
   #conversejs #controlbox #converse-login-panel, #conversejs #controlbox #converse-register-panel {
     padding-top: 0;
     padding-bottom: 0; }
@@ -5728,9 +5725,11 @@ body.reset {
   #conversejs:not(.fullscreen) #controlbox .box-flyout {
     min-width: 250px !important;
     width: 250px; }
+  #conversejs:not(.fullscreen) #controlbox:not(.logged-out) .controlbox-head {
+    height: 15px; }
   #conversejs:not(.fullscreen) #controlbox .controlbox-head {
     display: flex;
-    flex-direction: row;
+    flex-direction: row-reverse;
     flex-wrap: nowrap;
     justify-content: space-between; }
     #conversejs:not(.fullscreen) #controlbox .controlbox-head .brand-heading {
@@ -6209,8 +6208,6 @@ body.reset {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     background-color: #578EA9;
-    border: 1px solid white;
-    border-bottom: none;
     padding: 0.5em 0;
     text-align: center;
     color: white;
@@ -6218,7 +6215,7 @@ body.reset {
     overflow-y: hidden;
     text-overflow: ellipsis;
     display: block;
-    height: 50px; }
+    height: 45px; }
   #conversejs:not(.fullscreen) #minimized-chats a.restore-chat {
     padding: 1px 0 1px 5px;
     color: white;
@@ -6233,7 +6230,7 @@ body.reset {
     color: white; }
   #conversejs:not(.fullscreen) #minimized-chats .minimized-chats-flyout {
     flex-direction: column-reverse;
-    bottom: 34px;
+    bottom: 30px;
     width: 130px; }
     #conversejs:not(.fullscreen) #minimized-chats .minimized-chats-flyout .chat-head {
       padding: 0.3em;

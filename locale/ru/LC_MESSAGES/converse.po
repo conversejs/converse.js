@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-02-10 15:39+0000\n"
+"PO-Revision-Date: 2018-03-09 10:29+0000\n"
 "Last-Translator: Translator <admin@pochta.cf>\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
-"translations/ru/>\n"
+"Language-Team: Russian "
+"<https://hosted.weblate.org/projects/conversejs/translations/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.19-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2.20-dev\n"
 
 #: dist/converse-no-dependencies.js:7545
 msgid "The connection has dropped, attempting to reconnect."
@@ -65,9 +65,8 @@ msgid "You have unread messages"
 msgstr "У тебя есть непрочитанные сообщения"
 
 #: dist/converse-no-dependencies.js:12743
-#, fuzzy
 msgid "Hidden message"
-msgstr "Ваше сообщение"
+msgstr "Скрытое сообщение"
 
 #: dist/converse-no-dependencies.js:12745
 msgid "Personal message"
@@ -80,17 +79,15 @@ msgstr "Отправить"
 
 #: dist/converse-no-dependencies.js:12753
 msgid "Optional hint"
-msgstr ""
+msgstr "Опционная подсказка"
 
 #: dist/converse-no-dependencies.js:12809
-#, fuzzy
 msgid "Click to write as a normal (non-spoiler) message"
-msgstr "Редактировать произвольный статус"
+msgstr "Нажмите, чтобы написать как обычное (не-спойлер) сообщение"
 
 #: dist/converse-no-dependencies.js:12811
-#, fuzzy
 msgid "Click to write your message as a spoiler"
-msgstr "Редактировать произвольный статус"
+msgstr "Нажмите, чтобы написать сообщение как спойлер"
 
 #: dist/converse-no-dependencies.js:12815
 msgid "Clear all messages"
@@ -106,9 +103,8 @@ msgstr "Инициировать звонок"
 
 #: dist/converse-no-dependencies.js:13012
 #: dist/converse-no-dependencies.js:13475
-#, fuzzy
 msgid "Show hidden message"
-msgstr "Показать это меню"
+msgstr "Показать скрытое сообщение"
 
 #: dist/converse-no-dependencies.js:13064
 msgid "me"
@@ -156,7 +152,7 @@ msgstr "Вы уверены, что хотите очистить сообщен
 
 #: dist/converse-no-dependencies.js:13470
 msgid "Hide hidden message"
-msgstr ""
+msgstr "Скрыть скрытое сообщение"
 
 #: dist/converse-no-dependencies.js:13488
 #: dist/converse-no-dependencies.js:24999
@@ -304,9 +300,9 @@ msgid "Click to decline the contact request from %1$s"
 msgstr "Кликни, что-бы отклонить запрос на добавление от %1$s"
 
 #: dist/converse-no-dependencies.js:14402
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to chat with %1$s (JID: %2$s)"
-msgstr "Кликните, чтобы начать общение"
+msgstr "Нажмите для чата с %1$s (Идентификатор Jabber: %2$s)"
 
 #: dist/converse-no-dependencies.js:14447
 msgid "Are you sure you want to remove this contact?"

@@ -5673,8 +5673,7 @@ body.reset {
     font-size: 14px;
     left: 0;
     text-align: left;
-    overflow-x: hidden;
-    border-radius: 4px; }
+    overflow-x: hidden; }
     #conversejs #controlbox .controlbox-pane .add-converse-contact {
       margin: 0 0 0.75em 0; }
     #conversejs #controlbox .controlbox-pane .chatbox-btn {

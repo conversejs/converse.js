@@ -1,7 +1,16 @@
 #conversejs:not(.fullscreen) {
     #minimized-chats {
+        order: 100;
         @include make-col-ready();
-        @include make-col(1);
+        @include media-breakpoint-up(xs) {
+            @include make-col(2);
+        }
+        @include media-breakpoint-up(sm) {
+            @include make-col(2);
+        }
+        @include media-breakpoint-up(lg) {
+            @include make-col(1);
+        }
 
         margin-bottom: -2*$chat-gutter;
         border-top-left-radius: $chatbox-border-radius;
@@ -28,6 +37,7 @@
             overflow-y: hidden;
             text-overflow: ellipsis;
             display: block;
+            height: 50px;
         }
 
         a.restore-chat {
@@ -50,6 +60,7 @@
         .minimized-chats-flyout {
             flex-direction: column-reverse;
             width: 100%;
+            bottom: 48px;
 
             .chat-head {
                 padding: 0.3em;

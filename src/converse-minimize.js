@@ -318,7 +318,7 @@
 
             _converse.MinimizedChatBoxView = Backbone.NativeView.extend({
                 tagName: 'div',
-                className: 'chat-head',
+                className: 'chat-head row no-gutters',
                 events: {
                     'click .close-chatbox-button': 'close',
                     'click .restore-chat': 'restore'
@@ -389,7 +389,7 @@
                 render () {
                     if (!this.el.parentElement) {
                         this.el.innerHTML = tpl_chats_panel();
-                        _converse.chatboxviews.el.appendChild(this.el);
+                        _converse.chatboxviews.insertRowColumn(this.el);
                     }
                     if (this.keys().length === 0) {
                         this.el.classList.add('hidden');

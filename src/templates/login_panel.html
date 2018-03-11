@@ -23,12 +23,11 @@
                 </fieldset>
             {[ } ]}
             {[ if (o.authentication == o.ANONYMOUS) { ]}
-                <input class="pure-button button-primary login-anon" type="submit" value="{{{o.__('Click here to log in anonymously')}}}"/>
+                <input class="btn btn-primary login-anon" type="submit" value="{{{o.__('Click here to log in anonymously')}}}"/>
             {[ } ]}
             {[ if (o.authentication == o.PREBIND) { ]}
                 <p>Disconnected.</p>
             {[ } ]}
         {[ } ]}
-        </fieldset>
     </form>
 </div>

@@ -65,7 +65,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes", "converse-disco", "converse-dropdown"],
+        dependencies: ["converse-chatboxes", "converse-disco"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -74,24 +74,6 @@
             //
             // New functions which don't exist yet can also be added.
             //
-            registerGlobalEventHandlers: function () {
-                const { _converse } = this.__super__;
-                this.__super__.registerGlobalEventHandlers();
-                _converse.root.addEventListener(
-                    'click', function (ev) {
-                        // FIXME
-                        return;
-                        if (_.includes(ev.target.classList, 'toggle-toolbar-menu') ||
-                            _.includes(ev.target.classList, 'insert-emoji')) {
-                            return;
-                        }
-                        u.slideInAllElements(
-                            _converse.root.querySelectorAll('.toolbar-menu')
-                        )
-                    }
-                );
-            },
-
             ChatBoxViews: {
                 onChatBoxAdded (item) {
                     const { _converse } = this.__super__;

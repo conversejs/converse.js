@@ -1,9 +1,5 @@
 #converse-embedded-chat,
 #conversejs {
-    .new-chatroom-nick {
-        margin: 1em auto;
-    }
-
     .add-chatroom {
         input[type="submit"],
         input[type="button"] {
@@ -266,6 +262,8 @@
                         color: $error-color;
                     }
                     .chatroom-form {
+                        margin-top: 2em;
+
                         label,
                         input[type=text] {
                             display: block;

@@ -5692,6 +5692,7 @@ body.reset {
     #conversejs #controlbox .add-xmpp-contact button {
       width: 100%; }
 #conversejs .toggle-controlbox {
+  text-align: center;
   background-color: #578EA9;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
@@ -5703,21 +5704,35 @@ body.reset {
   #conversejs .toggle-controlbox span {
     color: white; }
 
-@media screen and (max-width: 767px) {
-  #conversejs #controlbox .box-flyout {
-    width: 100%;
-    left: 0; }
-  #conversejs #controlbox .sidebar {
-    display: block; }
-  #conversejs #controlbox .controlbox-pane {
-    position: absolute;
-    top: 0;
-    display: none;
-    width: 100%; }
-  #conversejs.sidebar-open .chatbox:not(#controlbox) {
-    display: none; }
-  #conversejs.sidebar-open #controlbox .controlbox-pane {
-    display: block; } }
+@media (max-width: 767.98px) {
+  #conversejs {
+    left: 0;
+    right: 0;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right); }
+    #conversejs .converse-chatboxes {
+      margin: 0 !important;
+      flex-direction: row !important;
+      justify-content: space-between; }
+      #conversejs .converse-chatboxes .converse-chatroom {
+        font-size: 14px; }
+      #conversejs .converse-chatboxes .chatbox .box-flyout {
+        left: 0;
+        bottom: 0;
+        border-radius: 0;
+        width: 100vw !important;
+        height: 100vh !important; }
+      #conversejs .converse-chatboxes #controlbox {
+        order: 0; }
+        #conversejs .converse-chatboxes #controlbox .box-flyout {
+          width: 100vw !important;
+          height: 100vh !important; }
+        #conversejs .converse-chatboxes #controlbox .sidebar {
+          display: block; }
+      #conversejs .converse-chatboxes.sidebar-open .chatbox:not(#controlbox) {
+        display: none; }
+      #conversejs .converse-chatboxes.sidebar-open #controlbox .controlbox-pane {
+        display: block; } }
 #conversejs:not(.fullscreen) #controlbox {
   order: -1;
   min-width: 250px !important;
@@ -5884,9 +5899,6 @@ body.reset {
     line-height: 16px;
     width: 100%; }
 
-#converse-embedded-chat .new-chatroom-nick,
-#conversejs .new-chatroom-nick {
-  margin: 1em auto; }
 #converse-embedded-chat .add-chatroom input[type="submit"],
 #converse-embedded-chat .add-chatroom input[type="button"],
 #conversejs .add-chatroom input[type="submit"],
@@ -6138,11 +6150,14 @@ body.reset {
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .validation-message {
           font-size: 90%;
           color: #A53214; }
-        #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label,
-        #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=text],
-        #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label,
-        #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=text] {
-          display: block; }
+        #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form,
+        #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form {
+          margin-top: 2em; }
+          #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label,
+          #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=text],
+          #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label,
+          #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=text] {
+            display: block; }
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container input[type=button],
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container input[type=submit],
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container input[type=button],

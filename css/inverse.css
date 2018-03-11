@@ -4731,7 +4731,8 @@ body.reset {
     float: right; }
   #conversejs .centered {
     text-align: center;
-    display: block; }
+    display: block;
+    margin: auto; }
   #conversejs .hor_centered {
     text-align: center;
     display: block;

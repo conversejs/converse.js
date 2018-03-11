@@ -128,7 +128,7 @@ clean:
 	rm css/*.map
 
 .PHONY: dev
-dev: gems node_modules
+dev: .bundle node_modules
 
 ########################################################################
 ## Builds
@@ -147,6 +147,9 @@ css/converse.css:: gems sass
 
 css/fonts.css:: dev sass
 	$(SASS) -I $(BOURBON) sass/only-fonts.scss $@
+
+css/theme.css:: dev sass
+	$(SASS) -I $(BOOTSTRAP) sass/theme.scss $@
 
 css/%.min.css:: css/%.css
 	make dev

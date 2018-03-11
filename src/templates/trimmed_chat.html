@@ -2,6 +2,6 @@
     {[ if (o.num_unread) { ]} 
         <span class="badge badge-light">{{{o.num_unread}}}</span>
     {[ } ]}
-    {{{o. title }}}
+    {{{o.title || o.jid }}}
 </a>
 <a class="chatbox-btn close-chatbox-button fa fa-times"></a>

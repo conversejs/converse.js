@@ -276,7 +276,7 @@
 
         describe("The \"chats\" API", function() {
 
-            it("has a method 'get' which returns a wrapped chat box", mock.initConverseWithPromises(
+            it("has a method 'get' which returns the chatbox model", mock.initConverseWithPromises(
                 null, ['rosterInitialized'], {}, function (done, _converse) {
                     test_utils.openControlBox();
                     test_utils.createContacts(_converse, 'current');
@@ -291,7 +291,7 @@
                     test_utils.openChatBoxFor(_converse, jid);
                     box = _converse.api.chats.get(jid);
                     expect(box instanceof Object).toBeTruthy();
-                    expect(box.model.get('box_id')).toBe(b64_sha1(jid));
+                    expect(box.get('box_id')).toBe(b64_sha1(jid));
                     chatboxview = _converse.chatboxviews.get(jid);
                     expect($(chatboxview.el).is(':visible')).toBeTruthy();
                     // Test for multiple JIDs
@@ -299,12 +299,12 @@
                     test_utils.openChatBoxFor(_converse, jid2);
                     var list = _converse.api.chats.get([jid, jid2]);
                     expect(_.isArray(list)).toBeTruthy();
-                    expect(list[0].model.get('box_id')).toBe(b64_sha1(jid));
-                    expect(list[1].model.get('box_id')).toBe(b64_sha1(jid2));
+                    expect(list[0].get('box_id')).toBe(b64_sha1(jid));
+                    expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
                     done();
             }));
 
-            it("has a method 'open' which opens and returns a wrapped chat box", mock.initConverseWithPromises(
+            it("has a method 'open' which opens and returns the chatbox model", mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {}, function (done, _converse) {
 
                 test_utils.openControlBox();
@@ -315,7 +315,7 @@
                 expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
                 var box = _converse.api.chats.open(jid);
                 expect(box instanceof Object).toBeTruthy();
-                expect(box.model.get('box_id')).toBe(b64_sha1(jid));
+                expect(box.get('box_id')).toBe(b64_sha1(jid));
                 expect(
                     _.keys(box),
                     ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
@@ -326,8 +326,8 @@
                 var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var list = _converse.api.chats.open([jid, jid2]);
                 expect(_.isArray(list)).toBeTruthy();
-                expect(list[0].model.get('box_id')).toBe(b64_sha1(jid));
-                expect(list[1].model.get('box_id')).toBe(b64_sha1(jid2));
+                expect(list[0].get('box_id')).toBe(b64_sha1(jid));
+                expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
                 done();
             }));
         });

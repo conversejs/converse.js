@@ -8,7 +8,7 @@
     var u = converse.env.utils;
 
 
-    describe("The Control Box", function () {
+    describe("The Controlbox", function () {
 
         it("can be opened by clicking a DOM element with class 'toggle-controlbox'",
             mock.initConverseWithPromises(
@@ -30,6 +30,53 @@
             expect($("div#controlbox").is(':visible')).toBe(true);
             done();
         }));
+
+        describe("The \"Contacts\" section", function () {
+
+            it("shows the number of unread mentions received",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.createContacts(_converse, 'all').openControlBox();
+
+                var contacts_panel = _converse.chatboxviews.get('controlbox').contactspanel;
+                expect(_.isNull(contacts_panel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
+
+                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                test_utils.openChatBoxFor(_converse, sender_jid);
+                var chatview = _converse.chatboxviews.get(sender_jid);
+                chatview.model.set({'minimized': true});
+
+                var msg = $msg({
+                        from: sender_jid,
+                        to: _converse.connection.jid,
+                        type: 'chat',
+                        id: (new Date()).getTime()
+                    }).c('body').t('hello').up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                _converse.chatboxes.onMessage(msg);
+                expect(contacts_panel.tab_el.querySelector('.msgs-indicator').textContent).toBe('1');
+
+                msg = $msg({
+                        from: sender_jid,
+                        to: _converse.connection.jid,
+                        type: 'chat',
+                        id: (new Date()).getTime()
+                    }).c('body').t('hello again').up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                _converse.chatboxes.onMessage(msg);
+                expect(contacts_panel.tab_el.querySelector('.msgs-indicator').textContent).toBe('2');
+
+                var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                expect(_.isNull(roomspanel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
+
+                chatview.model.set({'minimized': false});
+                expect(_.includes(contacts_panel.tab_el.firstChild.classList, 'unread-msgs')).toBeFalsy();
+                expect(_.isNull(contacts_panel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
+                done();
+            }));
+        });
 
         describe("The Status Widget", function () {
 
@@ -143,88 +190,5 @@
                 done();
             });
         }));
-    });
-
-    describe("The Controlbox Tabs", function () {
-
-        it("contains two tabs, 'Contacts' and 'ChatRooms'",
-            mock.initConverseWithPromises(
-                null, ['rosterGroupsFetched'], {},
-                function (done, _converse) {
-
-            test_utils.openControlBox();
-            var cbview = _converse.chatboxviews.get('controlbox');
-            var $panels = $(cbview.el).find('.controlbox-panes');
-            expect($panels.children().length).toBe(2);
-            expect($panels.children().first().attr('id')).toBe('users');
-            expect($panels.children().first().is(':visible')).toBe(true);
-            expect($panels.children().last().attr('id')).toBe('chatrooms');
-            expect($panels.children().last().is(':visible')).toBe(false);
-            done();
-        }));
-
-        it("remembers which tab was open last",
-            mock.initConverseWithPromises(
-                null, ['rosterGroupsFetched'], {},
-                function (done, _converse) {
-
-            test_utils.openControlBox();
-            var cbview = _converse.chatboxviews.get('controlbox');
-            var $tabs = $(cbview.el).find('#controlbox-tabs');
-            expect(cbview.model.get('active-panel')).toBe('users');
-            $tabs.find('li').last().find('a')[0].click();
-            expect(cbview.model.get('active-panel')).toBe('chatrooms');
-            $tabs.find('li').first().find('a')[0].click();
-            expect(cbview.model.get('active-panel')).toBe('users');
-            done();
-        }));
-
-        describe("The \"Contacts\" Panel", function () {
-
-            it("shows the number of unread mentions received",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
-
-                test_utils.createContacts(_converse, 'all').openControlBox();
-                test_utils.openContactsPanel(_converse);
-
-                var contacts_panel = _converse.chatboxviews.get('controlbox').contactspanel;
-                expect(_.isNull(contacts_panel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
-
-                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                test_utils.openChatBoxFor(_converse, sender_jid);
-                var chatview = _converse.chatboxviews.get(sender_jid);
-                chatview.model.set({'minimized': true});
-
-                var msg = $msg({
-                        from: sender_jid,
-                        to: _converse.connection.jid,
-                        type: 'chat',
-                        id: (new Date()).getTime()
-                    }).c('body').t('hello').up()
-                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                _converse.chatboxes.onMessage(msg);
-                expect(contacts_panel.tab_el.querySelector('.msgs-indicator').textContent).toBe('1');
-
-                msg = $msg({
-                        from: sender_jid,
-                        to: _converse.connection.jid,
-                        type: 'chat',
-                        id: (new Date()).getTime()
-                    }).c('body').t('hello again').up()
-                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                _converse.chatboxes.onMessage(msg);
-                expect(contacts_panel.tab_el.querySelector('.msgs-indicator').textContent).toBe('2');
-
-                var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
-                expect(_.isNull(roomspanel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
-
-                chatview.model.set({'minimized': false});
-                expect(_.includes(contacts_panel.tab_el.firstChild.classList, 'unread-msgs')).toBeFalsy();
-                expect(_.isNull(contacts_panel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
-                done();
-            }));
-        });
     });
 }));

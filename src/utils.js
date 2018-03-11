@@ -705,6 +705,5 @@
         evt.initEvent(name, bubbles, cancelable);
         el.dispatchEvent(evt);
     };
-
     return u;
 }));

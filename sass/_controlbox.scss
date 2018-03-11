@@ -74,13 +74,7 @@
         }
 
         .msgs-indicator {
-            border-radius: 3px;
-            background-color: $red;
-            color: white;
-            font-size: $font-size-small;
-            font-weight: normal;
-            padding: 0 4px;
-            text-shadow: none;
+            margin-right: 0.5em;
         }
 
         a.subscribe-to-user {

@@ -27,7 +27,6 @@
 
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(_converse);
 
                 var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 test_utils.openChatBoxFor(_converse, contact_jid);
@@ -65,7 +64,6 @@
                 }).then(function () {
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
                     expect(_converse.chatboxes.length).toEqual(1);
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var message = '/me is tired';
@@ -97,7 +95,6 @@
 
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(_converse);
 
                 var i, $el, jid, chatboxview;
                 // openControlBox was called earlier, so the controlbox is
@@ -134,7 +131,6 @@
 
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(_converse);
 
                 var i, $el, jid, chatbox, chatboxview, trimmedview;
                 // openControlBox was called earlier, so the controlbox is
@@ -215,7 +211,6 @@
                 test_utils.createContacts(_converse, 'current');
                 _converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(_converse);
 
                 var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var $el, jid, chatbox;
@@ -243,7 +238,6 @@
 
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(_converse);
 
                 spyOn(_converse, 'emit');
                 spyOn(_converse.chatboxviews, 'trimChats');
@@ -279,7 +273,6 @@
 
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
                         return $(_converse.rosterview.el).find('.roster-group').length;
                     }, 300)
@@ -317,7 +310,6 @@
                 var chatview;
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
                         return $(_converse.rosterview.el).find('.roster-group').length;
                     }, 300)
@@ -364,7 +356,6 @@
 
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
                         return $(_converse.rosterview.el).find('.roster-group').length;
                     }, 300)
@@ -409,7 +400,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
 
                     var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.openChatBoxFor(_converse, contact_jid);
@@ -430,7 +420,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
 
                     var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.openChatBoxFor(_converse, contact_jid);
@@ -478,7 +467,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
 
                     test_utils.waitUntil(function () {
                             return $(_converse.rosterview.el).find('.roster-group').length;
@@ -507,7 +495,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
 
                     var view;
                     var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -540,7 +527,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
 
                     var view, clearButton, $toolbar;
                     var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -581,7 +567,6 @@
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
                                 return $(_converse.rosterview.el).find('.roster-group').length;
                             }, 300)
@@ -749,7 +734,6 @@
 
                             test_utils.createContacts(_converse, 'current');
                             test_utils.openControlBox();
-                            test_utils.openContactsPanel(_converse);
 
                             // TODO: what could still be done for error
                             // messages... if the <error> element has type
@@ -853,7 +837,6 @@
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(_converse);
 
                         var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openChatBoxFor(_converse, sender_jid);
@@ -918,7 +901,6 @@
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(_converse);
 
                         test_utils.waitUntil(function () {
                                 return $(_converse.rosterview.el).find('.roster-group').length;
@@ -973,7 +955,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
 
                     test_utils.waitUntil(function () {
                             return $(_converse.rosterview.el).find('.roster-group').length;
@@ -1142,7 +1123,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
 
                     /* Ideally we wouldn't have to filter out headline
                      * messages, but Prosody gives them the wrong 'type' :(
@@ -1179,7 +1159,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
 
                     // Send a message from a different resource
                     spyOn(_converse, 'log');
@@ -1236,7 +1215,6 @@
                     }).then(function () {
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(_converse);
 
                         // Send a message from a different resource
                         spyOn(_converse, 'log');
@@ -1285,7 +1263,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
                     /* <message from="mallory@evil.example" to="b@xmpp.example">
                      *    <received xmlns='urn:xmpp:carbons:2'>
                      *      <forwarded xmlns='urn:xmpp:forward:0'>
@@ -1334,7 +1311,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
                     test_utils.waitUntil(function () {
                             return $(_converse.rosterview.el).find('.roster-group').length;
                         }, 300)
@@ -1394,7 +1370,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
                     test_utils.waitUntil(function () {
                             return $(_converse.rosterview.el).find('.roster-group').length;
                         }, 300)
@@ -1483,7 +1458,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
 
                     spyOn(_converse, 'emit');
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1507,7 +1481,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
 
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.openChatBoxFor(_converse, contact_jid);
@@ -1529,7 +1502,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
 
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.openChatBoxFor(_converse, contact_jid);
@@ -1551,7 +1523,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
 
                     var message, msg;
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1680,7 +1651,6 @@
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
 
                     spyOn(_converse, 'emit');
                     var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1705,7 +1675,6 @@
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
                             return $(_converse.rosterview.el).find('.roster-group').length;
                         }, 300).then(function () {
@@ -1731,7 +1700,6 @@
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(_converse);
                         var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
                         test_utils.waitUntil(function () {
@@ -1772,7 +1740,6 @@
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
                             return $(_converse.rosterview.el).find('.roster-group').length;
                         }, 300).then(function () {
@@ -1812,7 +1779,6 @@
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(_converse);
 
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
                         spyOn(_converse, 'emit');
@@ -1896,7 +1862,6 @@
                         var view, contact_jid;
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
                                 return $(_converse.rosterview.el).find('.roster-group li').length;
                         }, 700).then(function () {
@@ -1958,7 +1923,6 @@
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
                                 return $(_converse.rosterview.el).find('.roster-group').length;
                             }, 300)
@@ -2043,7 +2007,6 @@
                         var view, contact_jid;
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
                             return $(_converse.rosterview.el).find('.roster-group').length;
                         }, 500).then(function () {
@@ -2111,7 +2074,6 @@
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(_converse);
 
                         var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openChatBoxFor(_converse, contact_jid);
@@ -2133,7 +2095,6 @@
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
                             return $(_converse.rosterview.el).find('.roster-group').length;
                         }, 300).then(function () {
@@ -2162,7 +2123,6 @@
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(_converse);
 
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
                         spyOn(_converse, 'emit');
@@ -2194,7 +2154,6 @@
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(_converse);
 
                         spyOn(_converse, 'emit');
                         var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -2225,7 +2184,6 @@
 
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(_converse);
 
                 spyOn(_converse, 'emit');
                 var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -2266,7 +2224,6 @@
 
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(_converse);
 
                 spyOn(_converse, 'emit');
                 expect(_converse.msg_counter).toBe(0);
@@ -2300,7 +2257,6 @@
 
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(_converse);
                 _converse.windowState = 'hidden';
                 spyOn(_converse, 'clearMsgCounter').and.callThrough();
                 _converse.saveWindowState(null, 'focus');
@@ -2316,7 +2272,6 @@
 
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(_converse);
 
                 expect(_converse.msg_counter).toBe(0);
                 spyOn(_converse, 'incrementMsgCounter').and.callThrough();
@@ -2392,7 +2347,6 @@
                     function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
-                test_utils.openContactsPanel(_converse);
 
                 var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                     msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
@@ -2412,7 +2366,6 @@
                     function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
-                test_utils.openContactsPanel(_converse);
 
                 var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                     msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be read');
@@ -2528,7 +2481,6 @@
                     function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
-                test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
                     return $(_converse.rosterview.el).find('.roster-group').length;
                 }, 500)
@@ -2561,7 +2513,6 @@
                     function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
-                test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
                     return $(_converse.rosterview.el).find('.roster-group').length;
                 }, 500)
@@ -2595,7 +2546,6 @@
                     function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
-                test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
                     return $(_converse.rosterview.el).find('.roster-group').length;
                 }, 500)
@@ -2630,7 +2580,6 @@
                     function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
-                test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
                     return $(_converse.rosterview.el).find('.roster-group').length;
                 }, 500)
@@ -2663,7 +2612,6 @@
                     function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
-                test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
                     return $(_converse.rosterview.el).find('.roster-group').length;
                 }, 500)
@@ -2698,7 +2646,6 @@
                     function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
-                test_utils.openContactsPanel(_converse);
 
                 var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 test_utils.openChatBoxFor(_converse, sender_jid);
@@ -2729,7 +2676,6 @@
                     function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
-                test_utils.openContactsPanel(_converse);
 
                 var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 test_utils.openChatBoxFor(_converse, sender_jid);

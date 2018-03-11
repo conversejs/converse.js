@@ -93,7 +93,6 @@
 
             test_utils.createContacts(_converse, 'current');
             test_utils.openControlBox();
-            test_utils.openContactsPanel(_converse);
             var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
             // XXX: We need to send a presence from the contact, so that we
@@ -167,7 +166,6 @@
 
             test_utils.createContacts(_converse, 'current');
             test_utils.openControlBox();
-            test_utils.openContactsPanel(_converse);
             var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
             // XXX: We need to send a presence from the contact, so that we

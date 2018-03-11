@@ -269,6 +269,7 @@
                 },
 
                 render () {
+                    // XXX: Is this still needed?
                     this.el.setAttribute('id', this.model.get('box_id'));
                     this.el.innerHTML = tpl_chatbox(
                         _.extend(this.model.toJSON(), {

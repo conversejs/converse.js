@@ -482,6 +482,7 @@
                 'rooms': {
                     'close' (jids) {
                         if (_.isUndefined(jids)) {
+                            // FIXME: can't access views here
                             _converse.chatboxviews.each(function (view) {
                                 if (view.is_chatroom && view.model) {
                                     view.close();
@@ -543,9 +544,9 @@
                             attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
                         }
                         if (_.isString(jids)) {
-                            return _converse.getChatRoom(jids, attrs);
+                            return getChatRoom(jids, attrs);
                         }
-                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs));
+                        return _.map(jids, _.partial(getChatRoom, _, attrs));
                     }
                 }
             });

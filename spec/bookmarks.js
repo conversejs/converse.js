@@ -320,7 +320,6 @@
                 [{'category': 'pubsub', 'type': 'pep'}],
                 ['http://jabber.org/protocol/pubsub#publish-options']
             ).then(function () {
-                test_utils.openControlBox().openRoomsPanel(_converse);
                 test_utils.waitUntil(function () {
                     return _converse.bookmarks;
                 }, 300).then(function () {
@@ -465,7 +464,6 @@
                     ['http://jabber.org/protocol/pubsub#publish-options']
                 ).then(function () {
 
-                    test_utils.openControlBox().openRoomsPanel(_converse);
                     var IQ_id;
                     expect(_.filter(_converse.connection.send.calls.all(), function (call) {
                         var stanza = call.args[0];
@@ -575,7 +573,6 @@
                         'name':  'The Play',
                         'nick': ''
                     });
-                    test_utils.openControlBox().openRoomsPanel(_converse);
 
                     test_utils.waitUntil(function () {
                         return $('#chatrooms dl.bookmarks dd:visible').length;
@@ -609,7 +606,6 @@
                 [{'category': 'pubsub', 'type': 'pep'}],
                 ['http://jabber.org/protocol/pubsub#publish-options']
             ).then(function () {
-                test_utils.openControlBox().openRoomsPanel(_converse);
                 // XXX Create bookmarks view here, otherwise we need to mock stanza
                 // traffic for it to get created.
                 _converse.bookmarksview = new _converse.BookmarksView(

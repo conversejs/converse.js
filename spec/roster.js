@@ -497,7 +497,6 @@
                 // Must be initialized, so that render is called and documentFragment set up.
                 test_utils.createContacts(_converse, 'pending');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(_converse);
             }
 
             it("can be collapsed under their own header", 
@@ -690,7 +689,6 @@
             var _addContacts = function (_converse) {
                 test_utils.createContacts(_converse, 'current')
                     .openControlBox()
-                    .openContactsPanel(_converse);
             };
 
             it("can be collapsed under their own header", 
@@ -1081,7 +1079,6 @@
                         names.push($(item).text().replace(/^\s+|\s+$/g, ''));
                     }
                 };
-                test_utils.openContactsPanel(_converse);
                 spyOn(_converse, 'emit');
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 spyOn(_converse.controlboxtoggle, 'showControlBox').and.callThrough();
@@ -1112,7 +1109,6 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.openContactsPanel(_converse);
                 var name = mock.req_names[0];
                 spyOn(window, 'confirm').and.returnValue(true);
                 _converse.roster.create({
@@ -1258,7 +1254,6 @@
                     function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'all').openControlBox();
-                test_utils.openContactsPanel(_converse);
                 var new_attrs, old_attrs, attrs;
                 var num_contacts = _converse.roster.length;
                 var new_roster = new _converse.RosterContacts();
@@ -1287,7 +1282,6 @@
                     function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'all').openControlBox();
-                test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
                     return $(_converse.rosterview.el).find('.roster-group li').length;
                 }, 700).then(function () {

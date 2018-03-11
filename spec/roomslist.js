@@ -14,7 +14,6 @@
                                      // have to mock stanza traffic.
             },
             function (done, _converse) {
-                test_utils.openControlBox().openRoomsPanel(_converse);
                 var controlbox = _converse.chatboxviews.get('controlbox');
 
                 var list = controlbox.el.querySelector('div.rooms-list-container');
@@ -69,7 +68,6 @@
             test_utils.openChatRoom(
                 _converse, 'lounge', 'conference.shakespeare.lit', 'JC');
             expect(_converse.chatboxes.length).toBe(2);
-            test_utils.openControlBox().openRoomsPanel(_converse);
             var room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(1);
             var close_el = _converse.rooms_list_view.el.querySelector(".close-room");

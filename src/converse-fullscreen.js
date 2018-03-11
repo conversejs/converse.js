@@ -44,18 +44,6 @@
                         this.createBrandHeadingHTML()
                     );
                 }
-            },
-
-            ChatRoomView: {
-                afterShown (focus) {
-                    /* Make sure chat rooms are scrolled down when opened
-                     */
-                    this.scrollDown();
-                    if (focus) {
-                        this.focus();
-                    }
-                    return this.__super__.afterShown.apply(this, arguments);
-                }
             }
         },
 

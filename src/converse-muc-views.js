@@ -242,8 +242,9 @@
                 openRoom (ev) {
                     ev.preventDefault();
                     const jid = ev.target.getAttribute('data-room-jid');
+                    const name = ev.target.getAttribute('data-room-name');
                     this.modal.hide();
-                    _converse.api.rooms.open(jid);
+                    _converse.api.rooms.open(jid, {'name': name});
                 },
 
                 toggleRoomInfo (ev) {
@@ -264,7 +265,7 @@
                     );
                     const div = document.createElement('div');
                     div.innerHTML = tpl_room_item({
-                        'name': name,
+                        'name': Strophe.xmlunescape(name),
                         'jid': room.getAttribute('jid'),
                         'open_title': __('Click to open this room'),
                         'info_title': __('Show more information on this room')

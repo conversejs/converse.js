@@ -4574,7 +4574,6 @@ body.reset {
       position: absolute;
       bottom: 1em; }
   #conversejs .badge {
-    padding: 0.4em;
     line-height: 1;
     font-weight: normal;
     font-size: 90%; }
@@ -5442,13 +5441,7 @@ body.reset {
     #conversejs #controlbox form.search-xmpp-contact input {
       width: 8em; }
   #conversejs #controlbox .msgs-indicator {
-    border-radius: 3px;
-    background-color: #E77051;
-    color: white;
-    font-size: 12px;
-    font-weight: normal;
-    padding: 0 4px;
-    text-shadow: none; }
+    margin-right: 0.5em; }
   #conversejs #controlbox a.subscribe-to-user {
     padding-left: 2em;
     font-weight: bold; }

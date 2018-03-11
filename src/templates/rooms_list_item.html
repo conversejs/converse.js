@@ -1,11 +1,11 @@
 <div class="room-item">
 <div class="available-chatroom d-flex flex-row {[ if (o.num_unread_general) { ]} unread-msgs {[ } ]}" data-room-jid="{{{o.jid}}}">
 {[ if (o.num_unread) { ]}
-    <span class="msgs-indicator">{{{ o.num_unread }}}</span>
+    <span class="msgs-indicator badge badge-info">{{{ o.num_unread }}}</span>
 {[ } ]}
 <a class="open-room available-room w-100"
     data-room-jid="{{{o.jid}}}"
-    title="{{{o.open_title}}}" href="#">{{{o.name}}}</a>
+    title="{{{o.open_title}}}" href="#">{{{o.name || o.jid}}}</a>
 
 <a class="right close-room icon-leave"
    data-room-jid="{{{o.jid}}}"

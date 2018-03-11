@@ -366,10 +366,11 @@
                         create = attrs;
                         attrs = jid;
                         jid = attrs.jid;
-                    } else {
-                        attrs.jid = jid;
                     }
                     jid = jid.toLowerCase();
+                    attrs.jid = jid;
+                    attrs.id = jid;
+
                     let  chatbox = this.get(Strophe.getBareJidFromJid(jid));
                     if (!chatbox && create) {
                         chatbox = this.create(attrs, {

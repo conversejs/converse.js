@@ -333,7 +333,7 @@
                 ],
                 "Show rooms": [
                     null,
-                    "Mostar salas"
+                    "Mostrar salas"
                 ],
                 "No rooms on %1$s": [
                     null,

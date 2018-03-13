@@ -63,6 +63,10 @@
             },
 
             ChatBoxView: {
+                shouldShowOnTextMessage () {
+                    return false;
+                },
+
                 _show (focus) {
                     /* We only have one chat visible at any one
                      * time. So before opening a chat, we make sure all other

@@ -691,11 +691,8 @@
                     // assigned to their various groups.
                     _converse.on('rosterGroupsFetched', this.sortAndPositionAllItems.bind(this));
 
-                    // _converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
                     _converse.on('rosterContactsFetched', () => {
-                        _converse.roster.each((contact) => {
-                            this.addRosterContact(contact, {'silent': true});
-                        });
+                        _converse.roster.each((contact) => this.addRosterContact(contact, {'silent': true}));
                         this.update();
                         this.updateFilter();
                         this.trigger('rosterContactsFetchedAndProcessed');

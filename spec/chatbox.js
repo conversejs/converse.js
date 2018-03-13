@@ -56,13 +56,14 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                var view;
+                test_utils.createContacts(_converse, 'current');
                 test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
                 .then(function () {
                     return test_utils.waitUntil(function () {
                         return _converse.xmppstatus.get('fullname');
                     }, 300);
                 }).then(function () {
-                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
                     expect(_converse.chatboxes.length).toEqual(1);
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -76,15 +77,20 @@
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
 
                     _converse.chatboxes.onMessage(msg);
-                    var view = _converse.chatboxviews.get(sender_jid);
-                    expect(_.includes($(view.el).find('.chat-msg-author').text(), '**Max Frankfurter')).toBeTruthy();
-                    expect($(view.el).find('.chat-msg-content').text()).toBe(' is tired');
+                    view = _converse.chatboxviews.get(sender_jid);
 
-                    message = '/me is as well';
-                    test_utils.sendMessage(view, message);
-                    expect(_.includes($(view.el).find('.chat-msg-author:last').text(), '**Max Mustermann')).toBeTruthy();
-                    expect($(view.el).find('.chat-msg-content:last').text()).toBe(' is as well');
-                    done();
+                    test_utils.waitUntil(function () {
+                        return u.isVisible(view.el);
+                    }).then(function () {
+                        expect(_.includes(view.el.querySelector('.chat-msg-author').textContent, '**Max Frankfurter')).toBeTruthy();
+                        expect($(view.el).find('.chat-msg-content').text()).toBe(' is tired');
+
+                        message = '/me is as well';
+                        test_utils.sendMessage(view, message);
+                        expect(_.includes($(view.el).find('.chat-msg-author:last').text(), '**Max Mustermann')).toBeTruthy();
+                        expect($(view.el).find('.chat-msg-content:last').text()).toBe(' is as well');
+                        done();
+                    });
                 });
             }));
 
@@ -189,7 +195,7 @@
                 test_utils.createContacts(_converse, 'current');
 
                 var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var chat = _converse.api.chats.open(sender_jid, {
+                var chat = _converse.api.chats.create(sender_jid, {
                     minimized: true
                 });
 

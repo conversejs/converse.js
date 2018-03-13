@@ -367,10 +367,14 @@
                         attrs = jid;
                         jid = attrs.jid;
                     }
-                    jid = jid.toLowerCase();
+                    jid = Strophe.getBareJidFromJid(jid.toLowerCase());
                     attrs.jid = jid;
                     attrs.id = jid;
 
+                    if (!attrs.fullname) {
+                        const roster_item = _converse.roster.get(jid);
+                        attrs.fullname = roster_item.get('fullname');
+                    }
                     let  chatbox = this.get(Strophe.getBareJidFromJid(jid));
                     if (!chatbox && create) {
                         chatbox = this.create(attrs, {

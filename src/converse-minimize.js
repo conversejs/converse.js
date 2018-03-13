@@ -116,6 +116,11 @@
                         this.__super__.isNewMessageHidden.apply(this, arguments);
                 },
 
+                shouldShowOnTextMessage () {
+                    return !this.model.get('minimized') &&
+                        this.__super__.shouldShowOnTextMessage.apply(this, arguments);
+                },
+
                 setChatBoxHeight (height) {
                     if (!this.model.get('minimized')) {
                         return this.__super__.setChatBoxHeight.apply(this, arguments);

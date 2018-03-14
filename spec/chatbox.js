@@ -441,6 +441,8 @@
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                     toolbar.querySelector('li.toggle-smiley').click();
 
+                    var timeout = false;
+
                     test_utils.waitUntil(function () {
                         return utils.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container'));
                     }, 150).then(function () {
@@ -448,10 +450,22 @@
                         var items = picker.querySelectorAll('.emoji-picker li');
                         items[0].click()
                         expect(view.insertEmoji).toHaveBeenCalled();
+
+                        setTimeout(function () { timeout = true; }, 100);
+                        return test_utils.waitUntil(function () {
+                            return timeout;
+                        }, 300);
+                    }).then(function () {
+                        timeout = false;
                         toolbar.querySelector('li.toggle-smiley').click(); // Close the panel again
                         return test_utils.waitUntil(function () {
                             return !view.el.querySelector('.toggle-smiley .toolbar-menu').offsetHeight;
-                        }, 900);
+                        }, 300);
+                    }).then(function () {
+                        setTimeout(function () { timeout = true; }, 100);
+                        return test_utils.waitUntil(function () {
+                            return timeout;
+                        }, 300);
                     }).then(function () {
                         toolbar.querySelector('li.toggle-smiley').click();
                         expect(view.toggleEmojiMenu).toHaveBeenCalled();
@@ -485,12 +499,12 @@
                         test_utils.openChatBoxFor(_converse, contact_jid);
                         var view = _converse.chatboxviews.get(contact_jid);
                         var $toolbar = $(view.el).find('ul.chat-toolbar');
-                        expect($toolbar.children('li.toggle-otr').length).toBe(1);
+                        expect($toolbar.children('.toggle-otr').length).toBe(1);
                         // Register spies
                         spyOn(view, 'toggleOTRMenu').and.callThrough();
                         view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
 
-                        $toolbar[0].querySelector('li.toggle-otr').click();
+                        $toolbar[0].querySelector('.toggle-otr').click();
                         expect(view.toggleOTRMenu).toHaveBeenCalled();
                         done();
                     });

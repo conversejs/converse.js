@@ -66,6 +66,7 @@
 
     _.extend(_converse, Backbone.Events);
 
+    // Core plugins are whitelisted automatically
     _converse.core_plugins = [
         'converse-bookmarks',
         'converse-chatboxes',

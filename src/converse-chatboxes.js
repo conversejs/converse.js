@@ -368,15 +368,10 @@
                         jid = attrs.jid;
                     }
                     jid = Strophe.getBareJidFromJid(jid.toLowerCase());
-                    attrs.jid = jid;
-                    attrs.id = jid;
 
-                    if (!attrs.fullname) {
-                        const roster_item = _converse.roster.get(jid);
-                        attrs.fullname = roster_item.get('fullname');
-                    }
                     let  chatbox = this.get(Strophe.getBareJidFromJid(jid));
                     if (!chatbox && create) {
+                        _.extend(attrs, {'jid': jid, 'id': jid});
                         chatbox = this.create(attrs, {
                             'error' (model, response) {
                                 _converse.log(response.responseText);
@@ -492,9 +487,17 @@
                 'chats': {
                     'create' (jids, attrs) {
                         if (_.isUndefined(jids)) {
-                            _converse.log("chats.create: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+                            _converse.log(
+                                "chats.create: You need to provide at least one JID",
+                                Strophe.LogLevel.ERROR
+                            );
                             return null;
-                        } else if (_.isString(jids)) {
+                        }
+
+                        if (_.isString(jids)) {
+                            if (!attrs.fullname) {
+                                attrs.fullname = _.get(_converse.api.contacts.get(jids), 'attributes.fullname');
+                            }
                             const chatbox = _converse.chatboxes.getChatBox(jids, attrs, true);
                             if (_.isNil(chatbox)) {
                                 _converse.log("Could not open chatbox for JID: "+jids, Strophe.LogLevel.ERROR);
@@ -502,7 +505,10 @@
                             }
                             return chatbox;
                         }
-                        return _.map(jids, (jid) => _converse.chatboxes.getChatBox(jid, attrs, true).trigger('show'));
+                        return _.map(jids, (jid) => {
+                            attrs.fullname = _.get(_converse.api.contacts.get(jid), 'attributes.fullname');
+                            return _converse.chatboxes.getChatBox(jid, attrs, true).trigger('show');
+                        });
                     },
                     'open' (jids, attrs) {
                         if (_.isUndefined(jids)) {

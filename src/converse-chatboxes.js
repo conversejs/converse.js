@@ -498,7 +498,7 @@
                         }
 
                         if (_.isString(jids)) {
-                            if (!attrs.fullname) {
+                            if (attrs && !_.get(attrs, 'fullname')) {
                                 attrs.fullname = _.get(_converse.api.contacts.get(jids), 'attributes.fullname');
                             }
                             const chatbox = _converse.chatboxes.getChatBox(jids, attrs, true);

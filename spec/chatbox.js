@@ -224,16 +224,19 @@
                 // visible, but no other chat boxes have been created.
                 expect(_converse.chatboxes.length).toEqual(1);
 
-                spyOn(_converse.ChatBoxView.prototype, 'focus');
                 chatbox = test_utils.openChatBoxFor(_converse, contact_jid);
-
                 $el = $(_converse.rosterview.el).find('a.open-chat:contains("'+chatbox.get('fullname')+'")');
                 jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
+
+                spyOn(_converse, 'emit');
                 $el[0].click();
-                expect(_converse.chatboxes.length).toEqual(2);
-                var chatboxview = _converse.chatboxviews.get(contact_jid);
-                expect(chatboxview.focus).toHaveBeenCalled();
-                done();
+                test_utils.waitUntil(function () {
+                    return _converse.emit.calls.count();
+                }, 300).then(function () {
+                    expect(_converse.chatboxes.length).toEqual(2);
+                    expect(_converse.emit).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
+                    done();
+                });
             }));
 
 
@@ -280,9 +283,8 @@
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
                 test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('.roster-group').length;
-                    }, 300)
-                .then(function () {
+                    return $(_converse.rosterview.el).find('.roster-group').length;
+                }, 300).then(function () {
                     var chatbox = test_utils.openChatBoxes(_converse, 1)[0],
                         controlview = _converse.chatboxviews.get('controlbox'), // The controlbox is currently open
                         chatview = _converse.chatboxviews.get(chatbox.get('jid'));

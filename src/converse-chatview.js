@@ -1083,7 +1083,7 @@
                     return this;
                 },
 
-                afterShown (focus) {
+                afterShown () {
                     if (u.isPersistableModel(this.model)) {
                         this.model.clearUnreadMsgCounter();
                         this.model.save();
@@ -1091,21 +1091,18 @@
                     this.setChatState(_converse.ACTIVE);
                     this.renderEmojiPicker();
                     this.scrollDown();
-                    if (focus) {
-                        this.focus();
-                    }
                 },
 
-                _show (focus) {
+                _show (f) {
                     /* Inner show method that gets debounced */
                     if (u.isVisible(this.el)) {
-                        if (focus) { this.focus(); }
+                        this.focus();
                         return;
                     }
-                    u.fadeIn(this.el, _.bind(this.afterShown, this, focus));
+                    u.fadeIn(this.el, _.bind(this.afterShown, this));
                 },
 
-                show (focus) {
+                show () {
                     if (_.isUndefined(this.debouncedShow)) {
                         /* We wrap the method in a debouncer and set it on the
                          * instance, so that we have it debounced per instance.

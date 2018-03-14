@@ -517,7 +517,7 @@
                     }));
                 },
 
-                afterShown (focus) {
+                afterShown () {
                     /* Override from converse-chatview, specifically to avoid
                      * the 'active' chat state from being sent out prematurely.
                      *
@@ -530,18 +530,17 @@
                     this.occupantsview.setOccupantsHeight();
                     this.scrollDown();
                     this.renderEmojiPicker();
-                    if (focus) { this.focus(); }
                 },
 
-                show (focus) {
+                show () {
                     if (u.isVisible(this.el)) {
-                        if (focus) { this.focus(); }
+                        this.focus();
                         return;
                     }
                     // Override from converse-chatview in order to not use
                     // "fadeIn", which causes flashing.
                     u.showElement(this.el);
-                    this.afterShown(focus);
+                    this.afterShown();
                 },
 
                 afterConnected () {

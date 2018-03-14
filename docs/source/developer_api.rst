@@ -695,7 +695,9 @@ To return all contacts, simply call ``get`` without any parameters:
     });
 
 
-The returned roster contact objects have these attributes:
+The returned roster contact is a `Backbone.Model <http://backbonejs.org/#Model>`_ of type _converse.RosterContacts.
+
+It has the following attributes (which should be accessed via `get <http://backbonejs.org/#Model-get>`_).
 
 +----------------+-----------------------------------------------------------------------------------------------------------------+
 | Attribute      |                                                                                                                 |

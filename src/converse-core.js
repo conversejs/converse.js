@@ -1929,19 +1929,15 @@
         },
         'contacts': {
             'get' (jids) {
-                const _transform = function (jid) {
-                    const contact = _converse.roster.get(Strophe.getBareJidFromJid(jid));
-                    if (contact) {
-                        return contact.attributes;
-                    }
-                    return null;
+                const _getter = function (jid) {
+                    return _converse.roster.get(Strophe.getBareJidFromJid(jid)) || null;
                 };
                 if (_.isUndefined(jids)) {
                     jids = _converse.roster.pluck('jid');
                 } else if (_.isString(jids)) {
-                    return _transform(jids);
+                    return _getter(jids);
                 }
-                return _.map(jids, _transform);
+                return _.map(jids, _getter);
             },
             'add' (jid, name) {
                 if (!_.isString(jid) || !_.includes(jid, '@')) {

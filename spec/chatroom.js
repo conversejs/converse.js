@@ -1423,16 +1423,15 @@
                     var from_jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
                     var room_jid = 'lounge@localhost';
                     var reason = "Please join this chat room";
-                    var message = $(
-                        "<message from='"+from_jid+"' to='"+_converse.bare_jid+"'>" +
-                            "<x xmlns='jabber:x:conference'" +
-                                "jid='"+room_jid+"'" +
-                                "reason='"+reason+"'/>"+
-                        "</message>"
-                    )[0];
+
                     expect(_converse.chatboxes.models.length).toBe(1);
                     expect(_converse.chatboxes.models[0].id).toBe("controlbox");
-                    _converse.onDirectMUCInvitation(message);
+
+                    var stanza = Strophe.xmlHtmlNode(
+                        '<message xmlns="jabber:client" to="'+_converse.bare_jid+'" from="'+from_jid+'" id="9bceb415-f34b-4fa4-80d5-c0d076a24231">'+
+                            '<x xmlns="jabber:x:conference" jid="'+room_jid+'" reason="'+reason+'"/>'+
+                        '</message>').firstChild;
+                    _converse.onDirectMUCInvitation(stanza);
                     expect(window.confirm).toHaveBeenCalledWith(
                         name + ' has invited you to join a chat room: '+ room_jid +
                         ', and left the following reason: "'+reason+'"');
@@ -3142,26 +3141,41 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                var sendIQ = _converse.connection.sendIQ;
+                var sent_stanza, IQ_id;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+
                 test_utils.openControlBox();
                 var panel = _converse.chatboxviews.get('controlbox').roomspanel;
                 $(panel.tabs).find('li').last().find('a')[0].click(); // Click the chatrooms tab
                 panel.model.set({'muc_domain': 'muc.localhost'}); // Make sure the domain is set
                 // See: http://xmpp.org/extensions/xep-0045.html#disco-rooms
-                expect($('#available-chatrooms').children('dt').length).toBe(0);
-                expect($('#available-chatrooms').children('dd').length).toBe(0);
+                expect(document.querySelectorAll('#available-chatrooms dt').length).toBe(0);
+                expect(document.querySelectorAll('#available-chatrooms dd').length).toBe(0);
+                document.querySelector('input#show-rooms').click();
+
+                expect(sent_stanza.toLocaleString()).toBe(
+                    "<iq to='muc.localhost' from='dummy@localhost/resource' type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                        "<query xmlns='http://jabber.org/protocol/disco#items'/>"+
+                    "</iq>"
+                );
 
                 var iq = $iq({
                     from:'muc.localhost',
                     to:'dummy@localhost/pda',
+                    id: IQ_id,
                     type:'result'
                 }).c('query')
                   .c('item', { jid:'heath@chat.shakespeare.lit', name:'A Lonely Heath'}).up()
                   .c('item', { jid:'coven@chat.shakespeare.lit', name:'A Dark Cave'}).up()
                   .c('item', { jid:'forres@chat.shakespeare.lit', name:'The Palace'}).up()
                   .c('item', { jid:'inverness@chat.shakespeare.lit', name:'Macbeth&apos;s Castle'}).nodeTree;
+                _converse.connection._dataRecv(test_utils.createRequest(iq));
 
-                panel.onRoomsFound(iq);
-                expect($(panel.el.querySelector('#available-chatrooms')).children('dt').length).toBe(1);
+                expect(document.querySelectorAll('#available-chatrooms dt').length).toBe(1);
                 expect($(panel.el.querySelector('#available-chatrooms')).children('dt').first().text()).toBe("Rooms found");
                 expect($(panel.el.querySelector('#available-chatrooms')).children('dd').length).toBe(4);
                 done();

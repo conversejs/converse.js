@@ -452,9 +452,7 @@
                     });
                     this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
                         'beforeend',
-                        tpl_toolbar_otr(
-                            _.extend(this.model.toJSON(), options || {})
-                        ));
+                        tpl_toolbar_otr(_.extend(data, options || {})));
                 },
 
                 getToolbarOptions (options) {

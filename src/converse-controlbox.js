@@ -423,7 +423,7 @@
 
                 switchTab (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const tab = ev.target,
+                    const tab = u.hasClass('msgs-indicator', ev.target) ? ev.target.parentNode : ev.target,
                         sibling_li = tab.parentNode.nextElementSibling || tab.parentNode.previousElementSibling,
                         sibling = sibling_li.firstChild,
                         sibling_panel = _converse.root.querySelector(sibling.getAttribute('href')),

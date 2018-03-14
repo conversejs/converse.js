@@ -5,45 +5,45 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Converse.js 3.2.1\n"
+"Project-Id-Version: Converse.js 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-02-16 14:35+0000\n"
-"Last-Translator: Iru Cai (vimacs) <mytbk920423@gmail.com>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"conversejs/translations/zh_Hans/>\n"
-"Language: zh_CN\n"
+"PO-Revision-Date: 2018-02-15 18:40+0000\n"
+"Last-Translator: monolifed <monolifed@gmail.com>\n"
+"Language-Team: Turkish <https://hosted.weblate.org/projects/conversejs/"
+"translations/tr/>\n"
+"Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2.19\n"
 
 #: dist/converse-no-dependencies.js:7545
 msgid "The connection has dropped, attempting to reconnect."
-msgstr "连接已经掉线，正在尝试重新连接。"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:7643
 msgid "An error occurred while connecting to the chat server."
-msgstr "连接至聊天服务器时出现问题。"
+msgstr "Sohbet sunucusuna bağlanılırken bir hata oluştu."
 
 #: dist/converse-no-dependencies.js:7650
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
-msgstr "你的Jabber ID或密码不正确，请重新输入。"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:7662
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr "抱歉，我们未能连接至此XMPP服务器： "
+msgstr ""
 
 #: dist/converse-no-dependencies.js:7664
 msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr "XMPP服务器没有提供我们支持的验证方法"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:8359
 #, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
-msgstr "抱歉，添加%1$s为联系人时出现了问题。"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:8543
 msgid "This client does not allow presence subscriptions"
@@ -51,107 +51,103 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:8624
 msgid "Click to hide these contacts"
-msgstr "按此隐藏联系人"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:12668
 msgid "Close this chat box"
-msgstr "关闭此聊天对话窗口"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:12720
 #: dist/converse-no-dependencies.js:12757
 #: dist/converse-no-dependencies.js:18937
 msgid "You have unread messages"
-msgstr "你有未读信息"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:12743
-#, fuzzy
 msgid "Hidden message"
-msgstr "个人信息"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:12745
 msgid "Personal message"
-msgstr "个人信息"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:12752
 #: dist/converse-no-dependencies.js:18934
 msgid "Send"
-msgstr "发送"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:12753
 msgid "Optional hint"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:12809
-#, fuzzy
 msgid "Click to write as a normal (non-spoiler) message"
-msgstr "按此填写个性签名"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:12811
-#, fuzzy
 msgid "Click to write your message as a spoiler"
-msgstr "按此填写个性签名"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:12815
 msgid "Clear all messages"
-msgstr "清除所有信息"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:12816
 msgid "Insert a smiley"
-msgstr "输入表情"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:12817
 msgid "Start a call"
-msgstr "开始语音通话"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13012
 #: dist/converse-no-dependencies.js:13475
-#, fuzzy
 msgid "Show hidden message"
-msgstr "显示此菜单"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13064
 msgid "me"
-msgstr "我"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13119
 msgid "Typing from another device"
-msgstr "正在另一个装置上输入"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13121
 msgid "is typing"
-msgstr "正在输入"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13127
 msgid "Stopped typing on the other device"
-msgstr "已在另一个装置上停止输入"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13129
 msgid "has stopped typing"
-msgstr "已停止输入"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13134
 #: dist/converse-no-dependencies.js:13490
 #: dist/converse-no-dependencies.js:25001
 msgid "has gone away"
-msgstr "已经离开"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13262
 #: dist/converse-no-dependencies.js:19554
 msgid "Remove messages"
-msgstr "删除信息"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13262
 msgid "Write in the third person"
-msgstr "以第三人称输入"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13262
 #: dist/converse-no-dependencies.js:19554
 msgid "Show this menu"
-msgstr "显示此菜单"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13393
 msgid "Are you sure you want to clear the messages from this chat box?"
-msgstr "你确定要清除对话窗口的所有信息？"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13470
 msgid "Hide hidden message"
@@ -160,75 +156,75 @@ msgstr ""
 #: dist/converse-no-dependencies.js:13488
 #: dist/converse-no-dependencies.js:24999
 msgid "has gone offline"
-msgstr "已离线"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13492
 #: dist/converse-no-dependencies.js:25003
 msgid "is busy"
-msgstr "在忙碌"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13788
 msgid "Login"
-msgstr "登录"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13810
 msgid "Jabber ID:"
-msgstr "Jabber ID："
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13816
 msgid "Password:"
-msgstr "密码："
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13818
 msgid "password"
-msgstr "密码"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13822
 #: dist/converse-no-dependencies.js:20213
 msgid "Submit"
-msgstr "提交"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:13828
 msgid "Click here to log in anonymously"
-msgstr "按此以匿名登录"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14117
 msgid "This contact is busy"
-msgstr "此联系人正在忙碌"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14118
 msgid "This contact is online"
-msgstr "此联系人在线"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14119
 msgid "This contact is offline"
-msgstr "此联系人不在线"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14120
 msgid "This contact is unavailable"
-msgstr "此联系人不可用"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14121
 msgid "This contact is away for an extended period"
-msgstr "此联系人已离开了一段长时间"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14122
 msgid "This contact is away"
-msgstr "此联系人已离开"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14125
 #: dist/converse-no-dependencies.js:15628
 #: dist/converse-no-dependencies.js:16155
 msgid "Contacts"
-msgstr "联系人"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14127
 msgid "Groups"
-msgstr "群组"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14129
 msgid "My contacts"
-msgstr "我的联系人"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14131
 msgid "Pending contacts"
@@ -236,89 +232,89 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:14133
 msgid "Contact requests"
-msgstr "联系人请求"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14135
 msgid "Ungrouped"
-msgstr "未分组的"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14194
 msgid "Filter"
-msgstr "筛选"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14197
 msgid "State"
-msgstr "状态"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14198
 msgid "Any"
-msgstr "任意"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14199
 msgid "Unread"
-msgstr "未读"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14200
 #: dist/converse-no-dependencies.js:15980
 msgid "Online"
-msgstr "在线"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14201
 msgid "Chatty"
-msgstr "经常联系"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14202
 #: dist/converse-no-dependencies.js:15981
 msgid "Busy"
-msgstr "忙碌"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14203
 #: dist/converse-no-dependencies.js:15982
 msgid "Away"
-msgstr "离开"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14204
 msgid "Extended Away"
-msgstr "长期离开"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14205
 #: dist/converse-no-dependencies.js:15983
 msgid "Offline"
-msgstr "离线"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14380
 #: dist/converse-no-dependencies.js:14403
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
-msgstr "按此删除%1$s为联络人"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14386
 #, javascript-format
 msgid "Click to accept the contact request from %1$s"
-msgstr "按此接受%1$s的联系人请求"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14387
 #, javascript-format
 msgid "Click to decline the contact request from %1$s"
-msgstr "按此拒绝%1$s的联系人请求"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14402
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to chat with %1$s (JID: %2$s)"
-msgstr "按此与此联系人聊天"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14447
 msgid "Are you sure you want to remove this contact?"
-msgstr "你确定要删除此联系人吗？"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14464
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
-msgstr "抱歉，删除%1$s为联系人时出现了问题。"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:14486
 msgid "Are you sure you want to decline this contact request?"
-msgstr "你确定要拒绝此联系人请求吗？"
+msgstr ""
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
@@ -326,99 +322,99 @@ msgstr "你确定要拒绝此联系人请求吗？"
 #: dist/converse-no-dependencies.js:15398
 #, javascript-format
 msgid "I am %1$s"
-msgstr "我正%1$s"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:15331
 #: dist/converse-no-dependencies.js:15405
 msgid "Click here to write a custom status message"
-msgstr "按此填写个性签名"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:15332
 #: dist/converse-no-dependencies.js:15406
 msgid "Click to change your chat status"
-msgstr "按此更改你的聊天状态"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:15358
 msgid "Custom status"
-msgstr "个性签名"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:15359
 #: dist/converse-no-dependencies.js:19842
 #: dist/converse-no-dependencies.js:21920
 msgid "Save"
-msgstr "保存"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:15381
 #: dist/converse-no-dependencies.js:15391
 msgid "online"
-msgstr "在线"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:15383
 msgid "busy"
-msgstr "忙碌"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:15385
 msgid "away for long"
-msgstr "长期离开"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:15387
 msgid "away"
-msgstr "离开"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:15389
 msgid "offline"
-msgstr "离线"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:15896
 msgid "Username"
-msgstr "用户名"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:15896
 msgid "user@domain"
-msgstr "用户@域名"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:15904
 #: dist/converse-no-dependencies.js:16104
 msgid "Please enter a valid XMPP address"
-msgstr "请输入有效的XMPP地址"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:15984
 msgid "Log out"
-msgstr "登出"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:15991
 msgid "Click to add new chat contacts"
-msgstr "按此添加聊天联系人"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:15992
 msgid "Add a contact"
-msgstr "添加联系人"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:16031
 msgid "Contact name"
-msgstr "联系人名称"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:16032
 msgid "Search"
-msgstr "搜索"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:16037
 #: dist/converse-no-dependencies.js:16105
 msgid "e.g. user@example.org"
-msgstr "例如，user@example.org"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:16038
 #: dist/converse-no-dependencies.js:16106
 msgid "Add"
-msgstr "添加"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:16070
 msgid "No users found"
-msgstr "找不到用户"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:16074
 msgid "Click to add as a chat contact"
-msgstr "按此添加为聊天联系人"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:16155
 msgid "Toggle chat"
@@ -426,19 +422,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:18695
 msgid "This room is not anonymous"
-msgstr "此聊天室不是匿名的"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:18696
 msgid "This room now shows unavailable members"
-msgstr "此聊天室显示不可用的成员"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:18697
 msgid "This room does not show unavailable members"
-msgstr "此聊天室不显示不可用的成员"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:18698
 msgid "The room configuration has changed"
-msgstr "此聊天室设置已被更改"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:18699
 msgid "Room logging is now enabled"
@@ -450,19 +446,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:18701
 msgid "This room is now no longer anonymous"
-msgstr "这个聊天室现在不再匿名"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:18702
 msgid "This room is now semi-anonymous"
-msgstr "这个聊天室现在半匿名"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:18703
 msgid "This room is now fully-anonymous"
-msgstr "这个聊天室现在完全匿名"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:18704
 msgid "A new room has been created"
-msgstr "已经创建一个聊天室"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:18707
 msgid "You have been banned from this room"
@@ -924,9 +920,8 @@ msgid "Rooms"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:21196
-#, fuzzy
 msgid "No rooms found"
-msgstr "找不到用户"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:21208
 #: dist/converse-no-dependencies.js:22191
@@ -941,9 +936,8 @@ msgid "Show more information on this room"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:21224
-#, fuzzy
 msgid "Rooms found"
-msgstr "找不到用户"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:21301
 msgid "Description:"
@@ -1337,13 +1331,3 @@ msgstr ""
 #: dist/converse-no-dependencies.js:25680
 msgid "Minimized"
 msgstr ""
-
-#~ msgid "Name"
-#~ msgstr "名称"
-
-#~ msgid ""
-#~ "A very large message has been received. This might be due to an attack "
-#~ "meant to degrade the chat performance. Output has been shortened."
-#~ msgstr ""
-#~ "我们接收了一个非常大的信息。这可能是一个攻击，意图以信息的大小降低聊天质"
-#~ "量。所以，我们缩短了输出的信息。"

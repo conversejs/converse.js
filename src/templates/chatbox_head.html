@@ -4,7 +4,7 @@
         <img alt="User Avatar"
             class="avatar"
             height="{{{o.avatar_height}}}px" width="{{{o.avatar_width}}}px"
-            src="data:{{{o.image_type}}};base64,{{{o.image}}}"/>
+            src="data:{{{o.image_type || o._converse.DEFAULT_IMAGE_TYPE}}};base64,{{{o.image || o._converse.DEFAULT_IMAGE}}}"/>
     {[ } ]}
     <div class="chat-title">
         {[ if (o.url) { ]}

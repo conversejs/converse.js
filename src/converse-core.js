@@ -308,9 +308,9 @@
             keepalive: true,
             locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
             locales: [
-                'af', 'ca', 'de', 'es', 'en', 'fr', 'he',
+                'af', 'bg', 'ca', 'de', 'es', 'en', 'fr', 'he',
                 'hu', 'id', 'it', 'ja', 'nb', 'nl',
-                'pl', 'pt_BR', 'ru', 'uk', 'zh_CN', 'zh_TW'
+                'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'
             ],
             message_carbons: true,
             message_storage: 'session',
@@ -878,9 +878,10 @@
             },
 
             initialize (attributes) {
-                const { jid } = attributes;
-                const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
-                const resource = Strophe.getResourceFromJid(jid);
+                const { jid } = attributes,
+                      bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase(),
+                      resource = Strophe.getResourceFromJid(jid);
+
                 attributes.jid = bare_jid;
                 this.set(_.assignIn({
                     'fullname': bare_jid,
@@ -1503,7 +1504,7 @@
             constructPresence (type, status_message) {
                 let presence;
                 type = _.isString(type) ? type : (this.get('status') || _converse.default_state);
-                status_message = _.isString(status_message) ? status_message : undefined;
+                status_message = _.isString(status_message) ? status_message : this.get('status_message');
                 // Most of these presence types are actually not explicitly sent,
                 // but I add all of them here for reference and future proofing.
                 if ((type === 'unavailable') ||
@@ -2051,6 +2052,6 @@
             'utils': u
         }
     };
-    window.dispatchEvent(new Event('converse-loaded'));
+    window.dispatchEvent(new CustomEvent('converse-loaded'));
     return window.converse;
 }));

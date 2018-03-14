@@ -350,8 +350,8 @@
                         return $(chatview.el).find('.chat-body').is(':visible');
                     }, 500);
                 }).then(function () {
-                    expect($(chatview.el).find('.toggle-chatbox-button').hasClass('icon-minus')).toBeTruthy();
-                    expect($(chatview.el).find('.toggle-chatbox-button').hasClass('icon-plus')).toBeFalsy();
+                    expect($(chatview.el).find('.toggle-chatbox-button').hasClass('fa-minus')).toBeTruthy();
+                    expect($(chatview.el).find('.toggle-chatbox-button').hasClass('fa-plus')).toBeFalsy();
                     expect(chatview.model.get('minimized')).toBeFalsy();
                     done();
                 });
@@ -678,11 +678,11 @@
                             var chatboxview = _converse.chatboxviews.get(sender_jid);
                             expect(chatbox).toBeDefined();
                             expect(chatboxview).toBeDefined();
-                            // XXX: I don't really like the convention of
-                            // setting "fullname" to the JID if there's
-                            // no fullname. Should ideally be null if
-                            // there's no fullname.
+
+                            var author_el = chatboxview.el.querySelector('.chat-msg-author');
                             expect(chatbox.get('fullname') === sender_jid);
+                            expect( _.includes(author_el.textContent, 'max.frankfurter@localhost')).toBeTruthy();
+
                             test_utils.waitUntil(function () { return vcard_fetched; }, 100)
                             .then(function () {
                                 expect(_converse.api.vcard.get).toHaveBeenCalled();
@@ -718,12 +718,12 @@
                             // We don't already have an open chatbox for this user
                             expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
 
+                            var chatbox = _converse.chatboxes.get(sender_jid);
+                            expect(chatbox).not.toBeDefined();
+
                             // onMessage is a handler for received XMPP messages
                             _converse.chatboxes.onMessage(msg);
                             expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-
-                            var chatbox = _converse.chatboxes.get(sender_jid);
-                            expect(chatbox).not.toBeDefined();
 
                             // onMessage is a handler for received XMPP messages
                             _converse.allow_non_roster_messaging =true;
@@ -744,7 +744,7 @@
                             expect(msg_obj.get('delayed')).toEqual(false);
                             // Now check that the message appears inside the chatbox in the DOM
                             var $chat_content = $(chatboxview.el).find('.chat-content');
-                            var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
+                            var msg_txt = $chat_content.find('.chat-message .chat-msg-content').text();
                             expect(msg_txt).toEqual(message);
                             var sender_txt = $chat_content.find('span.chat-msg-them').text();
                             expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
@@ -1331,10 +1331,9 @@
                 }));
 
                 it("received for a minimized chat box will increment a counter on its header",
-
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
@@ -1439,7 +1438,7 @@
 
                         var $time = $chat_content.find('time');
                         expect($time.length).toEqual(1);
-                        expect($time.attr('class')).toEqual('message chat-info chat-date');
+                        expect($time.attr('class')).toEqual('message chat-info chat-date badge badge-info');
                         expect($time.data('isodate')).toEqual(moment(one_day_ago.startOf('day')).format());
                         expect($time.text()).toEqual(moment(one_day_ago.startOf('day')).format("dddd MMM Do YYYY"));
 
@@ -1459,7 +1458,7 @@
                         expect($time.length).toEqual(2); // There are now two time elements
                         $time = $chat_content.find('time:last'); // We check the last one
                         var message_date = new Date();
-                        expect($time.attr('class')).toEqual('message chat-info chat-date');
+                        expect($time.attr('class')).toEqual('message chat-info chat-date badge badge-info');
                         expect($time.data('isodate')).toEqual(moment(message_date).startOf('day').format());
                         expect($time.text()).toEqual(moment(message_date).startOf('day').format("dddd MMM Do YYYY"));
 
@@ -1502,9 +1501,9 @@
                 }));
 
                 it("is sanitized to prevent Javascript injection attacks",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
@@ -1544,9 +1543,9 @@
                 }));
 
                 it("will have properly escaped URLs",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
@@ -1644,9 +1643,9 @@
                 }));
 
                 it("will render the message time as configured",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
 
                     test_utils.createContacts(_converse, 'current');
 

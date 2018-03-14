@@ -102,26 +102,26 @@
                 _converse.auto_away = 3;
                 _converse.auto_xa = 6;
 
-                expect(_converse.xmppstatus.getStatus()).toBe('online');
+                expect(_converse.api.user.status.get()).toBe('online');
                 while (i <= _converse.auto_away) {
                     _converse.onEverySecond(); i++;
                 }
                 expect(_converse.auto_changed_status).toBe(true);
 
                 while (i <= _converse.auto_xa) {
-                    expect(_converse.xmppstatus.getStatus()).toBe('away');
+                    expect(_converse.api.user.status.get()).toBe('away');
                     _converse.onEverySecond();
                     i++;
                 }
-                expect(_converse.xmppstatus.getStatus()).toBe('xa');
+                expect(_converse.api.user.status.get()).toBe('xa');
                 expect(_converse.auto_changed_status).toBe(true);
 
                 _converse.onUserActivity();
-                expect(_converse.xmppstatus.getStatus()).toBe('online');
+                expect(_converse.api.user.status.get()).toBe('online');
                 expect(_converse.auto_changed_status).toBe(false);
 
                 // Check that it also works for the chat feature
-                _converse.xmppstatus.setStatus('chat');
+                _converse.api.user.status.set('chat')
                 i = 0;
                 while (i <= _converse.auto_away) {
                     _converse.onEverySecond();
@@ -129,36 +129,36 @@
                 }
                 expect(_converse.auto_changed_status).toBe(true);
                 while (i <= _converse.auto_xa) {
-                    expect(_converse.xmppstatus.getStatus()).toBe('away');
+                    expect(_converse.api.user.status.get()).toBe('away');
                     _converse.onEverySecond();
                     i++;
                 }
-                expect(_converse.xmppstatus.getStatus()).toBe('xa');
+                expect(_converse.api.user.status.get()).toBe('xa');
                 expect(_converse.auto_changed_status).toBe(true);
 
                 _converse.onUserActivity();
-                expect(_converse.xmppstatus.getStatus()).toBe('online');
+                expect(_converse.api.user.status.get()).toBe('online');
                 expect(_converse.auto_changed_status).toBe(false);
 
                 // Check that it doesn't work for 'dnd'
-                _converse.xmppstatus.setStatus('dnd');
+                _converse.api.user.status.set('dnd');
                 i = 0;
                 while (i <= _converse.auto_away) {
                     _converse.onEverySecond();
                     i++;
                 }
-                expect(_converse.xmppstatus.getStatus()).toBe('dnd');
+                expect(_converse.api.user.status.get()).toBe('dnd');
                 expect(_converse.auto_changed_status).toBe(false);
                 while (i <= _converse.auto_xa) {
-                    expect(_converse.xmppstatus.getStatus()).toBe('dnd');
+                    expect(_converse.api.user.status.get()).toBe('dnd');
                     _converse.onEverySecond();
                     i++;
                 }
-                expect(_converse.xmppstatus.getStatus()).toBe('dnd');
+                expect(_converse.api.user.status.get()).toBe('dnd');
                 expect(_converse.auto_changed_status).toBe(false);
 
                 _converse.onUserActivity();
-                expect(_converse.xmppstatus.getStatus()).toBe('dnd');
+                expect(_converse.api.user.status.get()).toBe('dnd');
                 expect(_converse.auto_changed_status).toBe(false);
             }));
         });
@@ -248,16 +248,15 @@
                 expect(_converse.api.contacts.get('non-existing@jabber.org')).toBeFalsy();
                 // Check when a single jid is given
                 var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var attrs = _converse.api.contacts.get(jid);
-                expect(typeof attrs).toBe('object');
-                expect(attrs.fullname).toBe(mock.cur_names[0]);
-                expect(attrs.jid).toBe(jid);
+                var contact = _converse.api.contacts.get(jid);
+                expect(contact.get('fullname')).toBe(mock.cur_names[0]);
+                expect(contact.get('jid')).toBe(jid);
                 // You can retrieve multiple contacts by passing in an array
                 var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var list = _converse.api.contacts.get([jid, jid2]);
                 expect(_.isArray(list)).toBeTruthy();
-                expect(list[0].fullname).toBe(mock.cur_names[0]);
-                expect(list[1].fullname).toBe(mock.cur_names[1]);
+                expect(list[0].get('fullname')).toBe(mock.cur_names[0]);
+                expect(list[1].get('fullname')).toBe(mock.cur_names[1]);
                 // Check that all JIDs are returned if you call without any parameters
                 list = _converse.api.contacts.get();
                 expect(list.length).toBe(mock.cur_names.length);

@@ -9,7 +9,7 @@
 
 <a class="right close-room icon-leave"
    data-room-jid="{{{o.jid}}}"
-   data-room-name="{{{o.name}}}"
+   data-room-name="{{{o.name || o.jid}}}"
    title="{{{o.info_leave_room}}}" href="#">&nbsp;</a>
 
 {[ if (o.allow_bookmarks) { ]}

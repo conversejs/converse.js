@@ -1091,6 +1091,7 @@
                     this.setChatState(_converse.ACTIVE);
                     this.renderEmojiPicker();
                     this.scrollDown();
+                    this.focus();
                 },
 
                 _show (f) {

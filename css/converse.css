@@ -6250,8 +6250,7 @@ body.reset {
       width: 100%; }
     #conversejs:not(.fullscreen) #minimized-chats .minimized-chats-flyout.minimized {
       height: auto; }
-  #conversejs:not(.fullscreen) #minimized-chats .unread-message-count,
-  #conversejs:not(.fullscreen) #minimized-chats .chat-head-message-count {
+  #conversejs:not(.fullscreen) #minimized-chats .unread-message-count {
     font-weight: bold;
     background-color: white;
     border: 1px solid;

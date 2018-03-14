@@ -487,24 +487,29 @@
                         null, ['rosterGroupsFetched'], {},
                         function (done, _converse) {
 
+                    var timeout = true, $toolbar, view;
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
 
                     test_utils.waitUntil(function () {
-                            return $(_converse.rosterview.el).find('.roster-group').length;
-                        }, 300)
-                    .then(function () {
+                        return $(_converse.rosterview.el).find('.roster-group').length;
+                    }, 300).then(function () {
                         // TODO: More tests can be added here...
                         var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openChatBoxFor(_converse, contact_jid);
-                        var view = _converse.chatboxviews.get(contact_jid);
-                        var $toolbar = $(view.el).find('ul.chat-toolbar');
-                        expect($toolbar.children('.toggle-otr').length).toBe(1);
+                        view = _converse.chatboxviews.get(contact_jid);
+                        $toolbar = $(view.el).find('ul.chat-toolbar');
+                        expect($toolbar.find('.toggle-otr').length).toBe(1);
                         // Register spies
                         spyOn(view, 'toggleOTRMenu').and.callThrough();
                         view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
 
+                        timeout = false;
                         $toolbar[0].querySelector('.toggle-otr').click();
+                        return test_utils.waitUntil(function () {
+                            return view.el.querySelector('.otr-menu').offsetHeight;
+                        }, 300)
+                    }).then(function () {
                         expect(view.toggleOTRMenu).toHaveBeenCalled();
                         done();
                     });
@@ -1360,7 +1365,7 @@
                         expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                         var trimmed_chatboxes = _converse.minimized_chats;
                         var trimmedview = trimmed_chatboxes.get(contact_jid);
-                        var $count = $(trimmedview.el).find('.chat-head-message-count');
+                        var $count = $(trimmedview.el).find('.message-count');
                         expect(u.isVisible(chatview.el)).toBeFalsy();
                         expect(trimmedview.model.get('minimized')).toBeTruthy();
                         expect(u.isVisible($count[0])).toBeTruthy();
@@ -1376,7 +1381,7 @@
                         );
                         expect(u.isVisible(chatview.el)).toBeFalsy();
                         expect(trimmedview.model.get('minimized')).toBeTruthy();
-                        $count = $(trimmedview.el).find('.chat-head-message-count');
+                        $count = $(trimmedview.el).find('.message-count');
                         expect(u.isVisible($count[0])).toBeTruthy();
                         expect($count.html()).toBe('2');
                         trimmedview.el.querySelector('.restore-chat').click();
@@ -2676,7 +2681,7 @@
                 };
                 var selectUnreadMsgCount = function () {
                     var minimizedChatBoxView = _converse.minimized_chats.get(sender_jid);
-                    return $(minimizedChatBoxView.el).find('.chat-head-message-count');
+                    return $(minimizedChatBoxView.el).find('.message-count');
                 };
 
                 var chatbox = _converse.chatboxes.get(sender_jid);
@@ -2706,7 +2711,7 @@
                 };
                 var selectUnreadMsgCount = function () {
                     var minimizedChatBoxView = _converse.minimized_chats.get(sender_jid);
-                    return $(minimizedChatBoxView.el).find('.chat-head-message-count');
+                    return $(minimizedChatBoxView.el).find('.message-count');
                 };
 
                 var chatboxview = _converse.chatboxviews.get(sender_jid);

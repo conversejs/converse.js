@@ -337,7 +337,10 @@
                         resource = from_resource;
                     }
                     // Get chat box, but only create a new one when the message has a body.
-                    const chatbox = this.getChatBox(contact_jid, {}, !_.isNull(message.querySelector('body'))),
+                    const attrs = {
+                        'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
+                    }
+                    const chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(message.querySelector('body'))),
                           msgid = message.getAttribute('id');
 
                     if (chatbox) {

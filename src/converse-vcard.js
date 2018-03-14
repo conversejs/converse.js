@@ -129,7 +129,7 @@
             _converse.api.settings.update({'use_vcards': true});
 
             _converse.createRequestingContactFromVCard = function (presence, vcard) {
-                const bare_jid = Strophe.getBareJidFromJid(vcard.jid);
+                const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
                 let fullname = vcard.fullname;
                 if (!fullname) {
                     const nick_el = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence);

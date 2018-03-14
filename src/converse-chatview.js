@@ -1186,6 +1186,27 @@
                 // Advertise that we support XEP-0382 Message Spoilers
                 _converse.connection.disco.addFeature(Strophe.NS.SPOILER);
             });
+
+
+            /************************ BEGIN API ************************/
+            _.extend(_converse.api, {
+                'chatviews': {
+                    'get' (jids) {
+                        if (_.isUndefined(jids)) {
+                            _converse.log(
+                                "chats.create: You need to provide at least one JID",
+                                Strophe.LogLevel.ERROR
+                            );
+                            return null;
+                        }
+                        if (_.isString(jids)) {
+                            return _converse.chatboxviews.get(jids);
+                        }
+                        return _.map(jids, (jid) => _converse.chatboxviews.get(jids));
+                    }
+                }
+            });
+            /************************ END API ************************/
         }
     });
 

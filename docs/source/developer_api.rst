@@ -864,6 +864,31 @@ To return an array of chatboxes, provide an array of JIDs:
 | url         | The URL of the chatbox heading.                    |
 +-------------+-----------------------------------------------------+
 
+The **chatviews** grouping
+----------------------
+
+.. note:: This is only for private chats.
+
+get
+~~~
+
+Returns a `Backbone.View <http://backbonejs.org/#View>`_ of type _converse.ChatBoxView.
+
+The chat should already be open, otherwise `undefined` will be returned.
+
+To return a single view, provide the JID of the contact:
+
+.. code-block:: javascript
+
+    _converse.api.chatviews.get('buddy@example.com')
+
+To return an array of views, provide an array of JIDs:
+
+.. code-block:: javascript
+
+    _converse.api.chatviews.get(['buddy1@example.com', 'buddy2@example.com'])
+
+
 .. _`listen-grouping`:
 
 The **listen** grouping

@@ -1427,7 +1427,7 @@ different builds, each for the different modes.
 These were:
 
 * ``converse-mobile.js`` for the ``mobile`` mode
-* ``converse-muc-embedded.js`` for embedding a single MUC room into the page.
+* ``converse-muc-embedded.js`` for embedding a single MUC room into a DOM element with id ``conversejs``
 * ``converse.js`` for the ``overlayed`` mode
 * ``inverse.js`` for the ``fullscreen`` mode
 

@@ -365,9 +365,8 @@
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
                 test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('.roster-group').length;
-                    }, 300)
-                .then(function () {
+                    return $(_converse.rosterview.el).find('.roster-group').length;
+                }, 300).then(function () {
                     spyOn(_converse, 'emit');
                     spyOn(_converse.chatboxviews, 'trimChats');
                     _converse.chatboxes.browserStorage._clear();

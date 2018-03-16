@@ -128,7 +128,6 @@
 
             _converse.AddContactModal = _converse.BootstrapModal.extend({
                 events: {
-                    'click a.subscribe-to-user': 'addContactFromList',
                     'submit form': 'addContactFromForm',
                     'submit form.search-xmpp-contact': 'searchContacts'
                 },

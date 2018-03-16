@@ -1,7 +1,7 @@
 # converse.js
 
 [![XMPP Chat](https://inverse.chat/badge.svg?room=discuss@conference.conversejs.org)](https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org)
-[![Travis](https://api.travis-ci.org/jcbrand/converse.js.png?branch=master)](https://travis-ci.org/jcbrand/converse.js)
+[![Travis](https://api.travis-ci.org/conversejs/converse.js.png?branch=master)](https://travis-ci.org/conversejs/converse.js)
 [![Bountysource bounties](https://img.shields.io/bountysource/team/converse.js/activity.svg?maxAge=2592000)](https://www.bountysource.com/teams/converse.js/issues?tracker_ids=194169)
 [![Translation status](https://hosted.weblate.org/widgets/conversejs/-/svg-badge.svg)](https://hosted.weblate.org/engage/conversejs/?utm_source=widget)
 
@@ -40,7 +40,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 
 ## Features
 
--   A [plugin architecture](https://conversejs.org/docs/html/plugin_development.html) based on [pluggable.js](https://jcbrand.github.io/pluggable.js/)
+-   A [plugin architecture](https://conversejs.org/docs/html/plugin_development.html) based on [pluggable.js](https://conversejs.github.io/pluggable.js/)
 -   Single-user and group chats
 -   Contacts and groups
 -   Multi-user chat rooms [XEP 45](http://xmpp.org/extensions/xep-0045.html)
@@ -90,7 +90,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 
 We use behavior-driven tests written with [jasmine.js](https://jasmine.github.io/).
 
-Open [tests.html](https://github.com/jcbrand/converse.js/blob/master/tests.html) in your browser, and the tests will run automatically.
+Open [tests.html](https://github.com/conversejs/converse.js/blob/master/tests.html) in your browser, and the tests will run automatically.
 
 ## Licence
 
@@ -102,7 +102,7 @@ For support queries and discussions, please join the mailing list: <conversejs@l
 
 Also take a look at the [mailing list archives](http://librelist.com/browser/conversejs).
 
-Issues can be logged on the [Github issue tracker](https://github.com/jcbrand/converse.js/issues).
+Issues can be logged on the [Github issue tracker](https://github.com/conversejs/converse.js/issues).
 
 ## Donations
 

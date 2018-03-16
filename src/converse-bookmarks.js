@@ -427,7 +427,7 @@
                         'info_remove_bookmark': __('Unbookmark this room'),
                         'info_title': __('Show more information on this room'),
                         'jid': this.model.get('jid'),
-                        'name': this.model.get('name'),
+                        'name': Strophe.xmlunescape(this.model.get('name')),
                         'open_title': __('Click to open this room')
                     });
                 }

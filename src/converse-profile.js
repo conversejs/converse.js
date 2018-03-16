@@ -100,7 +100,6 @@
                 events: {
                     "click a.show-profile": "showProfileModal",
                     "click a.change-status": "showStatusChangeModal",
-                    "click .dropdown dd ul li a": "setStatus",
                     "click .logout": "logOut"
                 },
 
@@ -142,12 +141,6 @@
                     if (result === true) {
                         _converse.logOut();
                     }
-                },
-
-                setStatus (ev) {
-                    ev.preventDefault();
-                    const value = ev.target.getAttribute('data-value');
-                    this.model.set('status', value);
                 },
 
                 getPrettyStatus (stat) {

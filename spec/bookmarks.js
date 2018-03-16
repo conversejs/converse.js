@@ -285,7 +285,7 @@
                     [{'category': 'pubsub', 'type': 'pep'}],
                     ['http://jabber.org/protocol/pubsub#publish-options']
                 ).then(function () {
-                    spyOn(_converse.api.rooms, 'open');
+                    spyOn(_converse.api.rooms, 'create').and.callThrough();
                     var jid = 'theplay@conference.shakespeare.lit';
                     var model = _converse.bookmarks.create({
                         'jid': jid,
@@ -293,7 +293,7 @@
                         'name':  'The Play',
                         'nick': ''
                     });
-                    expect(_converse.api.rooms.open).not.toHaveBeenCalled();
+                    expect(_converse.api.rooms.create).not.toHaveBeenCalled();
                     _converse.bookmarks.remove(model);
 
                     _converse.bookmarks.create({
@@ -302,7 +302,7 @@
                         'name':  'Hamlet',
                         'nick': ''
                     });
-                    expect(_converse.api.rooms.open).toHaveBeenCalled();
+                    expect(_converse.api.rooms.create).toHaveBeenCalled();
                     done();
                 });
             }));

@@ -20,8 +20,7 @@
             &.chatbox-btn {
                 &.fa {
                     color: $chat-head-text-color;
-                    &.button-on {
-                        background-color: $chat-head-text-color;
+                    &.button-on:before {
                         color: $chatroom-head-color;
                     }
                 }
@@ -29,8 +28,7 @@
         }
 
         .chatbox-btn {
-            &.button-on {
-                background-color: $chat-head-text-color;
+            &.button-on:before {
                 color: $chatroom-head-color;
             }
         }

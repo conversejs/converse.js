@@ -70,8 +70,9 @@
             &.chatbox-btn {
                 &.fa {
                     color: white;
-                    &.button-on {
-                        background-color: white;
+                    &.button-on:before {
+                        padding: 0.2em;
+                        background-color: $chat-head-text-color;
                         color: $chat-head-color;
                     }
                 }
@@ -87,8 +88,9 @@
                 position: relative;
                 top: 1px;
             }
-            &.button-on {
-                background-color: white;
+            &.button-on:before {
+                border-radius: 5%;
+                background-color: $chat-head-text-color;
                 color: $chat-head-color;
             }
         }

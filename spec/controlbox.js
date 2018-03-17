@@ -41,12 +41,14 @@
                 test_utils.createContacts(_converse, 'all').openControlBox();
 
                 var contacts_panel = _converse.chatboxviews.get('controlbox').contactspanel;
-                expect(_.isNull(contacts_panel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
 
                 var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 test_utils.openChatBoxFor(_converse, sender_jid);
                 var chatview = _converse.chatboxviews.get(sender_jid);
                 chatview.model.set({'minimized': true});
+
+                expect(_.isNull(_converse.chatboxviews.el.querySelector('.restore-chat .message-count'))).toBeTruthy();
+                expect(_.isNull(_converse.rosterview.el.querySelector('.msgs-indicator'))).toBeTruthy();
 
                 var msg = $msg({
                         from: sender_jid,
@@ -56,7 +58,8 @@
                     }).c('body').t('hello').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 _converse.chatboxes.onMessage(msg);
-                expect(contacts_panel.tab_el.querySelector('.msgs-indicator').textContent).toBe('1');
+                expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('1');
+                expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('1');
 
                 msg = $msg({
                         from: sender_jid,
@@ -66,14 +69,12 @@
                     }).c('body').t('hello again').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 _converse.chatboxes.onMessage(msg);
-                expect(contacts_panel.tab_el.querySelector('.msgs-indicator').textContent).toBe('2');
-
-                var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
-                expect(_.isNull(roomspanel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
+                expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('2');
+                expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('2');
 
                 chatview.model.set({'minimized': false});
-                expect(_.includes(contacts_panel.tab_el.firstChild.classList, 'unread-msgs')).toBeFalsy();
-                expect(_.isNull(contacts_panel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
+                expect(_.isNull(_converse.chatboxviews.el.querySelector('.restore-chat .message-count'))).toBeTruthy();
+                expect(_.isNull(_converse.rosterview.el.querySelector('.msgs-indicator'))).toBeTruthy();
                 done();
             }));
         });
@@ -87,8 +88,8 @@
 
                 test_utils.openControlBox();
                 var view = _converse.xmppstatusview;
-                expect($(view.el).find('a.choose-xmpp-status').hasClass('online')).toBe(true);
-                expect($(view.el).find('a.choose-xmpp-status').attr('data-value')).toBe('I am online');
+                expect($(view.el).find('.xmpp-status span:first-child').hasClass('online')).toBe(true);
+                expect(view.el.querySelector('.xmpp-status span.online').textContent.trim()).toBe('I am online');
                 done();
             }));
 
@@ -98,23 +99,25 @@
                     function (done, _converse) {
 
                 test_utils.openControlBox();
-                var view = _converse.xmppstatusview;
-                spyOn(view, 'toggleOptions').and.callThrough();
-                spyOn(view, 'setStatus').and.callThrough();
-                spyOn(_converse, 'emit');
-                view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                view.el.querySelector('a.choose-xmpp-status').click();
-                expect(view.toggleOptions).toHaveBeenCalled();
-                spyOn(view, 'updateStatusUI').and.callThrough();
-                view.initialize(); // Rebind events for spy
-                $(view.el).find('.dropdown dd ul li a')[1].click(); // Change status to "dnd"
-                expect(view.setStatus).toHaveBeenCalled();
-                expect(_converse.emit).toHaveBeenCalledWith('statusChanged', 'dnd');
-                expect(view.updateStatusUI).toHaveBeenCalled();
-                expect($(view.el).find('a.choose-xmpp-status').hasClass('online')).toBe(false);
-                expect($(view.el).find('a.choose-xmpp-status').hasClass('dnd')).toBe(true);
-                expect($(view.el).find('a.choose-xmpp-status').attr('data-value')).toBe('I am busy');
-                done();
+
+                var cbview = _converse.chatboxviews.get('controlbox');
+                cbview.el.querySelector('.change-status').click()
+                var modal = _converse.xmppstatusview.status_modal;
+
+                test_utils.waitUntil(function () {
+                    return u.isVisible(modal.el);
+                }, 1000).then(function () {
+                    var view = _converse.xmppstatusview;
+                    spyOn(_converse, 'emit');
+                    modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
+                    modal.el.querySelector('[type="submit"]').click();
+
+                    expect(_converse.emit).toHaveBeenCalledWith('statusChanged', 'dnd');
+                    expect($(view.el).find('.xmpp-status span:first-child').hasClass('online')).toBe(false);
+                    expect($(view.el).find('.xmpp-status span:first-child').hasClass('dnd')).toBe(true);
+                    expect(view.el.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe('I am busy');
+                    done();
+                });
             }));
 
             it("can be used to set a custom status message",
@@ -123,22 +126,26 @@
                     function (done, _converse) {
 
                 test_utils.openControlBox();
-                var view = _converse.xmppstatusview;
-                _converse.xmppstatus.save({'status': 'online'});
-                spyOn(view, 'setStatusMessage').and.callThrough();
-                spyOn(view, 'renderStatusChangeForm').and.callThrough();
-                spyOn(_converse, 'emit');
-                view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                view.el.querySelector('a.change-xmpp-status-message').click();
-                expect(view.renderStatusChangeForm).toHaveBeenCalled();
-                var msg = 'I am happy';
-                view.el.querySelector('input.custom-xmpp-status').value = msg;
-                view.el.querySelector('[type="submit"]').click();
-                expect(view.setStatusMessage).toHaveBeenCalled();
-                expect(_converse.emit).toHaveBeenCalledWith('statusMessageChanged', msg);
-                expect($(view.el).find('a.choose-xmpp-status').hasClass('online')).toBe(true);
-                expect($(view.el).find('a.choose-xmpp-status').attr('data-value')).toBe(msg);
-                done();
+
+                var cbview = _converse.chatboxviews.get('controlbox');
+                cbview.el.querySelector('.change-status').click()
+                var modal = _converse.xmppstatusview.status_modal;
+
+                test_utils.waitUntil(function () {
+                    return u.isVisible(modal.el);
+                }, 1000).then(function () {
+                    var view = _converse.xmppstatusview;
+                    spyOn(_converse, 'emit');
+
+                    var msg = 'I am happy';
+                    modal.el.querySelector('input[name="status_message"]').value = msg;
+                    modal.el.querySelector('[type="submit"]').click();
+
+                    expect(_converse.emit).toHaveBeenCalledWith('statusMessageChanged', msg);
+                    expect($(view.el).find('.xmpp-status span:first-child').hasClass('online')).toBe(true);
+                    expect(view.el.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe(msg);
+                    done();
+                });
             }));
         });
     });

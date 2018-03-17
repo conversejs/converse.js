@@ -14,7 +14,7 @@
     <span class="{{{o.chat_status}}} w-100 align-self-center" data-value="{{{o.chat_status}}}">
         <span class="fa
             {[ if (o.chat_status === 'online') { ]} fa-circle {[ } ]}
-            {[ if (o.chat_status === 'busy') { ]} fa-minus-circle {[ } ]}
+            {[ if (o.chat_status === 'dnd') { ]} fa-minus-circle {[ } ]}
             {[ if (o.chat_status === 'away') { ]} fa-dot-circle-o {[ } ]}
             {[ if (o.chat_status === 'xa') { ]} fa-circle-o {[ } ]}
             {[ if (o.chat_status === 'offline') { ]} fa-times-circle {[ } ]}"></span> {{{o.status_message}}}</span>

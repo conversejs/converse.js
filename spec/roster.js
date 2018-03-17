@@ -207,22 +207,24 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                var $filter;
-                var $type;
                 _converse.roster_groups = true;
                 test_utils.openControlBox();
                 test_utils.createGroupedContacts(_converse);
                 _converse.rosterview.filter_view.delegateEvents();
-                $filter = $(_converse.rosterview.el).find('.roster-filter');
                 var $roster = $(_converse.rosterview.roster_el);
-                $type = $(_converse.rosterview.el).find('.filter-type');
-                $type.val('groups');
+
+                var button = _converse.rosterview.el.querySelector('span[data-type="groups"]');
+                button.click();
+
                 test_utils.waitUntil(function () {
                     return $roster.find('li:visible').length === 15;
                 }, 600).then(function () {
                     expect($roster.find('div.roster-group:visible a.group-toggle').length).toBe(5);
-                    $filter.val("colleagues");
-                    u.triggerEvent($filter[0], "keydown", "KeyboardEvent");
+
+                    var filter = _converse.rosterview.el.querySelector('.roster-filter');
+                    filter.value = "colleagues";
+                    u.triggerEvent(filter, "keydown", "KeyboardEvent");
+
                     return test_utils.waitUntil(function () {
                         return $roster.find('div.roster-group:not(.collapsed) a.group-toggle').length === 1;
                     }, 600);
@@ -233,9 +235,9 @@
                     // Check that all contacts under the group are shown
                     expect($roster.find('div.roster-group:not(.collapsed) li:hidden').length).toBe(0);
 
-                    $filter = $(_converse.rosterview.el).find('.roster-filter');
-                    $filter.val("xxx");
-                    u.triggerEvent($filter[0], "keydown", "KeyboardEvent");
+                    var filter = _converse.rosterview.el.querySelector('.roster-filter');
+                    filter.value = "xxx";
+                    u.triggerEvent(filter, "keydown", "KeyboardEvent");
 
                     return test_utils.waitUntil(function () {
                         return $roster.find('div.roster-group.collapsed a.group-toggle').length === 5;
@@ -243,9 +245,9 @@
                 }).then(function () {
                     expect($roster.find('div.roster-group:not(.collapsed) a').length).toBe(0);
 
-                    $filter = $(_converse.rosterview.el).find('.roster-filter');
-                    $filter.val(""); // Check that groups are shown again, when the filter string is cleared.
-                    u.triggerEvent($filter[0], "keydown", "KeyboardEvent");
+                    var filter = _converse.rosterview.el.querySelector('.roster-filter');
+                    filter.value = ""; // Check that groups are shown again, when the filter string is cleared.
+                    u.triggerEvent(filter, "keydown", "KeyboardEvent");
                     return test_utils.waitUntil(function () {
                         return $roster.find('div.roster-group.collapsed a.group-toggle').length === 0;
                     }, 600);
@@ -264,21 +266,18 @@
                 _converse.roster_groups = true;
                 test_utils.openControlBox();
                 test_utils.createGroupedContacts(_converse);
-                var $filter = $(_converse.rosterview.el).find('.roster-filter');
-                _converse.rosterview.filter_view.delegateEvents();
-                $filter.val("xxx");
-                u.triggerEvent($filter[0], "keydown", "KeyboardEvent");
-                expect($filter.hasClass("x")).toBeFalsy();
-                $filter = $(_converse.rosterview.el).find('.roster-filter');
+
+                var filter = _converse.rosterview.el.querySelector('.roster-filter');
+                filter.value = "xxx";
+                u.triggerEvent(filter, "keydown", "KeyboardEvent");
+                expect(_.includes(filter.classList, "x")).toBeFalsy();
+                expect(u.hasClass('hidden', _converse.rosterview.el.querySelector('.roster-filter-form .clear-input'))).toBeTruthy();
+
                 test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-filter').hasClass("x");
+                    return !u.hasClass('hidden', _converse.rosterview.el.querySelector('.roster-filter-form .clear-input'));
                 }, 900).then(function () {
-                    var $filter = $(_converse.rosterview.el).find('.roster-filter');
-                    $filter.addClass("onX")[0].click();
-                    return test_utils.waitUntil(function () {
-                        return !$(_converse.rosterview.el).find('.roster-filter').hasClass("x");
-                    }, 900)
-                }).then(function () {
+                    var filter = _converse.rosterview.el.querySelector('.roster-filter');
+                    _converse.rosterview.el.querySelector('.clear-input').click();
                     expect(document.querySelector('.roster-filter').value).toBe("");
                     done();
                 });
@@ -289,27 +288,24 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                var $filter;
-                _converse.roster_groups = true;
                 test_utils.createGroupedContacts(_converse);
                 var jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
                 _converse.roster.get(jid).set('chat_status', 'online');
+                jid = mock.cur_names[4].replace(/ /g,'.').toLowerCase() + '@localhost';
+                _converse.roster.get(jid).set('chat_status', 'dnd');
                 test_utils.openControlBox();
 
-                _converse.rosterview.filter_view.delegateEvents();
-                var $type = $(_converse.rosterview.el).find('.filter-type');
-                $type.val('state')
-                u.triggerEvent($type[0], "change");
+                var button = _converse.rosterview.el.querySelector('span[data-type="state"]');
+                button.click();
 
-                $filter = $(_converse.rosterview.el).find('.state-type');
                 var $roster = $(_converse.rosterview.roster_el);
-
                 test_utils.waitUntil(function () {
-                        return $roster.find('li:visible').length === 15;
+                    return $roster.find('li:visible').length === 15;
                 }, 500).then(function () {
+                    var filter = _converse.rosterview.el.querySelector('.state-type');
                     expect($roster.find('ul.roster-group-contacts:visible').length).toBe(5);
-                    $filter.val("online");
-                    u.triggerEvent($filter[0], 'change');
+                    filter.value = "online";
+                    u.triggerEvent(filter, 'change');
 
                     return test_utils.waitUntil(function () {
                         return $roster.find('li:visible').length === 1;
@@ -317,9 +313,15 @@
                 }).then(function () {
                     expect($roster.find('li:visible').eq(0).text().trim()).toBe('Rinse Sommer');
                     expect($roster.find('ul.roster-group-contacts:visible').length).toBe(1);
-                    var $type = $(_converse.rosterview.el).find('.filter-type');
-                    $type.val('contacts');
-                    u.triggerEvent($type[0], 'change');
+
+                    var filter = _converse.rosterview.el.querySelector('.state-type');
+                    filter.value = "dnd";
+                    u.triggerEvent(filter, 'change');
+                    return test_utils.waitUntil(function () {
+                        return $roster.find('li:visible').eq(0).text().trim() === 'Annegreet Gomez';
+                    }, 900)
+                }).then(function () {
+                    expect($roster.find('ul.roster-group-contacts:visible').length).toBe(1);
                     done();
                 });
             }));

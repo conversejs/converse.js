@@ -603,15 +603,16 @@
 
                 toggle (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    if (_.includes(ev.target.classList, "icon-opened")) {
+                    const icon_el = ev.target.querySelector('.fa');
+                    if (_.includes(icon_el.classList, "fa-caret-down")) {
                         this.model.save({state: _converse.CLOSED});
                         this.collapse().then(() => {
-                            ev.target.classList.remove("icon-opened");
-                            ev.target.classList.add("icon-closed");
+                            icon_el.classList.remove("fa-caret-down");
+                            icon_el.classList.add("fa-caret-right");
                         });
                     } else {
-                        ev.target.classList.remove("icon-closed");
-                        ev.target.classList.add("icon-opened");
+                        icon_el.classList.remove("fa-caret-right");
+                        icon_el.classList.add("fa-caret-down");
                         this.model.save({state: _converse.OPENED});
                         this.filter();
                         u.showElement(this.el);

@@ -139,7 +139,7 @@
                 events: {
                     'click .add-bookmark': 'addBookmark',
                     'click .close-room': 'closeRoom',
-                    'click .open-rooms-toggle': 'toggleRoomsList',
+                    'click .rooms-toggle': 'toggleRoomsList',
                     'click .remove-bookmark': 'removeBookmark',
                     'click .open-room': 'openRoom',
                 },
@@ -168,7 +168,8 @@
                     this.el.innerHTML = tpl_rooms_list({
                         'toggle_state': this.list_model.get('toggle-state'),
                         'desc_rooms': __('Click to toggle the rooms list'),
-                        'label_rooms': __('Open Rooms')
+                        'label_rooms': __('Open Rooms'),
+                        '_converse': _converse
                     });
                     if (this.list_model.get('toggle-state') !== _converse.OPENED) {
                         this.el.querySelector('.open-rooms-list').classList.add('collapsed');
@@ -229,18 +230,18 @@
 
                 toggleRoomsList (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const el = ev.target;
-                    if (el.classList.contains("icon-opened")) {
+                    const icon_el = ev.target.querySelector('.fa');
+                    if (icon_el.classList.contains("fa-caret-down")) {
                         utils.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
                             this.list_model.save({'toggle-state': _converse.CLOSED});
-                            el.classList.remove("icon-opened");
-                            el.classList.add("icon-closed");
+                            icon_el.classList.remove("fa-caret-down");
+                            icon_el.classList.add("fa-caret-right");
                         });
                     } else {
                         utils.slideOut(this.el.querySelector('.open-rooms-list')).then(() => {
                             this.list_model.save({'toggle-state': _converse.OPENED});
-                            el.classList.remove("icon-closed");
-                            el.classList.add("icon-opened");
+                            icon_el.classList.remove("fa-caret-right");
+                            icon_el.classList.add("fa-caret-down");
                         });
                     }
                 }

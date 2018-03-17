@@ -529,14 +529,15 @@
 
                 toggleBookmarksList (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    if (u.hasClass('icon-opened', ev.target)) {
+                    const icon_el = ev.target.querySelector('.fa');
+                    if (u.hasClass('fa-caret-down', icon_el)) {
                         u.slideIn(this.el.querySelector('.bookmarks'));
                         this.list_model.save({'toggle-state': _converse.CLOSED});
-                        ev.target.classList.remove("icon-opened");
-                        ev.target.classList.add("icon-closed");
+                        icon_el.classList.remove("fa-caret-down");
+                        icon_el.classList.add("fa-caret-right");
                     } else {
-                        ev.target.classList.remove("icon-closed");
-                        ev.target.classList.add("icon-opened");
+                        icon_el.classList.remove("fa-caret-right");
+                        icon_el.classList.add("fa-caret-down");
                         u.slideOut(this.el.querySelector('.bookmarks'));
                         this.list_model.save({'toggle-state': _converse.OPENED});
                     }

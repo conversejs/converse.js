@@ -5549,8 +5549,8 @@ body.reset {
       margin-left: 0.5em;
       overflow: hidden;
       text-overflow: ellipsis; }
-    #conversejs #controlbox .controlbox-pane .userinfo .d-flex {
-      margin-bottom: 0.2em; }
+    #conversejs #controlbox .controlbox-pane .userinfo .profile {
+      margin-bottom: 0.75em; }
   #conversejs #controlbox #chatrooms {
     padding: 0;
     border-bottom: 1px solid #818479; }

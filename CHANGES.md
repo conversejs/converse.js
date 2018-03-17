@@ -26,6 +26,10 @@ boxes can no longer be resized horizontally (or diagonally). Perhaps a solution
 for this can again be found, but time constraints meant that this feature had
 to be removed.
 
+### Bugfixes
+
+- Spoiler messages didn't include the message author's name.
+
 
 ## 3.3.4 (2018-03-05)
 

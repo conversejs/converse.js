@@ -611,11 +611,9 @@
                         } else {
                             username = attrs.fullname;
                         }
-                    } else if (attrs.is_spoiler) {
-                        template = tpl_spoiler_message;
-                    } else  {
-                        template = tpl_message;
+                    } else {
                         username = attrs.sender === 'me' && __('me') || fullname;
+                        template = attrs.is_spoiler ? tpl_spoiler_message : tpl_message;
                     }
 
                     const msg_time = moment(attrs.time) || moment;

@@ -48,7 +48,7 @@ help:
 	@echo " pot           Generate a gettext POT file to be used for translations."
 	@echo " release       Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
 	@echo " serve         Serve this directory via a webserver on port 8000."
-	@echo " node_modules  Install NPM dependencies
+	@echo " stamp-npm  	  Install NPM dependencies
 	@echo " gems		  Install Bundler (Ruby) dependencies
 	@echo " watch         Tells Sass to watch the .scss files for changes and then automatically update the CSS files."
 
@@ -105,8 +105,9 @@ release:
 ########################################################################
 ## Install dependencies
 
-node_modules: package.json package-lock.json
+stamp-npm: package.json package-lock.json
 	npm install
+	touch stamp-npm
 
 .bundle: Gemfile 
 	mkdir -p .bundle
@@ -128,7 +129,7 @@ clean:
 	rm css/*.map
 
 .PHONY: dev
-dev: .bundle node_modules
+dev: .bundle stamp-npm
 
 ########################################################################
 ## Builds
@@ -160,10 +161,10 @@ watch: gems
 	$(SASS) --watch -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css sass/inverse/inverse.scss:css/inverse.css
 
 .PHONY: watchjs
-watchjs: node_modules 
+watchjs: stamp-npm 
 	$(BABEL) --source-maps --watch=./src --out-dir=./builds
 
-transpile: node_modules src
+transpile: stamp-npm src
 	$(BABEL) --source-maps --out-dir=./builds ./src
 	$(BABEL) --source-maps --out-dir=./builds ./node_modules/backbone.vdomview/backbone.vdomview.js
 	touch transpile
@@ -180,25 +181,25 @@ BUILDS = dist/converse.js \
 # dist/converse-esnext.js \
 # dist/converse-esnext.min.js \
 
-dist/converse.js: transpile src node_modules
+dist/converse.js: transpile src stamp-npm
 	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
-dist/converse.min.js: transpile src node_modules
+dist/converse.min.js: transpile src stamp-npm
 	$(RJS) -o src/build.js include=converse out=dist/converse.min.js
-dist/converse-headless.js: transpile src node_modules
+dist/converse-headless.js: transpile src stamp-npm
 	$(RJS) -o src/build.js paths.converse=src/headless include=converse out=dist/converse-headless.js optimize=none 
-dist/converse-headless.min.js: transpile src node_modules
+dist/converse-headless.min.js: transpile src stamp-npm
 	$(RJS) -o src/build.js paths.converse=src/headless include=converse out=dist/converse-headless.min.js
-dist/converse-esnext.js: src node_modules
+dist/converse-esnext.js: src stamp-npm
 	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.js optimize=none 
-dist/converse-esnext.min.js: src node_modules
+dist/converse-esnext.min.js: src stamp-npm
 	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.min.js
-dist/converse-no-dependencies.js: transpile src node_modules
+dist/converse-no-dependencies.js: transpile src stamp-npm
 	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
-dist/converse-no-dependencies.min.js: transpile src node_modules
+dist/converse-no-dependencies.min.js: transpile src stamp-npm
 	$(RJS) -o src/build-no-dependencies.js out=dist/converse-no-dependencies.min.js
-dist/converse-muc-embedded.js: transpile src node_modules
+dist/converse-muc-embedded.js: transpile src stamp-npm
 	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.js optimize=none 
-dist/converse-muc-embedded.min.js: transpile src node_modules
+dist/converse-muc-embedded.min.js: transpile src stamp-npm
 	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.min.js
 
 .PHONY: dist
@@ -211,7 +212,7 @@ build:: dev css transpile $(BUILDS)
 ## Tests
 
 .PHONY: eslint
-eslint: node_modules
+eslint: stamp-npm
 	$(ESLINT) src/
 	$(ESLINT) spec/
 

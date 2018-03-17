@@ -5978,10 +5978,11 @@ body {
             #conversejs #converse-roster .roster-contacts .roster-group li .open-chat.unread-msgs .contact-name {
               width: 70%; }
           #conversejs #converse-roster .roster-contacts .roster-group li .open-chat .msgs-indicator {
+            color: white;
             background-color: #3AA569;
             opacity: 1;
             border-radius: 10%;
-            padding: 0 0.2em;
+            padding: 0.2em;
             font-size: 14px; }
           #conversejs #converse-roster .roster-contacts .roster-group li .open-chat .contact-name {
             overflow: hidden;
@@ -6011,8 +6012,7 @@ body {
           white-space: nowrap;
           text-overflow: ellipsis; }
         #conversejs #converse-roster .roster-contacts .roster-group li span {
-          padding: 0;
-          height: 100%; }
+          padding: 0; }
         #conversejs #converse-roster .roster-contacts .roster-group li a.decline-xmpp-request {
           margin-left: 5px; }
         #conversejs #converse-roster .roster-contacts .roster-group li a.remove-xmpp-contact {

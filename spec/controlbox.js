@@ -152,19 +152,21 @@
 
     describe("The 'Add Contact' widget", function () {
 
-        it("opens up an add form when you click on it",
+        it("opens up an add modal when you click on it",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
             var panel = _converse.chatboxviews.get('controlbox').contactspanel;
-            spyOn(panel, 'toggleContactForm').and.callThrough();
-            panel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-            panel.el.querySelector('a.toggle-xmpp-contact-form').click();
-            expect(panel.toggleContactForm).toHaveBeenCalled();
-            // XXX: Awaiting more tests, close it again for now...
-            panel.el.querySelector('a.toggle-xmpp-contact-form').click();
-            done();
+            var cbview = _converse.chatboxviews.get('controlbox');
+            cbview.el.querySelector('.add-contact').click()
+            var modal = _converse.rosterview.add_contact_modal;
+            return test_utils.waitUntil(function () {
+                return u.isVisible(modal.el);
+            }, 1000).then(function () {
+                expect(!_.isNull(modal.el.querySelector('form.add-xmpp-contact'))).toBeTruthy();
+                done();
+            });
         }));
 
         it("can be used to add contact and it checks for case-sensivity", 

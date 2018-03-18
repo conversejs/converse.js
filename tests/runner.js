@@ -32,7 +32,7 @@ require.config(config);
 
 var specs = [
     "jasmine",
-    "spec/transcripts",
+    //"spec/transcripts",
     "spec/spoilers",
     "spec/profiling",
     "spec/utils",

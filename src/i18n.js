@@ -15,6 +15,7 @@
         "lodash.noconflict",
         "moment",
         'moment/locale/af',
+        'moment/locale/ar',
         'moment/locale/bg',
         'moment/locale/ca',
         'moment/locale/de',

@@ -1,22 +1,27 @@
-<form id="converse-register" class="pure-form converse-form">
-    <legend>{{{o.__("Create your account")}}}</legend>
+<div class="row">
+    <form id="converse-register" class="converse-form">
+        <legend>{{{o.__("Create your account")}}}</legend>
 
-    <label>{{{o.__("Please enter the XMPP provider to register with:")}}}</label>
-    <p class="form-help">{{{o.help_providers}}} <a href="{{{o.href_providers}}}" class="url" target="_blank" rel="noopener">{{{o.help_providers_link}}}</a>.</p>
-    <div class="form-errors hidden"></div>
+        <div class="form-group">
+            <label>{{{o.__("Please enter the XMPP provider to register with:")}}}</label>
+            <div class="form-errors hidden"></div>
 
-    {[ if (o.default_domain) { ]}
-        {{{o.default_domain}}}
-    {[ } ]}
-    {[ if (!o.default_domain) { ]}
-        <input autofocus required type="text" name="domain" placeholder="{{{o.domain_placeholder}}}">
-        <input class="pure-button button-primary" type="submit" value="{{{o.label_register}}}">
-    {[ } ]}
-</form>
-
-<div class="switch-form">
-    <p>{{{ o.__("Already have a chat account?") }}}</p>
-    <p>
-        <a class="login-here toggle-register-login" href="#converse/login">{{{o.__("Log in here")}}}</a>
-    </p>
+            {[ if (o.default_domain) { ]}
+                {{{o.default_domain}}}
+            </div>
+            {[ } ]}
+            {[ if (!o.default_domain) { ]}
+                <input class="form-control" autofocus="autofocus" required="required" type="text" name="domain" placeholder="{{{o.domain_placeholder}}}">
+                <p class="form-text text-muted">{{{o.help_providers}}} <a href="{{{o.href_providers}}}" class="url" target="_blank" rel="noopener">{{{o.help_providers_link}}}</a>.</p>
+            </div>
+            <fieldset class="buttons">
+                <input class="btn btn-primary" type="submit" value="{{{o.label_register}}}">
+                <div class="switch-form">
+                    <p>{{{ o.__("Already have a chat account?") }}}</p>
+                    <p><a class="login-here toggle-register-login" href="#converse/login">{{{o.__("Log in here")}}}</a></p>
+                </div>
+            </fieldset>
+            {[ } ]}
+        </div>
+    </form>
 </div>

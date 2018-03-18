@@ -12,10 +12,11 @@
 (function (root, factory) {
 
     define([ "converse-chatview",
+            "bootstrap",
             "tpl!toolbar_otr",
             'otr'
     ], factory);
-}(this, function (converse, tpl_toolbar_otr, otr) {
+}(this, function (converse, bootstrap, tpl_toolbar_otr, otr) {
     "use strict";
 
     const { Strophe, utils, b64_sha1, _ } = converse.env;
@@ -402,16 +403,12 @@
                 },
 
                 toggleOTRMenu (ev) {
-                    ev.stopPropagation();
-                    const { _converse } = this.__super__;
-                    const menu = this.el.querySelector('.toggle-otr ul');
-                    const elements = _.difference(
-                        _converse.root.querySelectorAll('.toolbar-menu'),
-                        [menu]
-                    );
-                    utils.slideInAllElements(elements).then(
-                        _.partial(utils.slideToggleElement, menu)
-                    );
+                    if (_.isUndefined(this.otr_dropdown)) {
+                        ev.stopPropagation();
+                        const dropdown_el = this.el.querySelector('.toggle-otr');
+                        this.otr_dropdown = new bootstrap.Dropdown(dropdown_el, true);
+                        this.otr_dropdown.toggle();
+                    }
                 },
 
                 getOTRTooltip () {

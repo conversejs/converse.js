@@ -6,9 +6,8 @@
 
         it("won't send <show>online</show> when setting a custom status message", mock.initConverse(function (_converse) {
             _converse.xmppstatus.save({'status': 'online'});
-            spyOn(_converse.xmppstatus, 'setStatusMessage').and.callThrough();
             spyOn(_converse.connection, 'send');
-            _converse.xmppstatus.setStatusMessage("I'm also happy!");
+            _converse.api.user.status.message.set("I'm also happy!");
             expect(_converse.connection.send).toHaveBeenCalled();
             var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
             expect($stanza.children().length).toBe(2);

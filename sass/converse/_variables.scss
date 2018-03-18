@@ -48,7 +48,7 @@ $light-text-color: #A8ABA1 !default;
 $border-color: #CCC !default;
 $icon-color: $blue !default;
 $save-button-color: $green !default;
-$chat-textarea-height: 70px !default;
+$chat-textarea-height: 60px !default;
 $send-button-height: 27px !default;
 $send-button-margin: 3px !default;
 
@@ -84,10 +84,12 @@ $online-color: $green !default;
 $error-color: $darkest-red !default;
 $info-color: $dark-green !default;
 
+$rounded-border-radius: 4px !default;
+
 $button-border-radius: 5px !default;
 $chatbox-border-radius: 4px !default;
 $bottom-gutter-height: 35px !default;
-$chatbox-hover-height: 6px !default;
+$chatbox-hover-height: 1em !default;
 
 $mobile_landscape_height: 450px !default;
 $mobile_portrait_length: 480px !default;
@@ -99,7 +101,6 @@ $font-size-large: 16px !default;
 $font-size-huge: 20px !default;
 $legend-font-size: 16px !default;
 
-$toolbar-height: 25px !default;
 $toolbar-color: $greenish-white !default;
 
 $emoji-picker-height: 100px !default;
@@ -108,8 +109,8 @@ $line-height-small:  14px !default;
 $line-height:  16px !default;
 $line-height-large:  20px !default;
 
-$controlbox-width: 200px !default;
-$chat-width: 200px !default;
+$controlbox-width: 250px !default;
+$chat-width: 250px !default;
 $chat-height: 450px !default;
 $chat-gutter: 0.5em !default;
 $minimized-chats-width: 130px !default;
@@ -120,7 +121,7 @@ $small-mobile-chat-height: 300px !default;
 
 $font-path: "../fonticons/fonts/" !default;
 
-$chatroom-width: 300px !default;
+$chatroom-width: 400px !default;
 $chatroom-head-color: $red !default;
 $chatroom-color-light: $light-red !default;
 $chatroom-color-lightest: $light-red !default;
@@ -134,4 +135,4 @@ $box-close-button-padding-top: 4px !default;
 $box-close-button-padding-bottom: 4px !default;
 $box-close-button-padding-left: 4px !default;
 $box-close-button-padding-right: 4px !default;
-$box-close-font-size: 12px !default;
+$box-close-font-size: 16px !default;

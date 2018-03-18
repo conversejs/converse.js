@@ -6,27 +6,53 @@
     @include animation-timing-function(ease);
 }
 
-#converse-embedded-chat,
+body.reset {
+    margin: 0;
+}
+
+@font-face {
+    font-family: 'Converse-js';
+    src: url($font-path + 'icomoon.eot?wvi0ht');
+    src:  url($font-path + 'icomoon.eot?wvi0ht#iefix') format('embedded-opentype'),
+          url($font-path + 'icomoon.ttf?wvi0ht') format('truetype'),
+          url($font-path + 'icomoon.woff?wvi0ht') format('woff'),
+          url($font-path + 'icomoon.svg?wvi0ht#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.icon-conversejs {
+    padding-right: 0.2em;
+    font-family: 'Converse-js';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-conversejs:before {
+    content: "\e600";
+}
+
 #conversejs {
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
-    bottom: 0;
     color: $text-color;
-    direction: ltr;
-    display: block;
     font-family: "Helvetica", "Arial", sans-serif;
     font-size: $font-size;
-    height: $bottom-gutter-height;
-    position: fixed;
-    right: 0;
-    width: auto;
+    direction: ltr;
+    display: block;
     z-index: 1031; // One more than bootstrap navbar
-    @media screen and (max-height: $mobile-landscape-height) {
-        width: 100%;
-        width: 100vw;
-    }
-    @media screen and (max-width: $mobile-portrait-length) {
-        width: 100%;
+
+    .converse-chatboxes {
+        position: fixed;
+        bottom: 0;
+        height: auto;
         width: 100vw;
     }
 
@@ -45,9 +71,22 @@
     ::placeholder {
         color: $subdued-color;
     }
-
-    .circle {
-        border-radius: 50%;
+    .form-control {
+        &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+            color: $subdued-color;
+        }
+        &::-moz-placeholder { /* Firefox 19+ */
+            color: $subdued-color;
+        }
+        &:-ms-input-placeholder { /* IE 10+ */
+            color: $subdued-color;
+        }
+        &:-moz-placeholder { /* Firefox 18- */
+            color: $subdued-color;
+        }
+        &::placeholder {
+            color: $subdued-color;
+        }
     }
 
     ::selection {
@@ -55,6 +94,142 @@
     }
     ::-moz-selection {
         background-color: $highlight-color;
+    }
+
+    @media screen and (max-width: $mobile-portrait-length) {
+        margin: 0;
+        right: 10px;
+        left: 10px;
+        bottom: 5px;
+    }
+    @media screen and (max-height: $mobile-landscape-height) {
+        margin: 0;
+        right: 10px;
+        left: 10px;
+        bottom: 5px;
+    }
+
+    ul li { height: auto; }
+    div, span, h1, h2, h3, h4, h5, h6, p, blockquote,
+    pre, a, em, img, strong, dl, dt, dd, ol, ul, li,
+    fieldset, form, legend, table, caption, tbody,
+    tfoot, thead, tr, th, td, article, aside, canvas, details,
+    embed, figure, figcaption, footer, header, hgroup, menu,
+    nav, output, ruby, section, summary, time, mark, audio, video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font: inherit;
+        vertical-align: baseline;
+    }
+
+    textarea,
+    input[type=submit], input[type=button],
+    input[type=text], input[type=password],
+    button {
+        font-size: $font-size;
+        padding: 0.25em;
+        min-height: 0;
+    }
+
+    strong {
+        font-weight: 700;
+    }
+
+    ol, ul {
+        list-style: none;
+    }
+
+    li {
+        height: 10px;
+    }
+
+    ul, ol, dl {
+        font: inherit;
+        margin: 0;
+    }
+
+    a, a:visited, a:hover, a:not([href]):not([tabindex]) {
+        text-decoration: none;
+        color: $link-color;
+        text-shadow: none;
+        &.fa {
+            color: $subdued-color;
+            &:hover {
+                color: $gray-color;
+            }
+        }
+    }
+
+    canvas {
+        background: $text-color;
+        border-radius: $chatbox-border-radius;
+    }
+
+    .fa {
+        color: $subdued-color;
+    }
+
+    .fa:hover {
+        color: $gray-color;
+    }
+
+    .modal {
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .selected {
+        color: $link-color !important;
+    }
+
+    .circle {
+        border-radius: 50%;
+    }
+
+    .sidebar {
+        display: none;
+        width: 50px;
+        height: 100vh;
+        padding: 1rem 0;
+        background-color: $controlbox-head-color;
+        color: white;
+        text-align: center;
+
+        .chatbox-btn {
+            float: none;
+            margin: 0;
+            font-size: 1.35em;
+            &.fa-vcard {
+                margin-top: 1em;
+            }
+        }
+        .bottom {
+            position: absolute;
+            bottom: 1em;
+        }
+    }
+    .badge {
+        line-height: 1;
+        font-weight: normal;
+        font-size: 90%;
+    }
+
+    .fa {
+        font: normal normal normal 14px/1 FontAwesome;
+        display: inline-block;
+        font-size: inherit;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .list-container {
+        text-align: left;
+        margin: 0.3em 0;
+    }
+
+    .btn.btn-primary {
+        color: #fff;
     }
 
     .no-text-select {
@@ -102,6 +277,11 @@
         100% { opacity: 1 }
     }
 
+    .fade {
+        opacity: 0;
+        transition: opacity 0.20s linear;
+    }
+
     .fade-in {
         @include fade-in;
     }
@@ -115,8 +295,8 @@
     }
 
     .hidden {
-        opacity: 0;
-        display: none;
+        opacity: 0 !important;
+        display: none !important;
     }
     .collapsed {
         height: 0 !important;
@@ -146,12 +326,8 @@
         @include animation(spin 2s infinite, linear);
         display: block;
         text-align: center;
-        margin: 1em;
-        &:before {
-            font-size: 24px;
-            font-family: 'Converse-js' !important;
-            content: "\231b";
-        }
+        margin: 2em;
+        font-size: 24px;
     }
     .left {
         float: left;
@@ -162,26 +338,13 @@
     .centered {
         text-align: center;
         display: block;
-        margin: 0;
-        padding: 10% 0;
+        margin: auto;
     }
     .hor_centered {
         text-align: center;
         display: block;
         margin: 0 auto;
         clear: both;
-    }
-
-    .button-group,
-    .input-button-group {
-        display: table;
-    }
-    .button-group {
-        width: 100%;
-    }
-    .input-button-group button,
-    .input-button-group input {
-        display: table-cell;
     }
 
     .error {
@@ -202,29 +365,14 @@
         width: 100%;
     }
 
-    a.restore-chat {
-        padding: 1px 0 1px 5px;
-        color: $chat-head-text-color;
-        line-height: 15px;
-        display: block;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    a.restore-chat:visited {
-        color: $chat-head-text-color;
+    .avatar {
+        border-radius: 25%;
     }
 
     .activated {
         display: block !important;
     }
-    .pure-form-message {
-        padding: 0.5em 0;
-    }
-    .pure-button {
-        border-radius: $button-border-radius;
-    }
+
     .button-primary {
         color: white;
         background-color: $primary-color;
@@ -239,7 +387,14 @@
     }
 
     form {
-        &.pure-form.converse-form {
+        .clear-input {
+            position: absolute;
+            right: 0.2em;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        &.converse-form {
             background: white;
             padding: 1em;
             legend {
@@ -255,10 +410,6 @@
             input[type=number],
             input[type=text] {
                 min-width: 50%;
-            }
-            label {
-                margin: 1em 0;
-                font-size: $font-size-large;
             }
             input[type=text],
             input[type=password],
@@ -278,19 +429,19 @@
                 border: 1px solid $error-color;
                 color: $text-color;
             }
-            .form-help {
-                color: gray;
+            .text-muted {
+                color: $subdued-color !important;
                 font-size: 85%;
                 padding-top: 0.5em;
-                &:hover {
-                    color: $text-color;
+                a {
+                    color: lighten($link-color, 10%);
                 }
                 &.error {
                     color: $error-color;
                 }
             }
         }
-        &.pure-form.converse-centered-form {
+        &.converse-centered-form {
             text-align: center;
             width: 100%;
         }
@@ -304,10 +455,55 @@
         border: 2px solid $link-color;
         margin: 0;
     }
+}
 
-    .dropdown dt,
-    .dropdown ul {
-        margin: 0;
-        padding: 0;
+@media screen and (max-width: 575px) {
+    body {
+      .brand-heading {
+        font-size: 3.75em;
+        }
     }
+    #conversejs {
+        .chatbox  {
+            .chat-body {
+                border-radius: $chatbox-border-radius;
+            }
+        }
+        .flyout {
+            border-radius: $chatbox-border-radius;
+        }
+    }
+}
+
+
+@media screen and (min-width: 576px) {
+  #conversejs .offset-sm-2 {
+    margin-left: 16.666667%;
+  }
+}
+@media screen and (min-width: 768px) {
+  #conversejs .offset-md-2 {
+    margin-left: 16.666667%;
+  }
+  #conversejs .offset-md-3 {
+    margin-left: 25%;
+  }
+}
+@media screen and (min-width: 992px) {
+  #conversejs .offset-lg-2 {
+    margin-left: 16.666667%;
+  }
+  #conversejs .offset-lg-3 {
+    margin-left: 25%;
+  }
+}
+@media screen and (min-width: 1200px) {
+  #conversejs .offset-xl-2 {
+    margin-left: 16.666667%;
+  }
+}
+@media screen and (max-height: 450px) {
+  #conversejs {
+    left: 0;
+  }
 }

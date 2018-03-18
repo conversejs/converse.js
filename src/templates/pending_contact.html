@@ -1,9 +1,7 @@
 {[ if (o.allow_chat_pending_contacts)  { ]}
-<a class="open-chat"href="#">
+<a class="open-chat w-100" href="#">
 {[ } ]}
-<span class="pending-contact-name" title="Name: {{{o.fullname}}}
-JID: {{{o.jid}}}">{{{o.fullname}}}</span> 
-{[ if (o.allow_chat_pending_contacts)  { ]}
-</a>
+<span class="pending-contact-name w-100" title="Name: {{{o.fullname}}} JID: {{{o.jid}}}">{{{o.fullname}}}</span> 
+{[ if (o.allow_chat_pending_contacts)  { ]}</a>
 {[ } ]}
-<a class="remove-xmpp-contact icon-remove" title="{{{o.desc_remove}}}" href="#"></a>
+<a class="remove-xmpp-contact fa fa-trash" title="{{{o.desc_remove}}}" href="#"></a>

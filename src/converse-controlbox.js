@@ -9,15 +9,10 @@
 (function (root, factory) {
     define(["converse-core",
             "lodash.fp",
-            "tpl!add_contact_dropdown",
-            "tpl!add_contact_form",
             "tpl!converse_brand_heading",
-            "tpl!contacts_panel",
-            "tpl!contacts_tab",
             "tpl!controlbox",
             "tpl!controlbox_toggle",
             "tpl!login_panel",
-            "tpl!search_contact",
             "converse-chatview",
             "converse-rosterview",
             "converse-profile"
@@ -25,19 +20,13 @@
 }(this, function (
             converse,
             fp,
-            tpl_add_contact_dropdown,
-            tpl_add_contact_form,
             tpl_brand_heading,
-            tpl_contacts_panel,
-            tpl_contacts_tab,
             tpl_controlbox,
             tpl_controlbox_toggle,
-            tpl_login_panel,
-            tpl_search_contact
+            tpl_login_panel
         ) {
     "use strict";
 
-    const USERS_PANEL_ID = 'users';
     const CHATBOX_TYPE = 'chatbox';
     const { Strophe, Backbone, Promise, _, moment } = converse.env;
     const u = converse.env.utils;
@@ -91,7 +80,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes"],
+        dependencies: ["converse-modal", "converse-chatboxes", "converse-rosterview", "converse-chatview"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -130,15 +119,6 @@
                 chatBoxMayBeShown (chatbox) {
                     return this.__super__.chatBoxMayBeShown.apply(this, arguments) &&
                            chatbox.get('id') !== 'controlbox';
-                },
-
-                onChatBoxesFetched (collection, resp) {
-                    this.__super__.onChatBoxesFetched.apply(this, arguments);
-                    const { _converse } = this.__super__;
-                    if (!_.includes(_.map(collection, 'id'), 'controlbox')) {
-                        _converse.addControlBox();
-                    }
-                    this.get('controlbox').save({connected:true});
                 },
             },
 
@@ -201,6 +181,7 @@
             },
 
             ChatBoxView: {
+
                 insertIntoDOM () {
                     const view = this.__super__._converse.chatboxviews.get("controlbox");
                     if (view) {
@@ -225,38 +206,36 @@
                 default_domain: undefined,
                 locked_domain: undefined,
                 show_controlbox_by_default: false,
-                sticky_controlbox: false,
-                xhr_user_search: false,
-                xhr_user_search_url: ''
+                sticky_controlbox: false
             });
 
             _converse.api.promises.add('controlboxInitialized');
 
             const LABEL_CONTACTS = __('Contacts');
 
-            _converse.addControlBox = () => {
+            _converse.addControlBox = () =>
                 _converse.chatboxes.add({
                     id: 'controlbox',
                     box_id: 'controlbox',
                     type: 'controlbox',
                     closed: !_converse.show_controlbox_by_default
                 })
-            };
+
 
             _converse.ControlBoxView = _converse.ChatBoxView.extend({
                 tagName: 'div',
                 className: 'chatbox',
                 id: 'controlbox',
                 events: {
-                    'click a.close-chatbox-button': 'close',
-                    'click ul#controlbox-tabs li a': 'switchTab',
+                    'click a.close-chatbox-button': 'close'
                 },
 
                 initialize () {
                     if (_.isUndefined(_converse.controlboxtoggle)) {
                         _converse.controlboxtoggle = new _converse.ControlBoxToggle();
-                        _converse.controlboxtoggle.el.insertAdjacentElement('afterend', this.el);
                     }
+                    _converse.controlboxtoggle.el.insertAdjacentElement('afterend', this.el);
+
                     this.model.on('change:connected', this.onConnected, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('hide', this.hide, this);
@@ -277,23 +256,20 @@
                             this.model.set('closed', !_converse.show_controlbox_by_default);
                         }
                     }
+                    this.el.innerHTML = tpl_controlbox(_.extend(this.model.toJSON()));
+
                     if (!this.model.get('closed')) {
                         this.show();
                     } else {
                         this.hide();
                     }
-                    this.el.innerHTML = tpl_controlbox(
-                        _.extend(this.model.toJSON(), {
-                            'sticky_controlbox': _converse.sticky_controlbox
-                        }));
-
                     if (!_converse.connection.connected ||
                             !_converse.connection.authenticated ||
                             _converse.connection.disconnecting) {
                         this.renderLoginPanel();
                     } else if (this.model.get('connected') &&
-                            (!this.contactspanel || !u.isVisible(this.contactspanel.el))) {
-                        this.renderContactsPanel();
+                            (!this.controlbox_pane || !u.isVisible(this.controlbox_pane.el))) {
+                        this.renderControlBoxPane();
                     }
                     return this;
                 },
@@ -304,13 +280,12 @@
                         _converse.api.waitUntil('rosterViewInitialized')
                             .then(this.insertRoster.bind(this))
                             .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                        this.model.save();
                     }
                 },
 
                 insertRoster () {
                     /* Place the rosterview inside the "Contacts" panel. */
-                    this.contactspanel.el.insertAdjacentElement(
+                    this.controlbox_pane.el.insertAdjacentElement(
                         'beforeEnd',
                         _converse.rosterview.el
                     );
@@ -318,7 +293,9 @@
                 },
 
                  createBrandHeadingHTML () {
-                    return tpl_brand_heading();
+                    return tpl_brand_heading({
+                        'sticky_controlbox': _converse.sticky_controlbox
+                    });
                 },
 
                 insertBrandHeading () {
@@ -347,7 +324,7 @@
                     return this;
                 },
 
-                renderContactsPanel () {
+                renderControlBoxPane () {
                     /* Renders the "Contacts" panel of the controlbox.
                      *
                      * This will only be called after the user has already been
@@ -358,19 +335,11 @@
                         delete this.loginpanel;
                     }
                     this.el.classList.remove("logged-out");
-
-                    if (_.isUndefined(this.model.get('active-panel'))) {
-                        this.model.save({'active-panel': USERS_PANEL_ID});
-                    }
-                    this.contactspanel = new _converse.ContactsPanel({
-                        'parent_el': this.el.querySelector('.controlbox-panes')
-                    });
-                    this.contactspanel.insertIntoDOM();
-
-                    _converse.xmppstatusview = new _converse.XMPPStatusView({
-                        'model': _converse.xmppstatus
-                    });
-                    _converse.xmppstatusview.render();
+                    this.controlbox_pane = new _converse.ControlBoxPane();
+                    this.el.querySelector('.controlbox-panes').insertAdjacentElement(
+                        'afterBegin',
+                        this.controlbox_pane.el
+                    )
                 },
 
                 close (ev) {
@@ -418,24 +387,6 @@
                     _converse.controlboxtoggle.hide(
                         this.onControlBoxToggleHidden.bind(this)
                     );
-                    return this;
-                },
-
-                switchTab (ev) {
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const tab = u.hasClass('msgs-indicator', ev.target) ? ev.target.parentNode : ev.target,
-                        sibling_li = tab.parentNode.nextElementSibling || tab.parentNode.previousElementSibling,
-                        sibling = sibling_li.firstChild,
-                        sibling_panel = _converse.root.querySelector(sibling.getAttribute('href')),
-                        tab_panel = _converse.root.querySelector(tab.getAttribute('href'));
-
-                    u.hideElement(sibling_panel);
-                    u.removeClass('current', sibling);
-                    u.addClass('current', tab);
-                    u.removeClass('hidden', tab_panel);
-                    if (!_.isUndefined(_converse.chatboxes.browserStorage)) {
-                        this.model.save({'active-panel': tab.getAttribute('data-id')});
-                    }
                     return this;
                 },
 
@@ -553,165 +504,18 @@
             });
 
 
-            _converse.ContactsPanel = Backbone.NativeView.extend({
+            _converse.ControlBoxPane = Backbone.NativeView.extend({
                 tagName: 'div',
                 className: 'controlbox-pane',
-                id: 'users',
-                events: {
-                    'click a.toggle-xmpp-contact-form': 'toggleContactForm',
-                    'submit form.add-xmpp-contact': 'addContactFromForm',
-                    'submit form.search-xmpp-contact': 'searchContacts',
-                    'click a.subscribe-to-user': 'addContactFromList'
-                },
 
-                initialize (cfg) {
-                    this.parent_el = cfg.parent_el;
-                    this.tab_el = document.createElement('li');
-                    _converse.chatboxes.on('change:num_unread', this.renderTab, this);
-                    _converse.chatboxes.on('add', _.debounce(this.renderTab, 100), this);
-                },
-
-                render () {
-                    this.renderTab();
-                    let widgets = tpl_contacts_panel({
-                        label_online: __('Online'),
-                        label_busy: __('Busy'),
-                        label_away: __('Away'),
-                        label_offline: __('Offline'),
-                        label_logout: __('Log out'),
-                        include_offline_state: _converse.include_offline_state,
-                        allow_logout: _converse.allow_logout
+                initialize () {
+                    _converse.xmppstatusview = new _converse.XMPPStatusView({
+                        'model': _converse.xmppstatus
                     });
-                    if (_converse.allow_contact_requests) {
-                        widgets += tpl_add_contact_dropdown({
-                            label_click_to_chat: __('Click to add new chat contacts'),
-                            label_add_contact: __('Add a contact')
-                        });
-                    }
-                    this.el.innerHTML = widgets;
-
-                    const controlbox = _converse.chatboxes.get('controlbox');
-                    if (controlbox.get('active-panel') !== USERS_PANEL_ID) {
-                        this.el.classList.add('hidden');
-                    }
-                    return this;
-                },
-
-                renderTab () {
-                    const controlbox = _converse.chatboxes.get('controlbox');
-                    if (_.isNil(controlbox)) {
-                        return;
-                    }
-                    const chats = fp.filter(_.partial(u.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
-                    this.tab_el.innerHTML = tpl_contacts_tab({
-                        'label_contacts': LABEL_CONTACTS,
-                        'is_current': controlbox.get('active-panel') === USERS_PANEL_ID,
-                        'num_unread': fp.sum(fp.map(fp.curry(u.getAttribute)('num_unread'), chats))
-                    });
-                },
-
-                insertIntoDOM () {
-                    this.parent_el.appendChild(this.render().el);
-                    this.tabs = this.parent_el.parentNode.querySelector('#controlbox-tabs');
-                    this.tabs.appendChild(this.tab_el);
-                    return this;
-                },
-
-                generateAddContactHTML (settings={}) {
-                    if (_converse.xhr_user_search) {
-                        return tpl_search_contact({
-                            label_contact_name: __('Contact name'),
-                            label_search: __('Search')
-                        });
-                    } else {
-                        return tpl_add_contact_form(_.assign({
-                            error_message: null,
-                            label_contact_username: __('e.g. user@example.org'),
-                            label_add: __('Add'),
-                            value: ''
-                        }, settings));
-                    }
-                },
-
-                toggleContactForm (ev) {
-                    ev.preventDefault();
-                    this.el.querySelector('.search-xmpp div').innerHTML = this.generateAddContactHTML();
-                    var dropdown = this.el.querySelector('.contact-form-container');
-                    u.slideToggleElement(dropdown).then(() => {
-                        if (u.isVisible(dropdown)) {
-                            dropdown.querySelector('input.username').focus();
-                        }
-                    });
-                },
-
-                searchContacts (ev) {
-                    ev.preventDefault();
-                    const search_query= ev.target.querySelector('input.username').value,
-                          url = _converse.xhr_user_search_url+ "?q=" + search_query,
-                          xhr = new XMLHttpRequest();
-
-                    xhr.open('GET', url, true);
-                    xhr.setRequestHeader('Accept', "application/json, text/javascript");
-
-                    xhr.onload = function () {
-                        if (xhr.status >= 200 && xhr.status < 400) {
-                            const data = JSON.parse(xhr.responseText),
-                                  ul = _converse.root.querySelector('.search-xmpp ul');
-                            u.removeElement(ul.querySelector('li.found-user'));
-                            u.removeElement(ul.querySelector('li.chat-info'));
-                            if (!data.length) {
-                                const no_users_text = __('No users found');
-                                ul.insertAdjacentHTML('beforeEnd', `<li class="chat-info">${no_users_text}</li>`);
-                            }
-                            else {
-                                const title_subscribe = __('Click to add as a chat contact');
-                                _.each(data, function (obj) {
-                                    const li = u.stringToElement('<li class="found-user"></li>'),
-                                          a = u.stringToElement(`<a class="subscribe-to-user" href="#" title="${title_subscribe}"></a>`),
-                                          jid = Strophe.getNodeFromJid(obj.id)+"@"+Strophe.getDomainFromJid(obj.id);
-
-                                    a.setAttribute('data-recipient', jid);
-                                    a.textContent = obj.fullname;
-                                    li.appendChild(a);
-                                    u.appendChild(li)
-                                });
-                            }
-                        } else {
-                            xhr.onerror();
-                        }
-                    };
-                    xhr.onerror = function () {
-                        _converse.log('Could not fetch contacts via XHR', Strophe.LogLevel.ERROR);
-                    };
-                    xhr.send();
-                },
-
-                addContactFromForm (ev) {
-                    ev.preventDefault();
-                    const input = ev.target.querySelector('input');
-                    const jid = input.value;
-                    if (!jid || _.compact(jid.split('@')).length < 2) {
-                        this.el.querySelector('.search-xmpp div').innerHTML =
-                            this.generateAddContactHTML({
-                                error_message: __('Please enter a valid XMPP address'),
-                                label_contact_username: __('e.g. user@example.org'),
-                                label_add: __('Add'),
-                                value: jid
-                            });
-                        return;
-                    }
-                    _converse.roster.addAndSubscribe(jid);
-                    u.slideIn(this.el.querySelector('.contact-form-container'));
-                },
-
-                addContactFromList (ev) {
-                    ev.preventDefault();
-                    const jid = ev.target.getAttribute('data-recipient'),
-                        name = ev.target.textContent;
-                    _converse.roster.addAndSubscribe(jid, name);
-                    const parent = ev.target.parentNode;
-                    parent.parentNode.removeChild(parent);
-                    u.slideIn(this.el.querySelector('.contact-form-container'));
+                    this.el.insertAdjacentElement(
+                        'afterBegin',
+                        _converse.xmppstatusview.render().el
+                    );
                 }
             });
 
@@ -728,11 +532,10 @@
                 },
 
                 initialize () {
-                    _converse.chatboxviews.el.insertAdjacentElement('afterBegin', this.render().el);
-                    const that = this;
-                    _converse.api.waitUntil('initialized').then(() => {
-                        this.render();
-                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                    _converse.chatboxviews.insertRowColumn(this.render().el);
+                    _converse.api.waitUntil('initialized')
+                        .then(this.render.bind(this))
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                 render () {
@@ -785,33 +588,23 @@
             Promise.all([
                 _converse.api.waitUntil('connectionInitialized'),
                 _converse.api.waitUntil('chatBoxesInitialized')
-            ]).then(_converse.addControlBox)
-              .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            ]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
+            _converse.on('chatBoxesFetched', () => {
+                const controlbox = _converse.chatboxes.get('controlbox') || _converse.addControlBox();
+                controlbox.save({connected:true});
+            });
 
             const disconnect =  function () {
                 /* Upon disconnection, set connected to `false`, so that if
-                 * we reconnect,
-                 * "onConnected" will be called, to fetch the roster again and
-                 * to send out a presence stanza.
+                 * we reconnect, "onConnected" will be called,
+                 * to fetch the roster again and to send out a presence stanza.
                  */
                 const view = _converse.chatboxviews.get('controlbox');
                 view.model.set({connected:false});
-                view.el.querySelector('#controlbox-tabs').innerHTML = '';
                 view.renderLoginPanel();
             };
             _converse.on('disconnected', disconnect);
-
-            const afterReconnected = function () {
-                /* After reconnection makes sure the controlbox is aware.
-                 */
-                const view = _converse.chatboxviews.get('controlbox');
-                if (view.model.get('connected')) {
-                    _converse.chatboxviews.get("controlbox").onConnected();
-                } else {
-                    view.model.set({connected:true});
-                }
-            };
-            _converse.on('reconnected', afterReconnected);
         }
     });
 }));

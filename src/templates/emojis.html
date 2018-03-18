@@ -1,3 +1,4 @@
+<div class="emoji-picker-container">
 {[ _.forEach(o.emojis_by_category, function (obj, category) { ]}
     <ul class="emoji-picker emoji-picker-{{{category}}} {[ if (o.current_category !== category) { ]} hidden {[ } ]}">
         {[ _.forEach(o.emojis_by_category[category], function (emoji) { ]}
@@ -28,3 +29,4 @@
         </ul>
     </li>
 </ul>
+</div>

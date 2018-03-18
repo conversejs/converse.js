@@ -66,6 +66,7 @@
 
     _.extend(_converse, Backbone.Events);
 
+    // Core plugins are whitelisted automatically
     _converse.core_plugins = [
         'converse-bookmarks',
         'converse-chatboxes',
@@ -74,12 +75,15 @@
         'converse-core',
         'converse-disco',
         'converse-dragresize',
+        'converse-dropdown',
         'converse-fullscreen',
         'converse-headline',
         'converse-mam',
         'converse-minimize',
+        'converse-modal',
         'converse-muc',
         'converse-muc-embedded',
+        'converse-muc-views',
         'converse-notification',
         'converse-otr',
         'converse-ping',
@@ -329,9 +333,7 @@
             synchronize_availability: true,
             view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
             websocket_url: undefined,
-            whitelisted_plugins: [],
-            xhr_custom_status: false,
-            xhr_custom_status_url: '',
+            whitelisted_plugins: []
         };
         _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
@@ -401,7 +403,7 @@
                 _converse.auto_changed_status = false;
                 // XXX: we should really remember the original state here, and
                 // then set it back to that...
-                _converse.xmppstatus.setStatus(_converse.default_state);
+                _converse.xmppstatus.set('status', _converse.default_state);
             }
         };
 
@@ -414,7 +416,7 @@
                 // This can happen when the connection reconnects.
                 return;
             }
-            const stat = _converse.xmppstatus.getStatus();
+            const stat = _converse.xmppstatus.get('status');
             _converse.idle_seconds++;
             if (_converse.csi_waiting_time > 0 &&
                     _converse.idle_seconds > _converse.csi_waiting_time &&
@@ -425,12 +427,12 @@
                     _converse.idle_seconds > _converse.auto_away &&
                     stat !== 'away' && stat !== 'xa' && stat !== 'dnd') {
                 _converse.auto_changed_status = true;
-                _converse.xmppstatus.setStatus('away');
+                _converse.xmppstatus.set('status', 'away');
             } else if (_converse.auto_xa > 0 &&
                     _converse.idle_seconds > _converse.auto_xa &&
                     stat !== 'xa' && stat !== 'dnd') {
                 _converse.auto_changed_status = true;
-                _converse.xmppstatus.setStatus('xa');
+                _converse.xmppstatus.set('status', 'xa');
             }
         };
 
@@ -615,19 +617,24 @@
             }
         };
 
-        this.initStatus = () =>
-            new Promise((resolve, reject) => {
-                const promise = new u.getResolveablePromise();
+        this.initStatus = (reconnecting) => {
+
+            // If there's no xmppstatus obj, then we were never connected to
+            // begin with, so we set reconnecting to false.
+            reconnecting = _.isUndefined(_converse.xmppstatus) ? false : reconnecting;
+            if (reconnecting) {
+                _converse.onStatusInitialized(reconnecting);
+            } else {
                 this.xmppstatus = new this.XMPPStatus();
                 const id = b64_sha1(`converse.xmppstatus-${_converse.bare_jid}`);
                 this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
                 this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
                 this.xmppstatus.fetch({
-                    success: resolve,
-                    error: resolve
+                    success: _.partial(_converse.onStatusInitialized, reconnecting),
+                    error: _.partial(_converse.onStatusInitialized, reconnecting)
                 });
-                _converse.emit('statusInitialized');
-            });
+            }
+        }
 
         this.initSession = function () {
             _converse.session = new Backbone.Model();
@@ -812,6 +819,7 @@
              * populating the roster etc.) necessary once the connection has
              * been established.
              */
+            _converse.emit('statusInitialized');
             if (reconnecting) {
                 // No need to recreate the roster, otherwise we lose our
                 // cached data. However we still emit an event, to give
@@ -825,9 +833,12 @@
             _converse.roster.onConnected();
             _converse.populateRoster(reconnecting);
             _converse.registerPresenceHandler();
-            if (!reconnecting) {
+            if (reconnecting) {
+                _converse.emit('reconnected');
+            } else {
                 init_promise.resolve();
                 _converse.emit('initialized');
+                _converse.emit('connected');
             }
         };
 
@@ -842,28 +853,11 @@
             /* Called as soon as a new connection has been established, either
              * by logging in or by attaching to an existing BOSH session.
              */
-            // Solves problem of returned PubSub BOSH response not received
-            // by browser.
-            _converse.connection.flush();
-
+            _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
             _converse.setUserJid();
             _converse.initSession();
             _converse.enableCarbons();
-
-            // If there's no xmppstatus obj, then we were never connected to
-            // begin with, so we set reconnecting to false.
-            reconnecting = _.isUndefined(_converse.xmppstatus) ? false : reconnecting;
-            if (reconnecting) {
-                _converse.onStatusInitialized(true);
-                _converse.emit('reconnected');
-            } else {
-                _converse.initStatus()
-                    .then(
-                        _.partial(_converse.onStatusInitialized, false),
-                        _.partial(_converse.onStatusInitialized, false))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                _converse.emit('connected');
-            }
+            _converse.initStatus(reconnecting)
         };
 
         this.RosterContact = Backbone.Model.extend({
@@ -1487,17 +1481,25 @@
 
         this.XMPPStatus = Backbone.Model.extend({
 
+            defaults () {
+                return {
+                    "status":  _converse.default_state,
+                    "jid": _converse.bare_jid,
+                    "vcard_updated": null
+                }
+            },
+
             initialize () {
-                this.set({
-                    'status' : this.getStatus()
+                this.on('change:status', (item) => {
+                    const status = this.get('status');
+                    this.sendPresence(status);
+                    _converse.emit('statusChanged', status);
                 });
-                this.on('change', (item) => {
-                    if (_.has(item.changed, 'status')) {
-                        _converse.emit('statusChanged', this.get('status'));
-                    }
-                    if (_.has(item.changed, 'status_message')) {
-                        _converse.emit('statusMessageChanged', this.get('status_message'));
-                    }
+
+                this.on('change:status_message', () => {
+                    const status_message = this.get('status_message');
+                    this.sendPresence(this.get('status'), status_message);
+                    _converse.emit('statusMessageChanged', status_message);
                 });
             },
 
@@ -1533,30 +1535,6 @@
 
             sendPresence (type, status_message) {
                 _converse.connection.send(this.constructPresence(type, status_message));
-            },
-
-            setStatus (value) {
-                this.sendPresence(value);
-                this.save({'status': value});
-            },
-
-            getStatus () {
-                return this.get('status') || _converse.default_state;
-            },
-
-            setStatusMessage (status_message) {
-                this.sendPresence(this.getStatus(), status_message);
-                this.save({'status_message': status_message});
-                if (this.xhr_custom_status) {
-                    const xhr = new XMLHttpRequest();
-                    xhr.open('POST', this.xhr_custom_status_url, true);
-                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-                    xhr.send({'msg': status_message});
-                }
-                const prev_status = this.get('status_message');
-                if (prev_status === status_message) {
-                    this.trigger("update-status-ui", this);
-                }
             }
         });
 
@@ -1952,19 +1930,15 @@
         },
         'contacts': {
             'get' (jids) {
-                const _transform = function (jid) {
-                    const contact = _converse.roster.get(Strophe.getBareJidFromJid(jid));
-                    if (contact) {
-                        return contact.attributes;
-                    }
-                    return null;
+                const _getter = function (jid) {
+                    return _converse.roster.get(Strophe.getBareJidFromJid(jid)) || null;
                 };
                 if (_.isUndefined(jids)) {
                     jids = _converse.roster.pluck('jid');
                 } else if (_.isString(jids)) {
-                    return _transform(jids);
+                    return _getter(jids);
                 }
-                return _.map(jids, _transform);
+                return _.map(jids, _getter);
             },
             'add' (jid, name) {
                 if (!_.isString(jid) || !_.includes(jid, '@')) {

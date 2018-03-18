@@ -1,9 +1,5 @@
 #converse-embedded-chat,
 #conversejs {
-    .new-chatroom-nick {
-        margin: 1em auto;
-    }
-
     .add-chatroom {
         input[type="submit"],
         input[type="button"] {
@@ -13,9 +9,26 @@
 
     .chat-head-chatroom {
         background-color: $chatroom-head-color;
+
+        .chatroom-topic {
+            white-space: nowrap;
+            overflow-y: hidden;
+            text-overflow: ellipsis;
+        }
+
+        a, a:visited, a:hover, a:not([href]):not([tabindex]) {
+            &.chatbox-btn {
+                &.fa {
+                    color: $chat-head-text-color;
+                    &.button-on:before {
+                        color: $chatroom-head-color;
+                    }
+                }
+            }
+        }
+
         .chatbox-btn {
-            &.button-on {
-                background-color: $chat-head-text-color;
+            &.button-on:before {
                 color: $chatroom-head-color;
             }
         }
@@ -49,8 +62,10 @@
         }
 
         .box-flyout {
-            min-width: $chatroom-width;
-            width: $chatroom-width;
+            overflow-y: hidden;
+            background-color: $chatroom-head-color;
+
+            width: 100%;
             @media screen and (max-height: $mobile-landscape-height) {
                 height: $mobile-chat-height;
                 width: $mobile-chat-width;
@@ -62,14 +77,27 @@
                 height: 100vh;
             }
             .chatroom-body {
-                height: 289px;
+                flex-direction: row;
+                flex-flow: nowrap;
                 @include border-bottom-radius($chatbox-border-radius);
-                @include calc(height, '100% - #{$chat-head-height}');
                 background-color: white;
                 border-top: 0;
                 width: 100%;
+                overflow: hidden;
+
+                .row {
+                    flex-direction: row;
+                }
+                .chat-topic {
+                    font-weight: bold;
+                    color: $chatroom-head-color;
+                }
                 .chat-info {
                     color: $chatroom-head-color;
+                    line-height: normal;
+                    &.badge {
+                        color: $chat-head-text-color;
+                    }
                 }
                 .mentioned {
                     font-weight: bold;
@@ -81,24 +109,31 @@
                     }
                     .chat-msg-them {
                         color: $chatroom-message-them-color;
+                        canvas {
+                            background: $red;
+                        }
+                    }
+                    .chat-msg-me {
+                        canvas {
+                            background: $light-blue;
+                        }
                     }
                 }
                 .disconnect-msg {
                     padding: 2em 2em 0 2em;
                 }
                 .chat-area {
+                    display: flex;
+                    flex-direction: column;
                     word-wrap: break-word; 
-                    height: 100%;
-                    width: 70%;
-                    float: left;
                     min-width: $chat-width;
                     .new-msgs-indicator {
                         background-color: $chatroom-head-color;
                         max-width: 70%;
                     }
                     .chat-content {
-                        // There's an annoying Chrome box-sizing bug which prevents us from adding 0.5em padding here.
-                        padding: 0 0.5em 0 0.5em;
+                        height: 100%;
+                        padding: 0.5em;
                     }
                     &.full {
                         min-width: 100%;
@@ -108,23 +143,31 @@
                     }
                 }
                 .occupants {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
                     overflow-x: hidden;
                     overflow-y: hidden;
-                    float: right;
                     vertical-align: top;
                     background-color: white;
                     border-left: 1px solid $text-color;
                     border-bottom-right-radius: $chatbox-border-radius;
-                    width: 30%;
-                    height: 100%;
                     padding: 0.5em;
+
                     .occupants-heading {
                         padding: 0.3em 0;
                         font-weight: bold;
                     }
+
                     .chatroom-features {
-                        bottom: 0.5em;
                         width: 100%;
+                        .feature {
+                            float: left;
+                            margin-right: 0.5em;
+                            padding-right: 0;
+                            font-size: 1em;
+                            cursor: help;
+                        }
                     }
                     .awesomplete {
                         ul {
@@ -143,10 +186,17 @@
 
                         &.occupant-list {
                             overflow-y: auto;
-                            @include calc(height, '100% - 220px');
+                            flex-basis: 0;
+                            flex-grow: 1;
                         }
                         &.features-list {
                             padding-top: 0;
+                            .feature {
+                                width: 100%;
+                                .fa {
+                                    color: $text-color;
+                                }
+                            }
                         }
                         li {
                             cursor: default;
@@ -156,8 +206,8 @@
                             padding: 0.2em 0.5em 0.2em 0;
                             text-overflow: ellipsis;
                             white-space: nowrap;
-                            [class^="icon-"], [class*=" icon-"] {
-                                padding-right: 0.5em;
+                            .fa {
+                                margin-right: 0.5em;
                             }
                             &.feature {
                                 font-size: $font-size-tiny;
@@ -202,7 +252,6 @@
                     font-size: $font-size;
                     height: 289px;
                     width: 100%;
-                    @include calc(height, '100% - #{$chat-head-height}');
                     overflow-y: auto;
                     position: absolute;
 
@@ -211,6 +260,8 @@
                         color: $error-color;
                     }
                     .chatroom-form {
+                        margin-top: 2em;
+
                         label,
                         input[type=text] {
                             display: block;
@@ -229,7 +280,12 @@
 
         .sendXMPPMessage {
             .chat-toolbar {
-                background-color: lighten($chatroom-head-color, 10%);
+                background-color: white;
+                border-top: 8px solid $chatroom-head-color;
+                color: $chatroom-head-color;
+                .fa, .fa:hover {
+                    color: $chatroom-head-color;
+                }
             }
             .chat-textarea {
                 border-bottom-right-radius: 0;
@@ -244,6 +300,19 @@
                 margin: -1px 0 0 -1px;
                 width: 100%;
                 border: 1px solid #999;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 767px) {
+    #conversejs  {
+        .chatbox {
+            .box-flyout {
+                .chatroom-body {
+                    .chat-area {
+                    }
+                }
             }
         }
     }

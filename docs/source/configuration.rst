@@ -379,22 +379,30 @@ plugins from registering themselves under those names.
 The core, and by default whitelisted, plugins are::
 
     converse-bookmarks
+    converse-chatboxes
     converse-chatview
     converse-controlbox
     converse-core
+    converse-disco
     converse-dragresize
+    converse-fullscreen
     converse-headline
     converse-mam
     converse-minimize
     converse-muc
+    converse-muc-embedded
     converse-notification
     converse-otr
     converse-ping
+    converse-profile
     converse-register
+    converse-roomslist
     converse-rosterview
-    converse-vcard
+    converse-singleton
+    converse-spoilers
+    converse-vcard'
 
-An example from `the embedded room demo <https://conversejs.org/demo/embedded.html>`_
+Example:
 
 .. code-block:: javascript
 
@@ -402,15 +410,11 @@ An example from `the embedded room demo <https://conversejs.org/demo/embedded.ht
         converse.initialize({
             // other settings removed for brevity
             blacklisted_plugins: [
-                'converse-controlbox',
                 'converse-dragresize',
-                'converse-minimize',
-                'converse-vcard'
+                'converse-minimize'
             ],
         });
     });
-
-
 
 
 .. _`bosh-service-url`:
@@ -1427,7 +1431,7 @@ different builds, each for the different modes.
 These were:
 
 * ``converse-mobile.js`` for the ``mobile`` mode
-* ``converse-muc-embedded.js`` for embedding a single MUC room into the page.
+* ``converse-muc-embedded.js`` for embedding a single MUC room into a DOM element with id ``conversejs``
 * ``converse.js`` for the ``overlayed`` mode
 * ``inverse.js`` for the ``fullscreen`` mode
 
@@ -1466,9 +1470,10 @@ when switching view modes.
     JavaScript builds, you'll still need to use different CSS files depending
     on the view mode.
 
-    * For ``overlayed`` this is ``./css/converse.css``
+    * For ``embedded`` you need to use ``./css/converse-muc-embedded.css``
     * For ``fullscreen`` you need ``./css/inverse.css``
     * For ``mobile`` you need to use both ``./css/converse.css`` and ``./css/mobile.css``
+    * For ``overlayed`` this is ``./css/converse.css``
 
     Hopefully in a future release the CSS files will be combined and you'll
     only need ``converse.css``
@@ -1495,103 +1500,41 @@ By default all the core plugins are already whitelisted.
 These are::
 
     converse-bookmarks
+    converse-chatboxes
     converse-chatview
     converse-controlbox
     converse-core
+    converse-disco
     converse-dragresize
+    converse-fullscreen
     converse-headline
     converse-mam
     converse-minimize
     converse-muc
+    converse-muc-embedded
     converse-notification
     converse-otr
     converse-ping
+    converse-profile
     converse-register
+    converse-roomslist
     converse-rosterview
-    converse-vcard
+    converse-singleton
+    converse-spoilers
+    converse-vcard'
 
-If you are using a custom build which excludes some core plugins, then you
-should blacklist them so that malicious scripts can't register their own
-plugins under those names. See `blacklisted_plugins`_ for more info.
+.. note::
+    If you are using a custom build which excludes some core plugins, then you
+    should blacklist them so that malicious scripts can't register their own
+    plugins under those names. See `blacklisted_plugins`_ for more info.
 
-An example from `the embedded room demo <https://conversejs.org/demo/embedded.html>`_
+Example:
 
 .. code-block:: javascript
 
     require(['converse-core', 'converse-muc-embedded'], function (converse) {
         converse.initialize({
             // other settings removed for brevity
-            whitelisted_plugins: ['converse-muc-embedded']
+            whitelisted_plugins: ['myplugin']
         });
     });
-
-
-xhr_custom_status
------------------
-
-* Default:  ``false``
-
-.. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
-
-This option will let converse.js make an AJAX POST with your changed custom chat status to a
-remote server.
-
-xhr_custom_status_url
----------------------
-
-.. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
-
-* Default:  Empty string
-
-Used only in conjunction with ``xhr_custom_status``.
-
-This is the URL to which the AJAX POST request to set the user's custom status
-message will be made.
-
-The message itself is sent in the request under the key ``msg``.
-
-xhr_user_search
----------------
-
-* Default:  ``false``
-
-.. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
-
-There are two ways to add users.
-
-* The user inputs a valid JID (Jabber ID), and the user is added as a pending contact.
-* The user inputs some text (for example part of a first name or last name),
-  an XHR (Ajax Request) will be made to a remote server, and a list of matches are returned.
-  The user can then choose one of the matches to add as a contact.
-
-This setting enables the second mechanism, otherwise by default the first will be used.
-
-*What is expected from the remote server?*
-
-A default JSON encoded list of objects must be returned. Each object
-corresponds to a matched user and needs the keys ``id`` and ``fullname``.
-
-.. code-block:: javascript
-
-    [{"id": "foo", "fullname": "Foo McFoo"}, {"id": "bar", "fullname": "Bar McBar"}]
-
-.. note::
-    Make sure your server script sets the header `Content-Type: application/json`.
-
-xhr_user_search_url
--------------------
-
-.. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
-
-* Default:  Empty string
-
-Used only in conjunction with ``xhr_user_search``.
-
-This is the URL to which an XHR GET request will be made to fetch user data from your remote server.
-The query string will be included in the request with ``q`` as its key.
-
-The data returned must be a JSON encoded list of user JIDs.

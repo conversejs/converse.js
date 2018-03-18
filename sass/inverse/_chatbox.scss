@@ -1,19 +1,19 @@
-#conversejs {
+#conversejs.fullscreen {
     .chatbox-btn {
         font-size: $font-size-large;
         margin: 0 0.3em;
     }
     .flyout {
+        border-radius: 0;
         border: $flyout-padding solid $chat-head-color;
         border-top: 0.8em solid $chat-head-color;
-        border-radius: 0;
         bottom: 0;
     }
     .chat-head {
         font-size: 20px;
         padding: 0;
         .user-custom-message {
-            font-size: 66%;
+            font-size: 50%;
             height: auto;
             line-height: $line-height;
         }
@@ -24,15 +24,23 @@
         }
     }
     .chatbox {
+        width: 100%;
         height: 100%;
         margin: 0;
-        @include calc(width, '100% - #{$controlbox-width}');
-        margin: 0;
+
+        @include make-col-ready();
+        @include media-breakpoint-up(md) {
+            @include make-col(9);
+        }
+        @include media-breakpoint-up(xl) {
+            @include make-col(10);
+        }
+
         .box-flyout {
             background-color: $chat-head-color;
-            @include calc(width, '100% - #{$controlbox-width}');
+            height: 100vh;
+            width: 100%;
             box-shadow: none;
-            min-width: auto;
         }
         .chat-body {
             background-color: $chat-head-color;
@@ -62,7 +70,7 @@
         }
         .chat-title {
             font-size: $font-size-huge;
-            line-height: $font-size-huge;
+            line-height: $line-height-huge;
         }
 
         .sendXMPPMessage {
@@ -83,6 +91,14 @@
                     }
                 }
             }
+        }
+    }
+}
+
+@media screen and (max-width: 767px) {
+    #conversejs.fullscreen  {
+        .chatbox {
+            width: calc(100% - 50px);
         }
     }
 }

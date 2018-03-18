@@ -25,6 +25,7 @@ require.config({
         "backbone.orderedlistview": "node_modules/backbone.overview/dist/backbone.orderedlistview",
         "backbone.overview":        "node_modules/backbone.overview/dist/backbone.overview",
         "backbone.vdomview":        "node_modules/backbone.vdomview/dist/backbone.vdomview",
+        "bootstrap":                "node_modules/bootstrap.native/dist/bootstrap-native-v4",
         "emojione":                 "node_modules/emojione/lib/js/emojione",
         "es6-promise":              "node_modules/es6-promise/dist/es6-promise.auto",
         "eventemitter":             "node_modules/otr/build/dep/eventemitter",
@@ -70,12 +71,14 @@ require.config({
         "converse-core":            "src/converse-core",
         "converse-disco":           "src/converse-disco",
         "converse-dragresize":      "src/converse-dragresize",
-        "converse-headline":        "src/converse-headline",
         "converse-fullscreen":      "src/converse-fullscreen",
+        "converse-headline":        "src/converse-headline",
         "converse-mam":             "src/converse-mam",
         "converse-minimize":        "src/converse-minimize",
+        "converse-modal":           "src/converse-modal",
         "converse-muc":             "src/converse-muc",
         "converse-muc-embedded":    "src/converse-muc-embedded",
+        "converse-muc-views":       "src/converse-muc-views",
         "converse-notification":    "src/converse-notification",
         "converse-otr":             "src/converse-otr",
         "converse-ping":            "src/converse-ping",
@@ -133,10 +136,13 @@ require.config({
 
     // define module dependencies for modules not using define
     shim: {
-        'awesomplete':          { exports: 'Awesomplete'},
-        'emojione':             { exports: 'emojione'},
-        'xss':                  {
-            init: function (xss_noconflict) {
+        'backbone.orderedlistview': { deps: ['backbone.nativeview'] },
+        'backbone.overview':        { deps: ['backbone.nativeview'] },
+        'backbone.vdomview':        { deps: ['backbone.nativeview'] },
+        'awesomplete':              { exports: 'Awesomplete'},
+        'emojione':                 { exports: 'emojione'},
+        'xss':  {
+            'init': function (xss_noconflict) {
                 return {
                     filterXSS: window.filterXSS,
                     filterCSS: window.filterCSS

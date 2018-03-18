@@ -11,6 +11,7 @@
 }(this, function (converse) {
     "use strict";
     const { Promise, Strophe, _, moment, sizzle } = converse.env;
+    const u = converse.env.utils;
 
 
     function onVCardData (_converse, jid, iq, callback) {
@@ -24,7 +25,7 @@
             url = _.get(vcard.querySelector('URL'), 'textContent'),
             fullname = _.get(vcard.querySelector('FN'), 'textContent');
 
-        if (jid) {
+        if (!u.isSameBareJID(jid, _converse.bare_jid)) {
             const contact = _converse.roster.get(jid);
             if (contact) {
                 contact.save({
@@ -39,8 +40,7 @@
         if (callback) {
             callback({
                 'stanza': iq,
-                'jid': jid,
-                'fullname': fullname || jid,
+                'fullname': fullname,
                 'image': img,
                 'image_type': img_type,
                 'url': url
@@ -63,16 +63,14 @@
          *    (String) jid - The Jabber ID of the user whose VCard
          *      is being requested.
          */
-        if (Strophe.getBareJidFromJid(jid) === _converse.bare_jid) {
-            jid = null; // No 'to' attr when getting one's own vCard
-        }
+        const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
         return new Promise((resolve, reject) => {
             if (!_converse.use_vcards) {
                 if (resolve) { resolve({'jid': jid}); }
             } else {
                 _converse.connection.vcard.get(
                     _.partial(onVCardData, _converse, jid, _, resolve),
-                    jid,
+                    to,
                     _.partial(onVCardError, _converse, jid, _, resolve)
                 );
             }
@@ -82,12 +80,13 @@
     function updateChatBoxFromVCard (_converse, jid) {
         _converse.api.vcard.get(jid)
             .then((vcard) => {
-                const chatbox = _converse.chatboxes.getChatBox(vcard.jid);
+                const chatbox = _converse.chatboxes.getChatBox(jid);
                 if (!_.isUndefined(chatbox)) {
                     chatbox.save(_.pick(vcard, ['fullname', 'url', 'image_type', 'image', 'vcard_updated']));
                 }
             })
-            .catch(() => {
+            .catch((e) => {
+                _converse.log(e, Strophe.LogLevel.ERROR);
                 _converse.log(
                     "updateChatBoxFromVCard: Error occured while attempting to update chatbox with VCard data",
                     Strophe.LogLevel.ERROR
@@ -130,7 +129,7 @@
             _converse.api.settings.update({'use_vcards': true});
 
             _converse.createRequestingContactFromVCard = function (presence, vcard) {
-                const bare_jid = Strophe.getBareJidFromJid(vcard.jid);
+                const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
                 let fullname = vcard.fullname;
                 if (!fullname) {
                     const nick_el = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence);
@@ -158,7 +157,7 @@
                 }
             });
 
-            _converse.on('chatBoxInitialized', function (chatbox) {
+            _converse.on('chatBoxInitialized', (chatbox) => {
                 if (!_converse.use_vcards || chatbox.model.get('type') === 'headline') {
                     return;
                 }
@@ -182,18 +181,14 @@
             });
 
             _converse.on('statusInitialized', function fetchOwnVCard () {
-                if (_.isNil(_converse.xmppstatus.get('fullname'))) {
-                    _converse.api.disco.supports(Strophe.NS.VCARD, _converse.domain).then(
-                        (result) => {
+                if (_.isNil(_converse.xmppstatus.get('vcard_updated'))) {
+                    _converse.api.disco.supports(Strophe.NS.VCARD, _converse.domain)
+                        .then((result) => {
                             if (result.supported) {
-                                _converse.api.vcard.get(_converse.bare_jid).then((vcard) => {
-                                    _converse.xmppstatus.save({'fullname': vcard.fullname || ''});
-                                });
-                            }
-                        }
-                    ).catch((msg) => {
-                        _converse.log(msg, Strophe.LogLevel.FATAL);
-                    });
+                                _converse.api.vcard.get(_converse.bare_jid)
+                                    .then((vcard) => _converse.xmppstatus.save(vcard));
+                            }})
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 }
             });
 

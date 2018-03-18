@@ -119,7 +119,7 @@
 
     converse.plugins.add('converse-mam', {
 
-        dependencies: ['converse-chatview', 'converse-muc'],
+        dependencies: ['converse-chatview', 'converse-muc', 'converse-muc-views'],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

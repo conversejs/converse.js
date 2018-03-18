@@ -77,7 +77,6 @@
                 function (done, _converse) {
 
             test_utils.openControlBox();
-            test_utils.openContactsPanel(_converse);
             test_utils.createContacts(_converse, 'current');
 
             var UNVERIFIED = 1, UNENCRYPTED = 0;
@@ -104,7 +103,6 @@
                     function (done, _converse) {
 
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(_converse);
                 test_utils.createContacts(_converse, 'current');
 
                 var msgtext = "?OTR,1,3,?OTR:AAIDAAAAAAEAAAABAAAAwCQ8HKsag0y0DGKsneo0kzKu1ua5L93M4UKTkCf1I2kbm2RgS5kIxDTxrTj3wVRB+H5Si86E1fKtuBgsDf/bKkGTM0h/49vh5lOD9HkE8cnSrFEn5GN,";

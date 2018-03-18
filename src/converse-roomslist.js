@@ -17,7 +17,7 @@
             "tpl!rooms_list_item"
         ], factory);
 }(this, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
-    const { Backbone, Promise, b64_sha1, sizzle, _ } = converse.env;
+    const { Backbone, Promise, Strophe, b64_sha1, sizzle, _ } = converse.env;
     const u = converse.env.utils;
 
     converse.plugins.add('converse-roomslist', {
@@ -135,12 +135,13 @@
 
             _converse.RoomsListView = Backbone.OrderedListView.extend({
                 tagName: 'div',
-                className: 'open-rooms-list rooms-list-container',
+                className: 'open-rooms-list list-container rooms-list-container',
                 events: {
                     'click .add-bookmark': 'addBookmark',
                     'click .close-room': 'closeRoom',
-                    'click .open-rooms-toggle': 'toggleRoomsList',
+                    'click .rooms-toggle': 'toggleRoomsList',
                     'click .remove-bookmark': 'removeBookmark',
+                    'click .open-room': 'openRoom',
                 },
                 listSelector: '.rooms-list',
                 ItemView: _converse.RoomsListElementView,
@@ -167,7 +168,8 @@
                     this.el.innerHTML = tpl_rooms_list({
                         'toggle_state': this.list_model.get('toggle-state'),
                         'desc_rooms': __('Click to toggle the rooms list'),
-                        'label_rooms': __('Open Rooms')
+                        'label_rooms': __('Open Rooms'),
+                        '_converse': _converse
                     });
                     if (this.list_model.get('toggle-state') !== _converse.OPENED) {
                         this.el.querySelector('.open-rooms-list').classList.add('collapsed');
@@ -181,9 +183,9 @@
                     const controlboxview = _converse.chatboxviews.get('controlbox');
                     if (!_.isUndefined(controlboxview) &&
                             !_converse.root.contains(this.el)) {
-                        const container = controlboxview.el.querySelector('#chatrooms');
-                        if (!_.isNull(container)) {
-                            container.insertBefore(this.el, container.firstChild);
+                        const el = controlboxview.el.querySelector('.open-rooms-list');
+                        if (!_.isNull(el)) {
+                            el.parentNode.replaceChild(this.el, el);
                         }
                     }
                 },
@@ -196,11 +198,21 @@
                     u.showElement(this.el);
                 },
 
+                openRoom (ev) {
+                    ev.preventDefault();
+                    const name = ev.target.textContent;
+                    const jid = ev.target.getAttribute('data-room-jid');
+                    const data = {
+                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
+                    }
+                    _converse.api.rooms.open(jid, data);
+                },
+
                 closeRoom (ev) {
                     ev.preventDefault();
                     const name = ev.target.getAttribute('data-room-name');
                     const jid = ev.target.getAttribute('data-room-jid');
-                    if (confirm(__("Are you sure you want to leave the room \"%1$s\"?", name))) {
+                    if (confirm(__("Are you sure you want to leave the room %1$s?", name))) {
                         _converse.chatboxviews.get(jid).leave();
                     }
                 },
@@ -218,18 +230,18 @@
 
                 toggleRoomsList (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const el = ev.target;
-                    if (el.classList.contains("icon-opened")) {
+                    const icon_el = ev.target.querySelector('.fa');
+                    if (icon_el.classList.contains("fa-caret-down")) {
                         utils.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
                             this.list_model.save({'toggle-state': _converse.CLOSED});
-                            el.classList.remove("icon-opened");
-                            el.classList.add("icon-closed");
+                            icon_el.classList.remove("fa-caret-down");
+                            icon_el.classList.add("fa-caret-right");
                         });
                     } else {
                         utils.slideOut(this.el.querySelector('.open-rooms-list')).then(() => {
                             this.list_model.save({'toggle-state': _converse.OPENED});
-                            el.classList.remove("icon-closed");
-                            el.classList.add("icon-opened");
+                            icon_el.classList.remove("fa-caret-right");
+                            icon_el.classList.add("fa-caret-down");
                         });
                     }
                 }

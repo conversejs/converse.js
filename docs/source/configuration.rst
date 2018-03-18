@@ -379,22 +379,30 @@ plugins from registering themselves under those names.
 The core, and by default whitelisted, plugins are::
 
     converse-bookmarks
+    converse-chatboxes
     converse-chatview
     converse-controlbox
     converse-core
+    converse-disco
     converse-dragresize
+    converse-fullscreen
     converse-headline
     converse-mam
     converse-minimize
     converse-muc
+    converse-muc-embedded
     converse-notification
     converse-otr
     converse-ping
+    converse-profile
     converse-register
+    converse-roomslist
     converse-rosterview
-    converse-vcard
+    converse-singleton
+    converse-spoilers
+    converse-vcard'
 
-An example from `the embedded room demo <https://conversejs.org/demo/embedded.html>`_
+Example:
 
 .. code-block:: javascript
 
@@ -402,15 +410,11 @@ An example from `the embedded room demo <https://conversejs.org/demo/embedded.ht
         converse.initialize({
             // other settings removed for brevity
             blacklisted_plugins: [
-                'converse-controlbox',
                 'converse-dragresize',
-                'converse-minimize',
-                'converse-vcard'
+                'converse-minimize'
             ],
         });
     });
-
-
 
 
 .. _`bosh-service-url`:
@@ -1427,7 +1431,7 @@ different builds, each for the different modes.
 These were:
 
 * ``converse-mobile.js`` for the ``mobile`` mode
-* ``converse-muc-embedded.js`` for embedding a single MUC room into the page.
+* ``converse-muc-embedded.js`` for embedding a single MUC room into a DOM element with id ``conversejs``
 * ``converse.js`` for the ``overlayed`` mode
 * ``inverse.js`` for the ``fullscreen`` mode
 
@@ -1466,9 +1470,10 @@ when switching view modes.
     JavaScript builds, you'll still need to use different CSS files depending
     on the view mode.
 
-    * For ``overlayed`` this is ``./css/converse.css``
+    * For ``embedded`` you need to use ``./css/converse-muc-embedded.css``
     * For ``fullscreen`` you need ``./css/inverse.css``
     * For ``mobile`` you need to use both ``./css/converse.css`` and ``./css/mobile.css``
+    * For ``overlayed`` this is ``./css/converse.css``
 
     Hopefully in a future release the CSS files will be combined and you'll
     only need ``converse.css``
@@ -1495,32 +1500,41 @@ By default all the core plugins are already whitelisted.
 These are::
 
     converse-bookmarks
+    converse-chatboxes
     converse-chatview
     converse-controlbox
     converse-core
+    converse-disco
     converse-dragresize
+    converse-fullscreen
     converse-headline
     converse-mam
     converse-minimize
     converse-muc
+    converse-muc-embedded
     converse-notification
     converse-otr
     converse-ping
+    converse-profile
     converse-register
+    converse-roomslist
     converse-rosterview
-    converse-vcard
+    converse-singleton
+    converse-spoilers
+    converse-vcard'
 
-If you are using a custom build which excludes some core plugins, then you
-should blacklist them so that malicious scripts can't register their own
-plugins under those names. See `blacklisted_plugins`_ for more info.
+.. note::
+    If you are using a custom build which excludes some core plugins, then you
+    should blacklist them so that malicious scripts can't register their own
+    plugins under those names. See `blacklisted_plugins`_ for more info.
 
-An example from `the embedded room demo <https://conversejs.org/demo/embedded.html>`_
+Example:
 
 .. code-block:: javascript
 
     require(['converse-core', 'converse-muc-embedded'], function (converse) {
         converse.initialize({
             // other settings removed for brevity
-            whitelisted_plugins: ['converse-muc-embedded']
+            whitelisted_plugins: ['myplugin']
         });
     });

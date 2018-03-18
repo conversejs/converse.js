@@ -929,7 +929,7 @@ msgstr "Entrar na sala"
 
 #: dist/converse-no-dependencies.js:21104
 msgid "Show rooms"
-msgstr "Mostar salas"
+msgstr "Mostrar salas"
 
 #: dist/converse-no-dependencies.js:21165
 msgid "Rooms"

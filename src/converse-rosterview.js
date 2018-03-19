@@ -708,12 +708,6 @@
                     const form = this.el.querySelector('.roster-filter-form');
                     this.el.replaceChild(this.filter_view.render().el, form);
                     this.roster_el = this.el.querySelector('.roster-contacts');
-
-                    if (!_converse.allow_contact_requests) {
-                        // XXX: if we ever support live editing of config then
-                        // we'll need to be able to remove this class on the fly.
-                        this.el.classList.add('no-contact-requests');
-                    }
                     return this;
                 },
 

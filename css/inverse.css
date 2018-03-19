@@ -5572,7 +5572,7 @@ body {
     #conversejs #controlbox .conn-feedback.error {
       color: #A53214; }
     #conversejs #controlbox .conn-feedback p {
-      padding-bottom: 0.5em; }
+      padding-bottom: 1em; }
       #conversejs #controlbox .conn-feedback p.feedback-subject.error {
         font-weight: bold; }
   #conversejs #controlbox .brand-heading-container .brand-heading {
@@ -5912,8 +5912,6 @@ body {
   overflow: hidden;
   height: calc(100% - 70px);
   /* Custom addition for CSP */ }
-  #conversejs #converse-roster.no-contact-requests {
-    height: calc(~"100% - 60px - 20px"); }
   #conversejs #converse-roster #online-count {
     display: none; }
   #conversejs #converse-roster .search-xmpp ul li.chat-info {

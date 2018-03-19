@@ -2514,7 +2514,7 @@
                         const fragment = document.createDocumentFragment();
                         for (let i=0; i<this.rooms.length; i++) {
                             const name = Strophe.unescapeNode(
-                                $(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid')
+                                 $(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid')
                             );
                             const jid = $(this.rooms[i]).attr('jid');
                             fragment.appendChild($(

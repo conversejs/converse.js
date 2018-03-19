@@ -243,9 +243,7 @@
                     this.model.on('change:closed', this.ensureClosedState, this);
                     this.render();
                     if (this.model.get('connected')) {
-                        _converse.api.waitUntil('rosterViewInitialized')
-                            .then(this.insertRoster.bind(this))
-                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                        this.insertRoster();
                     }
                     _converse.emit('controlboxInitialized', this);
                 },
@@ -277,19 +275,15 @@
                 onConnected () {
                     if (this.model.get('connected')) {
                         this.render();
-                        _converse.api.waitUntil('rosterViewInitialized')
-                            .then(this.insertRoster.bind(this))
-                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                        this.insertRoster();
                     }
                 },
 
                 insertRoster () {
                     /* Place the rosterview inside the "Contacts" panel. */
-                    this.controlbox_pane.el.insertAdjacentElement(
-                        'beforeEnd',
-                        _converse.rosterview.el
-                    );
-                    return this;
+                    _converse.api.waitUntil('rosterViewInitialized')
+                        .then(() => this.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el))
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                  createBrandHeadingHTML () {
@@ -601,10 +595,11 @@
                  * to fetch the roster again and to send out a presence stanza.
                  */
                 const view = _converse.chatboxviews.get('controlbox');
-                view.model.set({connected:false});
+                view.model.set({'connected': false});
                 view.renderLoginPanel();
             };
             _converse.on('disconnected', disconnect);
+            _converse.on('will-reconnect', disconnect);
         }
     });
 }));

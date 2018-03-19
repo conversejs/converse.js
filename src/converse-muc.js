@@ -1459,9 +1459,10 @@
                      *  <feature var='muc_nonanonymous'/>
                      *  <feature var='urn:xmpp:mam:0'/>
                      */
+                    var nimi = unescape(this.model.get('jid'));
                     const features = {
                         'features_fetched': true,
-                        'name': iq.querySelector('identity').getAttribute('name')
+                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid))
                     }
                     _.each(iq.querySelectorAll('feature'), function (field) {
                         const fieldname = field.getAttribute('var');

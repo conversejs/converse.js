@@ -1461,7 +1461,7 @@
                      */
                     const features = {
                         'features_fetched': true,
-                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid))
+                        'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid))
                     }
                     _.each(iq.querySelectorAll('feature'), function (field) {
                         const fieldname = field.getAttribute('var');

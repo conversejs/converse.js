@@ -134,7 +134,7 @@ dev: .bundle stamp-npm
 ## Builds
 
 .PHONY: css
-css: dev sass/*.scss css/converse.css css/converse.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css css/fonts.css
+css: dev sass/*.scss css/converse.css css/converse.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css
 
 css/inverse.css:: gems sass sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/inverse/inverse.scss css/inverse.css
@@ -144,9 +144,6 @@ css/converse-muc-embedded.css:: gems sass
 
 css/converse.css:: gems sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss css/converse.css
-
-css/fonts.css:: dev sass
-	$(SASS) -I $(BOURBON) sass/only-fonts.scss $@
 
 css/theme.css:: dev sass
 	$(SASS) -I $(BOOTSTRAP) sass/theme.scss $@

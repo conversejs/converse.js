@@ -124,7 +124,6 @@ clean:
 	rm dist/*.min.js
 	rm css/theme.min.css
 	rm css/converse.min.css
-	rm css/mobile.min.css
 	rm css/converse-muc-embedded.css
 	rm css/*.map
 
@@ -135,7 +134,7 @@ dev: .bundle stamp-npm
 ## Builds
 
 .PHONY: css
-css: dev sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css css/fonts.css
+css: dev sass/*.scss css/converse.css css/converse.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css css/fonts.css
 
 css/inverse.css:: gems sass sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/inverse/inverse.scss css/inverse.css

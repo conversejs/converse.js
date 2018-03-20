@@ -84,8 +84,11 @@
                 margin-top: 0.5em;
 
                 &.requesting-xmpp-contact {
-                    a.fa {
-                        width: 1.5em;
+                    a {
+                        line-height: $line-height;
+                        &.fa {
+                            width: 1.5em;
+                        }
                     }
                     .req-contact-name {
                         padding: 0 0.2em 0 0;

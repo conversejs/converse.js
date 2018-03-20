@@ -5828,8 +5828,10 @@ body.reset {
         line-height: 14px;
         width: 100%;
         margin-top: 0.5em; }
-        #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a.fa {
-          width: 1.5em; }
+        #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a {
+          line-height: 16px; }
+          #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a.fa {
+            width: 1.5em; }
         #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact .req-contact-name {
           padding: 0 0.2em 0 0; }
         #conversejs #converse-roster .roster-contacts .roster-group li a:hover {

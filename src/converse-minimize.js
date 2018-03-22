@@ -67,11 +67,9 @@
                         return;
                     }
                     this.save({
-                        'minimized': this.get('minimized') || chatWindowStatus,
+                        'minimized': sessionStorage.getItem(this.get('id')) ||  this.get('minimized'),
                         'time_minimized': this.get('time_minimized') || moment(),
                     });
-                  
-                    var chatWindowStatus = sessionStorage.getItem("jid");
                     
                 },
                 
@@ -80,7 +78,7 @@
                         'minimized': false,
                         'time_opened': moment().valueOf()
                     });
-                    sessionStorage.setItem("jid", this.get('minimized'));
+                    sessionStorage.setItem(this.get('id'), this.get('minimized'));
                 },
 
                 minimize () {
@@ -88,7 +86,7 @@
                         'minimized': true,
                         'time_minimized': moment().format()
                     });
-                    sessionStorage.setItem("jid", this.get('minimized'));
+                    sessionStorage.setItem(this.get('id'), this.get('minimized'));
                 },
             },
             ChatBoxView: {

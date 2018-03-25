@@ -443,6 +443,7 @@
                             .emoji-skintone-picker {
                                 li {
                                     padding: 0.2em;
+                                    font-size: $font-size-huge;
                                     &:hover {
                                         background-color: $highlight-color;
                                     }

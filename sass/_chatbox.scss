@@ -401,47 +401,37 @@
                                 overflow: scroll;
                                 padding: 0.5em;
                             }
-                            &.emoji-toolbar {
-                                /* offset-x | offset-y | blur-radius | spread-radius | color */
-                                box-shadow: 0 -1px 1px 0 rgba(0, 0, 0, 0.4);
-                            }
-                            &.emoji-toolbar {
-                                overflow: hidden;
-                                left: 0;
-                                .picked {
-                                    background-color: $highlight-color;
-                                }
-                                li {
-                                    height: $emoji_height + 2*5px;
-                                    padding: 4px;
-                                    z-index: 98;
-                                    &.emoji {
-                                        a {
-                                            font-size: $font-size-huge;
-                                        }
-                                    }
-                                }
-                            }
                             li {
-                                &.insert-emoji {
-                                    padding: 0.3em;
-                                    &:hover {
-                                        background-color: $highlight-color;
-                                    }
-                                }
                                 margin-left: 0;
                                 cursor: pointer;
                                 list-style: none;
                                 position: relative;
-                                a:hover {
-                                    color: #8f2831;
+                                &.emoji-skintone {
+                                }
+                                &.insert-emoji {
+                                    padding: 0.2em;
+                                    &.picked {
+                                        background-color: $highlight-color;
+                                    }
+                                    &:hover {
+                                        background-color: $highlight-color;
+                                    }
+                                    a {
+                                        font-size: $font-size-huge;
+                                        &:hover {
+                                            color: #8f2831;
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                     &.toggle-smiley {
                         .emoji-toolbar {
+                            box-shadow: 0 -1px 1px 0 rgba(0, 0, 0, 0.4);
+
                             .emoji-category-picker {
+                                padding-top: 0.5em;
                                 ul {
                                     display: flex;
                                     flex-direction: row;
@@ -451,8 +441,11 @@
 
                             .emoji-category-picker,
                             .emoji-skintone-picker {
-                                li:hover {
-                                    background-color: $highlight-color;
+                                li {
+                                    padding: 0.2em;
+                                    &:hover {
+                                        background-color: $highlight-color;
+                                    }
                                 }
                             }
                         }

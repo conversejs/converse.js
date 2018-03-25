@@ -319,10 +319,6 @@ body.reset {
         }
     }
 
-    .emojione {
-        height: $emoji_height;
-    }
-
     .spinner {
         @include animation(spin 2s infinite, linear);
         display: block;

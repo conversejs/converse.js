@@ -545,41 +545,6 @@
                     expect(_converse.emit).toHaveBeenCalledWith('callButtonClicked', jasmine.any(Object));
                     done();
                 }));
-
-                it("can contain a button for clearing messages",
-                    mock.initConverseWithPromises(
-                        null, ['rosterGroupsFetched'], {},
-                        function (done, _converse) {
-
-                    test_utils.createContacts(_converse, 'current');
-                    test_utils.openControlBox();
-
-                    var view, clearButton, $toolbar;
-                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    // First check that the button doesn't show if it's not enabled
-                    // via "visible_toolbar_buttons"
-                    _converse.visible_toolbar_buttons.clear = false;
-                    test_utils.openChatBoxFor(_converse, contact_jid);
-                    view = _converse.chatboxviews.get(contact_jid);
-                    view = _converse.chatboxviews.get(contact_jid);
-                    $toolbar = $(view.el).find('ul.chat-toolbar');
-                    clearButton = $toolbar.find('.toggle-clear');
-                    expect(clearButton.length).toBe(0);
-                    view.close();
-                    // Now check that it's shown if enabled and that it calls
-                    // clearMessages
-                    _converse.visible_toolbar_buttons.clear = true; // enable the button
-                    test_utils.openChatBoxFor(_converse, contact_jid);
-                    view = _converse.chatboxviews.get(contact_jid);
-                    $toolbar = $(view.el).find('ul.chat-toolbar');
-                    clearButton = $toolbar.find('.toggle-clear');
-                    expect(clearButton.length).toBe(1);
-                    spyOn(view, 'clearMessages');
-                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                    clearButton[0].click();
-                    expect(view.clearMessages).toHaveBeenCalled();
-                    done();
-                }));
             });
 
             describe("A Chat Message", function () {

@@ -1363,7 +1363,6 @@ visible_toolbar_buttons
 
     {
         call: false,
-        clear: true,
         emoji: true,
         toggle_occupants: true
     }
@@ -1381,8 +1380,6 @@ Allows you to show or hide buttons on the chatboxes' toolbars.
             console.log('Bare buddy JID is', data.model.get('jid'));
             // ... Third-party library code ...
         });
-* *clear*:
-    Provides a button for clearing messages from a chatbox.
 * *emoji*:
     Enables rendering of emoji and provides a toolbar button for choosing them.
 * *toggle_occupants*:

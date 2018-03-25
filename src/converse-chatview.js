@@ -370,7 +370,6 @@
                         'label_start_call': __('Start a call'),
                         'label_toggle_spoiler': label_toggle_spoiler,
                         'show_call_button': _converse.visible_toolbar_buttons.call,
-                        'show_clear_button': _converse.visible_toolbar_buttons.clear,
                         'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
                         'use_emoji': _converse.visible_toolbar_buttons.emoji,
                     });

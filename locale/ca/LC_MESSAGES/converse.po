@@ -7,14 +7,16 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2016-01-25 17:25+0100\n"
-"Last-Translator: Ruben Mansilla <ramansilla@gmail.com>\n"
-"Language-Team: CA <product@spamina.com>\n"
+"PO-Revision-Date: 2018-03-26 18:34+0000\n"
+"Last-Translator: Seve <seve@delape.net>\n"
+"Language-Team: Catalan <https://hosted.weblate.org/projects/conversejs/"
+"translations/ca/>\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.20-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: ca\n"
 "Language-Code: ca\n"
@@ -24,20 +26,18 @@ msgstr ""
 "domain: converse\n"
 "X-Is-Fallback-For: es-ar es-bo es-cl es-co es-cr es-do es-ec es-es es-sv es-"
 "gt es-hn es-mx es-ni es-pa es-py es-pe es-pr es-us es-uy es-ve\n"
-"X-Generator: Poedit 1.8.6\n"
 
 #: dist/converse-no-dependencies.js:7545
 msgid "The connection has dropped, attempting to reconnect."
-msgstr ""
+msgstr "S'ha perdut la connexió, s'està intentant reconnectar."
 
 #: dist/converse-no-dependencies.js:7643
-#, fuzzy
 msgid "An error occurred while connecting to the chat server."
-msgstr "S'ha produït un error en intentar desar el formulari."
+msgstr "S'ha produït un error al intentar connectar-se al servidor de xat."
 
 #: dist/converse-no-dependencies.js:7650
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
-msgstr ""
+msgstr "L'adreça Jabber i/o la contrasenya no és correcta. Intenta-ho de nou."
 
 #: dist/converse-no-dependencies.js:7662
 #, javascript-format
@@ -47,6 +47,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:7664
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
+"El servidor XMPP no ha proporcionat cap mecanisme d'autenticació compatible"
 
 #: dist/converse-no-dependencies.js:8359
 #, fuzzy, javascript-format

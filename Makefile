@@ -119,7 +119,7 @@ gems: .bundle
 
 .PHONY: clean
 clean:
-	rm -rf node_modules .bundle
+	rm -rf node_modules .bundle stamp-npm
 	rm dist/*.min.js
 	rm css/theme.min.css
 	rm css/converse.min.css

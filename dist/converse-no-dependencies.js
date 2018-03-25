@@ -7,16 +7,7 @@
 
 /* jshint ignore:start */
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        //Allow using this built library as an AMD module
-        //in another project. That other project will only
-        //see this AMD call, not the internal modules in
-        //the closure below.
-        define([], factory);
-    } else {
-        //Browser globals case.
-        root.converse = factory();
-    }
+    root.converse = factory();
 }(this, function () {
     //almond, and your modules will be inlined here
 /* jshint ignore:end */
@@ -5905,6 +5896,8 @@ return zhTw;
 
 })));
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -5917,7 +5910,7 @@ return zhTw;
 /*global define */
 (function (root, factory) {
   define('i18n',["es6-promise", "jed", "lodash.noconflict", "moment", 'moment/locale/af', 'moment/locale/ar', 'moment/locale/bg', 'moment/locale/ca', 'moment/locale/de', 'moment/locale/es', 'moment/locale/fr', 'moment/locale/he', 'moment/locale/hu', 'moment/locale/id', 'moment/locale/it', 'moment/locale/ja', 'moment/locale/nb', 'moment/locale/nl', 'moment/locale/pl', 'moment/locale/pt-br', 'moment/locale/ru', 'moment/locale/tr', 'moment/locale/uk', 'moment/locale/zh-cn', 'moment/locale/zh-tw'], factory);
-})(this, function (Promise, Jed, _, moment) {
+})(void 0, function (Promise, Jed, _, moment) {
   'use strict';
 
   function detectLocale(library_check) {
@@ -6047,6 +6040,8 @@ return zhTw;
   };
 });
 //# sourceMappingURL=i18n.js.map;
+
+
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 // Converse.js (A browser based XMPP chat client)
@@ -6061,7 +6056,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 /*global define, escape, window */
 (function (root, factory) {
   define('utils',["sizzle", "es6-promise", "lodash.noconflict", "strophe"], factory);
-})(this, function (sizzle, Promise, _, Strophe) {
+})(void 0, function (sizzle, Promise, _, Strophe) {
   "use strict";
 
   var b64_sha1 = Strophe.SHA1.b64_sha1;
@@ -7077,6 +7072,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 });
 
 //# sourceMappingURL=pluggable.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -7087,7 +7084,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 /*global Backbone, define, window, JSON */
 (function (root, factory) {
   define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "lodash.fp", "polyfill", "i18n", "utils", "moment", "strophe", "pluggable", "backbone.noconflict", "backbone.nativeview", "backbone.browserStorage"], factory);
-})(this, function (sizzle, Promise, _, f, polyfill, i18n, u, moment, Strophe, pluggable, Backbone) {
+})(void 0, function (sizzle, Promise, _, f, polyfill, i18n, u, moment, Strophe, pluggable, Backbone) {
   /* Cannot use this due to Safari bug.
    * See https://github.com/jcbrand/converse.js/issues/196
    */
@@ -13407,9 +13404,9 @@ __p += '\n                    </a>\n                ';
  } ;
 __p += '\n                <p class="user-custom-message">' +
 __e( o.status ) +
-'</p>\n            </div>\n        </div>\n    </div>\n    <div class="col-sm-3 col-lg-2">\n        <div class="chatbox-buttons row no-gutters">\n            <a class="chatbox-btn close-chatbox-button fa fa-close" title=' +
+'</p>\n            </div>\n        </div>\n    </div>\n    <div class="chatbox-buttons row no-gutters">\n        <a class="chatbox-btn close-chatbox-button fa fa-close" title=' +
 __e(o.info_close) +
-'></a>\n            <!-- <a class="chatbox-btn fa fa-vcard" title="Contact profile" data-toggle="modal" data-target="#contactProfileModal"></a> -->\n        </div>\n    </div>\n</div>\n';
+'></a>\n        <!-- <a class="chatbox-btn fa fa-vcard" title="Contact profile" data-toggle="modal" data-target="#contactProfileModal"></a> -->\n    </div>\n</div>\n';
 return __p
 };});
 
@@ -13632,12 +13629,6 @@ __e(o.label_start_call) +
 '"></li>\n';
  } ;
 __p += '\n';
- if (o.show_clear_button)  { ;
-__p += '\n<li class="toggle-clear right fa fa-eraser" title="' +
-__e(o.label_clear) +
-'"></li>\n';
- } ;
-__p += '\n';
 return __p
 };});
 
@@ -13647,6 +13638,8 @@ var __t, __p = '';
 __p += '<div class="converse-chatboxes row no-gutters"></div>\n<div id="converse-modals" class="modals"></div>\n';
 return __p
 };});
+
+
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -13658,7 +13651,7 @@ return __p
 /*global define */
 (function (root, factory) {
   define('converse-chatboxes',["converse-core", "tpl!chatboxes", "backbone.overview"], factory);
-})(this, function (converse, tpl_chatboxes) {
+})(void 0, function (converse, tpl_chatboxes) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -13688,10 +13681,12 @@ return __p
 
         return this.__super__.logOut.apply(this, arguments);
       },
-      initStatus: function initStatus() {
+      initStatus: function initStatus(reconnecting) {
         var _converse = this.__super__._converse;
 
-        _converse.chatboxviews.closeAllChatBoxes();
+        if (!reconnecting) {
+          _converse.chatboxviews.closeAllChatBoxes();
+        }
 
         return this.__super__.initStatus.apply(this, arguments);
       }
@@ -14213,6 +14208,8 @@ return __p
   return converse;
 });
 //# sourceMappingURL=converse-chatboxes.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -14223,7 +14220,7 @@ return __p
 /*global define */
 (function (root, factory) {
   define('converse-chatview',["converse-core", "bootstrap", "emojione", "xss", "tpl!action", "tpl!chatbox", "tpl!chatbox_head", "tpl!chatbox_message_form", "tpl!emojis", "tpl!help_message", "tpl!info", "tpl!message", "tpl!new_day", "tpl!spinner", "tpl!spoiler_button", "tpl!spoiler_message", "tpl!toolbar", "converse-chatboxes"], factory);
-})(this, function (converse, bootstrap, emojione, xss, tpl_action, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_help_message, tpl_info, tpl_message, tpl_new_day, tpl_spinner, tpl_spoiler_button, tpl_spoiler_message, tpl_toolbar) {
+})(void 0, function (converse, bootstrap, emojione, xss, tpl_action, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_help_message, tpl_info, tpl_message, tpl_new_day, tpl_spinner, tpl_spoiler_button, tpl_spoiler_message, tpl_toolbar) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -14285,7 +14282,7 @@ return __p
           __ = _converse.__;
 
       _converse.api.settings.update({
-        'use_emojione': true,
+        'use_emojione': false,
         'emojione_image_path': emojione.imagePathPNG,
         'chatview_avatar_height': 32,
         'chatview_avatar_width': 32,
@@ -14550,7 +14547,6 @@ return __p
             'label_start_call': __('Start a call'),
             'label_toggle_spoiler': label_toggle_spoiler,
             'show_call_button': _converse.visible_toolbar_buttons.call,
-            'show_clear_button': _converse.visible_toolbar_buttons.clear,
             'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
             'use_emoji': _converse.visible_toolbar_buttons.emoji
           });
@@ -16644,6 +16640,8 @@ exports.default = vnode;
 });
 //# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5vZGVfbW9kdWxlcy8ucmVnaXN0cnkubnBtanMub3JnL2Jyb3dzZXItcGFjay82LjAuMi9ub2RlX21vZHVsZXMvYnJvd3Nlci1wYWNrL19wcmVsdWRlLmpzIiwiaHRtbGRvbWFwaS5qcyIsInRvdm5vZGUuanMiLCJ2bm9kZS5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtBQ0FBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUNqRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUMzQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EiLCJmaWxlIjoiZ2VuZXJhdGVkLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXNDb250ZW50IjpbIihmdW5jdGlvbiBlKHQsbixyKXtmdW5jdGlvbiBzKG8sdSl7aWYoIW5bb10pe2lmKCF0W29dKXt2YXIgYT10eXBlb2YgcmVxdWlyZT09XCJmdW5jdGlvblwiJiZyZXF1aXJlO2lmKCF1JiZhKXJldHVybiBhKG8sITApO2lmKGkpcmV0dXJuIGkobywhMCk7dmFyIGY9bmV3IEVycm9yKFwiQ2Fubm90IGZpbmQgbW9kdWxlICdcIitvK1wiJ1wiKTt0aHJvdyBmLmNvZGU9XCJNT0RVTEVfTk9UX0ZPVU5EXCIsZn12YXIgbD1uW29dPXtleHBvcnRzOnt9fTt0W29dWzBdLmNhbGwobC5leHBvcnRzLGZ1bmN0aW9uKGUpe3ZhciBuPXRbb11bMV1bZV07cmV0dXJuIHMobj9uOmUpfSxsLGwuZXhwb3J0cyxlLHQsbixyKX1yZXR1cm4gbltvXS5leHBvcnRzfXZhciBpPXR5cGVvZiByZXF1aXJlPT1cImZ1bmN0aW9uXCImJnJlcXVpcmU7Zm9yKHZhciBvPTA7bzxyLmxlbmd0aDtvKyspcyhyW29dKTtyZXR1cm4gc30pIiwiXCJ1c2Ugc3RyaWN0XCI7XG5PYmplY3QuZGVmaW5lUHJvcGVydHkoZXhwb3J0cywgXCJfX2VzTW9kdWxlXCIsIHsgdmFsdWU6IHRydWUgfSk7XG5mdW5jdGlvbiBjcmVhdGVFbGVtZW50KHRhZ05hbWUpIHtcbiAgICByZXR1cm4gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCh0YWdOYW1lKTtcbn1cbmZ1bmN0aW9uIGNyZWF0ZUVsZW1lbnROUyhuYW1lc3BhY2VVUkksIHF1YWxpZmllZE5hbWUpIHtcbiAgICByZXR1cm4gZG9jdW1lbnQuY3JlYXRlRWxlbWVudE5TKG5hbWVzcGFjZVVSSSwgcXVhbGlmaWVkTmFtZSk7XG59XG5mdW5jdGlvbiBjcmVhdGVUZXh0Tm9kZSh0ZXh0KSB7XG4gICAgcmV0dXJuIGRvY3VtZW50LmNyZWF0ZVRleHROb2RlKHRleHQpO1xufVxuZnVuY3Rpb24gY3JlYXRlQ29tbWVudCh0ZXh0KSB7XG4gICAgcmV0dXJuIGRvY3VtZW50LmNyZWF0ZUNvbW1lbnQodGV4dCk7XG59XG5mdW5jdGlvbiBpbnNlcnRCZWZvcmUocGFyZW50Tm9kZSwgbmV3Tm9kZSwgcmVmZXJlbmNlTm9kZSkge1xuICAgIHBhcmVudE5vZGUuaW5zZXJ0QmVmb3JlKG5ld05vZGUsIHJlZmVyZW5jZU5vZGUpO1xufVxuZnVuY3Rpb24gcmVtb3ZlQ2hpbGQobm9kZSwgY2hpbGQpIHtcbiAgICBub2RlLnJlbW92ZUNoaWxkKGNoaWxkKTtcbn1cbmZ1bmN0aW9uIGFwcGVuZENoaWxkKG5vZGUsIGNoaWxkKSB7XG4gICAgbm9kZS5hcHBlbmRDaGlsZChjaGlsZCk7XG59XG5mdW5jdGlvbiBwYXJlbnROb2RlKG5vZGUpIHtcbiAgICByZXR1cm4gbm9kZS5wYXJlbnROb2RlO1xufVxuZnVuY3Rpb24gbmV4dFNpYmxpbmcobm9kZSkge1xuICAgIHJldHVybiBub2RlLm5leHRTaWJsaW5nO1xufVxuZnVuY3Rpb24gdGFnTmFtZShlbG0pIHtcbiAgICByZXR1cm4gZWxtLnRhZ05hbWU7XG59XG5mdW5jdGlvbiBzZXRUZXh0Q29udGVudChub2RlLCB0ZXh0KSB7XG4gICAgbm9kZS50ZXh0Q29udGVudCA9IHRleHQ7XG59XG5mdW5jdGlvbiBnZXRUZXh0Q29udGVudChub2RlKSB7XG4gICAgcmV0dXJuIG5vZGUudGV4dENvbnRlbnQ7XG59XG5mdW5jdGlvbiBpc0VsZW1lbnQobm9kZSkge1xuICAgIHJldHVybiBub2RlLm5vZGVUeXBlID09PSAxO1xufVxuZnVuY3Rpb24gaXNUZXh0KG5vZGUpIHtcbiAgICByZXR1cm4gbm9kZS5ub2RlVHlwZSA9PT0gMztcbn1cbmZ1bmN0aW9uIGlzQ29tbWVudChub2RlKSB7XG4gICAgcmV0dXJuIG5vZGUubm9kZVR5cGUgPT09IDg7XG59XG5leHBvcnRzLmh0bWxEb21BcGkgPSB7XG4gICAgY3JlYXRlRWxlbWVudDogY3JlYXRlRWxlbWVudCxcbiAgICBjcmVhdGVFbGVtZW50TlM6IGNyZWF0ZUVsZW1lbnROUyxcbiAgICBjcmVhdGVUZXh0Tm9kZTogY3JlYXRlVGV4dE5vZGUsXG4gICAgY3JlYXRlQ29tbWVudDogY3JlYXRlQ29tbWVudCxcbiAgICBpbnNlcnRCZWZvcmU6IGluc2VydEJlZm9yZSxcbiAgICByZW1vdmVDaGlsZDogcmVtb3ZlQ2hpbGQsXG4gICAgYXBwZW5kQ2hpbGQ6IGFwcGVuZENoaWxkLFxuICAgIHBhcmVudE5vZGU6IHBhcmVudE5vZGUsXG4gICAgbmV4dFNpYmxpbmc6IG5leHRTaWJsaW5nLFxuICAgIHRhZ05hbWU6IHRhZ05hbWUsXG4gICAgc2V0VGV4dENvbnRlbnQ6IHNldFRleHRDb250ZW50LFxuICAgIGdldFRleHRDb250ZW50OiBnZXRUZXh0Q29udGVudCxcbiAgICBpc0VsZW1lbnQ6IGlzRWxlbWVudCxcbiAgICBpc1RleHQ6IGlzVGV4dCxcbiAgICBpc0NvbW1lbnQ6IGlzQ29tbWVudCxcbn07XG5leHBvcnRzLmRlZmF1bHQgPSBleHBvcnRzLmh0bWxEb21BcGk7XG4vLyMgc291cmNlTWFwcGluZ1VSTD1odG1sZG9tYXBpLmpzLm1hcCIsIlwidXNlIHN0cmljdFwiO1xuT2JqZWN0LmRlZmluZVByb3BlcnR5KGV4cG9ydHMsIFwiX19lc01vZHVsZVwiLCB7IHZhbHVlOiB0cnVlIH0pO1xudmFyIHZub2RlXzEgPSByZXF1aXJlKFwiLi92bm9kZVwiKTtcbnZhciBodG1sZG9tYXBpXzEgPSByZXF1aXJlKFwiLi9odG1sZG9tYXBpXCIpO1xuZnVuY3Rpb24gdG9WTm9kZShub2RlLCBkb21BcGkpIHtcbiAgICB2YXIgYXBpID0gZG9tQXBpICE9PSB1bmRlZmluZWQgPyBkb21BcGkgOiBodG1sZG9tYXBpXzEuZGVmYXVsdDtcbiAgICB2YXIgdGV4dDtcbiAgICBpZiAoYXBpLmlzRWxlbWVudChub2RlKSkge1xuICAgICAgICB2YXIgaWQgPSBub2RlLmlkID8gJyMnICsgbm9kZS5pZCA6ICcnO1xuICAgICAgICB2YXIgY24gPSBub2RlLmdldEF0dHJpYnV0ZSgnY2xhc3MnKTtcbiAgICAgICAgdmFyIGMgPSBjbiA/ICcuJyArIGNuLnNwbGl0KCcgJykuam9pbignLicpIDogJyc7XG4gICAgICAgIHZhciBzZWwgPSBhcGkudGFnTmFtZShub2RlKS50b0xvd2VyQ2FzZSgpICsgaWQgKyBjO1xuICAgICAgICB2YXIgYXR0cnMgPSB7fTtcbiAgICAgICAgdmFyIGNoaWxkcmVuID0gW107XG4gICAgICAgIHZhciBuYW1lXzE7XG4gICAgICAgIHZhciBpID0gdm9pZCAwLCBuID0gdm9pZCAwO1xuICAgICAgICB2YXIgZWxtQXR0cnMgPSBub2RlLmF0dHJpYnV0ZXM7XG4gICAgICAgIHZhciBlbG1DaGlsZHJlbiA9IG5vZGUuY2hpbGROb2RlcztcbiAgICAgICAgZm9yIChpID0gMCwgbiA9IGVsbUF0dHJzLmxlbmd0aDsgaSA8IG47IGkrKykge1xuICAgICAgICAgICAgbmFtZV8xID0gZWxtQXR0cnNbaV0ubm9kZU5hbWU7XG4gICAgICAgICAgICBpZiAobmFtZV8xICE9PSAnaWQnICYmIG5hbWVfMSAhPT0gJ2NsYXNzJykge1xuICAgICAgICAgICAgICAgIGF0dHJzW25hbWVfMV0gPSBlbG1BdHRyc1tpXS5ub2RlVmFsdWU7XG4gICAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgICAgZm9yIChpID0gMCwgbiA9IGVsbUNoaWxkcmVuLmxlbmd0aDsgaSA8IG47IGkrKykge1xuICAgICAgICAgICAgY2hpbGRyZW4ucHVzaCh0b1ZOb2RlKGVsbUNoaWxkcmVuW2ldKSk7XG4gICAgICAgIH1cbiAgICAgICAgcmV0dXJuIHZub2RlXzEuZGVmYXVsdChzZWwsIHsgYXR0cnM6IGF0dHJzIH0sIGNoaWxkcmVuLCB1bmRlZmluZWQsIG5vZGUpO1xuICAgIH1cbiAgICBlbHNlIGlmIChhcGkuaXNUZXh0KG5vZGUpKSB7XG4gICAgICAgIHRleHQgPSBhcGkuZ2V0VGV4dENvbnRlbnQobm9kZSk7XG4gICAgICAgIHJldHVybiB2bm9kZV8xLmRlZmF1bHQodW5kZWZpbmVkLCB1bmRlZmluZWQsIHVuZGVmaW5lZCwgdGV4dCwgbm9kZSk7XG4gICAgfVxuICAgIGVsc2UgaWYgKGFwaS5pc0NvbW1lbnQobm9kZSkpIHtcbiAgICAgICAgdGV4dCA9IGFwaS5nZXRUZXh0Q29udGVudChub2RlKTtcbiAgICAgICAgcmV0dXJuIHZub2RlXzEuZGVmYXVsdCgnIScsIHt9LCBbXSwgdGV4dCwgbm9kZSk7XG4gICAgfVxuICAgIGVsc2Uge1xuICAgICAgICByZXR1cm4gdm5vZGVfMS5kZWZhdWx0KCcnLCB7fSwgW10sIHVuZGVmaW5lZCwgdW5kZWZpbmVkKTtcbiAgICB9XG59XG5leHBvcnRzLnRvVk5vZGUgPSB0b1ZOb2RlO1xuZXhwb3J0cy5kZWZhdWx0ID0gdG9WTm9kZTtcbi8vIyBzb3VyY2VNYXBwaW5nVVJMPXRvdm5vZGUuanMubWFwIiwiXCJ1c2Ugc3RyaWN0XCI7XG5PYmplY3QuZGVmaW5lUHJvcGVydHkoZXhwb3J0cywgXCJfX2VzTW9kdWxlXCIsIHsgdmFsdWU6IHRydWUgfSk7XG5mdW5jdGlvbiB2bm9kZShzZWwsIGRhdGEsIGNoaWxkcmVuLCB0ZXh0LCBlbG0pIHtcbiAgICB2YXIga2V5ID0gZGF0YSA9PT0gdW5kZWZpbmVkID8gdW5kZWZpbmVkIDogZGF0YS5rZXk7XG4gICAgcmV0dXJuIHsgc2VsOiBzZWwsIGRhdGE6IGRhdGEsIGNoaWxkcmVuOiBjaGlsZHJlbixcbiAgICAgICAgdGV4dDogdGV4dCwgZWxtOiBlbG0sIGtleToga2V5IH07XG59XG5leHBvcnRzLnZub2RlID0gdm5vZGU7XG5leHBvcnRzLmRlZmF1bHQgPSB2bm9kZTtcbi8vIyBzb3VyY2VNYXBwaW5nVVJMPXZub2RlLmpzLm1hcCJdfQ==
 ;
+
+
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*!
@@ -16658,7 +16656,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     // CommonJS-like environments
     module.exports = factory(require('snabbdom'), require('snabbdom-attributes'), require('snabbdom-class'), require('snabbdom-dataset'), require('snabbdom-props'), require('snabbdom-style'), require('tovnode'), require('underscore'), require('backbone'));
   }
-})(this, function (snabbdom, snabbdom_attributes, snabbdom_class, snabbdom_dataset, snabbdom_props, snabbdom_style, tovnode, _, Backbone) {
+})(void 0, function (snabbdom, snabbdom_attributes, snabbdom_class, snabbdom_dataset, snabbdom_props, snabbdom_style, tovnode, _, Backbone) {
   "use strict";
 
   var domParser = new DOMParser();
@@ -16777,6 +16775,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     });
 }));
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -16787,7 +16787,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 /*global define */
 (function (root, factory) {
   define('converse-rosterview',["converse-core", "tpl!add_contact_modal", "tpl!group_header", "tpl!pending_contact", "tpl!requesting_contact", "tpl!roster", "tpl!roster_filter", "tpl!roster_item", "tpl!search_contact", "converse-chatboxes", "converse-modal"], factory);
-})(this, function (converse, tpl_add_contact_modal, tpl_group_header, tpl_pending_contact, tpl_requesting_contact, tpl_roster, tpl_roster_filter, tpl_roster_item, tpl_search_contact) {
+})(void 0, function (converse, tpl_add_contact_modal, tpl_group_header, tpl_pending_contact, tpl_requesting_contact, tpl_roster, tpl_roster_filter, tpl_roster_item, tpl_search_contact) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -17504,13 +17504,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           var form = this.el.querySelector('.roster-filter-form');
           this.el.replaceChild(this.filter_view.render().el, form);
           this.roster_el = this.el.querySelector('.roster-contacts');
-
-          if (!_converse.allow_contact_requests) {
-            // XXX: if we ever support live editing of config then
-            // we'll need to be able to remove this class on the fly.
-            this.el.classList.add('no-contact-requests');
-          }
-
           return this;
         },
         showAddContactModal: function showAddContactModal(ev) {
@@ -17861,9 +17854,13 @@ __e(o.fullname) +
 __e(o.title_your_profile) +
 '" data-toggle="modal" data-target="#userProfileModal"></a> -->\n    <!-- <a class="chatbox-btn fa fa-cog align-self-center" title="' +
 __e(o.title_change_status) +
-'" data-toggle="modal" data-target="#settingsModal"></a> -->\n    <a class="chatbox-btn logout fa fa-sign-out align-self-center" title="' +
+'" data-toggle="modal" data-target="#settingsModal"></a> -->\n    ';
+ if (o._converse.allow_logout) { ;
+__p += '\n        <a class="chatbox-btn logout fa fa-sign-out align-self-center" title="' +
 __e(o.title_log_out) +
-'"></a>\n</div>\n<div class="d-flex xmpp-status">\n    <span class="' +
+'"></a>\n    ';
+ } ;
+__p += '\n</div>\n<div class="d-flex xmpp-status">\n    <span class="' +
 __e(o.chat_status) +
 ' w-100 align-self-center" data-value="' +
 __e(o.chat_status) +
@@ -17910,6 +17907,8 @@ __e( o.text ) +
 return __p
 };});
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -17920,7 +17919,7 @@ return __p
 /*global define */
 (function (root, factory) {
   define('converse-vcard',["converse-core", "strophe.vcard"], factory);
-})(this, function (converse) {
+})(void 0, function (converse) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -18131,6 +18130,8 @@ return __p
   });
 });
 //# sourceMappingURL=converse-vcard.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -18141,7 +18142,7 @@ return __p
 /*global define */
 (function (root, factory) {
   define('converse-profile',["converse-core", "bootstrap", "tpl!chat_status_modal", "tpl!profile_modal", "tpl!profile_view", "tpl!status_option", "converse-vcard", "converse-modal"], factory);
-})(this, function (converse, bootstrap, tpl_chat_status_modal, tpl_profile_modal, tpl_profile_view, tpl_status_option) {
+})(void 0, function (converse, bootstrap, tpl_chat_status_modal, tpl_profile_modal, tpl_profile_view, tpl_status_option) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -18223,6 +18224,7 @@ return __p
             'fullname': this.model.get('fullname') || _converse.bare_jid,
             'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
             'chat_status': chat_status,
+            '_converse': _converse,
             'title_change_settings': __('Change settings'),
             'title_change_status': __('Click to change your chat status'),
             'title_log_out': __('Log out'),
@@ -18275,6 +18277,8 @@ return __p
   });
 });
 //# sourceMappingURL=converse-profile.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -18285,7 +18289,7 @@ return __p
 /*global define */
 (function (root, factory) {
   define('converse-controlbox',["converse-core", "lodash.fp", "tpl!converse_brand_heading", "tpl!controlbox", "tpl!controlbox_toggle", "tpl!login_panel", "converse-chatview", "converse-rosterview", "converse-profile"], factory);
-})(this, function (converse, fp, tpl_brand_heading, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel) {
+})(void 0, function (converse, fp, tpl_brand_heading, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel) {
   "use strict";
 
   var CHATBOX_TYPE = 'chatbox';
@@ -18506,7 +18510,7 @@ return __p
           this.render();
 
           if (this.model.get('connected')) {
-            _converse.api.waitUntil('rosterViewInitialized').then(this.insertRoster.bind(this)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            this.insertRoster();
           }
 
           _converse.emit('controlboxInitialized', this);
@@ -18537,14 +18541,16 @@ return __p
         onConnected: function onConnected() {
           if (this.model.get('connected')) {
             this.render();
-
-            _converse.api.waitUntil('rosterViewInitialized').then(this.insertRoster.bind(this)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            this.insertRoster();
           }
         },
         insertRoster: function insertRoster() {
+          var _this = this;
+
           /* Place the rosterview inside the "Contacts" panel. */
-          this.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el);
-          return this;
+          _converse.api.waitUntil('rosterViewInitialized').then(function () {
+            return _this.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el);
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         },
         createBrandHeadingHTML: function createBrandHeadingHTML() {
           return tpl_brand_heading({
@@ -18856,12 +18862,14 @@ return __p
         var view = _converse.chatboxviews.get('controlbox');
 
         view.model.set({
-          connected: false
+          'connected': false
         });
         view.renderLoginPanel();
       };
 
       _converse.on('disconnected', disconnect);
+
+      _converse.on('will-reconnect', disconnect);
     }
   });
 });
@@ -19053,6 +19061,8 @@ __e(o.value) +
 return __p
 };});
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -19065,7 +19075,7 @@ return __p
 /*global define, escape, Jed */
 (function (root, factory) {
   define('form-utils',["sizzle", "lodash.noconflict", "utils", "tpl!field", "tpl!select_option", "tpl!form_select", "tpl!form_textarea", "tpl!form_checkbox", "tpl!form_username", "tpl!form_input", "tpl!form_captcha", "tpl!form_url"], factory);
-})(this, function (sizzle, _, u, tpl_field, tpl_select_option, tpl_form_select, tpl_form_textarea, tpl_form_checkbox, tpl_form_username, tpl_form_input, tpl_form_captcha, tpl_form_url) {
+})(void 0, function (sizzle, _, u, tpl_field, tpl_select_option, tpl_form_select, tpl_form_textarea, tpl_form_checkbox, tpl_form_username, tpl_form_input, tpl_form_captcha, tpl_form_url) {
   "use strict";
 
   var XFORM_TYPE_MAP = {
@@ -19195,6 +19205,8 @@ return __p
   return u;
 });
 //# sourceMappingURL=form-utils.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -19207,7 +19219,7 @@ return __p
 /*global Backbone, define, window */
 (function (root, factory) {
   define('converse-disco',["converse-core", "sizzle", "strophe.disco"], factory);
-})(this, function (converse, sizzle) {
+})(void 0, function (converse, sizzle) {
   var _converse$env = converse.env,
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
@@ -19612,6 +19624,8 @@ return __p
 });
 
 //# sourceMappingURL=backbone.orderedlistview.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -19626,7 +19640,7 @@ return __p
  */
 (function (root, factory) {
   define('converse-muc',["form-utils", "converse-core", "converse-chatview", "converse-disco", "backbone.overview", "backbone.orderedlistview", "backbone.vdomview"], factory);
-})(this, function (u, converse) {
+})(void 0, function (u, converse) {
   "use strict";
 
   var MUC_ROLE_WEIGHTS = {
@@ -20279,6 +20293,8 @@ __p += '"></div>\n';
 return __p
 };});
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -20293,7 +20309,7 @@ return __p
  */
 (function (root, factory) {
   define('converse-bookmarks',["converse-core", "converse-muc", "tpl!chatroom_bookmark_form", "tpl!chatroom_bookmark_toggle", "tpl!bookmark", "tpl!bookmarks_list"], factory);
-})(this, function (converse, muc, tpl_chatroom_bookmark_form, tpl_chatroom_bookmark_toggle, tpl_bookmark, tpl_bookmarks_list) {
+})(void 0, function (converse, muc, tpl_chatroom_bookmark_form, tpl_chatroom_bookmark_toggle, tpl_bookmark, tpl_bookmarks_list) {
   var _converse$env = converse.env,
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
@@ -20961,6 +20977,8 @@ __e(o.info_title) +
 return __p
 };});
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -20975,7 +20993,7 @@ return __p
  */
 (function (root, factory) {
   define('converse-roomslist',["utils", "converse-core", "converse-muc", "tpl!rooms_list", "tpl!rooms_list_item"], factory);
-})(this, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
+})(void 0, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
   var _converse$env = converse.env,
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
@@ -21246,6 +21264,8 @@ return __p
   });
 });
 //# sourceMappingURL=converse-roomslist.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -21257,7 +21277,7 @@ return __p
 // XEP-0059 Result Set Management
 (function (root, factory) {
   define('converse-mam',["sizzle", "converse-core", "utils", "converse-disco", "strophe.rsm"], factory);
-})(this, function (sizzle, converse, utils) {
+})(void 0, function (sizzle, converse, utils) {
   "use strict";
 
   var CHATROOMS_TYPE = 'chatroom';
@@ -21991,15 +22011,15 @@ __e( o.Strophe.getDomainFromJid(o.jid) ) +
  } ;
 __p += '\n        <p class="chatroom-description">' +
 __e( o.description ) +
-'<p/>\n    </div>\n</div>\n<div class="col-sm-3 col-lg-2">\n    <div class="chatbox-buttons row no-gutters">\n        <a class="chatbox-btn close-chatbox-button fa fa-sign-out" title="' +
+'<p/>\n    </div>\n</div>\n<div class="chatbox-buttons row no-gutters">\n    <a class="chatbox-btn close-chatbox-button fa fa-sign-out" title="' +
 __e(o.info_close) +
-'"></a>\n        ';
+'"></a>\n    ';
  if (o.affiliation == 'owner') { ;
-__p += '\n        <a class="chatbox-btn configure-chatroom-button fa fa-wrench" title="' +
+__p += '\n    <a class="chatbox-btn configure-chatroom-button fa fa-wrench" title="' +
 __e(o.info_configure) +
-' "></a>\n        ';
+' "></a>\n    ';
  } ;
-__p += '\n    </div>\n</div>\n\n';
+__p += '\n</div>\n';
 return __p
 };});
 
@@ -22079,12 +22099,6 @@ __e(o.label_hide_occupants) +
 '"></li>\n';
  } ;
 __p += '\n';
- if (o.show_clear_button)  { ;
-__p += '\n<li class="toggle-clear right fa fa-eraser" title="' +
-__e(o.label_clear) +
-'"></li>\n';
- } ;
-__p += '\n\n';
 return __p
 };});
 
@@ -22286,7 +22300,7 @@ define('tpl!rooms_results', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape;
 __p += '<li class="list-group-item active">' +
 __e( o.feedback_text ) +
-':</dt>\n';
+'</dt>\n';
 return __p
 };});
 
@@ -22576,7 +22590,7 @@ return __p
                     chatrooms_el.innerHTML = tpl_rooms_results({
                         'feedback_text': __('No rooms found')
                     });
-                    const input_el = this.el.querySelector('input#show-rooms');
+                    const input_el = this.el.querySelector('input[name="server"]');
                     input_el.classList.remove('hidden')
                     this.removeSpinner();
                 },
@@ -22591,7 +22605,7 @@ return __p
                         // For translators: %1$s is a variable and will be
                         // replaced with the XMPP server name
                         available_chatrooms.innerHTML = tpl_rooms_results({
-                            'feedback_text': __('Rooms found')
+                            'feedback_text': __('Rooms found:')
                         });
                         const fragment = document.createDocumentFragment();
                         const children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil)
@@ -24869,6 +24883,8 @@ return __p
     });
 }));
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -24877,7 +24893,7 @@ return __p
 //
 (function (root, factory) {
   define('converse-muc-embedded',["converse-core", "converse-muc"], factory);
-})(this, function (converse) {
+})(void 0, function (converse) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -24989,6 +25005,8 @@ __p += '\n';
 return __p
 };});
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -25003,7 +25021,7 @@ return __p
  */
 (function (root, factory) {
   define('converse-otr',["converse-chatview", "bootstrap", "tpl!toolbar_otr", 'otr'], factory);
-})(this, function (converse, bootstrap, tpl_toolbar_otr, otr) {
+})(void 0, function (converse, bootstrap, tpl_toolbar_otr, otr) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -25599,6 +25617,8 @@ __p += '\n';
 return __p
 };});
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -25613,7 +25633,7 @@ return __p
  */
 (function (root, factory) {
   define('converse-register',["form-utils", "converse-core", "tpl!form_username", "tpl!register_link", "tpl!register_panel", "tpl!registration_form", "tpl!registration_request", "tpl!form_input", "tpl!spinner", "converse-controlbox"], factory);
-})(this, function (utils, converse, tpl_form_username, tpl_register_link, tpl_register_panel, tpl_registration_form, tpl_registration_request, tpl_form_input, tpl_spinner) {
+})(void 0, function (utils, converse, tpl_form_username, tpl_register_link, tpl_register_panel, tpl_registration_form, tpl_registration_request, tpl_form_input, tpl_spinner) {
   "use strict"; // Strophe methods for building stanzas
 
   var _converse$env = converse.env,
@@ -26309,6 +26329,8 @@ return __p
   });
 });
 //# sourceMappingURL=converse-register.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -26323,7 +26345,7 @@ return __p
  */
 (function (root, factory) {
   define('converse-ping',["converse-core", "strophe.ping"], factory);
-})(this, function (converse) {
+})(void 0, function (converse) {
   "use strict"; // Strophe methods for building stanzas
 
   var _converse$env = converse.env,
@@ -26431,6 +26453,8 @@ return __p
   });
 });
 //# sourceMappingURL=converse-ping.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -26441,7 +26465,7 @@ return __p
 /*global define */
 (function (root, factory) {
   define('converse-notification',["converse-core"], factory);
-})(this, function (converse) {
+})(void 0, function (converse) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -26788,6 +26812,8 @@ __p += '<a id="toggle-minimized-chats" href="#" class="row no-gutters"></a>\n<di
 return __p
 };});
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -26798,7 +26824,7 @@ return __p
 /*global define, window, document */
 (function (root, factory) {
   define('converse-minimize',["converse-core", "tpl!chatbox_minimize", "tpl!toggle_chats", "tpl!trimmed_chat", "tpl!chats_panel", "converse-chatview"], factory);
-})(this, function (converse, tpl_chatbox_minimize, tpl_toggle_chats, tpl_trimmed_chat, tpl_chats_panel) {
+})(void 0, function (converse, tpl_chatbox_minimize, tpl_toggle_chats, tpl_trimmed_chat, tpl_chats_panel) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -27354,6 +27380,8 @@ __p += '<div class="dragresize dragresize-top"></div>\n<div class="dragresize dr
 return __p
 };});
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -27364,7 +27392,7 @@ return __p
 /*global define, window, document */
 (function (root, factory) {
   define('converse-dragresize',["converse-core", "tpl!dragresize", "converse-chatview", "converse-controlbox"], factory);
-})(this, function (converse, tpl_dragresize) {
+})(void 0, function (converse, tpl_dragresize) {
   "use strict";
 
   var _ = converse.env._;
@@ -27733,6 +27761,8 @@ return __p
   });
 });
 //# sourceMappingURL=converse-dragresize.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -27743,7 +27773,7 @@ return __p
 /*global define */
 (function (root, factory) {
   define('converse-headline',["converse-core", "tpl!chatbox", "converse-chatview"], factory);
-})(this, function (converse, tpl_chatbox) {
+})(void 0, function (converse, tpl_chatbox) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -27896,6 +27926,8 @@ __p += '<div class="row">\n    <div class="container brand-heading-container">\n
 return __p
 };});
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -27918,7 +27950,7 @@ return __p
  */
 (function (root, factory) {
   define('converse-singleton',["converse-core", "converse-chatview"], factory);
-})(this, function (converse) {
+})(void 0, function (converse) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -27990,6 +28022,8 @@ return __p
   });
 });
 //# sourceMappingURL=converse-singleton.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -28000,7 +28034,7 @@ return __p
 /*global define */
 (function (root, factory) {
   define('converse-fullscreen',["converse-core", "tpl!inverse_brand_heading", "converse-chatview", "converse-controlbox", "converse-muc", "converse-singleton"], factory);
-})(this, function (converse, tpl_brand_heading) {
+})(void 0, function (converse, tpl_brand_heading) {
   "use strict";
 
   var _converse$env = converse.env,

@@ -7,16 +7,7 @@
 
 /* jshint ignore:start */
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        //Allow using this built library as an AMD module
-        //in another project. That other project will only
-        //see this AMD call, not the internal modules in
-        //the closure below.
-        define([], factory);
-    } else {
-        //Browser globals case.
-        root.converse = factory();
-    }
+    root.converse = factory();
 }(this, function () {
     //almond, and your modules will be inlined here
 /* jshint ignore:end */
@@ -23151,7 +23142,7 @@ return parser;
 })(this);
 
 //! moment.js
-//! version : 2.18.1
+//! version : 2.19.4
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -23185,12 +23176,17 @@ function isObject(input) {
 }
 
 function isObjectEmpty(obj) {
-    var k;
-    for (k in obj) {
-        // even if its not own property I'd still call it non-empty
-        return false;
+    if (Object.getOwnPropertyNames) {
+        return (Object.getOwnPropertyNames(obj).length === 0);
+    } else {
+        var k;
+        for (k in obj) {
+            if (obj.hasOwnProperty(k)) {
+                return false;
+            }
+        }
+        return true;
     }
-    return true;
 }
 
 function isUndefined(input) {
@@ -23284,12 +23280,10 @@ if (Array.prototype.some) {
     };
 }
 
-var some$1 = some;
-
 function isValid(m) {
     if (m._isValid == null) {
         var flags = getParsingFlags(m);
-        var parsedParts = some$1.call(flags.parsedDateParts, function (i) {
+        var parsedParts = some.call(flags.parsedDateParts, function (i) {
             return i != null;
         });
         var isNowValid = !isNaN(m._d.getTime()) &&
@@ -23297,6 +23291,7 @@ function isValid(m) {
             !flags.empty &&
             !flags.invalidMonth &&
             !flags.invalidWeekday &&
+            !flags.weekdayMismatch &&
             !flags.nullInput &&
             !flags.invalidFormat &&
             !flags.userInvalidated &&
@@ -23562,8 +23557,6 @@ if (Object.keys) {
     };
 }
 
-var keys$1 = keys;
-
 var defaultCalendar = {
     sameDay : '[Today at] LT',
     nextDay : '[Tomorrow at] LT',
@@ -23689,56 +23682,6 @@ function getPrioritizedUnits(unitsObj) {
     return units;
 }
 
-function makeGetSet (unit, keepTime) {
-    return function (value) {
-        if (value != null) {
-            set$1(this, unit, value);
-            hooks.updateOffset(this, keepTime);
-            return this;
-        } else {
-            return get(this, unit);
-        }
-    };
-}
-
-function get (mom, unit) {
-    return mom.isValid() ?
-        mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]() : NaN;
-}
-
-function set$1 (mom, unit, value) {
-    if (mom.isValid()) {
-        mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
-    }
-}
-
-// MOMENTS
-
-function stringGet (units) {
-    units = normalizeUnits(units);
-    if (isFunction(this[units])) {
-        return this[units]();
-    }
-    return this;
-}
-
-
-function stringSet (units, value) {
-    if (typeof units === 'object') {
-        units = normalizeObjectUnits(units);
-        var prioritized = getPrioritizedUnits(units);
-        for (var i = 0; i < prioritized.length; i++) {
-            this[prioritized[i].unit](units[prioritized[i].unit]);
-        }
-    } else {
-        units = normalizeUnits(units);
-        if (isFunction(this[units])) {
-            return this[units](value);
-        }
-    }
-    return this;
-}
-
 function zeroFill(number, targetLength, forceSign) {
     var absNumber = '' + Math.abs(number),
         zerosToFill = targetLength - absNumber.length,
@@ -23859,7 +23802,7 @@ var matchTimestamp = /[+-]?\d+(\.\d{1,3})?/; // 123456789 123456789.123
 
 // any word (or two) characters or numbers including two/three word month in arabic.
 // includes scottish gaelic two word and hyphenated months
-var matchWord = /[0-9]*['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+|[\u0600-\u06FF\/]+(\s*?[\u0600-\u06FF]+){1,2}/i;
+var matchWord = /[0-9]{0,256}['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{1,256}|[\u0600-\u06FF\/]{1,256}(\s*?[\u0600-\u06FF]{1,256}){1,2}/i;
 
 
 var regexes = {};
@@ -23929,6 +23872,131 @@ var MILLISECOND = 6;
 var WEEK = 7;
 var WEEKDAY = 8;
 
+// FORMATTING
+
+addFormatToken('Y', 0, 0, function () {
+    var y = this.year();
+    return y <= 9999 ? '' + y : '+' + y;
+});
+
+addFormatToken(0, ['YY', 2], 0, function () {
+    return this.year() % 100;
+});
+
+addFormatToken(0, ['YYYY',   4],       0, 'year');
+addFormatToken(0, ['YYYYY',  5],       0, 'year');
+addFormatToken(0, ['YYYYYY', 6, true], 0, 'year');
+
+// ALIASES
+
+addUnitAlias('year', 'y');
+
+// PRIORITIES
+
+addUnitPriority('year', 1);
+
+// PARSING
+
+addRegexToken('Y',      matchSigned);
+addRegexToken('YY',     match1to2, match2);
+addRegexToken('YYYY',   match1to4, match4);
+addRegexToken('YYYYY',  match1to6, match6);
+addRegexToken('YYYYYY', match1to6, match6);
+
+addParseToken(['YYYYY', 'YYYYYY'], YEAR);
+addParseToken('YYYY', function (input, array) {
+    array[YEAR] = input.length === 2 ? hooks.parseTwoDigitYear(input) : toInt(input);
+});
+addParseToken('YY', function (input, array) {
+    array[YEAR] = hooks.parseTwoDigitYear(input);
+});
+addParseToken('Y', function (input, array) {
+    array[YEAR] = parseInt(input, 10);
+});
+
+// HELPERS
+
+function daysInYear(year) {
+    return isLeapYear(year) ? 366 : 365;
+}
+
+function isLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+// HOOKS
+
+hooks.parseTwoDigitYear = function (input) {
+    return toInt(input) + (toInt(input) > 68 ? 1900 : 2000);
+};
+
+// MOMENTS
+
+var getSetYear = makeGetSet('FullYear', true);
+
+function getIsLeapYear () {
+    return isLeapYear(this.year());
+}
+
+function makeGetSet (unit, keepTime) {
+    return function (value) {
+        if (value != null) {
+            set$1(this, unit, value);
+            hooks.updateOffset(this, keepTime);
+            return this;
+        } else {
+            return get(this, unit);
+        }
+    };
+}
+
+function get (mom, unit) {
+    return mom.isValid() ?
+        mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]() : NaN;
+}
+
+function set$1 (mom, unit, value) {
+    if (mom.isValid() && !isNaN(value)) {
+        if (unit === 'FullYear' && isLeapYear(mom.year()) && mom.month() === 1 && mom.date() === 29) {
+            mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value, mom.month(), daysInMonth(value, mom.month()));
+        }
+        else {
+            mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
+        }
+    }
+}
+
+// MOMENTS
+
+function stringGet (units) {
+    units = normalizeUnits(units);
+    if (isFunction(this[units])) {
+        return this[units]();
+    }
+    return this;
+}
+
+
+function stringSet (units, value) {
+    if (typeof units === 'object') {
+        units = normalizeObjectUnits(units);
+        var prioritized = getPrioritizedUnits(units);
+        for (var i = 0; i < prioritized.length; i++) {
+            this[prioritized[i].unit](units[prioritized[i].unit]);
+        }
+    } else {
+        units = normalizeUnits(units);
+        if (isFunction(this[units])) {
+            return this[units](value);
+        }
+    }
+    return this;
+}
+
+function mod(n, x) {
+    return ((n % x) + x) % x;
+}
+
 var indexOf;
 
 if (Array.prototype.indexOf) {
@@ -23946,10 +24014,13 @@ if (Array.prototype.indexOf) {
     };
 }
 
-var indexOf$1 = indexOf;
-
 function daysInMonth(year, month) {
-    return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+    if (isNaN(year) || isNaN(month)) {
+        return NaN;
+    }
+    var modMonth = mod(month, 12);
+    year += (month - modMonth) / 12;
+    return modMonth === 1 ? (isLeapYear(year) ? 29 : 28) : (31 - modMonth % 7 % 2);
 }
 
 // FORMATTING
@@ -24038,26 +24109,26 @@ function handleStrictParse(monthName, format, strict) {
 
     if (strict) {
         if (format === 'MMM') {
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            ii = indexOf.call(this._shortMonthsParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._longMonthsParse, llc);
+            ii = indexOf.call(this._longMonthsParse, llc);
             return ii !== -1 ? ii : null;
         }
     } else {
         if (format === 'MMM') {
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            ii = indexOf.call(this._shortMonthsParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._longMonthsParse, llc);
+            ii = indexOf.call(this._longMonthsParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._longMonthsParse, llc);
+            ii = indexOf.call(this._longMonthsParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            ii = indexOf.call(this._shortMonthsParse, llc);
             return ii !== -1 ? ii : null;
         }
     }
@@ -24214,72 +24285,6 @@ function computeMonthsParse () {
     this._monthsShortRegex = this._monthsRegex;
     this._monthsStrictRegex = new RegExp('^(' + longPieces.join('|') + ')', 'i');
     this._monthsShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')', 'i');
-}
-
-// FORMATTING
-
-addFormatToken('Y', 0, 0, function () {
-    var y = this.year();
-    return y <= 9999 ? '' + y : '+' + y;
-});
-
-addFormatToken(0, ['YY', 2], 0, function () {
-    return this.year() % 100;
-});
-
-addFormatToken(0, ['YYYY',   4],       0, 'year');
-addFormatToken(0, ['YYYYY',  5],       0, 'year');
-addFormatToken(0, ['YYYYYY', 6, true], 0, 'year');
-
-// ALIASES
-
-addUnitAlias('year', 'y');
-
-// PRIORITIES
-
-addUnitPriority('year', 1);
-
-// PARSING
-
-addRegexToken('Y',      matchSigned);
-addRegexToken('YY',     match1to2, match2);
-addRegexToken('YYYY',   match1to4, match4);
-addRegexToken('YYYYY',  match1to6, match6);
-addRegexToken('YYYYYY', match1to6, match6);
-
-addParseToken(['YYYYY', 'YYYYYY'], YEAR);
-addParseToken('YYYY', function (input, array) {
-    array[YEAR] = input.length === 2 ? hooks.parseTwoDigitYear(input) : toInt(input);
-});
-addParseToken('YY', function (input, array) {
-    array[YEAR] = hooks.parseTwoDigitYear(input);
-});
-addParseToken('Y', function (input, array) {
-    array[YEAR] = parseInt(input, 10);
-});
-
-// HELPERS
-
-function daysInYear(year) {
-    return isLeapYear(year) ? 366 : 365;
-}
-
-function isLeapYear(year) {
-    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-}
-
-// HOOKS
-
-hooks.parseTwoDigitYear = function (input) {
-    return toInt(input) + (toInt(input) > 68 ? 1900 : 2000);
-};
-
-// MOMENTS
-
-var getSetYear = makeGetSet('FullYear', true);
-
-function getIsLeapYear () {
-    return isLeapYear(this.year());
 }
 
 function createDate (y, m, d, h, M, s, ms) {
@@ -24549,48 +24554,48 @@ function handleStrictParse$1(weekdayName, format, strict) {
 
     if (strict) {
         if (format === 'dddd') {
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else if (format === 'ddd') {
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         }
     } else {
         if (format === 'dddd') {
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else if (format === 'ddd') {
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         }
     }
@@ -24979,11 +24984,10 @@ function loadLocale(name) {
             module && module.exports) {
         try {
             oldLocale = globalLocale._abbr;
-            require('./locale/' + name);
-            // because defineLocale currently also sets the global locale, we
-            // want to undo that for lazy loaded locales
+            var aliasedRequire = require;
+            aliasedRequire('./locale/' + name);
             getSetGlobalLocale(oldLocale);
-        } catch (e) { }
+        } catch (e) {}
     }
     return locales[name];
 }
@@ -25059,10 +25063,11 @@ function defineLocale (name, config) {
 
 function updateLocale(name, config) {
     if (config != null) {
-        var locale, parentConfig = baseConfig;
+        var locale, tmpLocale, parentConfig = baseConfig;
         // MERGE
-        if (locales[name] != null) {
-            parentConfig = locales[name]._config;
+        tmpLocale = loadLocale(name);
+        if (tmpLocale != null) {
+            parentConfig = tmpLocale._config;
         }
         config = mergeConfigs(parentConfig, config);
         locale = new Locale(config);
@@ -25109,7 +25114,7 @@ function getLocale (key) {
 }
 
 function listLocales() {
-    return keys$1(locales);
+    return keys(locales);
 }
 
 function checkOverflow (m) {
@@ -25140,6 +25145,156 @@ function checkOverflow (m) {
     }
 
     return m;
+}
+
+// Pick the first defined of two or three arguments.
+function defaults(a, b, c) {
+    if (a != null) {
+        return a;
+    }
+    if (b != null) {
+        return b;
+    }
+    return c;
+}
+
+function currentDateArray(config) {
+    // hooks is actually the exported moment object
+    var nowValue = new Date(hooks.now());
+    if (config._useUTC) {
+        return [nowValue.getUTCFullYear(), nowValue.getUTCMonth(), nowValue.getUTCDate()];
+    }
+    return [nowValue.getFullYear(), nowValue.getMonth(), nowValue.getDate()];
+}
+
+// convert an array to a date.
+// the array should mirror the parameters below
+// note: all values past the year are optional and will default to the lowest possible value.
+// [year, month, day , hour, minute, second, millisecond]
+function configFromArray (config) {
+    var i, date, input = [], currentDate, expectedWeekday, yearToUse;
+
+    if (config._d) {
+        return;
+    }
+
+    currentDate = currentDateArray(config);
+
+    //compute day of the year from weeks and weekdays
+    if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
+        dayOfYearFromWeekInfo(config);
+    }
+
+    //if the day of the year is set, figure out what it is
+    if (config._dayOfYear != null) {
+        yearToUse = defaults(config._a[YEAR], currentDate[YEAR]);
+
+        if (config._dayOfYear > daysInYear(yearToUse) || config._dayOfYear === 0) {
+            getParsingFlags(config)._overflowDayOfYear = true;
+        }
+
+        date = createUTCDate(yearToUse, 0, config._dayOfYear);
+        config._a[MONTH] = date.getUTCMonth();
+        config._a[DATE] = date.getUTCDate();
+    }
+
+    // Default to current date.
+    // * if no year, month, day of month are given, default to today
+    // * if day of month is given, default month and year
+    // * if month is given, default only year
+    // * if year is given, don't default anything
+    for (i = 0; i < 3 && config._a[i] == null; ++i) {
+        config._a[i] = input[i] = currentDate[i];
+    }
+
+    // Zero out whatever was not defaulted, including time
+    for (; i < 7; i++) {
+        config._a[i] = input[i] = (config._a[i] == null) ? (i === 2 ? 1 : 0) : config._a[i];
+    }
+
+    // Check for 24:00:00.000
+    if (config._a[HOUR] === 24 &&
+            config._a[MINUTE] === 0 &&
+            config._a[SECOND] === 0 &&
+            config._a[MILLISECOND] === 0) {
+        config._nextDay = true;
+        config._a[HOUR] = 0;
+    }
+
+    config._d = (config._useUTC ? createUTCDate : createDate).apply(null, input);
+    expectedWeekday = config._useUTC ? config._d.getUTCDay() : config._d.getDay();
+
+    // Apply timezone offset from input. The actual utcOffset can be changed
+    // with parseZone.
+    if (config._tzm != null) {
+        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
+    }
+
+    if (config._nextDay) {
+        config._a[HOUR] = 24;
+    }
+
+    // check for mismatching day of week
+    if (config._w && typeof config._w.d !== 'undefined' && config._w.d !== expectedWeekday) {
+        getParsingFlags(config).weekdayMismatch = true;
+    }
+}
+
+function dayOfYearFromWeekInfo(config) {
+    var w, weekYear, week, weekday, dow, doy, temp, weekdayOverflow;
+
+    w = config._w;
+    if (w.GG != null || w.W != null || w.E != null) {
+        dow = 1;
+        doy = 4;
+
+        // TODO: We need to take the current isoWeekYear, but that depends on
+        // how we interpret now (local, utc, fixed offset). So create
+        // a now version of current config (take local/utc/offset flags, and
+        // create now).
+        weekYear = defaults(w.GG, config._a[YEAR], weekOfYear(createLocal(), 1, 4).year);
+        week = defaults(w.W, 1);
+        weekday = defaults(w.E, 1);
+        if (weekday < 1 || weekday > 7) {
+            weekdayOverflow = true;
+        }
+    } else {
+        dow = config._locale._week.dow;
+        doy = config._locale._week.doy;
+
+        var curWeek = weekOfYear(createLocal(), dow, doy);
+
+        weekYear = defaults(w.gg, config._a[YEAR], curWeek.year);
+
+        // Default to current week.
+        week = defaults(w.w, curWeek.week);
+
+        if (w.d != null) {
+            // weekday -- low day numbers are considered next week
+            weekday = w.d;
+            if (weekday < 0 || weekday > 6) {
+                weekdayOverflow = true;
+            }
+        } else if (w.e != null) {
+            // local weekday -- counting starts from begining of week
+            weekday = w.e + dow;
+            if (w.e < 0 || w.e > 6) {
+                weekdayOverflow = true;
+            }
+        } else {
+            // default to begining of week
+            weekday = dow;
+        }
+    }
+    if (week < 1 || week > weeksInYear(weekYear, dow, doy)) {
+        getParsingFlags(config)._overflowWeeks = true;
+    } else if (weekdayOverflow != null) {
+        getParsingFlags(config)._overflowWeekday = true;
+    } else {
+        temp = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy);
+        config._a[YEAR] = temp.year;
+        config._dayOfYear = temp.dayOfYear;
+    }
 }
 
 // iso 8601 regex
@@ -25233,70 +25388,94 @@ function configFromISO(config) {
 }
 
 // RFC 2822 regex: For details see https://tools.ietf.org/html/rfc2822#section-3.3
-var basicRfcRegex = /^((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d?\d\s(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(?:\d\d)?\d\d\s)(\d\d:\d\d)(\:\d\d)?(\s(?:UT|GMT|[ECMP][SD]T|[A-IK-Za-ik-z]|[+-]\d{4}))$/;
+var rfc2822 = /^(?:(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d{1,2})\s(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(\d{2,4})\s(\d\d):(\d\d)(?::(\d\d))?\s(?:(UT|GMT|[ECMP][SD]T)|([Zz])|([+-]\d{4}))$/;
+
+function extractFromRFC2822Strings(yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr) {
+    var result = [
+        untruncateYear(yearStr),
+        defaultLocaleMonthsShort.indexOf(monthStr),
+        parseInt(dayStr, 10),
+        parseInt(hourStr, 10),
+        parseInt(minuteStr, 10)
+    ];
+
+    if (secondStr) {
+        result.push(parseInt(secondStr, 10));
+    }
+
+    return result;
+}
+
+function untruncateYear(yearStr) {
+    var year = parseInt(yearStr, 10);
+    if (year <= 49) {
+        return 2000 + year;
+    } else if (year <= 999) {
+        return 1900 + year;
+    }
+    return year;
+}
+
+function preprocessRFC2822(s) {
+    // Remove comments and folding whitespace and replace multiple-spaces with a single space
+    return s.replace(/\([^)]*\)|[\n\t]/g, ' ').replace(/(\s\s+)/g, ' ').trim();
+}
+
+function checkWeekday(weekdayStr, parsedInput, config) {
+    if (weekdayStr) {
+        // TODO: Replace the vanilla JS Date object with an indepentent day-of-week check.
+        var weekdayProvided = defaultLocaleWeekdaysShort.indexOf(weekdayStr),
+            weekdayActual = new Date(parsedInput[0], parsedInput[1], parsedInput[2]).getDay();
+        if (weekdayProvided !== weekdayActual) {
+            getParsingFlags(config).weekdayMismatch = true;
+            config._isValid = false;
+            return false;
+        }
+    }
+    return true;
+}
+
+var obsOffsets = {
+    UT: 0,
+    GMT: 0,
+    EDT: -4 * 60,
+    EST: -5 * 60,
+    CDT: -5 * 60,
+    CST: -6 * 60,
+    MDT: -6 * 60,
+    MST: -7 * 60,
+    PDT: -7 * 60,
+    PST: -8 * 60
+};
+
+function calculateOffset(obsOffset, militaryOffset, numOffset) {
+    if (obsOffset) {
+        return obsOffsets[obsOffset];
+    } else if (militaryOffset) {
+        // the only allowed military tz is Z
+        return 0;
+    } else {
+        var hm = parseInt(numOffset, 10);
+        var m = hm % 100, h = (hm - m) / 100;
+        return h * 60 + m;
+    }
+}
 
 // date and time from ref 2822 format
 function configFromRFC2822(config) {
-    var string, match, dayFormat,
-        dateFormat, timeFormat, tzFormat;
-    var timezones = {
-        ' GMT': ' +0000',
-        ' EDT': ' -0400',
-        ' EST': ' -0500',
-        ' CDT': ' -0500',
-        ' CST': ' -0600',
-        ' MDT': ' -0600',
-        ' MST': ' -0700',
-        ' PDT': ' -0700',
-        ' PST': ' -0800'
-    };
-    var military = 'YXWVUTSRQPONZABCDEFGHIKLM';
-    var timezone, timezoneIndex;
-
-    string = config._i
-        .replace(/\([^\)]*\)|[\n\t]/g, ' ') // Remove comments and folding whitespace
-        .replace(/(\s\s+)/g, ' ') // Replace multiple-spaces with a single space
-        .replace(/^\s|\s$/g, ''); // Remove leading and trailing spaces
-    match = basicRfcRegex.exec(string);
-
+    var match = rfc2822.exec(preprocessRFC2822(config._i));
     if (match) {
-        dayFormat = match[1] ? 'ddd' + ((match[1].length === 5) ? ', ' : ' ') : '';
-        dateFormat = 'D MMM ' + ((match[2].length > 10) ? 'YYYY ' : 'YY ');
-        timeFormat = 'HH:mm' + (match[4] ? ':ss' : '');
-
-        // TODO: Replace the vanilla JS Date object with an indepentent day-of-week check.
-        if (match[1]) { // day of week given
-            var momentDate = new Date(match[2]);
-            var momentDay = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][momentDate.getDay()];
-
-            if (match[1].substr(0,3) !== momentDay) {
-                getParsingFlags(config).weekdayMismatch = true;
-                config._isValid = false;
-                return;
-            }
+        var parsedArray = extractFromRFC2822Strings(match[4], match[3], match[2], match[5], match[6], match[7]);
+        if (!checkWeekday(match[1], parsedArray, config)) {
+            return;
         }
 
-        switch (match[5].length) {
-            case 2: // military
-                if (timezoneIndex === 0) {
-                    timezone = ' +0000';
-                } else {
-                    timezoneIndex = military.indexOf(match[5][1].toUpperCase()) - 12;
-                    timezone = ((timezoneIndex < 0) ? ' -' : ' +') +
-                        (('' + timezoneIndex).replace(/^-?/, '0')).match(/..$/)[0] + '00';
-                }
-                break;
-            case 4: // Zone
-                timezone = timezones[match[5]];
-                break;
-            default: // UT or +/-9999
-                timezone = timezones[' GMT'];
-        }
-        match[5] = timezone;
-        config._i = match.splice(1).join('');
-        tzFormat = ' ZZ';
-        config._f = dayFormat + dateFormat + timeFormat + tzFormat;
-        configFromStringAndFormat(config);
+        config._a = parsedArray;
+        config._tzm = calculateOffset(match[8], match[9], match[10]);
+
+        config._d = createUTCDate.apply(null, config._a);
+        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
+
         getParsingFlags(config).rfc2822 = true;
     } else {
         config._isValid = false;
@@ -25339,149 +25518,6 @@ hooks.createFromInputFallback = deprecate(
         config._d = new Date(config._i + (config._useUTC ? ' UTC' : ''));
     }
 );
-
-// Pick the first defined of two or three arguments.
-function defaults(a, b, c) {
-    if (a != null) {
-        return a;
-    }
-    if (b != null) {
-        return b;
-    }
-    return c;
-}
-
-function currentDateArray(config) {
-    // hooks is actually the exported moment object
-    var nowValue = new Date(hooks.now());
-    if (config._useUTC) {
-        return [nowValue.getUTCFullYear(), nowValue.getUTCMonth(), nowValue.getUTCDate()];
-    }
-    return [nowValue.getFullYear(), nowValue.getMonth(), nowValue.getDate()];
-}
-
-// convert an array to a date.
-// the array should mirror the parameters below
-// note: all values past the year are optional and will default to the lowest possible value.
-// [year, month, day , hour, minute, second, millisecond]
-function configFromArray (config) {
-    var i, date, input = [], currentDate, yearToUse;
-
-    if (config._d) {
-        return;
-    }
-
-    currentDate = currentDateArray(config);
-
-    //compute day of the year from weeks and weekdays
-    if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
-        dayOfYearFromWeekInfo(config);
-    }
-
-    //if the day of the year is set, figure out what it is
-    if (config._dayOfYear != null) {
-        yearToUse = defaults(config._a[YEAR], currentDate[YEAR]);
-
-        if (config._dayOfYear > daysInYear(yearToUse) || config._dayOfYear === 0) {
-            getParsingFlags(config)._overflowDayOfYear = true;
-        }
-
-        date = createUTCDate(yearToUse, 0, config._dayOfYear);
-        config._a[MONTH] = date.getUTCMonth();
-        config._a[DATE] = date.getUTCDate();
-    }
-
-    // Default to current date.
-    // * if no year, month, day of month are given, default to today
-    // * if day of month is given, default month and year
-    // * if month is given, default only year
-    // * if year is given, don't default anything
-    for (i = 0; i < 3 && config._a[i] == null; ++i) {
-        config._a[i] = input[i] = currentDate[i];
-    }
-
-    // Zero out whatever was not defaulted, including time
-    for (; i < 7; i++) {
-        config._a[i] = input[i] = (config._a[i] == null) ? (i === 2 ? 1 : 0) : config._a[i];
-    }
-
-    // Check for 24:00:00.000
-    if (config._a[HOUR] === 24 &&
-            config._a[MINUTE] === 0 &&
-            config._a[SECOND] === 0 &&
-            config._a[MILLISECOND] === 0) {
-        config._nextDay = true;
-        config._a[HOUR] = 0;
-    }
-
-    config._d = (config._useUTC ? createUTCDate : createDate).apply(null, input);
-    // Apply timezone offset from input. The actual utcOffset can be changed
-    // with parseZone.
-    if (config._tzm != null) {
-        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
-    }
-
-    if (config._nextDay) {
-        config._a[HOUR] = 24;
-    }
-}
-
-function dayOfYearFromWeekInfo(config) {
-    var w, weekYear, week, weekday, dow, doy, temp, weekdayOverflow;
-
-    w = config._w;
-    if (w.GG != null || w.W != null || w.E != null) {
-        dow = 1;
-        doy = 4;
-
-        // TODO: We need to take the current isoWeekYear, but that depends on
-        // how we interpret now (local, utc, fixed offset). So create
-        // a now version of current config (take local/utc/offset flags, and
-        // create now).
-        weekYear = defaults(w.GG, config._a[YEAR], weekOfYear(createLocal(), 1, 4).year);
-        week = defaults(w.W, 1);
-        weekday = defaults(w.E, 1);
-        if (weekday < 1 || weekday > 7) {
-            weekdayOverflow = true;
-        }
-    } else {
-        dow = config._locale._week.dow;
-        doy = config._locale._week.doy;
-
-        var curWeek = weekOfYear(createLocal(), dow, doy);
-
-        weekYear = defaults(w.gg, config._a[YEAR], curWeek.year);
-
-        // Default to current week.
-        week = defaults(w.w, curWeek.week);
-
-        if (w.d != null) {
-            // weekday -- low day numbers are considered next week
-            weekday = w.d;
-            if (weekday < 0 || weekday > 6) {
-                weekdayOverflow = true;
-            }
-        } else if (w.e != null) {
-            // local weekday -- counting starts from begining of week
-            weekday = w.e + dow;
-            if (w.e < 0 || w.e > 6) {
-                weekdayOverflow = true;
-            }
-        } else {
-            // default to begining of week
-            weekday = dow;
-        }
-    }
-    if (week < 1 || week > weeksInYear(weekYear, dow, doy)) {
-        getParsingFlags(config)._overflowWeeks = true;
-    } else if (weekdayOverflow != null) {
-        getParsingFlags(config)._overflowWeekday = true;
-    } else {
-        temp = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy);
-        config._a[YEAR] = temp.year;
-        config._dayOfYear = temp.dayOfYear;
-    }
-}
 
 // constant that refers to the ISO standard
 hooks.ISO_8601 = function () {};
@@ -25807,7 +25843,7 @@ var ordering = ['year', 'quarter', 'month', 'week', 'day', 'hour', 'minute', 'se
 
 function isDurationValid(m) {
     for (var key in m) {
-        if (!(ordering.indexOf(key) !== -1 && (m[key] == null || !isNaN(m[key])))) {
+        if (!(indexOf.call(ordering, key) !== -1 && (m[key] == null || !isNaN(m[key])))) {
             return false;
         }
     }
@@ -25858,7 +25894,7 @@ function Duration (duration) {
     // day when working around DST, we need to store them separately
     this._days = +days +
         weeks * 7;
-    // It is impossible translate months into days without knowing
+    // It is impossible to translate months into days without knowing
     // which months you are are talking about, so we have to store
     // it separately.
     this._months = +months +
@@ -26105,12 +26141,12 @@ function isUtc () {
 }
 
 // ASP.NET json date format regex
-var aspNetRegex = /^(\-)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)(\.\d*)?)?$/;
+var aspNetRegex = /^(\-|\+)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)(\.\d*)?)?$/;
 
 // from http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
 // somewhat more in line with 4.4.3.2 2004 spec, but allows decimal anywhere
 // and further modified to allow for strings containing both week and day
-var isoRegex = /^(-)?P(?:(-?[0-9,.]*)Y)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)W)?(?:(-?[0-9,.]*)D)?(?:T(?:(-?[0-9,.]*)H)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)S)?)?$/;
+var isoRegex = /^(-|\+)?P(?:([-+]?[0-9,.]*)Y)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)W)?(?:([-+]?[0-9,.]*)D)?(?:T(?:([-+]?[0-9,.]*)H)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)S)?)?$/;
 
 function createDuration (input, key) {
     var duration = input,
@@ -26144,7 +26180,7 @@ function createDuration (input, key) {
             ms : toInt(absRound(match[MILLISECOND] * 1000)) * sign // the millisecond decimal point is included in the match
         };
     } else if (!!(match = isoRegex.exec(input))) {
-        sign = (match[1] === '-') ? -1 : 1;
+        sign = (match[1] === '-') ? -1 : (match[1] === '+') ? 1 : 1;
         duration = {
             y : parseIso(match[2], sign),
             M : parseIso(match[3], sign),
@@ -26247,14 +26283,14 @@ function addSubtract (mom, duration, isAdding, updateOffset) {
 
     updateOffset = updateOffset == null ? true : updateOffset;
 
-    if (milliseconds) {
-        mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding);
+    if (months) {
+        setMonth(mom, get(mom, 'Month') + months * isAdding);
     }
     if (days) {
         set$1(mom, 'Date', get(mom, 'Date') + days * isAdding);
     }
-    if (months) {
-        setMonth(mom, get(mom, 'Month') + months * isAdding);
+    if (milliseconds) {
+        mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding);
     }
     if (updateOffset) {
         hooks.updateOffset(mom, days || months);
@@ -26364,22 +26400,18 @@ function diff (input, units, asFloat) {
 
     units = normalizeUnits(units);
 
-    if (units === 'year' || units === 'month' || units === 'quarter') {
-        output = monthDiff(this, that);
-        if (units === 'quarter') {
-            output = output / 3;
-        } else if (units === 'year') {
-            output = output / 12;
-        }
-    } else {
-        delta = this - that;
-        output = units === 'second' ? delta / 1e3 : // 1000
-            units === 'minute' ? delta / 6e4 : // 1000 * 60
-            units === 'hour' ? delta / 36e5 : // 1000 * 60 * 60
-            units === 'day' ? (delta - zoneDelta) / 864e5 : // 1000 * 60 * 60 * 24, negate dst
-            units === 'week' ? (delta - zoneDelta) / 6048e5 : // 1000 * 60 * 60 * 24 * 7, negate dst
-            delta;
+    switch (units) {
+        case 'year': output = monthDiff(this, that) / 12; break;
+        case 'month': output = monthDiff(this, that); break;
+        case 'quarter': output = monthDiff(this, that) / 3; break;
+        case 'second': output = (this - that) / 1e3; break; // 1000
+        case 'minute': output = (this - that) / 6e4; break; // 1000 * 60
+        case 'hour': output = (this - that) / 36e5; break; // 1000 * 60 * 60
+        case 'day': output = (this - that - zoneDelta) / 864e5; break; // 1000 * 60 * 60 * 24, negate dst
+        case 'week': output = (this - that - zoneDelta) / 6048e5; break; // 1000 * 60 * 60 * 24 * 7, negate dst
+        default: output = this - that;
     }
+
     return asFloat ? output : absFloor(output);
 }
 
@@ -26779,7 +26811,7 @@ addRegexToken('Do', function (isStrict, locale) {
 
 addParseToken(['D', 'DD'], DATE);
 addParseToken('Do', function (input, array) {
-    array[DATE] = toInt(input.match(match1to2)[0], 10);
+    array[DATE] = toInt(input.match(match1to2)[0]);
 });
 
 // MOMENTS
@@ -27357,6 +27389,10 @@ var asWeeks        = makeAs('w');
 var asMonths       = makeAs('M');
 var asYears        = makeAs('y');
 
+function clone$1 () {
+    return createDuration(this);
+}
+
 function get$2 (units) {
     units = normalizeUnits(units);
     return this.isValid() ? this[units + 's']() : NaN;
@@ -27466,6 +27502,10 @@ function humanize (withSuffix) {
 
 var abs$1 = Math.abs;
 
+function sign(x) {
+    return ((x > 0) - (x < 0)) || +x;
+}
+
 function toISOString$1() {
     // for ISO strings we do not use the normal bubbling rules:
     //  * milliseconds bubble up until they become hours
@@ -27500,7 +27540,7 @@ function toISOString$1() {
     var D = days;
     var h = hours;
     var m = minutes;
-    var s = seconds;
+    var s = seconds ? seconds.toFixed(3).replace(/\.?0+$/, '') : '';
     var total = this.asSeconds();
 
     if (!total) {
@@ -27509,15 +27549,19 @@ function toISOString$1() {
         return 'P0D';
     }
 
-    return (total < 0 ? '-' : '') +
-        'P' +
-        (Y ? Y + 'Y' : '') +
-        (M ? M + 'M' : '') +
-        (D ? D + 'D' : '') +
+    var totalSign = total < 0 ? '-' : '';
+    var ymSign = sign(this._months) !== sign(total) ? '-' : '';
+    var daysSign = sign(this._days) !== sign(total) ? '-' : '';
+    var hmsSign = sign(this._milliseconds) !== sign(total) ? '-' : '';
+
+    return totalSign + 'P' +
+        (Y ? ymSign + Y + 'Y' : '') +
+        (M ? ymSign + M + 'M' : '') +
+        (D ? daysSign + D + 'D' : '') +
         ((h || m || s) ? 'T' : '') +
-        (h ? h + 'H' : '') +
-        (m ? m + 'M' : '') +
-        (s ? s + 'S' : '');
+        (h ? hmsSign + h + 'H' : '') +
+        (m ? hmsSign + m + 'M' : '') +
+        (s ? hmsSign + s + 'S' : '');
 }
 
 var proto$2 = Duration.prototype;
@@ -27537,6 +27581,7 @@ proto$2.asMonths       = asMonths;
 proto$2.asYears        = asYears;
 proto$2.valueOf        = valueOf$1;
 proto$2._bubble        = bubble;
+proto$2.clone          = clone$1;
 proto$2.get            = get$2;
 proto$2.milliseconds   = milliseconds;
 proto$2.seconds        = seconds;
@@ -27578,7 +27623,7 @@ addParseToken('x', function (input, array, config) {
 // Side effect imports
 
 
-hooks.version = '2.18.1';
+hooks.version = '2.19.4';
 
 setHookCallback(createLocal);
 
@@ -27605,7 +27650,7 @@ hooks.updateLocale          = updateLocale;
 hooks.locales               = listLocales;
 hooks.weekdaysShort         = listWeekdaysShort;
 hooks.normalizeUnits        = normalizeUnits;
-hooks.relativeTimeRounding = getSetRelativeTimeRounding;
+hooks.relativeTimeRounding  = getSetRelativeTimeRounding;
 hooks.relativeTimeThreshold = getSetRelativeTimeThreshold;
 hooks.calendarFormat        = getCalendarFormat;
 hooks.prototype             = proto;
@@ -27687,6 +27732,149 @@ var af = moment.defineLocale('af', {
 });
 
 return af;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Arabic [ar]
+//! author : Abdel Said: https://github.com/abdelsaid
+//! author : Ahmed Elkhatib
+//! author : forabi https://github.com/forabi
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/ar',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var symbolMap = {
+    '1': '١',
+    '2': '٢',
+    '3': '٣',
+    '4': '٤',
+    '5': '٥',
+    '6': '٦',
+    '7': '٧',
+    '8': '٨',
+    '9': '٩',
+    '0': '٠'
+};
+var numberMap = {
+    '١': '1',
+    '٢': '2',
+    '٣': '3',
+    '٤': '4',
+    '٥': '5',
+    '٦': '6',
+    '٧': '7',
+    '٨': '8',
+    '٩': '9',
+    '٠': '0'
+};
+var pluralForm = function (n) {
+    return n === 0 ? 0 : n === 1 ? 1 : n === 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5;
+};
+var plurals = {
+    s : ['أقل من ثانية', 'ثانية واحدة', ['ثانيتان', 'ثانيتين'], '%d ثوان', '%d ثانية', '%d ثانية'],
+    m : ['أقل من دقيقة', 'دقيقة واحدة', ['دقيقتان', 'دقيقتين'], '%d دقائق', '%d دقيقة', '%d دقيقة'],
+    h : ['أقل من ساعة', 'ساعة واحدة', ['ساعتان', 'ساعتين'], '%d ساعات', '%d ساعة', '%d ساعة'],
+    d : ['أقل من يوم', 'يوم واحد', ['يومان', 'يومين'], '%d أيام', '%d يومًا', '%d يوم'],
+    M : ['أقل من شهر', 'شهر واحد', ['شهران', 'شهرين'], '%d أشهر', '%d شهرا', '%d شهر'],
+    y : ['أقل من عام', 'عام واحد', ['عامان', 'عامين'], '%d أعوام', '%d عامًا', '%d عام']
+};
+var pluralize = function (u) {
+    return function (number, withoutSuffix, string, isFuture) {
+        var f = pluralForm(number),
+            str = plurals[u][pluralForm(number)];
+        if (f === 2) {
+            str = str[withoutSuffix ? 0 : 1];
+        }
+        return str.replace(/%d/i, number);
+    };
+};
+var months = [
+    'كانون الثاني يناير',
+    'شباط فبراير',
+    'آذار مارس',
+    'نيسان أبريل',
+    'أيار مايو',
+    'حزيران يونيو',
+    'تموز يوليو',
+    'آب أغسطس',
+    'أيلول سبتمبر',
+    'تشرين الأول أكتوبر',
+    'تشرين الثاني نوفمبر',
+    'كانون الأول ديسمبر'
+];
+
+var ar = moment.defineLocale('ar', {
+    months : months,
+    monthsShort : months,
+    weekdays : 'الأحد_الإثنين_الثلاثاء_الأربعاء_الخميس_الجمعة_السبت'.split('_'),
+    weekdaysShort : 'أحد_إثنين_ثلاثاء_أربعاء_خميس_جمعة_سبت'.split('_'),
+    weekdaysMin : 'ح_ن_ث_ر_خ_ج_س'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'D/\u200FM/\u200FYYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd D MMMM YYYY HH:mm'
+    },
+    meridiemParse: /ص|م/,
+    isPM : function (input) {
+        return 'م' === input;
+    },
+    meridiem : function (hour, minute, isLower) {
+        if (hour < 12) {
+            return 'ص';
+        } else {
+            return 'م';
+        }
+    },
+    calendar : {
+        sameDay: '[اليوم عند الساعة] LT',
+        nextDay: '[غدًا عند الساعة] LT',
+        nextWeek: 'dddd [عند الساعة] LT',
+        lastDay: '[أمس عند الساعة] LT',
+        lastWeek: 'dddd [عند الساعة] LT',
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : 'بعد %s',
+        past : 'منذ %s',
+        s : pluralize('s'),
+        m : pluralize('m'),
+        mm : pluralize('m'),
+        h : pluralize('h'),
+        hh : pluralize('h'),
+        d : pluralize('d'),
+        dd : pluralize('d'),
+        M : pluralize('M'),
+        MM : pluralize('M'),
+        y : pluralize('y'),
+        yy : pluralize('y')
+    },
+    preparse: function (string) {
+        return string.replace(/[١٢٣٤٥٦٧٨٩٠]/g, function (match) {
+            return numberMap[match];
+        }).replace(/،/g, ',');
+    },
+    postformat: function (string) {
+        return string.replace(/\d/g, function (match) {
+            return symbolMap[match];
+        }).replace(/,/g, '،');
+    },
+    week : {
+        dow : 6, // Saturday is the first day of the week.
+        doy : 12  // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return ar;
 
 })));
 
@@ -27803,17 +27991,17 @@ var ca = moment.defineLocale('ca', {
     monthsParseExact : true,
     weekdays : 'diumenge_dilluns_dimarts_dimecres_dijous_divendres_dissabte'.split('_'),
     weekdaysShort : 'dg._dl._dt._dc._dj._dv._ds.'.split('_'),
-    weekdaysMin : 'Dg_Dl_Dt_Dc_Dj_Dv_Ds'.split('_'),
+    weekdaysMin : 'dg_dl_dt_dc_dj_dv_ds'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
         LT : 'H:mm',
         LTS : 'H:mm:ss',
         L : 'DD/MM/YYYY',
-        LL : '[el] D MMMM [de] YYYY',
+        LL : 'D MMMM [de] YYYY',
         ll : 'D MMM YYYY',
-        LLL : '[el] D MMMM [de] YYYY [a les] H:mm',
+        LLL : 'D MMMM [de] YYYY [a les] H:mm',
         lll : 'D MMM YYYY, H:mm',
-        LLLL : '[el] dddd D MMMM [de] YYYY [a les] H:mm',
+        LLLL : 'dddd D MMMM [de] YYYY [a les] H:mm',
         llll : 'ddd D MMM YYYY, H:mm'
     },
     calendar : {
@@ -27900,7 +28088,7 @@ function processRelativeTime(number, withoutSuffix, key, isFuture) {
 
 var de = moment.defineLocale('de', {
     months : 'Januar_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
-    monthsShort : 'Jan._Febr._Mrz._Apr._Mai_Jun._Jul._Aug._Sept._Okt._Nov._Dez.'.split('_'),
+    monthsShort : 'Jan._Feb._März_Apr._Mai_Juni_Juli_Aug._Sep._Okt._Nov._Dez.'.split('_'),
     monthsParseExact : true,
     weekdays : 'Sonntag_Montag_Dienstag_Mittwoch_Donnerstag_Freitag_Samstag'.split('_'),
     weekdaysShort : 'So._Mo._Di._Mi._Do._Fr._Sa.'.split('_'),
@@ -27964,6 +28152,9 @@ return de;
 var monthsShortDot = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_');
 var monthsShort = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
 
+var monthsParse = [/^ene/i, /^feb/i, /^mar/i, /^abr/i, /^may/i, /^jun/i, /^jul/i, /^ago/i, /^sep/i, /^oct/i, /^nov/i, /^dic/i];
+var monthsRegex = /^(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre|ene\.?|feb\.?|mar\.?|abr\.?|may\.?|jun\.?|jul\.?|ago\.?|sep\.?|oct\.?|nov\.?|dic\.?)/i;
+
 var es = moment.defineLocale('es', {
     months : 'enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre'.split('_'),
     monthsShort : function (m, format) {
@@ -27975,7 +28166,13 @@ var es = moment.defineLocale('es', {
             return monthsShortDot[m.month()];
         }
     },
-    monthsParseExact : true,
+    monthsRegex : monthsRegex,
+    monthsShortRegex : monthsRegex,
+    monthsStrictRegex : /^(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)/i,
+    monthsShortStrictRegex : /^(ene\.?|feb\.?|mar\.?|abr\.?|may\.?|jun\.?|jul\.?|ago\.?|sep\.?|oct\.?|nov\.?|dic\.?)/i,
+    monthsParse : monthsParse,
+    longMonthsParse : monthsParse,
+    shortMonthsParse : monthsParse,
     weekdays : 'domingo_lunes_martes_miércoles_jueves_viernes_sábado'.split('_'),
     weekdaysShort : 'dom._lun._mar._mié._jue._vie._sáb.'.split('_'),
     weekdaysMin : 'do_lu_ma_mi_ju_vi_sá'.split('_'),
@@ -28231,8 +28428,7 @@ return he;
 
 var weekEndings = 'vasárnap hétfőn kedden szerdán csütörtökön pénteken szombaton'.split(' ');
 function translate(number, withoutSuffix, key, isFuture) {
-    var num = number,
-        suffix;
+    var num = number;
     switch (key) {
         case 's':
             return (isFuture || withoutSuffix) ? 'néhány másodperc' : 'néhány másodperce';
@@ -28669,7 +28865,7 @@ var nl = moment.defineLocale('nl', {
 
     weekdays : 'zondag_maandag_dinsdag_woensdag_donderdag_vrijdag_zaterdag'.split('_'),
     weekdaysShort : 'zo._ma._di._wo._do._vr._za.'.split('_'),
-    weekdaysMin : 'Zo_Ma_Di_Wo_Do_Vr_Za'.split('_'),
+    weekdaysMin : 'zo_ma_di_wo_do_vr_za'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
         LT : 'HH:mm',
@@ -28781,7 +28977,24 @@ var pl = moment.defineLocale('pl', {
     calendar : {
         sameDay: '[Dziś o] LT',
         nextDay: '[Jutro o] LT',
-        nextWeek: '[W] dddd [o] LT',
+        nextWeek: function () {
+            switch (this.day()) {
+                case 0:
+                    return '[W niedzielę o] LT';
+
+                case 2:
+                    return '[We wtorek o] LT';
+
+                case 3:
+                    return '[W środę o] LT';
+
+                case 6:
+                    return '[W sobotę o] LT';
+
+                default:
+                    return '[W] dddd [o] LT';
+            }
+        },
         lastDay: '[Wczoraj o] LT',
         lastWeek: function () {
             switch (this.day()) {
@@ -28837,8 +29050,8 @@ return pl;
 
 
 var ptBr = moment.defineLocale('pt-br', {
-    months : 'Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro'.split('_'),
-    monthsShort : 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_'),
+    months : 'janeiro_fevereiro_março_abril_maio_junho_julho_agosto_setembro_outubro_novembro_dezembro'.split('_'),
+    monthsShort : 'jan_fev_mar_abr_mai_jun_jul_ago_set_out_nov_dez'.split('_'),
     weekdays : 'Domingo_Segunda-feira_Terça-feira_Quarta-feira_Quinta-feira_Sexta-feira_Sábado'.split('_'),
     weekdaysShort : 'Dom_Seg_Ter_Qua_Qui_Sex_Sáb'.split('_'),
     weekdaysMin : 'Do_2ª_3ª_4ª_5ª_6ª_Sá'.split('_'),
@@ -28867,6 +29080,7 @@ var ptBr = moment.defineLocale('pt-br', {
         future : 'em %s',
         past : '%s atrás',
         s : 'poucos segundos',
+        ss : '%d segundos',
         m : 'um minuto',
         mm : '%d minutos',
         h : 'uma hora',
@@ -29062,7 +29276,7 @@ var ru = moment.defineLocale('ru', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
     }
 });
 
@@ -29121,9 +29335,9 @@ var tr = moment.defineLocale('tr', {
     calendar : {
         sameDay : '[bugün saat] LT',
         nextDay : '[yarın saat] LT',
-        nextWeek : '[haftaya] dddd [saat] LT',
+        nextWeek : '[gelecek] dddd [saat] LT',
         lastDay : '[dün] LT',
-        lastWeek : '[geçen hafta] dddd [saat] LT',
+        lastWeek : '[geçen] dddd [saat] LT',
         sameElse : 'L'
     },
     relativeTime : {
@@ -29530,6 +29744,8 @@ return zhTw;
 
 })));
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -29541,8 +29757,8 @@ return zhTw;
 
 /*global define */
 (function (root, factory) {
-  define('i18n',["es6-promise", "jed", "lodash.noconflict", "moment", 'moment/locale/af', 'moment/locale/bg', 'moment/locale/ca', 'moment/locale/de', 'moment/locale/es', 'moment/locale/fr', 'moment/locale/he', 'moment/locale/hu', 'moment/locale/id', 'moment/locale/it', 'moment/locale/ja', 'moment/locale/nb', 'moment/locale/nl', 'moment/locale/pl', 'moment/locale/pt-br', 'moment/locale/ru', 'moment/locale/tr', 'moment/locale/uk', 'moment/locale/zh-cn', 'moment/locale/zh-tw'], factory);
-})(this, function (Promise, Jed, _, moment) {
+  define('i18n',["es6-promise", "jed", "lodash.noconflict", "moment", 'moment/locale/af', 'moment/locale/ar', 'moment/locale/bg', 'moment/locale/ca', 'moment/locale/de', 'moment/locale/es', 'moment/locale/fr', 'moment/locale/he', 'moment/locale/hu', 'moment/locale/id', 'moment/locale/it', 'moment/locale/ja', 'moment/locale/nb', 'moment/locale/nl', 'moment/locale/pl', 'moment/locale/pt-br', 'moment/locale/ru', 'moment/locale/tr', 'moment/locale/uk', 'moment/locale/zh-cn', 'moment/locale/zh-tw'], factory);
+})(void 0, function (Promise, Jed, _, moment) {
   'use strict';
 
   function detectLocale(library_check) {
@@ -36016,6 +36232,8 @@ require(["strophe-polyfill"]);
 }));
 /* jshint ignore:end */
 ;
+
+
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 // Converse.js (A browser based XMPP chat client)
@@ -36030,7 +36248,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 /*global define, escape, window */
 (function (root, factory) {
   define('utils',["sizzle", "es6-promise", "lodash.noconflict", "strophe"], factory);
-})(this, function (sizzle, Promise, _, Strophe) {
+})(void 0, function (sizzle, Promise, _, Strophe) {
   "use strict";
 
   var b64_sha1 = Strophe.SHA1.b64_sha1;
@@ -36169,6 +36387,16 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     }
 
     return el;
+  };
+
+  u.ancestor = function (el, selector) {
+    var parent = el;
+
+    while (!_.isNil(parent) && !sizzle.matchesSelector(parent, selector)) {
+      parent = parent.parentElement;
+    }
+
+    return parent;
   };
 
   u.nextUntil = function (el, selector) {
@@ -39419,6 +39647,8 @@ Backbone.sync = function(method, model, options) {
 return Backbone.BrowserStorage;
 }));
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -39429,7 +39659,7 @@ return Backbone.BrowserStorage;
 /*global Backbone, define, window, JSON */
 (function (root, factory) {
   define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "lodash.fp", "polyfill", "i18n", "utils", "moment", "strophe", "pluggable", "backbone.noconflict", "backbone.nativeview", "backbone.browserStorage"], factory);
-})(this, function (sizzle, Promise, _, f, polyfill, i18n, u, moment, Strophe, pluggable, Backbone) {
+})(void 0, function (sizzle, Promise, _, f, polyfill, i18n, u, moment, Strophe, pluggable, Backbone) {
   /* Cannot use this due to Safari bug.
    * See https://github.com/jcbrand/converse.js/issues/196
    */
@@ -39475,9 +39705,10 @@ return Backbone.BrowserStorage;
     'promises': {}
   };
 
-  _.extend(_converse, Backbone.Events);
+  _.extend(_converse, Backbone.Events); // Core plugins are whitelisted automatically
 
-  _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-muc-embedded', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-profile', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Make converse pluggable
+
+  _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-dropdown', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-embedded', 'converse-muc-views', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-profile', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Make converse pluggable
 
   pluggable.enable(_converse, '_converse', 'pluggable'); // Module-level constants
 
@@ -39707,7 +39938,7 @@ return Backbone.BrowserStorage;
       jid: undefined,
       keepalive: true,
       locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
-      locales: ['af', 'bg', 'ca', 'de', 'es', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
+      locales: ['af', 'ar', 'bg', 'ca', 'de', 'es', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
       message_carbons: true,
       message_storage: 'session',
       password: undefined,
@@ -39726,9 +39957,7 @@ return Backbone.BrowserStorage;
       view_mode: 'overlayed',
       // Choices are 'overlayed', 'fullscreen', 'mobile'
       websocket_url: undefined,
-      whitelisted_plugins: [],
-      xhr_custom_status: false,
-      xhr_custom_status_url: ''
+      whitelisted_plugins: []
     };
 
     _.assignIn(this, this.default_settings); // Allow only whitelisted configuration attributes to be overwritten
@@ -39808,7 +40037,7 @@ return Backbone.BrowserStorage;
         _converse.auto_changed_status = false; // XXX: we should really remember the original state here, and
         // then set it back to that...
 
-        _converse.xmppstatus.setStatus(_converse.default_state);
+        _converse.xmppstatus.set('status', _converse.default_state);
       }
     };
 
@@ -39822,7 +40051,7 @@ return Backbone.BrowserStorage;
         return;
       }
 
-      var stat = _converse.xmppstatus.getStatus();
+      var stat = _converse.xmppstatus.get('status');
 
       _converse.idle_seconds++;
 
@@ -39833,11 +40062,11 @@ return Backbone.BrowserStorage;
       if (_converse.auto_away > 0 && _converse.idle_seconds > _converse.auto_away && stat !== 'away' && stat !== 'xa' && stat !== 'dnd') {
         _converse.auto_changed_status = true;
 
-        _converse.xmppstatus.setStatus('away');
+        _converse.xmppstatus.set('status', 'away');
       } else if (_converse.auto_xa > 0 && _converse.idle_seconds > _converse.auto_xa && stat !== 'xa' && stat !== 'dnd') {
         _converse.auto_changed_status = true;
 
-        _converse.xmppstatus.setStatus('xa');
+        _converse.xmppstatus.set('status', 'xa');
       }
     };
 
@@ -40052,9 +40281,14 @@ return Backbone.BrowserStorage;
       }
     };
 
-    this.initStatus = function () {
-      return new Promise(function (resolve, reject) {
-        var promise = new u.getResolveablePromise();
+    this.initStatus = function (reconnecting) {
+      // If there's no xmppstatus obj, then we were never connected to
+      // begin with, so we set reconnecting to false.
+      reconnecting = _.isUndefined(_converse.xmppstatus) ? false : reconnecting;
+
+      if (reconnecting) {
+        _converse.onStatusInitialized(reconnecting);
+      } else {
         _this.xmppstatus = new _this.XMPPStatus();
         var id = b64_sha1("converse.xmppstatus-".concat(_converse.bare_jid));
         _this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
@@ -40062,12 +40296,10 @@ return Backbone.BrowserStorage;
         _this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
 
         _this.xmppstatus.fetch({
-          success: resolve,
-          error: resolve
+          success: _.partial(_converse.onStatusInitialized, reconnecting),
+          error: _.partial(_converse.onStatusInitialized, reconnecting)
         });
-
-        _converse.emit('statusInitialized');
-      });
+      }
     };
 
     this.initSession = function () {
@@ -40280,6 +40512,8 @@ return Backbone.BrowserStorage;
        * populating the roster etc.) necessary once the connection has
        * been established.
        */
+      _converse.emit('statusInitialized');
+
       if (reconnecting) {
         // No need to recreate the roster, otherwise we lose our
         // cached data. However we still emit an event, to give
@@ -40298,10 +40532,14 @@ return Backbone.BrowserStorage;
 
       _converse.registerPresenceHandler();
 
-      if (!reconnecting) {
+      if (reconnecting) {
+        _converse.emit('reconnected');
+      } else {
         init_promise.resolve();
 
         _converse.emit('initialized');
+
+        _converse.emit('connected');
       }
     };
 
@@ -40316,29 +40554,16 @@ return Backbone.BrowserStorage;
       /* Called as soon as a new connection has been established, either
        * by logging in or by attaching to an existing BOSH session.
        */
-      // Solves problem of returned PubSub BOSH response not received
-      // by browser.
-      _converse.connection.flush();
+      _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
+
 
       _converse.setUserJid();
 
       _converse.initSession();
 
-      _converse.enableCarbons(); // If there's no xmppstatus obj, then we were never connected to
-      // begin with, so we set reconnecting to false.
+      _converse.enableCarbons();
 
-
-      reconnecting = _.isUndefined(_converse.xmppstatus) ? false : reconnecting;
-
-      if (reconnecting) {
-        _converse.onStatusInitialized(true);
-
-        _converse.emit('reconnected');
-      } else {
-        _converse.initStatus().then(_.partial(_converse.onStatusInitialized, false), _.partial(_converse.onStatusInitialized, false)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-
-        _converse.emit('connected');
-      }
+      _converse.initStatus(reconnecting);
     };
 
     this.RosterContact = Backbone.Model.extend({
@@ -41013,20 +41238,29 @@ return Backbone.BrowserStorage;
     });
     this.connfeedback = new this.ConnectionFeedback();
     this.XMPPStatus = Backbone.Model.extend({
+      defaults: function defaults() {
+        return {
+          "status": _converse.default_state,
+          "jid": _converse.bare_jid,
+          "vcard_updated": null
+        };
+      },
       initialize: function initialize() {
         var _this8 = this;
 
-        this.set({
-          'status': this.getStatus()
-        });
-        this.on('change', function (item) {
-          if (_.has(item.changed, 'status')) {
-            _converse.emit('statusChanged', _this8.get('status'));
-          }
+        this.on('change:status', function (item) {
+          var status = _this8.get('status');
 
-          if (_.has(item.changed, 'status_message')) {
-            _converse.emit('statusMessageChanged', _this8.get('status_message'));
-          }
+          _this8.sendPresence(status);
+
+          _converse.emit('statusChanged', status);
+        });
+        this.on('change:status_message', function () {
+          var status_message = _this8.get('status_message');
+
+          _this8.sendPresence(_this8.get('status'), status_message);
+
+          _converse.emit('statusMessageChanged', status_message);
         });
       },
       constructPresence: function constructPresence(type, status_message) {
@@ -41058,36 +41292,6 @@ return Backbone.BrowserStorage;
       },
       sendPresence: function sendPresence(type, status_message) {
         _converse.connection.send(this.constructPresence(type, status_message));
-      },
-      setStatus: function setStatus(value) {
-        this.sendPresence(value);
-        this.save({
-          'status': value
-        });
-      },
-      getStatus: function getStatus() {
-        return this.get('status') || _converse.default_state;
-      },
-      setStatusMessage: function setStatusMessage(status_message) {
-        this.sendPresence(this.getStatus(), status_message);
-        this.save({
-          'status_message': status_message
-        });
-
-        if (this.xhr_custom_status) {
-          var xhr = new XMLHttpRequest();
-          xhr.open('POST', this.xhr_custom_status_url, true);
-          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-          xhr.send({
-            'msg': status_message
-          });
-        }
-
-        var prev_status = this.get('status_message');
-
-        if (prev_status === status_message) {
-          this.trigger("update-status-ui", this);
-        }
       }
     });
 
@@ -41499,23 +41703,17 @@ return Backbone.BrowserStorage;
     },
     'contacts': {
       'get': function get(jids) {
-        var _transform = function _transform(jid) {
-          var contact = _converse.roster.get(Strophe.getBareJidFromJid(jid));
-
-          if (contact) {
-            return contact.attributes;
-          }
-
-          return null;
+        var _getter = function _getter(jid) {
+          return _converse.roster.get(Strophe.getBareJidFromJid(jid)) || null;
         };
 
         if (_.isUndefined(jids)) {
           jids = _converse.roster.pluck('jid');
         } else if (_.isString(jids)) {
-          return _transform(jids);
+          return _getter(jids);
         }
 
-        return _.map(jids, _transform);
+        return _.map(jids, _getter);
       },
       'add': function add(jid, name) {
         if (!_.isString(jid) || !_.includes(jid, '@')) {
@@ -41602,727 +41800,1782 @@ return Backbone.BrowserStorage;
   return window.converse;
 });
 //# sourceMappingURL=converse-core.js.map;
-/*!
- * Backbone.Overview 
- *
- * Copyright (c) 2018, JC Brand <jc@opkode.com>
- * Licensed under the Mozilla Public License (MPL) 
- */
+// Native Javascript for Bootstrap 4 v2.0.21 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
-    define('backbone.overview',["underscore", "backbone"], factory);
+    // AMD support:
+    define('bootstrap',[], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    // CommonJS-like:
+    module.exports = factory();
   } else {
-    // RequireJS isn't being used.
-    // Assume underscore and backbone are loaded in <script> tags
-    factory(_ || root._, Backbone || root.Backbone);
+    // Browser globals (root is window)
+    var bsn = factory();
+    root.Alert = bsn.Alert;
+    root.Button = bsn.Button;
+    root.Carousel = bsn.Carousel;
+    root.Collapse = bsn.Collapse;
+    root.Dropdown = bsn.Dropdown;
+    root.Modal = bsn.Modal;
+    root.Popover = bsn.Popover;
+    root.ScrollSpy = bsn.ScrollSpy;
+    root.Tab = bsn.Tab;
+    root.Tooltip = bsn.Tooltip;
   }
-})(this, function (_, Backbone) {
+}(this, function () {
+  
+  /* Native Javascript for Bootstrap 4 | Internal Utility Functions
+  ----------------------------------------------------------------*/
   "use strict";
-
-  var View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
-
-  var Overview = Backbone.Overview = function (options) {
-    /* An Overview is a View that contains and keeps track of sub-views.
-     * Kind of like what a Collection is to a Model.
-     */
-    var that = this;
-    this.views = {};
-    this.keys = _.partial(_.keys, this.views);
-    this.getAll = _.partial(_.identity, this.views);
-
-    this.get = function (id) {
-      return that.views[id];
-    };
-
-    this.xget = function (id) {
-      /* Exclusive get. Returns all instances except the given id. */
-      return _.filter(that.views, function (view, vid) {
-        return vid !== id;
-      });
-    };
-
-    this.add = function (id, view) {
-      that.views[id] = view;
-      return view;
-    };
-
-    this.remove = function (id) {
-      if (typeof id === "undefined") {
-        new View().remove.apply(that);
-      }
-
-      var view = that.views[id];
-
-      if (view) {
-        delete that.views[id];
-        view.remove();
-        return view;
-      }
-    };
-
-    this.removeAll = function () {
-      _.each(_.keys(that.views), that.remove);
-
-      return that;
-    };
-
-    View.apply(this, Array.prototype.slice.apply(arguments));
-  };
-
-  var methods = ['all', 'any', 'chain', 'collect', 'contains', 'detect', 'difference', 'drop', 'each', 'every', 'filter', 'find', 'first', 'foldl', 'foldr', 'forEach', 'head', 'include', 'indexOf', 'initial', 'inject', 'invoke', 'isEmpty', 'last', 'lastIndexOf', 'map', 'max', 'min', 'reduce', 'reduceRight', 'reject', 'rest', 'sample', 'select', 'shuffle', 'size', 'some', 'sortBy', 'tail', 'take', 'toArray', 'without']; // Mix in each Underscore method as a proxy to `Overview#view`.
-
-  _.each(methods, function (method) {
-    Overview.prototype[method] = function () {
-      var args = Array.prototype.slice.call(arguments);
-      args.unshift(this.views);
-      return _[method].apply(_, args);
-    };
-  });
-
-  _.extend(Overview.prototype, View.prototype);
-
-  Overview.extend = View.extend;
-  Backbone.OrderedListView = Backbone.Overview.extend({
-    // The `listItems` attribute denotes the path (from this View) to the
-    // list of items.
-    listItems: 'model',
-    // The `sortEvent` attribute specifies the event which should cause the
-    // ordered list to be sorted.
-    sortEvent: 'change',
-    // The `listSelector` is the selector used to query for the DOM list
-    // element which contains the ordered items.
-    listSelector: '.ordered-items',
-    // The `itemView` is constructor which should be called to create a
-    // View for a new item.
-    ItemView: undefined,
-    initialize: function initialize() {
-      this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
-      this.items = _.get(this, this.listItems);
-      this.items.on('add', this.createItemView, this);
-      this.items.on('add', this.sortEventually, this);
-      this.items.on(this.sortEvent, this.sortEventually, this);
+  
+  // globals
+  var globalObject = typeof global !== 'undefined' ? global : this||window,
+    DOC = document, HTML = DOC.documentElement, body = 'body', // allow the library to be used in <head>
+  
+    // Native Javascript for Bootstrap Global Object
+    BSN = globalObject.BSN = {},
+    supports = BSN.supports = [],
+  
+    // function toggle attributes
+    dataToggle    = 'data-toggle',
+    dataDismiss   = 'data-dismiss',
+    dataSpy       = 'data-spy',
+    dataRide      = 'data-ride',
+  
+    // components
+    stringAlert     = 'Alert',
+    stringButton    = 'Button',
+    stringCarousel  = 'Carousel',
+    stringCollapse  = 'Collapse',
+    stringDropdown  = 'Dropdown',
+    stringModal     = 'Modal',
+    stringPopover   = 'Popover',
+    stringScrollSpy = 'ScrollSpy',
+    stringTab       = 'Tab',
+    stringTooltip   = 'Tooltip',
+  
+    // options DATA API
+    databackdrop      = 'data-backdrop',
+    dataKeyboard      = 'data-keyboard',
+    dataTarget        = 'data-target',
+    dataInterval      = 'data-interval',
+    dataHeight        = 'data-height',
+    dataPause         = 'data-pause',
+    dataTitle         = 'data-title',
+    dataOriginalTitle = 'data-original-title',
+    dataOriginalText  = 'data-original-text',
+    dataDismissible   = 'data-dismissible',
+    dataTrigger       = 'data-trigger',
+    dataAnimation     = 'data-animation',
+    dataContainer     = 'data-container',
+    dataPlacement     = 'data-placement',
+    dataDelay         = 'data-delay',
+    dataOffsetTop     = 'data-offset-top',
+    dataOffsetBottom  = 'data-offset-bottom',
+  
+    // option keys
+    backdrop = 'backdrop', keyboard = 'keyboard', delay = 'delay',
+    content = 'content', target = 'target',
+    interval = 'interval', pause = 'pause', animation = 'animation',
+    placement = 'placement', container = 'container',
+  
+    // box model
+    offsetTop    = 'offsetTop',      offsetBottom   = 'offsetBottom',
+    offsetLeft   = 'offsetLeft',
+    scrollTop    = 'scrollTop',      scrollLeft     = 'scrollLeft',
+    clientWidth  = 'clientWidth',    clientHeight   = 'clientHeight',
+    offsetWidth  = 'offsetWidth',    offsetHeight   = 'offsetHeight',
+    innerWidth   = 'innerWidth',     innerHeight    = 'innerHeight',
+    scrollHeight = 'scrollHeight',   height         = 'height',
+  
+    // aria
+    ariaExpanded = 'aria-expanded',
+    ariaHidden   = 'aria-hidden',
+  
+    // event names
+    clickEvent    = 'click',
+    hoverEvent    = 'hover',
+    keydownEvent  = 'keydown',
+    keyupEvent    = 'keyup', 
+    resizeEvent   = 'resize',
+    scrollEvent   = 'scroll',
+    // originalEvents
+    showEvent     = 'show',
+    shownEvent    = 'shown',
+    hideEvent     = 'hide',
+    hiddenEvent   = 'hidden',
+    closeEvent    = 'close',
+    closedEvent   = 'closed',
+    slidEvent     = 'slid',
+    slideEvent    = 'slide',
+    changeEvent   = 'change',
+  
+    // other
+    getAttribute           = 'getAttribute',
+    setAttribute           = 'setAttribute',
+    hasAttribute           = 'hasAttribute',
+    createElement          = 'createElement',
+    appendChild            = 'appendChild',
+    innerHTML              = 'innerHTML',  
+    getElementsByTagName   = 'getElementsByTagName',
+    preventDefault         = 'preventDefault',
+    getBoundingClientRect  = 'getBoundingClientRect',
+    querySelectorAll       = 'querySelectorAll',
+    getElementsByCLASSNAME = 'getElementsByClassName',
+  
+    indexOf      = 'indexOf',
+    parentNode   = 'parentNode',
+    length       = 'length',
+    toLowerCase  = 'toLowerCase',
+    Transition   = 'Transition',
+    Webkit       = 'Webkit',
+    style        = 'style',
+    push         = 'push',
+    tabindex     = 'tabindex',
+    contains     = 'contains',
+  
+    active     = 'active',
+    showClass  = 'show',
+    collapsing = 'collapsing',
+    disabled   = 'disabled',
+    loading    = 'loading',
+    left       = 'left',
+    right      = 'right',
+    top        = 'top',
+    bottom     = 'bottom',
+  
+    // tooltip / popover
+    mouseHover = ('onmouseleave' in DOC) ? [ 'mouseenter', 'mouseleave'] : [ 'mouseover', 'mouseout' ],
+    tipPositions = /\b(top|bottom|left|right)+/,
+    
+    // modal
+    modalOverlay = 0,
+    fixedTop = 'fixed-top',
+    fixedBottom = 'fixed-bottom',
+    
+    // transitionEnd since 2.0.4
+    supportTransitions = Webkit+Transition in HTML[style] || Transition[toLowerCase]() in HTML[style],
+    transitionEndEvent = Webkit+Transition in HTML[style] ? Webkit[toLowerCase]()+Transition+'End' : Transition[toLowerCase]()+'end',
+  
+    // set new focus element since 2.0.3
+    setFocus = function(element){
+      element.focus ? element.focus() : element.setActive();
     },
-    createItemView: function createItemView(item) {
-      var item_view = this.get(item.get('id'));
-
-      if (!item_view) {
-        item_view = new this.ItemView({
-          model: item
-        });
-        this.add(item.get('id'), item_view);
-      } else {
-        item_view.model = item;
-        item_view.initialize();
-      }
-
-      item_view.render();
-      return item_view;
+  
+    // class manipulation, since 2.0.0 requires polyfill.js
+    addClass = function(element,classNAME) {
+      element.classList.add(classNAME);
     },
-    sortAndPositionAllItems: function sortAndPositionAllItems() {
-      var _this = this;
-
-      this.items.sort();
-      this.items.each(function (item) {
-        if (_.isUndefined(_this.get(item.get('id')))) {
-          _this.createItemView(item);
+    removeClass = function(element,classNAME) {
+      element.classList.remove(classNAME);
+    },
+    hasClass = function(element,classNAME){ // since 2.0.0
+      return element.classList[contains](classNAME);
+    },
+  
+    // selection methods
+    getElementsByClassName = function(element,classNAME) { // returns Array
+      return [].slice.call(element[getElementsByCLASSNAME]( classNAME ));
+    },
+    queryElement = function (selector, parent) {
+      var lookUp = parent ? parent : DOC;
+      return typeof selector === 'object' ? selector : lookUp.querySelector(selector);
+    },
+    getClosest = function (element, selector) { //element is the element and selector is for the closest parent element to find
+      // source http://gomakethings.com/climbing-up-and-down-the-dom-tree-with-vanilla-javascript/
+      var firstChar = selector.charAt(0), selectorSubstring = selector.substr(1);
+      if ( firstChar === '.' ) {// If selector is a class
+        for ( ; element && element !== DOC; element = element[parentNode] ) { // Get closest match
+          if ( queryElement(selector,element[parentNode]) !== null && hasClass(element,selectorSubstring) ) { return element; }
         }
-
-        _this.positionItem(item, _this.el.querySelector(_this.listSelector));
+      } else if ( firstChar === '#' ) { // If selector is an ID
+        for ( ; element && element !== DOC; element = element[parentNode] ) { // Get closest match
+          if ( element.id === selectorSubstring ) { return element; }
+        }
+      }
+      return false;
+    },
+  
+    // event attach jQuery style / trigger  since 1.2.0
+    on = function (element, event, handler) {
+      element.addEventListener(event, handler, false);
+    },
+    off = function(element, event, handler) {
+      element.removeEventListener(event, handler, false);
+    },
+    one = function (element, event, handler) { // one since 2.0.4
+      on(element, event, function handlerWrapper(e){
+        handler(e);
+        off(element, event, handlerWrapper);
       });
     },
-    positionItem: function positionItem(item, list_el) {
-      /* Place the View's DOM element in the correct alphabetical
-       * position in the list.
-       *
-       * IMPORTANT: there's an important implicit assumption being
-       * made here. And that is that initially this method gets called
-       * for each item in the right positional order.
-       *
-       * In other words, it gets called for the 0th, then the
-       * 1st, then the 2nd, 3rd and so on.
-       *
-       * That's why we call it in the "success" handler after
-       * fetching the items, so that we know we have ALL of
-       * them and that they're sorted.
-       */
-      var view = this.get(item.get('id')),
-          index = this.items.indexOf(item);
-
-      if (index === 0) {
-        list_el.insertAdjacentElement('afterbegin', view.el);
-      } else if (index === this.items.length - 1) {
-        list_el.insertAdjacentElement('beforeend', view.el);
-      } else {
-        var neighbour_el = list_el.querySelector('li:nth-child(' + index + ')');
-        neighbour_el.insertAdjacentElement('afterend', view.el);
+    emulateTransitionEnd = function(element,handler){ // emulateTransitionEnd since 2.0.4
+      if (supportTransitions) { one(element, transitionEndEvent, function(e){ handler(e); }); }
+      else { handler(); }
+    },
+    bootstrapCustomEvent = function (eventName, componentName, related) {
+      var OriginalCustomEvent = new CustomEvent( eventName + '.bs.' + componentName);
+      OriginalCustomEvent.relatedTarget = related;
+      this.dispatchEvent(OriginalCustomEvent);
+    },
+  
+    // tooltip / popover stuff
+    getScroll = function() { // also Affix and ScrollSpy uses it
+      return {
+        y : globalObject.pageYOffset || HTML[scrollTop],
+        x : globalObject.pageXOffset || HTML[scrollLeft]
       }
-
-      return view;
+    },
+    styleTip = function(link,element,position,parent) { // both popovers and tooltips (target,tooltip,placement,elementToAppendTo)
+      var elementDimensions = { w : element[offsetWidth], h: element[offsetHeight] },
+          windowWidth = (HTML[clientWidth] || DOC[body][clientWidth]),
+          windowHeight = (HTML[clientHeight] || DOC[body][clientHeight]),
+          rect = link[getBoundingClientRect](),
+          scroll = parent === DOC[body] ? getScroll() : { x: parent[offsetLeft] + parent[scrollLeft], y: parent[offsetTop] + parent[scrollTop] },
+          linkDimensions = { w: rect[right] - rect[left], h: rect[bottom] - rect[top] },
+          arrow = queryElement('.arrow',element),
+          arrowWidth = arrow[offsetWidth], isPopover = hasClass(element,'popover'),
+          topPosition, leftPosition, arrowTop, arrowLeft,
+  
+          halfTopExceed = rect[top] + linkDimensions.h/2 - elementDimensions.h/2 < 0,
+          halfLeftExceed = rect[left] + linkDimensions.w/2 - elementDimensions.w/2 < 0,
+          halfRightExceed = rect[left] + elementDimensions.w/2 + linkDimensions.w/2 >= windowWidth,
+          halfBottomExceed = rect[top] + elementDimensions.h/2 + linkDimensions.h/2 >= windowHeight,
+          topExceed = rect[top] - elementDimensions.h < 0,
+          leftExceed = rect[left] - elementDimensions.w < 0,
+          bottomExceed = rect[top] + elementDimensions.h + linkDimensions.h >= windowHeight,
+          rightExceed = rect[left] + elementDimensions.w + linkDimensions.w >= windowWidth;
+  
+      // recompute position
+      position = (position === left || position === right) && leftExceed && rightExceed ? top : position; // first, when both left and right limits are exceeded, we fall back to top|bottom
+      position = position === top && topExceed ? bottom : position;
+      position = position === bottom && bottomExceed ? top : position;
+      position = position === left && leftExceed ? right : position;
+      position = position === right && rightExceed ? left : position;
+      
+      // apply styling to tooltip or popover
+      if ( position === left || position === right ) { // secondary|side positions
+        if ( position === left ) { // LEFT
+          leftPosition = rect[left] + scroll.x - elementDimensions.w;
+        } else { // RIGHT
+          leftPosition = rect[left] + scroll.x + linkDimensions.w;
+        }
+  
+        // adjust top and arrow
+        if (halfTopExceed) {
+          topPosition = rect[top] + scroll.y;
+          arrowTop = linkDimensions.h/2;
+        } else if (halfBottomExceed) {
+          topPosition = rect[top] + scroll.y - elementDimensions.h + linkDimensions.h;
+          arrowTop = elementDimensions.h - linkDimensions.h/2;
+        } else {
+          topPosition = rect[top] + scroll.y - elementDimensions.h/2 + linkDimensions.h/2;
+          arrowTop = elementDimensions.h/2;
+        }
+      } else if ( position === top || position === bottom ) { // primary|vertical positions
+        if ( position === top) { // TOP
+          topPosition =  rect[top] + scroll.y - elementDimensions.h;
+        } else { // BOTTOM
+          topPosition = rect[top] + scroll.y + linkDimensions.h;
+        }
+        // adjust left | right and also the arrow
+        if (halfLeftExceed) {
+          leftPosition = 0;
+          arrowLeft = rect[left] + linkDimensions.w/2;
+        } else if (halfRightExceed) {
+          leftPosition = windowWidth - elementDimensions.w*1.01;
+          arrowLeft = elementDimensions.w - ( windowWidth - rect[left] ) + linkDimensions.w/2;
+        } else {
+          leftPosition = rect[left] + scroll.x - elementDimensions.w/2 + linkDimensions.w/2;
+          arrowLeft = elementDimensions.w/2;
+        }
+      }
+  
+      // fixing some CSS bug with Bootstrap 4 alpha
+      topPosition = position === top && isPopover ? topPosition - arrowWidth : topPosition;
+      leftPosition = position === left && isPopover ? leftPosition - arrowWidth : leftPosition;
+  
+      // apply style to tooltip/popover and it's arrow
+      element[style][top] = topPosition + 'px';
+      element[style][left] = leftPosition + 'px';
+  
+      arrowTop && (arrow[style][top] = arrowTop + 'px');
+      arrowLeft && (arrow[style][left] = arrowLeft + 'px');
+  
+      element.className[indexOf](position) === -1 && (element.className = element.className.replace(tipPositions,position));
+    };
+  
+  BSN.version = '2.0.21';
+  
+  /* Native Javascript for Bootstrap 4 | Alert
+  -------------------------------------------*/
+  
+  // ALERT DEFINITION
+  // ================
+  var Alert = function( element ) {
+    
+    // initialization element
+    element = queryElement(element);
+  
+    // bind, target alert, duration and stuff
+    var self = this, component = 'alert',
+      alert = getClosest(element,'.'+component),
+      triggerHandler = function(){ hasClass(alert,'fade') ? emulateTransitionEnd(alert,transitionEndHandler) : transitionEndHandler(); },
+      // handlers
+      clickHandler = function(e){
+        alert = getClosest(e[target],'.'+component);
+        element = queryElement('['+dataDismiss+'="'+component+'"]',alert);
+        element && alert && (element === e[target] || element[contains](e[target])) && self.close();
+      },
+      transitionEndHandler = function(){
+        bootstrapCustomEvent.call(alert, closedEvent, component);
+        off(element, clickEvent, clickHandler); // detach it's listener
+        alert[parentNode].removeChild(alert);
+      };
+    
+    // public method
+    this.close = function() {
+      if ( alert && element && hasClass(alert,showClass) ) {
+        bootstrapCustomEvent.call(alert, closeEvent, component);
+        removeClass(alert,showClass);
+        alert && triggerHandler();
+      }
+    };
+  
+    // init
+    if ( !(stringAlert in element ) ) { // prevent adding event handlers twice
+      on(element, clickEvent, clickHandler);
     }
-  });
-  return Backbone.Overview;
-});
-
-//# sourceMappingURL=backbone.overview.js.map;
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
-//
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
-
-/*global define */
-(function (root, factory) {
-  define('converse-chatboxes',["converse-core", "backbone.overview"], factory);
-})(this, function (converse) {
-  "use strict";
-
-  var _converse$env = converse.env,
-      Backbone = _converse$env.Backbone,
-      Promise = _converse$env.Promise,
-      Strophe = _converse$env.Strophe,
-      b64_sha1 = _converse$env.b64_sha1,
-      moment = _converse$env.moment,
-      utils = _converse$env.utils,
-      _ = _converse$env._;
-  converse.plugins.add('converse-chatboxes', {
-    overrides: {
-      // Overrides mentioned here will be picked up by converse.js's
-      // plugin architecture they will replace existing methods on the
-      // relevant objects or classes.
-      disconnect: function disconnect() {
-        var _converse = this.__super__._converse;
-
-        _converse.chatboxviews.closeAllChatBoxes();
-
-        return this.__super__.disconnect.apply(this, arguments);
+    element[stringAlert] = self;
+  };
+  
+  // ALERT DATA API
+  // ==============
+  supports[push]([stringAlert, Alert, '['+dataDismiss+'="alert"]']);
+  
+  
+  /* Native Javascript for Bootstrap 4 | Button
+  ---------------------------------------------*/
+  
+  // BUTTON DEFINITION
+  // ===================
+  var Button = function( element ) {
+  
+    // initialization element
+    element = queryElement(element);
+  
+    // constant
+    var toggled = false, // toggled makes sure to prevent triggering twice the change.bs.button events
+  
+        // strings
+        component = 'button',
+        checked = 'checked',
+        reset = 'reset',
+        LABEL = 'LABEL',
+        INPUT = 'INPUT',
+  
+      // private methods
+      keyHandler = function(e){ 
+        var key = e.which || e.keyCode;
+        key === 32 && e[target] === DOC.activeElement && toggle(e);
       },
-      logOut: function logOut() {
-        var _converse = this.__super__._converse;
-
-        _converse.chatboxviews.closeAllChatBoxes();
-
-        return this.__super__.logOut.apply(this, arguments);
+      preventScroll = function(e){ 
+        var key = e.which || e.keyCode;
+        key === 32 && e[preventDefault]();
       },
-      initStatus: function initStatus() {
-        var _converse = this.__super__._converse;
-
-        _converse.chatboxviews.closeAllChatBoxes();
-
-        return this.__super__.initStatus.apply(this, arguments);
-      },
-      onStatusInitialized: function onStatusInitialized() {
-        var _converse = this.__super__._converse;
-
-        _converse.chatboxes.onConnected();
-
-        return this.__super__.onStatusInitialized.apply(this, arguments);
-      }
-    },
-    initialize: function initialize() {
-      /* The initialize function gets called as soon as the plugin is
-       * loaded by converse.js's plugin machinery.
-       */
-      var _converse = this._converse;
-
-      _converse.api.promises.add(['chatBoxesFetched', 'chatBoxesInitialized']);
-
-      function openChat(jid) {
-        if (!utils.isValidJID(jid)) {
-          return converse.log("Invalid JID \"".concat(jid, "\" provided in URL fragment"), Strophe.LogLevel.WARN);
-        }
-
-        Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(function () {
-          _converse.api.chats.open(jid);
-        });
-      }
-
-      _converse.router.route('converse/chat?jid=:jid', openChat);
-
-      _converse.Message = Backbone.Model.extend({
-        defaults: function defaults() {
-          return {
-            msgid: _converse.connection.getUniqueId()
-          };
-        }
-      });
-      _converse.Messages = Backbone.Collection.extend({
-        model: _converse.Message,
-        comparator: 'time'
-      });
-      _converse.ChatBox = Backbone.Model.extend({
-        defaults: {
-          'type': 'chatbox',
-          'show_avatar': true,
-          'bookmarked': false,
-          'chat_state': undefined,
-          'num_unread': 0,
-          'url': ''
-        },
-        initialize: function initialize() {
-          this.messages = new _converse.Messages();
-          this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](b64_sha1("converse.messages".concat(this.get('jid')).concat(_converse.bare_jid)));
-          this.save({
-            // The chat_state will be set to ACTIVE once the chat box is opened
-            // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
-            'box_id': b64_sha1(this.get('jid')),
-            'time_opened': this.get('time_opened') || moment().valueOf(),
-            'user_id': Strophe.getNodeFromJid(this.get('jid'))
-          });
-        },
-        getMessageBody: function getMessageBody(message) {
-          var type = message.getAttribute('type');
-          return type === 'error' ? _.propertyOf(message.querySelector('error text'))('textContent') : _.propertyOf(message.querySelector('body'))('textContent');
-        },
-        getMessageAttributes: function getMessageAttributes(message, delay, original_stanza) {
-          /* Parses a passed in message stanza and returns an object
-           * of attributes.
-           *
-           * Parameters:
-           *    (XMLElement) message - The message stanza
-           *    (XMLElement) delay - The <delay> node from the
-           *      stanza, if there was one.
-           *    (XMLElement) original_stanza - The original stanza,
-           *      that contains the message stanza, if it was
-           *      contained, otherwise it's the message stanza itself.
-           */
-          var _converse = this.__super__._converse,
-              __ = _converse.__;
-          delay = delay || message.querySelector('delay');
-          var type = message.getAttribute('type'),
-              body = this.getMessageBody(message);
-
-          var delayed = !_.isNull(delay),
-              is_groupchat = type === 'groupchat',
-              chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
-
-          var from;
-
-          if (is_groupchat) {
-            from = Strophe.unescapeNode(Strophe.getResourceFromJid(message.getAttribute('from')));
+      toggle = function(e) {
+        var label = e[target].tagName === LABEL ? e[target] : e[target][parentNode].tagName === LABEL ? e[target][parentNode] : null; // the .btn label
+        
+        if ( !label ) return; //react if a label or its immediate child is clicked
+  
+        var eventTarget = e[target], // the button itself, the target of the handler function
+          labels = getElementsByClassName(eventTarget[parentNode],'btn'), // all the button group buttons
+          input = label[getElementsByTagName](INPUT)[0];
+  
+        if ( !input ) return; //return if no input found
+  
+        // manage the dom manipulation
+        if ( input.type === 'checkbox' ) { //checkboxes
+          if ( !input[checked] ) {
+            addClass(label,active);
+            input[getAttribute](checked);
+            input[setAttribute](checked,checked);
+            input[checked] = true;
           } else {
-            from = Strophe.getBareJidFromJid(message.getAttribute('from'));
+            removeClass(label,active);
+            input[getAttribute](checked);
+            input.removeAttribute(checked);
+            input[checked] = false;
           }
-
-          var time = delayed ? delay.getAttribute('stamp') : moment().format();
-          var sender, fullname;
-
-          if (is_groupchat && from === this.get('nick') || !is_groupchat && from === _converse.bare_jid) {
-            sender = 'me';
-            fullname = _converse.xmppstatus.get('fullname') || from;
-          } else {
-            sender = 'them';
-            fullname = this.get('fullname') || from;
+  
+          if (!toggled) { // prevent triggering the event twice
+            toggled = true;
+            bootstrapCustomEvent.call(input, changeEvent, component); //trigger the change for the input
+            bootstrapCustomEvent.call(element, changeEvent, component); //trigger the change for the btn-group
           }
-
-          var spoiler = message.querySelector("spoiler[xmlns=\"".concat(Strophe.NS.SPOILER, "\"]"));
-          var attrs = {
-            'type': type,
-            'chat_state': chat_state,
-            'delayed': delayed,
-            'fullname': fullname,
-            'message': body || undefined,
-            'msgid': message.getAttribute('id'),
-            'sender': sender,
-            'time': time,
-            'is_spoiler': !_.isNull(spoiler)
-          };
-
-          if (spoiler) {
-            attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
-          }
-
-          return attrs;
-        },
-        createMessage: function createMessage(message, delay, original_stanza) {
-          /* Create a Backbone.Message object inside this chat box
-           * based on the identified message stanza.
-           */
-          return this.messages.create(this.getMessageAttributes.apply(this, arguments));
-        },
-        newMessageWillBeHidden: function newMessageWillBeHidden() {
-          /* Returns a boolean to indicate whether a newly received
-           * message will be visible to the user or not.
-           */
-          return this.get('hidden') || this.get('minimized') || this.isScrolledUp() || _converse.windowState === 'hidden';
-        },
-        incrementUnreadMsgCounter: function incrementUnreadMsgCounter(stanza) {
-          /* Given a newly received message, update the unread counter if
-           * necessary.
-           */
-          if (_.isNull(stanza.querySelector('body'))) {
-            return; // The message has no text
-          }
-
-          if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
-            this.save({
-              'num_unread': this.get('num_unread') + 1
-            });
-
-            _converse.incrementMsgCounter();
-          }
-        },
-        clearUnreadMsgCounter: function clearUnreadMsgCounter() {
-          this.save({
-            'num_unread': 0
-          });
-        },
-        isScrolledUp: function isScrolledUp() {
-          return this.get('scrolled', true);
         }
-      });
-      _converse.ChatBoxes = Backbone.Collection.extend({
-        comparator: 'time_opened',
-        model: function model(attrs, options) {
-          return new _converse.ChatBox(attrs, options);
-        },
-        registerMessageHandler: function registerMessageHandler() {
-          _converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
-
-          _converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
-        },
-        chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
-          return true;
-        },
-        onChatBoxesFetched: function onChatBoxesFetched(collection) {
-          var _this = this;
-
-          /* Show chat boxes upon receiving them from sessionStorage
-          *
-          * This method gets overridden entirely in src/converse-controlbox.js
-          * if the controlbox plugin is active.
-          */
-          collection.each(function (chatbox) {
-            if (_this.chatBoxMayBeShown(chatbox)) {
-              chatbox.trigger('show');
-            }
-          });
-
-          _converse.emit('chatBoxesFetched');
-        },
-        onConnected: function onConnected() {
-          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.chatboxes-".concat(_converse.bare_jid)));
-          this.registerMessageHandler();
-          this.fetch({
-            add: true,
-            success: this.onChatBoxesFetched.bind(this)
-          });
-        },
-        onErrorMessage: function onErrorMessage(message) {
-          /* Handler method for all incoming error message stanzas
-          */
-          // TODO: we can likely just reuse "onMessage" below
-          var from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
-
-          if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
-            return true;
-          } // Get chat box, but only create a new one when the message has a body.
-
-
-          var chatbox = this.getChatBox(from_jid);
-
-          if (!chatbox) {
-            return true;
-          }
-
-          chatbox.createMessage(message, null, message);
-          return true;
-        },
-        onMessage: function onMessage(message) {
-          /* Handler method for all incoming single-user chat "message"
-           * stanzas.
-           *
-           * Parameters:
-           *    (XMLElement) message - The incoming message stanza
-           */
-          var contact_jid,
-              delay,
-              resource,
-              from_jid = message.getAttribute('from'),
-              to_jid = message.getAttribute('to');
-          var original_stanza = message,
-              to_resource = Strophe.getResourceFromJid(to_jid),
-              is_carbon = !_.isNull(message.querySelector("received[xmlns=\"".concat(Strophe.NS.CARBONS, "\"]")));
-
-          if (_converse.filter_by_resource && to_resource && to_resource !== _converse.resource) {
-            _converse.log("onMessage: Ignoring incoming message intended for a different resource: ".concat(to_jid), Strophe.LogLevel.INFO);
-
-            return true;
-          } else if (utils.isHeadlineMessage(_converse, message)) {
-            // XXX: Ideally we wouldn't have to check for headline
-            // messages, but Prosody sends headline messages with the
-            // wrong type ('chat'), so we need to filter them out here.
-            _converse.log("onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ".concat(from_jid), Strophe.LogLevel.INFO);
-
-            return true;
-          }
-
-          var forwarded = message.querySelector('forwarded');
-
-          if (!_.isNull(forwarded)) {
-            var forwarded_message = forwarded.querySelector('message');
-            var forwarded_from = forwarded_message.getAttribute('from');
-
-            if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
-              // Prevent message forging via carbons
-              //
-              // https://xmpp.org/extensions/xep-0280.html#security
-              return true;
-            }
-
-            message = forwarded_message;
-            delay = forwarded.querySelector('delay');
-            from_jid = message.getAttribute('from');
-            to_jid = message.getAttribute('to');
-          }
-
-          var from_bare_jid = Strophe.getBareJidFromJid(from_jid),
-              from_resource = Strophe.getResourceFromJid(from_jid),
-              is_me = from_bare_jid === _converse.bare_jid;
-
-          if (is_me) {
-            // I am the sender, so this must be a forwarded message...
-            contact_jid = Strophe.getBareJidFromJid(to_jid);
-            resource = Strophe.getResourceFromJid(to_jid);
-          } else {
-            contact_jid = from_bare_jid;
-            resource = from_resource;
-          } // Get chat box, but only create a new one when the message has a body.
-
-
-          var chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body'))),
-              msgid = message.getAttribute('id');
-
-          if (chatbox) {
-            var messages = msgid && chatbox.messages.findWhere({
-              msgid: msgid
-            }) || [];
-
-            if (_.isEmpty(messages)) {
-              // Only create the message when we're sure it's not a
-              // duplicate
-              chatbox.incrementUnreadMsgCounter(original_stanza);
-              chatbox.createMessage(message, delay, original_stanza);
-            }
-          }
-
-          _converse.emit('message', {
-            'stanza': original_stanza,
-            'chatbox': chatbox
-          });
-
-          return true;
-        },
-        createChatBox: function createChatBox(jid, attrs) {
-          /* Creates a chat box
-          *
-          * Parameters:
-          *    (String) jid - The JID of the user for whom a chat box
-          *      gets created.
-          *    (Object) attrs - Optional chat box atributes.
-          */
-          var bare_jid = Strophe.getBareJidFromJid(jid),
-              roster_item = _converse.roster.get(bare_jid);
-
-          var roster_info = {};
-
-          if (!_.isUndefined(roster_item)) {
-            roster_info = {
-              'fullname': _.isEmpty(roster_item.get('fullname')) ? jid : roster_item.get('fullname'),
-              'image_type': roster_item.get('image_type'),
-              'image': roster_item.get('image'),
-              'url': roster_item.get('url')
-            };
-          } else if (!_converse.allow_non_roster_messaging) {
-            _converse.log("Could not get roster item for JID ".concat(bare_jid) + ' and allow_non_roster_messaging is set to false', Strophe.LogLevel.ERROR);
-
-            return;
-          }
-
-          return this.create(_.assignIn({
-            'id': bare_jid,
-            'jid': bare_jid,
-            'fullname': jid,
-            'image_type': _converse.DEFAULT_IMAGE_TYPE,
-            'image': _converse.DEFAULT_IMAGE,
-            'url': ''
-          }, roster_info, attrs || {}));
-        },
-        getChatBox: function getChatBox(jid, create, attrs) {
-          /* Returns a chat box or optionally return a newly
-          * created one if one doesn't exist.
-          *
-          * Parameters:
-          *    (String) jid - The JID of the user whose chat box we want
-          *    (Boolean) create - Should a new chat box be created if none exists?
-          *    (Object) attrs - Optional chat box atributes.
-          */
-          jid = jid.toLowerCase();
-          var chatbox = this.get(Strophe.getBareJidFromJid(jid));
-
-          if (!chatbox && create) {
-            chatbox = this.createChatBox(jid, attrs);
-          }
-
-          return chatbox;
-        }
-      });
-      _converse.ChatBoxViews = Backbone.Overview.extend({
-        initialize: function initialize() {
-          this.model.on("add", this.onChatBoxAdded, this);
-          this.model.on("destroy", this.removeChat, this);
-        },
-        _ensureElement: function _ensureElement() {
-          /* Override method from backbone.js
-          * If the #conversejs element doesn't exist, create it.
-          */
-          if (!this.el) {
-            var el = _converse.root.querySelector('#conversejs');
-
-            if (_.isNull(el)) {
-              el = document.createElement('div');
-              el.setAttribute('id', 'conversejs');
-
-              var body = _converse.root.querySelector('body');
-
-              if (body) {
-                body.appendChild(el);
-              } else {
-                // Perhaps inside a web component?
-                _converse.root.appendChild(el);
+  
+        if ( input.type === 'radio' && !toggled ) { // radio buttons
+          if ( !input[checked] ) { // don't trigger if already active
+            addClass(label,active);
+            input[setAttribute](checked,checked);
+            input[checked] = true;
+            bootstrapCustomEvent.call(input, changeEvent, component); //trigger the change for the input
+            bootstrapCustomEvent.call(element, changeEvent, component); //trigger the change for the btn-group
+  
+            toggled = true;
+            for (var i = 0, ll = labels[length]; i<ll; i++) {
+              var otherLabel = labels[i], otherInput = otherLabel[getElementsByTagName](INPUT)[0];
+              if ( otherLabel !== label && hasClass(otherLabel,active) )  {
+                removeClass(otherLabel,active);
+                otherInput.removeAttribute(checked);
+                otherInput[checked] = false;
+                bootstrapCustomEvent.call(otherInput, changeEvent, component); // trigger the change
               }
             }
-
-            el.innerHTML = '';
-            this.setElement(el, false);
-          } else {
-            this.setElement(_.result(this, 'el'), false);
           }
-        },
-        onChatBoxAdded: function onChatBoxAdded(item) {
-          // Views aren't created here, since the core code doesn't
-          // contain any views. Instead, they're created in overrides in
-          // plugins, such as in converse-chatview.js and converse-muc.js
-          return this.get(item.get('id'));
-        },
-        removeChat: function removeChat(item) {
-          this.remove(item.get('id'));
-        },
-        closeAllChatBoxes: function closeAllChatBoxes() {
-          /* This method gets overridden in src/converse-controlbox.js if
-          * the controlbox plugin is active.
-          */
-          this.each(function (view) {
-            view.close();
-          });
-          return this;
-        },
-        chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
-          return this.model.chatBoxMayBeShown(chatbox);
-        },
-        getChatBox: function getChatBox(attrs, create) {
-          var chatbox = this.model.get(attrs.jid);
-
-          if (!chatbox && create) {
-            chatbox = this.model.create(attrs, {
-              'error': function error(model, response) {
-                _converse.log(response.responseText);
-              }
-            });
-          }
-
-          return chatbox;
-        },
-        showChat: function showChat(attrs) {
-          /* Find the chat box and show it (if it may be shown).
-           * If it doesn't exist, create it.
-           */
-          var chatbox = this.getChatBox(attrs, true);
-
-          if (this.chatBoxMayBeShown(chatbox)) {
-            chatbox.trigger('show', true);
-          }
-
-          return chatbox;
         }
-      }); // BEGIN: Event handlers
-
-      _converse.api.listen.on('pluginsInitialized', function () {
-        _converse.chatboxes = new _converse.ChatBoxes();
-        _converse.chatboxviews = new _converse.ChatBoxViews({
-          'model': _converse.chatboxes
+        setTimeout( function() { toggled = false; }, 50 );
+      };
+  
+    // init
+    if ( !( stringButton in element ) ) { // prevent adding event handlers twice
+      on( element, clickEvent, toggle );
+      queryElement('['+tabindex+']',element) && on( element, keyupEvent, keyHandler ), 
+                                                on( element, keydownEvent, preventScroll );    
+    }
+  
+    // activate items on load
+    var labelsToACtivate = getElementsByClassName(element, 'btn'), lbll = labelsToACtivate[length];
+    for (var i=0; i<lbll; i++) {
+      !hasClass(labelsToACtivate[i],active) && queryElement('input:checked',labelsToACtivate[i]) 
+                                            && addClass(labelsToACtivate[i],active);
+    }
+    element[stringButton] = this;
+  };
+  
+  // BUTTON DATA API
+  // =================
+  supports[push]( [ stringButton, Button, '['+dataToggle+'="buttons"]' ] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | Carousel
+  ----------------------------------------------*/
+  
+  // CAROUSEL DEFINITION
+  // ===================
+  var Carousel = function( element, options ) {
+  
+    // initialization element
+    element = queryElement( element );
+  
+    // set options
+    options = options || {};
+  
+    // DATA API
+    var intervalAttribute = element[getAttribute](dataInterval),
+        intervalOption = options[interval],
+        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute) || 5000,  // bootstrap carousel default interval
+        pauseData = element[getAttribute](dataPause) === hoverEvent || false,
+        keyboardData = element[getAttribute](dataKeyboard) === 'true' || false,
+      
+        // strings
+        component = 'carousel',
+        paused = 'paused',
+        direction = 'direction',
+        carouselItem = 'carousel-item',
+        dataSlideTo = 'data-slide-to'; 
+  
+    this[keyboard] = options[keyboard] === true || keyboardData;
+    this[pause] = (options[pause] === hoverEvent || pauseData) ? hoverEvent : false; // false / hover
+  
+    this[interval] = typeof intervalOption === 'number' ? intervalOption
+                   : intervalData === 0 ? 0
+                   : intervalData;
+  
+    // bind, event targets
+    var self = this, index = element.index = 0, timer = element.timer = 0, 
+      isSliding = false, // isSliding prevents click event handlers when animation is running
+      slides = getElementsByClassName(element,carouselItem), total = slides[length],
+      slideDirection = this[direction] = left,
+      leftArrow = getElementsByClassName(element,component+'-control-prev')[0], 
+      rightArrow = getElementsByClassName(element,component+'-control-next')[0],
+      indicator = queryElement( '.'+component+'-indicators', element ),
+      indicators = indicator && indicator[getElementsByTagName]( "LI" ) || [];
+  
+    // handlers
+    var pauseHandler = function () {
+        if ( self[interval] !==false && !hasClass(element,paused) ) {
+          addClass(element,paused);
+          !isSliding && clearInterval( timer );
+        }
+      },
+      resumeHandler = function() {
+        if ( self[interval] !== false && hasClass(element,paused) ) {
+          removeClass(element,paused);
+          !isSliding && clearInterval( timer );
+          !isSliding && self.cycle();
+        }
+      },
+      indicatorHandler = function(e) {
+        e[preventDefault]();
+        if (isSliding) return;
+  
+        var eventTarget = e[target]; // event target | the current active item
+  
+        if ( eventTarget && !hasClass(eventTarget,active) && eventTarget[getAttribute](dataSlideTo) ) {
+          index = parseInt( eventTarget[getAttribute](dataSlideTo), 10 );
+        } else { return false; }
+  
+        self.slideTo( index ); //Do the slide
+      },
+      controlsHandler = function (e) {
+        e[preventDefault]();
+        if (isSliding) return;
+  
+        var eventTarget = e.currentTarget || e.srcElement;
+  
+        if ( eventTarget === rightArrow ) {
+          index++;
+        } else if ( eventTarget === leftArrow ) {
+          index--;
+        }
+  
+        self.slideTo( index ); //Do the slide
+      },
+      keyHandler = function (e) {
+        if (isSliding) return;
+        switch (e.which) {
+          case 39:
+            index++;
+            break;
+          case 37:
+            index--;
+            break;
+          default: return;
+        }
+        self.slideTo( index ); //Do the slide
+      },
+      // private methods
+      isElementInScrollRange = function () {
+        var rect = element[getBoundingClientRect](),
+          viewportHeight = globalObject[innerHeight] || HTML[clientHeight]
+        return rect[top] <= viewportHeight && rect[bottom] >= 0; // bottom && top
+      },    
+      setActivePage = function( pageIndex ) { //indicators
+        for ( var i = 0, icl = indicators[length]; i < icl; i++ ) {
+          removeClass(indicators[i],active);
+        }
+        if (indicators[pageIndex]) addClass(indicators[pageIndex], active);
+      };
+  
+  
+    // public methods
+    this.cycle = function() {
+      timer = setInterval(function() {
+        isElementInScrollRange() && (index++, self.slideTo( index ) );
+      }, this[interval]);
+    };
+    this.slideTo = function( next ) {
+      if (isSliding) return; // when controled via methods, make sure to check again      
+      
+      var activeItem = this.getActiveIndex(), // the current active
+          orientation;
+      
+      // determine slideDirection first
+      if  ( (activeItem < next ) || (activeItem === 0 && next === total -1 ) ) {
+        slideDirection = self[direction] = left; // next
+      } else if  ( (activeItem > next) || (activeItem === total - 1 && next === 0 ) ) {
+        slideDirection = self[direction] = right; // prev
+      }
+  
+      // find the right next index 
+      if ( next < 0 ) { next = total - 1; } 
+      else if ( next === total ){ next = 0; }
+  
+      // update index
+      index = next;
+  
+      orientation = slideDirection === left ? 'next' : 'prev'; //determine type
+      bootstrapCustomEvent.call(element, slideEvent, component, slides[next]); // here we go with the slide
+  
+      isSliding = true;
+      clearInterval(timer);
+      setActivePage( next );
+  
+      if ( supportTransitions && hasClass(element,'slide') ) {
+  
+        addClass(slides[next],carouselItem +'-'+ orientation);
+        slides[next][offsetWidth];
+        addClass(slides[next],carouselItem +'-'+ slideDirection);
+        addClass(slides[activeItem],carouselItem +'-'+ slideDirection);
+  
+        one(slides[activeItem], transitionEndEvent, function(e) {
+          var timeout = e[target] !== slides[activeItem] ? e.elapsedTime*1000 : 0;
+          
+          setTimeout(function(){
+            isSliding = false;
+  
+            addClass(slides[next],active);
+            removeClass(slides[activeItem],active);
+  
+            removeClass(slides[next],carouselItem +'-'+ orientation);
+            removeClass(slides[next],carouselItem +'-'+ slideDirection);
+            removeClass(slides[activeItem],carouselItem +'-'+ slideDirection);
+  
+            bootstrapCustomEvent.call(element, slidEvent, component, slides[next]);
+  
+            if ( !DOC.hidden && self[interval] && !hasClass(element,paused) ) {
+              self.cycle();
+            }
+          },timeout+100);
         });
-
-        _converse.emit('chatBoxesInitialized');
-      });
-
-      _converse.api.listen.on('beforeTearDown', function () {
-        _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
-
-
-        delete _converse.chatboxes.browserStorage;
-      }); // END: Event handlers
-
-
-      _converse.getViewForChatBox = function (chatbox) {
-        if (!chatbox) {
+  
+      } else {
+        addClass(slides[next],active);
+        slides[next][offsetWidth];
+        removeClass(slides[activeItem],active);
+        setTimeout(function() {
+          isSliding = false;
+          if ( self[interval] && !hasClass(element,paused) ) {
+            self.cycle();
+          }
+          bootstrapCustomEvent.call(element, slidEvent, component, slides[next]);
+        }, 100 );
+      }
+    };
+    this.getActiveIndex = function () {
+      return slides[indexOf](getElementsByClassName(element,carouselItem+' active')[0]) || 0;
+    };
+  
+    // init
+    if ( !(stringCarousel in element ) ) { // prevent adding event handlers twice
+  
+      if ( self[pause] && self[interval] ) {
+        on( element, mouseHover[0], pauseHandler );
+        on( element, mouseHover[1], resumeHandler );
+        on( element, 'touchstart', pauseHandler );
+        on( element, 'touchend', resumeHandler );
+      }
+    
+      rightArrow && on( rightArrow, clickEvent, controlsHandler );
+      leftArrow && on( leftArrow, clickEvent, controlsHandler );
+    
+      indicator && on( indicator, clickEvent, indicatorHandler );
+      self[keyboard] === true && on( globalObject, keydownEvent, keyHandler );
+    }
+    if (self.getActiveIndex()<0) {
+      slides[length] && addClass(slides[0],active);
+      indicators[length] && setActivePage(0);
+    }
+  
+    if ( self[interval] ){ self.cycle(); }
+    element[stringCarousel] = self;
+  };
+  
+  // CAROUSEL DATA API
+  // =================
+  supports[push]( [ stringCarousel, Carousel, '['+dataRide+'="carousel"]' ] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | Collapse
+  -----------------------------------------------*/
+  
+  // COLLAPSE DEFINITION
+  // ===================
+  var Collapse = function( element, options ) {
+  
+    // initialization element
+    element = queryElement(element);
+  
+    // set options
+    options = options || {};
+  
+    // event targets and constants
+    var accordion = null, collapse = null, self = this, 
+      isAnimating = false, // when true it will prevent click handlers
+      accordionData = element[getAttribute]('data-parent'),
+  
+      // component strings
+      component = 'collapse',
+      collapsed = 'collapsed',
+  
+      // private methods
+      openAction = function(collapseElement) {
+        bootstrapCustomEvent.call(collapseElement, showEvent, component);
+        isAnimating = true;
+        addClass(collapseElement,collapsing);
+        removeClass(collapseElement,component);
+        collapseElement[style][height] = collapseElement[scrollHeight] + 'px';
+        
+        emulateTransitionEnd(collapseElement, function() {
+          isAnimating = false;
+          collapseElement[setAttribute](ariaExpanded,'true');
+          removeClass(collapseElement,collapsing);
+          addClass(collapseElement, component);
+          addClass(collapseElement,showClass);
+          collapseElement[style][height] = '';
+          bootstrapCustomEvent.call(collapseElement, shownEvent, component);
+        });
+      },
+      closeAction = function(collapseElement) {
+        bootstrapCustomEvent.call(collapseElement, hideEvent, component);
+        isAnimating = true;
+        collapseElement[style][height] = collapseElement[scrollHeight] + 'px'; // set height first
+        removeClass(collapseElement,component);
+        removeClass(collapseElement,showClass);
+        addClass(collapseElement,collapsing);
+        collapseElement[offsetWidth]; // force reflow to enable transition
+        collapseElement[style][height] = '0px';
+        
+        emulateTransitionEnd(collapseElement, function() {
+          isAnimating = false;
+          collapseElement[setAttribute](ariaExpanded,'false');
+          removeClass(collapseElement,collapsing);
+          addClass(collapseElement,component);
+          collapseElement[style][height] = '';
+          bootstrapCustomEvent.call(collapseElement, hiddenEvent, component);
+        });
+      },
+      getTarget = function() {
+        var href = element.href && element[getAttribute]('href'),
+          parent = element[getAttribute](dataTarget),
+          id = href || ( parent && parent.charAt(0) === '#' ) && parent;
+        return id && queryElement(id);
+      };
+    
+    // public methods
+    this.toggle = function(e) {
+      e[preventDefault]();
+      if (isAnimating) return;
+      if (!hasClass(collapse,showClass)) { self.show(); } 
+      else { self.hide(); }
+    };
+    this.hide = function() {
+      closeAction(collapse);
+      addClass(element,collapsed);
+    };
+    this.show = function() {
+      if ( accordion ) {
+        var activeCollapse = queryElement('.'+component+'.'+showClass,accordion),
+            toggle = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
+                   || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) ),
+            correspondingCollapse = toggle && (toggle[getAttribute](dataTarget) || toggle.href);
+        if ( activeCollapse && toggle && activeCollapse !== collapse ) {
+          closeAction(activeCollapse); 
+          if ( correspondingCollapse.split('#')[1] !== collapse.id ) { addClass(toggle,collapsed); } 
+          else { removeClass(toggle,collapsed); }
+        }
+      }
+  
+      openAction(collapse);
+      removeClass(element,collapsed); 
+    };
+  
+    // init
+    if ( !(stringCollapse in element ) ) { // prevent adding event handlers twice
+      on(element, clickEvent, self.toggle);
+    }
+    collapse = getTarget();
+    accordion = queryElement(options.parent) || accordionData && getClosest(element, accordionData);
+    element[stringCollapse] = self;
+  };
+  
+  // COLLAPSE DATA API
+  // =================
+  supports[push]( [ stringCollapse, Collapse, '['+dataToggle+'="collapse"]' ] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | Dropdown
+  ----------------------------------------------*/
+  
+  // DROPDOWN DEFINITION
+  // ===================
+  var Dropdown = function( element, option ) {
+      
+    // initialization element
+    element = queryElement(element);
+  
+    // set option
+    this.persist = option === true || element[getAttribute]('data-persist') === 'true' || false;
+  
+    // constants, event targets, strings
+    var self = this, children = 'children',
+      parent = element[parentNode],
+      component = 'dropdown', open = 'open',
+      relatedTarget = null,
+      menu = queryElement('.dropdown-menu', parent),
+      menuItems = (function(){
+        var set = menu[children], newSet = [];
+        for ( var i=0; i<set[length]; i++ ){
+          set[i][children][length] && (set[i][children][0].tagName === 'A' && newSet[push](set[i][children][0]));
+          set[i].tagName === 'A' && newSet[push](set[i]);
+        }
+        return newSet;
+      })(),
+  
+      // preventDefault on empty anchor links
+      preventEmptyAnchor = function(anchor){
+        (anchor.href && anchor.href.slice(-1) === '#' || anchor[parentNode] && anchor[parentNode].href 
+          && anchor[parentNode].href.slice(-1) === '#') && this[preventDefault]();    
+      },
+  
+      // toggle dismissible events
+      toggleDismiss = function(){
+        var type = element[open] ? on : off;
+        type(DOC, clickEvent, dismissHandler); 
+        type(DOC, keydownEvent, preventScroll);
+        type(DOC, keyupEvent, keyHandler);
+      },
+  
+      // handlers
+      dismissHandler = function(e) {
+        var eventTarget = e[target], hasData = eventTarget && (stringDropdown in eventTarget || stringDropdown in eventTarget[parentNode]);
+        if ( (eventTarget === menu || menu[contains](eventTarget)) && (self.persist || hasData) ) { return; }
+        else {
+          relatedTarget = eventTarget === element || element[contains](eventTarget) ? element : null;
+          hide();
+        }
+        preventEmptyAnchor.call(e,eventTarget);
+      },
+      clickHandler = function(e) {
+        relatedTarget = element;
+        show();
+        preventEmptyAnchor.call(e,e[target]);
+      },
+      preventScroll = function(e){
+        var key = e.which || e.keyCode;
+        if( key === 38 || key === 40 ) { e[preventDefault](); }
+      },
+      keyHandler = function(e){
+        var key = e.which || e.keyCode,
+          activeItem = DOC.activeElement,
+          idx = menuItems[indexOf](activeItem),
+          isSameElement = activeItem === element,
+          isInsideMenu = menu[contains](activeItem),
+          isMenuItem = activeItem[parentNode] === menu || activeItem[parentNode][parentNode] === menu;          
+  
+        if ( isMenuItem || isSameElement ) { // navigate up | down
+          idx = isSameElement ? 0 
+                              : key === 38 ? (idx>1?idx-1:0)
+                              : key === 40 ? (idx<menuItems[length]-1?idx+1:idx) : idx;
+          menuItems[idx] && setFocus(menuItems[idx]);
+        }
+        if ( (menuItems[length] && isMenuItem // menu has items
+              || !menuItems[length] && (isInsideMenu || isSameElement)  // menu might be a form
+              || !isInsideMenu ) // or the focused element is not in the menu at all
+              && element[open] && key === 27  // menu must be open
+        ) {
+          self.toggle();
+          relatedTarget = null;
+        }
+      },
+  
+      // private methods
+      show = function() {
+        bootstrapCustomEvent.call(parent, showEvent, component, relatedTarget);
+        addClass(menu,showClass);
+        addClass(parent,showClass);
+        menu[setAttribute](ariaExpanded,true);
+        bootstrapCustomEvent.call(parent, shownEvent, component, relatedTarget);
+        element[open] = true;
+        off(element, clickEvent, clickHandler);
+        setTimeout(function(){
+          setFocus( menu[getElementsByTagName]('INPUT')[0] || element ); // focus the first input item | element
+          toggleDismiss();
+        },1);
+      },
+      hide = function() {
+        bootstrapCustomEvent.call(parent, hideEvent, component, relatedTarget);
+        removeClass(menu,showClass);
+        removeClass(parent,showClass);
+        menu[setAttribute](ariaExpanded,false);
+        bootstrapCustomEvent.call(parent, hiddenEvent, component, relatedTarget);
+        element[open] = false;
+        toggleDismiss();
+        setFocus(element);
+        setTimeout(function(){ on(element, clickEvent, clickHandler); },1);
+      };
+  
+    // set initial state to closed
+    element[open] = false;
+  
+    // public methods
+    this.toggle = function() {
+      if (hasClass(parent,showClass) && element[open]) { hide(); } 
+      else { show(); }
+    };
+  
+    // init
+    if ( !(stringDropdown in element) ) { // prevent adding event handlers twice
+      !tabindex in menu && menu[setAttribute](tabindex, '0'); // Fix onblur on Chrome | Safari
+      on(element, clickEvent, clickHandler);
+    }
+  
+    element[stringDropdown] = self;
+  };
+  
+  // DROPDOWN DATA API
+  // =================
+  supports[push]( [stringDropdown, Dropdown, '['+dataToggle+'="dropdown"]'] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | Modal
+  -------------------------------------------*/
+  
+  // MODAL DEFINITION
+  // ===============
+  var Modal = function(element, options) { // element can be the modal/triggering button
+  
+    // the modal (both JavaScript / DATA API init) / triggering button element (DATA API)
+    element = queryElement(element);
+  
+    // determine modal, triggering element
+    var btnCheck = element[getAttribute](dataTarget)||element[getAttribute]('href'),
+      checkModal = queryElement( btnCheck ),
+      modal = hasClass(element,'modal') ? element : checkModal,
+  
+      // strings
+      component = 'modal',
+      staticString = 'static',
+      paddingLeft = 'paddingLeft',
+      paddingRight = 'paddingRight',
+      modalBackdropString = 'modal-backdrop';
+  
+    if ( hasClass(element,'modal') ) { element = null; } // modal is now independent of it's triggering element
+  
+    if ( !modal ) { return; } // invalidate
+  
+    // set options
+    options = options || {};
+  
+    this[keyboard] = options[keyboard] === false || modal[getAttribute](dataKeyboard) === 'false' ? false : true;
+    this[backdrop] = options[backdrop] === staticString || modal[getAttribute](databackdrop) === staticString ? staticString : true;
+    this[backdrop] = options[backdrop] === false || modal[getAttribute](databackdrop) === 'false' ? false : this[backdrop];
+    this[content]  = options[content]; // JavaScript only
+  
+    // bind, constants, event targets and other vars
+    var self = this, relatedTarget = null,
+      bodyIsOverflowing, modalIsOverflowing, scrollbarWidth, overlay,
+  
+      // also find fixed-top / fixed-bottom items
+      fixedItems = getElementsByClassName(HTML,fixedTop).concat(getElementsByClassName(HTML,fixedBottom)),
+  
+      // private methods
+      getWindowWidth = function() {
+        var htmlRect = HTML[getBoundingClientRect]();
+        return globalObject[innerWidth] || (htmlRect[right] - Math.abs(htmlRect[left]));
+      },
+      setScrollbar = function () {
+        var bodyStyle = globalObject.getComputedStyle(DOC[body]),
+            bodyPad = parseInt((bodyStyle[paddingRight]), 10), itemPad;
+        if (bodyIsOverflowing) {
+          DOC[body][style][paddingRight] = (bodyPad + scrollbarWidth) + 'px';
+          if (fixedItems[length]){
+            for (var i = 0; i < fixedItems[length]; i++) {
+              itemPad = globalObject.getComputedStyle(fixedItems[i])[paddingRight];
+              fixedItems[i][style][paddingRight] = ( parseInt(itemPad) + scrollbarWidth) + 'px';
+            }
+          }
+        }
+      },
+      resetScrollbar = function () {
+        DOC[body][style][paddingRight] = '';
+        if (fixedItems[length]){
+          for (var i = 0; i < fixedItems[length]; i++) {
+            fixedItems[i][style][paddingRight] = '';
+          }
+        }
+      },
+      measureScrollbar = function () { // thx walsh
+        var scrollDiv = DOC[createElement]('div'), scrollBarWidth;
+        scrollDiv.className = component+'-scrollbar-measure'; // this is here to stay
+        DOC[body][appendChild](scrollDiv);
+        scrollBarWidth = scrollDiv[offsetWidth] - scrollDiv[clientWidth];
+        DOC[body].removeChild(scrollDiv);
+        return scrollBarWidth;
+      },
+      checkScrollbar = function () {
+        bodyIsOverflowing = DOC[body][clientWidth] < getWindowWidth();
+        modalIsOverflowing = modal[scrollHeight] > HTML[clientHeight];
+        scrollbarWidth = measureScrollbar();
+      },
+      adjustDialog = function () {
+        modal[style][paddingLeft] = !bodyIsOverflowing && modalIsOverflowing ? scrollbarWidth + 'px' : '';
+        modal[style][paddingRight] = bodyIsOverflowing && !modalIsOverflowing ? scrollbarWidth + 'px' : '';
+      },
+      resetAdjustments = function () {
+        modal[style][paddingLeft] = '';
+        modal[style][paddingRight] = '';
+      },
+      createOverlay = function() {
+        modalOverlay = 1;        
+        
+        var newOverlay = DOC[createElement]('div');
+        overlay = queryElement('.'+modalBackdropString);
+  
+        if ( overlay === null ) {
+          newOverlay[setAttribute]('class',modalBackdropString+' fade');
+          overlay = newOverlay;
+          DOC[body][appendChild](overlay);
+        }
+      },
+      removeOverlay = function() {
+        overlay = queryElement('.'+modalBackdropString);
+        if ( overlay && overlay !== null && typeof overlay === 'object' ) {
+          modalOverlay = 0;        
+          DOC[body].removeChild(overlay); overlay = null;
+        }
+        bootstrapCustomEvent.call(modal, hiddenEvent, component);      
+      },
+      keydownHandlerToggle = function() {
+        if (hasClass(modal,showClass)) {
+          on(DOC, keydownEvent, keyHandler);
+        } else {
+          off(DOC, keydownEvent, keyHandler);
+        }
+      },
+      resizeHandlerToggle = function() {
+        if (hasClass(modal,showClass)) {
+          on(globalObject, resizeEvent, self.update);
+        } else {
+          off(globalObject, resizeEvent, self.update);
+        }
+      },
+      dismissHandlerToggle = function() {
+        if (hasClass(modal,showClass)) {
+          on(modal, clickEvent, dismissHandler);
+        } else {
+          off(modal, clickEvent, dismissHandler);
+        }
+      },
+      // triggers
+      triggerShow = function() {
+        setFocus(modal);
+        bootstrapCustomEvent.call(modal, shownEvent, component, relatedTarget);
+      },
+      triggerHide = function() {
+        modal[style].display = '';
+        element && (setFocus(element));
+        
+        setTimeout(function(){
+          if (!getElementsByClassName(DOC,component+' '+showClass)[0]) {
+            resetAdjustments();
+            resetScrollbar();
+            removeClass(DOC[body],component+'-open');
+            overlay && hasClass(overlay,'fade') ? (removeClass(overlay,showClass), emulateTransitionEnd(overlay,removeOverlay)) 
+            : removeOverlay();
+  
+            resizeHandlerToggle();
+            dismissHandlerToggle();
+            keydownHandlerToggle();
+          }
+        }, 50);
+      },
+      // handlers
+      clickHandler = function(e) {
+        var clickTarget = e[target];
+        clickTarget = clickTarget[hasAttribute](dataTarget) || clickTarget[hasAttribute]('href') ? clickTarget : clickTarget[parentNode];
+        if ( clickTarget === element && !hasClass(modal,showClass) ) {
+          modal.modalTrigger = element;
+          relatedTarget = element;
+          self.show();
+          e[preventDefault]();
+        }
+      },
+      keyHandler = function(e) {
+        if (self[keyboard] && e.which == 27 && hasClass(modal,showClass)) {
+          self.hide();
+        }
+      },
+      dismissHandler = function(e) {
+        var clickTarget = e[target];
+        if ( hasClass(modal,showClass) && (clickTarget[parentNode][getAttribute](dataDismiss) === component
+            || clickTarget[getAttribute](dataDismiss) === component
+            || (clickTarget === modal && self[backdrop] !== staticString) ) ) {
+          self.hide(); relatedTarget = null;
+          e[preventDefault]();
+        }
+      };
+  
+    // public methods
+    this.toggle = function() {
+      if ( hasClass(modal,showClass) ) {this.hide();} else {this.show();}
+    };
+    this.show = function() {
+      bootstrapCustomEvent.call(modal, showEvent, component, relatedTarget);
+  
+      // we elegantly hide any opened modal
+      var currentOpen = getElementsByClassName(DOC,component+' '+showClass)[0];
+      currentOpen && currentOpen !== modal && currentOpen.modalTrigger[stringModal].hide();
+  
+      if ( this[backdrop] ) {
+        !modalOverlay && createOverlay();
+      }
+  
+      if ( overlay && modalOverlay && !hasClass(overlay,showClass)) {
+        overlay[offsetWidth]; // force reflow to enable trasition
+        addClass(overlay, showClass);
+      }
+  
+      setTimeout( function() {
+        modal[style].display = 'block';
+  
+        checkScrollbar();
+        setScrollbar();
+        adjustDialog();
+  
+        addClass(DOC[body],component+'-open');
+        addClass(modal,showClass);
+        modal[setAttribute](ariaHidden, false);
+        
+        resizeHandlerToggle();
+        dismissHandlerToggle();
+        keydownHandlerToggle();
+  
+        hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerShow) : triggerShow();
+      }, supportTransitions ? 150 : 0);
+    };
+    this.hide = function() {
+      bootstrapCustomEvent.call(modal, hideEvent, component);
+      overlay = queryElement('.'+modalBackdropString);
+  
+      removeClass(modal,showClass);
+      modal[setAttribute](ariaHidden, true);
+  
+      setTimeout(function(){
+        hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerHide) : triggerHide();
+      }, supportTransitions ? 150 : 0);
+    };
+    this.setContent = function( content ) {
+      queryElement('.'+component+'-content',modal)[innerHTML] = content;
+    };
+    this.update = function() {
+      if (hasClass(modal,showClass)) {
+        checkScrollbar();
+        setScrollbar();
+        adjustDialog();
+      }
+    };
+  
+    // init
+    // prevent adding event handlers over and over
+    // modal is independent of a triggering element
+    if ( !!element && !(stringModal in element) ) {
+      on(element, clickEvent, clickHandler);
+    }
+    if ( !!self[content] ) { self.setContent( self[content] ); }
+    !!element && (element[stringModal] = self);
+  };
+  
+  // DATA API
+  supports[push]( [ stringModal, Modal, '['+dataToggle+'="modal"]' ] );
+  
+  /* Native Javascript for Bootstrap 4 | Popover
+  ----------------------------------------------*/
+  
+  // POPOVER DEFINITION
+  // ==================
+  var Popover = function( element, options ) {
+  
+    // initialization element
+    element = queryElement(element);
+  
+    // set options
+    options = options || {};
+  
+    // DATA API
+    var triggerData = element[getAttribute](dataTrigger), // click / hover / focus
+        animationData = element[getAttribute](dataAnimation), // true / false
+        placementData = element[getAttribute](dataPlacement),
+        dismissibleData = element[getAttribute](dataDismissible),
+        delayData = element[getAttribute](dataDelay),
+        containerData = element[getAttribute](dataContainer),
+  
+        // internal strings
+        component = 'popover',
+        template = 'template',
+        trigger = 'trigger',
+        classString = 'class',
+        div = 'div',
+        fade = 'fade',
+        content = 'content',
+        dataContent = 'data-content',
+        dismissible = 'dismissible',
+        closeBtn = '<button type="button" class="close">×</button>',
+  
+        // check container
+        containerElement = queryElement(options[container]),
+        containerDataElement = queryElement(containerData),       
+        
+        // maybe the element is inside a modal
+        modal = getClosest(element,'.modal'),
+        
+        // maybe the element is inside a fixed navbar
+        navbarFixedTop = getClosest(element,'.'+fixedTop),
+        navbarFixedBottom = getClosest(element,'.'+fixedBottom);
+  
+    // set instance options
+    this[template] = options[template] ? options[template] : null; // JavaScript only
+    this[trigger] = options[trigger] ? options[trigger] : triggerData || hoverEvent;
+    this[animation] = options[animation] && options[animation] !== fade ? options[animation] : animationData || fade;
+    this[placement] = options[placement] ? options[placement] : placementData || top;
+    this[delay] = parseInt(options[delay] || delayData) || 200;
+    this[dismissible] = options[dismissible] || dismissibleData === 'true' ? true : false;
+    this[container] = containerElement ? containerElement 
+                    : containerDataElement ? containerDataElement 
+                    : navbarFixedTop ? navbarFixedTop
+                    : navbarFixedBottom ? navbarFixedBottom
+                    : modal ? modal : DOC[body];
+    
+    // bind, content
+    var self = this, 
+      titleString = element[getAttribute](dataTitle) || null,
+      contentString = element[getAttribute](dataContent) || null;
+  
+    if ( !contentString && !this[template] ) return; // invalidate
+  
+    // constants, vars
+    var popover = null, timer = 0, placementSetting = this[placement],
+      
+      // handlers
+      dismissibleHandler = function(e) {
+        if (popover !== null && e[target] === queryElement('.close',popover)) {
+          self.hide();
+        }
+      },
+  
+      // private methods
+      removePopover = function() {
+        self[container].removeChild(popover);
+        timer = null; popover = null; 
+      },
+      createPopover = function() {
+        titleString = element[getAttribute](dataTitle); // check content again
+        contentString = element[getAttribute](dataContent);
+  
+        popover = DOC[createElement](div);
+  
+        // popover arrow
+        var popoverArrow = DOC[createElement](div);
+        popoverArrow[setAttribute](classString,'arrow');
+        popover[appendChild](popoverArrow);
+  
+        if ( contentString !== null && self[template] === null ) { //create the popover from data attributes
+  
+          popover[setAttribute]('role','tooltip');
+  
+          if (titleString !== null) {
+            var popoverTitle = DOC[createElement]('h3');
+            popoverTitle[setAttribute](classString,component+'-header');
+  
+            popoverTitle[innerHTML] = self[dismissible] ? titleString + closeBtn : titleString;
+            popover[appendChild](popoverTitle);
+          }
+  
+          //set popover content
+          var popoverContent = DOC[createElement](div);
+          popoverContent[setAttribute](classString,component+'-body');
+          popoverContent[innerHTML] = self[dismissible] && titleString === null ? contentString + closeBtn : contentString;
+          popover[appendChild](popoverContent);
+  
+        } else {  // or create the popover from template
+          var popoverTemplate = DOC[createElement](div);
+          popoverTemplate[innerHTML] = self[template];
+          popover[innerHTML] = popoverTemplate.firstChild[innerHTML];
+        }
+  
+        //append to the container
+        self[container][appendChild](popover);
+        popover[style].display = 'block';
+        popover[setAttribute](classString, component+ ' bs-' + component+'-'+placementSetting + ' ' + self[animation]);
+      },
+      showPopover = function () {
+        !hasClass(popover,showClass) && ( addClass(popover,showClass) );
+      },
+      updatePopover = function() {
+        styleTip(element,popover,placementSetting,self[container]);
+      },
+  
+      // event toggle
+      dismissHandlerToggle = function(type){
+        if (clickEvent == self[trigger] || 'focus' == self[trigger]) {
+          !self[dismissible] && type( element, 'blur', self.hide );
+        }
+        self[dismissible] && type( DOC, clickEvent, dismissibleHandler );     
+        type( globalObject, resizeEvent, self.hide );
+      },
+  
+      // triggers
+      showTrigger = function() {
+        dismissHandlerToggle(on);
+        bootstrapCustomEvent.call(element, shownEvent, component);
+      },
+      hideTrigger = function() {
+        dismissHandlerToggle(off);
+        removePopover();
+        bootstrapCustomEvent.call(element, hiddenEvent, component);
+      };
+  
+    // public methods / handlers
+    this.toggle = function() {
+      if (popover === null) { self.show(); } 
+      else { self.hide(); }
+    };
+    this.show = function() {
+      clearTimeout(timer);
+      timer = setTimeout( function() {
+        if (popover === null) {
+          placementSetting = self[placement]; // we reset placement in all cases
+          createPopover();
+          updatePopover();
+          showPopover();
+          bootstrapCustomEvent.call(element, showEvent, component);
+          !!self[animation] ? emulateTransitionEnd(popover, showTrigger) : showTrigger();
+        }
+      }, 20 );
+    };
+    this.hide = function() {
+      clearTimeout(timer);
+      timer = setTimeout( function() {
+        if (popover && popover !== null && hasClass(popover,showClass)) {
+          bootstrapCustomEvent.call(element, hideEvent, component);
+          removeClass(popover,showClass);
+          !!self[animation] ? emulateTransitionEnd(popover, hideTrigger) : hideTrigger();
+        }
+      }, self[delay] );
+    };
+  
+    // init
+    if ( !(stringPopover in element) ) { // prevent adding event handlers twice
+      if (self[trigger] === hoverEvent) {
+        on( element, mouseHover[0], self.show );
+        if (!self[dismissible]) { on( element, mouseHover[1], self.hide ); }
+      } else if (clickEvent == self[trigger] || 'focus' == self[trigger]) {
+        on( element, self[trigger], self.toggle );
+      }
+    }
+    element[stringPopover] = self;
+  };
+  
+  // POPOVER DATA API
+  // ================
+  supports[push]( [ stringPopover, Popover, '['+dataToggle+'="popover"]' ] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | ScrollSpy
+  -----------------------------------------------*/
+  
+  // SCROLLSPY DEFINITION
+  // ====================
+  var ScrollSpy = function(element, options) {
+  
+    // initialization element, the element we spy on
+    element = queryElement(element); 
+  
+    // DATA API
+    var targetData = queryElement(element[getAttribute](dataTarget)),
+        offsetData = element[getAttribute]('data-offset');
+  
+    // set options
+    options = options || {};
+    if ( !options[target] && !targetData ) { return; } // invalidate
+  
+    // event targets, constants
+    var self = this, spyTarget = options[target] && queryElement(options[target]) || targetData,
+        links = spyTarget && spyTarget[getElementsByTagName]('A'),
+        offset = parseInt(offsetData || options['offset']) || 10,      
+        items = [], targetItems = [], scrollOffset,
+        scrollTarget = element[offsetHeight] < element[scrollHeight] ? element : globalObject, // determine which is the real scrollTarget
+        isWindow = scrollTarget === globalObject;  
+  
+    // populate items and targets
+    for (var i=0, il=links[length]; i<il; i++) {
+      var href = links[i][getAttribute]('href'), 
+          targetItem = href && href.charAt(0) === '#' && href.slice(-1) !== '#' && queryElement(href);
+      if ( !!targetItem ) {
+        items[push](links[i]);
+        targetItems[push](targetItem);
+      }
+    }
+  
+    // private methods
+    var updateItem = function(index) {
+        var item = items[index],
+          targetItem = targetItems[index], // the menu item targets this element
+          dropdown = item[parentNode][parentNode],
+          dropdownLink = hasClass(dropdown,'dropdown') && dropdown[getElementsByTagName]('A')[0],
+          targetRect = isWindow && targetItem[getBoundingClientRect](),
+  
+          isActive = hasClass(item,active) || false,
+  
+          topEdge = (isWindow ? targetRect[top] + scrollOffset : targetItem[offsetTop]) - offset,
+          bottomEdge = isWindow ? targetRect[bottom] + scrollOffset - offset : targetItems[index+1] ? targetItems[index+1][offsetTop] - offset : element[scrollHeight],
+  
+          inside = scrollOffset >= topEdge && bottomEdge > scrollOffset;
+  
+        if ( !isActive && inside ) {
+          if ( !hasClass(item,active) ) {
+            addClass(item,active);
+            if (dropdownLink && !hasClass(dropdownLink,active) ) {
+              addClass(dropdownLink,active);
+            }
+            bootstrapCustomEvent.call(element, 'activate', 'scrollspy', items[index]);
+          }
+        } else if ( !inside ) {
+          if ( hasClass(item,active) ) {
+            removeClass(item,active);
+            if (dropdownLink && hasClass(dropdownLink,active) && !getElementsByClassName(item[parentNode],active).length  ) {
+              removeClass(dropdownLink,active);
+            }
+          }
+        } else if ( !inside && !isActive || isActive && inside ) {
           return;
         }
-
-        return _converse.chatboxviews.get(chatbox.get('id'));
-      };
-      /* We extend the default converse.js API */
-
-
-      _.extend(_converse.api, {
-        'chats': {
-          'open': function open(jids, attrs) {
-            if (_.isUndefined(jids)) {
-              _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
-
-              return null;
-            } else if (_.isString(jids)) {
-              var chatbox = _converse.chatboxes.getChatBox(jids, true, attrs);
-
-              if (_.isNil(chatbox)) {
-                _converse.log("Could not open chatbox for JID: " + jids);
-
-                return;
-              }
-
-              return _converse.getViewForChatBox(chatbox.trigger('show'));
-            }
-
-            return _.map(jids, function (jid) {
-              return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jid, true, attrs).trigger('show'));
-            });
-          },
-          'get': function get(jids) {
-            if (_.isUndefined(jids)) {
-              var result = [];
-
-              _converse.chatboxes.each(function (chatbox) {
-                // FIXME: Leaky abstraction from MUC. We need to add a
-                // base type for chat boxes, and check for that.
-                if (chatbox.get('type') !== 'chatroom') {
-                  result.push(_converse.getViewForChatBox(chatbox));
-                }
-              });
-
-              return result;
-            } else if (_.isString(jids)) {
-              return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids));
-            }
-
-            return _.map(jids, _.partial(_.flow(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _converse.getViewForChatBox.bind(_converse)), _, true));
-          }
+      },
+      updateItems = function(){
+        scrollOffset = isWindow ? getScroll().y : element[scrollTop];
+        for (var index=0, itl=items[length]; index<itl; index++) {
+          updateItem(index)
         }
-      });
+      };
+  
+    // public method
+    this.refresh = function () {
+      updateItems();
     }
-  });
-  return converse;
-});
-//# sourceMappingURL=converse-chatboxes.js.map;
+  
+    // init
+    if ( !(stringScrollSpy in element) ) { // prevent adding event handlers twice
+      on( scrollTarget, scrollEvent, self.refresh );
+      on( globalObject, resizeEvent, self.refresh ); 
+    }
+    self.refresh();
+    element[stringScrollSpy] = self;
+  };
+  
+  // SCROLLSPY DATA API
+  // ==================
+  supports[push]( [ stringScrollSpy, ScrollSpy, '['+dataSpy+'="scroll"]' ] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | Tab
+  -----------------------------------------*/
+  
+  // TAB DEFINITION
+  // ==============
+  var Tab = function( element, options ) {
+  
+    // initialization element
+    element = queryElement(element);
+  
+    // DATA API
+    var heightData = element[getAttribute](dataHeight),
+      
+        // strings
+        component = 'tab', height = 'height', float = 'float', isAnimating = 'isAnimating';
+        
+    // set options
+    options = options || {};
+    this[height] = supportTransitions ? (options[height] || heightData === 'true') : false;
+  
+    // bind, event targets
+    var self = this, next,
+      tabs = getClosest(element,'.nav'),
+      tabsContentContainer = false,
+      dropdown = tabs && queryElement('.dropdown-toggle',tabs),
+      activeTab, activeContent, nextContent, containerHeight, equalContents, nextHeight,
+      
+      // trigger
+      triggerEnd = function(){
+        tabsContentContainer[style][height] = '';
+        removeClass(tabsContentContainer,collapsing);
+        tabs[isAnimating] = false;
+      },
+      triggerShow = function() {
+        if (tabsContentContainer) { // height animation
+          if ( equalContents ) {
+            triggerEnd();
+          } else {
+            setTimeout(function(){ // enables height animation
+              tabsContentContainer[style][height] = nextHeight + 'px'; // height animation
+              tabsContentContainer[offsetWidth];
+              emulateTransitionEnd(tabsContentContainer, triggerEnd);
+            },1);
+          }
+        } else {
+          tabs[isAnimating] = false; 
+        }
+        bootstrapCustomEvent.call(next, shownEvent, component, activeTab);
+      },
+      triggerHide = function() {
+        if (tabsContentContainer) {
+          activeContent[style][float] = left;
+          nextContent[style][float] = left;        
+          containerHeight = activeContent[scrollHeight];
+        }
+          
+        addClass(nextContent,active);
+        bootstrapCustomEvent.call(next, showEvent, component, activeTab);
+  
+        removeClass(activeContent,active);
+        bootstrapCustomEvent.call(activeTab, hiddenEvent, component, next);
+        
+        if (tabsContentContainer) {
+          nextHeight = nextContent[scrollHeight];
+          equalContents = nextHeight === containerHeight;
+          addClass(tabsContentContainer,collapsing);
+          tabsContentContainer[style][height] = containerHeight + 'px'; // height animation
+          tabsContentContainer[offsetHeight];
+          activeContent[style][float] = '';
+          nextContent[style][float] = '';   
+        }
+  
+        if ( hasClass(nextContent, 'fade') ) {
+          setTimeout(function(){
+            addClass(nextContent,showClass);
+            emulateTransitionEnd(nextContent,triggerShow);
+          },20);
+        } else { triggerShow(); }        
+      };
+  
+    if (!tabs) return; // invalidate
+  
+    // set default animation state
+    tabs[isAnimating] = false;    
+          
+    // private methods
+    var getActiveTab = function() {
+        var activeTabs = getElementsByClassName(tabs,active), activeTab;
+        if ( activeTabs[length] === 1 && !hasClass(activeTabs[0][parentNode],'dropdown') ) {
+          activeTab = activeTabs[0];
+        } else if ( activeTabs[length] > 1 ) {
+          activeTab = activeTabs[activeTabs[length]-1];
+        }
+        return activeTab;
+      },
+      getActiveContent = function() {
+        return queryElement(getActiveTab()[getAttribute]('href'));
+      },
+      // handler 
+      clickHandler = function(e) {
+        var href = e[target][getAttribute]('href');
+        e[preventDefault]();
+        next = e[target][getAttribute](dataToggle) === component || (href && href.charAt(0) === '#')
+             ? e[target] : e[target][parentNode]; // allow for child elements like icons to use the handler
+        !tabs[isAnimating] && !hasClass(next[parentNode],active) && self.show();
+      };
+  
+    // public method
+    this.show = function() { // the tab we clicked is now the next tab
+      next = next || element;
+      nextContent = queryElement(next[getAttribute]('href')); //this is the actual object, the next tab content to activate
+      activeTab = getActiveTab(); 
+      activeContent = getActiveContent();
+      
+      tabs[isAnimating] = true;
+      removeClass(activeTab,active);
+      addClass(next,active);
+  
+      if ( dropdown ) {
+        if ( !hasClass(element[parentNode],'dropdown-menu') ) {
+          if (hasClass(dropdown,active)) removeClass(dropdown,active);
+        } else {
+          if (!hasClass(dropdown,active)) addClass(dropdown,active);
+        }
+      }
+      
+      bootstrapCustomEvent.call(activeTab, hideEvent, component, next);
+  
+      if (hasClass(activeContent, 'fade')) {
+        removeClass(activeContent,showClass);
+        emulateTransitionEnd(activeContent, triggerHide);
+      } else { triggerHide(); }
+    };
+  
+    // init
+    if ( !(stringTab in element) ) { // prevent adding event handlers twice
+      on(element, clickEvent, clickHandler);
+    }
+    if (self[height]) { tabsContentContainer = getActiveContent()[parentNode]; }
+    element[stringTab] = self;
+  };
+  
+  // TAB DATA API
+  // ============
+  supports[push]( [ stringTab, Tab, '['+dataToggle+'="tab"]' ] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | Tooltip
+  ---------------------------------------------*/
+  
+  // TOOLTIP DEFINITION
+  // ==================
+  var Tooltip = function( element,options ) {
+  
+    // initialization element
+    element = queryElement(element);
+  
+    // set options
+    options = options || {};
+  
+    // DATA API
+    var animationData = element[getAttribute](dataAnimation),
+        placementData = element[getAttribute](dataPlacement),
+        delayData = element[getAttribute](dataDelay),
+        containerData = element[getAttribute](dataContainer),
+        
+        // strings
+        component = 'tooltip',
+        classString = 'class',
+        title = 'title',
+        fade = 'fade',
+        div = 'div',
+  
+        // check container
+        containerElement = queryElement(options[container]),
+        containerDataElement = queryElement(containerData),      
+  
+        // maybe the element is inside a modal
+        modal = getClosest(element,'.modal'),
+        
+        // maybe the element is inside a fixed navbar
+        navbarFixedTop = getClosest(element,'.'+fixedTop),
+        navbarFixedBottom = getClosest(element,'.'+fixedBottom);
+  
+    // set instance options
+    this[animation] = options[animation] && options[animation] !== fade ? options[animation] : animationData || fade;
+    this[placement] = options[placement] ? options[placement] : placementData || top;
+    this[delay] = parseInt(options[delay] || delayData) || 200;
+    this[container] = containerElement ? containerElement 
+                    : containerDataElement ? containerDataElement
+                    : navbarFixedTop ? navbarFixedTop
+                    : navbarFixedBottom ? navbarFixedBottom
+                    : modal ? modal : DOC[body];
+  
+    // bind, event targets, title and constants
+    var self = this, timer = 0, placementSetting = this[placement], tooltip = null,
+      titleString = element[getAttribute](title) || element[getAttribute](dataTitle) || element[getAttribute](dataOriginalTitle);
+  
+    if ( !titleString || titleString == "" ) return; // invalidate
+  
+    // private methods
+    var removeToolTip = function() {
+        self[container].removeChild(tooltip);
+        tooltip = null; timer = null;
+      },
+      createToolTip = function() {
+        titleString = element[getAttribute](title) || element[getAttribute](dataTitle) || element[getAttribute](dataOriginalTitle); // read the title again
+        if ( !titleString || titleString == "" ) return false; // invalidate
+        tooltip = DOC[createElement](div);
+        tooltip[setAttribute]('role',component);
+  
+        // tooltip arrow
+        var tooltipArrow = DOC[createElement](div);
+        tooltipArrow[setAttribute](classString,'arrow');
+        tooltip[appendChild](tooltipArrow);
+    
+        var tooltipInner = DOC[createElement](div);
+        tooltipInner[setAttribute](classString,component+'-inner');
+        tooltip[appendChild](tooltipInner);
+        tooltipInner[innerHTML] = titleString;
+  
+        self[container][appendChild](tooltip);
+        tooltip[setAttribute](classString, component + ' bs-' + component+'-'+placementSetting + ' ' + self[animation]);
+      },
+      updateTooltip = function () {
+        styleTip(element,tooltip,placementSetting,self[container]);
+      },
+      showTooltip = function () {
+        !hasClass(tooltip,showClass) && ( addClass(tooltip,showClass) );
+      },
+      // triggers
+      showTrigger = function() {
+        on( globalObject, resizeEvent, self.hide );
+        bootstrapCustomEvent.call(element, shownEvent, component);
+      },
+      hideTrigger = function() {
+        off( globalObject, resizeEvent, self.hide );
+        removeToolTip();
+        bootstrapCustomEvent.call(element, hiddenEvent, component);
+      };
+  
+    // public methods
+    this.show = function() {
+      clearTimeout(timer);
+      timer = setTimeout( function() {
+        if (tooltip === null) {
+          placementSetting = self[placement]; // we reset placement in all cases
+          if(createToolTip() == false) return;
+          updateTooltip();
+          showTooltip();
+          bootstrapCustomEvent.call(element, showEvent, component);
+          !!self[animation] ? emulateTransitionEnd(tooltip, showTrigger) : showTrigger();
+        }
+      }, 20 );
+    };
+    this.hide = function() {
+      clearTimeout(timer);
+      timer = setTimeout( function() {
+        if (tooltip && hasClass(tooltip,showClass)) {
+          bootstrapCustomEvent.call(element, hideEvent, component);
+          removeClass(tooltip,showClass);
+          !!self[animation] ? emulateTransitionEnd(tooltip, hideTrigger) : hideTrigger();
+        }
+      }, self[delay]);
+    };
+    this.toggle = function() {
+      if (!tooltip) { self.show(); } 
+      else { self.hide(); }
+    };
+  
+    // init
+    if ( !(stringTooltip in element) ) { // prevent adding event handlers twice
+      element[setAttribute](dataOriginalTitle,titleString);
+      element.removeAttribute(title);
+      on(element, mouseHover[0], self.show);
+      on(element, mouseHover[1], self.hide);
+    }
+    element[stringTooltip] = self;
+  };
+  
+  // TOOLTIP DATA API
+  // =================
+  supports[push]( [ stringTooltip, Tooltip, '['+dataToggle+'="tooltip"]' ] );
+  
+  
+  
+  /* Native Javascript for Bootstrap 4 | Initialize Data API
+  --------------------------------------------------------*/
+  var initializeDataAPI = function( constructor, collection ){
+      for (var i=0, l=collection[length]; i<l; i++) {
+        new constructor(collection[i]);
+      }
+    },
+    initCallback = BSN.initCallback = function(lookUp){
+      lookUp = lookUp || DOC;
+      for (var i=0, l=supports[length]; i<l; i++) {
+        initializeDataAPI( supports[i][1], lookUp[querySelectorAll] (supports[i][2]) );
+      }
+    };
+  
+  // bulk initialize all components
+  DOC[body] ? initCallback() : on( DOC, 'DOMContentLoaded', function(){ initCallback(); } );
+  
+  return {
+    Alert: Alert,
+    Button: Button,
+    Carousel: Carousel,
+    Collapse: Collapse,
+    Dropdown: Dropdown,
+    Modal: Modal,
+    Popover: Popover,
+    ScrollSpy: ScrollSpy,
+    Tab: Tab,
+    Tooltip: Tooltip
+  };
+}));
+
 /* jshint maxerr: 10000 */
 /* jslint unused: true */
 /* jshint shadow: true */
@@ -44698,35 +45951,37 @@ return __p
 define('tpl!chatbox_head', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<div class="chat-head chat-head-chatbox">\n    <a class="chatbox-btn close-chatbox-button icon-close" title="' +
-__e(o.info_close) +
-'"></a>\n    ';
+__p += '<div class="chat-head chat-head-chatbox row no-gutters">\n    <div class="col">\n        <div class="row no-gutters">\n            ';
  if (o.show_avatar) { ;
-__p += '\n        <img alt="User Avatar"\n            class="avatar"\n            height="' +
+__p += '\n            <div class="col-auto">\n                <img alt="User Avatar"\n                    class="avatar"\n                    height="' +
 __e(o.avatar_height) +
 'px" width="' +
 __e(o.avatar_width) +
-'px"\n            src="data:' +
+'px"\n                    src="data:' +
 __e(o.image_type || o._converse.DEFAULT_IMAGE_TYPE) +
 ';base64,' +
 __e(o.image || o._converse.DEFAULT_IMAGE) +
-'"/>\n    ';
+'"/>\n            </div>\n            ';
  } ;
-__p += '\n    <div class="chat-title">\n        ';
+__p += '\n            <div class="col chat-title" title="' +
+__e(o.jid) +
+'">\n                ';
  if (o.url) { ;
-__p += '\n            <a href="' +
+__p += '\n                    <a href="' +
 __e(o.url) +
-'" target="_blank" rel="noopener" class="user">\n        ';
+'" target="_blank" rel="noopener" class="user">\n                ';
  } ;
-__p += '\n                ' +
-__e( o.fullname ) +
-'\n        ';
+__p += '\n                        ' +
+__e( o.fullname || o.jid ) +
+'\n                ';
  if (o.url) { ;
-__p += '\n            </a>\n        ';
+__p += '\n                    </a>\n                ';
  } ;
-__p += '\n        <p class="user-custom-message">' +
+__p += '\n                <p class="user-custom-message">' +
 __e( o.status ) +
-'</p>\n    </div>\n</div>\n';
+'</p>\n            </div>\n        </div>\n    </div>\n    <div class="chatbox-buttons row no-gutters">\n        <a class="chatbox-btn close-chatbox-button fa fa-close" title=' +
+__e(o.info_close) +
+'></a>\n        <!-- <a class="chatbox-btn fa fa-vcard" title="Contact profile" data-toggle="modal" data-target="#contactProfileModal"></a> -->\n    </div>\n</div>\n';
 return __p
 };});
 
@@ -44774,7 +46029,7 @@ return __p
 define('tpl!emojis', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-
+__p += '<div class="emoji-picker-container">\n';
  _.forEach(o.emojis_by_category, function (obj, category) { ;
 __p += '\n    <ul class="emoji-picker emoji-picker-' +
 __e(category) +
@@ -44826,7 +46081,7 @@ __e(skintone) +
 ((__t = ( o.transform(':'+skintone+':') )) == null ? '' : __t) +
 ' </a>\n                </li>\n            ';
  }); ;
-__p += '\n        </ul>\n    </li>\n</ul>\n';
+__p += '\n        </ul>\n    </li>\n</ul>\n</div>\n';
 return __p
 };});
 
@@ -44880,7 +46135,7 @@ return __p
 
 define('tpl!new_day', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<time class="message chat-info chat-date" data-isodate="' +
+__p += '<time class="message chat-info chat-date badge badge-info" data-isodate="' +
 __e(o.isodate) +
 '">' +
 __e(o.datestring) +
@@ -44891,7 +46146,7 @@ return __p
 
 define('tpl!spinner', ['lodash'], function(_) {return function(o) {
 var __t, __p = '';
-__p += '<span class="spinner centered"/>\n';
+__p += '<span class="spinner fa fa-spinner centered"/>\n';
 return __p
 };});
 
@@ -44899,15 +46154,15 @@ return __p
 define('tpl!spoiler_button', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<li class="toggle-compose-spoiler">\n    <a class="\n        ';
+__p += '<li class="toggle-compose-spoiler fa ';
  if (o.composing_spoiler)  { ;
-__p += ' icon-eye-blocked ';
+__p += ' fa-eye-slash ';
  } ;
-__p += '\n        ';
+__p += ' ';
  if (!o.composing_spoiler)  { ;
-__p += ' icon-eye ';
+__p += ' fa-eye ';
  } ;
-__p += '"\n        title="' +
+__p += '"\n    title="' +
 ((__t = ( o.label_toggle_spoiler )) == null ? '' : __t) +
 '"></a>\n</li>\n';
 return __p
@@ -44940,25 +46195,188 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  if (o.use_emoji)  { ;
-__p += '\n<li class="toggle-toolbar-menu toggle-smiley">\n    <a class="icon-happy" title="' +
-__e(o.label_insert_smiley) +
-'"></a>\n    <span class="emoji-picker"></span>\n</li>\n';
+__p += '\n<li class="toggle-toolbar-menu toggle-smiley fa fa-smile-o dropup">\n    <div class="emoji-picker dropdown-menu toolbar-menu"></div>\n</li>\n';
  } ;
 __p += '\n';
  if (o.show_call_button)  { ;
-__p += '\n<li class="toggle-call"><a class="icon-phone" title="' +
+__p += '\n<li class="toggle-call fa fa-phone" title="' +
 __e(o.label_start_call) +
-'"></a></li>\n';
- } ;
-__p += '\n';
- if (o.show_clear_button)  { ;
-__p += '\n<li class="toggle-clear"><a class="icon-remove" title="' +
-__e(o.label_clear) +
-'"></a></li>\n';
+'"></li>\n';
  } ;
 __p += '\n';
 return __p
 };});
+
+
+define('tpl!chatboxes', ['lodash'], function(_) {return function(o) {
+var __t, __p = '';
+__p += '<div class="converse-chatboxes row no-gutters"></div>\n<div id="converse-modals" class="modals"></div>\n';
+return __p
+};});
+
+/*!
+ * Backbone.Overview 
+ *
+ * Copyright (c) 2018, JC Brand <jc@opkode.com>
+ * Licensed under the Mozilla Public License (MPL) 
+ */
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define('backbone.overview',["underscore", "backbone"], factory);
+  } else {
+    // RequireJS isn't being used.
+    // Assume underscore and backbone are loaded in <script> tags
+    factory(_ || root._, Backbone || root.Backbone);
+  }
+})(this, function (_, Backbone) {
+  "use strict";
+
+  var View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
+
+  var Overview = Backbone.Overview = function (options) {
+    /* An Overview is a View that contains and keeps track of sub-views.
+     * Kind of like what a Collection is to a Model.
+     */
+    var that = this;
+    this.views = {};
+    this.keys = _.partial(_.keys, this.views);
+    this.getAll = _.partial(_.identity, this.views);
+
+    this.get = function (id) {
+      return that.views[id];
+    };
+
+    this.xget = function (id) {
+      /* Exclusive get. Returns all instances except the given id. */
+      return _.filter(that.views, function (view, vid) {
+        return vid !== id;
+      });
+    };
+
+    this.add = function (id, view) {
+      that.views[id] = view;
+      return view;
+    };
+
+    this.remove = function (id) {
+      if (typeof id === "undefined") {
+        new View().remove.apply(that);
+      }
+
+      var view = that.views[id];
+
+      if (view) {
+        delete that.views[id];
+        view.remove();
+        return view;
+      }
+    };
+
+    this.removeAll = function () {
+      _.each(_.keys(that.views), that.remove);
+
+      return that;
+    };
+
+    View.apply(this, Array.prototype.slice.apply(arguments));
+  };
+
+  var methods = ['all', 'any', 'chain', 'collect', 'contains', 'detect', 'difference', 'drop', 'each', 'every', 'filter', 'find', 'first', 'foldl', 'foldr', 'forEach', 'head', 'include', 'indexOf', 'initial', 'inject', 'invoke', 'isEmpty', 'last', 'lastIndexOf', 'map', 'max', 'min', 'reduce', 'reduceRight', 'reject', 'rest', 'sample', 'select', 'shuffle', 'size', 'some', 'sortBy', 'tail', 'take', 'toArray', 'without']; // Mix in each Underscore method as a proxy to `Overview#view`.
+
+  _.each(methods, function (method) {
+    Overview.prototype[method] = function () {
+      var args = Array.prototype.slice.call(arguments);
+      args.unshift(this.views);
+      return _[method].apply(_, args);
+    };
+  });
+
+  _.extend(Overview.prototype, View.prototype);
+
+  Overview.extend = View.extend;
+  Backbone.OrderedListView = Backbone.Overview.extend({
+    // The `listItems` attribute denotes the path (from this View) to the
+    // list of items.
+    listItems: 'model',
+    // The `sortEvent` attribute specifies the event which should cause the
+    // ordered list to be sorted.
+    sortEvent: 'change',
+    // The `listSelector` is the selector used to query for the DOM list
+    // element which contains the ordered items.
+    listSelector: '.ordered-items',
+    // The `itemView` is constructor which should be called to create a
+    // View for a new item.
+    ItemView: undefined,
+    initialize: function initialize() {
+      this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
+      this.items = _.get(this, this.listItems);
+      this.items.on('add', this.createItemView, this);
+      this.items.on('add', this.sortEventually, this);
+      this.items.on(this.sortEvent, this.sortEventually, this);
+    },
+    createItemView: function createItemView(item) {
+      var item_view = this.get(item.get('id'));
+
+      if (!item_view) {
+        item_view = new this.ItemView({
+          model: item
+        });
+        this.add(item.get('id'), item_view);
+      } else {
+        item_view.model = item;
+        item_view.initialize();
+      }
+
+      item_view.render();
+      return item_view;
+    },
+    sortAndPositionAllItems: function sortAndPositionAllItems() {
+      var _this = this;
+
+      this.items.sort();
+      this.items.each(function (item) {
+        if (_.isUndefined(_this.get(item.get('id')))) {
+          _this.createItemView(item);
+        }
+
+        _this.positionItem(item, _this.el.querySelector(_this.listSelector));
+      });
+    },
+    positionItem: function positionItem(item, list_el) {
+      /* Place the View's DOM element in the correct alphabetical
+       * position in the list.
+       *
+       * IMPORTANT: there's an important implicit assumption being
+       * made here. And that is that initially this method gets called
+       * for each item in the right positional order.
+       *
+       * In other words, it gets called for the 0th, then the
+       * 1st, then the 2nd, 3rd and so on.
+       *
+       * That's why we call it in the "success" handler after
+       * fetching the items, so that we know we have ALL of
+       * them and that they're sorted.
+       */
+      var view = this.get(item.get('id')),
+          index = this.items.indexOf(item);
+
+      if (index === 0) {
+        list_el.insertAdjacentElement('afterbegin', view.el);
+      } else if (index === this.items.length - 1) {
+        list_el.insertAdjacentElement('beforeend', view.el);
+      } else {
+        var neighbour_el = list_el.querySelector('li:nth-child(' + index + ')');
+        neighbour_el.insertAdjacentElement('afterend', view.el);
+      }
+
+      return view;
+    }
+  });
+  return Backbone.Overview;
+});
+
+//# sourceMappingURL=backbone.overview.js.map;
+
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -44969,8 +46387,577 @@ return __p
 
 /*global define */
 (function (root, factory) {
-  define('converse-chatview',["converse-core", "converse-chatboxes", "emojione", "xss", "tpl!action", "tpl!chatbox", "tpl!chatbox_head", "tpl!chatbox_message_form", "tpl!emojis", "tpl!help_message", "tpl!info", "tpl!message", "tpl!new_day", "tpl!spinner", "tpl!spoiler_button", "tpl!spoiler_message", "tpl!toolbar"], factory);
-})(this, function (converse, dummy, emojione, xss, tpl_action, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_help_message, tpl_info, tpl_message, tpl_new_day, tpl_spinner, tpl_spoiler_button, tpl_spoiler_message, tpl_toolbar) {
+  define('converse-chatboxes',["converse-core", "tpl!chatboxes", "backbone.overview"], factory);
+})(void 0, function (converse, tpl_chatboxes) {
+  "use strict";
+
+  var _converse$env = converse.env,
+      Backbone = _converse$env.Backbone,
+      Promise = _converse$env.Promise,
+      Strophe = _converse$env.Strophe,
+      b64_sha1 = _converse$env.b64_sha1,
+      moment = _converse$env.moment,
+      utils = _converse$env.utils,
+      _ = _converse$env._;
+  converse.plugins.add('converse-chatboxes', {
+    overrides: {
+      // Overrides mentioned here will be picked up by converse.js's
+      // plugin architecture they will replace existing methods on the
+      // relevant objects or classes.
+      disconnect: function disconnect() {
+        var _converse = this.__super__._converse;
+
+        _converse.chatboxviews.closeAllChatBoxes();
+
+        return this.__super__.disconnect.apply(this, arguments);
+      },
+      logOut: function logOut() {
+        var _converse = this.__super__._converse;
+
+        _converse.chatboxviews.closeAllChatBoxes();
+
+        return this.__super__.logOut.apply(this, arguments);
+      },
+      initStatus: function initStatus(reconnecting) {
+        var _converse = this.__super__._converse;
+
+        if (!reconnecting) {
+          _converse.chatboxviews.closeAllChatBoxes();
+        }
+
+        return this.__super__.initStatus.apply(this, arguments);
+      }
+    },
+    initialize: function initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      var _converse = this._converse;
+
+      _converse.api.promises.add(['chatBoxesFetched', 'chatBoxesInitialized']);
+
+      function openChat(jid) {
+        if (!utils.isValidJID(jid)) {
+          return converse.log("Invalid JID \"".concat(jid, "\" provided in URL fragment"), Strophe.LogLevel.WARN);
+        }
+
+        Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(function () {
+          _converse.api.chats.open(jid);
+        });
+      }
+
+      _converse.router.route('converse/chat?jid=:jid', openChat);
+
+      _converse.Message = Backbone.Model.extend({
+        defaults: function defaults() {
+          return {
+            msgid: _converse.connection.getUniqueId()
+          };
+        }
+      });
+      _converse.Messages = Backbone.Collection.extend({
+        model: _converse.Message,
+        comparator: 'time'
+      });
+      _converse.ChatBox = Backbone.Model.extend({
+        defaults: {
+          'bookmarked': false,
+          'chat_state': undefined,
+          'image': _converse.DEFAULT_IMAGE,
+          'image_type': _converse.DEFAULT_IMAGE_TYPE,
+          'num_unread': 0,
+          'show_avatar': true,
+          'type': 'chatbox',
+          'url': ''
+        },
+        initialize: function initialize() {
+          this.messages = new _converse.Messages();
+          this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](b64_sha1("converse.messages".concat(this.get('jid')).concat(_converse.bare_jid)));
+          this.save({
+            // The chat_state will be set to ACTIVE once the chat box is opened
+            // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
+            'box_id': b64_sha1(this.get('jid')),
+            'time_opened': this.get('time_opened') || moment().valueOf(),
+            'user_id': Strophe.getNodeFromJid(this.get('jid'))
+          });
+        },
+        getMessageBody: function getMessageBody(message) {
+          var type = message.getAttribute('type');
+          return type === 'error' ? _.propertyOf(message.querySelector('error text'))('textContent') : _.propertyOf(message.querySelector('body'))('textContent');
+        },
+        getMessageAttributes: function getMessageAttributes(message, delay, original_stanza) {
+          /* Parses a passed in message stanza and returns an object
+           * of attributes.
+           *
+           * Parameters:
+           *    (XMLElement) message - The message stanza
+           *    (XMLElement) delay - The <delay> node from the
+           *      stanza, if there was one.
+           *    (XMLElement) original_stanza - The original stanza,
+           *      that contains the message stanza, if it was
+           *      contained, otherwise it's the message stanza itself.
+           */
+          var _converse = this.__super__._converse,
+              __ = _converse.__;
+          delay = delay || message.querySelector('delay');
+          var type = message.getAttribute('type'),
+              body = this.getMessageBody(message);
+
+          var delayed = !_.isNull(delay),
+              is_groupchat = type === 'groupchat',
+              chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
+
+          var from;
+
+          if (is_groupchat) {
+            from = Strophe.unescapeNode(Strophe.getResourceFromJid(message.getAttribute('from')));
+          } else {
+            from = Strophe.getBareJidFromJid(message.getAttribute('from'));
+          }
+
+          var time = delayed ? delay.getAttribute('stamp') : moment().format();
+          var sender, fullname;
+
+          if (is_groupchat && from === this.get('nick') || !is_groupchat && from === _converse.bare_jid) {
+            sender = 'me';
+            fullname = _converse.xmppstatus.get('fullname') || from;
+          } else {
+            sender = 'them';
+            fullname = this.get('fullname') || from;
+          }
+
+          var spoiler = message.querySelector("spoiler[xmlns=\"".concat(Strophe.NS.SPOILER, "\"]"));
+          var attrs = {
+            'type': type,
+            'chat_state': chat_state,
+            'delayed': delayed,
+            'fullname': fullname,
+            'message': body || undefined,
+            'msgid': message.getAttribute('id'),
+            'sender': sender,
+            'time': time,
+            'is_spoiler': !_.isNull(spoiler)
+          };
+
+          if (spoiler) {
+            attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
+          }
+
+          return attrs;
+        },
+        createMessage: function createMessage(message, delay, original_stanza) {
+          /* Create a Backbone.Message object inside this chat box
+           * based on the identified message stanza.
+           */
+          return this.messages.create(this.getMessageAttributes.apply(this, arguments));
+        },
+        newMessageWillBeHidden: function newMessageWillBeHidden() {
+          /* Returns a boolean to indicate whether a newly received
+           * message will be visible to the user or not.
+           */
+          return this.get('hidden') || this.get('minimized') || this.isScrolledUp() || _converse.windowState === 'hidden';
+        },
+        incrementUnreadMsgCounter: function incrementUnreadMsgCounter(stanza) {
+          /* Given a newly received message, update the unread counter if
+           * necessary.
+           */
+          if (_.isNull(stanza.querySelector('body'))) {
+            return; // The message has no text
+          }
+
+          if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+            this.save({
+              'num_unread': this.get('num_unread') + 1
+            });
+
+            _converse.incrementMsgCounter();
+          }
+        },
+        clearUnreadMsgCounter: function clearUnreadMsgCounter() {
+          this.save({
+            'num_unread': 0
+          });
+        },
+        isScrolledUp: function isScrolledUp() {
+          return this.get('scrolled', true);
+        }
+      });
+      _converse.ChatBoxes = Backbone.Collection.extend({
+        comparator: 'time_opened',
+        model: function model(attrs, options) {
+          return new _converse.ChatBox(attrs, options);
+        },
+        registerMessageHandler: function registerMessageHandler() {
+          _converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
+
+          _converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
+        },
+        chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
+          return true;
+        },
+        onChatBoxesFetched: function onChatBoxesFetched(collection) {
+          var _this = this;
+
+          /* Show chat boxes upon receiving them from sessionStorage */
+          collection.each(function (chatbox) {
+            if (_this.chatBoxMayBeShown(chatbox)) {
+              chatbox.trigger('show');
+            }
+          });
+
+          _converse.emit('chatBoxesFetched');
+        },
+        onConnected: function onConnected() {
+          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.chatboxes-".concat(_converse.bare_jid)));
+          this.registerMessageHandler();
+          this.fetch({
+            add: true,
+            success: this.onChatBoxesFetched.bind(this)
+          });
+        },
+        onErrorMessage: function onErrorMessage(message) {
+          /* Handler method for all incoming error message stanzas
+          */
+          // TODO: we can likely just reuse "onMessage" below
+          var from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
+
+          if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
+            return true;
+          } // Get chat box, but only create a new one when the message has a body.
+
+
+          var chatbox = this.getChatBox(from_jid);
+
+          if (!chatbox) {
+            return true;
+          }
+
+          chatbox.createMessage(message, null, message);
+          return true;
+        },
+        onMessage: function onMessage(message) {
+          /* Handler method for all incoming single-user chat "message"
+           * stanzas.
+           *
+           * Parameters:
+           *    (XMLElement) message - The incoming message stanza
+           */
+          var contact_jid,
+              delay,
+              resource,
+              from_jid = message.getAttribute('from'),
+              to_jid = message.getAttribute('to');
+          var original_stanza = message,
+              to_resource = Strophe.getResourceFromJid(to_jid),
+              is_carbon = !_.isNull(message.querySelector("received[xmlns=\"".concat(Strophe.NS.CARBONS, "\"]")));
+
+          if (_converse.filter_by_resource && to_resource && to_resource !== _converse.resource) {
+            _converse.log("onMessage: Ignoring incoming message intended for a different resource: ".concat(to_jid), Strophe.LogLevel.INFO);
+
+            return true;
+          } else if (utils.isHeadlineMessage(_converse, message)) {
+            // XXX: Ideally we wouldn't have to check for headline
+            // messages, but Prosody sends headline messages with the
+            // wrong type ('chat'), so we need to filter them out here.
+            _converse.log("onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ".concat(from_jid), Strophe.LogLevel.INFO);
+
+            return true;
+          }
+
+          var forwarded = message.querySelector('forwarded');
+
+          if (!_.isNull(forwarded)) {
+            var forwarded_message = forwarded.querySelector('message');
+            var forwarded_from = forwarded_message.getAttribute('from');
+
+            if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
+              // Prevent message forging via carbons
+              //
+              // https://xmpp.org/extensions/xep-0280.html#security
+              return true;
+            }
+
+            message = forwarded_message;
+            delay = forwarded.querySelector('delay');
+            from_jid = message.getAttribute('from');
+            to_jid = message.getAttribute('to');
+          }
+
+          var from_bare_jid = Strophe.getBareJidFromJid(from_jid),
+              from_resource = Strophe.getResourceFromJid(from_jid),
+              is_me = from_bare_jid === _converse.bare_jid;
+
+          if (is_me) {
+            // I am the sender, so this must be a forwarded message...
+            contact_jid = Strophe.getBareJidFromJid(to_jid);
+            resource = Strophe.getResourceFromJid(to_jid);
+          } else {
+            contact_jid = from_bare_jid;
+            resource = from_resource;
+          } // Get chat box, but only create a new one when the message has a body.
+
+
+          var attrs = {
+            'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
+          };
+          var chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(message.querySelector('body'))),
+              msgid = message.getAttribute('id');
+
+          if (chatbox) {
+            var messages = msgid && chatbox.messages.findWhere({
+              msgid: msgid
+            }) || [];
+
+            if (_.isEmpty(messages)) {
+              // Only create the message when we're sure it's not a
+              // duplicate
+              chatbox.incrementUnreadMsgCounter(original_stanza);
+              chatbox.createMessage(message, delay, original_stanza);
+            }
+          }
+
+          _converse.emit('message', {
+            'stanza': original_stanza,
+            'chatbox': chatbox
+          });
+
+          return true;
+        },
+        getChatBox: function getChatBox(jid) {
+          var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+          var create = arguments.length > 2 ? arguments[2] : undefined;
+
+          /* Returns a chat box or optionally return a newly
+           * created one if one doesn't exist.
+           *
+           * Parameters:
+           *    (String) jid - The JID of the user whose chat box we want
+           *    (Boolean) create - Should a new chat box be created if none exists?
+           *    (Object) attrs - Optional chat box atributes.
+           */
+          if (_.isObject(jid)) {
+            create = attrs;
+            attrs = jid;
+            jid = attrs.jid;
+          }
+
+          jid = Strophe.getBareJidFromJid(jid.toLowerCase());
+          var chatbox = this.get(Strophe.getBareJidFromJid(jid));
+
+          if (!chatbox && create) {
+            _.extend(attrs, {
+              'jid': jid,
+              'id': jid
+            });
+
+            chatbox = this.create(attrs, {
+              'error': function error(model, response) {
+                _converse.log(response.responseText);
+              }
+            });
+          }
+
+          return chatbox;
+        }
+      });
+      _converse.ChatBoxViews = Backbone.Overview.extend({
+        _ensureElement: function _ensureElement() {
+          /* Override method from backbone.js
+           * If the #conversejs element doesn't exist, create it.
+           */
+          if (!this.el) {
+            var el = _converse.root.querySelector('#conversejs');
+
+            if (_.isNull(el)) {
+              el = document.createElement('div');
+              el.setAttribute('id', 'conversejs');
+
+              var body = _converse.root.querySelector('body');
+
+              if (body) {
+                body.appendChild(el);
+              } else {
+                // Perhaps inside a web component?
+                _converse.root.appendChild(el);
+              }
+            }
+
+            if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
+              el.classList.add('fullscreen');
+            }
+
+            el.innerHTML = '';
+            this.setElement(el, false);
+          } else {
+            this.setElement(_.result(this, 'el'), false);
+          }
+        },
+        initialize: function initialize() {
+          this.model.on("add", this.onChatBoxAdded, this);
+          this.model.on("destroy", this.removeChat, this);
+          this.render();
+        },
+        render: function render() {
+          try {
+            this.el.innerHTML = tpl_chatboxes();
+          } catch (e) {
+            this._ensureElement();
+
+            this.el.innerHTML = tpl_chatboxes();
+          }
+
+          this.row_el = this.el.querySelector('.row');
+        },
+        insertRowColumn: function insertRowColumn(el) {
+          /* Add a new DOM element (likely a chat box) into the
+           * the row managed by this overview.
+           */
+          this.row_el.insertAdjacentElement('afterBegin', el);
+        },
+        onChatBoxAdded: function onChatBoxAdded(item) {
+          // Views aren't created here, since the core code doesn't
+          // contain any views. Instead, they're created in overrides in
+          // plugins, such as in converse-chatview.js and converse-muc.js
+          return this.get(item.get('id'));
+        },
+        removeChat: function removeChat(item) {
+          this.remove(item.get('id'));
+        },
+        closeAllChatBoxes: function closeAllChatBoxes() {
+          /* This method gets overridden in src/converse-controlbox.js if
+          * the controlbox plugin is active.
+          */
+          this.each(function (view) {
+            view.close();
+          });
+          return this;
+        },
+        chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
+          return this.model.chatBoxMayBeShown(chatbox);
+        }
+      }); // TODO: move to converse-chatboxviews.js and use there in the API
+
+      _converse.getViewForChatBox = function (chatbox) {
+        if (!chatbox) {
+          return;
+        }
+
+        return _converse.chatboxviews.get(chatbox.get('id'));
+      };
+      /************************ BEGIN Event Handlers ************************/
+
+
+      _converse.api.listen.on('pluginsInitialized', function () {
+        _converse.chatboxes = new _converse.ChatBoxes();
+        _converse.chatboxviews = new _converse.ChatBoxViews({
+          'model': _converse.chatboxes
+        });
+
+        _converse.emit('chatBoxesInitialized');
+      });
+
+      _converse.api.listen.on('beforeTearDown', function () {
+        _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
+
+
+        delete _converse.chatboxes.browserStorage;
+      });
+
+      _converse.api.listen.on('statusInitialized', function () {
+        return _converse.chatboxes.onConnected();
+      });
+      /************************ END Event Handlers ************************/
+
+      /************************ BEGIN API ************************/
+
+
+      _.extend(_converse.api, {
+        'chats': {
+          'create': function create(jids, attrs) {
+            if (_.isUndefined(jids)) {
+              _converse.log("chats.create: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+
+              return null;
+            }
+
+            if (_.isString(jids)) {
+              if (attrs && !_.get(attrs, 'fullname')) {
+                attrs.fullname = _.get(_converse.api.contacts.get(jids), 'attributes.fullname');
+              }
+
+              var chatbox = _converse.chatboxes.getChatBox(jids, attrs, true);
+
+              if (_.isNil(chatbox)) {
+                _converse.log("Could not open chatbox for JID: " + jids, Strophe.LogLevel.ERROR);
+
+                return;
+              }
+
+              return chatbox;
+            }
+
+            return _.map(jids, function (jid) {
+              attrs.fullname = _.get(_converse.api.contacts.get(jid), 'attributes.fullname');
+              return _converse.chatboxes.getChatBox(jid, attrs, true).trigger('show');
+            });
+          },
+          'open': function open(jids, attrs) {
+            if (_.isUndefined(jids)) {
+              _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+
+              return null;
+            } else if (_.isString(jids)) {
+              var chatbox = _converse.api.chats.create(jids, attrs);
+
+              chatbox.trigger('show');
+              return chatbox;
+            }
+
+            return _.map(jids, function (jid) {
+              return _converse.api.chats.create(jid, attrs).trigger('show');
+            });
+          },
+          'get': function get(jids) {
+            if (_.isUndefined(jids)) {
+              var result = [];
+
+              _converse.chatboxes.each(function (chatbox) {
+                // FIXME: Leaky abstraction from MUC. We need to add a
+                // base type for chat boxes, and check for that.
+                if (chatbox.get('type') !== 'chatroom') {
+                  result.push(chatbox);
+                }
+              });
+
+              return result;
+            } else if (_.isString(jids)) {
+              return _converse.chatboxes.getChatBox(jids);
+            }
+
+            return _.map(jids, _.partial(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _, {}, true));
+          }
+        }
+      });
+      /************************ END API ************************/
+
+    }
+  });
+  return converse;
+});
+//# sourceMappingURL=converse-chatboxes.js.map;
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+
+/*global define */
+(function (root, factory) {
+  define('converse-chatview',["converse-core", "bootstrap", "emojione", "xss", "tpl!action", "tpl!chatbox", "tpl!chatbox_head", "tpl!chatbox_message_form", "tpl!emojis", "tpl!help_message", "tpl!info", "tpl!message", "tpl!new_day", "tpl!spinner", "tpl!spoiler_button", "tpl!spoiler_message", "tpl!toolbar", "converse-chatboxes"], factory);
+})(void 0, function (converse, bootstrap, emojione, xss, tpl_action, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_help_message, tpl_info, tpl_message, tpl_new_day, tpl_spinner, tpl_spoiler_button, tpl_spoiler_message, tpl_toolbar) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -45007,19 +46994,6 @@ return __p
       //
       // New functions which don't exist yet can also be added.
       //
-      registerGlobalEventHandlers: function registerGlobalEventHandlers() {
-        var _converse = this.__super__._converse;
-
-        this.__super__.registerGlobalEventHandlers();
-
-        _converse.root.addEventListener('click', function (ev) {
-          if (_.includes(ev.target.classList, 'toggle-toolbar-menu') || _.includes(ev.target.classList, 'insert-emoji')) {
-            return;
-          }
-
-          u.slideInAllElements(_converse.root.querySelectorAll('.toolbar-menu'));
-        });
-      },
       ChatBoxViews: {
         onChatBoxAdded: function onChatBoxAdded(item) {
           var _converse = this.__super__._converse;
@@ -45045,7 +47019,7 @@ return __p
           __ = _converse.__;
 
       _converse.api.settings.update({
-        'use_emojione': true,
+        'use_emojione': false,
         'emojione_image_path': emojione.imagePathPNG,
         'chatview_avatar_height': 32,
         'chatview_avatar_width': 32,
@@ -45083,8 +47057,8 @@ return __p
           this.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
         }
       });
-      _converse.EmojiPickerView = Backbone.NativeView.extend({
-        className: 'emoji-picker-container toolbar-menu collapsed',
+      _converse.EmojiPickerView = Backbone.VDOMView.extend({
+        className: 'emoji-picker-container',
         events: {
           'click .emoji-category-picker li.emoji-category': 'chooseCategory',
           'click .emoji-skintone-picker li.emoji-skintone': 'chooseSkinTone'
@@ -45092,26 +47066,15 @@ return __p
         initialize: function initialize() {
           this.model.on('change:current_skintone', this.render, this);
           this.model.on('change:current_category', this.render, this);
-          this.setScrollPosition = _.debounce(this.setScrollPosition, 50);
         },
-        render: function render() {
-          var _this = this;
-
-          var emojis_html = tpl_emojis(_.extend(this.model.toJSON(), {
+        toHTML: function toHTML() {
+          return tpl_emojis(_.extend(this.model.toJSON(), {
             'transform': _converse.use_emojione ? emojione.shortnameToImage : emojione.shortnameToUnicode,
             'emojis_by_category': u.getEmojisByCategory(_converse, emojione),
             'toned_emojis': u.getTonedEmojis(_converse),
             'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
             'shouldBeHidden': this.shouldBeHidden
           }));
-          this.el.innerHTML = emojis_html;
-
-          _.forEach(this.el.querySelectorAll('.emoji-picker'), function (el) {
-            el.addEventListener('scroll', _this.setScrollPosition.bind(_this));
-          });
-
-          this.restoreScrollPosition();
-          return this;
         },
         shouldBeHidden: function shouldBeHidden(shortname, current_skintone, toned_emojis) {
           /* Helper method for the template which decides whether an
@@ -45129,16 +47092,6 @@ return __p
           }
 
           return false;
-        },
-        restoreScrollPosition: function restoreScrollPosition() {
-          var current_picker = _.difference(this.el.querySelectorAll('.emoji-picker'), this.el.querySelectorAll('.emoji-picker.hidden'));
-
-          if (current_picker.length === 1 && this.model.get('scroll_position')) {
-            current_picker[0].scrollTop = this.model.get('scroll_position');
-          }
-        },
-        setScrollPosition: function setScrollPosition(ev) {
-          this.model.save('scroll_position', this.content);
         },
         chooseSkinTone: function chooseSkinTone(ev) {
           ev.preventDefault();
@@ -45228,6 +47181,7 @@ return __p
           _converse.emit('chatBoxInitialized', this);
         },
         render: function render() {
+          // XXX: Is this still needed?
           this.el.setAttribute('id', this.model.get('box_id'));
           this.el.innerHTML = tpl_chatbox(_.extend(this.model.toJSON(), {
             unread_msgs: __('You have unread messages')
@@ -45272,7 +47226,7 @@ return __p
           this.renderToolbar();
         },
         addSpoilerButton: function addSpoilerButton(options) {
-          var _this2 = this;
+          var _this = this;
 
           /* Asynchronously adds a button for writing spoiler
            * messages, based on whether the contact's client supports
@@ -45295,12 +47249,12 @@ return __p
             var supported = _.every(f.map(f.get('supported'))(results));
 
             if (supported) {
-              var html = tpl_spoiler_button(_this2.model.toJSON());
+              var html = tpl_spoiler_button(_this.model.toJSON());
 
               if (_converse.visible_toolbar_buttons.emoji) {
-                _this2.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
+                _this.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
               } else {
-                _this2.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
+                _this.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
               }
             }
           });
@@ -45330,7 +47284,6 @@ return __p
             'label_start_call': __('Start a call'),
             'label_toggle_spoiler': label_toggle_spoiler,
             'show_call_button': _converse.visible_toolbar_buttons.call,
-            'show_clear_button': _converse.visible_toolbar_buttons.clear,
             'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
             'use_emoji': _converse.visible_toolbar_buttons.emoji
           });
@@ -45355,11 +47308,7 @@ return __p
            * as well as src/converse-muc.js (if those plugins are
            * enabled).
            */
-          var container = _converse.root.querySelector('#conversejs');
-
-          if (this.el.parentNode !== container) {
-            container.insertBefore(this.el, container.firstChild);
-          }
+          _converse.chatboxviews.insertRowColumn(this.el);
 
           return this;
         },
@@ -45570,11 +47519,9 @@ return __p
             } else {
               username = attrs.fullname;
             }
-          } else if (attrs.is_spoiler) {
-            template = tpl_spoiler_message;
           } else {
-            template = tpl_message;
             username = attrs.sender === 'me' && __('me') || fullname;
+            template = attrs.is_spoiler ? tpl_spoiler_message : tpl_message;
           }
 
           var msg_time = moment(attrs.time) || moment;
@@ -45604,10 +47551,10 @@ return __p
           return msg;
         },
         showHelpMessages: function showHelpMessages(msgs, type, spinner) {
-          var _this3 = this;
+          var _this2 = this;
 
           _.each(msgs, function (msg) {
-            _this3.content.insertAdjacentHTML('beforeend', tpl_help_message({
+            _this2.content.insertAdjacentHTML('beforeend', tpl_help_message({
               'isodate': moment().format(),
               'type': type || 'info',
               'message': xss.filterXSS(msg, {
@@ -45942,21 +47889,12 @@ return __p
           this.insertIntoTextArea(target.getAttribute('data-emoji'));
         },
         toggleEmojiMenu: function toggleEmojiMenu(ev) {
-          if (u.hasClass('insert-emoji', ev.target)) {
-            return;
-          }
-
-          if (!_.isUndefined(ev)) {
+          if (_.isUndefined(this.emoji_dropdown)) {
             ev.stopPropagation();
-
-            if (ev.target.classList.contains('emoji-category-picker') || ev.target.classList.contains('emoji-skintone-picker') || ev.target.classList.contains('emoji-category')) {
-              return;
-            }
+            var dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
+            this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
+            this.emoji_dropdown.toggle();
           }
-
-          var elements = _.difference(_converse.root.querySelectorAll('.toolbar-menu'), [this.emoji_picker_view.el]);
-
-          u.slideInAllElements(elements).then(_.partial(u.slideToggleElement, this.emoji_picker_view.el)).then(this.focus.bind(this));
         },
         toggleCall: function toggleCall(ev) {
           ev.stopPropagation();
@@ -46062,33 +48000,27 @@ return __p
           this.el.classList.add('hidden');
           return this;
         },
-        afterShown: function afterShown(focus) {
+        afterShown: function afterShown() {
           if (u.isPersistableModel(this.model)) {
             this.model.clearUnreadMsgCounter();
             this.model.save();
           }
 
           this.setChatState(_converse.ACTIVE);
-          this.scrollDown();
           this.renderEmojiPicker();
-
-          if (focus) {
-            this.focus();
-          }
+          this.scrollDown();
+          this.focus();
         },
-        _show: function _show(focus) {
+        _show: function _show(f) {
           /* Inner show method that gets debounced */
           if (u.isVisible(this.el)) {
-            if (focus) {
-              this.focus();
-            }
-
+            this.focus();
             return;
           }
 
-          u.fadeIn(this.el, _.bind(this.afterShown, this, focus));
+          u.fadeIn(this.el, _.bind(this.afterShown, this));
         },
-        show: function show(focus) {
+        show: function show() {
           if (_.isUndefined(this.debouncedShow)) {
             /* We wrap the method in a debouncer and set it on the
              * instance, so that we have it debounced per instance.
@@ -46175,6 +48107,30 @@ return __p
         // Advertise that we support XEP-0382 Message Spoilers
         _converse.connection.disco.addFeature(Strophe.NS.SPOILER);
       });
+      /************************ BEGIN API ************************/
+
+
+      _.extend(_converse.api, {
+        'chatviews': {
+          'get': function get(jids) {
+            if (_.isUndefined(jids)) {
+              _converse.log("chats.create: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+
+              return null;
+            }
+
+            if (_.isString(jids)) {
+              return _converse.chatboxviews.get(jids);
+            }
+
+            return _.map(jids, function (jid) {
+              return _converse.chatboxviews.get(jids);
+            });
+          }
+        }
+      });
+      /************************ END API ************************/
+
     }
   });
   return converse;
@@ -46444,6 +48400,8 @@ Strophe.addConnectionPlugin('disco',
 });
 }));
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -46456,7 +48414,7 @@ Strophe.addConnectionPlugin('disco',
 /*global Backbone, define, window */
 (function (root, factory) {
   define('converse-disco',["converse-core", "sizzle", "strophe.disco"], factory);
-})(this, function (converse, sizzle) {
+})(void 0, function (converse, sizzle) {
   var _converse$env = converse.env,
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
@@ -46847,6 +48805,8 @@ Strophe.RSM.prototype = {
 };
 }));
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -46858,7 +48818,7 @@ Strophe.RSM.prototype = {
 // XEP-0059 Result Set Management
 (function (root, factory) {
   define('converse-mam',["sizzle", "converse-core", "utils", "converse-disco", "strophe.rsm"], factory);
-})(this, function (sizzle, converse, utils) {
+})(void 0, function (sizzle, converse, utils) {
   "use strict";
 
   var CHATROOMS_TYPE = 'chatroom';
@@ -46999,7 +48959,7 @@ Strophe.RSM.prototype = {
   }
 
   converse.plugins.add('converse-mam', {
-    dependencies: ['converse-chatview', 'converse-muc'],
+    dependencies: ['converse-chatview', 'converse-muc', 'converse-muc-views'],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -47569,6 +49529,8 @@ __e(o.value) +
 return __p
 };});
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -47581,7 +49543,7 @@ return __p
 /*global define, escape, Jed */
 (function (root, factory) {
   define('form-utils',["sizzle", "lodash.noconflict", "utils", "tpl!field", "tpl!select_option", "tpl!form_select", "tpl!form_textarea", "tpl!form_checkbox", "tpl!form_username", "tpl!form_input", "tpl!form_captcha", "tpl!form_url"], factory);
-})(this, function (sizzle, _, u, tpl_field, tpl_select_option, tpl_form_select, tpl_form_textarea, tpl_form_checkbox, tpl_form_username, tpl_form_input, tpl_form_captcha, tpl_form_url) {
+})(void 0, function (sizzle, _, u, tpl_field, tpl_select_option, tpl_form_select, tpl_form_textarea, tpl_form_checkbox, tpl_form_username, tpl_form_input, tpl_form_captcha, tpl_form_url) {
   "use strict";
 
   var XFORM_TYPE_MAP = {
@@ -47711,1041 +49673,6 @@ return __p
   return u;
 });
 //# sourceMappingURL=form-utils.js.map;
-
-define('tpl!chatarea', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<div class="chat-area">\n    <div class="chat-content ';
- if (o.show_send_button) { ;
-__p += 'chat-content-sendbutton';
- } ;
-__p += '"></div>\n    <div class="new-msgs-indicator hidden">▼ ' +
-__e( o.unread_msgs ) +
-' ▼</div>\n    <form class="sendXMPPMessage">\n        ';
- if (o.show_toolbar) { ;
-__p += '\n            <ul class="chat-toolbar no-text-select"></ul>\n        ';
- } ;
-__p += '\n        <textarea type="text" class="chat-textarea ';
- if (o.show_send_button) { ;
-__p += 'chat-textarea-send-button';
- } ;
-__p += '"\n                  placeholder="' +
-__e(o.label_message) +
-'"></textarea>\n    ';
- if (o.show_send_button) { ;
-__p += '\n        <button type="submit" class="pure-button send-button">' +
-__e( o.label_send ) +
-'</button>\n    ';
- } ;
-__p += '\n    </form>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!chatroom', ['lodash'], function(_) {return function(o) {
-var __t, __p = '';
-__p += '<div class="flyout box-flyout">\n    <div class="chat-head chat-head-chatroom"></div>\n    <div class="chat-body chatroom-body"></div>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_disconnect', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<p class="disconnect-msg">' +
-__e(o.disconnect_message) +
-'</p>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_features', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-
- if (o.has_features) { ;
-__p += '\n<p class="occupants-heading">' +
-__e(o.label_features) +
-'</p>\n';
- } ;
-__p += '\n<ul class="features-list">\n';
- if (o.passwordprotected) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_passwordprotected ) +
-'"><span class="icon-lock"></span>' +
-__e( o.label_passwordprotected ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.unsecured) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_unsecured ) +
-'"><span class="icon-unlocked"></span>' +
-__e( o.label_unsecured ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.hidden) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_hidden ) +
-'"><span class="icon-eye-blocked"></span>' +
-__e( o.label_hidden ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.public_room) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_public ) +
-'"><span class="icon-eye"></span>' +
-__e( o.label_public ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.membersonly) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_membersonly ) +
-'"><span class="icon-address-book"></span>' +
-__e( o.label_membersonly ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.open) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_open ) +
-'"><span class="icon-globe"></span>' +
-__e( o.label_open ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.persistent) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_persistent ) +
-'"><span class="icon-save"></span>' +
-__e( o.label_persistent ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.temporary) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_temporary ) +
-'"><span class="icon-snowflake"></span>' +
-__e( o.label_temporary ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.nonanonymous) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_nonanonymous ) +
-'"><span class="icon-idcard-dark"></span>' +
-__e( o.label_nonanonymous ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.semianonymous) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_semianonymous ) +
-'"><span class="icon-info"></span>' +
-__e( o.label_semianonymous ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.moderated) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_moderated ) +
-'"><span class="icon-legal"></span>' +
-__e( o.label_moderated ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.unmoderated) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_unmoderated ) +
-'"><span class="icon-info"></span>' +
-__e( o.label_unmoderated ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.mam_enabled) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_mam_enabled ) +
-'"><span class="icon-database"></span>' +
-__e( o.label_mam_enabled ) +
-'</li>\n';
- } ;
-__p += '\n</ul>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_form', ['lodash'], function(_) {return function(o) {
-var __t, __p = '';
-__p += '<div class="chatroom-form-container">\n    <form class="pure-form pure-form-stacked converse-form chatroom-form">\n        <fieldset>\n            <span class="spinner centered"/>\n        </fieldset>\n    </form>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_head', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<a class="chatbox-btn close-chatbox-button icon-close" title="' +
-__e(o.info_close) +
-'"></a>\n';
- if (o.affiliation == 'owner') { ;
-__p += '\n    <a class="chatbox-btn configure-chatroom-button icon-wrench" title="' +
-__e(o.info_configure) +
-' "></a>\n';
- } ;
-__p += '\n<div class="chat-title" title="' +
-__e(o.jid) +
-'">\n    ';
- if (o.name && o.name !== o.Strophe.getNodeFromJid(o.jid)) { ;
-__p += '\n        <span class="chatroom-name">' +
-__e( o.name ) +
-'</span>\n    ';
- } else { ;
-__p += '\n        <span class="chatroom-name">' +
-__e( o.Strophe.getNodeFromJid(o.jid) ) +
-'</span>@' +
-__e( o.Strophe.getDomainFromJid(o.jid) ) +
-'\n    ';
- } ;
-__p += '\n    <p class="chatroom-description">' +
-__e( o.description ) +
-'<p/>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_invite', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<form class="pure-form room-invite">\n    ';
- if (o.error_message) { ;
-__p += '\n        <span class="pure-form-message error">' +
-__e(o.error_message) +
-'</span>\n    ';
- } ;
-__p += '\n    <input class="invited-contact" placeholder="' +
-__e(o.label_invitation) +
-'" type="text"/>\n</form>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_join_form', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<form class="pure-form pure-form-stacked converse-form add-chatroom" action="" method="post">\n    <fieldset>\n        <label>' +
-__e(o.label_room_name) +
-'</label>\n        <input type="text" name="chatroom" class="new-chatroom-name" placeholder="' +
-__e(o.label_room_name) +
-'"/>\n        ';
- if (o.server_input_type != 'hidden') { ;
-__p += '\n        <label' +
-__e(o.server_label_global_attr) +
-'>' +
-__e(o.label_server) +
-'</label>\n        ';
- } ;
-__p += '\n        <input type="' +
-__e(o.server_input_type) +
-'"\n               name="server"\n               class="new-chatroom-server"\n               placeholder="' +
-__e(o.label_server) +
-'"\n               value="' +
-__e(o.muc_domain) +
-'"/>\n        <input type="submit" class="pure-button button-primary" name="join" value="' +
-__e(o.label_join) +
-'"/>\n        <input type="button" class="pure-button button-secondary" name="show" id="show-rooms" value="' +
-__e(o.label_show_rooms) +
-'"/>\n    </fieldset>\n</form>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_nickname_form', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form converse-centered-form">\n        <fieldset>\n            <label>' +
-__e(o.heading) +
-'</label>\n            <p class="validation-message">' +
-__e(o.validation_message) +
-'</p>\n            <input type="text" required="required" name="nick" class="new-chatroom-nick" placeholder="' +
-__e(o.label_nickname) +
-'"/>\n        </fieldset>\n        <fieldset>\n            <input type="submit" class="pure-button button-primary" name="join" value="' +
-__e(o.label_join) +
-'"/>\n        </fieldset>\n    </form>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_password_form', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form">\n        <fieldset>\n            <legend>' +
-__e(o.heading) +
-'</legend>\n            <label>' +
-__e(o.label_password) +
-'</label>\n            <input type="password" name="password"/>\n        </fieldset>\n        <fieldset>\n            <input class="pure-button button-primary" type="submit" value="' +
-__e(o.label_submit) +
-'"/>\n        </fieldset>\n    </form>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_sidebar', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<!-- <div class="occupants"> -->\n<p class="occupants-heading">' +
-__e(o.label_occupants) +
-'</p>\n<ul class="occupant-list"></ul>\n<div class="chatroom-features"></div>\n<!-- </div> -->\n';
-return __p
-};});
-
-
-define('tpl!chatroom_toolbar', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-
- if (o.use_emoji)  { ;
-__p += '\n<li class="toggle-toolbar-menu toggle-smiley">\n    <a class="icon-happy" title="' +
-__e(o.label_insert_smiley) +
-'"></a>\n    <span class="emoji-picker"></span>\n</li>\n';
- } ;
-__p += '\n';
- if (o.show_call_button)  { ;
-__p += '\n<li class="toggle-call"><a class="icon-phone" title="' +
-__e(o.label_start_call) +
-'"></a></li>\n';
- } ;
-__p += '\n';
- if (o.show_occupants_toggle)  { ;
-__p += '\n<li class="toggle-occupants"><a class="icon-hide-users" title="' +
-__e(o.label_hide_occupants) +
-'"></a></li>\n';
- } ;
-__p += '\n';
- if (o.show_clear_button)  { ;
-__p += '\n<li class="toggle-clear"><a class="icon-trash" title="' +
-__e(o.label_clear) +
-'"></a></li>\n';
- } ;
-__p += '\n\n';
-return __p
-};});
-
-
-define('tpl!chatrooms_tab', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<a class="s rooms-tab\n   ';
- if (o.is_current) { ;
-__p += ' current ';
- } ;
-__p += '\n   ';
- if (o.num_unread) { ;
-__p += ' unread-msgs ';
- } ;
-__p += '"\n       data-id="chatrooms" href="#chatrooms">\n    ' +
-__e(o.label_rooms) +
-'\n    ';
- if (o.num_unread) { ;
-__p += '\n        <span class="msgs-indicator">' +
-__e(o. num_unread ) +
-'</span>\n    ';
- } ;
-__p += '\n</a>\n';
-return __p
-};});
-
-
-define('tpl!occupant', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<li class="' +
-__e( o.role ) +
-' occupant" id="' +
-__e( o.id ) +
-'"\n    ';
- if (o.role === "moderator") { ;
-__p += '\n       title="' +
-__e( o.jid ) +
-' ' +
-__e( o.desc_moderator ) +
-' ' +
-__e( o.hint_occupant ) +
-'"\n    ';
- } ;
-__p += '\n    ';
- if (o.role === "occupant") { ;
-__p += '\n       title="' +
-__e( o.jid ) +
-' ' +
-__e( o.desc_occupant ) +
-' ' +
-__e( o.hint_occupant ) +
-'"\n    ';
- } ;
-__p += '\n    ';
- if (o.role === "visitor") { ;
-__p += '\n       title="' +
-__e( o.jid ) +
-' ' +
-__e( o.desc_visitor ) +
-' ' +
-__e( o.hint_occupant ) +
-'"\n    ';
- } ;
-__p += '\n    ';
- if (!_.includes(["visitor", "occupant", "moderator"], o.role)) { ;
-__p += '\n       title="' +
-__e( o.jid ) +
-' ' +
-__e( o.hint_occupant ) +
-'"\n       ';
- } ;
-__p += '><div class="occupant-status occupant-' +
-__e(o.show) +
-' circle" title="' +
-__e(o.hint_show) +
-'"></div>' +
-__e(o.nick) +
-'</li>\n';
-return __p
-};});
-
-
-define('tpl!room_description', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<!-- FIXME: check markup in mockup -->\n<div class="room-info">\n<p class="room-info"><strong>' +
-__e(o.label_jid) +
-'</strong> ' +
-__e(o.jid) +
-'</p>\n<p class="room-info"><strong>' +
-__e(o.label_desc) +
-'</strong> ' +
-__e(o.desc) +
-'</p>\n<p class="room-info"><strong>' +
-__e(o.label_occ) +
-'</strong> ' +
-__e(o.occ) +
-'</p>\n<p class="room-info"><strong>' +
-__e(o.label_features) +
-'</strong>\n    <ul>\n        ';
- if (o.passwordprotected) { ;
-__p += '\n        <li class="room-info locked">' +
-__e(o.label_requires_auth) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.hidden) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_hidden) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.membersonly) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_requires_invite) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.moderated) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_moderated) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.nonanonymous) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_non_anon) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.open) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_open_room) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.persistent) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_permanent_room) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.publicroom) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_public) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.semianonymous) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_semi_anon) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.temporary) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_temp_room) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.unmoderated) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_unmoderated) +
-'</li>\n        ';
- } ;
-__p += '\n    </ul>\n</p>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!room_item', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<dd class="available-chatroom">\n<a class="open-room available-room"\n   data-room-jid="' +
-__e(o.jid) +
-'"\n   title="' +
-__e(o.open_title) +
-'"\n   href="#">' +
-__e(o.name) +
-'</a>\n<a class="right room-info icon-room-info"\n   data-room-jid="' +
-__e(o.jid) +
-'"\n   title="' +
-__e(o.info_title) +
-'" href="#">&nbsp;</a>\n</dd>\n';
-return __p
-};});
-
-
-define('tpl!room_panel', ['lodash'], function(_) {return function(o) {
-var __t, __p = '';
-__p += '<form class="add-chatroom"></form>\n<div class="rooms-list-container">\n    <dl id="available-chatrooms" class="rooms-list"></dl>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!rooms_results', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<dt class="centered">' +
-__e( o.feedback_text ) +
-'</dt>\n';
-return __p
-};});
-
-/**
- * Simple, lightweight, usable local autocomplete library for modern browsers
- * Because there weren’t enough autocomplete scripts in the world? Because I’m completely insane and have NIH syndrome? Probably both. :P
- * @author Lea Verou http://leaverou.github.io/awesomplete
- * MIT license
- */
-
-(function () {
-
-var _ = function (input, o) {
-	var me = this;
-
-	// Setup
-
-	this.isOpened = false;
-
-	this.input = $(input);
-	this.input.setAttribute("autocomplete", "off");
-	this.input.setAttribute("aria-autocomplete", "list");
-
-	o = o || {};
-
-	configure(this, {
-		minChars: 2,
-		maxItems: 10,
-		autoFirst: false,
-		data: _.DATA,
-		filter: _.FILTER_CONTAINS,
-		sort: o.sort === false ? false : _.SORT_BYLENGTH,
-		item: _.ITEM,
-		replace: _.REPLACE
-	}, o);
-
-	this.index = -1;
-
-	// Create necessary elements
-
-	this.container = $.create("div", {
-		className: "awesomplete",
-		around: input
-	});
-
-	this.ul = $.create("ul", {
-		hidden: "hidden",
-		inside: this.container
-	});
-
-	this.status = $.create("span", {
-		className: "visually-hidden",
-		role: "status",
-		"aria-live": "assertive",
-		"aria-relevant": "additions",
-		inside: this.container
-	});
-
-	// Bind events
-
-	this._events = {
-		input: {
-			"input": this.evaluate.bind(this),
-			"blur": this.close.bind(this, { reason: "blur" }),
-			"keydown": function(evt) {
-				var c = evt.keyCode;
-
-				// If the dropdown `ul` is in view, then act on keydown for the following keys:
-				// Enter / Esc / Up / Down
-				if(me.opened) {
-					if (c === 13 && me.selected) { // Enter
-						evt.preventDefault();
-						me.select();
-					}
-					else if (c === 27) { // Esc
-						me.close({ reason: "esc" });
-					}
-					else if (c === 38 || c === 40) { // Down/Up arrow
-						evt.preventDefault();
-						me[c === 38? "previous" : "next"]();
-					}
-				}
-			}
-		},
-		form: {
-			"submit": this.close.bind(this, { reason: "submit" })
-		},
-		ul: {
-			"mousedown": function(evt) {
-				var li = evt.target;
-
-				if (li !== this) {
-
-					while (li && !/li/i.test(li.nodeName)) {
-						li = li.parentNode;
-					}
-
-					if (li && evt.button === 0) {  // Only select on left click
-						evt.preventDefault();
-						me.select(li, evt.target);
-					}
-				}
-			}
-		}
-	};
-
-	$.bind(this.input, this._events.input);
-	$.bind(this.input.form, this._events.form);
-	$.bind(this.ul, this._events.ul);
-
-	if (this.input.hasAttribute("list")) {
-		this.list = "#" + this.input.getAttribute("list");
-		this.input.removeAttribute("list");
-	}
-	else {
-		this.list = this.input.getAttribute("data-list") || o.list || [];
-	}
-
-	_.all.push(this);
-};
-
-_.prototype = {
-	set list(list) {
-		if (Array.isArray(list)) {
-			this._list = list;
-		}
-		else if (typeof list === "string" && list.indexOf(",") > -1) {
-				this._list = list.split(/\s*,\s*/);
-		}
-		else { // Element or CSS selector
-			list = $(list);
-
-			if (list && list.children) {
-				var items = [];
-				slice.apply(list.children).forEach(function (el) {
-					if (!el.disabled) {
-						var text = el.textContent.trim();
-						var value = el.value || text;
-						var label = el.label || text;
-						if (value !== "") {
-							items.push({ label: label, value: value });
-						}
-					}
-				});
-				this._list = items;
-			}
-		}
-
-		if (document.activeElement === this.input) {
-			this.evaluate();
-		}
-	},
-
-	get selected() {
-		return this.index > -1;
-	},
-
-	get opened() {
-		return this.isOpened;
-	},
-
-	close: function (o) {
-		if (!this.opened) {
-			return;
-		}
-
-		this.ul.setAttribute("hidden", "");
-		this.isOpened = false;
-		this.index = -1;
-
-		$.fire(this.input, "awesomplete-close", o || {});
-	},
-
-	open: function () {
-		this.ul.removeAttribute("hidden");
-		this.isOpened = true;
-
-		if (this.autoFirst && this.index === -1) {
-			this.goto(0);
-		}
-
-		$.fire(this.input, "awesomplete-open");
-	},
-
-	destroy: function() {
-		//remove events from the input and its form
-		$.unbind(this.input, this._events.input);
-		$.unbind(this.input.form, this._events.form);
-
-		//move the input out of the awesomplete container and remove the container and its children
-		var parentNode = this.container.parentNode;
-
-		parentNode.insertBefore(this.input, this.container);
-		parentNode.removeChild(this.container);
-
-		//remove autocomplete and aria-autocomplete attributes
-		this.input.removeAttribute("autocomplete");
-		this.input.removeAttribute("aria-autocomplete");
-
-		//remove this awesomeplete instance from the global array of instances
-		var indexOfAwesomplete = _.all.indexOf(this);
-
-		if (indexOfAwesomplete !== -1) {
-			_.all.splice(indexOfAwesomplete, 1);
-		}
-	},
-
-	next: function () {
-		var count = this.ul.children.length;
-		this.goto(this.index < count - 1 ? this.index + 1 : (count ? 0 : -1) );
-	},
-
-	previous: function () {
-		var count = this.ul.children.length;
-		var pos = this.index - 1;
-
-		this.goto(this.selected && pos !== -1 ? pos : count - 1);
-	},
-
-	// Should not be used, highlights specific item without any checks!
-	goto: function (i) {
-		var lis = this.ul.children;
-
-		if (this.selected) {
-			lis[this.index].setAttribute("aria-selected", "false");
-		}
-
-		this.index = i;
-
-		if (i > -1 && lis.length > 0) {
-			lis[i].setAttribute("aria-selected", "true");
-			this.status.textContent = lis[i].textContent;
-
-			// scroll to highlighted element in case parent's height is fixed
-			this.ul.scrollTop = lis[i].offsetTop - this.ul.clientHeight + lis[i].clientHeight;
-
-			$.fire(this.input, "awesomplete-highlight", {
-				text: this.suggestions[this.index]
-			});
-		}
-	},
-
-	select: function (selected, origin) {
-		if (selected) {
-			this.index = $.siblingIndex(selected);
-		} else {
-			selected = this.ul.children[this.index];
-		}
-
-		if (selected) {
-			var suggestion = this.suggestions[this.index];
-
-			var allowed = $.fire(this.input, "awesomplete-select", {
-				text: suggestion,
-				origin: origin || selected
-			});
-
-			if (allowed) {
-				this.replace(suggestion);
-				this.close({ reason: "select" });
-				$.fire(this.input, "awesomplete-selectcomplete", {
-					text: suggestion
-				});
-			}
-		}
-	},
-
-	evaluate: function() {
-		var me = this;
-		var value = this.input.value;
-
-		if (value.length >= this.minChars && this._list.length > 0) {
-			this.index = -1;
-			// Populate list with options that match
-			this.ul.innerHTML = "";
-
-			this.suggestions = this._list
-				.map(function(item) {
-					return new Suggestion(me.data(item, value));
-				})
-				.filter(function(item) {
-					return me.filter(item, value);
-				});
-
-			if (this.sort !== false) {
-				this.suggestions = this.suggestions.sort(this.sort);
-			}
-
-			this.suggestions = this.suggestions.slice(0, this.maxItems);
-
-			this.suggestions.forEach(function(text) {
-					me.ul.appendChild(me.item(text, value));
-				});
-
-			if (this.ul.children.length === 0) {
-				this.close({ reason: "nomatches" });
-			} else {
-				this.open();
-			}
-		}
-		else {
-			this.close({ reason: "nomatches" });
-		}
-	}
-};
-
-// Static methods/properties
-
-_.all = [];
-
-_.FILTER_CONTAINS = function (text, input) {
-	return RegExp($.regExpEscape(input.trim()), "i").test(text);
-};
-
-_.FILTER_STARTSWITH = function (text, input) {
-	return RegExp("^" + $.regExpEscape(input.trim()), "i").test(text);
-};
-
-_.SORT_BYLENGTH = function (a, b) {
-	if (a.length !== b.length) {
-		return a.length - b.length;
-	}
-
-	return a < b? -1 : 1;
-};
-
-_.ITEM = function (text, input) {
-    input = input.trim();
-    var element = document.createElement("li");
-    element.setAttribute("aria-selected", "false");
-
-    var regex = new RegExp("("+input+")", "ig");
-    var parts = input ? text.split(regex) : [text];
-    parts.forEach(function (txt) {
-        if (input && txt.match(regex)) {
-            var match = document.createElement("mark");
-            match.textContent = txt;
-            element.appendChild(match);
-        } else {
-            element.appendChild(document.createTextNode(txt));
-        }
-    });
-    return element;
-};
-
-_.REPLACE = function (text) {
-	this.input.value = text.value;
-};
-
-_.DATA = function (item/*, input*/) { return item; };
-
-// Private functions
-
-function Suggestion(data) {
-	var o = Array.isArray(data)
-	  ? { label: data[0], value: data[1] }
-	  : typeof data === "object" && "label" in data && "value" in data ? data : { label: data, value: data };
-
-	this.label = o.label || o.value;
-	this.value = o.value;
-}
-Object.defineProperty(Suggestion.prototype = Object.create(String.prototype), "length", {
-	get: function() { return this.label.length; }
-});
-Suggestion.prototype.toString = Suggestion.prototype.valueOf = function () {
-	return "" + this.label;
-};
-
-function configure(instance, properties, o) {
-	for (var i in properties) {
-		var initial = properties[i],
-		    attrValue = instance.input.getAttribute("data-" + i.toLowerCase());
-
-		if (typeof initial === "number") {
-			instance[i] = parseInt(attrValue);
-		}
-		else if (initial === false) { // Boolean options must be false by default anyway
-			instance[i] = attrValue !== null;
-		}
-		else if (initial instanceof Function) {
-			instance[i] = null;
-		}
-		else {
-			instance[i] = attrValue;
-		}
-
-		if (!instance[i] && instance[i] !== 0) {
-			instance[i] = (i in o)? o[i] : initial;
-		}
-	}
-}
-
-// Helpers
-
-var slice = Array.prototype.slice;
-
-function $(expr, con) {
-	return typeof expr === "string"? (con || document).querySelector(expr) : expr || null;
-}
-
-function $$(expr, con) {
-	return slice.call((con || document).querySelectorAll(expr));
-}
-
-$.create = function(tag, o) {
-	var element = document.createElement(tag);
-
-	for (var i in o) {
-		var val = o[i];
-
-		if (i === "inside") {
-			$(val).appendChild(element);
-		}
-		else if (i === "around") {
-			var ref = $(val);
-			ref.parentNode.insertBefore(element, ref);
-			element.appendChild(ref);
-		}
-		else if (i in element) {
-			element[i] = val;
-		}
-		else {
-			element.setAttribute(i, val);
-		}
-	}
-
-	return element;
-};
-
-$.bind = function(element, o) {
-	if (element) {
-		for (var event in o) {
-			var callback = o[event];
-
-			event.split(/\s+/).forEach(function (event) {
-				element.addEventListener(event, callback);
-			});
-		}
-	}
-};
-
-$.unbind = function(element, o) {
-	if (element) {
-		for (var event in o) {
-			var callback = o[event];
-
-			event.split(/\s+/).forEach(function(event) {
-				element.removeEventListener(event, callback);
-			});
-		}
-	}
-};
-
-$.fire = function(target, type, properties) {
-	var evt = document.createEvent("HTMLEvents");
-
-	evt.initEvent(type, true, true );
-
-	for (var j in properties) {
-		evt[j] = properties[j];
-	}
-
-	return target.dispatchEvent(evt);
-};
-
-$.regExpEscape = function (s) {
-	return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
-};
-
-$.siblingIndex = function (el) {
-	/* eslint-disable no-cond-assign */
-	for (var i = 0; el = el.previousElementSibling; i++);
-	return i;
-};
-
-// Initialization
-
-function init() {
-	$$("input.awesomplete").forEach(function (input) {
-		new _(input);
-	});
-}
-
-// Are we in a browser? Check for Document constructor
-if (typeof Document !== "undefined") {
-	// DOM already loaded?
-	if (document.readyState !== "loading") {
-		init();
-	}
-	else {
-		// Wait for it
-		document.addEventListener("DOMContentLoaded", init);
-	}
-}
-
-_.$ = $;
-_.$$ = $$;
-
-// Make sure to export Awesomplete on self when in a browser
-if (typeof self !== "undefined") {
-	self.Awesomplete = _;
-}
-
-// Expose Awesomplete as a CJS module
-if (typeof module === "object" && module.exports) {
-	module.exports = _;
-}
-
-return _;
-
-}());
-
-define("awesomplete", (function (global) {
-    return function () {
-        var ret, fn;
-        return ret || global.Awesomplete;
-    };
-}(this)));
-
 /*!
  * Backbone.OrderedListView
  *
@@ -49742,6 +50669,8 @@ exports.default = vnode;
 });
 //# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5vZGVfbW9kdWxlcy8ucmVnaXN0cnkubnBtanMub3JnL2Jyb3dzZXItcGFjay82LjAuMi9ub2RlX21vZHVsZXMvYnJvd3Nlci1wYWNrL19wcmVsdWRlLmpzIiwiaHRtbGRvbWFwaS5qcyIsInRvdm5vZGUuanMiLCJ2bm9kZS5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtBQ0FBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUNqRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUMzQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EiLCJmaWxlIjoiZ2VuZXJhdGVkLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXNDb250ZW50IjpbIihmdW5jdGlvbiBlKHQsbixyKXtmdW5jdGlvbiBzKG8sdSl7aWYoIW5bb10pe2lmKCF0W29dKXt2YXIgYT10eXBlb2YgcmVxdWlyZT09XCJmdW5jdGlvblwiJiZyZXF1aXJlO2lmKCF1JiZhKXJldHVybiBhKG8sITApO2lmKGkpcmV0dXJuIGkobywhMCk7dmFyIGY9bmV3IEVycm9yKFwiQ2Fubm90IGZpbmQgbW9kdWxlICdcIitvK1wiJ1wiKTt0aHJvdyBmLmNvZGU9XCJNT0RVTEVfTk9UX0ZPVU5EXCIsZn12YXIgbD1uW29dPXtleHBvcnRzOnt9fTt0W29dWzBdLmNhbGwobC5leHBvcnRzLGZ1bmN0aW9uKGUpe3ZhciBuPXRbb11bMV1bZV07cmV0dXJuIHMobj9uOmUpfSxsLGwuZXhwb3J0cyxlLHQsbixyKX1yZXR1cm4gbltvXS5leHBvcnRzfXZhciBpPXR5cGVvZiByZXF1aXJlPT1cImZ1bmN0aW9uXCImJnJlcXVpcmU7Zm9yKHZhciBvPTA7bzxyLmxlbmd0aDtvKyspcyhyW29dKTtyZXR1cm4gc30pIiwiXCJ1c2Ugc3RyaWN0XCI7XG5PYmplY3QuZGVmaW5lUHJvcGVydHkoZXhwb3J0cywgXCJfX2VzTW9kdWxlXCIsIHsgdmFsdWU6IHRydWUgfSk7XG5mdW5jdGlvbiBjcmVhdGVFbGVtZW50KHRhZ05hbWUpIHtcbiAgICByZXR1cm4gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCh0YWdOYW1lKTtcbn1cbmZ1bmN0aW9uIGNyZWF0ZUVsZW1lbnROUyhuYW1lc3BhY2VVUkksIHF1YWxpZmllZE5hbWUpIHtcbiAgICByZXR1cm4gZG9jdW1lbnQuY3JlYXRlRWxlbWVudE5TKG5hbWVzcGFjZVVSSSwgcXVhbGlmaWVkTmFtZSk7XG59XG5mdW5jdGlvbiBjcmVhdGVUZXh0Tm9kZSh0ZXh0KSB7XG4gICAgcmV0dXJuIGRvY3VtZW50LmNyZWF0ZVRleHROb2RlKHRleHQpO1xufVxuZnVuY3Rpb24gY3JlYXRlQ29tbWVudCh0ZXh0KSB7XG4gICAgcmV0dXJuIGRvY3VtZW50LmNyZWF0ZUNvbW1lbnQodGV4dCk7XG59XG5mdW5jdGlvbiBpbnNlcnRCZWZvcmUocGFyZW50Tm9kZSwgbmV3Tm9kZSwgcmVmZXJlbmNlTm9kZSkge1xuICAgIHBhcmVudE5vZGUuaW5zZXJ0QmVmb3JlKG5ld05vZGUsIHJlZmVyZW5jZU5vZGUpO1xufVxuZnVuY3Rpb24gcmVtb3ZlQ2hpbGQobm9kZSwgY2hpbGQpIHtcbiAgICBub2RlLnJlbW92ZUNoaWxkKGNoaWxkKTtcbn1cbmZ1bmN0aW9uIGFwcGVuZENoaWxkKG5vZGUsIGNoaWxkKSB7XG4gICAgbm9kZS5hcHBlbmRDaGlsZChjaGlsZCk7XG59XG5mdW5jdGlvbiBwYXJlbnROb2RlKG5vZGUpIHtcbiAgICByZXR1cm4gbm9kZS5wYXJlbnROb2RlO1xufVxuZnVuY3Rpb24gbmV4dFNpYmxpbmcobm9kZSkge1xuICAgIHJldHVybiBub2RlLm5leHRTaWJsaW5nO1xufVxuZnVuY3Rpb24gdGFnTmFtZShlbG0pIHtcbiAgICByZXR1cm4gZWxtLnRhZ05hbWU7XG59XG5mdW5jdGlvbiBzZXRUZXh0Q29udGVudChub2RlLCB0ZXh0KSB7XG4gICAgbm9kZS50ZXh0Q29udGVudCA9IHRleHQ7XG59XG5mdW5jdGlvbiBnZXRUZXh0Q29udGVudChub2RlKSB7XG4gICAgcmV0dXJuIG5vZGUudGV4dENvbnRlbnQ7XG59XG5mdW5jdGlvbiBpc0VsZW1lbnQobm9kZSkge1xuICAgIHJldHVybiBub2RlLm5vZGVUeXBlID09PSAxO1xufVxuZnVuY3Rpb24gaXNUZXh0KG5vZGUpIHtcbiAgICByZXR1cm4gbm9kZS5ub2RlVHlwZSA9PT0gMztcbn1cbmZ1bmN0aW9uIGlzQ29tbWVudChub2RlKSB7XG4gICAgcmV0dXJuIG5vZGUubm9kZVR5cGUgPT09IDg7XG59XG5leHBvcnRzLmh0bWxEb21BcGkgPSB7XG4gICAgY3JlYXRlRWxlbWVudDogY3JlYXRlRWxlbWVudCxcbiAgICBjcmVhdGVFbGVtZW50TlM6IGNyZWF0ZUVsZW1lbnROUyxcbiAgICBjcmVhdGVUZXh0Tm9kZTogY3JlYXRlVGV4dE5vZGUsXG4gICAgY3JlYXRlQ29tbWVudDogY3JlYXRlQ29tbWVudCxcbiAgICBpbnNlcnRCZWZvcmU6IGluc2VydEJlZm9yZSxcbiAgICByZW1vdmVDaGlsZDogcmVtb3ZlQ2hpbGQsXG4gICAgYXBwZW5kQ2hpbGQ6IGFwcGVuZENoaWxkLFxuICAgIHBhcmVudE5vZGU6IHBhcmVudE5vZGUsXG4gICAgbmV4dFNpYmxpbmc6IG5leHRTaWJsaW5nLFxuICAgIHRhZ05hbWU6IHRhZ05hbWUsXG4gICAgc2V0VGV4dENvbnRlbnQ6IHNldFRleHRDb250ZW50LFxuICAgIGdldFRleHRDb250ZW50OiBnZXRUZXh0Q29udGVudCxcbiAgICBpc0VsZW1lbnQ6IGlzRWxlbWVudCxcbiAgICBpc1RleHQ6IGlzVGV4dCxcbiAgICBpc0NvbW1lbnQ6IGlzQ29tbWVudCxcbn07XG5leHBvcnRzLmRlZmF1bHQgPSBleHBvcnRzLmh0bWxEb21BcGk7XG4vLyMgc291cmNlTWFwcGluZ1VSTD1odG1sZG9tYXBpLmpzLm1hcCIsIlwidXNlIHN0cmljdFwiO1xuT2JqZWN0LmRlZmluZVByb3BlcnR5KGV4cG9ydHMsIFwiX19lc01vZHVsZVwiLCB7IHZhbHVlOiB0cnVlIH0pO1xudmFyIHZub2RlXzEgPSByZXF1aXJlKFwiLi92bm9kZVwiKTtcbnZhciBodG1sZG9tYXBpXzEgPSByZXF1aXJlKFwiLi9odG1sZG9tYXBpXCIpO1xuZnVuY3Rpb24gdG9WTm9kZShub2RlLCBkb21BcGkpIHtcbiAgICB2YXIgYXBpID0gZG9tQXBpICE9PSB1bmRlZmluZWQgPyBkb21BcGkgOiBodG1sZG9tYXBpXzEuZGVmYXVsdDtcbiAgICB2YXIgdGV4dDtcbiAgICBpZiAoYXBpLmlzRWxlbWVudChub2RlKSkge1xuICAgICAgICB2YXIgaWQgPSBub2RlLmlkID8gJyMnICsgbm9kZS5pZCA6ICcnO1xuICAgICAgICB2YXIgY24gPSBub2RlLmdldEF0dHJpYnV0ZSgnY2xhc3MnKTtcbiAgICAgICAgdmFyIGMgPSBjbiA/ICcuJyArIGNuLnNwbGl0KCcgJykuam9pbignLicpIDogJyc7XG4gICAgICAgIHZhciBzZWwgPSBhcGkudGFnTmFtZShub2RlKS50b0xvd2VyQ2FzZSgpICsgaWQgKyBjO1xuICAgICAgICB2YXIgYXR0cnMgPSB7fTtcbiAgICAgICAgdmFyIGNoaWxkcmVuID0gW107XG4gICAgICAgIHZhciBuYW1lXzE7XG4gICAgICAgIHZhciBpID0gdm9pZCAwLCBuID0gdm9pZCAwO1xuICAgICAgICB2YXIgZWxtQXR0cnMgPSBub2RlLmF0dHJpYnV0ZXM7XG4gICAgICAgIHZhciBlbG1DaGlsZHJlbiA9IG5vZGUuY2hpbGROb2RlcztcbiAgICAgICAgZm9yIChpID0gMCwgbiA9IGVsbUF0dHJzLmxlbmd0aDsgaSA8IG47IGkrKykge1xuICAgICAgICAgICAgbmFtZV8xID0gZWxtQXR0cnNbaV0ubm9kZU5hbWU7XG4gICAgICAgICAgICBpZiAobmFtZV8xICE9PSAnaWQnICYmIG5hbWVfMSAhPT0gJ2NsYXNzJykge1xuICAgICAgICAgICAgICAgIGF0dHJzW25hbWVfMV0gPSBlbG1BdHRyc1tpXS5ub2RlVmFsdWU7XG4gICAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgICAgZm9yIChpID0gMCwgbiA9IGVsbUNoaWxkcmVuLmxlbmd0aDsgaSA8IG47IGkrKykge1xuICAgICAgICAgICAgY2hpbGRyZW4ucHVzaCh0b1ZOb2RlKGVsbUNoaWxkcmVuW2ldKSk7XG4gICAgICAgIH1cbiAgICAgICAgcmV0dXJuIHZub2RlXzEuZGVmYXVsdChzZWwsIHsgYXR0cnM6IGF0dHJzIH0sIGNoaWxkcmVuLCB1bmRlZmluZWQsIG5vZGUpO1xuICAgIH1cbiAgICBlbHNlIGlmIChhcGkuaXNUZXh0KG5vZGUpKSB7XG4gICAgICAgIHRleHQgPSBhcGkuZ2V0VGV4dENvbnRlbnQobm9kZSk7XG4gICAgICAgIHJldHVybiB2bm9kZV8xLmRlZmF1bHQodW5kZWZpbmVkLCB1bmRlZmluZWQsIHVuZGVmaW5lZCwgdGV4dCwgbm9kZSk7XG4gICAgfVxuICAgIGVsc2UgaWYgKGFwaS5pc0NvbW1lbnQobm9kZSkpIHtcbiAgICAgICAgdGV4dCA9IGFwaS5nZXRUZXh0Q29udGVudChub2RlKTtcbiAgICAgICAgcmV0dXJuIHZub2RlXzEuZGVmYXVsdCgnIScsIHt9LCBbXSwgdGV4dCwgbm9kZSk7XG4gICAgfVxuICAgIGVsc2Uge1xuICAgICAgICByZXR1cm4gdm5vZGVfMS5kZWZhdWx0KCcnLCB7fSwgW10sIHVuZGVmaW5lZCwgdW5kZWZpbmVkKTtcbiAgICB9XG59XG5leHBvcnRzLnRvVk5vZGUgPSB0b1ZOb2RlO1xuZXhwb3J0cy5kZWZhdWx0ID0gdG9WTm9kZTtcbi8vIyBzb3VyY2VNYXBwaW5nVVJMPXRvdm5vZGUuanMubWFwIiwiXCJ1c2Ugc3RyaWN0XCI7XG5PYmplY3QuZGVmaW5lUHJvcGVydHkoZXhwb3J0cywgXCJfX2VzTW9kdWxlXCIsIHsgdmFsdWU6IHRydWUgfSk7XG5mdW5jdGlvbiB2bm9kZShzZWwsIGRhdGEsIGNoaWxkcmVuLCB0ZXh0LCBlbG0pIHtcbiAgICB2YXIga2V5ID0gZGF0YSA9PT0gdW5kZWZpbmVkID8gdW5kZWZpbmVkIDogZGF0YS5rZXk7XG4gICAgcmV0dXJuIHsgc2VsOiBzZWwsIGRhdGE6IGRhdGEsIGNoaWxkcmVuOiBjaGlsZHJlbixcbiAgICAgICAgdGV4dDogdGV4dCwgZWxtOiBlbG0sIGtleToga2V5IH07XG59XG5leHBvcnRzLnZub2RlID0gdm5vZGU7XG5leHBvcnRzLmRlZmF1bHQgPSB2bm9kZTtcbi8vIyBzb3VyY2VNYXBwaW5nVVJMPXZub2RlLmpzLm1hcCJdfQ==
 ;
+
+
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*!
@@ -49756,7 +50685,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     // CommonJS-like environments
     module.exports = factory(require('snabbdom'), require('snabbdom-attributes'), require('snabbdom-class'), require('snabbdom-dataset'), require('snabbdom-props'), require('snabbdom-style'), require('tovnode'), require('underscore'), require('backbone'));
   }
-})(this, function (snabbdom, snabbdom_attributes, snabbdom_class, snabbdom_dataset, snabbdom_props, snabbdom_style, tovnode, _, Backbone) {
+})(void 0, function (snabbdom, snabbdom_attributes, snabbdom_class, snabbdom_dataset, snabbdom_props, snabbdom_style, tovnode, _, Backbone) {
   "use strict";
 
   var domParser = new DOMParser();
@@ -49825,6 +50754,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   return Backbone.VDOMView;
 });
 //# sourceMappingURL=backbone.vdomview.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -49838,12 +50769,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  * specified in XEP-0045 Multi-user chat.
  */
 (function (root, factory) {
-  define('converse-muc',["form-utils", "converse-core", "emojione", "lodash.fp", "tpl!chatarea", "tpl!chatroom", "tpl!chatroom_disconnect", "tpl!chatroom_features", "tpl!chatroom_form", "tpl!chatroom_head", "tpl!chatroom_invite", "tpl!chatroom_join_form", "tpl!chatroom_nickname_form", "tpl!chatroom_password_form", "tpl!chatroom_sidebar", "tpl!chatroom_toolbar", "tpl!chatrooms_tab", "tpl!info", "tpl!occupant", "tpl!room_description", "tpl!room_item", "tpl!room_panel", "tpl!rooms_results", "tpl!spinner", "awesomplete", "converse-chatview", "converse-disco", "backbone.overview", "backbone.orderedlistview", "backbone.vdomview"], factory);
-})(this, function (u, converse, emojione, f, tpl_chatarea, tpl_chatroom, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_join_form, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_chatrooms_tab, tpl_info, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
+  define('converse-muc',["form-utils", "converse-core", "converse-chatview", "converse-disco", "backbone.overview", "backbone.orderedlistview", "backbone.vdomview"], factory);
+})(void 0, function (u, converse) {
   "use strict";
 
-  var ROOMS_PANEL_ID = 'chatrooms';
-  var CHATROOMS_TYPE = 'chatroom';
   var MUC_ROLE_WEIGHTS = {
     'moderator': 1,
     'participant': 2,
@@ -49868,21 +50797,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   Strophe.addNamespace('MUC_REGISTER', "jabber:iq:register");
   Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
   Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
-  var ROOM_FEATURES = ['passwordprotected', 'unsecured', 'hidden', 'publicroom', 'membersonly', 'open', 'persistent', 'temporary', 'nonanonymous', 'semianonymous', 'moderated', 'unmoderated', 'mam_enabled'];
-  var ROOM_FEATURES_MAP = {
-    'passwordprotected': 'unsecured',
-    'unsecured': 'passwordprotected',
-    'hidden': 'publicroom',
-    'publicroom': 'hidden',
-    'membersonly': 'open',
-    'open': 'membersonly',
-    'persistent': 'temporary',
-    'temporary': 'persistent',
-    'nonanonymous': 'semianonymous',
-    'semianonymous': 'nonanonymous',
-    'moderated': 'unmoderated',
-    'unmoderated': 'moderated'
-  };
+  converse.CHATROOMS_TYPE = 'chatroom';
+  converse.ROOM_FEATURES = ['passwordprotected', 'unsecured', 'hidden', 'publicroom', 'membersonly', 'open', 'persistent', 'temporary', 'nonanonymous', 'semianonymous', 'moderated', 'unmoderated', 'mam_enabled'];
   converse.ROOMSTATUS = {
     CONNECTED: 0,
     CONNECTING: 1,
@@ -49913,7 +50829,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       // New functions which don't exist yet can also be added.
       _tearDown: function _tearDown() {
         var rooms = this.chatboxes.where({
-          'type': CHATROOMS_TYPE
+          'type': converse.CHATROOMS_TYPE
         });
 
         _.each(rooms, function (room) {
@@ -49928,56 +50844,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         model: function model(attrs, options) {
           var _converse = this.__super__._converse;
 
-          if (attrs.type == CHATROOMS_TYPE) {
+          if (attrs.type == converse.CHATROOMS_TYPE) {
             return new _converse.ChatRoom(attrs, options);
           } else {
             return this.__super__.model.apply(this, arguments);
-          }
-        }
-      },
-      ControlBoxView: {
-        renderRoomsPanel: function renderRoomsPanel() {
-          var _converse = this.__super__._converse;
-          this.roomspanel = new _converse.RoomsPanel({
-            'parent': this.el.querySelector('.controlbox-panes'),
-            'model': new (_converse.RoomsPanelModel.extend({
-              id: b64_sha1("converse.roomspanel".concat(_converse.bare_jid)),
-              // Required by sessionStorage
-              browserStorage: new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.roomspanel".concat(_converse.bare_jid)))
-            }))()
-          });
-          this.roomspanel.insertIntoDOM().model.fetch();
-
-          if (!this.roomspanel.model.get('nick')) {
-            this.roomspanel.model.save({
-              nick: Strophe.getNodeFromJid(_converse.bare_jid)
-            });
-          }
-
-          _converse.emit('roomsPanelRendered');
-        },
-        renderContactsPanel: function renderContactsPanel() {
-          var _converse = this.__super__._converse;
-
-          this.__super__.renderContactsPanel.apply(this, arguments);
-
-          if (_converse.allow_muc) {
-            this.renderRoomsPanel();
-          }
-        }
-      },
-      ChatBoxViews: {
-        onChatBoxAdded: function onChatBoxAdded(item) {
-          var _converse = this.__super__._converse;
-          var view = this.get(item.get('id'));
-
-          if (!view && item.get('type') === CHATROOMS_TYPE) {
-            view = new _converse.ChatRoomView({
-              'model': item
-            });
-            return this.add(item.get('id'), view);
-          } else {
-            return this.__super__.onChatBoxAdded.apply(this, arguments);
           }
         }
       }
@@ -50091,7 +50961,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }
       });
 
-      _converse.api.promises.add(['roomsPanelRendered', 'roomsAutoJoined']);
+      _converse.api.promises.add(['roomsAutoJoined']);
 
       function openRoom(jid) {
         if (!u.isValidMUCJID(jid)) {
@@ -50111,24 +50981,24 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
       _converse.router.route('converse/room?jid=:jid', openRoom);
 
-      function _openChatRoom(settings, bring_to_foreground) {
+      _converse.openChatRoom = function (jid, settings, bring_to_foreground) {
         /* Opens a chat room, making sure that certain attributes
          * are correct, for example that the "type" is set to
          * "chatroom".
          */
-        if (_.isUndefined(settings.jid)) {
-          throw new Error("openChatRoom needs to be called with a JID");
-        }
+        settings.type = converse.CHATROOMS_TYPE;
+        settings.id = jid;
+        settings.box_id = b64_sha1(jid);
 
-        settings.type = CHATROOMS_TYPE;
-        settings.id = settings.jid;
-        settings.box_id = b64_sha1(settings.jid);
-        return _converse.chatboxviews.showChat(settings, bring_to_foreground);
-      }
+        var chatbox = _converse.chatboxes.getChatBox(jid, settings, true);
+
+        chatbox.trigger('show', true);
+        return chatbox;
+      };
 
       _converse.ChatRoom = _converse.ChatBox.extend({
         defaults: function defaults() {
-          return _.assign(_.clone(_converse.ChatBox.prototype.defaults), _.zipObject(ROOM_FEATURES, _.map(ROOM_FEATURES, _.stubFalse)), {
+          return _.assign(_.clone(_converse.ChatBox.prototype.defaults), _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)), {
             // For group chats, we distinguish between generally unread
             // messages and those ones that specifically mention the
             // user.
@@ -50144,7 +51014,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             'description': '',
             'features_fetched': false,
             'roomconfig': {},
-            'type': CHATROOMS_TYPE
+            'type': converse.CHATROOMS_TYPE
           });
         },
         isUserMentioned: function isUserMentioned(message) {
@@ -50190,1925 +51060,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           });
         }
       });
-      _converse.ChatRoomView = _converse.ChatBoxView.extend({
-        /* Backbone.NativeView which renders a chat room, based upon the view
-         * for normal one-on-one chat boxes.
-         */
-        length: 300,
-        tagName: 'div',
-        className: 'chatbox chatroom hidden',
-        is_chatroom: true,
-        events: {
-          'click .close-chatbox-button': 'close',
-          'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
-          'click .toggle-smiley': 'toggleEmojiMenu',
-          'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
-          'click .toggle-clear': 'clearChatRoomMessages',
-          'click .toggle-call': 'toggleCall',
-          'click .toggle-occupants a': 'toggleOccupants',
-          'click .new-msgs-indicator': 'viewUnreadMessages',
-          'click .occupant': 'onOccupantClicked',
-          'keypress .chat-textarea': 'keyPressed',
-          'click .send-button': 'onFormSubmitted'
-        },
-        initialize: function initialize() {
-          var _this = this;
-
-          this.scrollDown = _.debounce(this._scrollDown, 250);
-          this.markScrolled = _.debounce(this._markScrolled, 100);
-          this.model.messages.on('add', this.onMessageAdded, this);
-          this.model.on('show', this.show, this);
-          this.model.on('destroy', this.hide, this);
-          this.model.on('change:connection_status', this.afterConnected, this);
-          this.model.on('change:affiliation', this.renderHeading, this);
-          this.model.on('change:chat_state', this.sendChatState, this);
-          this.model.on('change:description', this.renderHeading, this);
-          this.model.on('change:name', this.renderHeading, this);
-          this.createEmojiPicker();
-          this.createOccupantsView();
-          this.render().insertIntoDOM();
-          this.registerHandlers();
-
-          if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
-            var handler = function handler() {
-              _this.join();
-
-              _this.fetchMessages();
-
-              _converse.emit('chatRoomOpened', _this);
-            };
-
-            this.getRoomFeatures().then(handler, handler);
-          } else {
-            this.fetchMessages();
-
-            _converse.emit('chatRoomOpened', this);
-          }
-        },
-        render: function render() {
-          this.el.setAttribute('id', this.model.get('box_id'));
-          this.el.innerHTML = tpl_chatroom();
-          this.renderHeading();
-          this.renderChatArea();
-
-          if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
-            this.showSpinner();
-          }
-
-          return this;
-        },
-        renderHeading: function renderHeading() {
-          /* Render the heading UI of the chat room. */
-          this.el.querySelector('.chat-head-chatroom').innerHTML = this.generateHeadingHTML();
-        },
-        renderChatArea: function renderChatArea() {
-          /* Render the UI container in which chat room messages will appear.
-           */
-          if (_.isNull(this.el.querySelector('.chat-area'))) {
-            var container_el = this.el.querySelector('.chatroom-body');
-            container_el.innerHTML = tpl_chatarea({
-              'label_message': __('Message'),
-              'label_send': __('Send'),
-              'show_send_button': _converse.show_send_button,
-              'show_toolbar': _converse.show_toolbar,
-              'unread_msgs': __('You have unread messages')
-            });
-            container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
-            this.renderToolbar(tpl_chatroom_toolbar);
-            this.content = this.el.querySelector('.chat-content');
-            this.toggleOccupants(null, true);
-          }
-
-          return this;
-        },
-        createOccupantsView: function createOccupantsView() {
-          /* Create the ChatRoomOccupantsView Backbone.NativeView
-           */
-          var model = new _converse.ChatRoomOccupants();
-          model.chatroomview = this;
-          this.occupantsview = new _converse.ChatRoomOccupantsView({
-            'model': model
-          });
-          this.occupantsview.model.on('change:role', this.informOfOccupantsRoleChange, this);
-          return this;
-        },
-        informOfOccupantsRoleChange: function informOfOccupantsRoleChange(occupant, changed) {
-          var previous_role = occupant._previousAttributes.role;
-
-          if (previous_role === 'moderator') {
-            this.showStatusNotification(__("%1$s is no longer a moderator.", occupant.get('nick')), false, true);
-          }
-
-          if (previous_role === 'visitor') {
-            this.showStatusNotification(__("%1$s has been given a voice again.", occupant.get('nick')), false, true);
-          }
-
-          if (occupant.get('role') === 'visitor') {
-            this.showStatusNotification(__("%1$s has been muted.", occupant.get('nick')), false, true);
-          }
-
-          if (occupant.get('role') === 'moderator') {
-            this.showStatusNotification(__("%1$s is now a moderator.", occupant.get('nick')), false, true);
-          }
-        },
-        generateHeadingHTML: function generateHeadingHTML() {
-          /* Returns the heading HTML to be rendered.
-           */
-          return tpl_chatroom_head(_.extend(this.model.toJSON(), {
-            Strophe: Strophe,
-            info_close: __('Close and leave this room'),
-            info_configure: __('Configure this room'),
-            description: this.model.get('description') || ''
-          }));
-        },
-        afterShown: function afterShown(focus) {
-          /* Override from converse-chatview, specifically to avoid
-           * the 'active' chat state from being sent out prematurely.
-           *
-           * This is instead done in `afterConnected` below.
-           */
-          if (u.isPersistableModel(this.model)) {
-            this.model.clearUnreadMsgCounter();
-            this.model.save();
-          }
-
-          this.occupantsview.setOccupantsHeight();
-          this.scrollDown();
-
-          if (focus) {
-            this.focus();
-          }
-        },
-        show: function show(focus) {
-          if (u.isVisible(this.el)) {
-            if (focus) {
-              this.focus();
-            }
-
-            return;
-          } // Override from converse-chatview in order to not use
-          // "fadeIn", which causes flashing.
-
-
-          u.showElement(this.el);
-          this.afterShown(focus);
-        },
-        afterConnected: function afterConnected() {
-          if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
-            this.setChatState(_converse.ACTIVE);
-            this.scrollDown();
-            this.renderEmojiPicker();
-            this.focus();
-          }
-        },
-        getExtraMessageClasses: function getExtraMessageClasses(attrs) {
-          var extra_classes = _converse.ChatBoxView.prototype.getExtraMessageClasses.apply(this, arguments);
-
-          if (this.is_chatroom && attrs.sender === 'them' && this.model.isUserMentioned(attrs.message)) {
-            // Add special class to mark groupchat messages
-            // in which we are mentioned.
-            extra_classes += ' mentioned';
-          }
-
-          return extra_classes;
-        },
-        getToolbarOptions: function getToolbarOptions() {
-          return _.extend(_converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments), {
-            label_hide_occupants: __('Hide the list of occupants'),
-            show_occupants_toggle: this.is_chatroom && _converse.visible_toolbar_buttons.toggle_occupants
-          });
-        },
-        close: function close(ev) {
-          /* Close this chat box, which implies leaving the room as
-           * well.
-           */
-          this.leave();
-        },
-        setOccupantsVisibility: function setOccupantsVisibility() {
-          if (this.model.get('hidden_occupants')) {
-            var icon_el = this.el.querySelector('.icon-hide-users');
-
-            if (!_.isNull(icon_el)) {
-              icon_el.classList.remove('icon-hide-users');
-              icon_el.classList.add('icon-show-users');
-            }
-
-            this.el.querySelector('.chat-area').classList.add('full');
-            u.hideElement(this.el.querySelector('.occupants'));
-          } else {
-            var _icon_el = this.el.querySelector('.icon-show-users');
-
-            if (!_.isNull(_icon_el)) {
-              _icon_el.classList.remove('icon-show-users');
-
-              _icon_el.classList.add('icon-hide-users');
-            }
-
-            this.el.querySelector('.chat-area').classList.remove('full');
-            this.el.querySelector('.occupants').classList.remove('hidden');
-          }
-
-          this.occupantsview.setOccupantsHeight();
-        },
-        toggleOccupants: function toggleOccupants(ev, preserve_state) {
-          /* Show or hide the right sidebar containing the chat
-           * occupants (and the invite widget).
-           */
-          if (ev) {
-            ev.preventDefault();
-            ev.stopPropagation();
-          }
-
-          if (!preserve_state) {
-            this.model.set({
-              'hidden_occupants': !this.model.get('hidden_occupants')
-            });
-          }
-
-          this.setOccupantsVisibility();
-          this.scrollDown();
-        },
-        onOccupantClicked: function onOccupantClicked(ev) {
-          /* When an occupant is clicked, insert their nickname into
-           * the chat textarea input.
-           */
-          this.insertIntoTextArea(ev.target.textContent);
-        },
-        requestMemberList: function requestMemberList(chatroom_jid, affiliation) {
-          /* Send an IQ stanza to the server, asking it for the
-           * member-list of this room.
-           *
-           * See: http://xmpp.org/extensions/xep-0045.html#modifymember
-           *
-           * Parameters:
-           *  (String) chatroom_jid: The JID of the chatroom for
-           *      which the member-list is being requested
-           *  (String) affiliation: The specific member list to
-           *      fetch. 'admin', 'owner' or 'member'.
-           *
-           * Returns:
-           *  A promise which resolves once the list has been
-           *  retrieved.
-           */
-          return new Promise(function (resolve, reject) {
-            affiliation = affiliation || 'member';
-            var iq = $iq({
-              to: chatroom_jid,
-              type: "get"
-            }).c("query", {
-              xmlns: Strophe.NS.MUC_ADMIN
-            }).c("item", {
-              'affiliation': affiliation
-            });
-
-            _converse.connection.sendIQ(iq, resolve, reject);
-          });
-        },
-        parseMemberListIQ: function parseMemberListIQ(iq) {
-          /* Given an IQ stanza with a member list, create an array of member
-           * objects.
-           */
-          return _.map(sizzle("query[xmlns=\"".concat(Strophe.NS.MUC_ADMIN, "\"] item"), iq), function (item) {
-            return {
-              'jid': item.getAttribute('jid'),
-              'affiliation': item.getAttribute('affiliation')
-            };
-          });
-        },
-        computeAffiliationsDelta: function computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list) {
-          /* Given two lists of objects with 'jid', 'affiliation' and
-           * 'reason' properties, return a new list containing
-           * those objects that are new, changed or removed
-           * (depending on the 'remove_absentees' boolean).
-           *
-           * The affiliations for new and changed members stay the
-           * same, for removed members, the affiliation is set to 'none'.
-           *
-           * The 'reason' property is not taken into account when
-           * comparing whether affiliations have been changed.
-           *
-           * Parameters:
-           *  (Boolean) exclude_existing: Indicates whether JIDs from
-           *      the new list which are also in the old list
-           *      (regardless of affiliation) should be excluded
-           *      from the delta. One reason to do this
-           *      would be when you want to add a JID only if it
-           *      doesn't have *any* existing affiliation at all.
-           *  (Boolean) remove_absentees: Indicates whether JIDs
-           *      from the old list which are not in the new list
-           *      should be considered removed and therefore be
-           *      included in the delta with affiliation set
-           *      to 'none'.
-           *  (Array) new_list: Array containing the new affiliations
-           *  (Array) old_list: Array containing the old affiliations
-           */
-          var new_jids = _.map(new_list, 'jid');
-
-          var old_jids = _.map(old_list, 'jid'); // Get the new affiliations
-
-
-          var delta = _.map(_.difference(new_jids, old_jids), function (jid) {
-            return new_list[_.indexOf(new_jids, jid)];
-          });
-
-          if (!exclude_existing) {
-            // Get the changed affiliations
-            delta = delta.concat(_.filter(new_list, function (item) {
-              var idx = _.indexOf(old_jids, item.jid);
-
-              if (idx >= 0) {
-                return item.affiliation !== old_list[idx].affiliation;
-              }
-
-              return false;
-            }));
-          }
-
-          if (remove_absentees) {
-            // Get the removed affiliations
-            delta = delta.concat(_.map(_.difference(old_jids, new_jids), function (jid) {
-              return {
-                'jid': jid,
-                'affiliation': 'none'
-              };
-            }));
-          }
-
-          return delta;
-        },
-        sendAffiliationIQ: function sendAffiliationIQ(chatroom_jid, affiliation, member) {
-          /* Send an IQ stanza specifying an affiliation change.
-           *
-           * Paremeters:
-           *  (String) chatroom_jid: JID of the relevant room
-           *  (String) affiliation: affiliation (could also be stored
-           *      on the member object).
-           *  (Object) member: Map containing the member's jid and
-           *      optionally a reason and affiliation.
-           */
-          return new Promise(function (resolve, reject) {
-            var iq = $iq({
-              to: chatroom_jid,
-              type: "set"
-            }).c("query", {
-              xmlns: Strophe.NS.MUC_ADMIN
-            }).c("item", {
-              'affiliation': member.affiliation || affiliation,
-              'jid': member.jid
-            });
-
-            if (!_.isUndefined(member.reason)) {
-              iq.c("reason", member.reason);
-            }
-
-            _converse.connection.sendIQ(iq, resolve, reject);
-          });
-        },
-        setAffiliation: function setAffiliation(affiliation, members) {
-          /* Send IQ stanzas to the server to set an affiliation for
-           * the provided JIDs.
-           *
-           * See: http://xmpp.org/extensions/xep-0045.html#modifymember
-           *
-           * XXX: Prosody doesn't accept multiple JIDs' affiliations
-           * being set in one IQ stanza, so as a workaround we send
-           * a separate stanza for each JID.
-           * Related ticket: https://prosody.im/issues/issue/795
-           *
-           * Parameters:
-           *  (String) affiliation: The affiliation
-           *  (Object) members: A map of jids, affiliations and
-           *      optionally reasons. Only those entries with the
-           *      same affiliation as being currently set will be
-           *      considered.
-           *
-           * Returns:
-           *  A promise which resolves and fails depending on the
-           *  XMPP server response.
-           */
-          members = _.filter(members, function (member) {
-            return (// We only want those members who have the right
-              // affiliation (or none, which implies the provided
-              // one).
-              _.isUndefined(member.affiliation) || member.affiliation === affiliation
-            );
-          });
-
-          var promises = _.map(members, _.partial(this.sendAffiliationIQ, this.model.get('jid'), affiliation));
-
-          return Promise.all(promises);
-        },
-        setAffiliations: function setAffiliations(members) {
-          /* Send IQ stanzas to the server to modify the
-           * affiliations in this room.
-           *
-           * See: http://xmpp.org/extensions/xep-0045.html#modifymember
-           *
-           * Parameters:
-           *  (Object) members: A map of jids, affiliations and optionally reasons
-           *  (Function) onSuccess: callback for a succesful response
-           *  (Function) onError: callback for an error response
-           */
-          var affiliations = _.uniq(_.map(members, 'affiliation'));
-
-          _.each(affiliations, _.partial(this.setAffiliation.bind(this), _, members));
-        },
-        marshallAffiliationIQs: function marshallAffiliationIQs() {
-          /* Marshall a list of IQ stanzas into a map of JIDs and
-           * affiliations.
-           *
-           * Parameters:
-           *  Any amount of XMLElement objects, representing the IQ
-           *  stanzas.
-           */
-          return _.flatMap(arguments[0], this.parseMemberListIQ);
-        },
-        getJidsWithAffiliations: function getJidsWithAffiliations(affiliations) {
-          var _this2 = this;
-
-          /* Returns a map of JIDs that have the affiliations
-           * as provided.
-           */
-          if (_.isString(affiliations)) {
-            affiliations = [affiliations];
-          }
-
-          return new Promise(function (resolve, reject) {
-            var promises = _.map(affiliations, _.partial(_this2.requestMemberList, _this2.model.get('jid')));
-
-            Promise.all(promises).then(_.flow(_this2.marshallAffiliationIQs.bind(_this2), resolve), _.flow(_this2.marshallAffiliationIQs.bind(_this2), resolve));
-          });
-        },
-        updateMemberLists: function updateMemberLists(members, affiliations, deltaFunc) {
-          var _this3 = this;
-
-          /* Fetch the lists of users with the given affiliations.
-           * Then compute the delta between those users and
-           * the passed in members, and if it exists, send the delta
-           * to the XMPP server to update the member list.
-           *
-           * Parameters:
-           *  (Object) members: Map of member jids and affiliations.
-           *  (String|Array) affiliation: An array of affiliations or
-           *      a string if only one affiliation.
-           *  (Function) deltaFunc: The function to compute the delta
-           *      between old and new member lists.
-           *
-           * Returns:
-           *  A promise which is resolved once the list has been
-           *  updated or once it's been established there's no need
-           *  to update the list.
-           */
-          this.getJidsWithAffiliations(affiliations).then(function (old_members) {
-            _this3.setAffiliations(deltaFunc(members, old_members));
-          });
-        },
-        directInvite: function directInvite(recipient, reason) {
-          /* Send a direct invitation as per XEP-0249
-           *
-           * Parameters:
-           *    (String) recipient - JID of the person being invited
-           *    (String) reason - Optional reason for the invitation
-           */
-          if (this.model.get('membersonly')) {
-            // When inviting to a members-only room, we first add
-            // the person to the member list by giving them an
-            // affiliation of 'member' (if they're not affiliated
-            // already), otherwise they won't be able to join.
-            var map = {};
-            map[recipient] = 'member';
-
-            var deltaFunc = _.partial(this.computeAffiliationsDelta, true, false);
-
-            this.updateMemberLists([{
-              'jid': recipient,
-              'affiliation': 'member',
-              'reason': reason
-            }], ['member', 'owner', 'admin'], deltaFunc);
-          }
-
-          var attrs = {
-            'xmlns': 'jabber:x:conference',
-            'jid': this.model.get('jid')
-          };
-
-          if (reason !== null) {
-            attrs.reason = reason;
-          }
-
-          if (this.model.get('password')) {
-            attrs.password = this.model.get('password');
-          }
-
-          var invitation = $msg({
-            from: _converse.connection.jid,
-            to: recipient,
-            id: _converse.connection.getUniqueId()
-          }).c('x', attrs);
-
-          _converse.connection.send(invitation);
-
-          _converse.emit('roomInviteSent', {
-            'room': this,
-            'recipient': recipient,
-            'reason': reason
-          });
-        },
-        handleChatStateMessage: function handleChatStateMessage(message) {
-          /* Override the method on the ChatBoxView base class to
-           * ignore <gone/> notifications in groupchats.
-           *
-           * As laid out in the business rules in XEP-0085
-           * http://xmpp.org/extensions/xep-0085.html#bizrules-groupchat
-           */
-          if (message.get('fullname') === this.model.get('nick')) {
-            // Don't know about other servers, but OpenFire sends
-            // back to you your own chat state notifications.
-            // We ignore them here...
-            return;
-          }
-
-          if (message.get('chat_state') !== _converse.GONE) {
-            _converse.ChatBoxView.prototype.handleChatStateMessage.apply(this, arguments);
-          }
-        },
-        sendChatState: function sendChatState() {
-          /* Sends a message with the status of the user in this chat session
-           * as taken from the 'chat_state' attribute of the chat box.
-           * See XEP-0085 Chat State Notifications.
-           */
-          if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
-            return;
-          }
-
-          var chat_state = this.model.get('chat_state');
-
-          if (chat_state === _converse.GONE) {
-            // <gone/> is not applicable within MUC context
-            return;
-          }
-
-          _converse.connection.send($msg({
-            'to': this.model.get('jid'),
-            'type': 'groupchat'
-          }).c(chat_state, {
-            'xmlns': Strophe.NS.CHATSTATES
-          }).up().c('no-store', {
-            'xmlns': Strophe.NS.HINTS
-          }).up().c('no-permanent-store', {
-            'xmlns': Strophe.NS.HINTS
-          }));
-        },
-        sendChatRoomMessage: function sendChatRoomMessage(text) {
-          /* Constuct a message stanza to be sent to this chat room,
-           * and send it to the server.
-           *
-           * Parameters:
-           *  (String) text: The message text to be sent.
-           */
-          text = emojione.shortnameToUnicode(text);
-
-          var msgid = _converse.connection.getUniqueId();
-
-          var msg = $msg({
-            to: this.model.get('jid'),
-            from: _converse.connection.jid,
-            type: 'groupchat',
-            id: msgid
-          }).c("body").t(text).up().c("x", {
-            xmlns: "jabber:x:event"
-          }).c(_converse.COMPOSING);
-
-          _converse.connection.send(msg);
-
-          this.model.messages.create({
-            fullname: this.model.get('nick'),
-            sender: 'me',
-            time: moment().format(),
-            message: text,
-            msgid: msgid
-          });
-        },
-        modifyRole: function modifyRole(room, nick, role, reason, onSuccess, onError) {
-          var item = $build("item", {
-            nick: nick,
-            role: role
-          });
-          var iq = $iq({
-            to: room,
-            type: "set"
-          }).c("query", {
-            xmlns: Strophe.NS.MUC_ADMIN
-          }).cnode(item.node);
-
-          if (reason !== null) {
-            iq.c("reason", reason);
-          }
-
-          return _converse.connection.sendIQ(iq, onSuccess, onError);
-        },
-        validateRoleChangeCommand: function validateRoleChangeCommand(command, args) {
-          /* Check that a command to change a chat room user's role or
-           * affiliation has anough arguments.
-           */
-          // TODO check if first argument is valid
-          if (args.length < 1 || args.length > 2) {
-            this.showStatusNotification(__('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command), true);
-            return false;
-          }
-
-          return true;
-        },
-        clearChatRoomMessages: function clearChatRoomMessages(ev) {
-          /* Remove all messages from the chat room UI.
-           */
-          if (!_.isUndefined(ev)) {
-            ev.stopPropagation();
-          }
-
-          var result = confirm(__("Are you sure you want to clear the messages from this room?"));
-
-          if (result === true) {
-            this.content.innerHTML = '';
-          }
-
-          return this;
-        },
-        onCommandError: function onCommandError() {
-          this.showStatusNotification(__("Error: could not execute the command"), true);
-        },
-        onMessageSubmitted: function onMessageSubmitted(text) {
-          /* Gets called when the user presses enter to send off a
-           * message in a chat room.
-           *
-           * Parameters:
-           *    (String) text - The message text.
-           */
-          if (_converse.muc_disable_moderator_commands) {
-            return this.sendChatRoomMessage(text);
-          }
-
-          var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
-              args = match[2] && match[2].splitOnce(' ') || [],
-              command = match[1].toLowerCase();
-
-          switch (command) {
-            case 'admin':
-              if (!this.validateRoleChangeCommand(command, args)) {
-                break;
-              }
-
-              this.setAffiliation('admin', [{
-                'jid': args[0],
-                'reason': args[1]
-              }]).then(null, this.onCommandError.bind(this));
-              break;
-
-            case 'ban':
-              if (!this.validateRoleChangeCommand(command, args)) {
-                break;
-              }
-
-              this.setAffiliation('outcast', [{
-                'jid': args[0],
-                'reason': args[1]
-              }]).then(null, this.onCommandError.bind(this));
-              break;
-
-            case 'clear':
-              this.clearChatRoomMessages();
-              break;
-
-            case 'deop':
-              if (!this.validateRoleChangeCommand(command, args)) {
-                break;
-              }
-
-              this.modifyRole(this.model.get('jid'), args[0], 'participant', args[1], undefined, this.onCommandError.bind(this));
-              break;
-
-            case 'help':
-              this.showHelpMessages(["<strong>/admin</strong>: ".concat(__("Change user's affiliation to admin")), "<strong>/ban</strong>: ".concat(__('Ban user from room')), "<strong>/clear</strong>: ".concat(__('Remove messages')), "<strong>/deop</strong>: ".concat(__('Change user role to participant')), "<strong>/help</strong>: ".concat(__('Show this menu')), "<strong>/kick</strong>: ".concat(__('Kick user from room')), "<strong>/me</strong>: ".concat(__('Write in 3rd person')), "<strong>/member</strong>: ".concat(__('Grant membership to a user')), "<strong>/mute</strong>: ".concat(__("Remove user's ability to post messages")), "<strong>/nick</strong>: ".concat(__('Change your nickname')), "<strong>/op</strong>: ".concat(__('Grant moderator role to user')), "<strong>/owner</strong>: ".concat(__('Grant ownership of this room')), "<strong>/revoke</strong>: ".concat(__("Revoke user's membership")), "<strong>/subject</strong>: ".concat(__('Set room subject')), "<strong>/topic</strong>: ".concat(__('Set room subject (alias for /subject)')), "<strong>/voice</strong>: ".concat(__('Allow muted user to post messages'))]);
-              break;
-
-            case 'kick':
-              if (!this.validateRoleChangeCommand(command, args)) {
-                break;
-              }
-
-              this.modifyRole(this.model.get('jid'), args[0], 'none', args[1], undefined, this.onCommandError.bind(this));
-              break;
-
-            case 'mute':
-              if (!this.validateRoleChangeCommand(command, args)) {
-                break;
-              }
-
-              this.modifyRole(this.model.get('jid'), args[0], 'visitor', args[1], undefined, this.onCommandError.bind(this));
-              break;
-
-            case 'member':
-              if (!this.validateRoleChangeCommand(command, args)) {
-                break;
-              }
-
-              this.setAffiliation('member', [{
-                'jid': args[0],
-                'reason': args[1]
-              }]).then(null, this.onCommandError.bind(this));
-              break;
-
-            case 'nick':
-              _converse.connection.send($pres({
-                from: _converse.connection.jid,
-                to: this.getRoomJIDAndNick(match[2]),
-                id: _converse.connection.getUniqueId()
-              }).tree());
-
-              break;
-
-            case 'owner':
-              if (!this.validateRoleChangeCommand(command, args)) {
-                break;
-              }
-
-              this.setAffiliation('owner', [{
-                'jid': args[0],
-                'reason': args[1]
-              }]).then(null, this.onCommandError.bind(this));
-              break;
-
-            case 'op':
-              if (!this.validateRoleChangeCommand(command, args)) {
-                break;
-              }
-
-              this.modifyRole(this.model.get('jid'), args[0], 'moderator', args[1], undefined, this.onCommandError.bind(this));
-              break;
-
-            case 'revoke':
-              if (!this.validateRoleChangeCommand(command, args)) {
-                break;
-              }
-
-              this.setAffiliation('none', [{
-                'jid': args[0],
-                'reason': args[1]
-              }]).then(null, this.onCommandError.bind(this));
-              break;
-
-            case 'topic':
-            case 'subject':
-              _converse.connection.send($msg({
-                to: this.model.get('jid'),
-                from: _converse.connection.jid,
-                type: "groupchat"
-              }).c("subject", {
-                xmlns: "jabber:client"
-              }).t(match[2]).tree());
-
-              break;
-
-            case 'voice':
-              if (!this.validateRoleChangeCommand(command, args)) {
-                break;
-              }
-
-              this.modifyRole(this.model.get('jid'), args[0], 'participant', args[1], undefined, this.onCommandError.bind(this));
-              break;
-
-            default:
-              this.sendChatRoomMessage(text);
-              break;
-          }
-        },
-        handleMUCMessage: function handleMUCMessage(stanza) {
-          /* Handler for all MUC messages sent to this chat room.
-           *
-           * Parameters:
-           *  (XMLElement) stanza: The message stanza.
-           */
-          var configuration_changed = stanza.querySelector("status[code='104']");
-          var logging_enabled = stanza.querySelector("status[code='170']");
-          var logging_disabled = stanza.querySelector("status[code='171']");
-          var room_no_longer_anon = stanza.querySelector("status[code='172']");
-          var room_now_semi_anon = stanza.querySelector("status[code='173']");
-          var room_now_fully_anon = stanza.querySelector("status[code='173']");
-
-          if (configuration_changed || logging_enabled || logging_disabled || room_no_longer_anon || room_now_semi_anon || room_now_fully_anon) {
-            this.getRoomFeatures();
-          }
-
-          _.flow(this.showStatusMessages.bind(this), this.onChatRoomMessage.bind(this))(stanza);
-
-          return true;
-        },
-        getRoomJIDAndNick: function getRoomJIDAndNick(nick) {
-          /* Utility method to construct the JID for the current user
-           * as occupant of the room.
-           *
-           * This is the room JID, with the user's nick added at the
-           * end.
-           *
-           * For example: room@conference.example.org/nickname
-           */
-          if (nick) {
-            this.model.save({
-              'nick': nick
-            });
-          } else {
-            nick = this.model.get('nick');
-          }
-
-          var room = this.model.get('jid');
-          var jid = Strophe.getBareJidFromJid(room);
-          return jid + (nick !== null ? "/".concat(nick) : "");
-        },
-        registerHandlers: function registerHandlers() {
-          /* Register presence and message handlers for this chat
-           * room
-           */
-          var room_jid = this.model.get('jid');
-          this.removeHandlers();
-          this.presence_handler = _converse.connection.addHandler(this.onChatRoomPresence.bind(this), Strophe.NS.MUC, 'presence', null, null, room_jid, {
-            'ignoreNamespaceFragment': true,
-            'matchBareFromJid': true
-          });
-          this.message_handler = _converse.connection.addHandler(this.handleMUCMessage.bind(this), null, 'message', 'groupchat', null, room_jid, {
-            'matchBareFromJid': true
-          });
-        },
-        removeHandlers: function removeHandlers() {
-          /* Remove the presence and message handlers that were
-           * registered for this chat room.
-           */
-          if (this.message_handler) {
-            _converse.connection.deleteHandler(this.message_handler);
-
-            delete this.message_handler;
-          }
-
-          if (this.presence_handler) {
-            _converse.connection.deleteHandler(this.presence_handler);
-
-            delete this.presence_handler;
-          }
-
-          return this;
-        },
-        join: function join(nick, password) {
-          /* Join the chat room.
-           *
-           * Parameters:
-           *  (String) nick: The user's nickname
-           *  (String) password: Optional password, if required by
-           *      the room.
-           */
-          nick = nick ? nick : this.model.get('nick');
-
-          if (!nick) {
-            return this.checkForReservedNick();
-          }
-
-          if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
-            // We have restored a chat room from session storage,
-            // so we don't send out a presence stanza again.
-            return this;
-          }
-
-          var stanza = $pres({
-            'from': _converse.connection.jid,
-            'to': this.getRoomJIDAndNick(nick)
-          }).c("x", {
-            'xmlns': Strophe.NS.MUC
-          }).c("history", {
-            'maxstanzas': _converse.muc_history_max_stanzas
-          }).up();
-
-          if (password) {
-            stanza.cnode(Strophe.xmlElement("password", [], password));
-          }
-
-          this.model.save('connection_status', converse.ROOMSTATUS.CONNECTING);
-
-          _converse.connection.send(stanza);
-
-          return this;
-        },
-        sendUnavailablePresence: function sendUnavailablePresence(exit_msg) {
-          var presence = $pres({
-            type: "unavailable",
-            from: _converse.connection.jid,
-            to: this.getRoomJIDAndNick()
-          });
-
-          if (exit_msg !== null) {
-            presence.c("status", exit_msg);
-          }
-
-          _converse.connection.sendPresence(presence);
-        },
-        leave: function leave(exit_msg) {
-          /* Leave the chat room.
-           *
-           * Parameters:
-           *  (String) exit_msg: Optional message to indicate your
-           *      reason for leaving.
-           */
-          this.hide();
-
-          if (Backbone.history.getFragment() === "converse/room?jid=" + this.model.get('jid')) {
-            _converse.router.navigate('');
-          }
-
-          this.occupantsview.model.reset();
-
-          this.occupantsview.model.browserStorage._clear();
-
-          if (_converse.connection.connected) {
-            this.sendUnavailablePresence(exit_msg);
-          }
-
-          u.safeSave(this.model, {
-            'connection_status': converse.ROOMSTATUS.DISCONNECTED
-          });
-          this.removeHandlers();
-
-          _converse.ChatBoxView.prototype.close.apply(this, arguments);
-        },
-        renderConfigurationForm: function renderConfigurationForm(stanza) {
-          var _this4 = this;
-
-          /* Renders a form given an IQ stanza containing the current
-           * room configuration.
-           *
-           * Returns a promise which resolves once the user has
-           * either submitted the form, or canceled it.
-           *
-           * Parameters:
-           *  (XMLElement) stanza: The IQ stanza containing the room
-           *      config.
-           */
-          var container_el = this.el.querySelector('.chatroom-body');
-
-          _.each(container_el.querySelectorAll('.chatroom-form-container'), u.removeElement);
-
-          _.each(container_el.children, u.hideElement);
-
-          container_el.insertAdjacentHTML('beforeend', tpl_chatroom_form());
-
-          var form_el = container_el.querySelector('form.chatroom-form'),
-              fieldset_el = form_el.querySelector('fieldset'),
-              fields = stanza.querySelectorAll('field'),
-              title = _.get(stanza.querySelector('title'), 'textContent'),
-              instructions = _.get(stanza.querySelector('instructions'), 'textContent');
-
-          u.removeElement(fieldset_el.querySelector('span.spinner'));
-          fieldset_el.insertAdjacentHTML('beforeend', "<legend>".concat(title, "</legend>"));
-
-          if (instructions && instructions !== title) {
-            fieldset_el.insertAdjacentHTML('beforeend', "<p class=\"instructions\">".concat(instructions, "</p>"));
-          }
-
-          _.each(fields, function (field) {
-            fieldset_el.insertAdjacentHTML('beforeend', u.xForm2webForm(field, stanza));
-          }); // Render save/cancel buttons
-
-
-          var last_fieldset_el = document.createElement('fieldset');
-          last_fieldset_el.insertAdjacentHTML('beforeend', "<input type=\"submit\" class=\"pure-button button-primary\" value=\"".concat(__('Save'), "\"/>"));
-          last_fieldset_el.insertAdjacentHTML('beforeend', "<input type=\"button\" class=\"pure-button button-cancel\" value=\"".concat(__('Cancel'), "\"/>"));
-          form_el.insertAdjacentElement('beforeend', last_fieldset_el);
-          last_fieldset_el.querySelector('input[type=button]').addEventListener('click', function (ev) {
-            ev.preventDefault();
-
-            _this4.closeForm();
-          });
-          form_el.addEventListener('submit', function (ev) {
-            ev.preventDefault();
-
-            _this4.saveConfiguration(ev.target).then(_this4.getRoomFeatures.bind(_this4));
-          }, false);
-        },
-        sendConfiguration: function sendConfiguration(config, onSuccess, onError) {
-          /* Send an IQ stanza with the room configuration.
-           *
-           * Parameters:
-           *  (Array) config: The room configuration
-           *  (Function) onSuccess: Callback upon succesful IQ response
-           *      The first parameter passed in is IQ containing the
-           *      room configuration.
-           *      The second is the response IQ from the server.
-           *  (Function) onError: Callback upon error IQ response
-           *      The first parameter passed in is IQ containing the
-           *      room configuration.
-           *      The second is the response IQ from the server.
-           */
-          var iq = $iq({
-            to: this.model.get('jid'),
-            type: "set"
-          }).c("query", {
-            xmlns: Strophe.NS.MUC_OWNER
-          }).c("x", {
-            xmlns: Strophe.NS.XFORM,
-            type: "submit"
-          });
-
-          _.each(config || [], function (node) {
-            iq.cnode(node).up();
-          });
-
-          onSuccess = _.isUndefined(onSuccess) ? _.noop : _.partial(onSuccess, iq.nodeTree);
-          onError = _.isUndefined(onError) ? _.noop : _.partial(onError, iq.nodeTree);
-          return _converse.connection.sendIQ(iq, onSuccess, onError);
-        },
-        saveConfiguration: function saveConfiguration(form) {
-          var _this5 = this;
-
-          /* Submit the room configuration form by sending an IQ
-           * stanza to the server.
-           *
-           * Returns a promise which resolves once the XMPP server
-           * has return a response IQ.
-           *
-           * Parameters:
-           *  (HTMLElement) form: The configuration form DOM element.
-           */
-          return new Promise(function (resolve, reject) {
-            var inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
-                configArray = _.map(inputs, u.webForm2xForm);
-
-            _this5.sendConfiguration(configArray, resolve, reject);
-
-            _this5.closeForm();
-          });
-        },
-        autoConfigureChatRoom: function autoConfigureChatRoom() {
-          var _this6 = this;
-
-          /* Automatically configure room based on the
-           * 'roomconfig' data on this view's model.
-           *
-           * Returns a promise which resolves once a response IQ has
-           * been received.
-           *
-           * Parameters:
-           *  (XMLElement) stanza: IQ stanza from the server,
-           *       containing the configuration.
-           */
-          var that = this;
-          return new Promise(function (resolve, reject) {
-            _this6.fetchRoomConfiguration().then(function (stanza) {
-              var configArray = [],
-                  fields = stanza.querySelectorAll('field'),
-                  config = that.model.get('roomconfig');
-              var count = fields.length;
-
-              _.each(fields, function (field) {
-                var fieldname = field.getAttribute('var').replace('muc#roomconfig_', ''),
-                    type = field.getAttribute('type');
-                var value;
-
-                if (fieldname in config) {
-                  switch (type) {
-                    case 'boolean':
-                      value = config[fieldname] ? 1 : 0;
-                      break;
-
-                    case 'list-multi':
-                      // TODO: we don't yet handle "list-multi" types
-                      value = field.innerHTML;
-                      break;
-
-                    default:
-                      value = config[fieldname];
-                  }
-
-                  field.innerHTML = $build('value').t(value);
-                }
-
-                configArray.push(field);
-
-                if (! --count) {
-                  that.sendConfiguration(configArray, resolve, reject);
-                }
-              });
-            });
-          });
-        },
-        closeForm: function closeForm() {
-          /* Remove the configuration form without submitting and
-           * return to the chat view.
-           */
-          u.removeElement(this.el.querySelector('.chatroom-form-container'));
-          this.renderAfterTransition();
-        },
-        fetchRoomConfiguration: function fetchRoomConfiguration(handler) {
-          var _this7 = this,
-              _arguments = arguments;
-
-          /* Send an IQ stanza to fetch the room configuration data.
-           * Returns a promise which resolves once the response IQ
-           * has been received.
-           *
-           * Parameters:
-           *  (Function) handler: The handler for the response IQ
-           */
-          return new Promise(function (resolve, reject) {
-            _converse.connection.sendIQ($iq({
-              'to': _this7.model.get('jid'),
-              'type': "get"
-            }).c("query", {
-              xmlns: Strophe.NS.MUC_OWNER
-            }), function (iq) {
-              if (handler) {
-                handler.apply(_this7, _arguments);
-              }
-
-              resolve(iq);
-            }, reject // errback
-            );
-          });
-        },
-        parseRoomFeatures: function parseRoomFeatures(iq) {
-          /* See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
-           *
-           *  <identity
-           *      category='conference'
-           *      name='A Dark Cave'
-           *      type='text'/>
-           *  <feature var='http://jabber.org/protocol/muc'/>
-           *  <feature var='muc_passwordprotected'/>
-           *  <feature var='muc_hidden'/>
-           *  <feature var='muc_temporary'/>
-           *  <feature var='muc_open'/>
-           *  <feature var='muc_unmoderated'/>
-           *  <feature var='muc_nonanonymous'/>
-           *  <feature var='urn:xmpp:mam:0'/>
-           */
-          var features = {
-            'features_fetched': true,
-            'name': iq.querySelector('identity').getAttribute('name')
-          };
-
-          _.each(iq.querySelectorAll('feature'), function (field) {
-            var fieldname = field.getAttribute('var');
-
-            if (!fieldname.startsWith('muc_')) {
-              if (fieldname === Strophe.NS.MAM) {
-                features.mam_enabled = true;
-              }
-
-              return;
-            }
-
-            features[fieldname.replace('muc_', '')] = true;
-          });
-
-          var desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
-
-          if (!_.isNull(desc_field)) {
-            features.description = desc_field.textContent;
-          }
-
-          this.model.save(features);
-        },
-        getRoomFeatures: function getRoomFeatures() {
-          var _this8 = this;
-
-          /* Fetch the room disco info, parse it and then
-           * save it on the Backbone.Model of this chat rooms.
-           */
-          return new Promise(function (resolve, reject) {
-            _converse.connection.disco.info(_this8.model.get('jid'), null, _.flow(_this8.parseRoomFeatures.bind(_this8), resolve), function () {
-              reject(new Error("Could not parse the room features"));
-            }, 5000);
-          });
-        },
-        getAndRenderConfigurationForm: function getAndRenderConfigurationForm(ev) {
-          /* Start the process of configuring a chat room, either by
-           * rendering a configuration form, or by auto-configuring
-           * based on the "roomconfig" data stored on the
-           * Backbone.Model.
-           *
-           * Stores the new configuration on the Backbone.Model once
-           * completed.
-           *
-           * Paremeters:
-           *  (Event) ev: DOM event that might be passed in if this
-           *      method is called due to a user action. In this
-           *      case, auto-configure won't happen, regardless of
-           *      the settings.
-           */
-          this.showSpinner();
-          this.fetchRoomConfiguration().then(this.renderConfigurationForm.bind(this)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-        },
-        submitNickname: function submitNickname(ev) {
-          /* Get the nickname value from the form and then join the
-           * chat room with it.
-           */
-          ev.preventDefault();
-          var nick_el = ev.target.nick;
-          var nick = nick_el.value;
-
-          if (!nick) {
-            nick_el.classList.add('error');
-            return;
-          } else {
-            nick_el.classList.remove('error');
-          }
-
-          this.el.querySelector('.chatroom-form-container').outerHTML = tpl_spinner();
-          this.join(nick);
-        },
-        checkForReservedNick: function checkForReservedNick() {
-          /* User service-discovery to ask the XMPP server whether
-           * this user has a reserved nickname for this room.
-           * If so, we'll use that, otherwise we render the nickname
-           * form.
-           */
-          this.showSpinner();
-
-          _converse.connection.sendIQ($iq({
-            'to': this.model.get('jid'),
-            'from': _converse.connection.jid,
-            'type': "get"
-          }).c("query", {
-            'xmlns': Strophe.NS.DISCO_INFO,
-            'node': 'x-roomuser-item'
-          }), this.onNickNameFound.bind(this), this.onNickNameNotFound.bind(this));
-
-          return this;
-        },
-        onNickNameFound: function onNickNameFound(iq) {
-          /* We've received an IQ response from the server which
-           * might contain the user's reserved nickname.
-           * If no nickname is found we either render a form for
-           * them to specify one, or we try to join the room with the
-           * node of the user's JID.
-           *
-           * Parameters:
-           *  (XMLElement) iq: The received IQ stanza
-           */
-          var identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
-              nick = identity_el ? identity_el.getAttribute('name') : null;
-
-          if (!nick) {
-            this.onNickNameNotFound();
-          } else {
-            this.join(nick);
-          }
-        },
-        onNickNameNotFound: function onNickNameNotFound(message) {
-          if (_converse.muc_nickname_from_jid) {
-            // We try to enter the room with the node part of
-            // the user's JID.
-            this.join(this.getDefaultNickName());
-          } else {
-            this.renderNicknameForm(message);
-          }
-        },
-        getDefaultNickName: function getDefaultNickName() {
-          /* The default nickname (used when muc_nickname_from_jid is true)
-           * is the node part of the user's JID.
-           * We put this in a separate method so that it can be
-           * overridden by plugins.
-           */
-          return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
-        },
-        onNicknameClash: function onNicknameClash(presence) {
-          /* When the nickname is already taken, we either render a
-           * form for the user to choose a new nickname, or we
-           * try to make the nickname unique by adding an integer to
-           * it. So john will become john-2, and then john-3 and so on.
-           *
-           * Which option is take depends on the value of
-           * muc_nickname_from_jid.
-           */
-          if (_converse.muc_nickname_from_jid) {
-            var nick = presence.getAttribute('from').split('/')[1];
-
-            if (nick === this.getDefaultNickName()) {
-              this.join(nick + '-2');
-            } else {
-              var del = nick.lastIndexOf("-");
-              var num = nick.substring(del + 1, nick.length);
-              this.join(nick.substring(0, del + 1) + String(Number(num) + 1));
-            }
-          } else {
-            this.renderNicknameForm(__("The nickname you chose is reserved or " + "currently in use, please choose a different one."));
-          }
-        },
-        hideChatRoomContents: function hideChatRoomContents() {
-          var container_el = this.el.querySelector('.chatroom-body');
-
-          if (!_.isNull(container_el)) {
-            _.each(container_el.children, function (child) {
-              child.classList.add('hidden');
-            });
-          }
-        },
-        renderNicknameForm: function renderNicknameForm(message) {
-          /* Render a form which allows the user to choose their
-           * nickname.
-           */
-          this.hideChatRoomContents();
-
-          _.each(this.el.querySelectorAll('span.centered.spinner'), u.removeElement);
-
-          if (!_.isString(message)) {
-            message = '';
-          }
-
-          var container_el = this.el.querySelector('.chatroom-body');
-          container_el.insertAdjacentHTML('beforeend', tpl_chatroom_nickname_form({
-            heading: __('Please choose your nickname'),
-            label_nickname: __('Nickname'),
-            label_join: __('Enter room'),
-            validation_message: message
-          }));
-          this.model.save('connection_status', converse.ROOMSTATUS.NICKNAME_REQUIRED);
-          var form_el = this.el.querySelector('.chatroom-form');
-          form_el.addEventListener('submit', this.submitNickname.bind(this), false);
-        },
-        submitPassword: function submitPassword(ev) {
-          ev.preventDefault();
-          var password = this.el.querySelector('.chatroom-form input[type=password]').value;
-          this.showSpinner();
-          this.join(this.model.get('nick'), password);
-        },
-        renderPasswordForm: function renderPasswordForm() {
-          var container_el = this.el.querySelector('.chatroom-body');
-
-          _.each(container_el.children, u.hideElement);
-
-          _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
-
-          container_el.insertAdjacentHTML('beforeend', tpl_chatroom_password_form({
-            heading: __('This chatroom requires a password'),
-            label_password: __('Password: '),
-            label_submit: __('Submit')
-          }));
-          this.model.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
-          this.el.querySelector('.chatroom-form').addEventListener('submit', this.submitPassword.bind(this), false);
-        },
-        showDisconnectMessage: function showDisconnectMessage(msg) {
-          u.hideElement(this.el.querySelector('.chat-area'));
-          u.hideElement(this.el.querySelector('.occupants'));
-
-          _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
-
-          this.el.querySelector('.chatroom-body').insertAdjacentHTML('beforeend', tpl_chatroom_disconnect({
-            'disconnect_message': msg
-          }));
-        },
-        getMessageFromStatus: function getMessageFromStatus(stat, stanza, is_self) {
-          /* Parameters:
-           *  (XMLElement) stat: A <status> element.
-           *  (Boolean) is_self: Whether the element refers to the
-           *                     current user.
-           *  (XMLElement) stanza: The original stanza received.
-           */
-          var code = stat.getAttribute('code');
-
-          if (code === '110') {
-            return;
-          }
-
-          if (code in _converse.muc.info_messages) {
-            return _converse.muc.info_messages[code];
-          }
-
-          var nick;
-
-          if (!is_self) {
-            if (code in _converse.muc.action_info_messages) {
-              nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
-              return __(_converse.muc.action_info_messages[code], nick);
-            }
-          } else if (code in _converse.muc.new_nickname_messages) {
-            if (is_self && code === "210") {
-              nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
-            } else if (is_self && code === "303") {
-              nick = stanza.querySelector('x item').getAttribute('nick');
-            }
-
-            return __(_converse.muc.new_nickname_messages[code], nick);
-          }
-
-          return;
-        },
-        saveAffiliationAndRole: function saveAffiliationAndRole(pres) {
-          /* Parse the presence stanza for the current user's
-           * affiliation.
-           *
-           * Parameters:
-           *  (XMLElement) pres: A <presence> stanza.
-           */
-          var item = sizzle("x[xmlns=\"".concat(Strophe.NS.MUC_USER, "\"] item"), pres).pop();
-          var is_self = pres.querySelector("status[code='110']");
-
-          if (is_self && !_.isNil(item)) {
-            var affiliation = item.getAttribute('affiliation');
-            var role = item.getAttribute('role');
-
-            if (affiliation) {
-              this.model.save({
-                'affiliation': affiliation
-              });
-            }
-
-            if (role) {
-              this.model.save({
-                'role': role
-              });
-            }
-          }
-        },
-        parseXUserElement: function parseXUserElement(x, stanza, is_self) {
-          /* Parse the passed-in <x xmlns='http://jabber.org/protocol/muc#user'>
-           * element and construct a map containing relevant
-           * information.
-           */
-          // 1. Get notification messages based on the <status> elements.
-          var statuses = x.querySelectorAll('status');
-
-          var mapper = _.partial(this.getMessageFromStatus, _, stanza, is_self);
-
-          var notification = {};
-
-          var messages = _.reject(_.map(statuses, mapper), _.isUndefined);
-
-          if (messages.length) {
-            notification.messages = messages;
-          } // 2. Get disconnection messages based on the <status> elements
-
-
-          var codes = _.invokeMap(statuses, Element.prototype.getAttribute, 'code');
-
-          var disconnection_codes = _.intersection(codes, _.keys(_converse.muc.disconnect_messages));
-
-          var disconnected = is_self && disconnection_codes.length > 0;
-
-          if (disconnected) {
-            notification.disconnected = true;
-            notification.disconnection_message = _converse.muc.disconnect_messages[disconnection_codes[0]];
-          } // 3. Find the reason and actor from the <item> element
-
-
-          var item = x.querySelector('item'); // By using querySelector above, we assume here there is
-          // one <item> per <x xmlns='http://jabber.org/protocol/muc#user'>
-          // element. This appears to be a safe assumption, since
-          // each <x/> element pertains to a single user.
-
-          if (!_.isNull(item)) {
-            var reason = item.querySelector('reason');
-
-            if (reason) {
-              notification.reason = reason ? reason.textContent : undefined;
-            }
-
-            var actor = item.querySelector('actor');
-
-            if (actor) {
-              notification.actor = actor ? actor.getAttribute('nick') : undefined;
-            }
-          }
-
-          return notification;
-        },
-        displayNotificationsforUser: function displayNotificationsforUser(notification) {
-          var _this9 = this;
-
-          /* Given the notification object generated by
-           * parseXUserElement, display any relevant messages and
-           * information to the user.
-           */
-          if (notification.disconnected) {
-            this.showDisconnectMessage(notification.disconnection_message);
-
-            if (notification.actor) {
-              this.showDisconnectMessage(__('This action was done by %1$s.', notification.actor));
-            }
-
-            if (notification.reason) {
-              this.showDisconnectMessage(__('The reason given is: "%1$s".', notification.reason));
-            }
-
-            this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-            return;
-          }
-
-          _.each(notification.messages, function (message) {
-            _this9.content.insertAdjacentHTML('beforeend', tpl_info({
-              'data': '',
-              'isodate': moment().format(),
-              'message': message
-            }));
-          });
-
-          if (notification.reason) {
-            this.showStatusNotification(__('The reason given is: "%1$s".', notification.reason), true);
-          }
-
-          if (_.get(notification.messages, 'length')) {
-            this.scrollDown();
-          }
-        },
-        displayJoinNotification: function displayJoinNotification(stanza) {
-          var nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
-          var stat = stanza.querySelector('status');
-          var last_el = this.content.lastElementChild;
-
-          if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).leave === "\"".concat(nick, "\"")) {
-            last_el.outerHTML = tpl_info({
-              'data': "data-leavejoin=\"".concat(nick, "\""),
-              'isodate': moment().format(),
-              'message': __('%1$s has left and re-entered the room.', nick)
-            });
-          } else {
-            var message;
-
-            if (_.get(stat, 'textContent')) {
-              message = __('%1$s has entered the room. "%2$s"', nick, stat.textContent);
-            } else {
-              message = __('%1$s has entered the room.', nick);
-            }
-
-            var data = {
-              'data': "data-join=\"".concat(nick, "\""),
-              'isodate': moment().format(),
-              'message': message
-            };
-
-            if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).joinleave === "\"".concat(nick, "\"")) {
-              last_el.outerHTML = tpl_info(data);
-            } else {
-              var el = u.stringToElement(tpl_info(data));
-              this.content.insertAdjacentElement('beforeend', el);
-              this.insertDayIndicator(el);
-            }
-          }
-
-          this.scrollDown();
-        },
-        displayLeaveNotification: function displayLeaveNotification(stanza) {
-          var nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
-          var stat = stanza.querySelector('status');
-          var last_el = this.content.lastElementChild;
-
-          if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).join === "\"".concat(nick, "\"")) {
-            var message;
-
-            if (_.get(stat, 'textContent')) {
-              message = __('%1$s has entered and left the room. "%2$s"', nick, stat.textContent);
-            } else {
-              message = __('%1$s has entered and left the room.', nick);
-            }
-
-            last_el.outerHTML = tpl_info({
-              'data': "data-joinleave=\"".concat(nick, "\""),
-              'isodate': moment().format(),
-              'message': message
-            });
-          } else {
-            var _message;
-
-            if (_.get(stat, 'textContent')) {
-              _message = __('%1$s has left the room. "%2$s"', nick, stat.textContent);
-            } else {
-              _message = __('%1$s has left the room.', nick);
-            }
-
-            var data = {
-              'message': _message,
-              'isodate': moment().format(),
-              'data': "data-leave=\"".concat(nick, "\"")
-            };
-
-            if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).leavejoin === "\"".concat(nick, "\"")) {
-              last_el.outerHTML = tpl_info(data);
-            } else {
-              var el = u.stringToElement(tpl_info(data));
-              this.content.insertAdjacentElement('beforeend', el);
-              this.insertDayIndicator(el);
-            }
-          }
-
-          this.scrollDown();
-        },
-        displayJoinOrLeaveNotification: function displayJoinOrLeaveNotification(stanza) {
-          if (stanza.getAttribute('type') === 'unavailable') {
-            this.displayLeaveNotification(stanza);
-          } else {
-            var nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
-
-            if (!this.occupantsview.model.find({
-              'nick': nick
-            })) {
-              // Only show join message if we don't already have the
-              // occupant model. Doing so avoids showing duplicate
-              // join messages.
-              this.displayJoinNotification(stanza);
-            }
-          }
-        },
-        showStatusMessages: function showStatusMessages(stanza) {
-          /* Check for status codes and communicate their purpose to the user.
-           * See: http://xmpp.org/registrar/mucstatus.html
-           *
-           * Parameters:
-           *  (XMLElement) stanza: The message or presence stanza
-           *      containing the status codes.
-           */
-          var elements = sizzle("x[xmlns=\"".concat(Strophe.NS.MUC_USER, "\"]"), stanza);
-          var is_self = stanza.querySelectorAll("status[code='110']").length;
-
-          var iteratee = _.partial(this.parseXUserElement.bind(this), _, stanza, is_self);
-
-          var notifications = _.reject(_.map(elements, iteratee), _.isEmpty);
-
-          if (_.isEmpty(notifications)) {
-            if (_converse.muc_show_join_leave && stanza.nodeName === 'presence' && this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
-              this.displayJoinOrLeaveNotification(stanza);
-            }
-          } else {
-            _.each(notifications, this.displayNotificationsforUser.bind(this));
-          }
-
-          return stanza;
-        },
-        showErrorMessage: function showErrorMessage(presence) {
-          // We didn't enter the room, so we must remove it from the MUC add-on
-          var error = presence.querySelector('error');
-
-          if (error.getAttribute('type') === 'auth') {
-            if (!_.isNull(error.querySelector('not-authorized'))) {
-              this.renderPasswordForm();
-            } else if (!_.isNull(error.querySelector('registration-required'))) {
-              this.showDisconnectMessage(__('You are not on the member list of this room.'));
-            } else if (!_.isNull(error.querySelector('forbidden'))) {
-              this.showDisconnectMessage(__('You have been banned from this room.'));
-            }
-          } else if (error.getAttribute('type') === 'modify') {
-            if (!_.isNull(error.querySelector('jid-malformed'))) {
-              this.showDisconnectMessage(__('No nickname was specified.'));
-            }
-          } else if (error.getAttribute('type') === 'cancel') {
-            if (!_.isNull(error.querySelector('not-allowed'))) {
-              this.showDisconnectMessage(__('You are not allowed to create new rooms.'));
-            } else if (!_.isNull(error.querySelector('not-acceptable'))) {
-              this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies."));
-            } else if (!_.isNull(error.querySelector('conflict'))) {
-              this.onNicknameClash(presence);
-            } else if (!_.isNull(error.querySelector('item-not-found'))) {
-              this.showDisconnectMessage(__("This room does not (yet) exist."));
-            } else if (!_.isNull(error.querySelector('service-unavailable'))) {
-              this.showDisconnectMessage(__("This room has reached its maximum number of occupants."));
-            }
-          }
-        },
-        renderAfterTransition: function renderAfterTransition() {
-          /* Rerender the room after some kind of transition. For
-           * example after the spinner has been removed or after a
-           * form has been submitted and removed.
-           */
-          if (this.model.get('connection_status') == converse.ROOMSTATUS.NICKNAME_REQUIRED) {
-            this.renderNicknameForm();
-          } else if (this.model.get('connection_status') == converse.ROOMSTATUS.PASSWORD_REQUIRED) {
-            this.renderPasswordForm();
-          } else {
-            this.el.querySelector('.chat-area').classList.remove('hidden');
-            this.setOccupantsVisibility();
-            this.scrollDown();
-          }
-        },
-        showSpinner: function showSpinner() {
-          u.removeElement(this.el.querySelector('.spinner'));
-          var container_el = this.el.querySelector('.chatroom-body');
-          var children = Array.prototype.slice.call(container_el.children, 0);
-          container_el.insertAdjacentHTML('afterbegin', tpl_spinner());
-
-          _.each(children, u.hideElement);
-        },
-        hideSpinner: function hideSpinner() {
-          /* Check if the spinner is being shown and if so, hide it.
-           * Also make sure then that the chat area and occupants
-           * list are both visible.
-           */
-          var spinner = this.el.querySelector('.spinner');
-
-          if (!_.isNull(spinner)) {
-            u.removeElement(spinner);
-            this.renderAfterTransition();
-          }
-
-          return this;
-        },
-        onOwnChatRoomPresence: function onOwnChatRoomPresence(pres) {
-          /* Handles a received presence relating to the current
-           * user.
-           *
-           * For locked rooms (which are by definition "new"), the
-           * room will either be auto-configured or created instantly
-           * (with default config) or a configuration room will be
-           * rendered.
-           *
-           * If the room is not locked, then the room will be
-           * auto-configured only if applicable and if the current
-           * user is the room's owner.
-           *
-           * Parameters:
-           *  (XMLElement) pres: The stanza
-           */
-          this.saveAffiliationAndRole(pres);
-          var locked_room = pres.querySelector("status[code='201']");
-
-          if (locked_room) {
-            if (this.model.get('auto_configure')) {
-              this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
-            } else if (_converse.muc_instant_rooms) {
-              // Accept default configuration
-              this.saveConfiguration().then(this.getRoomFeatures.bind(this));
-            } else {
-              this.getAndRenderConfigurationForm();
-              return; // We haven't yet entered the room, so bail here.
-            }
-          } else if (!this.model.get('features_fetched')) {
-            // The features for this room weren't fetched.
-            // That must mean it's a new room without locking
-            // (in which case Prosody doesn't send a 201 status),
-            // otherwise the features would have been fetched in
-            // the "initialize" method already.
-            if (this.model.get('affiliation') === 'owner' && this.model.get('auto_configure')) {
-              this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
-            } else {
-              this.getRoomFeatures();
-            }
-          }
-
-          this.model.save('connection_status', converse.ROOMSTATUS.ENTERED);
-        },
-        onChatRoomPresence: function onChatRoomPresence(pres) {
-          /* Handles all MUC presence stanzas.
-           *
-           * Parameters:
-           *  (XMLElement) pres: The stanza
-           */
-          if (pres.getAttribute('type') === 'error') {
-            this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-            this.showErrorMessage(pres);
-            return true;
-          }
-
-          var is_self = pres.querySelector("status[code='110']");
-
-          if (is_self && pres.getAttribute('type') !== 'unavailable') {
-            this.onOwnChatRoomPresence(pres);
-          }
-
-          this.hideSpinner().showStatusMessages(pres); // This must be called after showStatusMessages so that
-          // "join" messages are correctly shown.
-
-          this.occupantsview.updateOccupantsOnPresence(pres);
-
-          if (this.model.get('role') !== 'none' && this.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
-            this.model.save('connection_status', converse.ROOMSTATUS.CONNECTED);
-          }
-
-          return true;
-        },
-        setChatRoomSubject: function setChatRoomSubject(sender, subject) {
-          // For translators: the %1$s and %2$s parts will get
-          // replaced by the user and topic text respectively
-          // Example: Topic set by JC Brand to: Hello World!
-          this.content.insertAdjacentHTML('beforeend', tpl_info({
-            'data': '',
-            'isodate': moment().format(),
-            'message': __('Topic set by %1$s to: %2$s', sender, subject)
-          }));
-          this.scrollDown();
-        },
-        isDuplicateBasedOnTime: function isDuplicateBasedOnTime(message) {
-          /* Checks whether a received messages is actually a
-           * duplicate based on whether it has a "ts" attribute
-           * with a unix timestamp.
-           *
-           * This is used for better integration with Slack's XMPP
-           * gateway, which doesn't use message IDs but instead the
-           * aforementioned "ts" attributes.
-           */
-          var entity = _converse.disco_entities.get(_converse.domain);
-
-          if (entity.identities.where({
-            'name': "Slack-XMPP"
-          })) {
-            var ts = message.getAttribute('ts');
-
-            if (_.isNull(ts)) {
-              return false;
-            } else {
-              return this.model.messages.where({
-                'sender': 'me',
-                'message': this.model.getMessageBody(message)
-              }).filter(function (msg) {
-                return Math.abs(moment(msg.get('time')).diff(moment.unix(ts))) < 5000;
-              }).length > 0;
-            }
-          }
-
-          return false;
-        },
-        isDuplicate: function isDuplicate(message, original_stanza) {
-          var msgid = message.getAttribute('id'),
-              jid = message.getAttribute('from'),
-              resource = Strophe.getResourceFromJid(jid),
-              sender = resource && Strophe.unescapeNode(resource) || '';
-
-          if (msgid) {
-            return this.model.messages.filter( // Some bots (like HAL in the prosody chatroom)
-            // respond to commands with the same ID as the
-            // original message. So we also check the sender.
-            function (msg) {
-              return msg.get('msgid') === msgid && msg.get('fullname') === sender;
-            }).length > 0;
-          }
-
-          return this.isDuplicateBasedOnTime(message);
-        },
-        onChatRoomMessage: function onChatRoomMessage(message) {
-          /* Given a <message> stanza, create a message
-           * Backbone.Model if appropriate.
-           *
-           * Parameters:
-           *  (XMLElement) msg: The received message stanza
-           */
-          var original_stanza = message,
-              forwarded = message.querySelector('forwarded');
-          var delay;
-
-          if (!_.isNull(forwarded)) {
-            message = forwarded.querySelector('message');
-            delay = forwarded.querySelector('delay');
-          }
-
-          var jid = message.getAttribute('from'),
-              resource = Strophe.getResourceFromJid(jid),
-              sender = resource && Strophe.unescapeNode(resource) || '',
-              subject = _.propertyOf(message.querySelector('subject'))('textContent');
-
-          if (this.isDuplicate(message, original_stanza)) {
-            return true;
-          }
-
-          if (subject) {
-            this.setChatRoomSubject(sender, subject);
-          }
-
-          if (sender === '') {
-            return true;
-          }
-
-          this.model.incrementUnreadMsgCounter(original_stanza);
-          this.model.createMessage(message, delay, original_stanza);
-
-          if (sender !== this.model.get('nick')) {
-            // We only emit an event if it's not our own message
-            _converse.emit('message', {
-              'stanza': original_stanza,
-              'chatbox': this.model
-            });
-          }
-
-          return true;
-        }
-      });
       _converse.ChatRoomOccupant = Backbone.Model.extend({
         initialize: function initialize(attributes) {
           this.set(_.extend({
             'id': _converse.connection.getUniqueId()
           }, attributes));
-        }
-      });
-      _converse.ChatRoomOccupantView = Backbone.VDOMView.extend({
-        tagName: 'li',
-        initialize: function initialize() {
-          this.model.on('change', this.render, this);
-        },
-        toHTML: function toHTML() {
-          var show = this.model.get('show') || 'online';
-          return tpl_occupant(_.extend({
-            'jid': '',
-            'show': show,
-            'hint_show': _converse.PRETTY_CHAT_STATUS[show],
-            'hint_occupant': __('Click to mention %1$s in your message.', this.model.get('nick')),
-            'desc_moderator': __('This user is a moderator.'),
-            'desc_occupant': __('This user can send messages in this room.'),
-            'desc_visitor': __('This user can NOT send messages in this room.')
-          }, this.model.toJSON()));
-        },
-        destroy: function destroy() {
-          this.el.parentElement.removeChild(this.el);
         }
       });
       _converse.ChatRoomOccupants = Backbone.Collection.extend({
@@ -52126,604 +51082,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           }
         }
       });
-      _converse.ChatRoomOccupantsView = Backbone.OrderedListView.extend({
-        tagName: 'div',
-        className: 'occupants',
-        listItems: 'model',
-        sortEvent: 'change:role',
-        listSelector: '.occupant-list',
-        ItemView: _converse.ChatRoomOccupantView,
-        initialize: function initialize() {
-          Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
-          this.chatroomview = this.model.chatroomview;
-          this.chatroomview.model.on('change:open', this.renderInviteWidget, this);
-          this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
-          this.chatroomview.model.on('change:hidden', this.onFeatureChanged, this);
-          this.chatroomview.model.on('change:mam_enabled', this.onFeatureChanged, this);
-          this.chatroomview.model.on('change:membersonly', this.onFeatureChanged, this);
-          this.chatroomview.model.on('change:moderated', this.onFeatureChanged, this);
-          this.chatroomview.model.on('change:nonanonymous', this.onFeatureChanged, this);
-          this.chatroomview.model.on('change:open', this.onFeatureChanged, this);
-          this.chatroomview.model.on('change:passwordprotected', this.onFeatureChanged, this);
-          this.chatroomview.model.on('change:persistent', this.onFeatureChanged, this);
-          this.chatroomview.model.on('change:publicroom', this.onFeatureChanged, this);
-          this.chatroomview.model.on('change:semianonymous', this.onFeatureChanged, this);
-          this.chatroomview.model.on('change:temporary', this.onFeatureChanged, this);
-          this.chatroomview.model.on('change:unmoderated', this.onFeatureChanged, this);
-          this.chatroomview.model.on('change:unsecured', this.onFeatureChanged, this);
-          var id = b64_sha1("converse.occupants".concat(_converse.bare_jid).concat(this.chatroomview.model.get('jid')));
-          this.model.browserStorage = new Backbone.BrowserStorage.session(id);
-          this.render();
-          this.model.fetch({
-            'add': true,
-            'silent': true,
-            'success': this.sortAndPositionAllItems.bind(this)
-          });
-        },
-        render: function render() {
-          this.el.innerHTML = tpl_chatroom_sidebar(_.extend(this.chatroomview.model.toJSON(), {
-            'allow_muc_invitations': _converse.allow_muc_invitations,
-            'label_occupants': __('Occupants')
-          }));
-
-          if (_converse.allow_muc_invitations) {
-            _converse.api.waitUntil('rosterContactsFetched').then(this.renderInviteWidget.bind(this));
-          }
-
-          return this.renderRoomFeatures();
-        },
-        renderInviteWidget: function renderInviteWidget() {
-          var form = this.el.querySelector('form.room-invite');
-
-          if (this.shouldInviteWidgetBeShown()) {
-            if (_.isNull(form)) {
-              var heading = this.el.querySelector('.occupants-heading');
-              heading.insertAdjacentHTML('afterend', tpl_chatroom_invite({
-                'error_message': null,
-                'label_invitation': __('Invite')
-              }));
-              this.initInviteWidget();
-            }
-          } else if (!_.isNull(form)) {
-            form.remove();
-          }
-
-          return this;
-        },
-        renderRoomFeatures: function renderRoomFeatures() {
-          var picks = _.pick(this.chatroomview.model.attributes, ROOM_FEATURES),
-              iteratee = function iteratee(a, v) {
-            return a || v;
-          },
-              el = this.el.querySelector('.chatroom-features');
-
-          el.innerHTML = tpl_chatroom_features(_.extend(this.chatroomview.model.toJSON(), {
-            'has_features': _.reduce(_.values(picks), iteratee),
-            'label_features': __('Features'),
-            'label_hidden': __('Hidden'),
-            'label_mam_enabled': __('Message archiving'),
-            'label_membersonly': __('Members only'),
-            'label_moderated': __('Moderated'),
-            'label_nonanonymous': __('Non-anonymous'),
-            'label_open': __('Open'),
-            'label_passwordprotected': __('Password protected'),
-            'label_persistent': __('Persistent'),
-            'label_public': __('Public'),
-            'label_semianonymous': __('Semi-anonymous'),
-            'label_temporary': __('Temporary'),
-            'label_unmoderated': __('Unmoderated'),
-            'label_unsecured': __('No password'),
-            'tt_hidden': __('This room is not publicly searchable'),
-            'tt_mam_enabled': __('Messages are archived on the server'),
-            'tt_membersonly': __('This room is restricted to members only'),
-            'tt_moderated': __('This room is being moderated'),
-            'tt_nonanonymous': __('All other room occupants can see your XMPP username'),
-            'tt_open': __('Anyone can join this room'),
-            'tt_passwordprotected': __('This room requires a password before entry'),
-            'tt_persistent': __('This room persists even if it\'s unoccupied'),
-            'tt_public': __('This room is publicly searchable'),
-            'tt_semianonymous': __('Only moderators can see your XMPP username'),
-            'tt_temporary': __('This room will disappear once the last person leaves'),
-            'tt_unmoderated': __('This room is not being moderated'),
-            'tt_unsecured': __('This room does not require a password upon entry')
-          }));
-          this.setOccupantsHeight();
-          return this;
-        },
-        onFeatureChanged: function onFeatureChanged(model) {
-          /* When a feature has been changed, it's logical opposite
-           * must be set to the opposite value.
-           *
-           * So for example, if "temporary" was set to "false", then
-           * "persistent" will be set to "true" in this method.
-           *
-           * Additionally a debounced render method is called to make
-           * sure the features widget gets updated.
-           */
-          if (_.isUndefined(this.debouncedRenderRoomFeatures)) {
-            this.debouncedRenderRoomFeatures = _.debounce(this.renderRoomFeatures, 100, {
-              'leading': false
-            });
-          }
-
-          var changed_features = {};
-
-          _.each(_.keys(model.changed), function (k) {
-            if (!_.isNil(ROOM_FEATURES_MAP[k])) {
-              changed_features[ROOM_FEATURES_MAP[k]] = !model.changed[k];
-            }
-          });
-
-          this.chatroomview.model.save(changed_features, {
-            'silent': true
-          });
-          this.debouncedRenderRoomFeatures();
-        },
-        setOccupantsHeight: function setOccupantsHeight() {
-          var el = this.el.querySelector('.chatroom-features');
-          this.el.querySelector('.occupant-list').style.cssText = "height: calc(100% - ".concat(el.offsetHeight, "px - 5em);");
-        },
-        parsePresence: function parsePresence(pres) {
-          var id = Strophe.getResourceFromJid(pres.getAttribute("from"));
-          var data = {
-            nick: id,
-            type: pres.getAttribute("type"),
-            states: []
-          };
-
-          _.each(pres.childNodes, function (child) {
-            switch (child.nodeName) {
-              case "status":
-                data.status = child.textContent || null;
-                break;
-
-              case "show":
-                data.show = child.textContent || 'online';
-                break;
-
-              case "x":
-                if (child.getAttribute("xmlns") === Strophe.NS.MUC_USER) {
-                  _.each(child.childNodes, function (item) {
-                    switch (item.nodeName) {
-                      case "item":
-                        data.affiliation = item.getAttribute("affiliation");
-                        data.role = item.getAttribute("role");
-                        data.jid = item.getAttribute("jid");
-                        data.nick = item.getAttribute("nick") || data.nick;
-                        break;
-
-                      case "status":
-                        if (item.getAttribute("code")) {
-                          data.states.push(item.getAttribute("code"));
-                        }
-
-                    }
-                  });
-                }
-
-            }
-          });
-
-          return data;
-        },
-        findOccupant: function findOccupant(data) {
-          /* Try to find an existing occupant based on the passed in
-           * data object.
-           *
-           * If we have a JID, we use that as lookup variable,
-           * otherwise we use the nick. We don't always have both,
-           * but should have at least one or the other.
-           */
-          var jid = Strophe.getBareJidFromJid(data.jid);
-
-          if (jid !== null) {
-            return this.model.where({
-              'jid': jid
-            }).pop();
-          } else {
-            return this.model.where({
-              'nick': data.nick
-            }).pop();
-          }
-        },
-        updateOccupantsOnPresence: function updateOccupantsOnPresence(pres) {
-          /* Given a presence stanza, update the occupant models
-           * based on its contents.
-           *
-           * Parameters:
-           *  (XMLElement) pres: The presence stanza
-           */
-          var data = this.parsePresence(pres);
-
-          if (data.type === 'error') {
-            return true;
-          }
-
-          var occupant = this.findOccupant(data);
-
-          if (data.type === 'unavailable') {
-            if (occupant) {
-              occupant.destroy();
-            }
-          } else {
-            var jid = Strophe.getBareJidFromJid(data.jid);
-
-            var attributes = _.extend(data, {
-              'jid': jid ? jid : undefined,
-              'resource': data.jid ? Strophe.getResourceFromJid(data.jid) : undefined
-            });
-
-            if (occupant) {
-              occupant.save(attributes);
-            } else {
-              this.model.create(attributes);
-            }
-          }
-        },
-        promptForInvite: function promptForInvite(suggestion) {
-          var reason = prompt(__('You are about to invite %1$s to the chat room "%2$s". ' + 'You may optionally include a message, explaining the reason for the invitation.', suggestion.text.label, this.model.get('id')));
-
-          if (reason !== null) {
-            this.chatroomview.directInvite(suggestion.text.value, reason);
-          }
-
-          var form = suggestion.target.form,
-              error = form.querySelector('.pure-form-message.error');
-
-          if (!_.isNull(error)) {
-            error.parentNode.removeChild(error);
-          }
-
-          suggestion.target.value = '';
-        },
-        inviteFormSubmitted: function inviteFormSubmitted(evt) {
-          evt.preventDefault();
-          var el = evt.target.querySelector('input.invited-contact'),
-              jid = el.value;
-
-          if (!jid || _.compact(jid.split('@')).length < 2) {
-            evt.target.outerHTML = tpl_chatroom_invite({
-              'error_message': __('Please enter a valid XMPP username'),
-              'label_invitation': __('Invite')
-            });
-            this.initInviteWidget();
-            return;
-          }
-
-          this.promptForInvite({
-            'target': el,
-            'text': {
-              'label': jid,
-              'value': jid
-            }
-          });
-        },
-        shouldInviteWidgetBeShown: function shouldInviteWidgetBeShown() {
-          return _converse.allow_muc_invitations && (this.chatroomview.model.get('open') || this.chatroomview.model.get('affiliation') === "owner");
-        },
-        initInviteWidget: function initInviteWidget() {
-          var form = this.el.querySelector('form.room-invite');
-
-          if (_.isNull(form)) {
-            return;
-          }
-
-          form.addEventListener('submit', this.inviteFormSubmitted.bind(this), false);
-          var el = this.el.querySelector('input.invited-contact');
-
-          var list = _converse.roster.map(function (item) {
-            var label = item.get('fullname') || item.get('jid');
-            return {
-              'label': label,
-              'value': item.get('jid')
-            };
-          });
-
-          var awesomplete = new Awesomplete(el, {
-            'minChars': 1,
-            'list': list
-          });
-          el.addEventListener('awesomplete-selectcomplete', this.promptForInvite.bind(this));
-        }
-      });
-      _converse.MUCJoinForm = Backbone.VDOMView.extend({
-        initialize: function initialize() {
-          this.model.on('change:muc_domain', this.render, this);
-        },
-        toHTML: function toHTML() {
-          return tpl_chatroom_join_form(_.assign(this.model.toJSON(), {
-            'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
-            'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
-            'label_room_name': __('Room name'),
-            'label_nickname': __('Nickname'),
-            'label_server': __('Server'),
-            'label_join': __('Join Room'),
-            'label_show_rooms': __('Show rooms')
-          }));
-        }
-      });
       _converse.RoomsPanelModel = Backbone.Model.extend({
         defaults: {
           'muc_domain': ''
         }
       });
-      _converse.RoomsPanel = Backbone.NativeView.extend({
-        /* Backbone.NativeView which renders the "Rooms" tab and accompanying
-         * panel in the control box.
-         *
-         * In this panel, chat rooms can be listed, joined and new rooms
-         * can be created.
-         */
-        tagName: 'div',
-        className: 'controlbox-pane',
-        id: 'chatrooms',
-        events: {
-          'submit form.add-chatroom': 'openChatRoom',
-          'click input#show-rooms': 'showRooms',
-          'click a.open-room': 'openChatRoom',
-          'click a.room-info': 'toggleRoomInfo',
-          'change input[name=server]': 'setDomain',
-          'change input[name=nick]': 'setNick'
-        },
-        initialize: function initialize(cfg) {
-          this.join_form = new _converse.MUCJoinForm({
-            'model': this.model
-          });
-          this.parent_el = cfg.parent;
-          this.tab_el = document.createElement('li');
-          this.model.on('change:muc_domain', this.onDomainChange, this);
-          this.model.on('change:nick', this.onNickChange, this);
-
-          _converse.chatboxes.on('change:num_unread', this.renderTab, this);
-
-          _converse.chatboxes.on('add', _.debounce(this.renderTab, 100), this);
-        },
-        render: function render() {
-          this.el.innerHTML = tpl_room_panel();
-          this.join_form.setElement(this.el.querySelector('.add-chatroom'));
-          this.join_form.render();
-          this.renderTab();
-
-          var controlbox = _converse.chatboxes.get('controlbox');
-
-          if (controlbox.get('active-panel') !== ROOMS_PANEL_ID) {
-            this.el.classList.add('hidden');
-          } else {
-            this.el.classList.remove('hidden');
-          }
-
-          return this;
-        },
-        renderTab: function renderTab() {
-          var controlbox = _converse.chatboxes.get('controlbox');
-
-          var chatrooms = f.filter(_.partial(u.isOfType, CHATROOMS_TYPE), _converse.chatboxes.models);
-          this.tab_el.innerHTML = tpl_chatrooms_tab({
-            'label_rooms': __('Rooms'),
-            'is_current': controlbox.get('active-panel') === ROOMS_PANEL_ID,
-            'num_unread': f.sum(f.map(f.curry(u.getAttribute)('num_unread'), chatrooms))
-          });
-        },
-        insertIntoDOM: function insertIntoDOM() {
-          this.parent_el.appendChild(this.render().el);
-          this.tabs = this.parent_el.parentNode.querySelector('#controlbox-tabs');
-          this.tabs.appendChild(this.tab_el);
-          return this;
-        },
-        onDomainChange: function onDomainChange(model) {
-          if (_converse.auto_list_rooms) {
-            this.updateRoomsList();
-          }
-        },
-        onNickChange: function onNickChange(model) {
-          var nick = this.el.querySelector('input.new-chatroom-nick');
-
-          if (!_.isNull(nick)) {
-            nick.value = model.get('nick');
-          }
-        },
-        removeSpinner: function removeSpinner() {
-          _.each(this.el.querySelectorAll('span.spinner'), function (el) {
-            return el.parentNode.removeChild(el);
-          });
-        },
-        informNoRoomsFound: function informNoRoomsFound() {
-          var chatrooms_el = this.el.querySelector('#available-chatrooms');
-          chatrooms_el.innerHTML = tpl_rooms_results({
-            'feedback_text': __('No rooms found')
-          });
-          var input_el = this.el.querySelector('input#show-rooms');
-          input_el.classList.remove('hidden');
-          this.removeSpinner();
-        },
-        roomStanzaItemToHTMLElement: function roomStanzaItemToHTMLElement(room) {
-          var name = Strophe.unescapeNode(room.getAttribute('name') || room.getAttribute('jid'));
-          var div = document.createElement('div');
-          div.innerHTML = tpl_room_item({
-            'name': name,
-            'jid': room.getAttribute('jid'),
-            'open_title': __('Click to open this room'),
-            'info_title': __('Show more information on this room')
-          });
-          return div.firstChild;
-        },
-        onRoomsFound: function onRoomsFound(iq) {
-          /* Handle the IQ stanza returned from the server, containing
-           * all its public rooms.
-           */
-          var available_chatrooms = this.el.querySelector('#available-chatrooms');
-          this.rooms = iq.querySelectorAll('query item');
-
-          if (this.rooms.length) {
-            // For translators: %1$s is a variable and will be
-            // replaced with the XMPP server name
-            available_chatrooms.innerHTML = tpl_rooms_results({
-              'feedback_text': __('Rooms found')
-            });
-            var fragment = document.createDocumentFragment();
-
-            var children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil);
-
-            _.each(children, function (child) {
-              return fragment.appendChild(child);
-            });
-
-            available_chatrooms.appendChild(fragment);
-            var input_el = this.el.querySelector('input#show-rooms');
-            input_el.classList.remove('hidden');
-            this.removeSpinner();
-          } else {
-            this.informNoRoomsFound();
-          }
-
-          return true;
-        },
-        updateRoomsList: function updateRoomsList() {
-          /* Send an IQ stanza to the server asking for all rooms
-           */
-          _converse.connection.sendIQ($iq({
-            to: this.model.get('muc_domain'),
-            from: _converse.connection.jid,
-            type: "get"
-          }).c("query", {
-            xmlns: Strophe.NS.DISCO_ITEMS
-          }), this.onRoomsFound.bind(this), this.informNoRoomsFound.bind(this), 5000);
-        },
-        showRooms: function showRooms() {
-          var chatrooms_el = this.el.querySelector('#available-chatrooms');
-          var server_el = this.el.querySelector('input.new-chatroom-server');
-          var server = server_el.value;
-
-          if (!server) {
-            server_el.classList.add('error');
-            return;
-          }
-
-          this.el.querySelector('input.new-chatroom-name').classList.remove('error');
-          server_el.classList.remove('error');
-          chatrooms_el.innerHTML = '';
-          var input_el = this.el.querySelector('input#show-rooms');
-          input_el.classList.add('hidden');
-          input_el.insertAdjacentHTML('afterend', tpl_spinner());
-          this.model.save({
-            muc_domain: server
-          });
-          this.updateRoomsList();
-        },
-        insertRoomInfo: function insertRoomInfo(el, stanza) {
-          /* Insert room info (based on returned #disco IQ stanza)
-           *
-           * Parameters:
-           *  (HTMLElement) el: The HTML DOM element that should
-           *      contain the info.
-           *  (XMLElement) stanza: The IQ stanza containing the room
-           *      info.
-           */
-          // All MUC features found here: http://xmpp.org/registrar/disco-features.html
-          el.querySelector('span.spinner').outerHTML = tpl_room_description({
-            'jid': stanza.getAttribute('from'),
-            'desc': _.get(_.head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
-            'occ': _.get(_.head(sizzle('field[var="muc#roominfo_occupants"] value', stanza)), 'textContent'),
-            'hidden': sizzle('feature[var="muc_hidden"]', stanza).length,
-            'membersonly': sizzle('feature[var="muc_membersonly"]', stanza).length,
-            'moderated': sizzle('feature[var="muc_moderated"]', stanza).length,
-            'nonanonymous': sizzle('feature[var="muc_nonanonymous"]', stanza).length,
-            'open': sizzle('feature[var="muc_open"]', stanza).length,
-            'passwordprotected': sizzle('feature[var="muc_passwordprotected"]', stanza).length,
-            'persistent': sizzle('feature[var="muc_persistent"]', stanza).length,
-            'publicroom': sizzle('feature[var="muc_publicroom"]', stanza).length,
-            'semianonymous': sizzle('feature[var="muc_semianonymous"]', stanza).length,
-            'temporary': sizzle('feature[var="muc_temporary"]', stanza).length,
-            'unmoderated': sizzle('feature[var="muc_unmoderated"]', stanza).length,
-            'label_desc': __('Description:'),
-            'label_jid': __('Room Address (JID):'),
-            'label_occ': __('Occupants:'),
-            'label_features': __('Features:'),
-            'label_requires_auth': __('Requires authentication'),
-            'label_hidden': __('Hidden'),
-            'label_requires_invite': __('Requires an invitation'),
-            'label_moderated': __('Moderated'),
-            'label_non_anon': __('Non-anonymous'),
-            'label_open_room': __('Open room'),
-            'label_permanent_room': __('Permanent room'),
-            'label_public': __('Public'),
-            'label_semi_anon': __('Semi-anonymous'),
-            'label_temp_room': __('Temporary room'),
-            'label_unmoderated': __('Unmoderated')
-          });
-        },
-        toggleRoomInfo: function toggleRoomInfo(ev) {
-          /* Show/hide extra information about a room in the listing.
-           */
-          var parent_el = ev.target.parentElement,
-              div_el = parent_el.querySelector('div.room-info');
-
-          if (div_el) {
-            u.slideIn(div_el).then(u.removeElement);
-          } else {
-            parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
-
-            _converse.connection.disco.info(ev.target.getAttribute('data-room-jid'), null, _.partial(this.insertRoomInfo, parent_el));
-          }
-        },
-        parseRoomDataFromEvent: function parseRoomDataFromEvent(ev) {
-          var name, jid;
-
-          if (ev.type === 'click') {
-            name = ev.target.textContent;
-            jid = ev.target.getAttribute('data-room-jid');
-          } else {
-            var name_el = this.el.querySelector('input.new-chatroom-name');
-            var server_el = this.el.querySelector('input.new-chatroom-server');
-            var server = server_el.value;
-            name = name_el.value.trim();
-            name_el.value = ''; // Clear the input
-
-            if (name && server) {
-              jid = Strophe.escapeNode(name.toLowerCase()) + '@' + server.toLowerCase();
-              name_el.classList.remove('error');
-              server_el.classList.remove('error');
-              this.model.save({
-                muc_domain: server
-              });
-            } else {
-              if (!name) {
-                name_el.classList.add('error');
-              }
-
-              if (!server) {
-                server_el.classList.add('error');
-              }
-
-              return;
-            }
-          }
-
-          return {
-            'jid': jid,
-            'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
-          };
-        },
-        openChatRoom: function openChatRoom(ev) {
-          ev.preventDefault();
-          var data = this.parseRoomDataFromEvent(ev);
-
-          if (!_.isUndefined(data)) {
-            _openChatRoom(data);
-          }
-        },
-        setDomain: function setDomain(ev) {
-          this.model.save({
-            muc_domain: ev.target.value
-          });
-        },
-        setNick: function setNick(ev) {
-          this.model.save({
-            nick: ev.target.value
-          });
-        }
-      });
-      /************************ End of ChatRoomView **********************/
 
       _converse.onDirectMUCInvitation = function (message) {
         /* A direct MUC invitation to join a room has been received
@@ -52755,8 +51118,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }
 
         if (result === true) {
-          var chatroom = _openChatRoom({
-            'jid': room_jid,
+          var chatroom = _converse.openChatRoom(room_jid, {
             'password': x_el.getAttribute('password')
           });
 
@@ -52779,6 +51141,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
         _converse.on('reconnected', registerDirectInvitationHandler);
       }
+
+      var getChatRoom = function getChatRoom(jid, attrs, create) {
+        jid = jid.toLowerCase();
+        attrs.type = converse.CHATROOMS_TYPE;
+        attrs.id = jid;
+        attrs.box_id = b64_sha1(jid);
+        return _converse.chatboxes.getChatBox(jid, attrs, create);
+      };
+
+      var createChatRoom = function createChatRoom(jid, attrs) {
+        return getChatRoom(jid, attrs, true);
+      };
 
       function autoJoinRooms() {
         /* Automatically join chat rooms, based on the
@@ -52805,27 +51179,63 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         _converse.emit('roomsAutoJoined');
       }
 
+      function reconnectToChatRooms() {
+        /* Upon a reconnection event from converse, join again
+         * all the open chat rooms.
+         */
+        _converse.chatboxviews.each(function (view) {
+          if (view.model.get('type') === converse.CHATROOMS_TYPE) {
+            view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+            view.registerHandlers();
+            view.join();
+            view.fetchMessages();
+          }
+        });
+      }
+
+      function disconnectChatRooms() {
+        /* When disconnecting, or reconnecting, mark all chat rooms as
+         * disconnected, so that they will be properly entered again
+         * when fetched from session storage.
+         */
+        _converse.chatboxes.each(function (model) {
+          if (model.get('type') === converse.CHATROOMS_TYPE) {
+            model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+          }
+        });
+      }
+      /************************ BEGIN Event Handlers ************************/
+
+
+      _converse.on('addClientFeatures', function () {
+        if (_converse.allow_muc) {
+          _converse.connection.disco.addFeature(Strophe.NS.MUC);
+        }
+
+        if (_converse.allow_muc_invitations) {
+          _converse.connection.disco.addFeature('jabber:x:conference'); // Invites
+
+        }
+      });
+
       _converse.on('chatBoxesFetched', autoJoinRooms);
 
-      _converse.getChatRoom = function (jid, attrs, fetcher) {
-        jid = jid.toLowerCase();
-        return _converse.getViewForChatBox(fetcher(_.extend({
-          'id': jid,
-          'jid': jid,
-          'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-          'type': CHATROOMS_TYPE,
-          'box_id': b64_sha1(jid)
-        }, attrs), attrs.bring_to_foreground));
-      };
-      /* We extend the default converse.js API to add methods specific to MUC
-       * chat rooms.
-       */
+      _converse.on('reconnected', reconnectToChatRooms);
+
+      _converse.on('reconnecting', disconnectChatRooms);
+
+      _converse.on('disconnecting', disconnectChatRooms);
+      /************************ END Event Handlers ************************/
+
+      /************************ BEGIN API ************************/
+      // We extend the default converse.js API to add methods specific to MUC chat rooms.
 
 
       _.extend(_converse.api, {
         'rooms': {
           'close': function close(jids) {
             if (_.isUndefined(jids)) {
+              // FIXME: can't access views here
               _converse.chatboxviews.each(function (view) {
                 if (view.is_chatroom && view.model) {
                   view.close();
@@ -52847,7 +51257,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               });
             }
           },
-          'open': function open(jids, attrs) {
+          'create': function create(jids, attrs) {
             if (_.isString(attrs)) {
               attrs = {
                 'nick': attrs
@@ -52865,12 +51275,23 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             }
 
             if (_.isUndefined(jids)) {
-              throw new TypeError('rooms.open: You need to provide at least one JID');
+              throw new TypeError('rooms.create: You need to provide at least one JID');
             } else if (_.isString(jids)) {
-              return _converse.getChatRoom(jids, attrs, _openChatRoom);
+              return createChatRoom(jids, attrs);
             }
 
-            return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, _openChatRoom));
+            return _.map(jids, _.partial(createChatRoom, _, attrs));
+          },
+          'open': function open(jids, attrs) {
+            if (_.isUndefined(jids)) {
+              throw new TypeError('rooms.open: You need to provide at least one JID');
+            } else if (_.isString(jids)) {
+              return _converse.api.rooms.create(jids, attrs).trigger('show');
+            }
+
+            return _.map(jids, function (jid) {
+              return _converse.api.rooms.create(jid, attrs).trigger('show');
+            });
           },
           'get': function get(jids, attrs, create) {
             if (_.isString(attrs)) {
@@ -52885,131 +51306,34 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               var result = [];
 
               _converse.chatboxes.each(function (chatbox) {
-                if (chatbox.get('type') === CHATROOMS_TYPE) {
-                  result.push(_converse.getViewForChatBox(chatbox));
+                if (chatbox.get('type') === converse.CHATROOMS_TYPE) {
+                  result.push(chatbox);
                 }
               });
 
               return result;
             }
 
-            var fetcher = _.partial(_converse.chatboxviews.getChatBox.bind(_converse.chatboxviews), _, create);
-
             if (!attrs.nick) {
               attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
             }
 
             if (_.isString(jids)) {
-              return _converse.getChatRoom(jids, attrs, fetcher);
+              return getChatRoom(jids, attrs);
             }
 
-            return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, fetcher));
+            return _.map(jids, _.partial(getChatRoom, _, attrs));
           }
         }
       });
-      /* Event handlers */
+      /************************ END API ************************/
 
-
-      _converse.on('addClientFeatures', function () {
-        if (_converse.allow_muc) {
-          _converse.connection.disco.addFeature(Strophe.NS.MUC);
-        }
-
-        if (_converse.allow_muc_invitations) {
-          _converse.connection.disco.addFeature('jabber:x:conference'); // Invites
-
-        }
-      });
-
-      _converse.on('reconnected', function reconnectToChatRooms() {
-        /* Upon a reconnection event from converse, join again
-         * all the open chat rooms.
-         */
-        _converse.chatboxviews.each(function (view) {
-          if (view.model.get('type') === CHATROOMS_TYPE) {
-            view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-            view.registerHandlers();
-            view.join();
-            view.fetchMessages();
-          }
-        });
-      });
-
-      function setMUCDomainFromDisco(controlboxview) {
-        /* Check whether service discovery for the user's domain
-         * returned MUC information and use that to automatically
-         * set the MUC domain for the "Rooms" panel of the controlbox.
-         */
-        function featureAdded(feature) {
-          if (feature.get('var') === Strophe.NS.MUC && f.includes('conference', feature.entity.identities.pluck('category'))) {
-            setMUCDomain(feature.get('from'), controlboxview);
-          }
-        }
-
-        _converse.api.waitUntil('discoInitialized').then(function () {
-          _converse.api.listen.on('serviceDiscovered', featureAdded); // Features could have been added before the controlbox was
-          // initialized. We're only interested in MUC
-
-
-          _converse.disco_entities.each(function (entity) {
-            var feature = entity.features.findWhere({
-              'var': Strophe.NS.MUC
-            });
-
-            if (feature) {
-              featureAdded(feature);
-            }
-          });
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-      }
-
-      function setMUCDomain(domain, controlboxview) {
-        _converse.muc_domain = domain;
-        controlboxview.roomspanel.model.save({
-          'muc_domain': domain
-        });
-      }
-
-      function fetchAndSetMUCDomain(controlboxview) {
-        if (controlboxview.model.get('connected')) {
-          if (!controlboxview.roomspanel.model.get('muc_domain')) {
-            if (_.isUndefined(_converse.muc_domain)) {
-              setMUCDomainFromDisco(controlboxview);
-            } else {
-              setMUCDomain(_converse.muc_domain, controlboxview);
-            }
-          }
-        }
-      }
-
-      _converse.on('controlboxInitialized', function (view) {
-        if (!_converse.allow_muc) {
-          return;
-        }
-
-        fetchAndSetMUCDomain(view);
-        view.model.on('change:connected', _.partial(fetchAndSetMUCDomain, view));
-      });
-
-      function disconnectChatRooms() {
-        /* When disconnecting, or reconnecting, mark all chat rooms as
-         * disconnected, so that they will be properly entered again
-         * when fetched from session storage.
-         */
-        _converse.chatboxes.each(function (model) {
-          if (model.get('type') === CHATROOMS_TYPE) {
-            model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-          }
-        });
-      }
-
-      _converse.on('reconnecting', disconnectChatRooms);
-
-      _converse.on('disconnecting', disconnectChatRooms);
     }
   });
 });
 //# sourceMappingURL=converse-muc.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -53018,7 +51342,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 //
 (function (root, factory) {
   define('converse-muc-embedded',["converse-core", "converse-muc"], factory);
-})(this, function (converse) {
+})(void 0, function (converse) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -53162,6 +51486,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     });
 }));
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -53176,7 +51502,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  */
 (function (root, factory) {
   define('converse-ping',["converse-core", "strophe.ping"], factory);
-})(this, function (converse) {
+})(void 0, function (converse) {
   "use strict"; // Strophe methods for building stanzas
 
   var _converse$env = converse.env,
@@ -53284,6 +51610,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   });
 });
 //# sourceMappingURL=converse-ping.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -53294,7 +51622,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 /*global define */
 (function (root, factory) {
   define('converse-notification',["converse-core"], factory);
-})(this, function (converse) {
+})(void 0, function (converse) {
   "use strict";
 
   var _converse$env = converse.env,

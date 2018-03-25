@@ -538,7 +538,7 @@
                     // artifacts (i.e. on page load the toggle is shown only to then
                     // seconds later be hidden in favor of the control box).
                     this.el.innerHTML = tpl_controlbox_toggle({
-                        'label_toggle': _converse.connection.connected ? __('Contacts') : __('Toggle chat')
+                        'label_toggle': _converse.connection.connected ? __('Chat Contacts') : __('Toggle chat')
                     })
                     return this;
                 },

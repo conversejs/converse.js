@@ -114,6 +114,7 @@
                         'status_message': this.model.get('status_message') ||
                                             __("I am %1$s", this.getPrettyStatus(chat_status)),
                         'chat_status': chat_status,
+                        '_converse': _converse,
                         'title_change_settings': __('Change settings'),
                         'title_change_status': __('Click to change your chat status'),
                         'title_log_out': __('Log out'),

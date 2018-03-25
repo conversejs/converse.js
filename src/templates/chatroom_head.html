@@ -8,12 +8,9 @@
         <p class="chatroom-description">{{{ o.description }}}<p/>
     </div>
 </div>
-<div class="col-sm-3 col-lg-2">
-    <div class="chatbox-buttons row no-gutters">
-        <a class="chatbox-btn close-chatbox-button fa fa-sign-out" title="{{{o.info_close}}}"></a>
-        {[ if (o.affiliation == 'owner') { ]}
-        <a class="chatbox-btn configure-chatroom-button fa fa-wrench" title="{{{o.info_configure}}} "></a>
-        {[ } ]}
-    </div>
+<div class="chatbox-buttons row no-gutters">
+    <a class="chatbox-btn close-chatbox-button fa fa-sign-out" title="{{{o.info_close}}}"></a>
+    {[ if (o.affiliation == 'owner') { ]}
+    <a class="chatbox-btn configure-chatroom-button fa fa-wrench" title="{{{o.info_configure}}} "></a>
+    {[ } ]}
 </div>
-

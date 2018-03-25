@@ -97,7 +97,7 @@
                 { __ } = _converse;
 
             _converse.api.settings.update({
-                'use_emojione': true,
+                'use_emojione': false,
                 'emojione_image_path': emojione.imagePathPNG,
                 'chatview_avatar_height': 32,
                 'chatview_avatar_width': 32,

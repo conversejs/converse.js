@@ -1,4 +1,3 @@
-SHELL := /bin/bash --login
 # You can set these variables from the command line.
 UGLIFYJS		?= node_modules/.bin/uglifyjs
 BABEL			?= node_modules/.bin/babel

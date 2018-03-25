@@ -7224,7 +7224,15 @@ body.reset {
     margin-right: 0.5em; }
   #converse-embedded-chat .chat-head .chatbox-buttons,
   #conversejs .chat-head .chatbox-buttons {
-    flex-direction: row-reverse; }
+    flex-direction: row-reverse;
+    position: relative;
+    width: 100%;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+    flex: 0 0 25%;
+    max-width: 25%;
+    padding: 0; }
   #converse-embedded-chat .chat-head .user-custom-message,
   #conversejs .chat-head .user-custom-message {
     color: white;

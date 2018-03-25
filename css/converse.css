@@ -6783,6 +6783,7 @@ body.reset {
   display: block;
   z-index: 1031; }
   #conversejs .converse-chatboxes {
+    z-index: 1031;
     position: fixed;
     bottom: 0;
     height: auto;

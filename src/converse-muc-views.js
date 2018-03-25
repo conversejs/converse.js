@@ -284,7 +284,7 @@
                     chatrooms_el.innerHTML = tpl_rooms_results({
                         'feedback_text': __('No rooms found')
                     });
-                    const input_el = this.el.querySelector('input#show-rooms');
+                    const input_el = this.el.querySelector('input[name="server"]');
                     input_el.classList.remove('hidden')
                     this.removeSpinner();
                 },
@@ -299,7 +299,7 @@
                         // For translators: %1$s is a variable and will be
                         // replaced with the XMPP server name
                         available_chatrooms.innerHTML = tpl_rooms_results({
-                            'feedback_text': __('Rooms found')
+                            'feedback_text': __('Rooms found:')
                         });
                         const fragment = document.createDocumentFragment();
                         const children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil)

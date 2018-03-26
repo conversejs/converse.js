@@ -8,14 +8,20 @@
             </div>
             <form class="converse-form add-xmpp-contact">
                 <div class="modal-body">
-                    <div class="form-group">
+                    <div class="form-group {[ if (o._converse.xhr_user_search_url) { ]} hidden {[ } ]}">
                         <label class="clearfix" for="jid">{{{o.label_xmpp_address}}}:</label>
                         <input type="text" name="jid" required="required" value="{{{o.jid}}}"
                                class="form-control {[ if (o.error_message) { ]} is-invalid {[ } ]}"
-                               placeholder="{{{o.contact_placeholder}}}">
+                               placeholder="{{{o.contact_placeholder}}}"/>
                         {[ if (o.error_message) { ]}
                             <div class="invalid-feedback">{{{o.error_message}}}</div>
                         {[ } ]}
+                    </div>
+                    <div class="form-group">
+                        <label class="clearfix" for="name">{{{o.label_nickname}}}:</label>
+                        <input type="text" name="name" value="{{{o.nickname}}}"
+                               class="form-control {[ if (o.error_message) { ]} is-invalid {[ } ]}"
+                               placeholder="{{{o.nickname_placeholder}}}"/>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -197,12 +197,27 @@
             return test_utils.waitUntil(function () {
                 return u.isVisible(modal.el);
             }, 1000).then(function () {
+                var sendIQ = _converse.connection.sendIQ;
+                var sent_stanza, IQ_id;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+
                 expect(!_.isNull(modal.el.querySelector('form.add-xmpp-contact'))).toBeTruthy();
-                var input_el = modal.el.querySelector('input[name="jid"]');
-                input_el.value = 'someone@';
+                var input_jid = modal.el.querySelector('input[name="jid"]');
+                var input_name = modal.el.querySelector('input[name="name"]');
+                input_jid.value = 'someone@';
                 var evt = new Event('input');
-                input_el.dispatchEvent(evt);
+                input_jid.dispatchEvent(evt);
                 expect(modal.el.querySelector('.awesomplete li').textContent).toBe('someone@localhost');
+                input_jid.value = 'someone@localhost';
+                input_name.value = 'Someone';
+                modal.el.querySelector('button[type="submit"]').click();
+                expect(sent_stanza.toLocaleString()).toEqual(
+                "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                    "<query xmlns='jabber:iq:roster'><item jid='someone@localhost' name='Someone'/></query>"+
+                "</iq>");
                 done();
             });
         }));
@@ -231,6 +246,7 @@
                 return xhr;
             });
 
+            var input_el;
             var panel = _converse.chatboxviews.get('controlbox').contactspanel;
             var cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
@@ -238,15 +254,40 @@
             return test_utils.waitUntil(function () {
                 return u.isVisible(modal.el);
             }, 1000).then(function () {
-                var input_el = modal.el.querySelector('input[name="jid"]');
-                input_el.value = 'marty@';
+                input_el = modal.el.querySelector('input[name="name"]');
+                input_el.value = 'marty';
                 var evt = new Event('input');
                 input_el.dispatchEvent(evt);
                 return test_utils.waitUntil(function () {
                     return modal.el.querySelector('.awesomplete li');
-                });
+                }, 1000);
             }).then(function () {
-                expect(modal.el.querySelector('.awesomplete li').textContent).toBe('marty@mcfly.net');
+                var sendIQ = _converse.connection.sendIQ;
+                var sent_stanza, IQ_id;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                expect(modal.el.querySelectorAll('.awesomplete li').length).toBe(1);
+                const suggestion = modal.el.querySelector('.awesomplete li');
+                expect(suggestion.textContent).toBe('Marty McFly');
+
+                // Can't trigger "mousedown" event so trigger the Awesomplete
+                // custom event which would have been triggered upon mousedown.
+                var evt = document.createEvent("HTMLEvents");
+                evt.initEvent('awesomplete-selectcomplete', true, true );
+                evt.text = {
+                    'label': 'Marty McFly',
+                    'value': 'marty@mcfly.net'
+                }
+                modal.el.dispatchEvent(evt);
+                expect(input_el.value).toBe('Marty McFly');
+                expect(modal.el.querySelector('input[name="jid"]').value).toBe('marty@mcfly.net');
+                modal.el.querySelector('button[type="submit"]').click();
+                expect(sent_stanza.toLocaleString()).toEqual(
+                "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                    "<query xmlns='jabber:iq:roster'><item jid='marty@mcfly.net' name='Marty McFly'/></query>"+
+                "</iq>");
                 done();
             });
         }));

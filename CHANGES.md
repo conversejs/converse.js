@@ -2,29 +2,19 @@
 
 ## 4.0.0 (Unreleased)
 
-## Removed configuration settings
+## UI changes
 
-Due to rewriting parts of the code, we regrettably had to remove certain
-lesser-used configuration settings because the cost of adding them to the
-new code was too high.
+The UI is now based on Bootstrap4 and Flexbox is used extensively.
 
-If you relied on any of these settings, you can reproduce their
-functionality in your own 3rd party plugins, or you can [contact us](http://opkode.com/contact.html)
-with regards to sponsoring development on reintroducing them.
+## Configuration changes 
 
 * Removed the `xhr_custom_status` and `xhr_custom_status_url` configuration
   settings. If you relied on these settings, you can instead listen for the
   [statusMessageChanged](https://conversejs.org/docs/html/events.html#contactstatusmessagechanged)
   event and make the XMLHttpRequest yourself.
-* Removed the `xhr_user_search` and `xhr_user_search_url` configuration options.
-
-## Updated UI
-
-The UI is now rewritten with Bootstrap4 and Flexbox is used pretty much
-everywhere. Unfortunately this means that in the overlayed view_mode, chat
-boxes can no longer be resized horizontally (or diagonally). Perhaps a solution
-for this can again be found, but time constraints meant that this feature had
-to be removed.
+* Removed  `xhr_user_search` in favor of only accepting `xhr_user_search_url` as configuration option.
+* The data returned from the `xhr_user_search_url` must now include the user's
+  `jid` instead of just an `id`.
 
 ### Bugfixes
 

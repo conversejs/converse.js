@@ -16,6 +16,7 @@
             "tpl!roster_filter",
             "tpl!roster_item",
             "tpl!search_contact",
+            "awesomplete",
             "converse-chatboxes",
             "converse-modal"
     ], factory);
@@ -28,7 +29,8 @@
             tpl_roster,
             tpl_roster_filter,
             tpl_roster_item,
-            tpl_search_contact
+            tpl_search_contact,
+            Awesomplete
     ) {
     "use strict";
     const { Backbone, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
@@ -78,9 +80,10 @@
                   { __ } = _converse;
 
             _converse.api.settings.update({
-                allow_chat_pending_contacts: true,
-                allow_contact_removal: true,
-                show_toolbar: true,
+                'allow_chat_pending_contacts': true,
+                'allow_contact_removal': true,
+                'show_toolbar': true,
+                'xhr_user_search_url': null
             });
             _converse.api.promises.add('rosterViewInitialized');
 
@@ -145,6 +148,31 @@
                         'contact_placeholder': __('name@example.org'),
                         'label_add': __('Add'),
                     }));
+                },
+
+                afterRender () {
+                    const input_el = this.el.querySelector('input[name="jid"]');
+                    if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
+                        const awesomplete = new Awesomplete(input_el, {'list': [], 'minChars': 2});
+                        const xhr = new window.XMLHttpRequest();
+                        // `open` must be called after `onload` for
+                        // mock/testing purposes.
+                        xhr.onload = function () {
+                            awesomplete.list = JSON.parse(xhr.responseText).map((i) => i.jid);
+                            awesomplete.evaluate();
+                        };
+                        xhr.open("GET", _converse.xhr_user_search_url, true);
+                        input_el.addEventListener('input', _.debounce(() => xhr.send()), 100, {'leading': true});
+                    } else {
+                        const list = _.uniq(_converse.roster.map((item) => Strophe.getDomainFromJid(item.get('jid'))));
+                        new Awesomplete(input_el, {
+                            'list': list,
+                            'data': function (text, input) {
+                                return input.slice(0, input.indexOf("@")) + "@" + text;
+                            },
+                            'filter': Awesomplete.FILTER_STARTSWITH
+                        });
+                    }
                 },
 
                 addContactFromForm (ev) {

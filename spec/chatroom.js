@@ -1353,20 +1353,12 @@
                 $(view.el).find('.chat-area').remove();
 
                 test_utils.waitUntil(function () {
-                        return $(view.el).find('input.invited-contact').length;
+                    return $(view.el).find('input.invited-contact').length;
                 }, 300).then(function () {
                     var $input = $(view.el).find('input.invited-contact');
                     expect($input.attr('placeholder')).toBe('Invite');
                     $input.val("Felix");
-                    var evt;
-                    // check if Event() is a constructor function
-                    // usage as per the spec, if true
-                    if (typeof(Event) === 'function') {
-                        evt = new Event('input');
-                    } else { // the deprecated way for PhantomJS
-                        evt = document.createEvent('CustomEvent');
-                        evt.initCustomEvent('input', false, false, null);
-                    }
+                    var evt = new Event('input');
                     $input[0].dispatchEvent(evt);
 
                     var sent_stanza;

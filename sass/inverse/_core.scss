@@ -38,10 +38,8 @@ body {
 
     .converse-chatboxes {
         width: 100vw;
+        right: 15px; // Hack due to padding added by bootstrap
     }
-
-    // XXX: why is this neccessary?
-    margin-left: -15px;
 
     form {
         &.converse-form {

@@ -75,6 +75,12 @@
                     }));
                 },
 
+                afterRender () {
+                    this.el.addEventListener('shown.bs.modal', () => {
+                        this.el.querySelector('input[name="status_message"]').focus();
+                    }, false);
+                },
+
                 clearStatusMessage (ev) {
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();

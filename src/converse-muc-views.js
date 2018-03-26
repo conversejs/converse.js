@@ -239,6 +239,12 @@
                     }));
                 },
 
+                afterRender () {
+                    this.el.addEventListener('shown.bs.modal', () => {
+                        this.el.querySelector('input[name="server"]').focus();
+                    }, false);
+                },
+
                 openRoom (ev) {
                     ev.preventDefault();
                     const jid = ev.target.getAttribute('data-room-jid');
@@ -358,6 +364,12 @@
                         'chatroom_placeholder': __('name@conference.example.org'),
                         'label_join': __('Join'),
                     }));
+                },
+
+                afterRender () {
+                    this.el.addEventListener('shown.bs.modal', () => {
+                        this.el.querySelector('input[name="chatroom"]').focus();
+                    }, false);
                 },
 
                 parseRoomDataFromEvent (form) {

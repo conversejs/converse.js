@@ -845,6 +845,7 @@
                 onContactAdded (contact) {
                     this.addRosterContact(contact).update();
                     this.updateFilter();
+                    this.sortAndPositionAllItems();
                 },
 
                 onContactChange (contact) {

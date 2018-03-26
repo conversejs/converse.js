@@ -160,21 +160,27 @@
                 },
 
                 initJIDAutoComplete () {
-                    const input_el = this.el.querySelector('input[name="jid"]');
+                    const jid_input = this.el.querySelector('input[name="jid"]');
                     const list = _.uniq(_converse.roster.map((item) => Strophe.getDomainFromJid(item.get('jid'))));
-                    new Awesomplete(input_el, {
+                    new Awesomplete(jid_input, {
                         'list': list,
                         'data': function (text, input) {
                             return input.slice(0, input.indexOf("@")) + "@" + text;
                         },
                         'filter': Awesomplete.FILTER_STARTSWITH
                     });
+                    this.el.addEventListener('shown.bs.modal', () => {
+                        jid_input.focus();
+                    }, false);
                 },
 
                 initXHRAutoComplete () {
                     const name_input = this.el.querySelector('input[name="name"]');
                     const jid_input = this.el.querySelector('input[name="jid"]');
-                    const awesomplete = new Awesomplete(name_input, {'list': []});
+                    const awesomplete = new Awesomplete(name_input, {
+                        'minChars': 1,
+                        'list': []
+                    });
                     const xhr = new window.XMLHttpRequest();
                     // `open` must be called after `onload` for mock/testing purposes.
                     xhr.onload = function () {
@@ -193,6 +199,9 @@
                         jid_input.value = ev.text.value;
                         name_input.value = ev.text.label;
                     });
+                    this.el.addEventListener('shown.bs.modal', () => {
+                        name_input.focus();
+                    }, false);
                 },
 
                 addContactFromForm (ev) {

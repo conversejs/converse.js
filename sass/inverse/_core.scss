@@ -36,6 +36,10 @@ body {
 
 #conversejs.fullscreen {
 
+    .converse-chatboxes {
+        width: 100vw;
+    }
+
     // XXX: why is this neccessary?
     margin-left: -15px;
 

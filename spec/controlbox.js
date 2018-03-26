@@ -33,6 +33,37 @@
 
         describe("The \"Contacts\" section", function () {
 
+            it("can be used to add contact and it checks for case-sensivity", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                spyOn(_converse, 'emit');
+                spyOn(_converse.rosterview, 'update').and.callThrough();
+                test_utils.openControlBox();
+                // Adding two contacts one with Capital initials and one with small initials of same JID (Case sensitive check)
+                _converse.roster.create({
+                    jid: mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
+                    subscription: 'none',
+                    ask: 'subscribe',
+                    fullname: mock.pend_names[0]
+                });
+                _converse.roster.create({
+                    jid: mock.pend_names[0].replace(/ /g,'.') + '@localhost',
+                    subscription: 'none',
+                    ask: 'subscribe',
+                    fullname: mock.pend_names[0]
+                });
+                test_utils.waitUntil(function () {
+                    return $(_converse.rosterview.el).find('.roster-group li:visible').length;
+                }, 700).then(function () {
+                    // Checking that only one entry is created because both JID is same (Case sensitive check)
+                    expect($(_converse.rosterview.el).find('li:visible').length).toBe(1);
+                    expect(_converse.rosterview.update).toHaveBeenCalled();
+                    done();
+                });
+            }));
+
             it("shows the number of unread mentions received",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
@@ -157,6 +188,8 @@
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
+            test_utils.createContacts(_converse, 'all').openControlBox();
+
             var panel = _converse.chatboxviews.get('controlbox').contactspanel;
             var cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
@@ -165,37 +198,55 @@
                 return u.isVisible(modal.el);
             }, 1000).then(function () {
                 expect(!_.isNull(modal.el.querySelector('form.add-xmpp-contact'))).toBeTruthy();
+                var input_el = modal.el.querySelector('input[name="jid"]');
+                input_el.value = 'someone@';
+                var evt = new Event('input');
+                input_el.dispatchEvent(evt);
+                expect(modal.el.querySelector('.awesomplete li').textContent).toBe('someone@localhost');
                 done();
             });
         }));
 
-        it("can be used to add contact and it checks for case-sensivity", 
+
+        it("integrates with xhr_user_search_url to search for contacts", 
             mock.initConverseWithPromises(
-                null, ['rosterGroupsFetched'], {},
+                null, ['rosterGroupsFetched'],
+                { 'xhr_user_search': true,
+                  'xhr_user_search_url': 'http://example.org/'
+                },
                 function (done, _converse) {
 
-            spyOn(_converse, 'emit');
-            spyOn(_converse.rosterview, 'update').and.callThrough();
-            test_utils.openControlBox();
-            // Adding two contacts one with Capital initials and one with small initials of same JID (Case sensitive check)
-            _converse.roster.create({
-                jid: mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
-                subscription: 'none',
-                ask: 'subscribe',
-                fullname: mock.pend_names[0]
+            var xhr = {
+                'open': _.noop,
+                'send': function () {
+                    xhr.responseText = JSON.stringify([
+                        {"jid": "marty@mcfly.net", "fullname": "Marty McFly"},
+                        {"jid": "doc@brown.com", "fullname": "Doc Brown"}
+                    ]);
+                    xhr.onload();
+                }
+            };
+            window.XMLHttpRequest = jasmine.createSpy('XMLHttpRequest');
+            XMLHttpRequest.and.callFake(function () {
+                return xhr;
             });
-            _converse.roster.create({
-                jid: mock.pend_names[0].replace(/ /g,'.') + '@localhost',
-                subscription: 'none',
-                ask: 'subscribe',
-                fullname: mock.pend_names[0]
-            });
-            test_utils.waitUntil(function () {
-                return $(_converse.rosterview.el).find('.roster-group li:visible').length;
-            }, 700).then(function () {
-                // Checking that only one entry is created because both JID is same (Case sensitive check)
-                expect($(_converse.rosterview.el).find('li:visible').length).toBe(1);
-                expect(_converse.rosterview.update).toHaveBeenCalled();
+
+            var panel = _converse.chatboxviews.get('controlbox').contactspanel;
+            var cbview = _converse.chatboxviews.get('controlbox');
+            cbview.el.querySelector('.add-contact').click()
+            var modal = _converse.rosterview.add_contact_modal;
+            return test_utils.waitUntil(function () {
+                return u.isVisible(modal.el);
+            }, 1000).then(function () {
+                var input_el = modal.el.querySelector('input[name="jid"]');
+                input_el.value = 'marty@';
+                var evt = new Event('input');
+                input_el.dispatchEvent(evt);
+                return test_utils.waitUntil(function () {
+                    return modal.el.querySelector('.awesomplete li');
+                });
+            }).then(function () {
+                expect(modal.el.querySelector('.awesomplete li').textContent).toBe('marty@mcfly.net');
                 done();
             });
         }));

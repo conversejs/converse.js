@@ -8586,20 +8586,23 @@ body.reset {
   #conversejs:not(.fullscreen) #minimized-chats .chat-head-message-count-hidden {
     display: none; }
 
-#converse-embedded-chat,
-#conversejs {
-  /* Pointer */ }
-  #converse-embedded-chat [hidden],
-  #conversejs [hidden] {
-    display: none; }
-  #converse-embedded-chat .visually-hidden,
-  #conversejs .visually-hidden {
-    position: absolute;
-    clip: rect(0, 0, 0, 0); }
-  #converse-embedded-chat div.awesomplete,
-  #conversejs div.awesomplete {
-    display: inline-block;
-    position: relative; }
+#converse-embedded-chat [hidden],
+#conversejs [hidden] {
+  display: none; }
+#converse-embedded-chat .visually-hidden,
+#conversejs .visually-hidden {
+  position: absolute;
+  clip: rect(0, 0, 0, 0); }
+#converse-embedded-chat .form-group .awesomplete,
+#conversejs .form-group .awesomplete {
+  width: 100%; }
+#converse-embedded-chat div.awesomplete,
+#conversejs div.awesomplete {
+  display: inline-block;
+  position: relative; }
+  #converse-embedded-chat div.awesomplete mark,
+  #conversejs div.awesomplete mark {
+    background: #FFB9A7; }
   #converse-embedded-chat div.awesomplete > input,
   #conversejs div.awesomplete > input {
     display: block; }
@@ -8620,62 +8623,60 @@ body.reset {
     border: 1px solid rgba(0, 0, 0, 0.3);
     box-shadow: 0.05em 0.2em 0.6em rgba(0, 0, 0, 0.2);
     text-shadow: none; }
+    #converse-embedded-chat div.awesomplete > ul:before,
+    #conversejs div.awesomplete > ul:before {
+      content: "";
+      position: absolute;
+      top: -.43em;
+      left: 1em;
+      width: 0;
+      height: 0;
+      background: white;
+      border: inherit;
+      border-right: 0;
+      border-bottom: 0;
+      -webkit-transform: rotate(45deg);
+      transform: rotate(45deg); }
+    #converse-embedded-chat div.awesomplete > ul > li,
+    #conversejs div.awesomplete > ul > li {
+      text-overflow: ellipsis;
+      overflow-x: hidden;
+      position: relative;
+      cursor: pointer;
+      padding: 1em; }
+#converse-embedded-chat div.awesomplete > ul[hidden],
+#converse-embedded-chat div.awesomplete > ul:empty,
+#conversejs div.awesomplete > ul[hidden],
+#conversejs div.awesomplete > ul:empty {
+  display: none; }
+@supports (transform: scale(0)) {
+  #converse-embedded-chat div.awesomplete > ul,
+  #conversejs div.awesomplete > ul {
+    transition: 0.3s cubic-bezier(0.4, 0.2, 0.5, 1.4);
+    transform-origin: 1.43em -.43em; }
   #converse-embedded-chat div.awesomplete > ul[hidden],
   #converse-embedded-chat div.awesomplete > ul:empty,
   #conversejs div.awesomplete > ul[hidden],
   #conversejs div.awesomplete > ul:empty {
-    display: none; }
-  @supports (transform: scale(0)) {
-    #converse-embedded-chat div.awesomplete > ul,
-    #conversejs div.awesomplete > ul {
-      transition: 0.3s cubic-bezier(0.4, 0.2, 0.5, 1.4);
-      transform-origin: 1.43em -.43em; }
-    #converse-embedded-chat div.awesomplete > ul[hidden],
-    #converse-embedded-chat div.awesomplete > ul:empty,
-    #conversejs div.awesomplete > ul[hidden],
-    #conversejs div.awesomplete > ul:empty {
-      opacity: 0;
-      transform: scale(0);
-      display: block;
-      transition-timing-function: ease; } }
-  #converse-embedded-chat div.awesomplete > ul:before,
-  #conversejs div.awesomplete > ul:before {
-    content: "";
-    position: absolute;
-    top: -.43em;
-    left: 1em;
-    width: 0;
-    height: 0;
-    background: white;
-    border: inherit;
-    border-right: 0;
-    border-bottom: 0;
-    -webkit-transform: rotate(45deg);
-    transform: rotate(45deg); }
-  #converse-embedded-chat div.awesomplete > ul > li,
-  #conversejs div.awesomplete > ul > li {
-    text-overflow: ellipsis;
-    overflow-x: hidden;
-    position: relative;
-    cursor: pointer; }
-  #converse-embedded-chat div.awesomplete > ul > li:hover,
-  #conversejs div.awesomplete > ul > li:hover {
-    background: #E77051;
-    color: white; }
-  #converse-embedded-chat div.awesomplete > ul > li[aria-selected="true"],
-  #conversejs div.awesomplete > ul > li[aria-selected="true"] {
-    background: #3d6d8f;
-    color: white; }
-  #converse-embedded-chat div.awesomplete mark,
-  #conversejs div.awesomplete mark {
-    background: #FFB9A7; }
-  #converse-embedded-chat div.awesomplete li:hover mark,
-  #conversejs div.awesomplete li:hover mark {
-    background: #A53214;
-    color: white; }
-  #converse-embedded-chat div.awesomplete li[aria-selected="true"] mark,
-  #conversejs div.awesomplete li[aria-selected="true"] mark {
-    background: #3d6b00;
-    color: inherit; }
+    opacity: 0;
+    transform: scale(0);
+    display: block;
+    transition-timing-function: ease; } }
+#converse-embedded-chat div.awesomplete > ul > li:hover,
+#conversejs div.awesomplete > ul > li:hover {
+  background: #E77051;
+  color: white; }
+#converse-embedded-chat div.awesomplete > ul > li[aria-selected="true"],
+#conversejs div.awesomplete > ul > li[aria-selected="true"] {
+  background: #3d6d8f;
+  color: white; }
+#converse-embedded-chat div.awesomplete li:hover mark,
+#conversejs div.awesomplete li:hover mark {
+  background: #A53214;
+  color: white; }
+#converse-embedded-chat div.awesomplete li[aria-selected="true"] mark,
+#conversejs div.awesomplete li[aria-selected="true"] mark {
+  background: #3d6b00;
+  color: inherit; }
 
 /*# sourceMappingURL=converse.css.map */

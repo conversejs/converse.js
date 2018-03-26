@@ -1535,3 +1535,38 @@ Example:
             whitelisted_plugins: ['myplugin']
         });
     });
+
+
+xhr_user_search_url
+-------------------
+
+.. note::
+    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
+
+* Default: ``null``
+
+There are two ways to add users.
+
+* The user inputs a valid JID (Jabber ID, aka XMPP address), and the user is added as a pending contact.
+* The user inputs some text (for example part of a first name or last name),
+  an XHR (Ajax Request) will be made to a remote server, and a list of matches are returned.
+  The user can then choose one of the matches to add as a contact.
+
+By providing an XHR search URL, you're enabling the second mechanism.
+
+*What is expected from the remote server?*
+
+A default JSON encoded list of objects must be returned. Each object
+corresponds to a matched user and needs the keys ``jid`` and ``fullname``.
+
+.. code-block:: javascript
+
+    [{"jid": "marty@mcfly.net", "fullname": "Marty McFly"}, {"jid": "doc@brown.com", "fullname": "Doc Brown"}]
+
+.. note::
+    Make sure your server script sets the header `Content-Type: application/json`.
+
+This is the URL to which an XHR GET request will be made to fetch user data from your remote server.
+The query string will be included in the request with ``q`` as its key.
+
+The data returned must be a JSON encoded list of user JIDs.

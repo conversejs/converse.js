@@ -9,7 +9,7 @@
             <form class="converse-form add-xmpp-contact">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="jid">{{{o.label_xmpp_address}}}:</label>
+                        <label class="clearfix" for="jid">{{{o.label_xmpp_address}}}:</label>
                         <input type="text" name="jid" required="required" value="{{{o.jid}}}"
                                class="form-control {[ if (o.error_message) { ]} is-invalid {[ } ]}"
                                placeholder="{{{o.contact_placeholder}}}">

@@ -6781,7 +6781,7 @@ body.reset {
     position: fixed;
     bottom: 0;
     height: auto;
-    width: 100vw; }
+    right: 0; }
   #conversejs ::-webkit-input-placeholder {
     /* Chrome/Opera/Safari */
     color: #A8ABA1; }
@@ -7204,6 +7204,8 @@ body {
 
 #conversejs.fullscreen {
   margin-left: -15px; }
+  #conversejs.fullscreen .converse-chatboxes {
+    width: 100vw; }
   #conversejs.fullscreen form.converse-form {
     margin: 1em; }
     #conversejs.fullscreen form.converse-form input[type=checkbox] {

@@ -6781,7 +6781,7 @@ body.reset {
     position: fixed;
     bottom: 0;
     height: auto;
-    width: 100vw; }
+    right: 0; }
   #conversejs ::-webkit-input-placeholder {
     /* Chrome/Opera/Safari */
     color: #A8ABA1; }

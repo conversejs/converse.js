@@ -7202,21 +7202,20 @@ body {
         padding-right: 10%;
         font-size: 120%; }
 
-#conversejs.fullscreen {
-  margin-left: -15px; }
-  #conversejs.fullscreen .converse-chatboxes {
-    width: 100vw; }
-  #conversejs.fullscreen form.converse-form {
-    margin: 1em; }
-    #conversejs.fullscreen form.converse-form input[type=checkbox] {
-      margin-left: 1em;
-      display: inline;
-      margin-bottom: 2em; }
-    #conversejs.fullscreen form.converse-form input[type=button],
-    #conversejs.fullscreen form.converse-form input[type=submit] {
-      padding-left: 1em;
-      padding-right: 1em;
-      margin-right: 1em; }
+#conversejs.fullscreen .converse-chatboxes {
+  width: 100vw;
+  right: 15px; }
+#conversejs.fullscreen form.converse-form {
+  margin: 1em; }
+  #conversejs.fullscreen form.converse-form input[type=checkbox] {
+    margin-left: 1em;
+    display: inline;
+    margin-bottom: 2em; }
+  #conversejs.fullscreen form.converse-form input[type=button],
+  #conversejs.fullscreen form.converse-form input[type=submit] {
+    padding-left: 1em;
+    padding-right: 1em;
+    margin-right: 1em; }
 
 #conversejs #user-profile-modal label {
   font-weight: bold; }

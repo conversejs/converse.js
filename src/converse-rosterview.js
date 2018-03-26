@@ -153,16 +153,21 @@
                 afterRender () {
                     const input_el = this.el.querySelector('input[name="jid"]');
                     if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
-                        const awesomplete = new Awesomplete(input_el, {'list': [], 'minChars': 2});
+                        const awesomplete = new Awesomplete(input_el, {'list': []});
                         const xhr = new window.XMLHttpRequest();
-                        // `open` must be called after `onload` for
-                        // mock/testing purposes.
+                        // `open` must be called after `onload` for mock/testing purposes.
                         xhr.onload = function () {
-                            awesomplete.list = JSON.parse(xhr.responseText).map((i) => i.jid);
-                            awesomplete.evaluate();
+                            if (xhr.responseText) {
+                                awesomplete.list = JSON.parse(xhr.responseText).map((i) => {
+                                    return {'label': i.fullname, 'value': i.jid};
+                                });
+                                awesomplete.evaluate();
+                            }
                         };
-                        xhr.open("GET", _converse.xhr_user_search_url, true);
-                        input_el.addEventListener('input', _.debounce(() => xhr.send()), 100, {'leading': true});
+                        input_el.addEventListener('input', _.debounce(() => {
+                            xhr.open("GET", `${_converse.xhr_user_search_url}?q=${input_el.value}`, true);
+                            xhr.send()
+                        } , 500));
                     } else {
                         const list = _.uniq(_converse.roster.map((item) => Strophe.getDomainFromJid(item.get('jid'))));
                         new Awesomplete(input_el, {

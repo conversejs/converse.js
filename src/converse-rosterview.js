@@ -209,6 +209,7 @@
                     const data = new FormData(ev.target),
                           jid = data.get('jid'),
                           name = data.get('name');
+                    ev.target.reset();
 
                     if (!jid || _.compact(jid.split('@')).length < 2) {
                         this.model.set({

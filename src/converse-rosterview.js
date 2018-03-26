@@ -131,8 +131,7 @@
 
             _converse.AddContactModal = _converse.BootstrapModal.extend({
                 events: {
-                    'submit form': 'addContactFromForm',
-                    'submit form.search-xmpp-contact': 'searchContacts'
+                    'submit form': 'addContactFromForm'
                 },
 
                 initialize () {
@@ -141,49 +140,66 @@
                 },
 
                 toHTML () {
+                    const label_nickname = _converse.xhr_user_search_url ? __('Contact name') : __('Optional nickname');
                     return tpl_add_contact_modal(_.extend(this.model.toJSON(), {
+                        '_converse': _converse,
                         'heading_new_contact': __('Add a Contact'),
                         'label_xmpp_address': __('XMPP Address'),
-                        'label_nickname': __('Optional nickname'),
+                        'label_nickname': label_nickname,
                         'contact_placeholder': __('name@example.org'),
                         'label_add': __('Add'),
                     }));
                 },
 
                 afterRender () {
-                    const input_el = this.el.querySelector('input[name="jid"]');
                     if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
-                        const awesomplete = new Awesomplete(input_el, {'list': []});
-                        const xhr = new window.XMLHttpRequest();
-                        // `open` must be called after `onload` for mock/testing purposes.
-                        xhr.onload = function () {
-                            if (xhr.responseText) {
-                                awesomplete.list = JSON.parse(xhr.responseText).map((i) => {
-                                    return {'label': i.fullname, 'value': i.jid};
-                                });
-                                awesomplete.evaluate();
-                            }
-                        };
-                        input_el.addEventListener('input', _.debounce(() => {
-                            xhr.open("GET", `${_converse.xhr_user_search_url}?q=${input_el.value}`, true);
-                            xhr.send()
-                        } , 500));
+                        this.initXHRAutoComplete();
                     } else {
-                        const list = _.uniq(_converse.roster.map((item) => Strophe.getDomainFromJid(item.get('jid'))));
-                        new Awesomplete(input_el, {
-                            'list': list,
-                            'data': function (text, input) {
-                                return input.slice(0, input.indexOf("@")) + "@" + text;
-                            },
-                            'filter': Awesomplete.FILTER_STARTSWITH
-                        });
+                        this.initJIDAutoComplete();
                     }
+                },
+
+                initJIDAutoComplete () {
+                    const input_el = this.el.querySelector('input[name="jid"]');
+                    const list = _.uniq(_converse.roster.map((item) => Strophe.getDomainFromJid(item.get('jid'))));
+                    new Awesomplete(input_el, {
+                        'list': list,
+                        'data': function (text, input) {
+                            return input.slice(0, input.indexOf("@")) + "@" + text;
+                        },
+                        'filter': Awesomplete.FILTER_STARTSWITH
+                    });
+                },
+
+                initXHRAutoComplete () {
+                    const name_input = this.el.querySelector('input[name="name"]');
+                    const jid_input = this.el.querySelector('input[name="jid"]');
+                    const awesomplete = new Awesomplete(name_input, {'list': []});
+                    const xhr = new window.XMLHttpRequest();
+                    // `open` must be called after `onload` for mock/testing purposes.
+                    xhr.onload = function () {
+                        if (xhr.responseText) {
+                            awesomplete.list = JSON.parse(xhr.responseText).map((i) => { //eslint-disable-line arrow-body-style
+                                return {'label': i.fullname, 'value': i.jid};
+                            });
+                            awesomplete.evaluate();
+                        }
+                    };
+                    name_input.addEventListener('input', _.debounce(() => {
+                        xhr.open("GET", `${_converse.xhr_user_search_url}?q=${name_input.value}`, true);
+                        xhr.send()
+                    } , 300));
+                    this.el.addEventListener('awesomplete-selectcomplete', (ev) => {
+                        jid_input.value = ev.text.value;
+                        name_input.value = ev.text.label;
+                    });
                 },
 
                 addContactFromForm (ev) {
                     ev.preventDefault();
                     const data = new FormData(ev.target),
-                          jid = data.get('jid');
+                          jid = data.get('jid'),
+                          name = data.get('name');
 
                     if (!jid || _.compact(jid.split('@')).length < 2) {
                         this.model.set({
@@ -191,7 +207,7 @@
                             'jid': jid
                         })
                     } else {
-                        _converse.roster.addAndSubscribe(jid);
+                        _converse.roster.addAndSubscribe(jid, name);
                         this.model.clear();
                         this.modal.hide();
                     }

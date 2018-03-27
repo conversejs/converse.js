@@ -727,9 +727,9 @@
                 return;
             }
             const carbons_iq = new Strophe.Builder('iq', {
-                from: this.connection.jid,
-                id: 'enablecarbons',
-                type: 'set'
+                'from': this.connection.jid,
+                'id': 'enablecarbons',
+                'type': 'set'
               })
               .c('enable', {xmlns: Strophe.NS.CARBONS});
             this.connection.addHandler((iq) => {
@@ -951,7 +951,7 @@
                  * Parameters:
                  *   (String) message - Optional message to send to the person being authorized
                  */
-                const pres = $pres({to: this.get('jid'), type: "subscribed"});
+                const pres = $pres({'to': this.get('jid'), 'type': "subscribed"});
                 if (message && message !== "") {
                     pres.c("status").t(message);
                 }
@@ -1227,7 +1227,7 @@
                             contact.authorize().subscribe();
                         }
                     }
-                    this.addContact(bare_jid, '', [], { 'subscription': 'from' }).then(handler, handler);
+                    this.addContact(bare_jid, '', [], {'subscription': 'from'}).then(handler, handler);
                 }
             },
 
@@ -1342,11 +1342,11 @@
                 const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from')),
                       nick_el = presence.querySelector(`nick[xmlns="${Strophe.NS.NICK}"]`);
                 const user_data = {
-                    jid: bare_jid,
-                    subscription: 'none',
-                    ask: null,
-                    requesting: true,
-                    fullname: nick_el && nick_el.textContent || bare_jid,
+                    'jid': bare_jid,
+                    'subscription': 'none',
+                    'ask': null,
+                    'requesting': true,
+                    'fullname': nick_el && nick_el.textContent || bare_jid,
                 };
                 this.create(user_data);
                 _converse.emit('contactRequest', user_data);

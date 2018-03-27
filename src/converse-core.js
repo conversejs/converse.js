@@ -899,7 +899,6 @@
                  *    (String) message - An optional message to explain the
                  *      reason for the subscription request.
                  */
-                this.save('ask', "subscribe"); // ask === 'subscribe' Means we have ask to subscribe to them.
                 const pres = $pres({to: this.get('jid'), type: "subscribe"});
                 if (message && message !== "") {
                     pres.c("status").t(message).up();
@@ -909,6 +908,7 @@
                     pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
                 }
                 _converse.connection.send(pres);
+                this.save('ask', "subscribe"); // ask === 'subscribe' Means we have asked to subscribe to them.
                 return this;
             },
 
@@ -1311,11 +1311,11 @@
                         return; // We're lazy when adding contacts.
                     }
                     this.create({
-                        ask,
-                        fullname: item.getAttribute("name") || jid,
-                        groups,
-                        jid,
-                        subscription
+                        'ask': ask,
+                        'fullname': item.getAttribute("name") || jid,
+                        'groups': groups,
+                        'jid': jid,
+                        'subscription': subscription
                     }, {sort: false});
                 } else {
                     if (subscription === "remove") {
@@ -1326,10 +1326,10 @@
                     // here, we know they aren't requesting anymore.
                     // see docs/DEVELOPER.rst
                     contact.save({
-                        subscription,
-                        ask,
-                        requesting: null,
-                        groups
+                        'subscription': subscription,
+                        'ask': ask,
+                        'requesting': null,
+                        'groups': groups
                     });
                 }
             },

@@ -15,6 +15,7 @@ The UI is now based on Bootstrap4 and Flexbox is used extensively.
 * Removed  `xhr_user_search` in favor of only accepting `xhr_user_search_url` as configuration option.
 * The data returned from the `xhr_user_search_url` must now include the user's
   `jid` instead of just an `id`.
+- New configuration setting [nickname](https://conversejs.org/docs/html/configurations.html#nickname)
 
 ### Bugfixes
 

@@ -318,6 +318,7 @@
             ],
             message_carbons: true,
             message_storage: 'session',
+            nickname: undefined,
             password: undefined,
             prebind_url: null,
             priority: 0,
@@ -903,8 +904,8 @@
                 if (message && message !== "") {
                     pres.c("status").t(message).up();
                 }
-                const nick = _converse.xmppstatus.get('fullname');
-                if (nick && nick !== "") {
+                const nick = _converse.xmppstatus.get('nickname') || _converse.xmppstatus.get('fullname');
+                if (nick) {
                     pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
                 }
                 _converse.connection.send(pres);
@@ -1131,8 +1132,7 @@
                     if (item.getAttribute('action') === 'add') {
                         _converse.roster.addAndSubscribe(
                             item.getAttribute('jid'),
-                            null,
-                            _converse.xmppstatus.get('fullname')
+                            _converse.xmppstatus.get('nickname') || _converse.xmppstatus.get('fullname')
                         );
                     }
                 });
@@ -1159,7 +1159,7 @@
                         contact.subscribe(message);
                     }
                 }
-                this.addContact(jid, name, groups, attributes).then(handler, handler);
+                this.addContactToRoster(jid, name, groups, attributes).then(handler, handler);
             },
 
             sendContactAddIQ (jid, name, groups, callback, errback) {
@@ -1180,7 +1180,7 @@
                 _converse.connection.sendIQ(iq, callback, errback);
             },
 
-            addContact (jid, name, groups, attributes) {
+            addContactToRoster (jid, name, groups, attributes) {
                 /* Adds a RosterContact instance to _converse.roster and
                  * registers the contact on the XMPP server.
                  * Returns a promise which is resolved once the XMPP server has
@@ -1216,7 +1216,7 @@
                 });
             },
 
-            subscribeBack (bare_jid) {
+            subscribeBack (bare_jid, presence) {
                 const contact = this.get(bare_jid);
                 if (contact instanceof _converse.RosterContact) {
                     contact.authorize().subscribe();
@@ -1227,7 +1227,8 @@
                             contact.authorize().subscribe();
                         }
                     }
-                    this.addContact(bare_jid, '', [], {'subscription': 'from'}).then(handler, handler);
+                    const nickname = _.get(sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop(), 'textContent', null);
+                    this.addContactToRoster(bare_jid, nickname, [], {'subscription': 'from'}).then(handler, handler);
                 }
             },
 
@@ -1340,13 +1341,13 @@
                  * Note: this method gets completely overridden by converse-vcard.js
                  */
                 const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from')),
-                      nick_el = presence.querySelector(`nick[xmlns="${Strophe.NS.NICK}"]`);
+                      nickname = _.get(sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop(), 'textContent', null);
                 const user_data = {
                     'jid': bare_jid,
                     'subscription': 'none',
                     'ask': null,
                     'requesting': true,
-                    'fullname': nick_el && nick_el.textContent || bare_jid,
+                    'fullname': nickname
                 };
                 this.create(user_data);
                 _converse.emit('contactRequest', user_data);
@@ -1365,7 +1366,7 @@
                 }
                 if (_converse.auto_subscribe) {
                     if ((!contact) || (contact.get('subscription') !== 'to')) {
-                        this.subscribeBack(bare_jid);
+                        this.subscribeBack(bare_jid, presence);
                     } else {
                         contact.authorize();
                     }
@@ -1485,6 +1486,7 @@
                 return {
                     "status":  _converse.default_state,
                     "jid": _converse.bare_jid,
+                    "nickname": _converse.nickname,
                     "vcard_updated": null
                 }
             },

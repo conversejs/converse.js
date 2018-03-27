@@ -50761,6 +50761,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           this.model.contacts.remove(contact, {
             'silent': true
           });
+          this.get(contact.get('jid')).remove();
           this.onRemove(contact);
         },
         onRemove: function onRemove(contact) {

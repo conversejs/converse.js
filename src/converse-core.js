@@ -1407,6 +1407,23 @@
                             _converse.xmppstatus.save({'status_message': status_message});
                         }
                     }
+                    if (_converse.jid === jid && presence_type === 'unavailable') {
+                        // XXX: We've received an "unavailable" presence from our
+                        // own resource. Apparently this happens due to a
+                        // Prosody bug, whereby we send an IQ stanza to remove
+                        // a roster contact, and Prosody then sends
+                        // "unavailable" globally, instead of directed to the
+                        // particular user that's removed.
+                        //
+                        // Here is the bug report: https://prosody.im/issues/1121
+                        //
+                        // I'm not sure whether this might legitimately happen
+                        // in other cases.
+                        //
+                        // As a workaround for now we simply send our presence again,
+                        // otherwise we're treated as offline.
+                        _converse.xmppstatus.sendPresence();
+                    }
                     return;
                 } else if (sizzle(`query[xmlns="${Strophe.NS.MUC}"]`, presence).length) {
                     return; // Ignore MUC

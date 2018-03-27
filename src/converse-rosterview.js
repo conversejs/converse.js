@@ -730,7 +730,6 @@
 
                 events: {
                     'click a.chatbox-btn.add-contact': 'showAddContactModal',
-
                 },
 
                 initialize () {

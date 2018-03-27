@@ -887,7 +887,6 @@
                     'user_id': Strophe.getNodeFromJid(jid)
                 }, attributes));
 
-                this.on('destroy', () => { this.removeFromRoster(); });
                 this.on('change:chat_status', function (item) {
                     _converse.emit('contactStatusChanged', item.attributes);
                 });
@@ -935,7 +934,8 @@
                  *    (String) jid - The Jabber ID of the user who is unsubscribing
                  */
                 _converse.connection.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
-                this.destroy(); // Will cause removeFromRoster to be called.
+                this.removeFromRoster();
+                this.destroy();
             },
 
             unauthorize (message) {
@@ -1320,7 +1320,7 @@
                     }, {sort: false});
                 } else {
                     if (subscription === "remove") {
-                        return contact.destroy(); // will trigger removeFromRoster
+                        return contact.destroy();
                     }
                     // We only find out about requesting contacts via the
                     // presence handler, so if we receive a contact

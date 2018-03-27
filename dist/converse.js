@@ -40411,9 +40411,9 @@ return Backbone.BrowserStorage;
       }
 
       var carbons_iq = new Strophe.Builder('iq', {
-        from: this.connection.jid,
-        id: 'enablecarbons',
-        type: 'set'
+        'from': this.connection.jid,
+        'id': 'enablecarbons',
+        'type': 'set'
       }).c('enable', {
         xmlns: Strophe.NS.CARBONS
       });
@@ -40604,8 +40604,6 @@ return Backbone.BrowserStorage;
          *    (String) message - An optional message to explain the
          *      reason for the subscription request.
          */
-        this.save('ask', "subscribe"); // ask === 'subscribe' Means we have ask to subscribe to them.
-
         var pres = $pres({
           to: this.get('jid'),
           type: "subscribe"
@@ -40624,6 +40622,8 @@ return Backbone.BrowserStorage;
         }
 
         _converse.connection.send(pres);
+
+        this.save('ask', "subscribe"); // ask === 'subscribe' Means we have asked to subscribe to them.
 
         return this;
       },
@@ -40669,8 +40669,8 @@ return Backbone.BrowserStorage;
          *   (String) message - Optional message to send to the person being authorized
          */
         var pres = $pres({
-          to: this.get('jid'),
-          type: "subscribed"
+          'to': this.get('jid'),
+          'type': "subscribed"
         });
 
         if (message && message !== "") {
@@ -41067,11 +41067,11 @@ return Backbone.BrowserStorage;
           }
 
           this.create({
-            ask: ask,
-            fullname: item.getAttribute("name") || jid,
-            groups: groups,
-            jid: jid,
-            subscription: subscription
+            'ask': ask,
+            'fullname': item.getAttribute("name") || jid,
+            'groups': groups,
+            'jid': jid,
+            'subscription': subscription
           }, {
             sort: false
           });
@@ -41085,10 +41085,10 @@ return Backbone.BrowserStorage;
 
 
           contact.save({
-            subscription: subscription,
-            ask: ask,
-            requesting: null,
-            groups: groups
+            'subscription': subscription,
+            'ask': ask,
+            'requesting': null,
+            'groups': groups
           });
         }
       },
@@ -41100,11 +41100,11 @@ return Backbone.BrowserStorage;
         var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from')),
             nick_el = presence.querySelector("nick[xmlns=\"".concat(Strophe.NS.NICK, "\"]"));
         var user_data = {
-          jid: bare_jid,
-          subscription: 'none',
-          ask: null,
-          requesting: true,
-          fullname: nick_el && nick_el.textContent || bare_jid
+          'jid': bare_jid,
+          'subscription': 'none',
+          'ask': null,
+          'requesting': true,
+          'fullname': nick_el && nick_el.textContent || bare_jid
         };
         this.create(user_data);
 
@@ -48226,7 +48226,11 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- Add contact Modal -->\n<div class="modal fade" id="add-contact-modal" tabindex="-1" role="dialog" aria-labelledby="addContactModalLabel" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="addContactModalLabel">' +
 __e(o.heading_new_contact) +
-'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <form class="converse-form add-xmpp-contact">\n                <div class="modal-body">\n                    <div class="form-group">\n                        <label for="jid">' +
+'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <form class="converse-form add-xmpp-contact">\n                <div class="modal-body">\n                    <div class="form-group ';
+ if (o._converse.xhr_user_search_url) { ;
+__p += ' hidden ';
+ } ;
+__p += '">\n                        <label class="clearfix" for="jid">' +
 __e(o.label_xmpp_address) +
 ':</label>\n                        <input type="text" name="jid" required="required" value="' +
 __e(o.jid) +
@@ -48236,13 +48240,23 @@ __p += ' is-invalid ';
  } ;
 __p += '"\n                               placeholder="' +
 __e(o.contact_placeholder) +
-'">\n                        ';
+'"/>\n                        ';
  if (o.error_message) { ;
 __p += '\n                            <div class="invalid-feedback">' +
 __e(o.error_message) +
 '</div>\n                        ';
  } ;
-__p += '\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="submit" class="btn btn-primary">' +
+__p += '\n                    </div>\n                    <div class="form-group">\n                        <label class="clearfix" for="name">' +
+__e(o.label_nickname) +
+':</label>\n                        <input type="text" name="name" value="' +
+__e(o.nickname) +
+'"\n                               class="form-control ';
+ if (o.error_message) { ;
+__p += ' is-invalid ';
+ } ;
+__p += '"\n                               placeholder="' +
+__e(o.nickname_placeholder) +
+'"/>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="submit" class="btn btn-primary">' +
 __e(o.label_add) +
 '</button>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n';
 return __p
@@ -48475,6 +48489,522 @@ __e(o.label_search) +
 '</button>\n    </form>\n</li>\n';
 return __p
 };});
+
+/**
+ * Simple, lightweight, usable local autocomplete library for modern browsers
+ * Because there weren’t enough autocomplete scripts in the world? Because I’m completely insane and have NIH syndrome? Probably both. :P
+ * @author Lea Verou http://leaverou.github.io/awesomplete
+ * MIT license
+ */
+
+(function () {
+
+var _ = function (input, o) {
+	var me = this;
+
+	// Setup
+
+	this.isOpened = false;
+
+	this.input = $(input);
+	this.input.setAttribute("autocomplete", "off");
+	this.input.setAttribute("aria-autocomplete", "list");
+
+	o = o || {};
+
+	configure(this, {
+		minChars: 2,
+		maxItems: 10,
+		autoFirst: false,
+		data: _.DATA,
+		filter: _.FILTER_CONTAINS,
+		sort: o.sort === false ? false : _.SORT_BYLENGTH,
+		item: _.ITEM,
+		replace: _.REPLACE
+	}, o);
+
+	this.index = -1;
+
+	// Create necessary elements
+
+	this.container = $.create("div", {
+		className: "awesomplete",
+		around: input
+	});
+
+	this.ul = $.create("ul", {
+		hidden: "hidden",
+		inside: this.container
+	});
+
+	this.status = $.create("span", {
+		className: "visually-hidden",
+		role: "status",
+		"aria-live": "assertive",
+		"aria-relevant": "additions",
+		inside: this.container
+	});
+
+	// Bind events
+
+	this._events = {
+		input: {
+			"input": this.evaluate.bind(this),
+			"blur": this.close.bind(this, { reason: "blur" }),
+			"keydown": function(evt) {
+				var c = evt.keyCode;
+
+				// If the dropdown `ul` is in view, then act on keydown for the following keys:
+				// Enter / Esc / Up / Down
+				if(me.opened) {
+					if (c === 13 && me.selected) { // Enter
+						evt.preventDefault();
+						me.select();
+					}
+					else if (c === 27) { // Esc
+						me.close({ reason: "esc" });
+					}
+					else if (c === 38 || c === 40) { // Down/Up arrow
+						evt.preventDefault();
+						me[c === 38? "previous" : "next"]();
+					}
+				}
+			}
+		},
+		form: {
+			"submit": this.close.bind(this, { reason: "submit" })
+		},
+		ul: {
+			"mousedown": function(evt) {
+				var li = evt.target;
+
+				if (li !== this) {
+
+					while (li && !/li/i.test(li.nodeName)) {
+						li = li.parentNode;
+					}
+
+					if (li && evt.button === 0) {  // Only select on left click
+						evt.preventDefault();
+						me.select(li, evt.target);
+					}
+				}
+			}
+		}
+	};
+
+	$.bind(this.input, this._events.input);
+	$.bind(this.input.form, this._events.form);
+	$.bind(this.ul, this._events.ul);
+
+	if (this.input.hasAttribute("list")) {
+		this.list = "#" + this.input.getAttribute("list");
+		this.input.removeAttribute("list");
+	}
+	else {
+		this.list = this.input.getAttribute("data-list") || o.list || [];
+	}
+
+	_.all.push(this);
+};
+
+_.prototype = {
+	set list(list) {
+		if (Array.isArray(list)) {
+			this._list = list;
+		}
+		else if (typeof list === "string" && list.indexOf(",") > -1) {
+				this._list = list.split(/\s*,\s*/);
+		}
+		else { // Element or CSS selector
+			list = $(list);
+
+			if (list && list.children) {
+				var items = [];
+				slice.apply(list.children).forEach(function (el) {
+					if (!el.disabled) {
+						var text = el.textContent.trim();
+						var value = el.value || text;
+						var label = el.label || text;
+						if (value !== "") {
+							items.push({ label: label, value: value });
+						}
+					}
+				});
+				this._list = items;
+			}
+		}
+
+		if (document.activeElement === this.input) {
+			this.evaluate();
+		}
+	},
+
+	get selected() {
+		return this.index > -1;
+	},
+
+	get opened() {
+		return this.isOpened;
+	},
+
+	close: function (o) {
+		if (!this.opened) {
+			return;
+		}
+
+		this.ul.setAttribute("hidden", "");
+		this.isOpened = false;
+		this.index = -1;
+
+		$.fire(this.input, "awesomplete-close", o || {});
+	},
+
+	open: function () {
+		this.ul.removeAttribute("hidden");
+		this.isOpened = true;
+
+		if (this.autoFirst && this.index === -1) {
+			this.goto(0);
+		}
+
+		$.fire(this.input, "awesomplete-open");
+	},
+
+	destroy: function() {
+		//remove events from the input and its form
+		$.unbind(this.input, this._events.input);
+		$.unbind(this.input.form, this._events.form);
+
+		//move the input out of the awesomplete container and remove the container and its children
+		var parentNode = this.container.parentNode;
+
+		parentNode.insertBefore(this.input, this.container);
+		parentNode.removeChild(this.container);
+
+		//remove autocomplete and aria-autocomplete attributes
+		this.input.removeAttribute("autocomplete");
+		this.input.removeAttribute("aria-autocomplete");
+
+		//remove this awesomeplete instance from the global array of instances
+		var indexOfAwesomplete = _.all.indexOf(this);
+
+		if (indexOfAwesomplete !== -1) {
+			_.all.splice(indexOfAwesomplete, 1);
+		}
+	},
+
+	next: function () {
+		var count = this.ul.children.length;
+		this.goto(this.index < count - 1 ? this.index + 1 : (count ? 0 : -1) );
+	},
+
+	previous: function () {
+		var count = this.ul.children.length;
+		var pos = this.index - 1;
+
+		this.goto(this.selected && pos !== -1 ? pos : count - 1);
+	},
+
+	// Should not be used, highlights specific item without any checks!
+	goto: function (i) {
+		var lis = this.ul.children;
+
+		if (this.selected) {
+			lis[this.index].setAttribute("aria-selected", "false");
+		}
+
+		this.index = i;
+
+		if (i > -1 && lis.length > 0) {
+			lis[i].setAttribute("aria-selected", "true");
+			this.status.textContent = lis[i].textContent;
+
+			// scroll to highlighted element in case parent's height is fixed
+			this.ul.scrollTop = lis[i].offsetTop - this.ul.clientHeight + lis[i].clientHeight;
+
+			$.fire(this.input, "awesomplete-highlight", {
+				text: this.suggestions[this.index]
+			});
+		}
+	},
+
+	select: function (selected, origin) {
+		if (selected) {
+			this.index = $.siblingIndex(selected);
+		} else {
+			selected = this.ul.children[this.index];
+		}
+
+		if (selected) {
+			var suggestion = this.suggestions[this.index];
+
+			var allowed = $.fire(this.input, "awesomplete-select", {
+				text: suggestion,
+				origin: origin || selected
+			});
+
+			if (allowed) {
+				this.replace(suggestion);
+				this.close({ reason: "select" });
+				$.fire(this.input, "awesomplete-selectcomplete", {
+					text: suggestion
+				});
+			}
+		}
+	},
+
+	evaluate: function() {
+		var me = this;
+		var value = this.input.value;
+
+		if (value.length >= this.minChars && this._list.length > 0) {
+			this.index = -1;
+			// Populate list with options that match
+			this.ul.innerHTML = "";
+
+			this.suggestions = this._list
+				.map(function(item) {
+					return new Suggestion(me.data(item, value));
+				})
+				.filter(function(item) {
+					return me.filter(item, value);
+				});
+
+			if (this.sort !== false) {
+				this.suggestions = this.suggestions.sort(this.sort);
+			}
+
+			this.suggestions = this.suggestions.slice(0, this.maxItems);
+
+			this.suggestions.forEach(function(text) {
+					me.ul.appendChild(me.item(text, value));
+				});
+
+			if (this.ul.children.length === 0) {
+				this.close({ reason: "nomatches" });
+			} else {
+				this.open();
+			}
+		}
+		else {
+			this.close({ reason: "nomatches" });
+		}
+	}
+};
+
+// Static methods/properties
+
+_.all = [];
+
+_.FILTER_CONTAINS = function (text, input) {
+	return RegExp($.regExpEscape(input.trim()), "i").test(text);
+};
+
+_.FILTER_STARTSWITH = function (text, input) {
+	return RegExp("^" + $.regExpEscape(input.trim()), "i").test(text);
+};
+
+_.SORT_BYLENGTH = function (a, b) {
+	if (a.length !== b.length) {
+		return a.length - b.length;
+	}
+
+	return a < b? -1 : 1;
+};
+
+_.ITEM = function (text, input) {
+    input = input.trim();
+    var element = document.createElement("li");
+    element.setAttribute("aria-selected", "false");
+
+    var regex = new RegExp("("+input+")", "ig");
+    var parts = input ? text.split(regex) : [text];
+    parts.forEach(function (txt) {
+        if (input && txt.match(regex)) {
+            var match = document.createElement("mark");
+            match.textContent = txt;
+            element.appendChild(match);
+        } else {
+            element.appendChild(document.createTextNode(txt));
+        }
+    });
+    return element;
+};
+
+_.REPLACE = function (text) {
+	this.input.value = text.value;
+};
+
+_.DATA = function (item/*, input*/) { return item; };
+
+// Private functions
+
+function Suggestion(data) {
+	var o = Array.isArray(data)
+	  ? { label: data[0], value: data[1] }
+	  : typeof data === "object" && "label" in data && "value" in data ? data : { label: data, value: data };
+
+	this.label = o.label || o.value;
+	this.value = o.value;
+}
+Object.defineProperty(Suggestion.prototype = Object.create(String.prototype), "length", {
+	get: function() { return this.label.length; }
+});
+Suggestion.prototype.toString = Suggestion.prototype.valueOf = function () {
+	return "" + this.label;
+};
+
+function configure(instance, properties, o) {
+	for (var i in properties) {
+		var initial = properties[i],
+		    attrValue = instance.input.getAttribute("data-" + i.toLowerCase());
+
+		if (typeof initial === "number") {
+			instance[i] = parseInt(attrValue);
+		}
+		else if (initial === false) { // Boolean options must be false by default anyway
+			instance[i] = attrValue !== null;
+		}
+		else if (initial instanceof Function) {
+			instance[i] = null;
+		}
+		else {
+			instance[i] = attrValue;
+		}
+
+		if (!instance[i] && instance[i] !== 0) {
+			instance[i] = (i in o)? o[i] : initial;
+		}
+	}
+}
+
+// Helpers
+
+var slice = Array.prototype.slice;
+
+function $(expr, con) {
+	return typeof expr === "string"? (con || document).querySelector(expr) : expr || null;
+}
+
+function $$(expr, con) {
+	return slice.call((con || document).querySelectorAll(expr));
+}
+
+$.create = function(tag, o) {
+	var element = document.createElement(tag);
+
+	for (var i in o) {
+		var val = o[i];
+
+		if (i === "inside") {
+			$(val).appendChild(element);
+		}
+		else if (i === "around") {
+			var ref = $(val);
+			ref.parentNode.insertBefore(element, ref);
+			element.appendChild(ref);
+		}
+		else if (i in element) {
+			element[i] = val;
+		}
+		else {
+			element.setAttribute(i, val);
+		}
+	}
+
+	return element;
+};
+
+$.bind = function(element, o) {
+	if (element) {
+		for (var event in o) {
+			var callback = o[event];
+
+			event.split(/\s+/).forEach(function (event) {
+				element.addEventListener(event, callback);
+			});
+		}
+	}
+};
+
+$.unbind = function(element, o) {
+	if (element) {
+		for (var event in o) {
+			var callback = o[event];
+
+			event.split(/\s+/).forEach(function(event) {
+				element.removeEventListener(event, callback);
+			});
+		}
+	}
+};
+
+$.fire = function(target, type, properties) {
+	var evt = document.createEvent("HTMLEvents");
+
+	evt.initEvent(type, true, true );
+
+	for (var j in properties) {
+		evt[j] = properties[j];
+	}
+
+	return target.dispatchEvent(evt);
+};
+
+$.regExpEscape = function (s) {
+	return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
+};
+
+$.siblingIndex = function (el) {
+	/* eslint-disable no-cond-assign */
+	for (var i = 0; el = el.previousElementSibling; i++);
+	return i;
+};
+
+// Initialization
+
+function init() {
+	$$("input.awesomplete").forEach(function (input) {
+		new _(input);
+	});
+}
+
+// Are we in a browser? Check for Document constructor
+if (typeof Document !== "undefined") {
+	// DOM already loaded?
+	if (document.readyState !== "loading") {
+		init();
+	}
+	else {
+		// Wait for it
+		document.addEventListener("DOMContentLoaded", init);
+	}
+}
+
+_.$ = $;
+_.$$ = $$;
+
+// Make sure to export Awesomplete on self when in a browser
+if (typeof self !== "undefined") {
+	self.Awesomplete = _;
+}
+
+// Expose Awesomplete as a CJS module
+if (typeof module === "object" && module.exports) {
+	module.exports = _;
+}
+
+return _;
+
+}());
+
+define("awesomplete", (function (global) {
+    return function () {
+        var ret, fn;
+        return ret || global.Awesomplete;
+    };
+}(this)));
 
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define('snabbdom',[],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.snabbdom = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
@@ -49516,8 +50046,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 /*global define */
 (function (root, factory) {
-  define('converse-rosterview',["converse-core", "tpl!add_contact_modal", "tpl!group_header", "tpl!pending_contact", "tpl!requesting_contact", "tpl!roster", "tpl!roster_filter", "tpl!roster_item", "tpl!search_contact", "converse-chatboxes", "converse-modal"], factory);
-})(void 0, function (converse, tpl_add_contact_modal, tpl_group_header, tpl_pending_contact, tpl_requesting_contact, tpl_roster, tpl_roster_filter, tpl_roster_item, tpl_search_contact) {
+  define('converse-rosterview',["converse-core", "tpl!add_contact_modal", "tpl!group_header", "tpl!pending_contact", "tpl!requesting_contact", "tpl!roster", "tpl!roster_filter", "tpl!roster_item", "tpl!search_contact", "awesomplete", "converse-chatboxes", "converse-modal"], factory);
+})(void 0, function (converse, tpl_add_contact_modal, tpl_group_header, tpl_pending_contact, tpl_requesting_contact, tpl_roster, tpl_roster_filter, tpl_roster_item, tpl_search_contact, Awesomplete) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -49566,9 +50096,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           __ = _converse.__;
 
       _converse.api.settings.update({
-        allow_chat_pending_contacts: true,
-        allow_contact_removal: true,
-        show_toolbar: true
+        'allow_chat_pending_contacts': true,
+        'allow_contact_removal': true,
+        'show_toolbar': true,
+        'xhr_user_search_url': null
       });
 
       _converse.api.promises.add('rosterViewInitialized');
@@ -49627,8 +50158,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
       _converse.AddContactModal = _converse.BootstrapModal.extend({
         events: {
-          'submit form': 'addContactFromForm',
-          'submit form.search-xmpp-contact': 'searchContacts'
+          'submit form': 'addContactFromForm'
         },
         initialize: function initialize() {
           _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
@@ -49636,18 +50166,81 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           this.model.on('change', this.render, this);
         },
         toHTML: function toHTML() {
+          var label_nickname = _converse.xhr_user_search_url ? __('Contact name') : __('Optional nickname');
           return tpl_add_contact_modal(_.extend(this.model.toJSON(), {
+            '_converse': _converse,
             'heading_new_contact': __('Add a Contact'),
             'label_xmpp_address': __('XMPP Address'),
-            'label_nickname': __('Optional nickname'),
+            'label_nickname': label_nickname,
             'contact_placeholder': __('name@example.org'),
             'label_add': __('Add')
           }));
         },
+        afterRender: function afterRender() {
+          if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
+            this.initXHRAutoComplete();
+          } else {
+            this.initJIDAutoComplete();
+          }
+        },
+        initJIDAutoComplete: function initJIDAutoComplete() {
+          var jid_input = this.el.querySelector('input[name="jid"]');
+
+          var list = _.uniq(_converse.roster.map(function (item) {
+            return Strophe.getDomainFromJid(item.get('jid'));
+          }));
+
+          new Awesomplete(jid_input, {
+            'list': list,
+            'data': function data(text, input) {
+              return input.slice(0, input.indexOf("@")) + "@" + text;
+            },
+            'filter': Awesomplete.FILTER_STARTSWITH
+          });
+          this.el.addEventListener('shown.bs.modal', function () {
+            jid_input.focus();
+          }, false);
+        },
+        initXHRAutoComplete: function initXHRAutoComplete() {
+          var name_input = this.el.querySelector('input[name="name"]');
+          var jid_input = this.el.querySelector('input[name="jid"]');
+          var awesomplete = new Awesomplete(name_input, {
+            'minChars': 1,
+            'list': []
+          });
+          var xhr = new window.XMLHttpRequest(); // `open` must be called after `onload` for mock/testing purposes.
+
+          xhr.onload = function () {
+            if (xhr.responseText) {
+              awesomplete.list = JSON.parse(xhr.responseText).map(function (i) {
+                //eslint-disable-line arrow-body-style
+                return {
+                  'label': i.fullname,
+                  'value': i.jid
+                };
+              });
+              awesomplete.evaluate();
+            }
+          };
+
+          name_input.addEventListener('input', _.debounce(function () {
+            xhr.open("GET", "".concat(_converse.xhr_user_search_url, "?q=").concat(name_input.value), true);
+            xhr.send();
+          }, 300));
+          this.el.addEventListener('awesomplete-selectcomplete', function (ev) {
+            jid_input.value = ev.text.value;
+            name_input.value = ev.text.label;
+          });
+          this.el.addEventListener('shown.bs.modal', function () {
+            name_input.focus();
+          }, false);
+        },
         addContactFromForm: function addContactFromForm(ev) {
           ev.preventDefault();
           var data = new FormData(ev.target),
-              jid = data.get('jid');
+              jid = data.get('jid'),
+              name = data.get('name');
+          ev.target.reset();
 
           if (!jid || _.compact(jid.split('@')).length < 2) {
             this.model.set({
@@ -49655,7 +50248,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               'jid': jid
             });
           } else {
-            _converse.roster.addAndSubscribe(jid);
+            _converse.roster.addAndSubscribe(jid, name);
 
             this.model.clear();
             this.modal.hide();
@@ -50374,6 +50967,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         },
         addContactToGroup: function addContactToGroup(contact, name, options) {
           this.getGroup(name).contacts.add(contact, options);
+          this.sortAndPositionAllItems();
         },
         addExistingContact: function addExistingContact(contact, options) {
           var groups;
@@ -50822,6 +51416,13 @@ return __p
   }
 
   converse.plugins.add('converse-vcard', {
+    enabled: function enabled(_converse) {
+      _converse.api.settings.update({
+        'use_vcards': true
+      });
+
+      return _converse.use_vcards;
+    },
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -50845,12 +51446,6 @@ return __p
       /* The initialize function gets called as soon as the plugin is
        * loaded by converse.js's plugin machinery.
        */
-      var _converse = this._converse;
-
-      _converse.api.settings.update({
-        'use_vcards': true
-      });
-
       _converse.createRequestingContactFromVCard = function (presence, vcard) {
         var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
         var fullname = vcard.fullname;
@@ -50880,9 +51475,7 @@ return __p
 
 
       _converse.on('addClientFeatures', function () {
-        if (_converse.use_vcards) {
-          _converse.connection.disco.addFeature(Strophe.NS.VCARD);
-        }
+        _converse.connection.disco.addFeature(Strophe.NS.VCARD);
       });
 
       _converse.on('chatBoxInitialized', function (chatbox) {
@@ -50989,6 +51582,13 @@ return __p
             'modal_title': __('Change chat status'),
             'placeholder_status_message': __('Personal status message')
           }));
+        },
+        afterRender: function afterRender() {
+          var _this = this;
+
+          this.el.addEventListener('shown.bs.modal', function () {
+            _this.el.querySelector('input[name="status_message"]').focus();
+          }, false);
         },
         clearStatusMessage: function clearStatusMessage(ev) {
           if (ev && ev.preventDefault) {
@@ -55175,7 +55775,7 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<form class="room-invite">\n    ';
  if (o.error_message) { ;
-__p += '\n        <span class="pure-form-message error">' +
+__p += '\n        <span class="error">' +
 __e(o.error_message) +
 '</span>\n    ';
  } ;
@@ -55450,522 +56050,6 @@ __e( o.feedback_text ) +
 return __p
 };});
 
-/**
- * Simple, lightweight, usable local autocomplete library for modern browsers
- * Because there weren’t enough autocomplete scripts in the world? Because I’m completely insane and have NIH syndrome? Probably both. :P
- * @author Lea Verou http://leaverou.github.io/awesomplete
- * MIT license
- */
-
-(function () {
-
-var _ = function (input, o) {
-	var me = this;
-
-	// Setup
-
-	this.isOpened = false;
-
-	this.input = $(input);
-	this.input.setAttribute("autocomplete", "off");
-	this.input.setAttribute("aria-autocomplete", "list");
-
-	o = o || {};
-
-	configure(this, {
-		minChars: 2,
-		maxItems: 10,
-		autoFirst: false,
-		data: _.DATA,
-		filter: _.FILTER_CONTAINS,
-		sort: o.sort === false ? false : _.SORT_BYLENGTH,
-		item: _.ITEM,
-		replace: _.REPLACE
-	}, o);
-
-	this.index = -1;
-
-	// Create necessary elements
-
-	this.container = $.create("div", {
-		className: "awesomplete",
-		around: input
-	});
-
-	this.ul = $.create("ul", {
-		hidden: "hidden",
-		inside: this.container
-	});
-
-	this.status = $.create("span", {
-		className: "visually-hidden",
-		role: "status",
-		"aria-live": "assertive",
-		"aria-relevant": "additions",
-		inside: this.container
-	});
-
-	// Bind events
-
-	this._events = {
-		input: {
-			"input": this.evaluate.bind(this),
-			"blur": this.close.bind(this, { reason: "blur" }),
-			"keydown": function(evt) {
-				var c = evt.keyCode;
-
-				// If the dropdown `ul` is in view, then act on keydown for the following keys:
-				// Enter / Esc / Up / Down
-				if(me.opened) {
-					if (c === 13 && me.selected) { // Enter
-						evt.preventDefault();
-						me.select();
-					}
-					else if (c === 27) { // Esc
-						me.close({ reason: "esc" });
-					}
-					else if (c === 38 || c === 40) { // Down/Up arrow
-						evt.preventDefault();
-						me[c === 38? "previous" : "next"]();
-					}
-				}
-			}
-		},
-		form: {
-			"submit": this.close.bind(this, { reason: "submit" })
-		},
-		ul: {
-			"mousedown": function(evt) {
-				var li = evt.target;
-
-				if (li !== this) {
-
-					while (li && !/li/i.test(li.nodeName)) {
-						li = li.parentNode;
-					}
-
-					if (li && evt.button === 0) {  // Only select on left click
-						evt.preventDefault();
-						me.select(li, evt.target);
-					}
-				}
-			}
-		}
-	};
-
-	$.bind(this.input, this._events.input);
-	$.bind(this.input.form, this._events.form);
-	$.bind(this.ul, this._events.ul);
-
-	if (this.input.hasAttribute("list")) {
-		this.list = "#" + this.input.getAttribute("list");
-		this.input.removeAttribute("list");
-	}
-	else {
-		this.list = this.input.getAttribute("data-list") || o.list || [];
-	}
-
-	_.all.push(this);
-};
-
-_.prototype = {
-	set list(list) {
-		if (Array.isArray(list)) {
-			this._list = list;
-		}
-		else if (typeof list === "string" && list.indexOf(",") > -1) {
-				this._list = list.split(/\s*,\s*/);
-		}
-		else { // Element or CSS selector
-			list = $(list);
-
-			if (list && list.children) {
-				var items = [];
-				slice.apply(list.children).forEach(function (el) {
-					if (!el.disabled) {
-						var text = el.textContent.trim();
-						var value = el.value || text;
-						var label = el.label || text;
-						if (value !== "") {
-							items.push({ label: label, value: value });
-						}
-					}
-				});
-				this._list = items;
-			}
-		}
-
-		if (document.activeElement === this.input) {
-			this.evaluate();
-		}
-	},
-
-	get selected() {
-		return this.index > -1;
-	},
-
-	get opened() {
-		return this.isOpened;
-	},
-
-	close: function (o) {
-		if (!this.opened) {
-			return;
-		}
-
-		this.ul.setAttribute("hidden", "");
-		this.isOpened = false;
-		this.index = -1;
-
-		$.fire(this.input, "awesomplete-close", o || {});
-	},
-
-	open: function () {
-		this.ul.removeAttribute("hidden");
-		this.isOpened = true;
-
-		if (this.autoFirst && this.index === -1) {
-			this.goto(0);
-		}
-
-		$.fire(this.input, "awesomplete-open");
-	},
-
-	destroy: function() {
-		//remove events from the input and its form
-		$.unbind(this.input, this._events.input);
-		$.unbind(this.input.form, this._events.form);
-
-		//move the input out of the awesomplete container and remove the container and its children
-		var parentNode = this.container.parentNode;
-
-		parentNode.insertBefore(this.input, this.container);
-		parentNode.removeChild(this.container);
-
-		//remove autocomplete and aria-autocomplete attributes
-		this.input.removeAttribute("autocomplete");
-		this.input.removeAttribute("aria-autocomplete");
-
-		//remove this awesomeplete instance from the global array of instances
-		var indexOfAwesomplete = _.all.indexOf(this);
-
-		if (indexOfAwesomplete !== -1) {
-			_.all.splice(indexOfAwesomplete, 1);
-		}
-	},
-
-	next: function () {
-		var count = this.ul.children.length;
-		this.goto(this.index < count - 1 ? this.index + 1 : (count ? 0 : -1) );
-	},
-
-	previous: function () {
-		var count = this.ul.children.length;
-		var pos = this.index - 1;
-
-		this.goto(this.selected && pos !== -1 ? pos : count - 1);
-	},
-
-	// Should not be used, highlights specific item without any checks!
-	goto: function (i) {
-		var lis = this.ul.children;
-
-		if (this.selected) {
-			lis[this.index].setAttribute("aria-selected", "false");
-		}
-
-		this.index = i;
-
-		if (i > -1 && lis.length > 0) {
-			lis[i].setAttribute("aria-selected", "true");
-			this.status.textContent = lis[i].textContent;
-
-			// scroll to highlighted element in case parent's height is fixed
-			this.ul.scrollTop = lis[i].offsetTop - this.ul.clientHeight + lis[i].clientHeight;
-
-			$.fire(this.input, "awesomplete-highlight", {
-				text: this.suggestions[this.index]
-			});
-		}
-	},
-
-	select: function (selected, origin) {
-		if (selected) {
-			this.index = $.siblingIndex(selected);
-		} else {
-			selected = this.ul.children[this.index];
-		}
-
-		if (selected) {
-			var suggestion = this.suggestions[this.index];
-
-			var allowed = $.fire(this.input, "awesomplete-select", {
-				text: suggestion,
-				origin: origin || selected
-			});
-
-			if (allowed) {
-				this.replace(suggestion);
-				this.close({ reason: "select" });
-				$.fire(this.input, "awesomplete-selectcomplete", {
-					text: suggestion
-				});
-			}
-		}
-	},
-
-	evaluate: function() {
-		var me = this;
-		var value = this.input.value;
-
-		if (value.length >= this.minChars && this._list.length > 0) {
-			this.index = -1;
-			// Populate list with options that match
-			this.ul.innerHTML = "";
-
-			this.suggestions = this._list
-				.map(function(item) {
-					return new Suggestion(me.data(item, value));
-				})
-				.filter(function(item) {
-					return me.filter(item, value);
-				});
-
-			if (this.sort !== false) {
-				this.suggestions = this.suggestions.sort(this.sort);
-			}
-
-			this.suggestions = this.suggestions.slice(0, this.maxItems);
-
-			this.suggestions.forEach(function(text) {
-					me.ul.appendChild(me.item(text, value));
-				});
-
-			if (this.ul.children.length === 0) {
-				this.close({ reason: "nomatches" });
-			} else {
-				this.open();
-			}
-		}
-		else {
-			this.close({ reason: "nomatches" });
-		}
-	}
-};
-
-// Static methods/properties
-
-_.all = [];
-
-_.FILTER_CONTAINS = function (text, input) {
-	return RegExp($.regExpEscape(input.trim()), "i").test(text);
-};
-
-_.FILTER_STARTSWITH = function (text, input) {
-	return RegExp("^" + $.regExpEscape(input.trim()), "i").test(text);
-};
-
-_.SORT_BYLENGTH = function (a, b) {
-	if (a.length !== b.length) {
-		return a.length - b.length;
-	}
-
-	return a < b? -1 : 1;
-};
-
-_.ITEM = function (text, input) {
-    input = input.trim();
-    var element = document.createElement("li");
-    element.setAttribute("aria-selected", "false");
-
-    var regex = new RegExp("("+input+")", "ig");
-    var parts = input ? text.split(regex) : [text];
-    parts.forEach(function (txt) {
-        if (input && txt.match(regex)) {
-            var match = document.createElement("mark");
-            match.textContent = txt;
-            element.appendChild(match);
-        } else {
-            element.appendChild(document.createTextNode(txt));
-        }
-    });
-    return element;
-};
-
-_.REPLACE = function (text) {
-	this.input.value = text.value;
-};
-
-_.DATA = function (item/*, input*/) { return item; };
-
-// Private functions
-
-function Suggestion(data) {
-	var o = Array.isArray(data)
-	  ? { label: data[0], value: data[1] }
-	  : typeof data === "object" && "label" in data && "value" in data ? data : { label: data, value: data };
-
-	this.label = o.label || o.value;
-	this.value = o.value;
-}
-Object.defineProperty(Suggestion.prototype = Object.create(String.prototype), "length", {
-	get: function() { return this.label.length; }
-});
-Suggestion.prototype.toString = Suggestion.prototype.valueOf = function () {
-	return "" + this.label;
-};
-
-function configure(instance, properties, o) {
-	for (var i in properties) {
-		var initial = properties[i],
-		    attrValue = instance.input.getAttribute("data-" + i.toLowerCase());
-
-		if (typeof initial === "number") {
-			instance[i] = parseInt(attrValue);
-		}
-		else if (initial === false) { // Boolean options must be false by default anyway
-			instance[i] = attrValue !== null;
-		}
-		else if (initial instanceof Function) {
-			instance[i] = null;
-		}
-		else {
-			instance[i] = attrValue;
-		}
-
-		if (!instance[i] && instance[i] !== 0) {
-			instance[i] = (i in o)? o[i] : initial;
-		}
-	}
-}
-
-// Helpers
-
-var slice = Array.prototype.slice;
-
-function $(expr, con) {
-	return typeof expr === "string"? (con || document).querySelector(expr) : expr || null;
-}
-
-function $$(expr, con) {
-	return slice.call((con || document).querySelectorAll(expr));
-}
-
-$.create = function(tag, o) {
-	var element = document.createElement(tag);
-
-	for (var i in o) {
-		var val = o[i];
-
-		if (i === "inside") {
-			$(val).appendChild(element);
-		}
-		else if (i === "around") {
-			var ref = $(val);
-			ref.parentNode.insertBefore(element, ref);
-			element.appendChild(ref);
-		}
-		else if (i in element) {
-			element[i] = val;
-		}
-		else {
-			element.setAttribute(i, val);
-		}
-	}
-
-	return element;
-};
-
-$.bind = function(element, o) {
-	if (element) {
-		for (var event in o) {
-			var callback = o[event];
-
-			event.split(/\s+/).forEach(function (event) {
-				element.addEventListener(event, callback);
-			});
-		}
-	}
-};
-
-$.unbind = function(element, o) {
-	if (element) {
-		for (var event in o) {
-			var callback = o[event];
-
-			event.split(/\s+/).forEach(function(event) {
-				element.removeEventListener(event, callback);
-			});
-		}
-	}
-};
-
-$.fire = function(target, type, properties) {
-	var evt = document.createEvent("HTMLEvents");
-
-	evt.initEvent(type, true, true );
-
-	for (var j in properties) {
-		evt[j] = properties[j];
-	}
-
-	return target.dispatchEvent(evt);
-};
-
-$.regExpEscape = function (s) {
-	return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
-};
-
-$.siblingIndex = function (el) {
-	/* eslint-disable no-cond-assign */
-	for (var i = 0; el = el.previousElementSibling; i++);
-	return i;
-};
-
-// Initialization
-
-function init() {
-	$$("input.awesomplete").forEach(function (input) {
-		new _(input);
-	});
-}
-
-// Are we in a browser? Check for Document constructor
-if (typeof Document !== "undefined") {
-	// DOM already loaded?
-	if (document.readyState !== "loading") {
-		init();
-	}
-	else {
-		// Wait for it
-		document.addEventListener("DOMContentLoaded", init);
-	}
-}
-
-_.$ = $;
-_.$$ = $$;
-
-// Make sure to export Awesomplete on self when in a browser
-if (typeof self !== "undefined") {
-	self.Awesomplete = _;
-}
-
-// Expose Awesomplete as a CJS module
-if (typeof module === "object" && module.exports) {
-	module.exports = _;
-}
-
-return _;
-
-}());
-
-define("awesomplete", (function (global) {
-    return function () {
-        var ret, fn;
-        return ret || global.Awesomplete;
-    };
-}(this)));
-
 
 
 // Converse.js (A browser based XMPP chat client)
@@ -56160,6 +56244,13 @@ define("awesomplete", (function (global) {
             'server_placeholder': __('conference.example.org')
           }));
         },
+        afterRender: function afterRender() {
+          var _this = this;
+
+          this.el.addEventListener('shown.bs.modal', function () {
+            _this.el.querySelector('input[name="server"]').focus();
+          }, false);
+        },
         openRoom: function openRoom(ev) {
           ev.preventDefault();
           var jid = ev.target.getAttribute('data-room-jid');
@@ -56275,6 +56366,13 @@ define("awesomplete", (function (global) {
             'label_join': __('Join')
           }));
         },
+        afterRender: function afterRender() {
+          var _this2 = this;
+
+          this.el.addEventListener('shown.bs.modal', function () {
+            _this2.el.querySelector('input[name="chatroom"]').focus();
+          }, false);
+        },
         parseRoomDataFromEvent: function parseRoomDataFromEvent(form) {
           var data = new FormData(form);
           var jid = data.get('chatroom');
@@ -56317,7 +56415,7 @@ define("awesomplete", (function (global) {
           'click .send-button': 'onFormSubmitted'
         },
         initialize: function initialize() {
-          var _this = this;
+          var _this3 = this;
 
           this.scrollDown = _.debounce(this._scrollDown, 250);
           this.markScrolled = _.debounce(this._markScrolled, 100);
@@ -56336,11 +56434,11 @@ define("awesomplete", (function (global) {
 
           if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
             var handler = function handler() {
-              _this.join();
+              _this3.join();
 
-              _this.fetchMessages();
+              _this3.fetchMessages();
 
-              _converse.emit('chatRoomOpened', _this);
+              _converse.emit('chatRoomOpened', _this3);
             };
 
             this.getRoomFeatures().then(handler, handler);
@@ -56709,7 +56807,7 @@ define("awesomplete", (function (global) {
           return _.flatMap(arguments[0], this.parseMemberListIQ);
         },
         getJidsWithAffiliations: function getJidsWithAffiliations(affiliations) {
-          var _this2 = this;
+          var _this4 = this;
 
           /* Returns a map of JIDs that have the affiliations
            * as provided.
@@ -56719,13 +56817,13 @@ define("awesomplete", (function (global) {
           }
 
           return new Promise(function (resolve, reject) {
-            var promises = _.map(affiliations, _.partial(_this2.requestMemberList, _this2.model.get('jid')));
+            var promises = _.map(affiliations, _.partial(_this4.requestMemberList, _this4.model.get('jid')));
 
-            Promise.all(promises).then(_.flow(_this2.marshallAffiliationIQs.bind(_this2), resolve), _.flow(_this2.marshallAffiliationIQs.bind(_this2), resolve));
+            Promise.all(promises).then(_.flow(_this4.marshallAffiliationIQs.bind(_this4), resolve), _.flow(_this4.marshallAffiliationIQs.bind(_this4), resolve));
           });
         },
         updateMemberLists: function updateMemberLists(members, affiliations, deltaFunc) {
-          var _this3 = this;
+          var _this5 = this;
 
           /* Fetch the lists of users with the given affiliations.
            * Then compute the delta between those users and
@@ -56745,7 +56843,7 @@ define("awesomplete", (function (global) {
            *  to update the list.
            */
           this.getJidsWithAffiliations(affiliations).then(function (old_members) {
-            _this3.setAffiliations(deltaFunc(members, old_members));
+            _this5.setAffiliations(deltaFunc(members, old_members));
           });
         },
         directInvite: function directInvite(recipient, reason) {
@@ -57222,7 +57320,7 @@ define("awesomplete", (function (global) {
           _converse.ChatBoxView.prototype.close.apply(this, arguments);
         },
         renderConfigurationForm: function renderConfigurationForm(stanza) {
-          var _this4 = this;
+          var _this6 = this;
 
           /* Renders a form given an IQ stanza containing the current
            * room configuration.
@@ -57267,12 +57365,12 @@ define("awesomplete", (function (global) {
           last_fieldset_el.querySelector('input[type=button]').addEventListener('click', function (ev) {
             ev.preventDefault();
 
-            _this4.closeForm();
+            _this6.closeForm();
           });
           form_el.addEventListener('submit', function (ev) {
             ev.preventDefault();
 
-            _this4.saveConfiguration(ev.target).then(_this4.getRoomFeatures.bind(_this4));
+            _this6.saveConfiguration(ev.target).then(_this6.getRoomFeatures.bind(_this6));
           }, false);
         },
         sendConfiguration: function sendConfiguration(config, onSuccess, onError) {
@@ -57308,7 +57406,7 @@ define("awesomplete", (function (global) {
           return _converse.connection.sendIQ(iq, onSuccess, onError);
         },
         saveConfiguration: function saveConfiguration(form) {
-          var _this5 = this;
+          var _this7 = this;
 
           /* Submit the room configuration form by sending an IQ
            * stanza to the server.
@@ -57323,13 +57421,13 @@ define("awesomplete", (function (global) {
             var inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
                 configArray = _.map(inputs, u.webForm2xForm);
 
-            _this5.sendConfiguration(configArray, resolve, reject);
+            _this7.sendConfiguration(configArray, resolve, reject);
 
-            _this5.closeForm();
+            _this7.closeForm();
           });
         },
         autoConfigureChatRoom: function autoConfigureChatRoom() {
-          var _this6 = this;
+          var _this8 = this;
 
           /* Automatically configure room based on the
            * 'roomconfig' data on this view's model.
@@ -57343,7 +57441,7 @@ define("awesomplete", (function (global) {
            */
           var that = this;
           return new Promise(function (resolve, reject) {
-            _this6.fetchRoomConfiguration().then(function (stanza) {
+            _this8.fetchRoomConfiguration().then(function (stanza) {
               var configArray = [],
                   fields = stanza.querySelectorAll('field'),
                   config = that.model.get('roomconfig');
@@ -57389,7 +57487,7 @@ define("awesomplete", (function (global) {
           this.renderAfterTransition();
         },
         fetchRoomConfiguration: function fetchRoomConfiguration(handler) {
-          var _this7 = this,
+          var _this9 = this,
               _arguments = arguments;
 
           /* Send an IQ stanza to fetch the room configuration data.
@@ -57401,13 +57499,13 @@ define("awesomplete", (function (global) {
            */
           return new Promise(function (resolve, reject) {
             _converse.connection.sendIQ($iq({
-              'to': _this7.model.get('jid'),
+              'to': _this9.model.get('jid'),
               'type': "get"
             }).c("query", {
               xmlns: Strophe.NS.MUC_OWNER
             }), function (iq) {
               if (handler) {
-                handler.apply(_this7, _arguments);
+                handler.apply(_this9, _arguments);
               }
 
               resolve(iq);
@@ -57459,13 +57557,13 @@ define("awesomplete", (function (global) {
           this.model.save(features);
         },
         getRoomFeatures: function getRoomFeatures() {
-          var _this8 = this;
+          var _this10 = this;
 
           /* Fetch the room disco info, parse it and then
            * save it on the Backbone.Model of this chat rooms.
            */
           return new Promise(function (resolve, reject) {
-            _converse.connection.disco.info(_this8.model.get('jid'), null, _.flow(_this8.parseRoomFeatures.bind(_this8), resolve), function () {
+            _converse.connection.disco.info(_this10.model.get('jid'), null, _.flow(_this10.parseRoomFeatures.bind(_this10), resolve), function () {
               reject(new Error("Could not parse the room features"));
             }, 5000);
           });
@@ -57763,7 +57861,7 @@ define("awesomplete", (function (global) {
           return notification;
         },
         displayNotificationsforUser: function displayNotificationsforUser(notification) {
-          var _this9 = this;
+          var _this11 = this;
 
           /* Given the notification object generated by
            * parseXUserElement, display any relevant messages and
@@ -57785,7 +57883,7 @@ define("awesomplete", (function (global) {
           }
 
           _.each(notification.messages, function (message) {
-            _this9.content.insertAdjacentHTML('beforeend', tpl_info({
+            _this11.content.insertAdjacentHTML('beforeend', tpl_info({
               'data': '',
               'isodate': moment().format(),
               'extra_classes': 'chat-event',

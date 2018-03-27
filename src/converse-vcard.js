@@ -97,6 +97,11 @@
 
     converse.plugins.add('converse-vcard', {
 
+        enabled (_converse) {
+            _converse.api.settings.update({'use_vcards': true});
+            return _converse.use_vcards;
+        },
+
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -126,7 +131,6 @@
              * loaded by converse.js's plugin machinery.
              */
             const { _converse } = this;
-            _converse.api.settings.update({'use_vcards': true});
 
             _converse.createRequestingContactFromVCard = function (presence, vcard) {
                 const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
@@ -152,9 +156,7 @@
 
             /* Event handlers */
             _converse.on('addClientFeatures', () => {
-                if (_converse.use_vcards) {
-                    _converse.connection.disco.addFeature(Strophe.NS.VCARD);
-                }
+                _converse.connection.disco.addFeature(Strophe.NS.VCARD);
             });
 
             _converse.on('chatBoxInitialized', (chatbox) => {

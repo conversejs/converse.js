@@ -707,13 +707,13 @@
                     // also cause the contact's view to be removed from the
                     // "Pending Contacts" group.
                     this.model.contacts.remove(contact, {'silent': true});
-                    this.get(contact.get('jid')).remove();
                     this.onRemove(contact);
                 },
 
                 onRemove (contact) {
+                    this.remove(contact.get('jid'));
                     if (this.model.contacts.length === 0) {
-                        this.el.parentElement.removeChild(this.el);
+                        this.remove();
                     }
                 }
             });

@@ -495,10 +495,7 @@
                     if (!_converse.allow_contact_removal) { return; }
                     const result = confirm(__("Are you sure you want to remove this contact?"));
                     if (result === true) {
-                        const iq = $iq({type: 'set'})
-                            .c('query', {xmlns: Strophe.NS.ROSTER})
-                            .c('item', {jid: this.model.get('jid'), subscription: "remove"});
-                        _converse.connection.sendIQ(iq,
+                        this.model.removeFromRoster(
                             (iq) => {
                                 this.model.destroy();
                                 this.remove();

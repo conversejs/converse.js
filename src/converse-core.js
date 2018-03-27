@@ -1034,7 +1034,7 @@
                 }
             },
 
-            removeFromRoster (callback) {
+            removeFromRoster (callback, errback) {
                 /* Instruct the XMPP server to remove this contact from our roster
                  * Parameters:
                  *   (Function) callback
@@ -1042,7 +1042,7 @@
                 const iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', {jid: this.get('jid'), subscription: "remove"});
-                _converse.connection.sendIQ(iq, callback, callback);
+                _converse.connection.sendIQ(iq, callback, errback);
                 return this;
             }
         });

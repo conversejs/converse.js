@@ -584,26 +584,33 @@
                 var name = mock.pend_names[0];
                 var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
                 var contact = _converse.roster.get(jid);
-
+                var sent_IQ;
                 spyOn(window, 'confirm').and.returnValue(true);
                 spyOn(contact, 'unauthorize').and.callFake(function () { return contact; });
-                spyOn(contact, 'removeFromRoster');
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
-                    if (typeof callback === "function") { return callback(); }
-                });
+                spyOn(contact, 'removeFromRoster').and.callThrough();
                 test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find(".pending-contact-name:contains('"+name+"')").length;
+                    return $(_converse.rosterview.el).find(".pending-contact-name:contains('"+name+"')").length;
                 }, 700).then(function () {
+
+                    var sendIQ = _converse.connection.sendIQ;
+                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                        sent_IQ = iq;
+                        callback();
+                    });
                     $(_converse.rosterview.el).find(".pending-contact-name:contains('"+name+"')")
                         .parent().siblings('.remove-xmpp-contact')[0].click();
                     return test_utils.waitUntil(function () {
                         return $(_converse.rosterview.el).find(".pending-contact-name:contains('"+name+"')").length === 0
-                    }, 700)
+                    }, 1000)
                 }).then(function () {
                     expect(window.confirm).toHaveBeenCalled();
-                    expect(_converse.connection.sendIQ).toHaveBeenCalled();
                     expect(contact.removeFromRoster).toHaveBeenCalled();
-                    expect(_converse.connection.sendIQ).toHaveBeenCalled();
+                    expect(sent_IQ.toLocaleString()).toBe(
+                        "<iq type='set' xmlns='jabber:client'>"+
+                            "<query xmlns='jabber:iq:roster'>"+
+                                "<item jid='suleyman.van.beusichem@localhost' subscription='remove'/>"+
+                            "</query>"+
+                        "</iq>");
                     done();
                 });
             }));
@@ -771,6 +778,7 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                var sent_IQ;
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
                     return $(_converse.rosterview.el).find('li').length;
@@ -779,15 +787,21 @@
                     var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
                     var contact = _converse.roster.get(jid);
                     spyOn(window, 'confirm').and.returnValue(true);
-                    spyOn(contact, 'removeFromRoster');
-                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
-                        if (typeof callback === "function") { return callback(); }
+                    spyOn(contact, 'removeFromRoster').and.callThrough();
+
+                    var sendIQ = _converse.connection.sendIQ;
+                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                        sent_IQ = iq;
+                        callback();
                     });
                     $(_converse.rosterview.el).find(".open-chat:contains('"+name+"')")
                         .parent().find('.remove-xmpp-contact')[0].click();
 
                     expect(window.confirm).toHaveBeenCalled();
-                    expect(_converse.connection.sendIQ).toHaveBeenCalled();
+                    expect(sent_IQ.toLocaleString()).toBe(
+                        "<iq type='set' xmlns='jabber:client'>"+
+                            "<query xmlns='jabber:iq:roster'><item jid='max.frankfurter@localhost' subscription='remove'/></query>"+
+                        "</iq>");
                     expect(contact.removeFromRoster).toHaveBeenCalled();
                     expect($(_converse.rosterview.el).find(".open-chat:contains('"+name+"')").length).toEqual(0);
                     done();
@@ -812,7 +826,7 @@
                     return $(_converse.rosterview.el).find('.roster-group:visible li').length;
                 }, 700).then(function () {
                     spyOn(window, 'confirm').and.returnValue(true);
-                    spyOn(contact, 'removeFromRoster');
+                    spyOn(contact, 'removeFromRoster').and.callThrough();
                     spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
                         if (typeof callback === "function") { return callback(); }
                     });

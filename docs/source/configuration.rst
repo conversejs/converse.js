@@ -992,6 +992,15 @@ muc_show_join_leave
 Determines whether Converse.js will show info messages inside a chatroom
 whenever a user joins or leaves it.
 
+nickname
+--------
+
+* Default: ``undefined``
+
+This setting allows you to specify the nickname for the current user.
+The nickname will be included in presence requests to other users and will also
+be used as the default nickname when entering MUC chatrooms.
+
 notify_all_room_messages
 ------------------------
 

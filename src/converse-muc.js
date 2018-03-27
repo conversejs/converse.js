@@ -264,6 +264,7 @@
                           'affiliation': null,
                           'connection_status': converse.ROOMSTATUS.DISCONNECTED,
                           'name': '',
+                          'nick': _converse.xmppstatus.get('nickname'),
                           'description': '',
                           'features_fetched': false,
                           'roomconfig': {},

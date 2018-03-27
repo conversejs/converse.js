@@ -39941,6 +39941,7 @@ return Backbone.BrowserStorage;
       locales: ['af', 'ar', 'bg', 'ca', 'de', 'es', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
       message_carbons: true,
       message_storage: 'session',
+      nickname: undefined,
       password: undefined,
       prebind_url: null,
       priority: 0,
@@ -40411,9 +40412,9 @@ return Backbone.BrowserStorage;
       }
 
       var carbons_iq = new Strophe.Builder('iq', {
-        from: this.connection.jid,
-        id: 'enablecarbons',
-        type: 'set'
+        'from': this.connection.jid,
+        'id': 'enablecarbons',
+        'type': 'set'
       }).c('enable', {
         xmlns: Strophe.NS.CARBONS
       });
@@ -40576,8 +40577,6 @@ return Backbone.BrowserStorage;
         'status': ''
       },
       initialize: function initialize(attributes) {
-        var _this3 = this;
-
         var jid = attributes.jid,
             bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase(),
             resource = Strophe.getResourceFromJid(jid);
@@ -40590,9 +40589,6 @@ return Backbone.BrowserStorage;
           'resources': {},
           'user_id': Strophe.getNodeFromJid(jid)
         }, attributes));
-        this.on('destroy', function () {
-          _this3.removeFromRoster();
-        });
         this.on('change:chat_status', function (item) {
           _converse.emit('contactStatusChanged', item.attributes);
         });
@@ -40604,8 +40600,6 @@ return Backbone.BrowserStorage;
          *    (String) message - An optional message to explain the
          *      reason for the subscription request.
          */
-        this.save('ask', "subscribe"); // ask === 'subscribe' Means we have ask to subscribe to them.
-
         var pres = $pres({
           to: this.get('jid'),
           type: "subscribe"
@@ -40615,15 +40609,17 @@ return Backbone.BrowserStorage;
           pres.c("status").t(message).up();
         }
 
-        var nick = _converse.xmppstatus.get('fullname');
+        var nick = _converse.xmppstatus.get('nickname') || _converse.xmppstatus.get('fullname');
 
-        if (nick && nick !== "") {
+        if (nick) {
           pres.c('nick', {
             'xmlns': Strophe.NS.NICK
           }).t(nick).up();
         }
 
         _converse.connection.send(pres);
+
+        this.save('ask', "subscribe"); // ask === 'subscribe' Means we have asked to subscribe to them.
 
         return this;
       },
@@ -40652,7 +40648,8 @@ return Backbone.BrowserStorage;
           'to': this.get('jid')
         }));
 
-        this.destroy(); // Will cause removeFromRoster to be called.
+        this.removeFromRoster();
+        this.destroy();
       },
       unauthorize: function unauthorize(message) {
         /* Unauthorize this contact's presence subscription
@@ -40669,8 +40666,8 @@ return Backbone.BrowserStorage;
          *   (String) message - Optional message to send to the person being authorized
          */
         var pres = $pres({
-          to: this.get('jid'),
-          type: "subscribed"
+          'to': this.get('jid'),
+          'type': "subscribed"
         });
 
         if (message && message !== "") {
@@ -40816,7 +40813,7 @@ return Backbone.BrowserStorage;
         }, Strophe.NS.ROSTERX, 'message', null);
       },
       fetchRosterContacts: function fetchRosterContacts() {
-        var _this4 = this;
+        var _this3 = this;
 
         /* Fetches the roster contacts, first by trying the
          * sessionStorage cache, and if that's empty, then by querying
@@ -40826,7 +40823,7 @@ return Backbone.BrowserStorage;
          * fetched.
          */
         return new Promise(function (resolve, reject) {
-          _this4.fetch({
+          _this3.fetch({
             'add': true,
             'silent': true,
             success: function success(collection) {
@@ -40846,7 +40843,7 @@ return Backbone.BrowserStorage;
       subscribeToSuggestedItems: function subscribeToSuggestedItems(msg) {
         _.each(msg.querySelectorAll('item'), function (item) {
           if (item.getAttribute('action') === 'add') {
-            _converse.roster.addAndSubscribe(item.getAttribute('jid'), null, _converse.xmppstatus.get('fullname'));
+            _converse.roster.addAndSubscribe(item.getAttribute('jid'), _converse.xmppstatus.get('nickname') || _converse.xmppstatus.get('fullname'));
           }
         });
 
@@ -40872,7 +40869,7 @@ return Backbone.BrowserStorage;
           }
         };
 
-        this.addContact(jid, name, groups, attributes).then(handler, handler);
+        this.addContactToRoster(jid, name, groups, attributes).then(handler, handler);
       },
       sendContactAddIQ: function sendContactAddIQ(jid, name, groups, callback, errback) {
         /*  Send an IQ stanza to the XMPP server to add a new roster contact.
@@ -40900,8 +40897,8 @@ return Backbone.BrowserStorage;
 
         _converse.connection.sendIQ(iq, callback, errback);
       },
-      addContact: function addContact(jid, name, groups, attributes) {
-        var _this5 = this;
+      addContactToRoster: function addContactToRoster(jid, name, groups, attributes) {
+        var _this4 = this;
 
         /* Adds a RosterContact instance to _converse.roster and
          * registers the contact on the XMPP server.
@@ -40918,8 +40915,8 @@ return Backbone.BrowserStorage;
           groups = groups || [];
           name = _.isEmpty(name) ? jid : name;
 
-          _this5.sendContactAddIQ(jid, name, groups, function () {
-            var contact = _this5.create(_.assignIn({
+          _this4.sendContactAddIQ(jid, name, groups, function () {
+            var contact = _this4.create(_.assignIn({
               ask: undefined,
               fullname: name,
               groups: groups,
@@ -40940,7 +40937,7 @@ return Backbone.BrowserStorage;
           });
         });
       },
-      subscribeBack: function subscribeBack(bare_jid) {
+      subscribeBack: function subscribeBack(bare_jid, presence) {
         var contact = this.get(bare_jid);
 
         if (contact instanceof _converse.RosterContact) {
@@ -40953,7 +40950,9 @@ return Backbone.BrowserStorage;
             }
           };
 
-          this.addContact(bare_jid, '', [], {
+          var nickname = _.get(sizzle("nick[xmlns=\"".concat(Strophe.NS.NICK, "\"]"), presence).pop(), 'textContent', null);
+
+          this.addContactToRoster(bare_jid, nickname, [], {
             'subscription': 'from'
           }).then(handler, handler);
         }
@@ -41012,7 +41011,7 @@ return Backbone.BrowserStorage;
         return true;
       },
       fetchFromServer: function fetchFromServer() {
-        var _this6 = this;
+        var _this5 = this;
 
         /* Fetch the roster from the XMPP server */
         return new Promise(function (resolve, reject) {
@@ -41023,7 +41022,7 @@ return Backbone.BrowserStorage;
             xmlns: Strophe.NS.ROSTER
           });
 
-          var callback = _.flow(_this6.onReceivedFromServer.bind(_this6), resolve);
+          var callback = _.flow(_this5.onReceivedFromServer.bind(_this5), resolve);
 
           var errback = function errback(iq) {
             var errmsg = "Error while trying to fetch roster from the server";
@@ -41067,17 +41066,17 @@ return Backbone.BrowserStorage;
           }
 
           this.create({
-            ask: ask,
-            fullname: item.getAttribute("name") || jid,
-            groups: groups,
-            jid: jid,
-            subscription: subscription
+            'ask': ask,
+            'fullname': item.getAttribute("name") || jid,
+            'groups': groups,
+            'jid': jid,
+            'subscription': subscription
           }, {
             sort: false
           });
         } else {
           if (subscription === "remove") {
-            return contact.destroy(); // will trigger removeFromRoster
+            return contact.destroy();
           } // We only find out about requesting contacts via the
           // presence handler, so if we receive a contact
           // here, we know they aren't requesting anymore.
@@ -41085,10 +41084,10 @@ return Backbone.BrowserStorage;
 
 
           contact.save({
-            subscription: subscription,
-            ask: ask,
-            requesting: null,
-            groups: groups
+            'subscription': subscription,
+            'ask': ask,
+            'requesting': null,
+            'groups': groups
           });
         }
       },
@@ -41098,13 +41097,14 @@ return Backbone.BrowserStorage;
          * Note: this method gets completely overridden by converse-vcard.js
          */
         var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from')),
-            nick_el = presence.querySelector("nick[xmlns=\"".concat(Strophe.NS.NICK, "\"]"));
+            nickname = _.get(sizzle("nick[xmlns=\"".concat(Strophe.NS.NICK, "\"]"), presence).pop(), 'textContent', null);
+
         var user_data = {
-          jid: bare_jid,
-          subscription: 'none',
-          ask: null,
-          requesting: true,
-          fullname: nick_el && nick_el.textContent || bare_jid
+          'jid': bare_jid,
+          'subscription': 'none',
+          'ask': null,
+          'requesting': true,
+          'fullname': nickname
         };
         this.create(user_data);
 
@@ -41121,7 +41121,7 @@ return Backbone.BrowserStorage;
 
         if (_converse.auto_subscribe) {
           if (!contact || contact.get('subscription') !== 'to') {
-            this.subscribeBack(bare_jid);
+            this.subscribeBack(bare_jid, presence);
           } else {
             contact.authorize();
           }
@@ -41167,6 +41167,24 @@ return Backbone.BrowserStorage;
             }
           }
 
+          if (_converse.jid === jid && presence_type === 'unavailable') {
+            // XXX: We've received an "unavailable" presence from our
+            // own resource. Apparently this happens due to a
+            // Prosody bug, whereby we send an IQ stanza to remove
+            // a roster contact, and Prosody then sends
+            // "unavailable" globally, instead of directed to the
+            // particular user that's removed.
+            //
+            // Here is the bug report: https://prosody.im/issues/1121
+            //
+            // I'm not sure whether this might legitimately happen
+            // in other cases.
+            //
+            // As a workaround for now we simply send our presence again,
+            // otherwise we're treated as offline.
+            _converse.xmppstatus.sendPresence();
+          }
+
           return;
         } else if (sizzle("query[xmlns=\"".concat(Strophe.NS.MUC, "\"]"), presence).length) {
           return; // Ignore MUC
@@ -41207,7 +41225,7 @@ return Backbone.BrowserStorage;
     this.RosterGroups = Backbone.Collection.extend({
       model: _converse.RosterGroup,
       fetchRosterGroups: function fetchRosterGroups() {
-        var _this7 = this;
+        var _this6 = this;
 
         /* Fetches all the roster groups from sessionStorage.
          *
@@ -41215,7 +41233,7 @@ return Backbone.BrowserStorage;
          * returned.
          */
         return new Promise(function (resolve, reject) {
-          _this7.fetch({
+          _this6.fetch({
             silent: true,
             // We need to first have all groups before
             // we can start positioning them, so we set
@@ -41242,23 +41260,24 @@ return Backbone.BrowserStorage;
         return {
           "status": _converse.default_state,
           "jid": _converse.bare_jid,
+          "nickname": _converse.nickname,
           "vcard_updated": null
         };
       },
       initialize: function initialize() {
-        var _this8 = this;
+        var _this7 = this;
 
         this.on('change:status', function (item) {
-          var status = _this8.get('status');
+          var status = _this7.get('status');
 
-          _this8.sendPresence(status);
+          _this7.sendPresence(status);
 
           _converse.emit('statusChanged', status);
         });
         this.on('change:status_message', function () {
-          var status_message = _this8.get('status_message');
+          var status_message = _this7.get('status_message');
 
-          _this8.sendPresence(_this8.get('status'), status_message);
+          _this7.sendPresence(_this7.get('status'), status_message);
 
           _converse.emit('statusMessageChanged', status_message);
         });
@@ -51011,6 +51030,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             'affiliation': null,
             'connection_status': converse.ROOMSTATUS.DISCONNECTED,
             'name': '',
+            'nick': _converse.xmppstatus.get('nickname'),
             'description': '',
             'features_fetched': false,
             'roomconfig': {},

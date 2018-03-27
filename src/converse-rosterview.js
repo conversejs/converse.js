@@ -707,6 +707,7 @@
                     // also cause the contact's view to be removed from the
                     // "Pending Contacts" group.
                     this.model.contacts.remove(contact, {'silent': true});
+                    this.get(contact.get('jid')).remove();
                     this.onRemove(contact);
                 },
 

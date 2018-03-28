@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-03-28 17:09+0000\n"
+"PO-Revision-Date: 2018-03-28 17:16+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -546,29 +546,29 @@ msgstr "%1$s iada ez da moderatzailea."
 #: dist/converse-no-dependencies.js:18966
 #, javascript-format
 msgid "%1$s has been given a voice again."
-msgstr "%1$s -k ahots berri bat jaso du"
+msgstr "%1$s -k ahots berri bat jaso du berriro."
 
 #: dist/converse-no-dependencies.js:18970
 #, javascript-format
 msgid "%1$s has been muted."
-msgstr ""
+msgstr "%1$s isilarazia izan da."
 
 #: dist/converse-no-dependencies.js:18974
 #, javascript-format
 msgid "%1$s is now a moderator."
-msgstr ""
+msgstr "%1$s orain moderatzailea da."
 
 #: dist/converse-no-dependencies.js:18982
 msgid "Close and leave this room"
-msgstr ""
+msgstr "Itxi eta gela utzi"
 
 #: dist/converse-no-dependencies.js:18983
 msgid "Configure this room"
-msgstr ""
+msgstr "Gela hau konfiguratu"
 
 #: dist/converse-no-dependencies.js:19040
 msgid "Hide the list of occupants"
-msgstr ""
+msgstr "Kideen zerrenda ezkutatu"
 
 #: dist/converse-no-dependencies.js:19479
 #, javascript-format
@@ -576,14 +576,16 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
+"Akatsa: %1$s komandoak bi argumentu hartzen ditu, erabiltzailearen ezizena "
+"eta aukerako arrazoi bat."
 
 #: dist/converse-no-dependencies.js:19492
 msgid "Are you sure you want to clear the messages from this room?"
-msgstr ""
+msgstr "Ziur al zaude gela honetako mezuak garbitu nahi dituzula?"
 
 #: dist/converse-no-dependencies.js:19501
 msgid "Error: could not execute the command"
-msgstr ""
+msgstr "Akatsa: ezin izan da agindua exekutatu"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Change user's affiliation to admin"

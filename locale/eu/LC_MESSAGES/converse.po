@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-03-28 17:06+0000\n"
+"PO-Revision-Date: 2018-03-28 17:09+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -541,12 +541,12 @@ msgstr "Mezua"
 #: dist/converse-no-dependencies.js:18962
 #, javascript-format
 msgid "%1$s is no longer a moderator."
-msgstr "%1$s iada ez da moderatzailea"
+msgstr "%1$s iada ez da moderatzailea."
 
 #: dist/converse-no-dependencies.js:18966
 #, javascript-format
 msgid "%1$s has been given a voice again."
-msgstr ""
+msgstr "%1$s -k ahots berri bat jaso du"
 
 #: dist/converse-no-dependencies.js:18970
 #, javascript-format

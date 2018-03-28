@@ -54,7 +54,8 @@ var specs = [
     "spec/chatroom",
     "spec/minchats",
     "spec/notification",
-    "spec/register"
+    "spec/register",
+    "spec/http-file-upload"
 ];
 
 require(['console-reporter', 'mock', 'sinon', 'wait-until-promise', 'pluggable'],

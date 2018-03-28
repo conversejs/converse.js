@@ -10,7 +10,6 @@
  * encryption of one-on-one chat messages.
  */
 (function (root, factory) {
-
     define([ "converse-chatview",
             "bootstrap",
             "tpl!toolbar_otr",

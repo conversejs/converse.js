@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-03-28 18:41+0000\n"
+"PO-Revision-Date: 2018-03-28 21:49+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -968,28 +968,28 @@ msgstr "Ezaugarriak:"
 
 #: dist/converse-no-dependencies.js:21305
 msgid "Requires authentication"
-msgstr "Autentikazioa behar da"
+msgstr "Autentifikazioa behar da"
 
 #: dist/converse-no-dependencies.js:21307
 msgid "Requires an invitation"
-msgstr ""
+msgstr "Gonbidapena behar da"
 
 #: dist/converse-no-dependencies.js:21310
 msgid "Open room"
-msgstr ""
+msgstr "Gela ireki"
 
 #: dist/converse-no-dependencies.js:21311
 msgid "Permanent room"
-msgstr ""
+msgstr "Gela iraunkorra"
 
 #: dist/converse-no-dependencies.js:21314
 msgid "Temporary room"
-msgstr ""
+msgstr "Aldi baterako gela"
 
 #: dist/converse-no-dependencies.js:21414
 #, javascript-format
 msgid "%1$s has invited you to join a chat room: %2$s"
-msgstr ""
+msgstr "%1$s -k %2$s gelara gonbidatu zaitu"
 
 #: dist/converse-no-dependencies.js:21416
 #, javascript-format
@@ -997,81 +997,83 @@ msgid ""
 "%1$s has invited you to join a chat room: %2$s, and left the following "
 "reason: \"%3$s\""
 msgstr ""
+"%1$s -k %2$s gelara batzeko gonbidatu zaitu, eta ondorengo arrazoia eman du: "
+"\"%3$s\""
 
 #: dist/converse-no-dependencies.js:21830
 #: dist/converse-no-dependencies.js:21915
 #: dist/converse-no-dependencies.js:22559
 msgid "Bookmark this room"
-msgstr ""
+msgstr "Egin gela honen laster-marka"
 
 #: dist/converse-no-dependencies.js:21916
 msgid "The name for this bookmark:"
-msgstr ""
+msgstr "Laster-marka honen izena:"
 
 #: dist/converse-no-dependencies.js:21917
 msgid "Would you like this room to be automatically joined upon startup?"
-msgstr ""
+msgstr "Gela honetan automatikoki sartu nahiko zenuke abioan?"
 
 #: dist/converse-no-dependencies.js:21918
 msgid "What should your nickname for this room be?"
-msgstr ""
+msgstr "Zein izango litzateke gela honetarako zure ezizena?"
 
 #: dist/converse-no-dependencies.js:21994
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr ""
+msgstr "Ziur al zaude \"%1$s\" laster-marka ezabatu nahi duzula?"
 
 #: dist/converse-no-dependencies.js:22106
 msgid "Sorry, something went wrong while trying to save your bookmark."
-msgstr ""
+msgstr "Barkatu, zerbaitek huts egin du zure laster-marka gordetzerakoan."
 
 #: dist/converse-no-dependencies.js:22185
 #: dist/converse-no-dependencies.js:22557
 msgid "Leave this room"
-msgstr ""
+msgstr "Gela hau utzi"
 
 #: dist/converse-no-dependencies.js:22186
 msgid "Remove this bookmark"
-msgstr ""
+msgstr "Laster-marka hau ezabatu"
 
 #: dist/converse-no-dependencies.js:22187
 #: dist/converse-no-dependencies.js:22558
 msgid "Unbookmark this room"
-msgstr ""
+msgstr "Gela honi laster-marka kendu"
 
 #: dist/converse-no-dependencies.js:22226
 msgid "Click to toggle the bookmarks list"
-msgstr ""
+msgstr "Klikatu laster-marka zerrenda ordezkatzeko"
 
 #: dist/converse-no-dependencies.js:22227
 msgid "Bookmarks"
-msgstr ""
+msgstr "Laster-markak"
 
 #: dist/converse-no-dependencies.js:22593
 msgid "Click to toggle the rooms list"
-msgstr ""
+msgstr "Klikatu gela zerrenda ordezkatzeko"
 
 #: dist/converse-no-dependencies.js:22594
 msgid "Open Rooms"
-msgstr ""
+msgstr "Gelak ireki"
 
 #: dist/converse-no-dependencies.js:22627
 #, javascript-format
 msgid "Are you sure you want to leave the room \"%1$s\"?"
-msgstr ""
+msgstr "Ziur al zaude \"%1$s\" gela utzi nahi duzula?"
 
 #: dist/converse-no-dependencies.js:23479
 msgid "Re-establishing encrypted session"
-msgstr ""
+msgstr "Saio enkriptatua berrezartzen"
 
 #. We need to generate a new key and instance tag
 #: dist/converse-no-dependencies.js:23490
 msgid "Generating private key."
-msgstr ""
+msgstr "Gako pribatua sortzen."
 
 #: dist/converse-no-dependencies.js:23490
 msgid "Your browser might become unresponsive."
-msgstr ""
+msgstr "Zure nabigatzaileak erantzuteari utz diezaioke."
 
 #: dist/converse-no-dependencies.js:23533
 #, javascript-format
@@ -1083,47 +1085,57 @@ msgid ""
 "\n"
 "%2$s"
 msgstr ""
+"Autentifikazio eskaera %1$s -tik\n"
+"\n"
+"Zure txat kontaktua zure nortasuna egiaztatzen ari da, ondorengo galdera "
+"eginez.\n"
+"\n"
+"%2$s"
 
 #: dist/converse-no-dependencies.js:23542
 msgid "Could not verify this user's identify."
-msgstr ""
+msgstr "Ezin izan da erabiltzaile honen nortasuna egiaztatu."
 
 #: dist/converse-no-dependencies.js:23596
 msgid "Exchanging private key with contact."
-msgstr ""
+msgstr "Gako pribatuak kontaktuarekin trukatzen."
 
 #: dist/converse-no-dependencies.js:23711
 msgid "Your messages are not encrypted anymore"
-msgstr ""
+msgstr "Zure mezuak ez dira enkriptatuak izango"
 
 #: dist/converse-no-dependencies.js:23713
 msgid ""
 "Your messages are now encrypted but your contact's identity has not been "
 "verified."
 msgstr ""
+"Zure mezuak enkriptatuak dira baina zure kontaktuaren nortasuna  ez da "
+"egiaztatua izan."
 
 #: dist/converse-no-dependencies.js:23715
 msgid "Your contact's identify has been verified."
-msgstr ""
+msgstr "Zure kontaktuaren nortasuna egiaztatua izan da."
 
 #: dist/converse-no-dependencies.js:23717
 msgid "Your contact has ended encryption on their end, you should do the same."
 msgstr ""
+"Zure kontaktuek enkriptatzea amaitu dute beren aldetik, zuk ere berdin egin "
+"beharko zenuke."
 
 #: dist/converse-no-dependencies.js:23727
 msgid "Your message could not be sent"
-msgstr ""
+msgstr "Zure mezua ezin izan da bidali"
 
 #: dist/converse-no-dependencies.js:23729
 msgid "We received an unencrypted message"
-msgstr ""
+msgstr "Zifratu gabeko mezu bat jaso dugu"
 
 #: dist/converse-no-dependencies.js:23731
 msgid "We received an unreadable encrypted message"
-msgstr ""
+msgstr "Zifraturiko mezu irakurgaitz bat jaso dugu"
 
 #: dist/converse-no-dependencies.js:23757
-#, javascript-format
+#, fuzzy, javascript-format
 msgid ""
 "Here are the fingerprints, please confirm them with %1$s, outside of this "
 "chat.\n"
@@ -1135,6 +1147,14 @@ msgid ""
 "If you have confirmed that the fingerprints match, click OK, otherwise click "
 "Cancel."
 msgstr ""
+"Hemen daude hatzmarkak, mesedez egiaztatu itzazu %1$s -(r)ekin, txat "
+"honetatik kanpo.\n"
+"\n"
+"Zure hatzmarka, %2$s: %3$s\n"
+"\n"
+"%1$s -(r)entzako hatzmarka: %4$s\n"
+"\n"
+"Hatzmarkak egiaztatu baldin badituzu, klikatu OK, bestela klikatu Utzi."
 
 #: dist/converse-no-dependencies.js:23769
 msgid ""
@@ -1144,60 +1164,68 @@ msgid ""
 "Your contact will then be prompted the same question and if they type the "
 "exact same answer (case sensitive), their identity will be verified."
 msgstr ""
+"Segurtasun galdera bat eskatuko zaizu eta galdera horrentzako erantzun bat.\n"
+"\n"
+"Zure kontaktuei galdera bera egingo zaie eta erantzun zuzena (hizki larri/"
+"txikiak kontuan izanik) ematen badute, beraien nortasuna egiaztatuko da."
 
 #: dist/converse-no-dependencies.js:23770
 msgid "What is your security question?"
-msgstr ""
+msgstr "Zein da zure segurtasun galdera?"
 
 #: dist/converse-no-dependencies.js:23773
 msgid "What is the answer to the security question?"
-msgstr ""
+msgstr "Zein da segurtasun galderaren erantzuna?"
 
 #: dist/converse-no-dependencies.js:23777
 msgid "Invalid authentication scheme provided"
-msgstr ""
+msgstr "Autentifikazio eskema baliogabea"
 
 #: dist/converse-no-dependencies.js:23795
 msgid "Your messages are not encrypted. Click here to enable OTR encryption."
 msgstr ""
+"Zure mezuak ez daude enkriptaturik. Klikatu hemen OTR enkriptazioa gaitzeko."
 
 #: dist/converse-no-dependencies.js:23797
 msgid "Your messages are encrypted, but your contact has not been verified."
 msgstr ""
+"Zure mezuak enkriptaturik daude, baina zure kontaktua ez da egiaztatua izan."
 
 #: dist/converse-no-dependencies.js:23799
 msgid "Your messages are encrypted and your contact verified."
-msgstr ""
+msgstr "Zure mezuak enkriptaturik daude eta zure kontaktua egiaztaturik."
 
 #: dist/converse-no-dependencies.js:23801
 msgid ""
 "Your contact has closed their end of the private session, you should do the "
 "same"
 msgstr ""
+"Zure kontaktuek saio pribatuaren amaiera itxi dute, gauza bera egin beharko "
+"zenuke"
 
 #: dist/converse-no-dependencies.js:23815
 msgid "End encrypted conversation"
-msgstr ""
+msgstr "Amaitu berriketa enkriptatua"
 
 #: dist/converse-no-dependencies.js:23816
 msgid "Refresh encrypted conversation"
-msgstr ""
+msgstr "Berriketa enkriptatua freskatu"
 
 #: dist/converse-no-dependencies.js:23817
 msgid "Start encrypted conversation"
-msgstr ""
+msgstr "Berriketa enkriptatua hasi"
 
 #: dist/converse-no-dependencies.js:23818
 msgid "Verify with fingerprints"
-msgstr ""
+msgstr "Hatzmarkekin egiaztatu"
 
 #: dist/converse-no-dependencies.js:23819
 msgid "Verify with SMP"
-msgstr ""
+msgstr "SMP egiaztapena"
 
 #: dist/converse-no-dependencies.js:23820
 msgid "What's this?"
-msgstr ""
+msgstr "Zer da hau?"
 
 #. Translation aware constants
 #. ---------------------------
@@ -1207,7 +1235,7 @@ msgstr ""
 #. the module.
 #: dist/converse-no-dependencies.js:23863
 msgid "unencrypted"
-msgstr ""
+msgstr "textu laua"
 
 #: dist/converse-no-dependencies.js:23864
 msgid "unverified"

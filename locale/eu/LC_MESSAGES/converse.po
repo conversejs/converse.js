@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-03-28 21:49+0000\n"
+"PO-Revision-Date: 2018-03-28 22:24+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -83,11 +83,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:12809
 msgid "Click to write as a normal (non-spoiler) message"
-msgstr ""
+msgstr "Klikatu mezu normal moduan idazteko"
 
 #: dist/converse-no-dependencies.js:12811
 msgid "Click to write your message as a spoiler"
-msgstr ""
+msgstr "Klikatu zure mezua iragarki moduan idazteko"
 
 #: dist/converse-no-dependencies.js:12815
 msgid "Clear all messages"
@@ -1235,85 +1235,87 @@ msgstr "Zer da hau?"
 #. the module.
 #: dist/converse-no-dependencies.js:23863
 msgid "unencrypted"
-msgstr "textu laua"
+msgstr "enkriptatugabea"
 
 #: dist/converse-no-dependencies.js:23864
 msgid "unverified"
-msgstr ""
+msgstr "egiaztatu gabea"
 
 #: dist/converse-no-dependencies.js:23865
 msgid "verified"
-msgstr ""
+msgstr "egiaztatua"
 
 #: dist/converse-no-dependencies.js:23866
 msgid "finished"
-msgstr ""
+msgstr "amaitua"
 
 #: dist/converse-no-dependencies.js:23882
 msgid "Don't have a chat account?"
-msgstr ""
+msgstr "Ez duzu txat konturik?"
 
 #: dist/converse-no-dependencies.js:23884
 msgid "Create an account"
-msgstr ""
+msgstr "Sortu kontu bat"
 
 #: dist/converse-no-dependencies.js:23896
 msgid "Create your account"
-msgstr ""
+msgstr "Zure kontua sortu"
 
 #: dist/converse-no-dependencies.js:23898
 msgid "Please enter the XMPP provider to register with:"
-msgstr ""
+msgstr "Mesedez sartu erregistratu beharreko XMPP hornitzailea:"
 
 #: dist/converse-no-dependencies.js:23920
 msgid "Already have a chat account?"
-msgstr ""
+msgstr "Baduzu txat konturik?"
 
 #: dist/converse-no-dependencies.js:23922
 msgid "Log in here"
-msgstr ""
+msgstr "Hasi saioa hemen"
 
 #: dist/converse-no-dependencies.js:23932
 msgid "Account Registration:"
-msgstr ""
+msgstr "Kontu erregistroa:"
 
 #: dist/converse-no-dependencies.js:23940
 msgid "Register"
-msgstr ""
+msgstr "Erregistratu"
 
 #: dist/converse-no-dependencies.js:23944
 msgid "Choose a different provider"
-msgstr ""
+msgstr "Hornitzaile ezberdin bat aukeratu"
 
 #: dist/converse-no-dependencies.js:23956
 msgid "Hold tight, we're fetching the registration form…"
-msgstr ""
+msgstr "Itxaron, erregistro formularioa eskuratzen ari gara…"
 
 #: dist/converse-no-dependencies.js:24091
 msgid " e.g. conversejs.org"
-msgstr ""
+msgstr " adib. conversejs.org"
 
 #: dist/converse-no-dependencies.js:24137
 msgid "Fetch registration form"
-msgstr ""
+msgstr "Erregistro formularioa eskuratu"
 
 #: dist/converse-no-dependencies.js:24138
 msgid "Tip: A list of public XMPP providers is available"
-msgstr ""
+msgstr "Aholkua: XMPP hornitzaile publikoen zerrenda bat dago eskuragarri"
 
 #: dist/converse-no-dependencies.js:24139
 msgid "here"
-msgstr ""
+msgstr "hemen"
 
 #: dist/converse-no-dependencies.js:24187
 msgid "Sorry, we're unable to connect to your chosen provider."
-msgstr ""
+msgstr "Barkatu, ezin izan dugu zuk aukeraturiko hornitzailera konektatu."
 
 #: dist/converse-no-dependencies.js:24203
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
 msgstr ""
+"Barkatu, emandako hornitzaileak ez du banda kontuen erregistroa onartzen. "
+"Saiatu beste hornitzaile batekin."
 
 #: dist/converse-no-dependencies.js:24227
 #, javascript-format
@@ -1321,52 +1323,56 @@ msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
 msgstr ""
+"Zerbait oker joan da \"%1$s\"-(r)ekin konexioa ezartzean. Ziur al zaude "
+"existitzen dela?"
 
 #: dist/converse-no-dependencies.js:24390
 msgid "Now logging you in"
-msgstr ""
+msgstr "Orain saio hasten"
 
 #: dist/converse-no-dependencies.js:24394
 msgid "Registered successfully"
-msgstr ""
+msgstr "Arrakastaz erregistratua"
 
 #: dist/converse-no-dependencies.js:24503
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
 msgstr ""
+"Hornitzaileak zure izen emate saiakera ukatu du. Mesedez egiaztatu sartutako "
+"balioak zuzenak direla."
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:24949
 #: dist/converse-no-dependencies.js:24955
 #, javascript-format
 msgid "Notification from %1$s"
-msgstr ""
+msgstr "%1$s -(r)en jakinarazpena"
 
 #: dist/converse-no-dependencies.js:24957
 #: dist/converse-no-dependencies.js:24968
 #: dist/converse-no-dependencies.js:24971
 #, javascript-format
 msgid "%1$s says"
-msgstr ""
+msgstr "%1$s -k dio"
 
 #: dist/converse-no-dependencies.js:25005
 msgid "has come online"
-msgstr ""
+msgstr "linean jarri da"
 
 #: dist/converse-no-dependencies.js:25022
 msgid "wants to be your contact"
-msgstr ""
+msgstr "zure kontaktua izan nahi du"
 
 #: dist/converse-no-dependencies.js:25347
 #: dist/converse-no-dependencies.js:25703
 msgid "Minimize this chat box"
-msgstr ""
+msgstr "Txat leiho hau minimizatu"
 
 #: dist/converse-no-dependencies.js:25493
 msgid "Click to restore this chat"
-msgstr ""
+msgstr "Klikatu txat hau berrezartzeko"
 
 #: dist/converse-no-dependencies.js:25680
 msgid "Minimized"
-msgstr ""
+msgstr "Minimizaturik"

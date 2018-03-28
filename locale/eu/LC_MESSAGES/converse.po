@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-03-28 18:15+0000\n"
+"PO-Revision-Date: 2018-03-28 18:22+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -629,57 +629,59 @@ msgstr "Eman gela honen jabegotza"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Revoke user's membership"
-msgstr ""
+msgstr "Erabiltzaile harpidetza baliogabetu"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Set room subject"
-msgstr ""
+msgstr "Gelaren gaia ezarri"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Set room subject (alias for /subject)"
-msgstr ""
+msgstr "Gelaren gaia ezarri (aliasa/gaia)"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Allow muted user to post messages"
-msgstr ""
+msgstr "Baimendu isilarazitako erabiltzaileari mezuak argitaratzea"
 
 #: dist/converse-no-dependencies.js:19843
 #: dist/converse-no-dependencies.js:21921
 #: dist/converse-no-dependencies.js:23960
 msgid "Cancel"
-msgstr ""
+msgstr "Utzi"
 
 #: dist/converse-no-dependencies.js:20162
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
+"Aukeratutako ezizena erreserbatuta dago edo erabiltzen ari da une honetan, "
+"aukeratu beste bat."
 
 #: dist/converse-no-dependencies.js:20188
 msgid "Please choose your nickname"
-msgstr ""
+msgstr "Mesedez, aukeratu zure ezizena"
 
 #: dist/converse-no-dependencies.js:20189
 #: dist/converse-no-dependencies.js:21101
 msgid "Nickname"
-msgstr ""
+msgstr "Ezizena"
 
 #: dist/converse-no-dependencies.js:20190
 msgid "Enter room"
-msgstr ""
+msgstr "Gelan sartu"
 
 #: dist/converse-no-dependencies.js:20211
 msgid "This chatroom requires a password"
-msgstr ""
+msgstr "Txat gela honek pasahitza behar du"
 
 #: dist/converse-no-dependencies.js:20212
 msgid "Password: "
-msgstr ""
+msgstr "Pasahitza: "
 
 #: dist/converse-no-dependencies.js:20354
 #, javascript-format
 msgid "This action was done by %1$s."
-msgstr ""
+msgstr "Ekintza hau %1$s -k egina izan da"
 
 #: dist/converse-no-dependencies.js:20358
 #: dist/converse-no-dependencies.js:20374

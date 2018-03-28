@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-03-28 12:48+0000\n"
+"PO-Revision-Date: 2018-03-28 13:08+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -34,47 +34,48 @@ msgstr "Zure Jabber ID-a/edo pasahitza ez dira zuzenak. Mesedez saiatu berriro."
 #: dist/converse-no-dependencies.js:7662
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr "Barkatu, ezin izan dugu XMPP ostalarira konektatu %1$s domeinuarekin."
+msgstr "Barkatu, ezin izan dugu XMPP ostalarira konektatu %1$s domeinuarekin"
 
 #: dist/converse-no-dependencies.js:7664
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
+"XMPP zerbitzariak ez du lagunduriko autentikazio mekanismorik eskaintzen"
 
 #: dist/converse-no-dependencies.js:8359
 #, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
-msgstr ""
+msgstr "Barkatu, akats bat izan da %1$s kontaktu moduan gehitzean."
 
 #: dist/converse-no-dependencies.js:8543
 msgid "This client does not allow presence subscriptions"
-msgstr ""
+msgstr "Bezero honek ez du onartzen aurrez aurreko harpidetzarik"
 
 #: dist/converse-no-dependencies.js:8624
 msgid "Click to hide these contacts"
-msgstr ""
+msgstr "Klikatu kontaktu hauek ezkutatzeko"
 
 #: dist/converse-no-dependencies.js:12668
 msgid "Close this chat box"
-msgstr ""
+msgstr "Txat leiho hau itxi"
 
 #: dist/converse-no-dependencies.js:12720
 #: dist/converse-no-dependencies.js:12757
 #: dist/converse-no-dependencies.js:18937
 msgid "You have unread messages"
-msgstr ""
+msgstr "Irakurri gabeko mezuak dituzu"
 
 #: dist/converse-no-dependencies.js:12743
 msgid "Hidden message"
-msgstr ""
+msgstr "Ezkutuko mezua"
 
 #: dist/converse-no-dependencies.js:12745
 msgid "Personal message"
-msgstr ""
+msgstr "Mezu pertsonala"
 
 #: dist/converse-no-dependencies.js:12752
 #: dist/converse-no-dependencies.js:18934
 msgid "Send"
-msgstr ""
+msgstr "Bidali"
 
 #: dist/converse-no-dependencies.js:12753
 msgid "Optional hint"
@@ -90,115 +91,115 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:12815
 msgid "Clear all messages"
-msgstr ""
+msgstr "Mezu guztiak garbitu"
 
 #: dist/converse-no-dependencies.js:12816
 msgid "Insert a smiley"
-msgstr ""
+msgstr "Smiley bat txertatu"
 
 #: dist/converse-no-dependencies.js:12817
 msgid "Start a call"
-msgstr ""
+msgstr "Dei bat hasi"
 
 #: dist/converse-no-dependencies.js:13012
 #: dist/converse-no-dependencies.js:13475
 msgid "Show hidden message"
-msgstr ""
+msgstr "Ezkutuko mezuak erakutsi"
 
 #: dist/converse-no-dependencies.js:13064
 msgid "me"
-msgstr ""
+msgstr "ni"
 
 #: dist/converse-no-dependencies.js:13119
 msgid "Typing from another device"
-msgstr ""
+msgstr "Beste gailu batetatik idazten"
 
 #: dist/converse-no-dependencies.js:13121
 msgid "is typing"
-msgstr ""
+msgstr "idazten ari da"
 
 #: dist/converse-no-dependencies.js:13127
 msgid "Stopped typing on the other device"
-msgstr ""
+msgstr "Beste gailuan idazteari utzi zaio"
 
 #: dist/converse-no-dependencies.js:13129
 msgid "has stopped typing"
-msgstr ""
+msgstr "idazteari utzi dio"
 
 #: dist/converse-no-dependencies.js:13134
 #: dist/converse-no-dependencies.js:13490
 #: dist/converse-no-dependencies.js:25001
 msgid "has gone away"
-msgstr ""
+msgstr "joan egin da"
 
 #: dist/converse-no-dependencies.js:13262
 #: dist/converse-no-dependencies.js:19554
 msgid "Remove messages"
-msgstr ""
+msgstr "mezuak ezabatu"
 
 #: dist/converse-no-dependencies.js:13262
 msgid "Write in the third person"
-msgstr ""
+msgstr "Hirugarrengo pertsonan idatzi"
 
 #: dist/converse-no-dependencies.js:13262
 #: dist/converse-no-dependencies.js:19554
 msgid "Show this menu"
-msgstr ""
+msgstr "Menu hau erakutsi"
 
 #: dist/converse-no-dependencies.js:13393
 msgid "Are you sure you want to clear the messages from this chat box?"
-msgstr ""
+msgstr "Ziur al zaude leiho honetako mezuak ezabatu nahi dituzula?"
 
 #: dist/converse-no-dependencies.js:13470
 msgid "Hide hidden message"
-msgstr ""
+msgstr "Ezkutuko mezuak ezkutatu"
 
 #: dist/converse-no-dependencies.js:13488
 #: dist/converse-no-dependencies.js:24999
 msgid "has gone offline"
-msgstr ""
+msgstr "deskonektatu egin da"
 
 #: dist/converse-no-dependencies.js:13492
 #: dist/converse-no-dependencies.js:25003
 msgid "is busy"
-msgstr ""
+msgstr "lanpeturik dago"
 
 #: dist/converse-no-dependencies.js:13788
 msgid "Login"
-msgstr ""
+msgstr "Saioa hasi"
 
 #: dist/converse-no-dependencies.js:13810
 msgid "Jabber ID:"
-msgstr ""
+msgstr "Jabber ID-a:"
 
 #: dist/converse-no-dependencies.js:13816
 msgid "Password:"
-msgstr ""
+msgstr "Pasahitza:"
 
 #: dist/converse-no-dependencies.js:13818
 msgid "password"
-msgstr ""
+msgstr "pasahitza"
 
 #: dist/converse-no-dependencies.js:13822
 #: dist/converse-no-dependencies.js:20213
 msgid "Submit"
-msgstr ""
+msgstr "Bidali"
 
 #: dist/converse-no-dependencies.js:13828
 msgid "Click here to log in anonymously"
-msgstr ""
+msgstr "Klikatu hemen saioa anonimoki hasteko"
 
 #: dist/converse-no-dependencies.js:14117
 msgid "This contact is busy"
-msgstr ""
+msgstr "Kontaktu hau lanpeturik dago"
 
 #: dist/converse-no-dependencies.js:14118
 msgid "This contact is online"
-msgstr ""
+msgstr "Kontaktu hau online dago"
 
 #: dist/converse-no-dependencies.js:14119
 msgid "This contact is offline"
-msgstr ""
+msgstr "Kontaktu hau lineaz kanpo dago"
 
 #: dist/converse-no-dependencies.js:14120
 msgid "This contact is unavailable"

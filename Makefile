@@ -48,7 +48,7 @@ help:
 	@echo " release       Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
 	@echo " serve         Serve this directory via a webserver on port 8000."
 	@echo " stamp-npm  	  Install NPM dependencies
-	@echo " gems		  Install Bundler (Ruby) dependencies
+	@echo " stamp-bundler Install Bundler (Ruby) dependencies
 	@echo " watch         Tells Sass to watch the .scss files for changes and then automatically update the CSS files."
 
 
@@ -108,14 +108,12 @@ stamp-npm: package.json package-lock.json
 	npm install
 	touch stamp-npm
 
-.bundle: Gemfile 
+stamp-bundler: Gemfile
 	mkdir -p .bundle
 	$(RVM_USE)
 	gem install --user bundler --bindir .bundle/bin
 	$(BUNDLE) install --path .bundle --binstubs .bundle/bin
-
-.PHONY: gems
-gems: .bundle
+	touch stamp-bundler
 
 .PHONY: clean
 clean:
@@ -127,7 +125,7 @@ clean:
 	rm css/*.map
 
 .PHONY: dev
-dev: .bundle stamp-npm
+dev: stamp-bundler stamp-npm
 
 ########################################################################
 ## Builds
@@ -135,31 +133,28 @@ dev: .bundle stamp-npm
 .PHONY: css
 css: dev sass/*.scss css/converse.css css/converse.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css
 
-css/inverse.css:: gems sass sass
+css/inverse.css:: dev sass sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/inverse/inverse.scss css/inverse.css
 
-css/converse-muc-embedded.css:: gems sass
+css/converse-muc-embedded.css:: dev sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/_muc_embedded.scss css/converse-muc-embedded.css
 
-css/converse.css:: gems sass
+css/converse.css:: dev sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss css/converse.css
-
-css/theme.css:: dev sass
-	$(SASS) -I $(BOOTSTRAP) sass/theme.scss $@
 
 css/%.min.css:: css/%.css
 	make dev
 	$(CLEANCSS) $< > $@
 
 .PHONY: watch
-watch: gems
+watch: dev
 	$(SASS) --watch -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css sass/inverse/inverse.scss:css/inverse.css
 
 .PHONY: watchjs
-watchjs: stamp-npm 
+watchjs: dev
 	$(BABEL) --source-maps --watch=./src --out-dir=./builds
 
-transpile: stamp-npm src
+transpile: dev src
 	$(BABEL) --source-maps --out-dir=./builds ./src
 	$(BABEL) --source-maps --out-dir=./builds ./node_modules/backbone.vdomview/backbone.vdomview.js
 	touch transpile

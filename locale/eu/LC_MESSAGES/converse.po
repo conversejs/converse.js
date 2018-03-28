@@ -8,30 +8,33 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2018-03-28 12:48+0000\n"
+"Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
+"Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
+"translations/eu/>\n"
 "Language: eu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.20-dev\n"
 
 #: dist/converse-no-dependencies.js:7545
 msgid "The connection has dropped, attempting to reconnect."
-msgstr ""
+msgstr "Konexioa galdu egin da, birkonektatzen saiatzen."
 
 #: dist/converse-no-dependencies.js:7643
 msgid "An error occurred while connecting to the chat server."
-msgstr ""
+msgstr "Akats bat izan da txat zerbitzariarekin konektatzean."
 
 #: dist/converse-no-dependencies.js:7650
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
-msgstr ""
+msgstr "Zure Jabber ID-a/edo pasahitza ez dira zuzenak. Mesedez saiatu berriro."
 
 #: dist/converse-no-dependencies.js:7662
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr ""
+msgstr "Barkatu, ezin izan dugu XMPP ostalarira konektatu %1$s domeinuarekin."
 
 #: dist/converse-no-dependencies.js:7664
 msgid "The XMPP server did not offer a supported authentication mechanism"

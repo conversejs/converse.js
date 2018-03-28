@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-03-28 18:22+0000\n"
+"PO-Revision-Date: 2018-03-28 18:41+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -681,221 +681,221 @@ msgstr "Pasahitza: "
 #: dist/converse-no-dependencies.js:20354
 #, javascript-format
 msgid "This action was done by %1$s."
-msgstr "Ekintza hau %1$s -k egina izan da"
+msgstr "Ekintza hau %1$s -k egina izan da."
 
 #: dist/converse-no-dependencies.js:20358
 #: dist/converse-no-dependencies.js:20374
 #, javascript-format
 msgid "The reason given is: \"%1$s\"."
-msgstr ""
+msgstr "Emandako arrazoia ondorengoa da: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:20390
 #, javascript-format
 msgid "%1$s has left and re-entered the room."
-msgstr ""
+msgstr "%1$s irten egin da eta berriro sartu da gelan."
 
 #: dist/converse-no-dependencies.js:20396
 #, javascript-format
 msgid "%1$s has entered the room. \"%2$s\""
-msgstr ""
+msgstr "%1$s gelan sartu da. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:20398
 #, javascript-format
 msgid "%1$s has entered the room."
-msgstr ""
+msgstr "%1$s gelan sartu da."
 
 #: dist/converse-no-dependencies.js:20427
 #, javascript-format
 msgid "%1$s has entered and left the room. \"%2$s\""
-msgstr ""
+msgstr "%1$s gelan sartu eta irten egin da. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:20429
 #, javascript-format
 msgid "%1$s has entered and left the room."
-msgstr ""
+msgstr "%1$s gelan sartu eta irten egin da."
 
 #: dist/converse-no-dependencies.js:20441
 #, javascript-format
 msgid "%1$s has left the room. \"%2$s\""
-msgstr ""
+msgstr "%1$s -k gela utzi du. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:20443
 #, javascript-format
 msgid "%1$s has left the room."
-msgstr ""
+msgstr "%1$s -k gela utzi du."
 
 #: dist/converse-no-dependencies.js:20512
 msgid "You are not on the member list of this room."
-msgstr ""
+msgstr "Ez zaude  gela honen kideen zerrendan."
 
 #: dist/converse-no-dependencies.js:20514
 msgid "You have been banned from this room."
-msgstr ""
+msgstr "Gela honetatik bidalia izan zara."
 
 #: dist/converse-no-dependencies.js:20518
 msgid "No nickname was specified."
-msgstr ""
+msgstr "Ez da ezizenik zehaztu."
 
 #: dist/converse-no-dependencies.js:20522
 msgid "You are not allowed to create new rooms."
-msgstr ""
+msgstr "Ez duzu baimenik gela berriak sortzeko."
 
 #: dist/converse-no-dependencies.js:20524
 msgid "Your nickname doesn't conform to this room's policies."
-msgstr ""
+msgstr "Zure ezizak ez ditu gela honetako arauak betetzen."
 
 #: dist/converse-no-dependencies.js:20528
 msgid "This room does not (yet) exist."
-msgstr ""
+msgstr "Gela hau ez da existitzen (oraindik)."
 
 #: dist/converse-no-dependencies.js:20530
 msgid "This room has reached its maximum number of occupants."
-msgstr ""
+msgstr "Gela hau gehienezko kide kopurura iritsi da."
 
 #: dist/converse-no-dependencies.js:20651
 #, javascript-format
 msgid "Topic set by %1$s to: %2$s"
-msgstr ""
+msgstr "%1$s -k ezarritako gaia: %2$s"
 
 #: dist/converse-no-dependencies.js:20767
 #, javascript-format
 msgid "Click to mention %1$s in your message."
-msgstr ""
+msgstr "Klikatu %1$s zure mezuan aipatzeko."
 
 #: dist/converse-no-dependencies.js:20768
 msgid "This user is a moderator."
-msgstr ""
+msgstr "Erabiltzaile hau moderatzailea da."
 
 #: dist/converse-no-dependencies.js:20769
 msgid "This user can send messages in this room."
-msgstr ""
+msgstr "Erabiltzaile honek mezuak bidal ditzake gela honetan."
 
 #: dist/converse-no-dependencies.js:20770
 msgid "This user can NOT send messages in this room."
-msgstr ""
+msgstr "Erabiltzaile honek EZIN ditu mezuak bidali gela honetan."
 
 #: dist/converse-no-dependencies.js:20829
 msgid "Occupants"
-msgstr ""
+msgstr "Kideak"
 
 #: dist/converse-no-dependencies.js:20846
 #: dist/converse-no-dependencies.js:21050
 msgid "Invite"
-msgstr ""
+msgstr "Gonbidatu"
 
 #: dist/converse-no-dependencies.js:20865
 msgid "Features"
-msgstr ""
+msgstr "Ezaugarriak"
 
 #: dist/converse-no-dependencies.js:20866
 #: dist/converse-no-dependencies.js:21306
 msgid "Hidden"
-msgstr ""
+msgstr "Ezkutua"
 
 #: dist/converse-no-dependencies.js:20867
 msgid "Message archiving"
-msgstr ""
+msgstr "Mezu artxibaketa"
 
 #: dist/converse-no-dependencies.js:20868
 msgid "Members only"
-msgstr ""
+msgstr "Kideak soilik"
 
 #: dist/converse-no-dependencies.js:20869
 #: dist/converse-no-dependencies.js:21308
 msgid "Moderated"
-msgstr ""
+msgstr "Moderatua"
 
 #: dist/converse-no-dependencies.js:20870
 #: dist/converse-no-dependencies.js:21309
 msgid "Non-anonymous"
-msgstr ""
+msgstr "Ez-anonimoa"
 
 #: dist/converse-no-dependencies.js:20871
 msgid "Open"
-msgstr ""
+msgstr "Ireki"
 
 #: dist/converse-no-dependencies.js:20872
 msgid "Password protected"
-msgstr ""
+msgstr "Pasahitzez babestua"
 
 #: dist/converse-no-dependencies.js:20873
 msgid "Persistent"
-msgstr ""
+msgstr "Iraunkorra"
 
 #: dist/converse-no-dependencies.js:20874
 #: dist/converse-no-dependencies.js:21312
 msgid "Public"
-msgstr ""
+msgstr "Publikoa"
 
 #: dist/converse-no-dependencies.js:20875
 #: dist/converse-no-dependencies.js:21313
 msgid "Semi-anonymous"
-msgstr ""
+msgstr "Erdi-anonimoa"
 
 #: dist/converse-no-dependencies.js:20876
 msgid "Temporary"
-msgstr ""
+msgstr "Aldi baterako"
 
 #: dist/converse-no-dependencies.js:20877
 #: dist/converse-no-dependencies.js:21315
 msgid "Unmoderated"
-msgstr ""
+msgstr "Moderatu gabea"
 
 #: dist/converse-no-dependencies.js:20878
 msgid "No password"
-msgstr ""
+msgstr "Pasahitzik gabe"
 
 #: dist/converse-no-dependencies.js:20879
 msgid "This room is not publicly searchable"
-msgstr ""
+msgstr "Gela hau ezin da publikoki bilatua izan"
 
 #: dist/converse-no-dependencies.js:20880
 msgid "Messages are archived on the server"
-msgstr ""
+msgstr "Mezuak zerbitzarian gordetzen dira"
 
 #: dist/converse-no-dependencies.js:20881
 msgid "This room is restricted to members only"
-msgstr ""
+msgstr "Gela hau kideei soilik dagokie"
 
 #: dist/converse-no-dependencies.js:20882
 msgid "This room is being moderated"
-msgstr ""
+msgstr "Gela hau moderatua izaten ari da"
 
 #: dist/converse-no-dependencies.js:20883
 msgid "All other room occupants can see your XMPP username"
-msgstr ""
+msgstr "Gelako gainontzeko kideek zure XMPP erabiltzailea ikus dezakete"
 
 #: dist/converse-no-dependencies.js:20884
 msgid "Anyone can join this room"
-msgstr ""
+msgstr "Gela honetan edozein sartu daiteke"
 
 #: dist/converse-no-dependencies.js:20885
 msgid "This room requires a password before entry"
-msgstr ""
+msgstr "Gela honek pasahitza behar du sartu aurretik"
 
 #: dist/converse-no-dependencies.js:20886
 msgid "This room persists even if it's unoccupied"
-msgstr ""
+msgstr "Gela honek bere horretan jarraituko du hustu arren"
 
 #: dist/converse-no-dependencies.js:20887
 msgid "This room is publicly searchable"
-msgstr ""
+msgstr "Gela hau publikoki bilatua izan daiteke"
 
 #: dist/converse-no-dependencies.js:20888
 msgid "Only moderators can see your XMPP username"
-msgstr ""
+msgstr "Moderatzaileek soilik ikus dezakete zure XMPP erabiltzailea"
 
 #: dist/converse-no-dependencies.js:20889
 msgid "This room will disappear once the last person leaves"
-msgstr ""
+msgstr "Gela hau desagertu egingo da azken pertsonak uzten duen unean"
 
 #: dist/converse-no-dependencies.js:20890
 msgid "This room is not being moderated"
-msgstr ""
+msgstr "Gela hau ez da moderatua izaten ari"
 
 #: dist/converse-no-dependencies.js:20891
 msgid "This room does not require a password upon entry"
-msgstr ""
+msgstr "Gela honek ez du pasahitzik behar sartzeko"
 
 #: dist/converse-no-dependencies.js:21027
 #, javascript-format
@@ -903,70 +903,72 @@ msgid ""
 "You are about to invite %1$s to the chat room \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
 msgstr ""
+"%1$s \"%2$s\" txat gelara gonbidatzera zoaz. Gonbidapenaren arrazoia "
+"adieraziz mezu bat gehitzeko aukera duzu."
 
 #: dist/converse-no-dependencies.js:21049
 msgid "Please enter a valid XMPP username"
-msgstr ""
+msgstr "Mesedez sartu baleko XMPP erabiltzailea"
 
 #: dist/converse-no-dependencies.js:21100
 msgid "Room name"
-msgstr ""
+msgstr "Gelaren izena"
 
 #: dist/converse-no-dependencies.js:21102
 msgid "Server"
-msgstr ""
+msgstr "Zerbitzaria"
 
 #: dist/converse-no-dependencies.js:21103
 msgid "Join Room"
-msgstr ""
+msgstr "Gelan sartu"
 
 #: dist/converse-no-dependencies.js:21104
 msgid "Show rooms"
-msgstr ""
+msgstr "Gelak erakutsi"
 
 #: dist/converse-no-dependencies.js:21165
 msgid "Rooms"
-msgstr ""
+msgstr "Gelak"
 
 #: dist/converse-no-dependencies.js:21196
 msgid "No rooms found"
-msgstr ""
+msgstr "Ez da gelarik aurkitu"
 
 #: dist/converse-no-dependencies.js:21208
 #: dist/converse-no-dependencies.js:22191
 #: dist/converse-no-dependencies.js:22562
 msgid "Click to open this room"
-msgstr ""
+msgstr "Klikatu gela hau irekitzeko"
 
 #: dist/converse-no-dependencies.js:21209
 #: dist/converse-no-dependencies.js:22188
 #: dist/converse-no-dependencies.js:22560
 msgid "Show more information on this room"
-msgstr ""
+msgstr "Erakutsi informazio gehiago gela honetan"
 
 #: dist/converse-no-dependencies.js:21224
 msgid "Rooms found"
-msgstr ""
+msgstr "Aurkitutako gelak"
 
 #: dist/converse-no-dependencies.js:21301
 msgid "Description:"
-msgstr ""
+msgstr "Deskribapena:"
 
 #: dist/converse-no-dependencies.js:21302
 msgid "Room Address (JID):"
-msgstr ""
+msgstr "Gelaren helbidea (JID):"
 
 #: dist/converse-no-dependencies.js:21303
 msgid "Occupants:"
-msgstr ""
+msgstr "Kideak:"
 
 #: dist/converse-no-dependencies.js:21304
 msgid "Features:"
-msgstr ""
+msgstr "Ezaugarriak:"
 
 #: dist/converse-no-dependencies.js:21305
 msgid "Requires authentication"
-msgstr ""
+msgstr "Autentikazioa behar da"
 
 #: dist/converse-no-dependencies.js:21307
 msgid "Requires an invitation"

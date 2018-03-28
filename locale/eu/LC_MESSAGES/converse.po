@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-03-28 13:08+0000\n"
+"PO-Revision-Date: 2018-03-28 16:55+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -195,7 +195,7 @@ msgstr "Kontaktu hau lanpeturik dago"
 
 #: dist/converse-no-dependencies.js:14118
 msgid "This contact is online"
-msgstr "Kontaktu hau online dago"
+msgstr "Kontaktu hau linean dago"
 
 #: dist/converse-no-dependencies.js:14119
 msgid "This contact is offline"
@@ -203,76 +203,76 @@ msgstr "Kontaktu hau lineaz kanpo dago"
 
 #: dist/converse-no-dependencies.js:14120
 msgid "This contact is unavailable"
-msgstr ""
+msgstr "Kontaktu hau ez dago erabilgarri"
 
 #: dist/converse-no-dependencies.js:14121
 msgid "This contact is away for an extended period"
-msgstr ""
+msgstr "Kontaktu hau kanpoan dago denbora luzez"
 
 #: dist/converse-no-dependencies.js:14122
 msgid "This contact is away"
-msgstr ""
+msgstr "Kontaktu hau kanpoan dago"
 
 #: dist/converse-no-dependencies.js:14125
 #: dist/converse-no-dependencies.js:15628
 #: dist/converse-no-dependencies.js:16155
 msgid "Contacts"
-msgstr ""
+msgstr "Kontaktuak"
 
 #: dist/converse-no-dependencies.js:14127
 msgid "Groups"
-msgstr ""
+msgstr "Taldeak"
 
 #: dist/converse-no-dependencies.js:14129
 msgid "My contacts"
-msgstr ""
+msgstr "Nere kontaktuak"
 
 #: dist/converse-no-dependencies.js:14131
 msgid "Pending contacts"
-msgstr ""
+msgstr "Zain dauden kontaktuak"
 
 #: dist/converse-no-dependencies.js:14133
 msgid "Contact requests"
-msgstr ""
+msgstr "Kontaktu eskaerak"
 
 #: dist/converse-no-dependencies.js:14135
 msgid "Ungrouped"
-msgstr ""
+msgstr "Taldegabeak"
 
 #: dist/converse-no-dependencies.js:14194
 msgid "Filter"
-msgstr ""
+msgstr "Iragazi"
 
 #: dist/converse-no-dependencies.js:14197
 msgid "State"
-msgstr ""
+msgstr "Egoera"
 
 #: dist/converse-no-dependencies.js:14198
 msgid "Any"
-msgstr ""
+msgstr "Edozein"
 
 #: dist/converse-no-dependencies.js:14199
 msgid "Unread"
-msgstr ""
+msgstr "Irakurri gabe"
 
 #: dist/converse-no-dependencies.js:14200
 #: dist/converse-no-dependencies.js:15980
 msgid "Online"
-msgstr ""
+msgstr "Linean"
 
 #: dist/converse-no-dependencies.js:14201
 msgid "Chatty"
-msgstr ""
+msgstr "Hitzduna"
 
 #: dist/converse-no-dependencies.js:14202
 #: dist/converse-no-dependencies.js:15981
 msgid "Busy"
-msgstr ""
+msgstr "Lanpetua"
 
 #: dist/converse-no-dependencies.js:14203
 #: dist/converse-no-dependencies.js:15982
 msgid "Away"
-msgstr ""
+msgstr "Kanpoan"
 
 #: dist/converse-no-dependencies.js:14204
 msgid "Extended Away"
@@ -281,41 +281,41 @@ msgstr ""
 #: dist/converse-no-dependencies.js:14205
 #: dist/converse-no-dependencies.js:15983
 msgid "Offline"
-msgstr ""
+msgstr "Deskonektaturik"
 
 #: dist/converse-no-dependencies.js:14380
 #: dist/converse-no-dependencies.js:14403
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
-msgstr ""
+msgstr "Klikatu %1$s kontaktuetatik ezabatzeko"
 
 #: dist/converse-no-dependencies.js:14386
 #, javascript-format
 msgid "Click to accept the contact request from %1$s"
-msgstr ""
+msgstr "Klikatu %1$s -(r)en kontaktu eskaera onartzeko"
 
 #: dist/converse-no-dependencies.js:14387
 #, javascript-format
 msgid "Click to decline the contact request from %1$s"
-msgstr ""
+msgstr "Klikatu %1$s -(r)en kontaktu eskaera baztertzeko"
 
 #: dist/converse-no-dependencies.js:14402
 #, javascript-format
 msgid "Click to chat with %1$s (JID: %2$s)"
-msgstr ""
+msgstr "Klikatu %1$s (JID: %2$s) -(r)ekin berriketan egiteko"
 
 #: dist/converse-no-dependencies.js:14447
 msgid "Are you sure you want to remove this contact?"
-msgstr ""
+msgstr "Ziur al zaude kontaktu hau ezabatu nahi duzula?"
 
 #: dist/converse-no-dependencies.js:14464
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
-msgstr ""
+msgstr "Barkatu, akats bat izan da %1$s kontaktu moduan ezabatzean."
 
 #: dist/converse-no-dependencies.js:14486
 msgid "Are you sure you want to decline this contact request?"
-msgstr ""
+msgstr "Ziur al,zaude kontaktu eskaera hau baztertu nahi duzula?"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
@@ -323,155 +323,155 @@ msgstr ""
 #: dist/converse-no-dependencies.js:15398
 #, javascript-format
 msgid "I am %1$s"
-msgstr ""
+msgstr "%1$s nago"
 
 #: dist/converse-no-dependencies.js:15331
 #: dist/converse-no-dependencies.js:15405
 msgid "Click here to write a custom status message"
-msgstr ""
+msgstr "Klikatu hemen zure egoera mezuaidaztek pertsonalizatua idazteko"
 
 #: dist/converse-no-dependencies.js:15332
 #: dist/converse-no-dependencies.js:15406
 msgid "Click to change your chat status"
-msgstr ""
+msgstr "Klikatu zure txat egoera aldatzeko"
 
 #: dist/converse-no-dependencies.js:15358
 msgid "Custom status"
-msgstr ""
+msgstr "Egoera pertsonalizatua"
 
 #: dist/converse-no-dependencies.js:15359
 #: dist/converse-no-dependencies.js:19842
 #: dist/converse-no-dependencies.js:21920
 msgid "Save"
-msgstr ""
+msgstr "Gorde"
 
 #: dist/converse-no-dependencies.js:15381
 #: dist/converse-no-dependencies.js:15391
 msgid "online"
-msgstr ""
+msgstr "linean"
 
 #: dist/converse-no-dependencies.js:15383
 msgid "busy"
-msgstr ""
+msgstr "lanpetua"
 
 #: dist/converse-no-dependencies.js:15385
 msgid "away for long"
-msgstr ""
+msgstr "kanpoan denbora luzerako"
 
 #: dist/converse-no-dependencies.js:15387
 msgid "away"
-msgstr ""
+msgstr "kanpoan"
 
 #: dist/converse-no-dependencies.js:15389
 msgid "offline"
-msgstr ""
+msgstr "deskonektatua"
 
 #: dist/converse-no-dependencies.js:15896
 msgid "Username"
-msgstr ""
+msgstr "Erabiltzaile izena"
 
 #: dist/converse-no-dependencies.js:15896
 msgid "user@domain"
-msgstr ""
+msgstr "erabiltzailea@domeinua"
 
 #: dist/converse-no-dependencies.js:15904
 #: dist/converse-no-dependencies.js:16104
 msgid "Please enter a valid XMPP address"
-msgstr ""
+msgstr "Mesedez sar ezazu baleko XMPP helbide bat"
 
 #: dist/converse-no-dependencies.js:15984
 msgid "Log out"
-msgstr ""
+msgstr "Saioa itxi"
 
 #: dist/converse-no-dependencies.js:15991
 msgid "Click to add new chat contacts"
-msgstr ""
+msgstr "Klikatu txat kontaktu berriak gehitzeko"
 
 #: dist/converse-no-dependencies.js:15992
 msgid "Add a contact"
-msgstr ""
+msgstr "Kontaktu bat gehitu"
 
 #: dist/converse-no-dependencies.js:16031
 msgid "Contact name"
-msgstr ""
+msgstr "Kontaktu izena"
 
 #: dist/converse-no-dependencies.js:16032
 msgid "Search"
-msgstr ""
+msgstr "Bilatu"
 
 #: dist/converse-no-dependencies.js:16037
 #: dist/converse-no-dependencies.js:16105
 msgid "e.g. user@example.org"
-msgstr ""
+msgstr "adib. erabiltzale@adibidea.org"
 
 #: dist/converse-no-dependencies.js:16038
 #: dist/converse-no-dependencies.js:16106
 msgid "Add"
-msgstr ""
+msgstr "Gehitu"
 
 #: dist/converse-no-dependencies.js:16070
 msgid "No users found"
-msgstr ""
+msgstr "Ez da erabiltzailerik aurkitu"
 
 #: dist/converse-no-dependencies.js:16074
 msgid "Click to add as a chat contact"
-msgstr ""
+msgstr "Klikatu txat komtaktu moduan gehitzeko"
 
 #: dist/converse-no-dependencies.js:16155
 msgid "Toggle chat"
-msgstr ""
+msgstr "Txata ordezkatu"
 
 #: dist/converse-no-dependencies.js:18695
 msgid "This room is not anonymous"
-msgstr ""
+msgstr "Gela hau ez da erabiltzaile anonimoentzat"
 
 #: dist/converse-no-dependencies.js:18696
 msgid "This room now shows unavailable members"
-msgstr ""
+msgstr "Gela honek orain kide eskuragaitzak erakusten ditu"
 
 #: dist/converse-no-dependencies.js:18697
 msgid "This room does not show unavailable members"
-msgstr ""
+msgstr "Gela honek ez ditu kide eskuragaitzak erakusten"
 
 #: dist/converse-no-dependencies.js:18698
 msgid "The room configuration has changed"
-msgstr ""
+msgstr "Gelaren ezarpenak aldatudira egin dira"
 
 #: dist/converse-no-dependencies.js:18699
 msgid "Room logging is now enabled"
-msgstr ""
+msgstr "Gelan izen ematea gaiturik dago orain"
 
 #: dist/converse-no-dependencies.js:18700
 msgid "Room logging is now disabled"
-msgstr ""
+msgstr "Gelan izen ematea desgaiturik dago orain"
 
 #: dist/converse-no-dependencies.js:18701
 msgid "This room is now no longer anonymous"
-msgstr ""
+msgstr "Dagoeneko gela hau ez da anonimoa"
 
 #: dist/converse-no-dependencies.js:18702
 msgid "This room is now semi-anonymous"
-msgstr ""
+msgstr "Gela hau orain erdi-anonimoa da"
 
 #: dist/converse-no-dependencies.js:18703
 msgid "This room is now fully-anonymous"
-msgstr ""
+msgstr "Gela hau orain erabat anonimoa da"
 
 #: dist/converse-no-dependencies.js:18704
 msgid "A new room has been created"
-msgstr ""
+msgstr "Gela berri bat sortua izan da"
 
 #: dist/converse-no-dependencies.js:18707
 msgid "You have been banned from this room"
-msgstr ""
+msgstr "Gela honetan blokeatua izan zara"
 
 #: dist/converse-no-dependencies.js:18708
 msgid "You have been kicked from this room"
-msgstr ""
+msgstr "Gela honetatik bidalia izan zara"
 
 #: dist/converse-no-dependencies.js:18709
 msgid "You have been removed from this room because of an affiliation change"
-msgstr ""
+msgstr "Gela honetatik ezabatua izan zara afiliazio aldaketa bat medio"
 
 #: dist/converse-no-dependencies.js:18710
 msgid ""

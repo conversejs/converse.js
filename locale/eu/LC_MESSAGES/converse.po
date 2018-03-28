@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-03-28 16:55+0000\n"
+"PO-Revision-Date: 2018-03-28 17:06+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -471,19 +471,23 @@ msgstr "Gela honetatik bidalia izan zara"
 
 #: dist/converse-no-dependencies.js:18709
 msgid "You have been removed from this room because of an affiliation change"
-msgstr "Gela honetatik ezabatua izan zara afiliazio aldaketa bat medio"
+msgstr "Gela honetatik ezabatua izan zara afiliazio aldaketa bat dela eta"
 
 #: dist/converse-no-dependencies.js:18710
 msgid ""
 "You have been removed from this room because the room has changed to members-"
 "only and you're not a member"
 msgstr ""
+"Gela honetatik ezabatua izan zara gelako sarbidea kideentzako soilik ezarri "
+"delako eta zu ez zara kidea"
 
 #: dist/converse-no-dependencies.js:18711
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
 "service is being shut down"
 msgstr ""
+"Gela honetatik ezabatua izan zara MUC (Multi-user chat) zerbitzua bertan "
+"behera gelditzen ari delako"
 
 #. XXX: Note the triple underscore function and not double
 #. * underscore.
@@ -498,46 +502,46 @@ msgstr ""
 #: dist/converse-no-dependencies.js:18724
 #, javascript-format
 msgid "%1$s has been banned"
-msgstr ""
+msgstr "%1$s bidalia izan da"
 
 #: dist/converse-no-dependencies.js:18725
 #, javascript-format
 msgid "%1$s's nickname has changed"
-msgstr ""
+msgstr "%1$s -(r)en ezizena aldatu egin da"
 
 #: dist/converse-no-dependencies.js:18726
 #, javascript-format
 msgid "%1$s has been kicked out"
-msgstr ""
+msgstr "%1$s bidalia izan da"
 
 #: dist/converse-no-dependencies.js:18727
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr ""
+msgstr "%1$s ezabatua izan da afiliazio aldaketa bat dela eta"
 
 #: dist/converse-no-dependencies.js:18728
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr ""
+msgstr "%1$s ezabatua izan da kidea ez delako"
 
 #: dist/converse-no-dependencies.js:18731
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr ""
+msgstr "Zure ezizena %1$s bezala ezarria izan da automatikoki"
 
 #: dist/converse-no-dependencies.js:18732
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
-msgstr ""
+msgstr "Zure ezizena %1$s -ra aldatua izan da"
 
 #: dist/converse-no-dependencies.js:18933
 msgid "Message"
-msgstr ""
+msgstr "Mezua"
 
 #: dist/converse-no-dependencies.js:18962
 #, javascript-format
 msgid "%1$s is no longer a moderator."
-msgstr ""
+msgstr "%1$s iada ez da moderatzailea"
 
 #: dist/converse-no-dependencies.js:18966
 #, javascript-format

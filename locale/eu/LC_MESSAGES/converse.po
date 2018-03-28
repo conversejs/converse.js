@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-03-28 17:16+0000\n"
+"PO-Revision-Date: 2018-03-28 18:15+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -576,7 +576,7 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
-"Akatsa: %1$s komandoak bi argumentu hartzen ditu, erabiltzailearen ezizena "
+"Akatsa: %1$s aginduak bi argumentu hartzen ditu, erabiltzailearen ezizena "
 "eta aukerako arrazoi bat."
 
 #: dist/converse-no-dependencies.js:19492
@@ -589,43 +589,43 @@ msgstr "Akatsa: ezin izan da agindua exekutatu"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Change user's affiliation to admin"
-msgstr ""
+msgstr "Aldatu erabiltzailearen afiliazioa administratzailera"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Ban user from room"
-msgstr ""
+msgstr "Erabiltzailea gelatik bidali"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Change user role to participant"
-msgstr ""
+msgstr "Erabiltzaile rola parte hartzaile moduan ezarri"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Kick user from room"
-msgstr ""
+msgstr "Erabiltzailea gelatik bidali"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Write in 3rd person"
-msgstr ""
+msgstr "3. pertsonan idatzi"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Grant membership to a user"
-msgstr ""
+msgstr "Eman izena erabiltzaile bati"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Remove user's ability to post messages"
-msgstr ""
+msgstr "Kendu mezuak argitaratzeko erabiltzailearen gaitasuna"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Change your nickname"
-msgstr ""
+msgstr "Zure ezizena aldatu"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Grant moderator role to user"
-msgstr ""
+msgstr "Eman moderatzaile rola erabiltzaileari"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Grant ownership of this room"
-msgstr ""
+msgstr "Eman gela honen jabegotza"
 
 #: dist/converse-no-dependencies.js:19554
 msgid "Revoke user's membership"

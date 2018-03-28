@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-03-28 22:24+0000\n"
+"PO-Revision-Date: 2018-03-28 22:32+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -79,11 +79,11 @@ msgstr "Bidali"
 
 #: dist/converse-no-dependencies.js:12753
 msgid "Optional hint"
-msgstr ""
+msgstr "Aukerako haztarna"
 
 #: dist/converse-no-dependencies.js:12809
 msgid "Click to write as a normal (non-spoiler) message"
-msgstr "Klikatu mezu normal moduan idazteko"
+msgstr "Klikatu mezua ohiko moduan idazteko"
 
 #: dist/converse-no-dependencies.js:12811
 msgid "Click to write your message as a spoiler"
@@ -276,7 +276,7 @@ msgstr "Kanpoan"
 
 #: dist/converse-no-dependencies.js:14204
 msgid "Extended Away"
-msgstr ""
+msgstr "Denbora luzez at"
 
 #: dist/converse-no-dependencies.js:14205
 #: dist/converse-no-dependencies.js:15983
@@ -1135,7 +1135,7 @@ msgid "We received an unreadable encrypted message"
 msgstr "Zifraturiko mezu irakurgaitz bat jaso dugu"
 
 #: dist/converse-no-dependencies.js:23757
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Here are the fingerprints, please confirm them with %1$s, outside of this "
 "chat.\n"

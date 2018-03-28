@@ -382,7 +382,7 @@
                             'jid': bookmark.getAttribute('jid'),
                             'name': bookmark.getAttribute('name'),
                             'autojoin': bookmark.getAttribute('autojoin') === 'true',
-                            'nick': bookmark.querySelector('nick').textContent
+                            'nick': _.get(bookmark.querySelector('nick'), 'textContent')
                         });
                     });
                 },

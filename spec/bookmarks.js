@@ -444,7 +444,7 @@
                                         'name': 'Another room',
                                         'autojoin': 'false',
                                         'jid': 'another@conference.shakespeare.lit'
-                                    }).c('nick').t('JC').up().up();
+                                    }); // Purposefully exclude the <nick> element to test #1043
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 expect(_converse.bookmarks.models.length).toBe(2);
                 expect(_converse.bookmarks.findWhere({'jid': 'theplay@conference.shakespeare.lit'}).get('autojoin')).toBe(true);

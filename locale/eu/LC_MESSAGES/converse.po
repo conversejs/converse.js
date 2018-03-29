@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-03-28 22:32+0000\n"
+"PO-Revision-Date: 2018-03-30 10:53+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -237,7 +237,7 @@ msgstr "Kontaktu eskaerak"
 
 #: dist/converse-no-dependencies.js:14135
 msgid "Ungrouped"
-msgstr "Taldegabeak"
+msgstr "Sailkatu gabe"
 
 #: dist/converse-no-dependencies.js:14194
 msgid "Filter"
@@ -328,7 +328,7 @@ msgstr "%1$s nago"
 #: dist/converse-no-dependencies.js:15331
 #: dist/converse-no-dependencies.js:15405
 msgid "Click here to write a custom status message"
-msgstr "Klikatu hemen zure egoera mezuaidaztek pertsonalizatua idazteko"
+msgstr "Klikatu hemen zure egoera mezu pertsonalizatua idazteko"
 
 #: dist/converse-no-dependencies.js:15332
 #: dist/converse-no-dependencies.js:15406
@@ -348,11 +348,11 @@ msgstr "Gorde"
 #: dist/converse-no-dependencies.js:15381
 #: dist/converse-no-dependencies.js:15391
 msgid "online"
-msgstr "linean"
+msgstr "Linean"
 
 #: dist/converse-no-dependencies.js:15383
 msgid "busy"
-msgstr "lanpetua"
+msgstr "Lanpetua"
 
 #: dist/converse-no-dependencies.js:15385
 msgid "away for long"
@@ -360,7 +360,7 @@ msgstr "kanpoan denbora luzerako"
 
 #: dist/converse-no-dependencies.js:15387
 msgid "away"
-msgstr "kanpoan"
+msgstr "Kanpoan"
 
 #: dist/converse-no-dependencies.js:15389
 msgid "offline"
@@ -560,7 +560,7 @@ msgstr "%1$s orain moderatzailea da."
 
 #: dist/converse-no-dependencies.js:18982
 msgid "Close and leave this room"
-msgstr "Itxi eta gela utzi"
+msgstr "Itxi eta gela hau utzi"
 
 #: dist/converse-no-dependencies.js:18983
 msgid "Configure this room"
@@ -944,7 +944,7 @@ msgstr "Klikatu gela hau irekitzeko"
 #: dist/converse-no-dependencies.js:22188
 #: dist/converse-no-dependencies.js:22560
 msgid "Show more information on this room"
-msgstr "Erakutsi informazio gehiago gela honetan"
+msgstr "Gelari buruzko informazio gehiago erakutsi"
 
 #: dist/converse-no-dependencies.js:21224
 msgid "Rooms found"
@@ -1263,7 +1263,7 @@ msgstr "Zure kontua sortu"
 
 #: dist/converse-no-dependencies.js:23898
 msgid "Please enter the XMPP provider to register with:"
-msgstr "Mesedez sartu erregistratu beharreko XMPP hornitzailea:"
+msgstr "Mesedez sartu XMPP hornitzailea:"
 
 #: dist/converse-no-dependencies.js:23920
 msgid "Already have a chat account?"

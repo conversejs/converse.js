@@ -1200,7 +1200,8 @@
                      */
                     nick = nick ? nick : this.model.get('nick');
                     if (!nick) {
-                        return this.checkForReservedNick();
+                        this.checkForReservedNick();
+                        return this;
                     }
                     if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                         // We have restored a chat room from session storage,
@@ -1314,29 +1315,6 @@
                     );
                 },
 
-                sendConfiguration(config, onSuccess, onError) {
-                    /* Send an IQ stanza with the room configuration.
-                     *
-                     * Parameters:
-                     *  (Array) config: The room configuration
-                     *  (Function) onSuccess: Callback upon succesful IQ response
-                     *      The first parameter passed in is IQ containing the
-                     *      room configuration.
-                     *      The second is the response IQ from the server.
-                     *  (Function) onError: Callback upon error IQ response
-                     *      The first parameter passed in is IQ containing the
-                     *      room configuration.
-                     *      The second is the response IQ from the server.
-                     */
-                    const iq = $iq({to: this.model.get('jid'), type: "set"})
-                        .c("query", {xmlns: Strophe.NS.MUC_OWNER})
-                        .c("x", {xmlns: Strophe.NS.XFORM, type: "submit"});
-                    _.each(config || [], function (node) { iq.cnode(node).up(); });
-                    onSuccess = _.isUndefined(onSuccess) ? _.noop : _.partial(onSuccess, iq.nodeTree);
-                    onError = _.isUndefined(onError) ? _.noop : _.partial(onError, iq.nodeTree);
-                    return _converse.connection.sendIQ(iq, onSuccess, onError);
-                },
-
                 saveConfiguration (form) {
                     /* Submit the room configuration form by sending an IQ
                      * stanza to the server.
@@ -1350,7 +1328,7 @@
                     return new Promise((resolve, reject) => {
                         const inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
                               configArray = _.map(inputs, u.webForm2xForm);
-                        this.sendConfiguration(configArray, resolve, reject);
+                        this.model.sendConfiguration(configArray, resolve, reject);
                         this.closeForm();
                     });
                 },
@@ -1394,7 +1372,7 @@
                                 }
                                 configArray.push(field);
                                 if (!--count) {
-                                    that.sendConfiguration(configArray, resolve, reject);
+                                    that.model.sendConfiguration(configArray, resolve, reject);
                                 }
                             });
                         });
@@ -1434,42 +1412,6 @@
                     });
                 },
 
-                parseRoomFeatures (iq) {
-                    /* See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
-                     *
-                     *  <identity
-                     *      category='conference'
-                     *      name='A Dark Cave'
-                     *      type='text'/>
-                     *  <feature var='http://jabber.org/protocol/muc'/>
-                     *  <feature var='muc_passwordprotected'/>
-                     *  <feature var='muc_hidden'/>
-                     *  <feature var='muc_temporary'/>
-                     *  <feature var='muc_open'/>
-                     *  <feature var='muc_unmoderated'/>
-                     *  <feature var='muc_nonanonymous'/>
-                     *  <feature var='urn:xmpp:mam:0'/>
-                     */
-                    const features = {
-                        'features_fetched': true,
-                        'name': iq.querySelector('identity').getAttribute('name')
-                    }
-                    _.each(iq.querySelectorAll('feature'), function (field) {
-                        const fieldname = field.getAttribute('var');
-                        if (!fieldname.startsWith('muc_')) {
-                            if (fieldname === Strophe.NS.MAM) {
-                                features.mam_enabled = true;
-                            }
-                            return;
-                        }
-                        features[fieldname.replace('muc_', '')] = true;
-                    });
-                    const desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
-                    if (!_.isNull(desc_field)) {
-                        features.description = desc_field.textContent;
-                    }
-                    this.model.save(features);
-                },
 
                 getRoomFeatures () {
                     /* Fetch the room disco info, parse it and then
@@ -1479,7 +1421,7 @@
                         _converse.connection.disco.info(
                             this.model.get('jid'),
                             null,
-                            _.flow(this.parseRoomFeatures.bind(this), resolve),
+                            _.flow(this.model.parseRoomFeatures.bind(this.model), resolve),
                             () => { reject(new Error("Could not parse the room features")) },
                             5000
                         );
@@ -1528,22 +1470,13 @@
                 checkForReservedNick () {
                     /* User service-discovery to ask the XMPP server whether
                      * this user has a reserved nickname for this room.
-                     * If so, we'll use that, otherwise we render the nickname
-                     * form.
+                     * If so, we'll use that, otherwise we render the nickname form.
                      */
                     this.showSpinner();
-                    _converse.connection.sendIQ(
-                        $iq({
-                            'to': this.model.get('jid'),
-                            'from': _converse.connection.jid,
-                            'type': "get"
-                        }).c("query", {
-                            'xmlns': Strophe.NS.DISCO_INFO,
-                            'node': 'x-roomuser-item'
-                        }),
+                    this.model.checkForReservedNick(
                         this.onNickNameFound.bind(this),
                         this.onNickNameNotFound.bind(this)
-                    );
+                    )
                     return this;
                 },
 

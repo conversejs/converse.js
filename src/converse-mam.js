@@ -154,8 +154,8 @@
                     if (this.disable_mam) { return; }
                     const { _converse } = this.__super__;
                     _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
-                        (result) => { // Success
-                            if (result.supported) {
+                        (results) => { // Success
+                            if (result.length) {
                                 const most_recent_msg = utils.getMostRecentMessage(this.model);
                                 if (_.isNil(most_recent_msg)) {
                                     this.fetchArchivedMessages();
@@ -193,7 +193,7 @@
                     const { _converse } = this.__super__;
                     _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
                         (result) => { // Success
-                            if (result.supported) {
+                            if (result.length) {
                                 this.fetchArchivedMessages();
                             }
                             this.model.save({'mam_initialized': true});

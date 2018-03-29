@@ -341,8 +341,7 @@
                     Promise.all(_.map(_.keys(resources), (resource) =>
                         _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${resource}`)
                     )).then((results) => {
-                        const supported = _.every(f.map(f.get('supported'))(results));
-                        if (supported) {
+                        if (results.length) {
                             const html = tpl_spoiler_button(this.model.toJSON());
                             if (_converse.visible_toolbar_buttons.emoji) {
                                 this.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);

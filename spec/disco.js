@@ -20,7 +20,7 @@
                 var IQ_ids =  _converse.connection.IQ_ids;
                 test_utils.waitUntil(function () {
                     return _.filter(IQ_stanzas, function (iq) {
-                        return iq.nodeTree.querySelector('query[xmlns="http://jabber.org/protocol/disco#info"]');
+                        return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                     }).length > 0;
                 }, 300).then(function () {
                     /* <iq type='result'
@@ -49,8 +49,11 @@
                      *  </query>
                      *  </iq>
                      */
-                    var info_IQ_id = IQ_ids[0];
-                    var stanza = $iq({
+                    var stanza = _.filter(IQ_stanzas, function (iq) {
+                        return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                    })[0];
+                    var info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
+                    stanza = $iq({
                         'type': 'result',
                         'from': 'localhost',
                         'to': 'dummy@localhost/resource',
@@ -79,92 +82,97 @@
                             'var': 'jabber:iq:version'});
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                    var entities = _converse.disco_entities;
-                    expect(entities.length).toBe(2); // We have an extra entity, which is the user's JID
-                    expect(entities.get(_converse.domain).features.length).toBe(5);
-                    expect(entities.get(_converse.domain).identities.length).toBe(3);
-                    expect(entities.get('localhost').features.where({'var': 'jabber:iq:version'}).length).toBe(1);
-                    expect(entities.get('localhost').features.where({'var': 'jabber:iq:time'}).length).toBe(1);
-                    expect(entities.get('localhost').features.where({'var': 'jabber:iq:register'}).length).toBe(1);
-                    expect(entities.get('localhost').features.where(
-                        {'var': 'http://jabber.org/protocol/disco#items'}).length).toBe(1);
-                    expect(entities.get('localhost').features.where(
-                        {'var': 'http://jabber.org/protocol/disco#info'}).length).toBe(1);
+                    _converse.api.disco.entities.get().then(function (entities) {
+                        expect(entities.length).toBe(2); // We have an extra entity, which is the user's JID
+                        expect(entities.get(_converse.domain).features.length).toBe(5);
+                        expect(entities.get(_converse.domain).identities.length).toBe(3);
+                        expect(entities.get('localhost').features.where({'var': 'jabber:iq:version'}).length).toBe(1);
+                        expect(entities.get('localhost').features.where({'var': 'jabber:iq:time'}).length).toBe(1);
+                        expect(entities.get('localhost').features.where({'var': 'jabber:iq:register'}).length).toBe(1);
+                        expect(entities.get('localhost').features.where(
+                            {'var': 'http://jabber.org/protocol/disco#items'}).length).toBe(1);
+                        expect(entities.get('localhost').features.where(
+                            {'var': 'http://jabber.org/protocol/disco#info'}).length).toBe(1);
 
 
-                test_utils.waitUntil(function () {
-                    // Converse.js sees that the entity has a disco#items feature,
-                    // so it will make a query for it.
-                    return _.filter(IQ_stanzas, function (iq) {
-                        return iq.nodeTree.querySelector('query[xmlns="http://jabber.org/protocol/disco#items"]');
-                    }).length > 0;
-                }, 300).then(function () {
-                    /* <iq type='result'
-                     *     from='catalog.shakespeare.lit'
-                     *     to='romeo@montague.net/orchard'
-                     *     id='items2'>
-                     * <query xmlns='http://jabber.org/protocol/disco#items'>
-                     *     <item jid='people.shakespeare.lit'
-                     *         name='Directory of Characters'/>
-                     *     <item jid='plays.shakespeare.lit'
-                     *         name='Play-Specific Chatrooms'/>
-                     *     <item jid='mim.shakespeare.lit'
-                     *         name='Gateway to Marlowe IM'/>
-                     *     <item jid='words.shakespeare.lit'
-                     *         name='Shakespearean Lexicon'/>
-                     *
-                     *     <item jid='catalog.shakespeare.lit'
-                     *         node='books'
-                     *         name='Books by and about Shakespeare'/>
-                     *     <item jid='catalog.shakespeare.lit'
-                     *         node='clothing'
-                     *         name='Wear your literary taste with pride'/>
-                     *     <item jid='catalog.shakespeare.lit'
-                     *         node='music'
-                     *         name='Music from the time of Shakespeare'/>
-                     * </query>
-                     * </iq>
-                     */
-                   var items_IQ_id = IQ_ids.pop();
-                   stanza = $iq({
-                       'type': 'result',
-                       'from': 'localhost',
-                       'to': 'dummy@localhost/resource',
-                       'id': items_IQ_id
-                   }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#items'})
-                       .c('item', {
-                           'jid': 'people.shakespeare.lit',
-                           'name': 'Directory of Characters'}).up()
-                       .c('item', {
-                           'jid': 'plays.shakespeare.lit',
-                           'name': 'Play-Specific Chatrooms'}).up()
-                       .c('item', {
-                           'jid': 'words.shakespeare.lit',
-                           'name': 'Gateway to Marlowe IM'}).up()
-                       .c('item', {
-                           'jid': 'localhost',
-                           'name': 'Shakespearean Lexicon'}).up()
+                        test_utils.waitUntil(function () {
+                            // Converse.js sees that the entity has a disco#items feature,
+                            // so it will make a query for it.
+                            return _.filter(IQ_stanzas, function (iq) {
+                                return iq.nodeTree.querySelector('query[xmlns="http://jabber.org/protocol/disco#items"]');
+                            }).length > 0;
+                        }, 300).then(function () {
+                            /* <iq type='result'
+                             *     from='catalog.shakespeare.lit'
+                             *     to='romeo@montague.net/orchard'
+                             *     id='items2'>
+                             * <query xmlns='http://jabber.org/protocol/disco#items'>
+                             *     <item jid='people.shakespeare.lit'
+                             *         name='Directory of Characters'/>
+                             *     <item jid='plays.shakespeare.lit'
+                             *         name='Play-Specific Chatrooms'/>
+                             *     <item jid='mim.shakespeare.lit'
+                             *         name='Gateway to Marlowe IM'/>
+                             *     <item jid='words.shakespeare.lit'
+                             *         name='Shakespearean Lexicon'/>
+                             *
+                             *     <item jid='catalog.shakespeare.lit'
+                             *         node='books'
+                             *         name='Books by and about Shakespeare'/>
+                             *     <item jid='catalog.shakespeare.lit'
+                             *         node='clothing'
+                             *         name='Wear your literary taste with pride'/>
+                             *     <item jid='catalog.shakespeare.lit'
+                             *         node='music'
+                             *         name='Music from the time of Shakespeare'/>
+                             * </query>
+                             * </iq>
+                             */
+                            var stanza = _.filter(IQ_stanzas, function (iq) {
+                                return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
+                            })[0];
+                            var items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
+                            stanza = $iq({
+                                'type': 'result',
+                                'from': 'localhost',
+                                'to': 'dummy@localhost/resource',
+                                'id': items_IQ_id
+                            }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#items'})
+                                .c('item', {
+                                    'jid': 'people.shakespeare.lit',
+                                    'name': 'Directory of Characters'}).up()
+                                .c('item', {
+                                    'jid': 'plays.shakespeare.lit',
+                                    'name': 'Play-Specific Chatrooms'}).up()
+                                .c('item', {
+                                    'jid': 'words.shakespeare.lit',
+                                    'name': 'Gateway to Marlowe IM'}).up()
 
-                       .c('item', {
-                           'jid': 'localhost',
-                           'node': 'books',
-                           'name': 'Books by and about Shakespeare'}).up()
-                       .c('item', {
-                           'node': 'localhost',
-                           'name': 'Wear your literary taste with pride'}).up()
-                       .c('item', {
-                           'jid': 'localhost',
-                           'node': 'music',
-                           'name': 'Music from the time of Shakespeare'
-                       });
-                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                                .c('item', {
+                                    'jid': 'localhost',
+                                    'node': 'books',
+                                    'name': 'Books by and about Shakespeare'}).up()
+                                .c('item', {
+                                    'node': 'localhost',
+                                    'name': 'Wear your literary taste with pride'}).up()
+                                .c('item', {
+                                    'jid': 'localhost',
+                                    'node': 'music',
+                                    'name': 'Music from the time of Shakespeare'
+                                });
+                            _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                    entities = _converse.disco_entities;
-                    expect(entities.length).toBe(5); // We have an extra entity, which is the user's JID
-                    expect(entities.get(_converse.domain).identities.where({'category': 'conference'}).length).toBe(1);
-                    expect(entities.get(_converse.domain).identities.where({'category': 'directory'}).length).toBe(1);
-                    done();
-                });
+                            entities = _converse.disco_entities;
+                            expect(entities.length).toBe(2); // We have an extra entity, which is the user's JID
+                            expect(entities.get(_converse.domain).items.length).toBe(3);
+                            expect(_.includes(entities.get(_converse.domain).items.pluck('jid'), 'people.shakespeare.lit')).toBeTruthy();
+                            expect(_.includes(entities.get(_converse.domain).items.pluck('jid'), 'plays.shakespeare.lit')).toBeTruthy();
+                            expect(_.includes(entities.get(_converse.domain).items.pluck('jid'), 'words.shakespeare.lit')).toBeTruthy();
+                            expect(entities.get(_converse.domain).identities.where({'category': 'conference'}).length).toBe(1);
+                            expect(entities.get(_converse.domain).identities.where({'category': 'directory'}).length).toBe(1);
+                            done();
+                        });
+                    });
                 });
             }));
         });

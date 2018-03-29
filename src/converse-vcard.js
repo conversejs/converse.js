@@ -186,7 +186,7 @@
                 if (_.isNil(_converse.xmppstatus.get('vcard_updated'))) {
                     _converse.api.disco.supports(Strophe.NS.VCARD, _converse.domain)
                         .then((result) => {
-                            if (result.supported) {
+                            if (result.length) {
                                 _converse.api.vcard.get(_converse.bare_jid)
                                     .then((vcard) => _converse.xmppstatus.save(vcard));
                             }})

@@ -30,7 +30,7 @@
         "accessor-pairs": "error",
         "array-bracket-spacing": "off",
         "array-callback-return": "error",
-        "arrow-body-style": "error",
+        "arrow-body-style": "off",
         "arrow-parens": "error",
         "arrow-spacing": "error",
         "block-scoped-var": "off",

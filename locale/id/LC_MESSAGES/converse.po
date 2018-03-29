@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
-"PO-Revision-Date: 2018-03-29 03:34+0000\n"
+"PO-Revision-Date: 2018-03-29 03:36+0000\n"
 "Last-Translator: musthova <musthova18@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/conversejs/"
 "translations/id/>\n"
@@ -31,7 +31,7 @@ msgstr "Kesalahan terjadi saat menyimpan formulir ini."
 
 #: dist/converse-no-dependencies.js:7650
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
-msgstr ""
+msgstr "ID Jabber dan atau password anda salah. Silahkan ulangi lagi"
 
 #: dist/converse-no-dependencies.js:7662
 #, javascript-format

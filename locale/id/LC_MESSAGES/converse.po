@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-05 14:40+0100\n"
 "PO-Revision-Date: 2018-03-30 04:37+0000\n"
-"Last-Translator: anonymous <>\n"
+"Last-Translator: musthova <musthova18@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/conversejs/"
 "translations/id/>\n"
 "Language: id\n"
@@ -36,7 +36,7 @@ msgstr "username dan/atau password Anda salah. Silahkan ulang kembali."
 #: dist/converse-no-dependencies.js:7662
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr ""
+msgstr "Maaf, Domain: %1$s tidak dapat tersambung ke XMPP host kami"
 
 #: dist/converse-no-dependencies.js:7664
 msgid "The XMPP server did not offer a supported authentication mechanism"

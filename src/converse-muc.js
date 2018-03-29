@@ -17,7 +17,8 @@
             "converse-disco",
             "backbone.overview",
             "backbone.orderedlistview",
-            "backbone.vdomview"
+            "backbone.vdomview",
+            "muc-utils"
     ], factory);
 }(this, function (u, converse) {
     "use strict";
@@ -55,6 +56,7 @@
         DISCONNECTED: 4,
         ENTERED: 5
     };
+
 
     converse.plugins.add('converse-muc', {
         /* Optional dependencies are other plugins which might be
@@ -273,6 +275,46 @@
                     );
                 },
 
+                directInvite (recipient, reason) {
+                    /* Send a direct invitation as per XEP-0249
+                     *
+                     * Parameters:
+                     *    (String) recipient - JID of the person being invited
+                     *    (String) reason - Optional reason for the invitation
+                     */
+                    if (this.get('membersonly')) {
+                        // When inviting to a members-only room, we first add
+                        // the person to the member list by giving them an
+                        // affiliation of 'member' (if they're not affiliated
+                        // already), otherwise they won't be able to join.
+                        const map = {}; map[recipient] = 'member';
+                        const deltaFunc = _.partial(u.computeAffiliationsDelta, true, false);
+                        this.updateMemberLists(
+                            [{'jid': recipient, 'affiliation': 'member', 'reason': reason}],
+                            ['member', 'owner', 'admin'],
+                            deltaFunc
+                        );
+                    }
+                    const attrs = {
+                        'xmlns': 'jabber:x:conference',
+                        'jid': this.get('jid')
+                    };
+                    if (reason !== null) { attrs.reason = reason; }
+                    if (this.get('password')) { attrs.password = this.get('password'); }
+                    const invitation = $msg({
+                        from: _converse.connection.jid,
+                        to: recipient,
+                        id: _converse.connection.getUniqueId()
+                    }).c('x', attrs);
+                    _converse.connection.send(invitation);
+                    _converse.emit('roomInviteSent', {
+                        'room': this,
+                        'recipient': recipient,
+                        'reason': reason
+                    });
+                },
+
+
                 sendConfiguration (config, callback, errback) {
                     /* Send an IQ stanza with the room configuration.
                      *
@@ -333,6 +375,162 @@
                         features.description = desc_field.textContent;
                     }
                     this.save(features);
+                },
+
+                requestMemberList (affiliation) {
+                    /* Send an IQ stanza to the server, asking it for the
+                     * member-list of this room.
+                     *
+                     * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+                     *
+                     * Parameters:
+                     *  (String) affiliation: The specific member list to
+                     *      fetch. 'admin', 'owner' or 'member'.
+                     *
+                     * Returns:
+                     *  A promise which resolves once the list has been
+                     *  retrieved.
+                     */
+                    return new Promise((resolve, reject) => {
+                        affiliation = affiliation || 'member';
+                        const iq = $iq({to: this.get('jid'), type: "get"})
+                            .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                                .c("item", {'affiliation': affiliation});
+                        _converse.connection.sendIQ(iq, resolve, reject);
+                    });
+                },
+
+                setAffiliation (affiliation, members) {
+                    /* Send IQ stanzas to the server to set an affiliation for
+                     * the provided JIDs.
+                     *
+                     * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+                     *
+                     * XXX: Prosody doesn't accept multiple JIDs' affiliations
+                     * being set in one IQ stanza, so as a workaround we send
+                     * a separate stanza for each JID.
+                     * Related ticket: https://prosody.im/issues/issue/795
+                     *
+                     * Parameters:
+                     *  (String) affiliation: The affiliation
+                     *  (Object) members: A map of jids, affiliations and
+                     *      optionally reasons. Only those entries with the
+                     *      same affiliation as being currently set will be
+                     *      considered.
+                     *
+                     * Returns:
+                     *  A promise which resolves and fails depending on the
+                     *  XMPP server response.
+                     */
+                    members = _.filter(members, (member) =>
+                        // We only want those members who have the right
+                        // affiliation (or none, which implies the provided one).
+                        _.isUndefined(member.affiliation) ||
+                                member.affiliation === affiliation
+                    );
+                    const promises = _.map(members, _.bind(this.sendAffiliationIQ, this, affiliation));
+                    return Promise.all(promises);
+                },
+
+                saveAffiliationAndRole (pres) {
+                    /* Parse the presence stanza for the current user's
+                     * affiliation.
+                     *
+                     * Parameters:
+                     *  (XMLElement) pres: A <presence> stanza.
+                     */
+                    const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, pres).pop();
+                    const is_self = pres.querySelector("status[code='110']");
+                    if (is_self && !_.isNil(item)) {
+                        const affiliation = item.getAttribute('affiliation');
+                        const role = item.getAttribute('role');
+                        if (affiliation) {
+                            this.save({'affiliation': affiliation});
+                        }
+                        if (role) {
+                            this.save({'role': role});
+                        }
+                    }
+                },
+
+                sendAffiliationIQ (affiliation, member) {
+                    /* Send an IQ stanza specifying an affiliation change.
+                     *
+                     * Paremeters:
+                     *  (String) affiliation: affiliation (could also be stored
+                     *      on the member object).
+                     *  (Object) member: Map containing the member's jid and
+                     *      optionally a reason and affiliation.
+                     */
+                    return new Promise((resolve, reject) => {
+                        const iq = $iq({to: this.get('jid'), type: "set"})
+                            .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                            .c("item", {
+                                'affiliation': member.affiliation || affiliation,
+                                'jid': member.jid
+                            });
+                        if (!_.isUndefined(member.reason)) {
+                            iq.c("reason", member.reason);
+                        }
+                        _converse.connection.sendIQ(iq, resolve, reject);
+                    });
+                },
+
+                setAffiliations (members) {
+                    /* Send IQ stanzas to the server to modify the
+                     * affiliations in this room.
+                     *
+                     * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+                     *
+                     * Parameters:
+                     *  (Object) members: A map of jids, affiliations and optionally reasons
+                     *  (Function) onSuccess: callback for a succesful response
+                     *  (Function) onError: callback for an error response
+                     */
+                    const affiliations = _.uniq(_.map(members, 'affiliation'));
+                    _.each(affiliations, _.partial(this.setAffiliation.bind(this), _, members));
+                },
+
+                getJidsWithAffiliations (affiliations) {
+                    /* Returns a map of JIDs that have the affiliations
+                     * as provided.
+                     */
+                    if (_.isString(affiliations)) {
+                        affiliations = [affiliations];
+                    }
+                    return new Promise((resolve, reject) => {
+                        const promises = _.map(
+                            affiliations,
+                            _.partial(this.requestMemberList.bind(this))
+                        );
+                        Promise.all(promises).then(
+                            _.flow(u.marshallAffiliationIQs, resolve),
+                            _.flow(u.marshallAffiliationIQs, resolve)
+                        );
+                    });
+                },
+
+                updateMemberLists (members, affiliations, deltaFunc) {
+                    /* Fetch the lists of users with the given affiliations.
+                     * Then compute the delta between those users and
+                     * the passed in members, and if it exists, send the delta
+                     * to the XMPP server to update the member list.
+                     *
+                     * Parameters:
+                     *  (Object) members: Map of member jids and affiliations.
+                     *  (String|Array) affiliation: An array of affiliations or
+                     *      a string if only one affiliation.
+                     *  (Function) deltaFunc: The function to compute the delta
+                     *      between old and new member lists.
+                     *
+                     * Returns:
+                     *  A promise which is resolved once the list has been
+                     *  updated or once it's been established there's no need
+                     *  to update the list.
+                     */
+                    this.getJidsWithAffiliations(affiliations).then((old_members) => {
+                        this.setAffiliations(deltaFunc(members, old_members));
+                    });
                 },
 
                 checkForReservedNick (callback, errback) {

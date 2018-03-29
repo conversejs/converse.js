@@ -264,12 +264,12 @@
                        ' </query>'+
                        ' </iq>');
 
-                    spyOn(chatroomview, 'sendConfiguration').and.callThrough();
+                    spyOn(chatroomview.model, 'sendConfiguration').and.callThrough();
                     _converse.connection._dataRecv(test_utils.createRequest(node.firstElementChild));
 
 
                     return test_utils.waitUntil(function () {
-                        return chatroomview.sendConfiguration.calls.count() === 1;
+                        return chatroomview.model.sendConfiguration.calls.count() === 1;
                     }, 300).then(function () {
                         var sent_stanza = sent_IQ_els.pop();
                         while (sent_stanza.getAttribute('type') !== 'set') {
@@ -3203,6 +3203,7 @@
                             to: 'dummy@localhost',
                             type: 'groupchat'
                         }).c('body').t(message).tree();
+
                     view.handleMUCMessage(msg);
 
                     expect(roomspanel.el.querySelectorAll('.available-room').length).toBe(1);

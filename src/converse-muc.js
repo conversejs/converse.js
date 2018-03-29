@@ -273,6 +273,90 @@
                     );
                 },
 
+                sendConfiguration (config, callback, errback) {
+                    /* Send an IQ stanza with the room configuration.
+                     *
+                     * Parameters:
+                     *  (Array) config: The room configuration
+                     *  (Function) callback: Callback upon succesful IQ response
+                     *      The first parameter passed in is IQ containing the
+                     *      room configuration.
+                     *      The second is the response IQ from the server.
+                     *  (Function) errback: Callback upon error IQ response
+                     *      The first parameter passed in is IQ containing the
+                     *      room configuration.
+                     *      The second is the response IQ from the server.
+                     */
+                    const iq = $iq({to: this.get('jid'), type: "set"})
+                        .c("query", {xmlns: Strophe.NS.MUC_OWNER})
+                        .c("x", {xmlns: Strophe.NS.XFORM, type: "submit"});
+                    _.each(config || [], function (node) { iq.cnode(node).up(); });
+                    callback = _.isUndefined(callback) ? _.noop : _.partial(callback, iq.nodeTree);
+                    errback = _.isUndefined(errback) ? _.noop : _.partial(errback, iq.nodeTree);
+                    return _converse.connection.sendIQ(iq, callback, errback);
+                },
+
+                parseRoomFeatures (iq) {
+                    /* Parses an IQ stanza containing the room's features.
+                     *
+                     * See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
+                     *
+                     *  <identity
+                     *      category='conference'
+                     *      name='A Dark Cave'
+                     *      type='text'/>
+                     *  <feature var='http://jabber.org/protocol/muc'/>
+                     *  <feature var='muc_passwordprotected'/>
+                     *  <feature var='muc_hidden'/>
+                     *  <feature var='muc_temporary'/>
+                     *  <feature var='muc_open'/>
+                     *  <feature var='muc_unmoderated'/>
+                     *  <feature var='muc_nonanonymous'/>
+                     *  <feature var='urn:xmpp:mam:0'/>
+                     */
+                    const features = {
+                        'features_fetched': true,
+                        'name': iq.querySelector('identity').getAttribute('name')
+                    }
+                    _.each(iq.querySelectorAll('feature'), function (field) {
+                        const fieldname = field.getAttribute('var');
+                        if (!fieldname.startsWith('muc_')) {
+                            if (fieldname === Strophe.NS.MAM) {
+                                features.mam_enabled = true;
+                            }
+                            return;
+                        }
+                        features[fieldname.replace('muc_', '')] = true;
+                    });
+                    const desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
+                    if (!_.isNull(desc_field)) {
+                        features.description = desc_field.textContent;
+                    }
+                    this.save(features);
+                },
+
+                checkForReservedNick (callback, errback) {
+                    /* Use service-discovery to ask the XMPP server whether
+                     * this user has a reserved nickname for this room.
+                     * If so, we'll use that, otherwise we render the nickname form.
+                     *
+                     * Parameters:
+                     *  (Function) callback: Callback upon succesful IQ response
+                     *  (Function) errback: Callback upon error IQ response
+                     */
+                    _converse.connection.sendIQ(
+                        $iq({
+                            'to': this.get('jid'),
+                            'from': _converse.connection.jid,
+                            'type': "get"
+                        }).c("query", {
+                            'xmlns': Strophe.NS.DISCO_INFO,
+                            'node': 'x-roomuser-item'
+                        }),
+                        callback, errback);
+                    return this;
+                },
+
                 isUserMentioned (message) {
                     /* Returns a boolean to indicate whether the current user
                      * was mentioned in a message.
@@ -295,11 +379,12 @@
                         return; // The message has no text
                     }
                     if (u.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
-                        this.save({'num_unread_general': this.get('num_unread_general') + 1});
+                        const settings = {'num_unread_general': this.get('num_unread_general') + 1};
                         if (this.isUserMentioned(body.textContent)) {
-                            this.save({'num_unread': this.get('num_unread') + 1});
+                            settings.num_unread = this.get('num_unread') + 1;
                             _converse.incrementMsgCounter();
                         }
+                        this.save(settings);
                     }
                 },
 

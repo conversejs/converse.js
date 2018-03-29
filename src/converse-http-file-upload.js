@@ -1,6 +1,9 @@
 (function (root, factory) {
-    define(["converse-core"], factory);
-}(this, function (converse) {
+    define([
+        "converse-core",
+        "tpl!toolbar_fileupload"
+    ], factory);
+}(this, function (converse, tpl_toolbar_fileupload) {
     "use strict";
 
     const { Promise, Strophe, _ } = converse.env;
@@ -25,14 +28,21 @@
 
             ChatBoxView:  {
                 addFileUploadButton (options) {
+                    const { __ } = this.__super__._converse;
+                    this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
+                        'beforeend',
+                        tpl_toolbar_fileupload({'tooltip_upload_file': __('Choose a file to send')}));
                 },
 
                 renderToolbar (toolbar, options) {
                     const { _converse } = this.__super__;
                     const result = this.__super__.renderToolbar.apply(this, arguments);
-                    // TODO: check results.length
                     _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain)
-                        .then(this.addFileUploadButton.bind(this));
+                        .then((result) => {
+                            if (result.length) {
+                                this.addFileUploadButton();
+                            }
+                        });
                     return result;
                 }
             }

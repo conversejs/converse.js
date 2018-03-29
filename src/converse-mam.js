@@ -155,7 +155,7 @@
                     const { _converse } = this.__super__;
                     _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
                         (results) => { // Success
-                            if (result.length) {
+                            if (results.length) {
                                 const most_recent_msg = utils.getMostRecentMessage(this.model);
                                 if (_.isNil(most_recent_msg)) {
                                     this.fetchArchivedMessages();

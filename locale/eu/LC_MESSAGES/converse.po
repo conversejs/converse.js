@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-03-30 13:18+0000\n"
+"PO-Revision-Date: 2018-03-30 13:24+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -274,7 +274,7 @@ msgstr "Iragazi"
 
 #: dist/converse-no-dependencies.js:16901
 msgid "Filter by contact name"
-msgstr "Kontaktu izen bidez iragazi"
+msgstr "Kontaktu izenaz iragazi"
 
 #: dist/converse-no-dependencies.js:16902
 msgid "Filter by group name"
@@ -282,7 +282,7 @@ msgstr "Talde izenaz iragazi"
 
 #: dist/converse-no-dependencies.js:16903
 msgid "Filter by status"
-msgstr ""
+msgstr "Egoeraren araberan iragazi"
 
 #: dist/converse-no-dependencies.js:16904
 msgid "Any"
@@ -360,12 +360,12 @@ msgstr "Kontaktu bat gehitu"
 
 #: dist/converse-no-dependencies.js:18097
 msgid "Your Profile"
-msgstr ""
+msgstr "Zure profila"
 
 #: dist/converse-no-dependencies.js:18098
 #: dist/converse-no-dependencies.js:18110
 msgid "Close"
-msgstr ""
+msgstr "Itxi"
 
 #: dist/converse-no-dependencies.js:18112
 #: dist/converse-no-dependencies.js:20805
@@ -383,19 +383,16 @@ msgid "Save"
 msgstr "Gorde"
 
 #: dist/converse-no-dependencies.js:18117
-#, fuzzy
 msgid "Away for long"
-msgstr "kanpoan denbora luzerako"
+msgstr "Kanpoan denbora luzerako"
 
 #: dist/converse-no-dependencies.js:18118
-#, fuzzy
 msgid "Change chat status"
-msgstr "Klikatu zure txat egoera aldatzeko"
+msgstr "Txat egoera aldatu"
 
 #: dist/converse-no-dependencies.js:18119
-#, fuzzy
 msgid "Personal status message"
-msgstr "Mezu pertsonala"
+msgstr "Egoera mezu pertsonala"
 
 #: dist/converse-no-dependencies.js:18162
 #, javascript-format
@@ -404,7 +401,7 @@ msgstr "%1$s nago"
 
 #: dist/converse-no-dependencies.js:18165
 msgid "Change settings"
-msgstr ""
+msgstr "Ezarpenak aldatu"
 
 #: dist/converse-no-dependencies.js:18166
 msgid "Click to change your chat status"
@@ -416,12 +413,11 @@ msgstr "Saioa itxi"
 
 #: dist/converse-no-dependencies.js:18168
 msgid "Your profile"
-msgstr ""
+msgstr "Zure profila"
 
 #: dist/converse-no-dependencies.js:18191
-#, fuzzy
 msgid "Are you sure you want to log out?"
-msgstr "Ziur al zaude kontaktu hau ezabatu nahi duzula?"
+msgstr "Ziur al zaude saioa itxi nahi duzula?"
 
 #: dist/converse-no-dependencies.js:18199
 #: dist/converse-no-dependencies.js:18209
@@ -453,9 +449,8 @@ msgid "user@domain"
 msgstr "erabiltzailea@domeinua"
 
 #: dist/converse-no-dependencies.js:18738
-#, fuzzy
 msgid "Chat Contacts"
-msgstr "Kontaktuak"
+msgstr "Txat kontaktuak"
 
 #: dist/converse-no-dependencies.js:18738
 msgid "Toggle chat"
@@ -730,49 +725,43 @@ msgstr "Moderatu gabea"
 
 #: dist/converse-no-dependencies.js:22888
 msgid "Query for Chatrooms"
-msgstr ""
+msgstr "Txat geletarako kontsulta"
 
 #: dist/converse-no-dependencies.js:22889
-#, fuzzy
 msgid "Server address"
-msgstr "Zerbitzaria"
+msgstr "Zerbitzariaren helbidea"
 
 #: dist/converse-no-dependencies.js:22890
 msgid "Show rooms"
 msgstr "Gelak erakutsi"
 
 #: dist/converse-no-dependencies.js:22891
-#, fuzzy
 msgid "conference.example.org"
-msgstr "adib. erabiltzale@adibidea.org"
+msgstr "conference.example.org"
 
 #: dist/converse-no-dependencies.js:22944
 msgid "No rooms found"
 msgstr "Ez da gelarik aurkitu"
 
 #: dist/converse-no-dependencies.js:22961
-#, fuzzy
 msgid "Rooms found:"
-msgstr "Aurkitutako gelak"
+msgstr "Aurkitutako gelak:"
 
 #: dist/converse-no-dependencies.js:23014
-#, fuzzy
 msgid "Enter a new Chatroom"
-msgstr "Gelan sartu"
+msgstr "Gela berri batean sartu"
 
 #: dist/converse-no-dependencies.js:23015
-#, fuzzy
 msgid "Room address"
-msgstr "Gelaren helbidea (JID):"
+msgstr "Gelaren helbidea"
 
 #: dist/converse-no-dependencies.js:23017
 msgid "name@conference.example.org"
-msgstr ""
+msgstr "izena@conference.example.org"
 
 #: dist/converse-no-dependencies.js:23018
-#, fuzzy
 msgid "Join"
-msgstr "Gelan sartu"
+msgstr "Sartu"
 
 #: dist/converse-no-dependencies.js:23124
 msgid "Message"

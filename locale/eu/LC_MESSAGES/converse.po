@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-03-30 13:26+0000\n"
+"PO-Revision-Date: 2018-04-01 10:35+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -648,12 +648,12 @@ msgstr "Klikatu gela zerrenda ordezkatzeko"
 
 #: dist/converse-no-dependencies.js:21494
 msgid "Open Rooms"
-msgstr "Gelak ireki"
+msgstr "Gela irekiak"
 
 #: dist/converse-no-dependencies.js:21538
 #, javascript-format
 msgid "Are you sure you want to leave the room %1$s?"
-msgstr "Ziur al zaude \"%1$s\" gela utzi nahi duzula?"
+msgstr "Ziur al zaude %1$s gela utzi nahi duzula?"
 
 #: dist/converse-no-dependencies.js:22835
 msgid "Description:"

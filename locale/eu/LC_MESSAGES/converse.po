@@ -761,7 +761,7 @@ msgstr "izena@conference.example.org"
 
 #: dist/converse-no-dependencies.js:23018
 msgid "Join"
-msgstr "Sartu"
+msgstr "Batu"
 
 #: dist/converse-no-dependencies.js:23124
 msgid "Message"
@@ -912,7 +912,7 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "Emandako arrazoia ondorengoa da: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:24119
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the room"
 msgstr "%1$s irten egin da eta berriro sartu da gelan."
 

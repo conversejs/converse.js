@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-03-30 13:24+0000\n"
+"PO-Revision-Date: 2018-03-30 13:26+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -166,9 +166,8 @@ msgid "is busy"
 msgstr "lanpeturik dago"
 
 #: dist/converse-no-dependencies.js:15321
-#, fuzzy
 msgid "XMPP Username:"
-msgstr "Erabiltzaile izena"
+msgstr "XMPP erabiltzaile izena:"
 
 #: dist/converse-no-dependencies.js:15327
 msgid "Password:"
@@ -247,7 +246,6 @@ msgid "Optional nickname"
 msgstr "Aukerako ezizena"
 
 #: dist/converse-no-dependencies.js:16788
-#, fuzzy
 msgid "Add a Contact"
 msgstr "Kontaktu bat gehitu"
 
@@ -653,7 +651,7 @@ msgid "Open Rooms"
 msgstr "Gelak ireki"
 
 #: dist/converse-no-dependencies.js:21538
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to leave the room %1$s?"
 msgstr "Ziur al zaude \"%1$s\" gela utzi nahi duzula?"
 
@@ -914,7 +912,7 @@ msgstr "Emandako arrazoia ondorengoa da: \"%1$s\"."
 #: dist/converse-no-dependencies.js:24119
 #, javascript-format
 msgid "%1$s has left and re-entered the room"
-msgstr "%1$s irten egin da eta berriro sartu da gelan."
+msgstr "%1$s irten egin da eta berriro sartu da gelan"
 
 #: dist/converse-no-dependencies.js:24124
 #, javascript-format
@@ -922,9 +920,9 @@ msgid "%1$s has entered the room. \"%2$s\""
 msgstr "%1$s gelan sartu da. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:24126
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered the room"
-msgstr "%1$s gelan sartu da."
+msgstr "%1$s gelan sartu da"
 
 #: dist/converse-no-dependencies.js:24156
 #, javascript-format
@@ -932,9 +930,9 @@ msgid "%1$s has entered and left the room. \"%2$s\""
 msgstr "%1$s gelan sartu eta irten egin da. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:24158
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered and left the room"
-msgstr "%1$s gelan sartu eta irten egin da."
+msgstr "%1$s gelan sartu eta irten egin da"
 
 #: dist/converse-no-dependencies.js:24170
 #, javascript-format
@@ -942,9 +940,9 @@ msgid "%1$s has left the room. \"%2$s\""
 msgstr "%1$s -k gela utzi du. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:24172
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left the room"
-msgstr "%1$s -k gela utzi du."
+msgstr "%1$s -k gela utzi du"
 
 #: dist/converse-no-dependencies.js:24238
 msgid "You are not on the member list of this room."
@@ -975,23 +973,21 @@ msgid "This room has reached its maximum number of occupants."
 msgstr "Gela hau gehienezko kide kopurura iritsi da."
 
 #: dist/converse-no-dependencies.js:24380
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic set by %1$s"
-msgstr "%1$s -k ezarritako gaia: %2$s"
+msgstr "%1$s -k ezarritako gaia"
 
 #: dist/converse-no-dependencies.js:24493
-#, fuzzy
 msgid "Chatrooms"
-msgstr "Gelak erakutsi"
+msgstr "Gelak"
 
 #: dist/converse-no-dependencies.js:24494
 msgid "Add a new room"
-msgstr ""
+msgstr "Gela berria gehitu"
 
 #: dist/converse-no-dependencies.js:24495
-#, fuzzy
 msgid "Query for rooms"
-msgstr "Erabiltzailea gelatik bidali"
+msgstr "Geletarako kontsulta"
 
 #: dist/converse-no-dependencies.js:24534
 #, javascript-format

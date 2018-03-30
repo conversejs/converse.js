@@ -31,7 +31,7 @@ via the *script* and *link* tags:
 .. code-block:: html
 
     <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/css/converse.min.css">
-    <script src="https://cdn.conversejs.org/dist/converse.min.js"></script>
+    <script src="https://cdn.conversejs.org/dist/converse.min.js" charset="utf-8"></script>
 
 
 .. note:: For the fullscreen version of converse.js, replace

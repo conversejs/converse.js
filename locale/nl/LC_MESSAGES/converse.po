@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-02-14 17:41+0000\n"
+"PO-Revision-Date: 2018-03-30 21:59+0000\n"
 "Last-Translator: Nathan Follens <nathan@email.is>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/conversejs/"
 "translations/nl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.19-dev\n"
+"X-Generator: Weblate 2.20-dev\n"
 "domain: converse\n"
 "lang: nl\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -167,9 +167,8 @@ msgid "is busy"
 msgstr "is bezet"
 
 #: dist/converse-no-dependencies.js:15321
-#, fuzzy
 msgid "XMPP Username:"
-msgstr "XMPP/Jabber Username:"
+msgstr "XMPP-gebruikersnaam:"
 
 #: dist/converse-no-dependencies.js:15327
 msgid "Password:"
@@ -244,23 +243,20 @@ msgstr "Contactnaam"
 
 #: dist/converse-no-dependencies.js:16785
 #: dist/converse-no-dependencies.js:23016
-#, fuzzy
 msgid "Optional nickname"
-msgstr "Facultatieve tip"
+msgstr "Facultatieve bijnaam"
 
 #: dist/converse-no-dependencies.js:16788
-#, fuzzy
 msgid "Add a Contact"
 msgstr "Voeg een contact toe"
 
 #: dist/converse-no-dependencies.js:16789
 msgid "XMPP Address"
-msgstr ""
+msgstr "XMPP-adres"
 
 #: dist/converse-no-dependencies.js:16791
-#, fuzzy
 msgid "name@example.org"
-msgstr "bv. gebruiker@voorbeeld.be"
+msgstr "gebruiker@voorbeeld.be"
 
 #: dist/converse-no-dependencies.js:16792
 msgid "Add"
@@ -276,17 +272,16 @@ msgid "Filter"
 msgstr "Filteren"
 
 #: dist/converse-no-dependencies.js:16901
-#, fuzzy
 msgid "Filter by contact name"
-msgstr "Contactnaam"
+msgstr "Filteren op contactnaam"
 
 #: dist/converse-no-dependencies.js:16902
 msgid "Filter by group name"
-msgstr ""
+msgstr "Filteren op groepsnaam"
 
 #: dist/converse-no-dependencies.js:16903
 msgid "Filter by status"
-msgstr ""
+msgstr "Filteren op status"
 
 #: dist/converse-no-dependencies.js:16904
 msgid "Any"
@@ -364,12 +359,12 @@ msgstr "Voeg een contact toe"
 
 #: dist/converse-no-dependencies.js:18097
 msgid "Your Profile"
-msgstr ""
+msgstr "Je profiel"
 
 #: dist/converse-no-dependencies.js:18098
 #: dist/converse-no-dependencies.js:18110
 msgid "Close"
-msgstr ""
+msgstr "Sluiten"
 
 #: dist/converse-no-dependencies.js:18112
 #: dist/converse-no-dependencies.js:20805
@@ -387,19 +382,16 @@ msgid "Save"
 msgstr "Opslaan"
 
 #: dist/converse-no-dependencies.js:18117
-#, fuzzy
 msgid "Away for long"
-msgstr "uitgebreid afwezig"
+msgstr "Langduring afwezig"
 
 #: dist/converse-no-dependencies.js:18118
-#, fuzzy
 msgid "Change chat status"
-msgstr "Klik hier om je gespreksstatus te wijzigen"
+msgstr "Gespreksstatus wijzigen"
 
 #: dist/converse-no-dependencies.js:18119
-#, fuzzy
 msgid "Personal status message"
-msgstr "Persoonlijk bericht"
+msgstr "Persoonlijk statusbericht"
 
 #: dist/converse-no-dependencies.js:18162
 #, javascript-format
@@ -408,7 +400,7 @@ msgstr "Ik ben %1$s"
 
 #: dist/converse-no-dependencies.js:18165
 msgid "Change settings"
-msgstr ""
+msgstr "Instellingen wijzigen"
 
 #: dist/converse-no-dependencies.js:18166
 msgid "Click to change your chat status"
@@ -420,12 +412,11 @@ msgstr "Afmelden"
 
 #: dist/converse-no-dependencies.js:18168
 msgid "Your profile"
-msgstr ""
+msgstr "Je profiel"
 
 #: dist/converse-no-dependencies.js:18191
-#, fuzzy
 msgid "Are you sure you want to log out?"
-msgstr "Weet je zeker dat je dit contact wil verwijderen?"
+msgstr "Weet je zeker dat je wil afmelden?"
 
 #: dist/converse-no-dependencies.js:18199
 #: dist/converse-no-dependencies.js:18209
@@ -457,9 +448,8 @@ msgid "user@domain"
 msgstr "gebruiker@domein"
 
 #: dist/converse-no-dependencies.js:18738
-#, fuzzy
 msgid "Chat Contacts"
-msgstr "Contacten"
+msgstr "Gesprekscontacten"
 
 #: dist/converse-no-dependencies.js:18738
 msgid "Toggle chat"
@@ -663,7 +653,7 @@ msgid "Open Rooms"
 msgstr "Groepsgesprekken openen"
 
 #: dist/converse-no-dependencies.js:21538
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to leave the room %1$s?"
 msgstr "Weet je zeker dat je het gesprek ‘%1$s’ wil verlaten?"
 
@@ -735,49 +725,43 @@ msgstr "Niet gemodereerd"
 
 #: dist/converse-no-dependencies.js:22888
 msgid "Query for Chatrooms"
-msgstr ""
+msgstr "Zoeken naar gesprekken"
 
 #: dist/converse-no-dependencies.js:22889
-#, fuzzy
 msgid "Server address"
-msgstr "Server"
+msgstr "Serveradres"
 
 #: dist/converse-no-dependencies.js:22890
 msgid "Show rooms"
 msgstr "Groepsgesprekken tonen"
 
 #: dist/converse-no-dependencies.js:22891
-#, fuzzy
 msgid "conference.example.org"
-msgstr "bv. gebruiker@voorbeeld.be"
+msgstr "groepsgesprek.voorbeeld.be"
 
 #: dist/converse-no-dependencies.js:22944
 msgid "No rooms found"
 msgstr "Geen groepsgesprekken gevonden"
 
 #: dist/converse-no-dependencies.js:22961
-#, fuzzy
 msgid "Rooms found:"
-msgstr "Groepsgesprekken gevonden"
+msgstr "Groepsgesprekken gevonden:"
 
 #: dist/converse-no-dependencies.js:23014
-#, fuzzy
 msgid "Enter a new Chatroom"
-msgstr "Deelnemen aan groepsgesprek"
+msgstr "Deelnemen aan nieuw groepsgesprek"
 
 #: dist/converse-no-dependencies.js:23015
-#, fuzzy
 msgid "Room address"
-msgstr "Gespreksadres (JID):"
+msgstr "Gespreksadres"
 
 #: dist/converse-no-dependencies.js:23017
 msgid "name@conference.example.org"
-msgstr ""
+msgstr "naam@groepsgesprek.voorbeeld.be"
 
 #: dist/converse-no-dependencies.js:23018
-#, fuzzy
 msgid "Join"
-msgstr "Deelnemen aan groepsgesprek"
+msgstr "Deelnemen"
 
 #: dist/converse-no-dependencies.js:23124
 msgid "Message"
@@ -928,9 +912,9 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "De opgegeven reden is: ‘%1$s’."
 
 #: dist/converse-no-dependencies.js:24119
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the room"
-msgstr "%1$s heeft het groepsgesprek verlaten en neemt opnieuw deel."
+msgstr "%1$s heeft het groepsgesprek verlaten en neemt opnieuw deel"
 
 #: dist/converse-no-dependencies.js:24124
 #, javascript-format
@@ -938,9 +922,9 @@ msgid "%1$s has entered the room. \"%2$s\""
 msgstr "%1$s neemt deel aan het groepsgesprek. ‘%2$s’"
 
 #: dist/converse-no-dependencies.js:24126
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered the room"
-msgstr "%1$s neemt deel aan het groepsgesprek."
+msgstr "%1$s neemt deel aan het groepsgesprek"
 
 #: dist/converse-no-dependencies.js:24156
 #, javascript-format
@@ -948,9 +932,9 @@ msgid "%1$s has entered and left the room. \"%2$s\""
 msgstr "%1$s nam deel aan het groepsgesprek en heeft het verlaten. ‘%2$s’"
 
 #: dist/converse-no-dependencies.js:24158
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered and left the room"
-msgstr "%1$s nam deel aan het groepsgesprek en heeft het verlaten."
+msgstr "%1$s nam deel aan het groepsgesprek en heeft het verlaten"
 
 #: dist/converse-no-dependencies.js:24170
 #, javascript-format
@@ -958,9 +942,9 @@ msgid "%1$s has left the room. \"%2$s\""
 msgstr "%1$s heeft het groepsgesprek verlaten. ‘%2$s’"
 
 #: dist/converse-no-dependencies.js:24172
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left the room"
-msgstr "%1$s heeft het groepsgesprek verlaten."
+msgstr "%1$s heeft het groepsgesprek verlaten"
 
 #: dist/converse-no-dependencies.js:24238
 msgid "You are not on the member list of this room."
@@ -991,23 +975,21 @@ msgid "This room has reached its maximum number of occupants."
 msgstr "Dit groepsgesprek heeft het maximale aantal gebruikers bereikt."
 
 #: dist/converse-no-dependencies.js:24380
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic set by %1$s"
-msgstr "Onderwerp ingesteld op %2$s door %1$s"
+msgstr "Onderwerp ingesteld door %1$s"
 
 #: dist/converse-no-dependencies.js:24493
-#, fuzzy
 msgid "Chatrooms"
-msgstr "Groepsgesprekken tonen"
+msgstr "Groepsgesprekken"
 
 #: dist/converse-no-dependencies.js:24494
 msgid "Add a new room"
-msgstr ""
+msgstr "Nieuw groepsgesprek toevoegen"
 
 #: dist/converse-no-dependencies.js:24495
-#, fuzzy
 msgid "Query for rooms"
-msgstr "Gebruiker verbannen uit groepsgesprek"
+msgstr "Zoeken naar gesprekken"
 
 #: dist/converse-no-dependencies.js:24534
 #, javascript-format

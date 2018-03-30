@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-03-30 10:53+0000\n"
+"PO-Revision-Date: 2018-03-30 13:18+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -243,9 +243,8 @@ msgstr "Kontaktu izena"
 
 #: dist/converse-no-dependencies.js:16785
 #: dist/converse-no-dependencies.js:23016
-#, fuzzy
 msgid "Optional nickname"
-msgstr "Aukerako haztarna"
+msgstr "Aukerako ezizena"
 
 #: dist/converse-no-dependencies.js:16788
 #, fuzzy
@@ -254,12 +253,11 @@ msgstr "Kontaktu bat gehitu"
 
 #: dist/converse-no-dependencies.js:16789
 msgid "XMPP Address"
-msgstr ""
+msgstr "XMPP Helbidea"
 
 #: dist/converse-no-dependencies.js:16791
-#, fuzzy
 msgid "name@example.org"
-msgstr "adib. erabiltzale@adibidea.org"
+msgstr "izena@adibidea.org"
 
 #: dist/converse-no-dependencies.js:16792
 msgid "Add"
@@ -275,13 +273,12 @@ msgid "Filter"
 msgstr "Iragazi"
 
 #: dist/converse-no-dependencies.js:16901
-#, fuzzy
 msgid "Filter by contact name"
-msgstr "Kontaktu izena"
+msgstr "Kontaktu izen bidez iragazi"
 
 #: dist/converse-no-dependencies.js:16902
 msgid "Filter by group name"
-msgstr ""
+msgstr "Talde izenaz iragazi"
 
 #: dist/converse-no-dependencies.js:16903
 msgid "Filter by status"
@@ -706,7 +703,7 @@ msgstr "Ez-anonimoa"
 
 #: dist/converse-no-dependencies.js:22844
 msgid "Open room"
-msgstr "Gela ireki"
+msgstr "Gela irekia"
 
 #: dist/converse-no-dependencies.js:22845
 msgid "Permanent room"

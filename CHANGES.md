@@ -20,7 +20,7 @@ The UI is now based on Bootstrap4 and Flexbox is used extensively.
 ### Bugfixes
 
 - Spoiler messages didn't include the message author's name.
-
+- Documentation includes utf-8 charset to make minfied versions compatible across platforms. #1017
 
 ## 3.3.4 (2018-03-05)
 

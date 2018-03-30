@@ -1569,7 +1569,7 @@
 
                     test_utils.waitUntil(function () {
                         return $(view.el).find('.chat-content').find('.chat-message img').length;
-                    }, 500).then(function () {
+                    }, 1000).then(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
@@ -1579,7 +1579,7 @@
                         test_utils.sendMessage(view, message);
                         return test_utils.waitUntil(function () {
                             return $(view.el).find('.chat-content').find('.chat-message img').length === 2;
-                        }, 500);
+                        }, 1000);
                     }).then(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');

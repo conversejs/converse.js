@@ -10,6 +10,7 @@ CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
 ESLINT		  	?= ./node_modules/.bin/eslint
 HTTPSERVE	   	?= ./node_modules/.bin/http-server
 HTTPSERVE_PORT  ?= 8000
+INKSCAPE        ?= inkscape
 PAPER		   	=
 PO2JSON		 	?= ./node_modules/.bin/po2json
 RJS			 	?= ./node_modules/.bin/r.js
@@ -17,6 +18,7 @@ SASS			?= ./.bundle/bin/sass
 SPHINXBUILD	 	?= ./bin/sphinx-build
 SED				?= sed
 SPHINXOPTS	  	=
+OXIPNG          ?= oxipng
 
 
 # In the case user wishes to use RVM 
@@ -50,6 +52,7 @@ help:
 	@echo " stamp-npm     Install NPM dependencies"
 	@echo " stamp-bundler Install Bundler (Ruby) dependencies"
 	@echo " watch         Tells Sass to watch the .scss files for changes and then automatically update the CSS files."
+	@echo " logo          Generate PNG logos of multiple sizes."
 
 
 ########################################################################
@@ -158,6 +161,26 @@ transpile: dev src
 	$(BABEL) --source-maps --out-dir=./builds ./src
 	$(BABEL) --source-maps --out-dir=./builds ./node_modules/backbone.vdomview/backbone.vdomview.js
 	touch transpile
+
+.PHONY: logo
+logo: logo/conversejs-transparent16.png \
+      logo/conversejs-transparent19.png \
+      logo/conversejs-transparent48.png \
+      logo/conversejs-transparent128.png \
+      logo/conversejs-transparent512.png \
+      logo/conversejs-filled16.png \
+      logo/conversejs-filled19.png \
+      logo/conversejs-filled48.png \
+      logo/conversejs-filled128.png \
+      logo/conversejs-filled512.png \
+
+logo/conversejs-transparent%.png:: logo/conversejs-transparent.svg
+	$(INKSCAPE) -e $@ -w $* $<
+	$(OXIPNG) $@
+
+logo/conversejs-filled%.png:: logo/conversejs-filled.svg
+	$(INKSCAPE) -e $@ -w $* $<
+	$(OXIPNG) $@
 
 BUILDS = dist/converse.js \
 		 dist/converse.min.js \

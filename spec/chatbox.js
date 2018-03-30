@@ -1560,7 +1560,7 @@
 
                     test_utils.createContacts(_converse, 'current');
                     var base_url = document.URL.split(window.location.pathname)[0];
-                    var message = base_url+"/logo/conversejs.svg";
+                    var message = base_url+"/logo/conversejs-filled.svg";
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.openChatBoxFor(_converse, contact_jid);
                     var view = _converse.chatboxviews.get(contact_jid);
@@ -1573,7 +1573,7 @@
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
-                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg"><img class="chat-image"'+
+                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs-filled.svg"><img class="chat-image"'+
                             ' src="' + message + '"></a>');
                         message += "?param1=val1&param2=val2";
                         test_utils.sendMessage(view, message);
@@ -1584,23 +1584,23 @@
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
-                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2"><img'+
+                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2"><img'+
                             ' class="chat-image" src="'+message.replace(/&/g, '&amp;')+'"></a>')
 
                         // Test now with two images in one message
-                        message += ' hello world '+base_url+"/logo/conversejs.svg";
+                        message += ' hello world '+base_url+"/logo/conversejs-filled.svg";
                         test_utils.sendMessage(view, message);
                         return test_utils.waitUntil(function () {
                             return $(view.el).find('.chat-content').find('.chat-message img').length === 4;
-                        }, 500);
+                        }, 1000);
                     }).then(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
-                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2">'+
-                            '<img class="chat-image" src="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2"></a> hello world '+
-                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg">'+
-                            '<img class="chat-image" src="'+base_url+'/logo/conversejs.svg"></a>'
+                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2">'+
+                            '<img class="chat-image" src="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2"></a> hello world '+
+                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs-filled.svg">'+
+                            '<img class="chat-image" src="'+base_url+'/logo/conversejs-filled.svg"></a>'
                         )
                         done();
                     });

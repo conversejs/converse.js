@@ -104,8 +104,8 @@ To do this for ALL languages, run:
 
 The resulting `.po` file is then what gets translated.
 
-Generating a JavaScript file from a translations file
------------------------------------------------------
+Generating a JSON file from a translations file
+-----------------------------------------------
 
 Unfortunately `Jed <http://slexaxton.github.io/Jed>`_, which we use for
 translations in converse.js cannot use the `.po` files directly. We have
@@ -136,3 +136,29 @@ To do this for ALL languages, run:
     If you are adding translations for a new language that is not already supported,
     you'll have to add the language path in main.js and make one more edit in ./src/locales.js
     to make sure the language is loaded by require.js.
+
+
+Making sure the JSON file will get loaded
+------------------------------------------
+
+Finally, make sure that the language code is added to the list of default
+values for the ``locales`` config setting.
+
+This is done in ``src/converse-core.js``.
+
+Look for the following section:
+
+.. code-block:: javascript
+
+        // Default configuration values
+        // ----------------------------
+        this.default_settings = {
+            // ... Omitted for brevity
+            locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
+            locales: [
+                'af', 'ar', 'bg', 'ca', 'de', 'es', 'en', 'fr', 'he',
+                'hu', 'id', 'it', 'ja', 'nb', 'nl',
+                'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'
+            ],
+            // ... Omitted for brevity
+        };

@@ -2687,6 +2687,33 @@
                 expect($unreadMsgCount.html()).toBe('1');
                 done();
             }));
+
+            it("will render Openstreetmap-URL from geo-URI",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
+
+                    test_utils.createContacts(_converse, 'current');
+                    var base_url = document.URL.split(window.location.pathname)[0];
+                    var message = "geo:37.786971,-122.399677";
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    var view = _converse.chatboxviews.get(contact_jid);
+                    spyOn(view, 'sendMessage').and.callThrough();
+                    test_utils.sendMessage(view, message);
+
+                    test_utils.waitUntil(function () {
+                        return $(view.el).find('.chat-content').find('.chat-message').length;
+                    }, 1000).then(function () {
+                        expect(view.sendMessage).toHaveBeenCalled();
+                        var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                        expect(msg.html()).toEqual(
+                            '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
+                            'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.7869'+
+                            '71&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');
+                        done();
+                    });
+                }));
         });
     });
 }));

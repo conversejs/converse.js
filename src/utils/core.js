@@ -705,5 +705,15 @@
         evt.initEvent(name, bubbles, cancelable);
         el.dispatchEvent(evt);
     };
+
+    u.geoUriToHttp = function(text, _converse) {
+        const regex = /geo:([\-0-9.]+),([\-0-9.]+)(?:,([\-0-9.]+))?(?:\?(.*))?/g;
+        return text.replace(regex, _converse.geouri_replacement);
+    };
+
+    u.httpToGeoUri = function(text, _converse) {
+        const replacement = 'geo:$1,$2';
+        return text.replace(_converse.geouri_regex, replacement);
+    };
     return u;
 }));

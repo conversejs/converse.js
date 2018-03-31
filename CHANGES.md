@@ -6,6 +6,10 @@
 
 The UI is now based on Bootstrap4 and Flexbox is used extensively.
 
+## New Features
+
+- geo-URIs (e.g. from Conversations) are now replaced by links to openstreetmap (works in reverse also)
+
 ## Configuration changes 
 
 * Removed the `xhr_custom_status` and `xhr_custom_status_url` configuration

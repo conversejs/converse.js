@@ -615,6 +615,8 @@
                         template = attrs.is_spoiler ? tpl_spoiler_message : tpl_message;
                     }
 
+                    text = u.geoUriToHttp(text, _converse);
+
                     const msg_time = moment(attrs.time) || moment;
                     const msg = u.stringToElement(template(
                         _.extend(this.getExtraMessageTemplateAttributes(attrs), {
@@ -846,7 +848,7 @@
                             'fullname': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
                             'sender': 'me',
                             'time': moment().format(),
-                            'message': emojione.shortnameToUnicode(text),
+                            'message': u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse),
                             'is_spoiler': is_spoiler
                         };
                     if (is_spoiler) {

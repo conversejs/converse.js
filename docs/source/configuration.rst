@@ -651,6 +651,21 @@ logged in user, otherwise the user's vCard will be fetched.
 
 .. _`hide_muc_server`:
 
+geouri_regex
+----------------
+
+* Default:  ``/https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g``
+
+Regular expression used to extract geo coordinates from links to openstreetmap.
+
+geouri_replacement
+----------------
+
+* Default:  ``'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2'``
+
+String used to replace geo-URIs with. Ought to be a link to osm or similar. ``$1`` and ``$2`` is replaced by
+latitude and longitude respectively.
+
 hide_muc_server
 ---------------
 

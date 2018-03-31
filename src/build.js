@@ -29,8 +29,9 @@
         "converse-singleton":       "builds/converse-singleton",
         "converse-vcard":           "builds/converse-vcard",
         "i18n":                     "builds/i18n",
-        "utils":                    "builds/utils",
-        "form-utils":               "builds/form-utils"
+        "utils":                    "builds/utils/core",
+        "form-utils":               "builds/utils/form",
+        "muc-utils":                "builds/utils/muc"
     },
     wrap: {
         startFile: "start.frag",

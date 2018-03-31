@@ -675,7 +675,7 @@
                      * Parameters:
                      *  (String) text: The message text to be sent.
                      */
-                    text = emojione.shortnameToUnicode(text)
+                    text = u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse)
                     const msgid = _converse.connection.getUniqueId();
                     const msg = $msg({
                         to: this.model.get('jid'),

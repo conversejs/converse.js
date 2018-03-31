@@ -306,6 +306,8 @@
             expose_rid_and_sid: false,
             filter_by_resource: false,
             forward_messages: false,
+            geouri_regex: /https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
+            geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
             hide_offline_users: false,
             include_offline_state: false,
             jid: undefined,

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-04-01 10:35+0000\n"
+"PO-Revision-Date: 2018-04-03 10:34+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -167,7 +167,7 @@ msgstr "lanpeturik dago"
 
 #: dist/converse-no-dependencies.js:15321
 msgid "XMPP Username:"
-msgstr "XMPP erabiltzaile izena:"
+msgstr "XMPP Erabiltzaile izena:"
 
 #: dist/converse-no-dependencies.js:15327
 msgid "Password:"
@@ -452,7 +452,7 @@ msgstr "Txat kontaktuak"
 
 #: dist/converse-no-dependencies.js:18738
 msgid "Toggle chat"
-msgstr "Txata ordezkatu"
+msgstr "Txata gaitu"
 
 #: dist/converse-no-dependencies.js:19800
 msgid "This room is not anonymous"

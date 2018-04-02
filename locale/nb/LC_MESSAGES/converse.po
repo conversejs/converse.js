@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-02-27 19:39+0000\n"
+"PO-Revision-Date: 2018-04-03 14:39+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb/>\n"
@@ -256,7 +256,7 @@ msgstr "Legg til en Kontakt"
 
 #: dist/converse-no-dependencies.js:16789
 msgid "XMPP Address"
-msgstr ""
+msgstr "XMPP-adresse"
 
 #: dist/converse-no-dependencies.js:16791
 #, fuzzy
@@ -283,11 +283,11 @@ msgstr "Kontaktnavn"
 
 #: dist/converse-no-dependencies.js:16902
 msgid "Filter by group name"
-msgstr ""
+msgstr "Filtrer etter gruppenavn"
 
 #: dist/converse-no-dependencies.js:16903
 msgid "Filter by status"
-msgstr ""
+msgstr "Filtrer etter status"
 
 #: dist/converse-no-dependencies.js:16904
 msgid "Any"
@@ -365,12 +365,12 @@ msgstr "Legg til en Kontakt"
 
 #: dist/converse-no-dependencies.js:18097
 msgid "Your Profile"
-msgstr ""
+msgstr "Din profil"
 
 #: dist/converse-no-dependencies.js:18098
 #: dist/converse-no-dependencies.js:18110
 msgid "Close"
-msgstr ""
+msgstr "Lukk"
 
 #: dist/converse-no-dependencies.js:18112
 #: dist/converse-no-dependencies.js:20805
@@ -409,7 +409,7 @@ msgstr "Jeg er %1$s"
 
 #: dist/converse-no-dependencies.js:18165
 msgid "Change settings"
-msgstr ""
+msgstr "Endre innstillinger"
 
 #: dist/converse-no-dependencies.js:18166
 msgid "Click to change your chat status"
@@ -421,7 +421,7 @@ msgstr "Logg Av"
 
 #: dist/converse-no-dependencies.js:18168
 msgid "Your profile"
-msgstr ""
+msgstr "Din profil"
 
 #: dist/converse-no-dependencies.js:18191
 #, fuzzy
@@ -737,7 +737,7 @@ msgstr "Umoderert"
 
 #: dist/converse-no-dependencies.js:22888
 msgid "Query for Chatrooms"
-msgstr ""
+msgstr "Spørring for sludrerom"
 
 #: dist/converse-no-dependencies.js:22889
 #, fuzzy
@@ -774,7 +774,7 @@ msgstr "Romadresse (JID):"
 
 #: dist/converse-no-dependencies.js:23017
 msgid "name@conference.example.org"
-msgstr ""
+msgstr "navn@konferanse.eksempel.no"
 
 #: dist/converse-no-dependencies.js:23018
 #, fuzzy
@@ -1004,7 +1004,7 @@ msgstr "Vis Rom"
 
 #: dist/converse-no-dependencies.js:24494
 msgid "Add a new room"
-msgstr ""
+msgstr "Legg til et nytt rom"
 
 #: dist/converse-no-dependencies.js:24495
 #, fuzzy

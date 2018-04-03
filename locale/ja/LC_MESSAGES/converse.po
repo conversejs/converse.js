@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-04-02 11:38+0000\n"
+"PO-Revision-Date: 2018-04-03 04:55+0000\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
@@ -1017,27 +1017,27 @@ msgstr "招待"
 
 #: dist/converse-no-dependencies.js:24630
 msgid "Features"
-msgstr "特徴"
+msgstr "主要点"
 
 #: dist/converse-no-dependencies.js:24632
 msgid "Message archiving"
-msgstr "記録保存談話室"
+msgstr "記録保存"
 
 #: dist/converse-no-dependencies.js:24633
 msgid "Members only"
-msgstr "メンバー制談話室"
+msgstr "メンバー制"
 
 #: dist/converse-no-dependencies.js:24636
 msgid "Open"
-msgstr "開放談話室"
+msgstr "開放"
 
 #: dist/converse-no-dependencies.js:24637
 msgid "Password protected"
-msgstr "パスワード制談話室"
+msgstr "パスワード制"
 
 #: dist/converse-no-dependencies.js:24638
 msgid "Persistent"
-msgstr "永続談話室"
+msgstr "常設談話室"
 
 #: dist/converse-no-dependencies.js:24641
 msgid "Temporary"

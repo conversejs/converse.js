@@ -412,6 +412,8 @@
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-clear': 'clearChatRoomMessages',
                     'click .toggle-call': 'toggleCall',
+                    'click .toggle-fileUpload': 'toggleFileUpload',
+                    'change .fileUpload_input': 'handleFileSelect',
                     'click .toggle-occupants': 'toggleOccupants',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant': 'onOccupantClicked',

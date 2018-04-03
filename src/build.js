@@ -13,6 +13,7 @@
         "converse-dragresize":      "builds/converse-dragresize",
         "converse-fullscreen":      "builds/converse-fullscreen",
         "converse-headline":        "builds/converse-headline",
+        "converse-httpFileUpload":  "builds/converse-httpFileUpload",
         "converse-mam":             "builds/converse-mam",
         "converse-minimize":        "builds/converse-minimize",
         "converse-modal":           "builds/converse-modal",

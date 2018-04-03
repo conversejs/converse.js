@@ -25,6 +25,7 @@
             "tpl!spoiler_button",
             "tpl!spoiler_message",
             "tpl!toolbar",
+            "converse-httpFileUpload",
             "converse-chatboxes"
     ], factory);
 }(this, function (
@@ -44,7 +45,8 @@
             tpl_spinner,
             tpl_spoiler_button,
             tpl_spoiler_message,
-            tpl_toolbar
+            tpl_toolbar,
+            filetransfer
     ) {
     "use strict";
     const { $msg, Backbone, Promise, Strophe, _, b64_sha1, f, sizzle, moment } = converse.env;
@@ -53,6 +55,8 @@
         ENTER: 13,
         FORWARD_SLASH: 47
     };
+
+    Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
 
     converse.plugins.add('converse-chatview', {
         /* Plugin dependencies are other plugins which might be
@@ -108,7 +112,8 @@
                     'call': false,
                     'clear': true,
                     'emoji': true,
-                    'spoiler': true
+                    'spoiler': true,
+                    'fileUpload': true
                 },
             });
             emojione.imagePathPNG = _converse.emojione_image_path;
@@ -247,7 +252,22 @@
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .toggle-spoiler': 'toggleSpoilerMessage',
                     'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
-                    'keypress .chat-textarea': 'keyPressed'
+                    'keypress .chat-textarea': 'keyPressed',
+                    'click .toggle-fileUpload': 'toggleFileUpload',
+                    'change .fileUpload_input': 'handleFileSelect'
+                },
+
+                toggleFileUpload(ev) {
+                    _converse.FileUpload.prototype.initFiletransfer(_converse.connection);
+                    var uploadDialog = this.el.querySelector('.fileUpload_input');
+                    uploadDialog.click();
+                },
+
+                handleFileSelect(evt) {
+                    var files = evt.target.files;
+                    var file = files[0];
+                    var jid = this.jid;
+                    _converse.FileUpload.prototype.setFile(file,this);
                 },
 
                 initialize () {
@@ -368,9 +388,11 @@
                         'label_clear': __('Clear all messages'),
                         'label_insert_smiley': __('Insert a smiley'),
                         'label_start_call': __('Start a call'),
+                        'label_upload_file': __('Upload a File'),
                         'label_toggle_spoiler': label_toggle_spoiler,
                         'show_call_button': _converse.visible_toolbar_buttons.call,
                         'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
+                        'show_fileUpload_button': _converse.visible_toolbar_buttons.fileUpload,
                         'use_emoji': _converse.visible_toolbar_buttons.emoji,
                     });
                 },
@@ -639,7 +661,14 @@
                     if (attrs.is_spoiler) {
                         this.renderSpoilerMessage(msg, attrs)
                     }
-                    u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
+                    
+                    if(msg_content.textContent.endsWith('mp4')){
+                        msg_content.innerHTML = u.renderMovieURLs(msg_content);
+                    } else if(msg_content.textContent.endsWith('mp3')){
+                        msg_content.innerHTML = u.renderAudioURLs(msg_content); 
+                    } else {
+                        u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
+                    }
                     return msg;
                 },
 
@@ -771,6 +800,19 @@
                     return stanza;
                 },
 
+                createFileMessageStanza(message){
+                    const stanza = $msg({
+                        'from': _converse.connection.jid,
+                        'to': this.model.get('jid'),
+                        'type': 'chat',
+                        'id': message.get('msgid')
+                    }).c('body').t(message.get('message')).up()
+                      .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up()
+                      .c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('message')).up();
+
+                    return stanza;
+                },
+
                 sendMessage (message) {
                     /* Responsible for sending off a text message.
                      *
@@ -779,8 +821,7 @@
                      */
                     // TODO: We might want to send to specfic resources.
                     // Especially in the OTR case.
-                    const messageStanza = this.createMessageStanza(message);
-                    _converse.connection.send(messageStanza);
+                    _converse.connection.send(message);
                     if (_converse.forward_messages) {
                         // Forward the message, so that other connected resources are also aware of it.
                         _converse.connection.send(
@@ -790,7 +831,7 @@
                                 'xmns': Strophe.NS.DELAY,
                                 'stamp': moment().format()
                             }).up()
-                            .cnode(messageStanza.tree())
+                            .cnode(message.tree())
                         );
                     }
                 },
@@ -814,7 +855,7 @@
                     }
                 },
 
-                onMessageSubmitted (text, spoiler_hint) {
+                onMessageSubmitted (text, spoiler_hint, file = null) {
                     /* This method gets called once the user has typed a message
                      * and then pressed enter in a chat box.
                      *
@@ -833,9 +874,18 @@
                     if (this.parseMessageForCommands(text)) {
                         return;
                     }
-                    const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint)
+                    const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
                     const message = this.model.messages.create(attrs);
-                    this.sendMessage(message);
+                    
+                    /* check, if a file was send. If true it will send the file with XEP-0066. */
+                    var messageStanza;
+                    if(file !== null){
+                        messageStanza = this.createFileMessageStanza(message);
+                    }
+                    else {
+                        messageStanza = this.createMessageStanza(message);
+                    }
+                    this.sendMessage(messageStanza);
                 },
 
                 getOutgoingMessageAttributes (text, spoiler_hint) {

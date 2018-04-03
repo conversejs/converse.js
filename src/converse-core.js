@@ -78,6 +78,7 @@
         'converse-dropdown',
         'converse-fullscreen',
         'converse-headline',
+        'converse-httpFileUpload',
         'converse-mam',
         'converse-minimize',
         'converse-modal',

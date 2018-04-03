@@ -25,6 +25,7 @@ if (typeof define !== 'undefined') {
         "converse-register",    // XEP-0077 In-band registration
         "converse-roomslist",   // Show currently open chat rooms
         "converse-vcard",       // XEP-0054 VCard-temp
+        "converse-httpFileUpload", // Support for XEP-0363
         /* END: Removable components */
 
         "converse-inverse",     // Inverse plugin for converse.js

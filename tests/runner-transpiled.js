@@ -24,6 +24,7 @@ config.paths["converse-core"] =         "builds/converse-core";
 config.paths["converse-disco"] =        "builds/converse-disco";
 config.paths["converse-dragresize"] =   "builds/converse-dragresize";
 config.paths["converse-headline"] =     "builds/converse-headline";
+config.paths["converse-httpFileUpload"]="builds/converse-httpFileUpload";
 config.paths["converse-fullscreen"] =   "builds/converse-fullscreen";
 config.paths["converse-mam"] =          "builds/converse-mam";
 config.paths["converse-minimize"] =     "builds/converse-minimize";

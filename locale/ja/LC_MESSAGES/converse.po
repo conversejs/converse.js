@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-04-03 04:55+0000\n"
+"PO-Revision-Date: 2018-04-04 05:38+0000\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
@@ -1037,15 +1037,15 @@ msgstr "パスワード制"
 
 #: dist/converse-no-dependencies.js:24638
 msgid "Persistent"
-msgstr "常設談話室"
+msgstr "常設"
 
 #: dist/converse-no-dependencies.js:24641
 msgid "Temporary"
-msgstr "臨時談話室"
+msgstr "臨時"
 
 #: dist/converse-no-dependencies.js:24643
 msgid "No password"
-msgstr "パスワードなし談話室"
+msgstr "パスワードなし"
 
 #: dist/converse-no-dependencies.js:24644
 msgid "This room is not publicly searchable"
@@ -1053,7 +1053,7 @@ msgstr "この談話室は公に検索されません"
 
 #: dist/converse-no-dependencies.js:24645
 msgid "Messages are archived on the server"
-msgstr "メッセージはサーバ上に記録されます"
+msgstr "メッセージはサーバ上に保存されます"
 
 #: dist/converse-no-dependencies.js:24646
 msgid "This room is restricted to members only"

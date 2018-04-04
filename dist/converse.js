@@ -50410,7 +50410,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   });
   return Backbone.VDOMView;
 });
-//# sourceMappingURL=backbone.vdomview.js.map;
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     define('converse-modal',["converse-core", "bootstrap", "underscore", "backbone", "backbone.vdomview"], factory);

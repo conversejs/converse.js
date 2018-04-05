@@ -813,7 +813,7 @@
                     return stanza;
                 },
 
-                sendMessage (message) {
+                sendMessage (message, file=null) {
                     /* Responsible for sending off a text message.
                      *
                      *  Parameters:
@@ -821,7 +821,14 @@
                      */
                     // TODO: We might want to send to specfic resources.
                     // Especially in the OTR case.
-                    _converse.connection.send(message);
+                    var messageStanza;
+                    if(file !== null){
+                        messageStanza = this.createFileMessageStanza(message);
+                    }
+                    else {
+                        messageStanza = this.createMessageStanza(message);
+                    }
+                    _converse.connection.send(messageStanza);
                     if (_converse.forward_messages) {
                         // Forward the message, so that other connected resources are also aware of it.
                         _converse.connection.send(
@@ -878,14 +885,7 @@
                     const message = this.model.messages.create(attrs);
                     
                     /* check, if a file was send. If true it will send the file with XEP-0066. */
-                    var messageStanza;
-                    if(file !== null){
-                        messageStanza = this.createFileMessageStanza(message);
-                    }
-                    else {
-                        messageStanza = this.createMessageStanza(message);
-                    }
-                    this.sendMessage(messageStanza);
+                    this.sendMessage(message, file);
                 },
 
                 getOutgoingMessageAttributes (text, spoiler_hint) {

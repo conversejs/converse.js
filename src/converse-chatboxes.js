@@ -167,6 +167,7 @@
                     const spoiler = message.querySelector(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`);
                     const attrs = {
                         'type': type,
+                        'from': from,
                         'chat_state': chat_state,
                         'delayed': delayed,
                         'fullname': fullname,

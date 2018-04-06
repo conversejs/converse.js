@@ -1634,10 +1634,10 @@
 
             describe("A Chat Status Notification", function () {
 
-                it("does not open automatically if a chat state notification is received",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                it("does not open a new chatbox",
+                        mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
@@ -1659,9 +1659,9 @@
                 describe("An active notification", function () {
 
                     it("is sent when the user opens a chat box",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                            mock.initConverseWithPromises(
+                                null, ['rosterGroupsFetched'], {},
+                                function (done, _converse) {
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
@@ -1787,8 +1787,21 @@
                         var chatboxview = _converse.chatboxviews.get(sender_jid);
                         expect(chatboxview).toBeDefined();
                         // Check that the notification appears inside the chatbox in the DOM
-                        var $events = $(chatboxview.el).find('.chat-event');
-                        expect($events.text()).toEqual(mock.cur_names[1] + ' is typing');
+                        var events = chatboxview.el.querySelectorAll('.chat-state-notification');
+                        expect(events.length).toBe(1);
+                        expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
+
+                        // Check that it doesn't appear twice
+                        msg = $msg({
+                                from: sender_jid,
+                                to: _converse.connection.jid,
+                                type: 'chat',
+                                id: (new Date()).getTime()
+                            }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                        _converse.chatboxes.onMessage(msg);
+                        events = chatboxview.el.querySelectorAll('.chat-state-notification');
+                        expect(events.length).toBe(1);
+                        expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
                         done();
                     }));
 
@@ -1835,7 +1848,7 @@
                             expect(msg_obj.get('sender')).toEqual('me');
                             expect(msg_obj.get('delayed')).toEqual(false);
                             var $chat_content = $(chatboxview.el).find('.chat-content');
-                            var status_text = $chat_content.find('.chat-info.chat-event').text();
+                            var status_text = $chat_content.find('.chat-info.chat-state-notification').text();
                             expect(status_text).toBe('Typing from another device');
                             done();
                         });
@@ -1845,9 +1858,9 @@
                 describe("A paused notification", function () {
 
                     it("is sent if the user has stopped typing since 30 seconds",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                        mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
 
                         var view, contact_jid;
                         test_utils.createContacts(_converse, 'current');
@@ -1931,7 +1944,7 @@
                             _converse.chatboxes.onMessage(msg);
                             expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                             var chatboxview = _converse.chatboxviews.get(sender_jid);
-                            var $events = $(chatboxview.el).find('.chat-event');
+                            var $events = $(chatboxview.el).find('.chat-info.chat-state-notification');
                             expect($events.text()).toEqual(mock.cur_names[1] + ' has stopped typing');
                             done();
                         });
@@ -1980,7 +1993,7 @@
                             expect(msg_obj.get('sender')).toEqual('me');
                             expect(msg_obj.get('delayed')).toEqual(false);
                             var $chat_content = $(chatboxview.el).find('.chat-content');
-                            var status_text = $chat_content.find('.chat-info.chat-event').text();
+                            var status_text = $chat_content.find('.chat-info.chat-state-notification').text();
                             expect(status_text).toBe('Stopped typing on the other device');
                             done();
                         });
@@ -2106,7 +2119,7 @@
                         });
                     }));
 
-                    it("will clear any other chat status notifications if its received",
+                    it("will clear any other chat status notifications",
                         mock.initConverseWithPromises(
                             null, ['rosterGroupsFetched'], {},
                             function (done, _converse) {
@@ -2119,10 +2132,20 @@
                         var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openChatBoxFor(_converse, sender_jid);
                         var view = _converse.chatboxviews.get(sender_jid);
-                        expect($(view.el).find('.chat-event').length).toBe(0);
-                        view.showStatusNotification(sender_jid+' is typing');
-                        expect($(view.el).find('.chat-event').length).toBe(1);
+                        expect(view.el.querySelectorAll('.chat-event').length).toBe(0);
+                        // Insert <composing> message, to also check that
+                        // text messages are inserted correctly with
+                        // temporary chat events in the chat contents.
                         var msg = $msg({
+                                'to': _converse.bare_jid,
+                                'xmlns': 'jabber:client',
+                                'from': sender_jid,
+                                'type': 'chat'})
+                            .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
+                            .tree();
+                        _converse.chatboxes.onMessage(msg);
+                        expect(view.el.querySelectorAll('.chat-state-notification').length).toBe(1);
+                        msg = $msg({
                                 from: sender_jid,
                                 to: _converse.connection.jid,
                                 type: 'chat',
@@ -2130,7 +2153,7 @@
                             }).c('body').c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         _converse.chatboxes.onMessage(msg);
                         expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-                        expect($(view.el).find('.chat-event').length).toBe(0);
+                        expect($(view.el).find('.chat-state-notification').length).toBe(0);
                         done();
                     }));
                 });
@@ -2157,7 +2180,7 @@
                         _converse.chatboxes.onMessage(msg);
                         expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                         var chatboxview = _converse.chatboxviews.get(sender_jid);
-                        var $events = $(chatboxview.el).find('.chat-event');
+                        var $events = $(chatboxview.el).find('.chat-state-notification');
                         expect($events.text()).toEqual(mock.cur_names[1] + ' has gone away');
                         done();
                     }));

@@ -16,7 +16,9 @@
             "tpl!chatbox",
             "tpl!chatbox_head",
             "tpl!chatbox_message_form",
+            "tpl!csn",
             "tpl!emojis",
+            "tpl!error_message",
             "tpl!help_message",
             "tpl!info",
             "tpl!message",
@@ -24,6 +26,7 @@
             "tpl!spinner",
             "tpl!spoiler_button",
             "tpl!spoiler_message",
+            "tpl!status_message",
             "tpl!toolbar",
             "converse-chatboxes"
     ], factory);
@@ -36,7 +39,9 @@
             tpl_chatbox,
             tpl_chatbox_head,
             tpl_chatbox_message_form,
+            tpl_csn,
             tpl_emojis,
+            tpl_error_message,
             tpl_help_message,
             tpl_info,
             tpl_message,
@@ -44,6 +49,7 @@
             tpl_spinner,
             tpl_spoiler_button,
             tpl_spoiler_message,
+            tpl_status_message,
             tpl_toolbar
     ) {
     "use strict";
@@ -400,22 +406,25 @@
                     return this;
                 },
 
-                clearStatusNotification () {
-                    u.removeElement(this.content.querySelector('.chat-event'));
-                },
-
-                showStatusNotification (message, keep_old, permanent) {
-                    if (!keep_old) {
-                        this.clearStatusNotification();
-                    }
+                showChatEvent (message, data='') {
+                    const isodate = moment().format();
                     this.content.insertAdjacentHTML(
                         'beforeend',
                         tpl_info({
-                            'extra_classes': !permanent ? 'chat-event' : '',
+                            'extra_classes': 'chat-event',
                             'message': message,
-                            'isodate': moment().format(),
-                            'data': ''
+                            'isodate': isodate,
+                            'data': data
                         }));
+                    this.scrollDown();
+                    return isodate;
+                },
+
+                showErrorMessage (message) {
+                    this.content.insertAdjacentHTML(
+                        'beforeend',
+                        tpl_error_message({'message': message, 'isodate': moment().format() })
+                    );
                     this.scrollDown();
                 },
 
@@ -449,7 +458,7 @@
                      *      This element must have a "data-isodate" attribute
                      *      which specifies its creation date.
                      */
-                    const prev_msg_el = u.getPreviousElement(next_msg_el, ".message:not(.chat-event)"),
+                    const prev_msg_el = u.getPreviousElement(next_msg_el, ".message:not(.chat-state-notification)"),
                           prev_msg_date = _.isNull(prev_msg_el) ? null : prev_msg_el.getAttribute('data-isodate'),
                           next_msg_date = next_msg_el.getAttribute('data-isodate');
 
@@ -471,24 +480,24 @@
                      *  (Object) cutoff: Moment Date cutoff date. The last
                      *      message received cutoff this date will be returned.
                      */
-                    const first_msg = u.getFirstChildElement(this.content, '.message:not(.chat-event)'),
+                    const first_msg = u.getFirstChildElement(this.content, '.message:not(.chat-state-notification)'),
                           oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
                     if (!_.isNull(oldest_date) && moment(oldest_date).isAfter(cutoff)) {
                         return null;
                     }
-                    const last_msg = u.getLastChildElement(this.content, '.message:not(.chat-event)'),
+                    const last_msg = u.getLastChildElement(this.content, '.message:not(.chat-state-notification)'),
                           most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
                     if (_.isNull(most_recent_date) || moment(most_recent_date).isBefore(cutoff)) {
                         return most_recent_date;
                     }
-                    /* XXX: We avoid .chat-event messages, since they are
+                    /* XXX: We avoid .chat-state-notification messages, since they are
                      * temporary and get removed once a new element is
                      * inserted into the chat area, so we don't query for
                      * them here, otherwise we get a null reference later
                      * upon element insertion.
                      */
                     const msg_dates = _.invokeMap(
-                        sizzle('.message:not(.chat-event)', this.content),
+                        sizzle('.message:not(.chat-state-notification)', this.content),
                         Element.prototype.getAttribute, 'data-isodate'
                     )
                     if (_.isObject(cutoff)) {
@@ -527,7 +536,7 @@
                         previous_msg_el.insertAdjacentElement('afterend', message_el);
                     }
                     this.insertDayIndicator(message_el);
-                    this.clearStatusNotification();
+                    this.clearChatStateNotification(attrs.from);
                     this.setScrollPosition(message_el);
                 },
 
@@ -662,28 +671,55 @@
                     return this.scrollDown();
                 },
 
-                handleChatStateMessage (message) {
+                clearChatStateNotification (from, isodate) {
+                    if (isodate) {
+                        _.each(
+                            sizzle(`.chat-state-notification[data-csn="${from}"][data-isodate="${isodate}"]`, this.content),
+                            u.removeElement
+                        );
+                    } else {
+                        _.each(sizzle(`.chat-state-notification[data-csn="${from}"]`, this.content), u.removeElement);
+                    }
+                },
+
+                showChatStateNotification (message) {
+                    /* Support for XEP-0085, Chat State Notifications */
+                    let text;
+                    const from = message.get('from');
+                    const data = `data-csn=${from}`;
+                    this.clearChatStateNotification(from);
+
                     if (message.get('chat_state') === _converse.COMPOSING) {
                         if (message.get('sender') === 'me') {
-                            this.showStatusNotification(__('Typing from another device'));
+                            text = __('Typing from another device');
                         } else {
-                            this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
+                            text = message.get('fullname')+' '+__('is typing');
                         }
-                        this.clear_status_timeout = window.setTimeout(
-                            this.clearStatusNotification.bind(this),
-                            30000
-                        );
                     } else if (message.get('chat_state') === _converse.PAUSED) {
                         if (message.get('sender') === 'me') {
-                            this.showStatusNotification(__('Stopped typing on the other device'));
+                            text = __('Stopped typing on the other device');
                         } else {
-                            this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
+                            text = message.get('fullname')+' '+__('has stopped typing');
                         }
-                    } else if (_.includes([_converse.INACTIVE, _converse.ACTIVE], message.get('chat_state'))) {
-                        this.clearStatusNotification();
                     } else if (message.get('chat_state') === _converse.GONE) {
-                        this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
+                        text = message.get('fullname')+' '+__('has gone away');
+                    } else {
+                        return;
                     }
+                    const isodate = moment().format();
+                    this.content.insertAdjacentHTML(
+                        'beforeend',
+                        tpl_csn({
+                            'message': text,
+                            'from': from,
+                            'isodate': isodate
+                        }));
+                    this.scrollDown();
+
+                    this.clear_status_timeout = window.setTimeout(
+                        this.clearChatStateNotification.bind(this, from, isodate),
+                        30000
+                    );
                     return message;
                 },
 
@@ -740,7 +776,7 @@
                         this.handleErrorMessage(message);
                     } else {
                         if (message.get('chat_state')) {
-                            this.handleChatStateMessage(message);
+                            this.showChatStateNotification(message);
                         }
                         if (message.get('message')) {
                             this.handleTextMessage(message);
@@ -1021,16 +1057,27 @@
                 onChatStatusChanged (item) {
                     const chat_status = item.get('chat_status');
                     let fullname = item.get('fullname');
+                    let text;
+
                     fullname = _.isEmpty(fullname)? item.get('jid'): fullname;
                     if (u.isVisible(this.el)) {
                         if (chat_status === 'offline') {
-                            this.showStatusNotification(fullname+' '+__('has gone offline'));
+                            text = fullname+' '+__('has gone offline');
                         } else if (chat_status === 'away') {
-                            this.showStatusNotification(fullname+' '+__('has gone away'));
+                            text = fullname+' '+__('has gone away');
                         } else if ((chat_status === 'dnd')) {
-                            this.showStatusNotification(fullname+' '+__('is busy'));
+                            text = fullname+' '+__('is busy');
                         } else if (chat_status === 'online') {
-                            this.clearStatusNotification();
+                            text = fullname+' '+__('is online');
+                        }
+                        if (text) {
+                            this.content.insertAdjacentHTML(
+                                'beforeend',
+                                tpl_status_message({
+                                    'message': text,
+                                    'isodate': moment().format(),
+                                }));
+                            this.scrollDown();
                         }
                     }
                 },

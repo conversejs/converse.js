@@ -497,25 +497,16 @@
                 informOfOccupantsRoleChange (occupant, changed) {
                     const previous_role = occupant._previousAttributes.role;
                     if (previous_role === 'moderator') {
-                        this.showStatusNotification(
-                            __("%1$s is no longer a moderator.", occupant.get('nick')),
-                            false, true)
+                        this.showChatEvent(__("%1$s is no longer a moderator", occupant.get('nick')))
                     }
                     if (previous_role === 'visitor') {
-                        this.showStatusNotification(
-                            __("%1$s has been given a voice again.", occupant.get('nick')),
-                            false, true)
+                        this.showChatEvent(__("%1$s has been given a voice again", occupant.get('nick')))
                     }
-
                     if (occupant.get('role') === 'visitor') {
-                        this.showStatusNotification(
-                            __("%1$s has been muted.", occupant.get('nick')),
-                            false, true)
+                        this.showChatEvent(__("%1$s has been muted", occupant.get('nick')))
                     }
                     if (occupant.get('role') === 'moderator') {
-                        this.showStatusNotification(
-                            __("%1$s is now a moderator.", occupant.get('nick')),
-                            false, true)
+                        this.showChatEvent(__("%1$s is now a moderator", occupant.get('nick')))
                     }
                 },
 
@@ -629,7 +620,7 @@
                     this.insertIntoTextArea(ev.target.textContent);
                 },
 
-                handleChatStateMessage (message) {
+                handleChatStateNotification (message) {
                     /* Override the method on the ChatBoxView base class to
                      * ignore <gone/> notifications in groupchats.
                      *
@@ -643,7 +634,7 @@
                         return;
                     }
                     if (message.get('chat_state') !== _converse.GONE) {
-                        _converse.ChatBoxView.prototype.handleChatStateMessage.apply(this, arguments);
+                        _converse.ChatBoxView.prototype.handleChatStateNotification.apply(this, arguments);
                     }
                 },
 
@@ -707,7 +698,7 @@
                      */
                     // TODO check if first argument is valid
                     if (args.length < 1 || args.length > 2) {
-                        this.showStatusNotification(
+                        this.showErrorMessage(
                             __('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.',
                                 command),
                             true
@@ -729,7 +720,7 @@
                 },
 
                 onCommandError () {
-                    this.showStatusNotification(__("Error: could not execute the command"), true);
+                    this.showErrorMessage(__("Error: could not execute the command"), true);
                 },
 
                 onMessageSubmitted (text) {
@@ -1446,7 +1437,7 @@
                             }));
                     });
                     if (notification.reason) {
-                        this.showStatusNotification(__('The reason given is: "%1$s".', notification.reason), true);
+                        this.showChatEvent(__('The reason given is: "%1$s".', notification.reason));
                     }
                     if (_.get(notification.messages, 'length')) {
                         this.scrollDown();
@@ -1577,7 +1568,7 @@
                     return stanza;
                 },
 
-                showErrorMessage (presence) {
+                showErrorMessageFromPresence (presence) {
                     // We didn't enter the room, so we must remove it from the MUC add-on
                     const error = presence.querySelector('error');
                     if (error.getAttribute('type') === 'auth') {
@@ -1698,7 +1689,7 @@
                      */
                     if (pres.getAttribute('type') === 'error') {
                         this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-                        this.showErrorMessage(pres);
+                        this.showErrorMessageFromPresence(pres);
                         return true;
                     }
                     const is_self = pres.querySelector("status[code='110']");

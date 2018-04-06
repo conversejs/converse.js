@@ -7354,6 +7354,9 @@ body.reset {
       #converse-embedded-chat .chatbox .chat-body .chat-info.badge,
       #conversejs .chatbox .chat-body .chat-info.badge {
         color: white; }
+      #converse-embedded-chat .chatbox .chat-body .chat-info.chat-state-notification,
+      #conversejs .chatbox .chat-body .chat-info.chat-state-notification {
+        font-style: italic; }
       #converse-embedded-chat .chatbox .chat-body .chat-info.chat-event,
       #conversejs .chatbox .chat-body .chat-info.chat-event {
         clear: left;

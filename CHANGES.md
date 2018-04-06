@@ -4,7 +4,8 @@
 
 ## UI changes
 
-The UI is now based on Bootstrap4 and Flexbox is used extensively.
+* The UI is now based on Bootstrap4 and Flexbox is used extensively.
+* #956 Conversation pane should show my own identity in pane header 
 
 ## New Features
 

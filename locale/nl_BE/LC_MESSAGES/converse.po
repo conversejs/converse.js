@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-04-07 23:33+0000\n"
+"PO-Revision-Date: 2018-04-07 23:35+0000\n"
 "Last-Translator: Nathan Follens <nathan@email.is>\n"
 "Language-Team: Flemish <https://hosted.weblate.org/projects/conversejs/"
 "translations/nl_BE/>\n"
@@ -169,7 +169,7 @@ msgstr "XMPP-gebruikersnaam:"
 
 #: dist/converse-no-dependencies.js:15327
 msgid "Password:"
-msgstr ""
+msgstr "Wachtwoord:"
 
 #: dist/converse-no-dependencies.js:15329
 msgid "password"
@@ -245,7 +245,7 @@ msgstr "Facultatieve bijnaam"
 
 #: dist/converse-no-dependencies.js:16788
 msgid "Add a Contact"
-msgstr ""
+msgstr "Voeg een contact toe"
 
 #: dist/converse-no-dependencies.js:16789
 msgid "XMPP Address"
@@ -291,7 +291,7 @@ msgstr "Ongelezen"
 #: dist/converse-no-dependencies.js:16906
 #: dist/converse-no-dependencies.js:18115
 msgid "Online"
-msgstr ""
+msgstr "Online"
 
 #: dist/converse-no-dependencies.js:16907
 msgid "Chatty"
@@ -300,12 +300,12 @@ msgstr "Spraakzaam"
 #: dist/converse-no-dependencies.js:16908
 #: dist/converse-no-dependencies.js:18111
 msgid "Busy"
-msgstr ""
+msgstr "Bezet"
 
 #: dist/converse-no-dependencies.js:16909
 #: dist/converse-no-dependencies.js:18109
 msgid "Away"
-msgstr ""
+msgstr "Afwezig"
 
 #: dist/converse-no-dependencies.js:16910
 msgid "Extended Away"
@@ -314,7 +314,7 @@ msgstr "Uitgebreid afwezig"
 #: dist/converse-no-dependencies.js:16911
 #: dist/converse-no-dependencies.js:18114
 msgid "Offline"
-msgstr ""
+msgstr "Offline"
 
 #: dist/converse-no-dependencies.js:17062
 #: dist/converse-no-dependencies.js:17099
@@ -352,11 +352,11 @@ msgstr "Weet ge zeker dat ge dit contactverzoek wilt weigeren?"
 
 #: dist/converse-no-dependencies.js:17434
 msgid "Add a contact"
-msgstr ""
+msgstr "Voeg een contact toe"
 
 #: dist/converse-no-dependencies.js:18097
 msgid "Your Profile"
-msgstr ""
+msgstr "Uw profiel"
 
 #: dist/converse-no-dependencies.js:18098
 #: dist/converse-no-dependencies.js:18110
@@ -380,7 +380,7 @@ msgstr "Opslaan"
 
 #: dist/converse-no-dependencies.js:18117
 msgid "Away for long"
-msgstr ""
+msgstr "Langdurig afwezig"
 
 #: dist/converse-no-dependencies.js:18118
 msgid "Change chat status"
@@ -409,7 +409,7 @@ msgstr "Afmelden"
 
 #: dist/converse-no-dependencies.js:18168
 msgid "Your profile"
-msgstr ""
+msgstr "Uw profiel"
 
 #: dist/converse-no-dependencies.js:18191
 msgid "Are you sure you want to log out?"
@@ -418,23 +418,23 @@ msgstr "Weet ge zeker dat ge u wilt afmelden?"
 #: dist/converse-no-dependencies.js:18199
 #: dist/converse-no-dependencies.js:18209
 msgid "online"
-msgstr ""
+msgstr "online"
 
 #: dist/converse-no-dependencies.js:18201
 msgid "busy"
-msgstr ""
+msgstr "bezet"
 
 #: dist/converse-no-dependencies.js:18203
 msgid "away for long"
-msgstr ""
+msgstr "langdurig afwezig"
 
 #: dist/converse-no-dependencies.js:18205
 msgid "away"
-msgstr ""
+msgstr "afwezig"
 
 #: dist/converse-no-dependencies.js:18207
 msgid "offline"
-msgstr ""
+msgstr "offline"
 
 #: dist/converse-no-dependencies.js:18644
 msgid "Username"
@@ -895,7 +895,7 @@ msgstr "Dit groepsgesprek vereist een wachtwoord"
 
 #: dist/converse-no-dependencies.js:23983
 msgid "Password: "
-msgstr ""
+msgstr "Wachtwoord: "
 
 #: dist/converse-no-dependencies.js:24081
 #, javascript-format

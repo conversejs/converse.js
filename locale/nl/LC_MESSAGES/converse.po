@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-03-30 21:59+0000\n"
+"PO-Revision-Date: 2018-04-08 23:35+0000\n"
 "Last-Translator: Nathan Follens <nathan@email.is>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/conversejs/"
 "translations/nl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.20-dev\n"
+"X-Generator: Weblate 2.20\n"
 "domain: converse\n"
 "lang: nl\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -383,7 +383,7 @@ msgstr "Opslaan"
 
 #: dist/converse-no-dependencies.js:18117
 msgid "Away for long"
-msgstr "Langduring afwezig"
+msgstr "Langdurig afwezig"
 
 #: dist/converse-no-dependencies.js:18118
 msgid "Change chat status"
@@ -429,7 +429,7 @@ msgstr "bezet"
 
 #: dist/converse-no-dependencies.js:18203
 msgid "away for long"
-msgstr "uitgebreid afwezig"
+msgstr "langdurig afwezig"
 
 #: dist/converse-no-dependencies.js:18205
 msgid "away"

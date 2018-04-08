@@ -416,6 +416,7 @@
                             'isodate': isodate,
                             'data': data
                         }));
+                    this.insertDayIndicator(this.content.lastElementChild);
                     this.scrollDown();
                     return isodate;
                 },

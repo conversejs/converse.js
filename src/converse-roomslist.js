@@ -213,7 +213,8 @@
                     const name = ev.target.getAttribute('data-room-name');
                     const jid = ev.target.getAttribute('data-room-jid');
                     if (confirm(__("Are you sure you want to leave the room %1$s?", name))) {
-                        _converse.chatboxviews.get(jid).leave();
+                        // TODO: replace with API call
+                        _converse.chatboxviews.get(jid).close();
                     }
                 },
 

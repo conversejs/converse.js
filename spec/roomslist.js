@@ -97,7 +97,7 @@
                     view.model.set({'minimized': true});
                     var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var nick = mock.chatroom_names[0];
-                    view.handleMUCMessage(
+                    view.model.onMessage(
                         $msg({
                             from: room_jid+'/'+nick,
                             id: (new Date()).getTime(),
@@ -112,7 +112,7 @@
                     expect(_.includes(room_el.classList, 'unread-msgs'));
 
                     // If the user is mentioned, the counter also gets updated
-                    view.handleMUCMessage(
+                    view.model.onMessage(
                         $msg({
                             from: room_jid+'/'+nick,
                             id: (new Date()).getTime(),
@@ -123,7 +123,7 @@
                     var indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
                     expect(indicator_el.textContent).toBe('1');
 
-                    view.handleMUCMessage(
+                    view.model.onMessage(
                         $msg({
                             from: room_jid+'/'+nick,
                             id: (new Date()).getTime(),

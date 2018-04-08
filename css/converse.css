@@ -7594,6 +7594,9 @@ body.reset {
                 #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu ul li.insert-emoji a:hover,
                 #conversejs .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu ul li.insert-emoji a:hover {
                   color: #8f2831; }
+        #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley a.toggle-smiley,
+        #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley a.toggle-smiley {
+          padding: 0; }
         #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar,
         #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar {
           box-shadow: 0 -1px 1px 0 rgba(0, 0, 0, 0.4); }

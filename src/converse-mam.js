@@ -269,13 +269,16 @@
                 },
             },
 
-            ChatRoomView: {
+            ChatRoom: {
 
-                initialize () {
-                    const { _converse } = this.__super__;
-                    this.__super__.initialize.apply(this, arguments);
-                    this.model.on('change:mam_enabled', this.fetchArchivedMessagesIfNecessary, this);
-                    this.model.on('change:connection_status', this.fetchArchivedMessagesIfNecessary, this);
+                onMessage (stanza) {
+                    /* MAM (message archive management XEP-0313) messages are
+                     * ignored, since they're handled separately.
+                     */
+                    if (sizzle(`[xmlns="${Strophe.NS.MAM}"]`, stanza).length > 0) {
+                        return true;
+                    }
+                    return this.__super__.onMessage.apply(this, arguments);
                 },
 
                 isDuplicate (message, original_stanza) {
@@ -285,8 +288,18 @@
                     }
                     const archive_id = getMessageArchiveID(original_stanza);
                     if (archive_id) {
-                        return this.model.messages.filter({'archive_id': archive_id}).length > 0;
+                        return this.messages.filter({'archive_id': archive_id}).length > 0;
                     }
+                }
+            },
+
+            ChatRoomView: {
+
+                initialize () {
+                    const { _converse } = this.__super__;
+                    this.__super__.initialize.apply(this, arguments);
+                    this.model.on('change:mam_enabled', this.fetchArchivedMessagesIfNecessary, this);
+                    this.model.on('change:connection_status', this.fetchArchivedMessagesIfNecessary, this);
                 },
 
                 renderChatArea () {
@@ -295,16 +308,6 @@
                         this.content.addEventListener('scroll', _.debounce(this.onScroll.bind(this), 100));
                     }
                     return result;
-                },
-
-                handleMUCMessage (stanza) {
-                    /* MAM (message archive management XEP-0313) messages are
-                     * ignored, since they're handled separately.
-                     */
-                    if (sizzle(`[xmlns="${Strophe.NS.MAM}"]`, stanza).length > 0) {
-                        return true;
-                    }
-                    return this.__super__.handleMUCMessage.apply(this, arguments);
                 },
 
                 fetchArchivedMessagesIfNecessary () {
@@ -321,7 +324,7 @@
                 fetchArchivedMessages (options) {
                     /* Fetch archived chat messages for this Chat Room
                      *
-                     * Then, upon receiving them, call onChatRoomMessage
+                     * Then, upon receiving them, call onMessage
                      * so that they are displayed inside it.
                      */
                     const that = this;
@@ -337,7 +340,7 @@
                         function (messages) {
                             that.clearSpinner();
                             if (messages.length) {
-                                _.each(messages, that.onChatRoomMessage.bind(that));
+                                _.each(messages, that.model.onMessage.bind(that));
                             }
                         },
                         function () {
@@ -362,7 +365,6 @@
                 message_archiving: undefined, // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
                 message_archiving_timeout: 8000, // Time (in milliseconds) to wait before aborting MAM request
             });
-
 
             _converse.onMAMError = function (iq) {
                 if (iq.querySelectorAll('feature-not-implemented').length) {

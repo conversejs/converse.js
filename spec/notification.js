@@ -173,7 +173,7 @@
                             to: 'dummy@localhost',
                             type: 'groupchat'
                         }).c('body').t(text);
-                        view.onChatRoomMessage(message.nodeTree);
+                        view.model.onMessage(message.nodeTree);
                         expect(_converse.playSoundNotification).toHaveBeenCalled();
 
                         text = "This message won't play a sound";
@@ -183,7 +183,7 @@
                             to: 'dummy@localhost',
                             type: 'groupchat'
                         }).c('body').t(text);
-                        view.onChatRoomMessage(message.nodeTree);
+                        view.model.onMessage(message.nodeTree);
                         expect(_converse.playSoundNotification, 1);
                         _converse.play_sounds = false;
 
@@ -194,7 +194,7 @@
                             to: 'dummy@localhost',
                             type: 'groupchat'
                         }).c('body').t(text);
-                        view.onChatRoomMessage(message.nodeTree);
+                        view.model.onMessage(message.nodeTree);
                         expect(_converse.playSoundNotification, 1);
                         _converse.play_sounds = false;
                         done();

@@ -34,8 +34,8 @@ For more info on how to use (or add promises), you can read the
 Below we will now list all events and also specify whether they are available
 as promises.
 
-List of Events (and promises)
------------------------------
+List of global events (and promises)
+------------------------------------
 
 Hooking into events that Converse.js emits is a great way to extend or
 customize its functionality.
@@ -478,3 +478,16 @@ windowStateChanged
 When window state has changed. Used to determine when a user left the page and when came back.
 
 ``_converse.on('windowStateChanged', function (data) { ... });``
+
+
+List of events on the ChatRoom Backbone.Model
+---------------------------------------------
+
+configurationNeeded
+~~~~~~~~~~~~~~~~~~~
+
+Triggered when a new room has been created which first needs to be configured
+and when `auto_configure` is set to `false`.
+
+Used by the core `ChatRoomView` view in order to know when to render the
+configuration form for a new room.

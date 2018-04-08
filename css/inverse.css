@@ -7647,28 +7647,31 @@ body {
                 #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu ul li.insert-emoji a:hover,
                 #conversejs .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu ul li.insert-emoji a:hover {
                   color: #8f2831; }
-        #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar,
-        #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar {
-          box-shadow: 0 -1px 1px 0 rgba(0, 0, 0, 0.4); }
-          #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker,
-          #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker {
-            padding-top: 0.5em; }
-            #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker ul,
-            #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker ul {
-              display: flex;
-              flex-direction: row;
-              justify-content: space-between; }
-          #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker li,
-          #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-skintone-picker li,
-          #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker li,
-          #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-skintone-picker li {
-            padding: 0.2em;
-            font-size: 26px; }
-            #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker li:hover,
-            #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-skintone-picker li:hover,
-            #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker li:hover,
-            #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-skintone-picker li:hover {
-              background-color: #DCF9F6; }
+        #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley,
+        #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley {
+          padding: 0 0 0 0.5em; }
+          #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar,
+          #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar {
+            box-shadow: 0 -1px 1px 0 rgba(0, 0, 0, 0.4); }
+            #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker,
+            #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker {
+              padding-top: 0.5em; }
+              #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker ul,
+              #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker ul {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between; }
+            #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker li,
+            #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-skintone-picker li,
+            #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker li,
+            #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-skintone-picker li {
+              padding: 0.2em;
+              font-size: 26px; }
+              #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker li:hover,
+              #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-skintone-picker li:hover,
+              #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker li:hover,
+              #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-skintone-picker li:hover {
+                background-color: #DCF9F6; }
         #converse-embedded-chat .chatbox .sendXMPPMessage .chat-toolbar li.toggle-otr ul,
         #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-otr ul {
           z-index: 99; }
@@ -7788,13 +7791,11 @@ body {
     line-height: 26px; }
   #conversejs.fullscreen .chatbox .sendXMPPMessage ul {
     width: 100%; }
-  #conversejs.fullscreen .chatbox .sendXMPPMessage .toggle-smiley {
-    padding-left: 0.5em; }
-    #conversejs.fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category-picker {
-      margin-right: 5em; }
-    #conversejs.fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category {
-      padding-left: 10px;
-      padding-right: 10px; }
+  #conversejs.fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category-picker {
+    margin-right: 5em; }
+  #conversejs.fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category {
+    padding-left: 10px;
+    padding-right: 10px; }
 
 @media screen and (max-width: 767px) {
   #conversejs.fullscreen .chatbox {

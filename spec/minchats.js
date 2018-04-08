@@ -158,7 +158,7 @@
                         to: 'dummy@localhost',
                         type: 'groupchat'
                     }).c('body').t(message).tree();
-                view.handleMUCMessage(msg);
+                view.model.onMessage(msg);
 
                 expect($(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count')).is(':visible')).toBeTruthy();
                 expect($(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count')).text()).toBe('1');

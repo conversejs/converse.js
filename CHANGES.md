@@ -4,8 +4,8 @@
 
 ## UI changes
 
-* The UI is now based on Bootstrap4 and Flexbox is used extensively.
-* #956 Conversation pane should show my own identity in pane header 
+- The UI is now based on Bootstrap4 and Flexbox is used extensively.
+- #956 Conversation pane should show my own identity in pane header 
 
 ## New Features
 
@@ -13,14 +13,20 @@
 
 ## Configuration changes 
 
-* Removed the `xhr_custom_status` and `xhr_custom_status_url` configuration
+- Removed the `xhr_custom_status` and `xhr_custom_status_url` configuration
   settings. If you relied on these settings, you can instead listen for the
   [statusMessageChanged](https://conversejs.org/docs/html/events.html#contactstatusmessagechanged)
   event and make the XMLHttpRequest yourself.
-* Removed  `xhr_user_search` in favor of only accepting `xhr_user_search_url` as configuration option.
-* The data returned from the `xhr_user_search_url` must now include the user's
+- Removed  `xhr_user_search` in favor of only accepting `xhr_user_search_url` as configuration option.
+- The data returned from the `xhr_user_search_url` must now include the user's
   `jid` instead of just an `id`.
 - New configuration setting [nickname](https://conversejs.org/docs/html/configurations.html#nickname)
+
+## Architectural changes
+
+- Extracted the views from `converse-muc.js` into `converse-muc-views.js` and
+  where appropriate moved methods from the views into the models/collections.
+  This makes MUC possible in headless mode.
 
 ### Bugfixes
 

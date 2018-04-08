@@ -39,7 +39,7 @@
                                 </forwarded>
                             </result>
                         </message>`).firstElementChild;
-                    chatroomview.onChatRoomMessage(stanza);
+                    chatroomview.model.onMessage(stanza);
                     expect(chatroomview.content.querySelectorAll('.chat-message').length).toBe(1);
                     done();
                 });

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-04-07 23:35+0000\n"
+"PO-Revision-Date: 2018-04-09 18:30+0000\n"
 "Last-Translator: Nathan Follens <nathan@email.is>\n"
 "Language-Team: Flemish <https://hosted.weblate.org/projects/conversejs/"
 "translations/nl_BE/>\n"
@@ -29,16 +29,16 @@ msgstr "Der trad een fout op bij het verbinden met de gespreksserver."
 
 #: dist/converse-no-dependencies.js:7507
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
-msgstr "Uw Jabber-ID en/of wachtwoord is onjuist. Probeer het opnieuw."
+msgstr "Uwen Jabber-ID en/of uw paswoord is onjuist. Probeer het opnieuw."
 
 #: dist/converse-no-dependencies.js:7519
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr "Sorry, we konden geen verbinding maken met deze XMPP-host: %1$s"
+msgstr "Sorry, we konden geen verbinding maken met dezen XMPP-host: %1$s"
 
 #: dist/converse-no-dependencies.js:7521
 msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr "De XMPP-server bood geen ondersteund authenticatiemechanisme aan"
+msgstr "Den XMPP-server bood geen ondersteund authenticatiemechanisme aan"
 
 #: dist/converse-no-dependencies.js:8208
 #, javascript-format
@@ -94,11 +94,11 @@ msgstr "Alle berichten wissen"
 
 #: dist/converse-no-dependencies.js:14412
 msgid "Insert a smiley"
-msgstr "Voeg een smiley in"
+msgstr "Voeg ne smiley in"
 
 #: dist/converse-no-dependencies.js:14413
 msgid "Start a call"
-msgstr "Plaats een oproep"
+msgstr "Plaats nen oproep"
 
 #: dist/converse-no-dependencies.js:14603
 #: dist/converse-no-dependencies.js:15055
@@ -138,7 +138,7 @@ msgstr "Berichten verwijderen"
 
 #: dist/converse-no-dependencies.js:14851
 msgid "Write in the third person"
-msgstr "Schrijf in de derde persoon"
+msgstr "Schrijf in den derde persoon"
 
 #: dist/converse-no-dependencies.js:14851
 #: dist/converse-no-dependencies.js:23429
@@ -173,7 +173,7 @@ msgstr "Wachtwoord:"
 
 #: dist/converse-no-dependencies.js:15329
 msgid "password"
-msgstr "wachtwoord"
+msgstr "paswoord"
 
 #: dist/converse-no-dependencies.js:15333
 #: dist/converse-no-dependencies.js:23984
@@ -478,7 +478,7 @@ msgstr "Loggen van groepsgesprek is nu uitgeschakeld"
 
 #: dist/converse-no-dependencies.js:19806
 msgid "This room is now no longer anonymous"
-msgstr "Dit groepsgesprek is niet langer anoniem"
+msgstr "Dit groepsgesprek is niet anoniem meer"
 
 #: dist/converse-no-dependencies.js:19807
 msgid "This room is now semi-anonymous"
@@ -539,7 +539,7 @@ msgstr "%1$s is verbannen"
 #: dist/converse-no-dependencies.js:19830
 #, javascript-format
 msgid "%1$s's nickname has changed"
-msgstr "De bijnaam van %1$s is gewijzigd"
+msgstr "Den bijnaam van %1$s is gewijzigd"
 
 #: dist/converse-no-dependencies.js:19831
 #, javascript-format
@@ -559,12 +559,12 @@ msgstr "%1$s is verwijderd omwille van geen lid te zijn"
 #: dist/converse-no-dependencies.js:19836
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr "Uw bijnaam is automatisch ingesteld op %1$s"
+msgstr "Uwen bijnaam is automatisch ingesteld op %1$s"
 
 #: dist/converse-no-dependencies.js:19837
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
-msgstr "Uw bijnaam is gewijzigd naar %1$s"
+msgstr "Uwen bijnaam is gewijzigd naar %1$s"
 
 #: dist/converse-no-dependencies.js:20335
 #, javascript-format
@@ -588,7 +588,7 @@ msgstr "Gesprek toevoegen aan bladwijzers"
 
 #: dist/converse-no-dependencies.js:20800
 msgid "The name for this bookmark:"
-msgstr "De naam voor deze bladwijzer:"
+msgstr "De naam voor dezen bladwijzer:"
 
 #: dist/converse-no-dependencies.js:20801
 msgid "Would you like this room to be automatically joined upon startup?"
@@ -596,16 +596,16 @@ msgstr "Wilt ge automatisch deelnemen aan dit groepsgesprek bij opstarten?"
 
 #: dist/converse-no-dependencies.js:20802
 msgid "What should your nickname for this room be?"
-msgstr "Wat moet uw bijnaam in dit groepsgesprek zijn?"
+msgstr "Wat moet uwen bijnaam in dit groepsgesprek zijn?"
 
 #: dist/converse-no-dependencies.js:20878
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr "Weet ge zeker dat ge de bladwijzer ‘%1$s’ wilt verwijderen?"
+msgstr "Weet ge zeker dat ge den bladwijzer ‘%1$s’ wilt verwijderen?"
 
 #: dist/converse-no-dependencies.js:20994
 msgid "Sorry, something went wrong while trying to save your bookmark."
-msgstr "Sorry, der ging iets mis bij het opslaan van uw bladwijzer."
+msgstr "Sorry, der ging iets mis bij het opslaan van uwen bladwijzer."
 
 #: dist/converse-no-dependencies.js:21073
 #: dist/converse-no-dependencies.js:21456
@@ -614,7 +614,7 @@ msgstr "Dit gesprek verlaten"
 
 #: dist/converse-no-dependencies.js:21074
 msgid "Remove this bookmark"
-msgstr "Deze bladwijzer verwijderen"
+msgstr "Dezen bladwijzer verwijderen"
 
 #: dist/converse-no-dependencies.js:21075
 #: dist/converse-no-dependencies.js:21457
@@ -767,7 +767,7 @@ msgstr "Bericht"
 #: dist/converse-no-dependencies.js:23152
 #, javascript-format
 msgid "%1$s is no longer a moderator."
-msgstr "%1$s is geen moderator meer."
+msgstr "%1$s is gene moderator meer."
 
 #: dist/converse-no-dependencies.js:23157
 #, javascript-format
@@ -782,7 +782,7 @@ msgstr "%1$s is gedempt."
 #: dist/converse-no-dependencies.js:23168
 #, javascript-format
 msgid "%1$s is now a moderator."
-msgstr "%1$s is nu een moderator."
+msgstr "%1$s is nu ne moderator."
 
 #: dist/converse-no-dependencies.js:23179
 msgid "Close and leave this room"
@@ -794,7 +794,7 @@ msgstr "Configureer dit groepsgesprek"
 
 #: dist/converse-no-dependencies.js:23236
 msgid "Hide the list of occupants"
-msgstr "Verberg de deelnemerslijst"
+msgstr "Verberg den deelnemerslijst"
 
 #: dist/converse-no-dependencies.js:23362
 #, javascript-format
@@ -802,7 +802,7 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
-"Fout: de opdracht ‘%1$s’ aanvaardt twee parameters, de bijnaam van de "
+"Fout: de opdracht ‘%1$s’ aanvaardt twee parameters, den bijnaam van de "
 "gebruiker en optioneel een reden."
 
 #: dist/converse-no-dependencies.js:23375
@@ -831,11 +831,11 @@ msgstr "Gebruiker uit groepsgesprek schoppen"
 
 #: dist/converse-no-dependencies.js:23431
 msgid "Write in 3rd person"
-msgstr "Schrijf in de derde persoon"
+msgstr "Schrijf in den derde persoon"
 
 #: dist/converse-no-dependencies.js:23432
 msgid "Grant membership to a user"
-msgstr "Verleen lidmaatschap aan een gebruiker"
+msgstr "Verleen lidmaatschap aan ne gebruiker"
 
 #: dist/converse-no-dependencies.js:23433
 msgid "Remove user's ability to post messages"
@@ -843,7 +843,7 @@ msgstr "Mogelijkheid van gebruiker om berichten te schrijven verwijderen"
 
 #: dist/converse-no-dependencies.js:23434
 msgid "Change your nickname"
-msgstr "Wijzig uw bijnaam"
+msgstr "Wijzig uwen bijnaam"
 
 #: dist/converse-no-dependencies.js:23435
 msgid "Grant moderator role to user"
@@ -874,12 +874,12 @@ msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
-"De bijnaam die ge hebt gekozen is gereserveerd of momenteel in gebruik, kies "
-"der een andere."
+"Den bijnaam die ge gekozen hebt is gereserveerd of momenteel in gebruik, "
+"kies der nen anderen."
 
 #: dist/converse-no-dependencies.js:23957
 msgid "Please choose your nickname"
-msgstr "Kies uw bijnaam"
+msgstr "Kies uwen bijnaam"
 
 #: dist/converse-no-dependencies.js:23958
 msgid "Nickname"
@@ -891,7 +891,7 @@ msgstr "Deelnemen aan groepsgesprek"
 
 #: dist/converse-no-dependencies.js:23982
 msgid "This chatroom requires a password"
-msgstr "Dit groepsgesprek vereist een wachtwoord"
+msgstr "Dit groepsgesprek vereist een paswoord"
 
 #: dist/converse-no-dependencies.js:23983
 msgid "Password: "
@@ -953,7 +953,7 @@ msgstr "Ge zijt uit dit groepsgesprek verbannen."
 
 #: dist/converse-no-dependencies.js:24244
 msgid "No nickname was specified."
-msgstr "Geen bijnaam opgegeven."
+msgstr "Genen bijnaam opgegeven."
 
 #: dist/converse-no-dependencies.js:24248
 msgid "You are not allowed to create new rooms."
@@ -961,7 +961,7 @@ msgstr "Ge hebt geen toestemming om nieuwe groepsgesprekken aan te maken."
 
 #: dist/converse-no-dependencies.js:24250
 msgid "Your nickname doesn't conform to this room's policies."
-msgstr "Uw bijnaam stemt niet overeen met het beleid van dit groepsgesprek."
+msgstr "Uwen bijnaam stemt niet overeen met het beleid van dit groepsgesprek."
 
 #: dist/converse-no-dependencies.js:24254
 msgid "This room does not (yet) exist."
@@ -995,7 +995,7 @@ msgstr "Klik om %1$s in uw bericht te vermelden."
 
 #: dist/converse-no-dependencies.js:24535
 msgid "This user is a moderator."
-msgstr "Deze gebruiker is een moderator."
+msgstr "Deze gebruiker is ne moderator."
 
 #: dist/converse-no-dependencies.js:24536
 msgid "This user can send messages in this room."
@@ -1032,7 +1032,7 @@ msgstr "Open"
 
 #: dist/converse-no-dependencies.js:24637
 msgid "Password protected"
-msgstr "Beveiligd met wachtwoord"
+msgstr "Beveiligd met paswoord"
 
 #: dist/converse-no-dependencies.js:24638
 msgid "Persistent"
@@ -1044,7 +1044,7 @@ msgstr "Tijdelijk"
 
 #: dist/converse-no-dependencies.js:24643
 msgid "No password"
-msgstr "Geen wachtwoord"
+msgstr "Geen paswoord"
 
 #: dist/converse-no-dependencies.js:24644
 msgid "This room is not publicly searchable"
@@ -1064,7 +1064,8 @@ msgstr "Dit groepsgesprek wordt gemodereerd"
 
 #: dist/converse-no-dependencies.js:24648
 msgid "All other room occupants can see your XMPP username"
-msgstr "Alle gebruikers in dit groepsgesprek kunnen uw XMPP-gebruikersnaam zien"
+msgstr ""
+"Alle gebruikers in dit groepsgesprek kunnen uwen XMPP-gebruikersnaam zien"
 
 #: dist/converse-no-dependencies.js:24649
 msgid "Anyone can join this room"
@@ -1072,7 +1073,7 @@ msgstr "Iedereen kan deelnemen aan dit gesprek"
 
 #: dist/converse-no-dependencies.js:24650
 msgid "This room requires a password before entry"
-msgstr "Dit groepsgesprek vereist een wachtwoord voor toegang"
+msgstr "Dit groepsgesprek vereist een paswoord voor toegang"
 
 #: dist/converse-no-dependencies.js:24651
 msgid "This room persists even if it's unoccupied"
@@ -1084,12 +1085,12 @@ msgstr "Dit groepsgesprek is openbaar zoekbaar"
 
 #: dist/converse-no-dependencies.js:24653
 msgid "Only moderators can see your XMPP username"
-msgstr "Enkel moderatoren kunnen uw XMPP-gebruikersnaam zien"
+msgstr "Enkel moderatoren kunnen uwen XMPP-gebruikersnaam zien"
 
 #: dist/converse-no-dependencies.js:24654
 msgid "This room will disappear once the last person leaves"
 msgstr ""
-"Dit groepsgesprek zal verdwijnen van zodra de laatste gebruik het verlaat"
+"Dit groepsgesprek zal verdwijnen van zodra de laatste gebruiker het verlaat"
 
 #: dist/converse-no-dependencies.js:24655
 msgid "This room is not being moderated"
@@ -1097,7 +1098,7 @@ msgstr "Dit groepsgesprek wordt niet gemodereerd"
 
 #: dist/converse-no-dependencies.js:24656
 msgid "This room does not require a password upon entry"
-msgstr "Dit groepsgesprek vereist geen wachtwoord voor toegang"
+msgstr "Dit groepsgesprek vereist geen paswoord voor toegang"
 
 #: dist/converse-no-dependencies.js:24776
 #, javascript-format
@@ -1110,7 +1111,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:24797
 msgid "Please enter a valid XMPP username"
-msgstr "Voer een geldige XMPP-gebruikersnaam in"
+msgstr "Voer ne geldigen XMPP-gebruikersnaam in"
 
 #: dist/converse-no-dependencies.js:25137
 msgid "Re-establishing encrypted session"
@@ -1123,7 +1124,7 @@ msgstr "Privésleutel genereren."
 
 #: dist/converse-no-dependencies.js:25148
 msgid "Your browser might become unresponsive."
-msgstr "Uw browser kan mogelijk stoppen met reageren."
+msgstr "Uwen browser kan mogelijk stoppen met reageren."
 
 #: dist/converse-no-dependencies.js:25191
 #, javascript-format
@@ -1199,7 +1200,7 @@ msgid ""
 msgstr ""
 "Hier zijn de vingerafdrukken, bevestig ze met %1$s, buiten dit gesprek.\n"
 "\n"
-"Uw vingerafdruk (%2$s): %3$s\n"
+"Uwe vingerafdruk (%2$s): %3$s\n"
 "\n"
 "Vingerafdruk van %1$s: %4$s\n"
 "\n"
@@ -1303,7 +1304,7 @@ msgstr "klaar"
 
 #: dist/converse-no-dependencies.js:25539
 msgid "Don't have a chat account?"
-msgstr "Hebt ge geen account?"
+msgstr "Hebt ge genen account?"
 
 #: dist/converse-no-dependencies.js:25541
 msgid "Create an account"
@@ -1311,15 +1312,15 @@ msgstr "Account aanmaken"
 
 #: dist/converse-no-dependencies.js:25553
 msgid "Create your account"
-msgstr "Maak uw account aan"
+msgstr "Maak uwen account aan"
 
 #: dist/converse-no-dependencies.js:25555
 msgid "Please enter the XMPP provider to register with:"
-msgstr "Voer de XMPP-leverancier in waarbij ge u wilt registreren:"
+msgstr "Voer den XMPP-leverancier in waarbij ge u wilt registreren:"
 
 #: dist/converse-no-dependencies.js:25575
 msgid "Already have a chat account?"
-msgstr "Hebt ge al een account?"
+msgstr "Hebt ge al nen account?"
 
 #: dist/converse-no-dependencies.js:25577
 msgid "Log in here"
@@ -1335,7 +1336,7 @@ msgstr "Registreren"
 
 #: dist/converse-no-dependencies.js:25601
 msgid "Choose a different provider"
-msgstr "Kies een andere leverancier"
+msgstr "Kies nen andere leverancier"
 
 #: dist/converse-no-dependencies.js:25613
 msgid "Hold tight, we're fetching the registration form…"
@@ -1351,7 +1352,7 @@ msgstr "Registratieformulier ophalen"
 
 #: dist/converse-no-dependencies.js:25795
 msgid "Tip: A list of public XMPP providers is available"
-msgstr "Tip: der is een lijst met openbare XMPP-leveranciers beschikbaar"
+msgstr "Tip: der is ne lijst met openbare XMPP-leveranciers beschikbaar"
 
 #: dist/converse-no-dependencies.js:25796
 msgid "here"
@@ -1359,15 +1360,15 @@ msgstr "hier"
 
 #: dist/converse-no-dependencies.js:25844
 msgid "Sorry, we're unable to connect to your chosen provider."
-msgstr "Sorry, we konden geen verbinding maken met uw gekozen leverancier."
+msgstr "Sorry, we konden geen verbinding maken met uwe gekozen leverancier."
 
 #: dist/converse-no-dependencies.js:25860
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
 msgstr ""
-"Sorry, de opgegeven leverancier biedt geen ondersteuning voor "
-"inbandaccountregistratie. Probeer een andere leverancier."
+"Sorry, den opgegeven leverancier biedt geen ondersteuning voor "
+"inbandaccountregistratie. Probeer nen andere leverancier."
 
 #: dist/converse-no-dependencies.js:25884
 #, javascript-format

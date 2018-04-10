@@ -754,11 +754,15 @@
                         // <gone/> is not applicable within MUC context
                         return;
                     }
+                    const msgid = _converse.connection.getUniqueId();
                     _converse.connection.send(
-                        $msg({'to':this.model.get('jid'), 'type': 'groupchat'})
-                            .c(chat_state, {'xmlns': Strophe.NS.CHATSTATES}).up()
-                            .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
-                            .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
+                        $msg({
+                            'to':this.model.get('jid'),
+                            'id': msgid,
+                            'type': 'groupchat'
+                        }).c(chat_state, {'xmlns': Strophe.NS.CHATSTATES}).up()
+                          .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                          .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
                     );
                 },
 
@@ -772,10 +776,10 @@
                     text = u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse)
                     const msgid = _converse.connection.getUniqueId();
                     const msg = $msg({
-                        to: this.model.get('jid'),
-                        from: _converse.connection.jid,
-                        type: 'groupchat',
-                        id: msgid
+                        'to': this.model.get('jid'),
+                        'from': _converse.connection.jid,
+                        'type': 'groupchat',
+                        'id': msgid
                     }).c("body").t(text).up()
                     .c("x", {xmlns: "jabber:x:event"}).c(_converse.COMPOSING);
                     _converse.connection.send(msg);

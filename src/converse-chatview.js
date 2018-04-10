@@ -685,23 +685,18 @@
 
                 showChatStateNotification (message) {
                     /* Support for XEP-0085, Chat State Notifications */
+                    if (message.get('sender') === 'me') {
+                        return;
+                    }
                     let text;
                     const from = message.get('from');
                     const data = `data-csn=${from}`;
                     this.clearChatStateNotification(from);
 
                     if (message.get('chat_state') === _converse.COMPOSING) {
-                        if (message.get('sender') === 'me') {
-                            text = __('Typing from another device');
-                        } else {
-                            text = message.get('fullname')+' '+__('is typing');
-                        }
+                        text = message.get('fullname')+' '+__('is typing');
                     } else if (message.get('chat_state') === _converse.PAUSED) {
-                        if (message.get('sender') === 'me') {
-                            text = __('Stopped typing on the other device');
-                        } else {
-                            text = message.get('fullname')+' '+__('has stopped typing');
-                        }
+                        text = message.get('fullname')+' '+__('has stopped typing');
                     } else if (message.get('chat_state') === _converse.GONE) {
                         text = message.get('fullname')+' '+__('has gone away');
                     } else {

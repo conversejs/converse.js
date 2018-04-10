@@ -7868,8 +7868,7 @@ body.reset {
     font-weight: normal;
     margin: 1em 0; }
   #conversejs #controlbox .controlbox-pane .userinfo {
-    padding-bottom: 1em;
-    border-bottom: 1px solid #818479; }
+    padding-bottom: 1em; }
     #conversejs #controlbox .controlbox-pane .userinfo .username {
       margin-left: 0.5em;
       overflow: hidden;
@@ -7878,7 +7877,7 @@ body.reset {
       margin-bottom: 0.75em; }
   #conversejs #controlbox #chatrooms {
     padding: 0;
-    border-bottom: 1px solid #818479; }
+    padding-bottom: 1em; }
     #conversejs #controlbox #chatrooms form.add-chatroom {
       margin: 0;
       padding: 0; }
@@ -7889,7 +7888,7 @@ body.reset {
     #conversejs #controlbox #chatrooms .rooms-list-container .rooms-toggle {
       display: block;
       color: #777;
-      margin: 0.5em 0 0.5em 0; }
+      padding: 0 0 0.5rem 0; }
       #conversejs #controlbox #chatrooms .rooms-list-container .rooms-toggle:hover {
         color: #585B51; }
     #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list {
@@ -7902,7 +7901,7 @@ body.reset {
         color: #777;
         display: block;
         overflow: hidden;
-        padding: 0.2em 0;
+        margin-top: 0.5em;
         text-shadow: 0 1px 0 #FAFAFA;
         word-wrap: break-word; }
         #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom a:hover,
@@ -7947,8 +7946,10 @@ body.reset {
             #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .remove-bookmark.button-on:hover {
               color: #206485; }
   #conversejs #controlbox #chatrooms, #conversejs #controlbox #converse-roster {
-    margin-top: 0.75em;
-    padding-bottom: 0.75em; }
+    margin: 1em 0 0 0; }
+    #conversejs #controlbox #chatrooms div.d-flex span, #conversejs #controlbox #converse-roster div.d-flex span {
+      margin: 0 0 0.5em 0;
+      text-transform: uppercase; }
   #conversejs #controlbox .dropdown a {
     width: 143px;
     display: inline-block; }
@@ -8139,7 +8140,7 @@ body.reset {
         color: #777;
         display: block;
         width: 100%;
-        padding: 0 0 0.5em 0; }
+        padding: 0 0 0.3rem 0; }
         #conversejs #converse-roster .roster-contacts .roster-group .group-toggle:hover {
           color: #585B51; }
       #conversejs #converse-roster .roster-contacts .roster-group li {
@@ -8185,7 +8186,7 @@ body.reset {
             margin: 0;
             max-width: 80%;
             float: none;
-            height: 60px; }
+            height: 100%; }
             #conversejs #converse-roster .roster-contacts .roster-group li .open-chat .contact-name.unread-msgs {
               max-width: 60%; }
           #conversejs #converse-roster .roster-contacts .roster-group li .open-chat .avatar {

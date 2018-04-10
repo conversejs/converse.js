@@ -214,7 +214,6 @@
         .controlbox-pane {
             .userinfo {
                 padding-bottom: 1em;
-                border-bottom: 1px solid $gray-color;
 
                 .username {
                     margin-left: 0.5em;
@@ -229,7 +228,7 @@
 
         #chatrooms {
             padding: 0;
-            border-bottom: 1px solid $gray-color;
+            padding-bottom: 1em;
 
             form.add-chatroom {
                 input[type=button],
@@ -245,7 +244,7 @@
                 .rooms-toggle {
                     display: block;
                     color: $text-color;
-                    margin: 0.5em 0 0.5em 0;
+                    padding: 0 0 0.5rem 0;
                     &:hover {
                         color: $dark-gray-color;
                     }
@@ -262,7 +261,7 @@
                         color: $text-color;
                         display: block;
                         overflow: hidden;
-                        padding: 0.2em 0;
+                        margin-top: 0.5em;
                         text-shadow: 0 1px 0 $text-shadow-color;
                         word-wrap: break-word;
                         a:hover {
@@ -312,8 +311,11 @@
         }
 
         #chatrooms, #converse-roster {
-            margin-top: 0.75em;
-            padding-bottom: 0.75em;
+            margin: 1em 0 0 0;
+            div.d-flex span {
+                margin: 0 0 0.5em 0;
+                text-transform: uppercase;
+            }
         }
 
         .dropdown {

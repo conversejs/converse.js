@@ -68,7 +68,7 @@
                 color: $text-color;
                 display: block;
                 width: 100%;
-                padding: 0 0 0.5em 0;
+                padding: 0 0 0.3rem 0;
             }
 
             li {
@@ -128,7 +128,7 @@
                         margin: 0;
                         max-width: 80%;
                         float: none;
-                        height: $roster-item-height;
+                        height: 100%;
                         &.unread-msgs {
                             max-width: 60%;
                         }

@@ -785,32 +785,6 @@
                     return data;
                 },
 
-                isDuplicateBasedOnTime (message) {
-                    /* Checks whether a received messages is actually a
-                     * duplicate based on whether it has a "ts" attribute
-                     * with a unix timestamp.
-                     *
-                     * This is used for better integration with Slack's XMPP
-                     * gateway, which doesn't use message IDs but instead the
-                     * aforementioned "ts" attributes.
-                     */
-                    const entity = _converse.disco_entities.get(_converse.domain);
-                    if (entity.identities.where({'name': "Slack-XMPP"})) {
-                        const ts = message.getAttribute('ts');
-                        if (_.isNull(ts)) {
-                            return false;
-                        } else {
-                            return this.messages.where({
-                                'sender': 'me',
-                                'message': this.getMessageBody(message)
-                            }).filter(
-                                (msg) => Math.abs(moment(msg.get('time')).diff(moment.unix(ts))) < 5000
-                            ).length > 0;
-                        }
-                    }
-                    return false;
-                },
-
                 isDuplicate (message, original_stanza) {
                     const msgid = message.getAttribute('id'),
                           jid = message.getAttribute('from'),
@@ -824,7 +798,7 @@
                             (msg) => msg.get('msgid') === msgid && msg.get('fullname') === sender
                         ).length > 0;
                     }
-                    return this.isDuplicateBasedOnTime(message);
+                    return false;
                 },
 
                 fetchFeaturesIfConfigurationChanged (stanza) {

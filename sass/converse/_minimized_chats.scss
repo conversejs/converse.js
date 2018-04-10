@@ -19,7 +19,7 @@
             border-top-left-radius: $chatbox-border-radius;
             border-top-right-radius: $chatbox-border-radius;
             background-color: $link-color;
-            padding: 0.5em 0;
+            padding: 1em 0 0 0;
             text-align: center;
             color: white;
             white-space: nowrap;
@@ -48,7 +48,7 @@
 
         .minimized-chats-flyout {
             flex-direction: column-reverse;
-            bottom: 30px;
+            bottom: 42px;
             width: $minimized-chats-width;
 
             .chat-head {

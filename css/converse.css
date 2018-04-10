@@ -8542,7 +8542,7 @@ body.reset {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     background-color: #578EA9;
-    padding: 0.5em 0;
+    padding: 1em 0 0 0;
     text-align: center;
     color: white;
     white-space: nowrap;
@@ -8564,7 +8564,7 @@ body.reset {
     color: white; }
   #conversejs:not(.fullscreen) #minimized-chats .minimized-chats-flyout {
     flex-direction: column-reverse;
-    bottom: 30px;
+    bottom: 42px;
     width: 130px; }
     #conversejs:not(.fullscreen) #minimized-chats .minimized-chats-flyout .chat-head {
       padding: 0.3em;

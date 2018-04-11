@@ -275,6 +275,18 @@
                     );
                 },
 
+                sendChatRoomFile (text, to) {
+                    const msgid = _converse.connection.getUniqueId();
+                    const stanza = $msg({
+                        'from': _converse.connection.jid,
+                        'to': to,
+                        'type': 'groupchat',
+                        'id': msgid
+                    }).c("body").t(text).up()
+                      .c("x", {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(text).up();
+                      _converse.connection.send(stanza);
+                },
+
                 directInvite (recipient, reason) {
                     /* Send a direct invitation as per XEP-0249
                      *

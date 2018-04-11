@@ -82,8 +82,6 @@
         'unmoderated': 'moderated'
     };
 
-    Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
-
     converse.plugins.add('converse-muc-views', {
         /* Dependencies are other plugins which might be
          * overridden or relied upon, and therefore need to be loaded before
@@ -697,17 +695,6 @@
                         msgid
                     });
                 },
-                sendChatRoomFile (text) {
-                    const msgid = _converse.connection.getUniqueId();
-                    const stanza = $msg({
-                        'from': _converse.connection.jid,
-                        'to': this.model.get('jid'),
-                        'type': 'groupchat',
-                        'id': msgid
-                    }).c("body").t(text).up()
-                      .c("x", {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(text).up();
-                     _converse.connection.send(stanza);
-                },
 
                 modifyRole(room, nick, role, reason, onSuccess, onError) {
                     const item = $build("item", {nick, role});
@@ -757,7 +744,7 @@
                      *    (String) text - The message text.
                      */
                     if(file !== null){
-                        return this.sendChatRoomFile(text);
+                        return this.model.sendChatRoomFile(text,this.model.get('jid'));
                     }
                     if (_converse.muc_disable_moderator_commands) {
                         return this.sendChatRoomMessage(text);

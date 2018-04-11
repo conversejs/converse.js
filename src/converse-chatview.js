@@ -25,7 +25,7 @@
             "tpl!spoiler_button",
             "tpl!spoiler_message",
             "tpl!toolbar",
-            "converse-httpFileUpload",
+            "converse-http-file-upload",
             "converse-chatboxes"
     ], factory);
 }(this, function (
@@ -55,8 +55,6 @@
         ENTER: 13,
         FORWARD_SLASH: 47
     };
-
-    Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
 
     converse.plugins.add('converse-chatview', {
         /* Plugin dependencies are other plugins which might be
@@ -236,7 +234,6 @@
                 }
             });
 
-
             _converse.ChatBoxView = Backbone.NativeView.extend({
                 length: 200,
                 className: 'chatbox hidden',
@@ -257,17 +254,14 @@
                     'change .fileUpload_input': 'handleFileSelect'
                 },
 
-                toggleFileUpload(ev) {
-                    _converse.FileUpload.prototype.initFiletransfer(_converse.connection);
-                    var uploadDialog = this.el.querySelector('.fileUpload_input');
-                    uploadDialog.click();
+                toggleFileUpload (ev) {
+                    this.el.querySelector('.fileUpload_input').click();
                 },
 
-                handleFileSelect(evt) {
+                handleFileSelect (evt) {
                     var files = evt.target.files;
                     var file = files[0];
-                    var jid = this.jid;
-                    _converse.FileUpload.prototype.setFile(file,this);
+                    this.model.sendFile(file, this);
                 },
 
                 initialize () {
@@ -662,9 +656,9 @@
                         this.renderSpoilerMessage(msg, attrs)
                     }
                     
-                    if(msg_content.textContent.endsWith('mp4')){
+                    if (msg_content.textContent.endsWith('mp4')) {
                         msg_content.innerHTML = u.renderMovieURLs(msg_content);
-                    } else if(msg_content.textContent.endsWith('mp3')){
+                    } else if (msg_content.textContent.endsWith('mp3')) {
                         msg_content.innerHTML = u.renderAudioURLs(msg_content); 
                     } else {
                         u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
@@ -800,18 +794,7 @@
                     return stanza;
                 },
 
-                createFileMessageStanza(message){
-                    const stanza = $msg({
-                        'from': _converse.connection.jid,
-                        'to': this.model.get('jid'),
-                        'type': 'chat',
-                        'id': message.get('msgid')
-                    }).c('body').t(message.get('message')).up()
-                      .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up()
-                      .c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('message')).up();
 
-                    return stanza;
-                },
 
                 sendMessage (message, file=null) {
                     /* Responsible for sending off a text message.
@@ -823,7 +806,7 @@
                     // Especially in the OTR case.
                     var messageStanza;
                     if(file !== null){
-                        messageStanza = this.createFileMessageStanza(message);
+                        messageStanza = this.createFileMessageStanza(message, this.model.get('jid'));
                     }
                     else {
                         messageStanza = this.createMessageStanza(message);
@@ -883,8 +866,7 @@
                     }
                     const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
                     const message = this.model.messages.create(attrs);
-                    
-                    /* check, if a file was send. If true it will send the file with XEP-0066. */
+                
                     this.sendMessage(message, file);
                 },
 

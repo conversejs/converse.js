@@ -158,6 +158,7 @@
                             expect(entities.get('localhost').items.get('upload.localhost').identities.where({'category': 'store'}).length).toBe(1);
                             _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then(
                                 function (result) {
+                                    console.log("in the test the service is supported");
                                     expect(result.length).toBe(1);
                                     expect(result[0].get('jid')).toBe('upload.localhost');
                                     done();

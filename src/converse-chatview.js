@@ -250,18 +250,6 @@
                     'click .toggle-spoiler': 'toggleSpoilerMessage',
                     'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
                     'keypress .chat-textarea': 'keyPressed',
-                    'click .toggle-fileUpload': 'toggleFileUpload',
-                    'change .fileUpload_input': 'handleFileSelect'
-                },
-
-                toggleFileUpload (ev) {
-                    this.el.querySelector('.fileUpload_input').click();
-                },
-
-                handleFileSelect (evt) {
-                    var files = evt.target.files;
-                    var file = files[0];
-                    this.model.sendFile(file, this);
                 },
 
                 initialize () {
@@ -382,7 +370,6 @@
                         'label_clear': __('Clear all messages'),
                         'label_insert_smiley': __('Insert a smiley'),
                         'label_start_call': __('Start a call'),
-                        'label_upload_file': __('Upload a File'),
                         'label_toggle_spoiler': label_toggle_spoiler,
                         'show_call_button': _converse.visible_toolbar_buttons.call,
                         'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,

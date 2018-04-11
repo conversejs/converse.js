@@ -175,9 +175,6 @@
                     });
                 },
                 
-                /**
-                 * Upload the given file to the given url.
-                */
                 uploadFile (url, file, success_cb) {
                     console.log("uploadFile start");
                     const xmlhttp = new XMLHttpRequest();

@@ -146,7 +146,7 @@ msgid "has gone away"
 msgstr "ist jetzt abwesend"
 
 #: src/converse-chatview.js:860
-msgid "Upload a File"
+msgid "Choose a file to send"
 msgstr "Datei versenden"
 
 #: dist/converse-no-dependencies.js:14851

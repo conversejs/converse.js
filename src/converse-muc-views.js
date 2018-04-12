@@ -835,7 +835,7 @@
                      * Parameters:
                      *    (String) text - The message text.
                      */
-                    if(file !== null){
+                    if (file !== null) {
                         return this.model.sendChatRoomFile(text,this.model.get('jid'));
                     }
                     if (_converse.muc_disable_moderator_commands) {

@@ -116,7 +116,7 @@
                     });
                 },
 
-                createFileMessageStanza(message, to){
+                createFileMessageStanza (message, to) {
                     const stanza = $msg({
                         'from': _converse.connection.jid,
                         'to': to,

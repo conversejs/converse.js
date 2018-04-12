@@ -255,7 +255,7 @@
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .toggle-spoiler': 'toggleSpoilerMessage',
                     'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
-                    'keypress .chat-textarea': 'keyPressed',
+                    'keypress .chat-textarea': 'keyPressed'
                 },
 
                 initialize () {
@@ -829,7 +829,7 @@
                     // TODO: We might want to send to specfic resources.
                     // Especially in the OTR case.
                     var messageStanza;
-                    if(file !== null){
+                    if (file !== null) {
                         messageStanza = this.createFileMessageStanza(message, this.model.get('jid'));
                     }
                     else {
@@ -845,7 +845,7 @@
                                 'xmns': Strophe.NS.DELAY,
                                 'stamp': moment().format()
                             }).up()
-                            .cnode(message.tree())
+                            .cnode(messageStanza.tree())
                         );
                     }
                 },
@@ -890,7 +890,6 @@
                     }
                     const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
                     const message = this.model.messages.create(attrs);
-                
                     this.sendMessage(message, file);
                 },
 

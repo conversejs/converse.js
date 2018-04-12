@@ -116,8 +116,7 @@
                     'call': false,
                     'clear': true,
                     'emoji': true,
-                    'spoiler': true,
-                    'fileUpload': true
+                    'spoiler': true
                 },
             });
             emojione.imagePathPNG = _converse.emojione_image_path;
@@ -379,7 +378,6 @@
                         'label_toggle_spoiler': label_toggle_spoiler,
                         'show_call_button': _converse.visible_toolbar_buttons.call,
                         'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
-                        'show_fileUpload_button': _converse.visible_toolbar_buttons.fileUpload,
                         'use_emoji': _converse.visible_toolbar_buttons.emoji,
                     });
                 },
@@ -818,7 +816,7 @@
                     return stanza;
                 },
 
-                sendMessage (message, file=null) {
+                sendMessage (message, file = null) {
                     /* Responsible for sending off a text message.
                      *
                      *  Parameters:
@@ -828,7 +826,7 @@
                     // Especially in the OTR case.
                     var messageStanza;
                     if (file !== null) {
-                        messageStanza = this.createFileMessageStanza(message, this.model.get('jid'));
+                        messageStanza = this.model.createFileMessageStanza(message, this.model.get('jid'));
                     }
                     else {
                         messageStanza = this.createMessageStanza(message);

@@ -22,7 +22,6 @@
 
         overrides: {
             ChatBoxView:  {
-
                 events: {
                     'click .toggle-fileUpload': 'toggleFileUpload',
                     'change .fileUpload_input': 'handleFileSelect'
@@ -35,18 +34,6 @@
                         tpl_toolbar_fileupload({'label_upload_file': __('Choose a file to send')}));
                 },
 
-                renderToolbar (toolbar, options) {
-                    const { _converse } = this.__super__;
-                    const result = this.__super__.renderToolbar.apply(this, arguments);
-                    _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, 'upload.' + _converse.domain)
-                        .then((result) => {
-                            if (result.supported) {
-                                this.addFileUploadButton();
-                            }
-                        });
-                    return result;
-                },
-
                 toggleFileUpload (ev) {
                     this.el.querySelector('.fileUpload_input').click();
                 },
@@ -55,21 +42,24 @@
                     var files = evt.target.files;
                     var file = files[0];
                     this.model.sendFile(file, this);
-                }
+                },
+
+                renderToolbar (toolbar, options) {
+                    const result = this.__super__.renderToolbar.apply(this, arguments);
+                    this.addFileUploadButton();
+                    return result;
+                },
             },
 
             ChatRoomView: {
                 events: {
                     'click .toggle-fileUpload': 'toggleFileUpload',
-                    'change .fileUpload_input': 'handleFileSelect',
+                    'change .fileUpload_input': 'handleFileSelect'
                 }
             }
         },
 
         initialize () {
-            /* The initialize function gets called as soon as the plugin is
-             * loaded by converse.js's plugin machinery.
-             */
             const { _converse } = this,
                 { __ } = _converse;
         }

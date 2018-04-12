@@ -28,6 +28,7 @@
             "tpl!spoiler_message",
             "tpl!status_message",
             "tpl!toolbar",
+            "converse-http-file-upload",
             "converse-chatboxes"
     ], factory);
 }(this, function (
@@ -50,7 +51,8 @@
             tpl_spoiler_button,
             tpl_spoiler_message,
             tpl_status_message,
-            tpl_toolbar
+            tpl_toolbar,
+            filetransfer
     ) {
     "use strict";
     const { $msg, Backbone, Promise, Strophe, _, b64_sha1, f, sizzle, moment } = converse.env;
@@ -114,7 +116,8 @@
                     'call': false,
                     'clear': true,
                     'emoji': true,
-                    'spoiler': true
+                    'spoiler': true,
+                    'fileUpload': true
                 },
             });
             emojione.imagePathPNG = _converse.emojione_image_path;
@@ -237,7 +240,6 @@
                 }
             });
 
-
             _converse.ChatBoxView = Backbone.NativeView.extend({
                 length: 200,
                 className: 'chatbox hidden',
@@ -253,7 +255,7 @@
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .toggle-spoiler': 'toggleSpoilerMessage',
                     'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
-                    'keypress .chat-textarea': 'keyPressed'
+                    'keypress .chat-textarea': 'keyPressed',
                 },
 
                 initialize () {
@@ -377,6 +379,7 @@
                         'label_toggle_spoiler': label_toggle_spoiler,
                         'show_call_button': _converse.visible_toolbar_buttons.call,
                         'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
+                        'show_fileUpload_button': _converse.visible_toolbar_buttons.fileUpload,
                         'use_emoji': _converse.visible_toolbar_buttons.emoji,
                     });
                 },
@@ -649,7 +652,14 @@
                     if (attrs.is_spoiler) {
                         this.renderSpoilerMessage(msg, attrs)
                     }
-                    u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
+                    
+                    if (msg_content.textContent.endsWith('mp4')) {
+                        msg_content.innerHTML = u.renderMovieURLs(msg_content);
+                    } else if (msg_content.textContent.endsWith('mp3')) {
+                        msg_content.innerHTML = u.renderAudioURLs(msg_content); 
+                    } else {
+                        u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
+                    }
                     return msg;
                 },
 
@@ -808,7 +818,9 @@
                     return stanza;
                 },
 
-                sendMessage (message) {
+
+
+                sendMessage (message, file=null) {
                     /* Responsible for sending off a text message.
                      *
                      *  Parameters:
@@ -816,7 +828,13 @@
                      */
                     // TODO: We might want to send to specfic resources.
                     // Especially in the OTR case.
-                    const messageStanza = this.createMessageStanza(message);
+                    var messageStanza;
+                    if(file !== null){
+                        messageStanza = this.createFileMessageStanza(message, this.model.get('jid'));
+                    }
+                    else {
+                        messageStanza = this.createMessageStanza(message);
+                    }
                     _converse.connection.send(messageStanza);
                     if (_converse.forward_messages) {
                         // Forward the message, so that other connected resources are also aware of it.
@@ -827,7 +845,7 @@
                                 'xmns': Strophe.NS.DELAY,
                                 'stamp': moment().format()
                             }).up()
-                            .cnode(messageStanza.tree())
+                            .cnode(message.tree())
                         );
                     }
                 },
@@ -851,7 +869,7 @@
                     }
                 },
 
-                onMessageSubmitted (text, spoiler_hint) {
+                onMessageSubmitted (text, spoiler_hint, file = null) {
                     /* This method gets called once the user has typed a message
                      * and then pressed enter in a chat box.
                      *
@@ -870,9 +888,10 @@
                     if (this.parseMessageForCommands(text)) {
                         return;
                     }
-                    const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint)
+                    const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
                     const message = this.model.messages.create(attrs);
-                    this.sendMessage(message);
+                
+                    this.sendMessage(message, file);
                 },
 
                 getOutgoingMessageAttributes (text, spoiler_hint) {

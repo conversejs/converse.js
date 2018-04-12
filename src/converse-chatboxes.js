@@ -15,8 +15,8 @@
 }(this, function (converse, tpl_chatboxes) {
     "use strict";
 
-    const { Backbone, Promise, Strophe, b64_sha1, moment, utils, _ } = converse.env;
-
+    const { $msg, Backbone, Promise, Strophe, b64_sha1, moment, utils, _ } = converse.env;
+    Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
 
     converse.plugins.add('converse-chatboxes', {
 
@@ -50,7 +50,8 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            const { _converse } = this;
+            const { _converse } = this,
+                { __ } = _converse;
 
             _converse.api.promises.add([
                 'chatBoxesFetched',
@@ -113,6 +114,117 @@
                         'time_opened': this.get('time_opened') || moment().valueOf(),
                         'user_id' : Strophe.getNodeFromJid(this.get('jid'))
                     });
+                },
+
+                createFileMessageStanza(message, to){
+                    const stanza = $msg({
+                        'from': _converse.connection.jid,
+                        'to': to,
+                        'type': 'chat',
+                        'id': message.get('msgid')
+                    }).c('body').t(message.get('message')).up()
+                      .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up()
+                      .c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('message')).up();
+
+                    return stanza;
+                },
+
+                sendFile (file, chatbox) {
+                    const self = this;
+                    console.log('Send file via http upload');
+                    const request_slot_url = 'upload.' + _converse.domain;
+                    _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, request_slot_url)
+                        .then((result) => { 
+                            chatbox.showHelpMessages([__('The file upload starts now')],'info');
+                            self.requestSlot(file, request_slot_url, function(data) {
+                                if (!data) {
+                                    // general error
+                                    console.log('Unknown error while requesting upload slot.');
+                                    alert(__('File upload failed. Please check the log.'));
+                                } else if (data.error) {
+                                    // specific error
+                                    console.log('The XMPP-Server return an error of the type: ' + data.error.type);
+                                    alert(__('File upload failed. Please check the log.'));
+                                } else if (data.get && data.put) {
+                                    console.log('slot received, start upload to ' + data.put);
+                                    self.uploadFile(data.put, file, function() {
+                                        console.log(data.put);
+                                        chatbox.onMessageSubmitted(data.put, null, file);
+                                    });
+                                }
+                            });
+                        });
+                },
+
+                requestSlot (file, request_slot_url, cb) {
+                    const self = this;
+                    console.log("try sending file to: " + request_slot_url);
+                    const iq = converse.env.$iq({
+                        to: request_slot_url,
+                        type: 'get'
+                    }).c('request', {
+                        xmlns: Strophe.NS.HTTPUPLOAD
+                    }).c('filename').t(file.name)
+                    .up()
+                    .c('size').t(file.size);
+                
+                    _converse.connection.sendIQ(iq, function(stanza) {
+                        self.successfulRequestSlotCB(stanza, cb);
+                    }, function(stanza) {
+                        self.failedRequestSlotCB(stanza, cb);
+                    });
+                },
+                
+                uploadFile (url, file, success_cb) {
+                    console.log("uploadFile start");
+                    const xmlhttp = new XMLHttpRequest();
+                    const contentType = 'application/octet-stream';
+                    xmlhttp.onreadystatechange = function() {
+                        if (xmlhttp.readyState === XMLHttpRequest.DONE) {   
+                            console.log("Status: " + xmlhttp.status);
+                            if (xmlhttp.status === 200 || xmlhttp.status === 201) {
+                                console.log('file successful uploaded');
+                                if (success_cb) {
+                                    success_cb();
+                                }    
+                            }
+                            else {
+                                console.log('error while uploading file to ' + url);
+                                alert(__('Could not upload File please try again.'));
+                            }
+                        }
+                    };
+                
+                    xmlhttp.open('PUT', url, true);
+                    xmlhttp.setRequestHeader("Content-type", contentType);
+                    xmlhttp.send(file);
+
+                    console.log("uploadFile end");
+                },
+                
+                /**
+                * Process successful response to slot request.
+                */
+                successfulRequestSlotCB (stanza, cb) {
+                    const slot = stanza.getElementsByTagName('slot')[0];
+                
+                    if (slot != undefined) {
+                        var put = slot.getElementsByTagName('put')[0].textContent;
+                        var get = slot.getElementsByTagName('get')[0].textContent;
+                        cb({
+                            put: put,
+                            get: get
+                        });
+                    } else {
+                        this.failedRequestSlotCB(stanza, cb);
+                    }
+                },
+                
+                /**
+                * Process failed response to slot request.
+                */
+                failedRequestSlotCB (stanza, cb) {
+                    alert(__('Could not upload File please try again.'));
                 },
 
                 getMessageBody (message) {

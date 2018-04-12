@@ -213,6 +213,14 @@
             ))
     };
 
+    u.renderMovieURLs = function (obj) {
+        return "<video controls><source src=\"" + obj.textContent + "\" type=\"video/mp4\"></video>";
+    };
+
+    u.renderAudioURLs = function (obj) {
+        return "<audio controls><source src=\"" + obj.textContent + "\" type=\"audio/mpeg\"></audio>";
+    };
+
     u.slideInAllElements = function (elements, duration=300) {
         return Promise.all(
             _.map(

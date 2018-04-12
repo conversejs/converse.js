@@ -818,8 +818,6 @@
                     return stanza;
                 },
 
-
-
                 sendMessage (message, file=null) {
                     /* Responsible for sending off a text message.
                      *
@@ -1247,12 +1245,10 @@
                 }
             });
 
-
             _converse.on('connected', () => {
                 // Advertise that we support XEP-0382 Message Spoilers
                 _converse.connection.disco.addFeature(Strophe.NS.SPOILER);
             });
-
 
             /************************ BEGIN API ************************/
             _.extend(_converse.api, {

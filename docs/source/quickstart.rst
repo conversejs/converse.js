@@ -34,9 +34,7 @@ via the *script* and *link* tags:
     <script src="https://cdn.conversejs.org/dist/converse.min.js" charset="utf-8"></script>
 
 
-.. note:: For the fullscreen version of converse.js, replace
-    ``converse.min.js`` with ``inverse.min.js`` and ``converse.min.css`` with
-    ``inverse.min.css``.
+.. note:: For the fullscreen :ref:`view_mode` version of converse.js, replace ``converse.min.css`` with ``inverse.min.css``.
 
 .. note:: Instead of always loading the latest version of Converse.js via the
     CDN, it's generally better to load a specific version (preferably the

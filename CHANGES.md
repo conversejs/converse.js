@@ -4,7 +4,7 @@
 
 ## New Features
 
-- files can now be send via http-file-upload (XEP-0363)
+- files can now be sent via http-file-upload (XEP-0363)
 - mp4 and mp3 files will now be playable directly in chat. 
 
 ## 4.0.0 (Unreleased)

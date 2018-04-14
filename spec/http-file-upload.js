@@ -23,7 +23,8 @@
                 test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []).then(function () {
                     test_utils.waitUntil(function () {
                         return _.filter(IQ_stanzas, function (iq) {
-                            return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                            return iq.nodeTree.querySelector(
+                                'iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                         }).length > 0;
                     }, 300).then(function () {
                         /* <iq type='result'
@@ -40,7 +41,8 @@
                          *  </iq>
                          */
                         var stanza = _.filter(IQ_stanzas, function (iq) {
-                            return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                            return iq.nodeTree.querySelector(
+                                'iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                         })[0];
                         var info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
 

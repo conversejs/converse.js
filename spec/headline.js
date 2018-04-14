@@ -42,7 +42,7 @@
 
         it("will open and display headline messages", mock.initConverseWithPromises(
             null, ['rosterGroupsFetched'], {}, function (done, _converse) {
-  
+
             /* <message from='notify.example.com'
              *          to='romeo@im.example.com'
              *          type='headline'

@@ -37,6 +37,7 @@ require.config({
         "lodash.converter":         "3rdparty/lodash.fp",
         "lodash.fp":                "src/lodash.fp",
         "lodash.noconflict":        "src/lodash.noconflict",
+        "message-utils":            "src/utils/message",
         "muc-utils":                "src/utils/muc",
         "pluggable":                "node_modules/pluggable.js/dist/pluggable",
         "polyfill":                 "src/polyfill",

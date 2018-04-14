@@ -173,6 +173,7 @@
 
         describe("When supported", function () {
 
+
             describe("A file upload toolbar button", function () {
 
                 it("appears in private chats", mock.initConverseWithAsync(function (done, _converse) {
@@ -201,6 +202,92 @@
                 it("appears in MUC chats", mock.initConverseWithAsync(function (done, _converse) {
                     done();
                 }));
+
+                describe("when clicked", function () {
+                    it("a file upload slot is requested", mock.initConverseWithAsync(function (done, _converse) {
+                        test_utils.waitUntilDiscoConfirmed(
+                            _converse, _converse.domain,
+                            [{'category': 'server', 'type':'IM'}],
+                            ['http://jabber.org/protocol/disco#items'], [], 'info').then(function () {
+
+                            var IQ_stanzas = _converse.connection.IQ_stanzas;
+
+                            test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.tld'], 'items').then(function () {
+                                test_utils.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []).then(function () {
+                                    test_utils.createContacts(_converse, 'current');
+                                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+                                    test_utils.openChatBoxFor(_converse, contact_jid);
+                                    var view = _converse.chatboxviews.get(contact_jid);
+                                    var file = {
+                                        'type': 'image/jpeg',
+                                        'size': '23456' ,
+                                        'lastModifiedDate': "",
+                                        'name': "my-juliet.jpg"
+                                    };
+                                    view.model.sendFile(file);
+                                    return test_utils.waitUntil(function () {
+                                        return _.filter(IQ_stanzas, function (iq) {
+                                            return iq.nodeTree.querySelector('iq[to="upload.montague.tld"] request');
+                                        });
+                                    }).then(function () {
+                                        var iq = IQ_stanzas.pop();
+                                        expect(iq.toLocaleString()).toBe(
+                                            "<iq from='dummy@localhost/resource' "+
+                                                "to='upload.montague.tld' "+
+                                                "type='get' "+
+                                                "xmlns='jabber:client' "+
+                                                "id='"+iq.nodeTree.getAttribute('id')+"'>"+
+                                            "<request xmlns='urn:xmpp:http:upload:0' "+
+                                                "filename='my-juliet.jpg' "+
+                                                "size='23456' "+
+                                                "content-type='image/jpeg'/>"+
+                                            "</iq>");
+
+                                        var stanza = Strophe.xmlHtmlNode(
+                                            "<iq from='upload.montague.tld'"+
+                                            "    id='"+iq.nodeTree.getAttribute('id')+"'"+
+                                            "    to='dummy@localhost/resource'"+
+                                            "    type='result'>"+
+                                            "<slot xmlns='urn:xmpp:http:upload:0'>"+
+                                            "    <put url='https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg'>"+
+                                            "    <header name='Authorization'>Basic Base64String==</header>"+
+                                            "    <header name='Cookie'>foo=bar; user=romeo</header>"+
+                                            "    </put>"+
+                                            "    <get url='https://download.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg' />"+
+                                            "</slot>"+
+                                            "</iq>").firstElementChild;
+                                        spyOn(view.model, 'uploadFile').and.callFake(function () {
+                                            return new window.Promise((resolve, reject) => { resolve(); });
+                                        });
+                                        var sent_stanza;
+                                        spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
+                                            sent_stanza = stanza;
+                                        });
+                                        _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                                        return test_utils.waitUntil(function () {
+                                            return sent_stanza;
+                                        }).then(function () {
+                                            expect(view.model.uploadFile).toHaveBeenCalled();
+                                            expect(sent_stanza.toLocaleString()).toBe(
+                                                "<message from='dummy@localhost/resource' "+
+                                                    "to='irini.vlastuin@localhost' "+
+                                                    "type='chat' "+
+                                                    "id='"+sent_stanza.nodeTree.getAttribute('id')+"' xmlns='jabber:client'>"+
+                                                        "<body>https://download.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg</body>"+
+                                                        "<active xmlns='http://jabber.org/protocol/chatstates'/>"+
+                                                        "<x xmlns='jabber:x:oob'>"+
+                                                            "<url>https://download.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg</url>"+
+                                                        "</x>"+
+                                                "</message>");
+                                            done();
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    }));
+                });
             });
         });
     });

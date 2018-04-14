@@ -224,7 +224,7 @@
                             this.trigger('showReceivedOTRMessage', msg);
                         });
                         this.otr.on('io', (msg) => {
-                            this.trigger('sendMessage', new _converse.Message({ message: msg }));
+                            this.sendMessage(new _converse.Message({'message':msg}));
                         });
                         this.otr.on('error', (msg) => {
                             this.trigger('showOTRError', msg);

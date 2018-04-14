@@ -268,7 +268,6 @@
                     this.model.on('change:chat_state', this.sendChatState, this);
                     this.model.on('change:chat_status', this.onChatStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
-                    this.model.on('sendMessage', this.sendMessage, this);
                     this.render();
                     this.fetchMessages();
                     _converse.emit('chatBoxOpened', this);
@@ -372,8 +371,8 @@
                     }
                     return _.extend(options || {}, {
                         'label_clear': __('Clear all messages'),
-                        'label_insert_smiley': __('Insert a smiley'),
-                        'label_start_call': __('Start a call'),
+                        'tooltip_insert_smiley': __('Insert emojis'),
+                        'tooltip_start_call': __('Start a call'),
                         'label_toggle_spoiler': label_toggle_spoiler,
                         'show_call_button': _converse.visible_toolbar_buttons.call,
                         'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
@@ -666,7 +665,7 @@
                             'beforeend',
                             tpl_help_message({
                                 'isodate': moment().format(),
-                                'type': type||'info',
+                                'type': type,
                                 'message': xss.filterXSS(msg, {'whiteList': {'strong': []}})
                             })
                         );
@@ -796,55 +795,6 @@
                     });
                 },
 
-                createMessageStanza (message) {
-                    const stanza = $msg({
-                            'from': _converse.connection.jid,
-                            'to': this.model.get('jid'),
-                            'type': 'chat',
-                            'id': message.get('msgid')
-                        }).c('body').t(message.get('message')).up()
-                          .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
-
-                    if (message.get('is_spoiler')) {
-                        if (message.get('spoiler_hint')) {
-                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }, message.get('spoiler_hint'));
-                        } else {
-                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER });
-                        }
-                    }
-                    return stanza;
-                },
-
-                sendMessage (message, file = null) {
-                    /* Responsible for sending off a text message.
-                     *
-                     *  Parameters:
-                     *    (Message) message - The chat message
-                     */
-                    // TODO: We might want to send to specfic resources.
-                    // Especially in the OTR case.
-                    var messageStanza;
-                    if (file !== null) {
-                        messageStanza = this.model.createFileMessageStanza(message, this.model.get('jid'));
-                    }
-                    else {
-                        messageStanza = this.createMessageStanza(message);
-                    }
-                    _converse.connection.send(messageStanza);
-                    if (_converse.forward_messages) {
-                        // Forward the message, so that other connected resources are also aware of it.
-                        _converse.connection.send(
-                            $msg({ to: _converse.bare_jid, type: 'chat', id: message.get('msgid') })
-                            .c('forwarded', {'xmlns': Strophe.NS.FORWARD})
-                            .c('delay', {
-                                'xmns': Strophe.NS.DELAY,
-                                'stamp': moment().format()
-                            }).up()
-                            .cnode(messageStanza.tree())
-                        );
-                    }
-                },
-
                 parseMessageForCommands (text) {
                     const match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
                     if (match) {
@@ -864,7 +814,7 @@
                     }
                 },
 
-                onMessageSubmitted (text, spoiler_hint, file = null) {
+                onMessageSubmitted (text, spoiler_hint, file=null) {
                     /* This method gets called once the user has typed a message
                      * and then pressed enter in a chat box.
                      *
@@ -884,8 +834,7 @@
                         return;
                     }
                     const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
-                    const message = this.model.messages.create(attrs);
-                    this.sendMessage(message, file);
+                    this.model.sendMessage(attrs, file);
                 },
 
                 getOutgoingMessageAttributes (text, spoiler_hint) {

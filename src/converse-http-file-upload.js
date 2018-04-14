@@ -32,7 +32,16 @@
             ChatBoxView:  {
                 events: {
                     'click .upload-file': 'toggleFileUpload',
-                    'change input.fileupload': 'handleFileSelect'
+                    'change input.fileupload': 'onFileSelection'
+                },
+                
+
+                toggleFileUpload (ev) {
+                    this.el.querySelector('input.fileupload').click();
+                },
+
+                onFileSelection (evt) {
+                    this.model.sendFiles(evt.target.files);
                 },
 
                 addFileUploadButton (options) {
@@ -45,30 +54,19 @@
                 renderToolbar (toolbar, options) {
                     const { _converse } = this.__super__;
                     const result = this.__super__.renderToolbar.apply(this, arguments);
-                    _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain)
-                        .then((result) => {
-                            if (result.length) {
-                                this.addFileUploadButton();
-                            }
-                        });
+                    _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then((result) => {
+                        if (result.length) {
+                            this.addFileUploadButton();
+                        }
+                    });
                     return result;
-                },
-
-                toggleFileUpload (ev) {
-                    this.el.querySelector('.input.fileupload').click();
-                },
-
-                handleFileSelect (evt) {
-                    var files = evt.target.files;
-                    var file = files[0];
-                    this.model.sendFile(file, this);
                 }
             },
 
             ChatRoomView: {
                 events: {
                     'click .upload-file': 'toggleFileUpload',
-                    'change .input.fileupload': 'handleFileSelect'
+                    'change .input.fileupload': 'onFileSelection'
                 }
             }
         }

@@ -60,7 +60,7 @@
 
             function openChat (jid) {
                 if (!utils.isValidJID(jid)) {
-                    return converse.log(
+                    return _converse.log(
                         `Invalid JID "${jid}" provided in URL fragment`,
                         Strophe.LogLevel.WARN
                     );
@@ -116,99 +116,137 @@
                     });
                 },
 
-                createFileMessageStanza (message, to) {
+                createMessageStanza (message) {
+                    /* Given a _converse.Message Backbone.Model, return the XML
+                     * stanza that represents it.
+                     *
+                     *  Parameters:
+                     *    (Object) message - The Backbone.Model representing the message
+                     */
                     const stanza = $msg({
-                        'from': _converse.connection.jid,
-                        'to': to,
-                        'type': 'chat',
-                        'id': message.get('msgid')
-                    }).c('body').t(message.get('message')).up()
-                      .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up()
-                      .c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('message')).up();
+                            'from': _converse.connection.jid,
+                            'to': this.get('jid'),
+                            'type': 'chat',
+                            'id': message.get('msgid')
+                        }).c('body').t(message.get('message')).up()
+                          .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
 
+                    if (message.get('is_spoiler')) {
+                        if (message.get('spoiler_hint')) {
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }, message.get('spoiler_hint')).up();
+                        } else {
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }).up();
+                        }
+                    }
+                    if (message.get('file')) {
+                        stanza.c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('message')).up();
+                    }
                     return stanza;
                 },
 
-                sendFile (file, chatbox) {
-                    const self = this;
-                    const request_slot_url = 'upload.' + _converse.domain;
-                    _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, request_slot_url)
-                        .then((result) => { 
-                            chatbox.showHelpMessages([__('The file upload starts now')],'info');
-                            self.requestSlot(file, request_slot_url, function(data) {
-                                if (!data) {
-                                    alert(__('File upload failed. Please check the log.'));
-                                } else if (data.error) {
-                                    alert(__('File upload failed. Please check the log.'));
-                                } else if (data.get && data.put) {
-                                    self.uploadFile(data.put, file, function() {
-                                        console.log(data.put);
-                                        chatbox.onMessageSubmitted(data.put, null, file);
-                                    });
-                                }
-                            });
-                        });
+                sendMessageStanza (message, file) {
+                    const messageStanza = this.createMessageStanza(message, file);
+                    _converse.connection.send(messageStanza);
+                    if (_converse.forward_messages) {
+                        // Forward the message, so that other connected resources are also aware of it.
+                        _converse.connection.send(
+                            $msg({ to: _converse.bare_jid, type: 'chat', id: message.get('msgid') })
+                            .c('forwarded', {'xmlns': Strophe.NS.FORWARD})
+                            .c('delay', {
+                                'xmns': Strophe.NS.DELAY,
+                                'stamp': moment().format()
+                            }).up()
+                            .cnode(messageStanza.tree())
+                        );
+                    }
                 },
 
-                requestSlot (file, request_slot_url, cb) {
-                    const self = this;
-                    console.log("try sending file to: " + request_slot_url);
-                    const iq = converse.env.$iq({
-                        to: request_slot_url,
-                        type: 'get'
-                    }).c('request', {
-                        xmlns: Strophe.NS.HTTPUPLOAD
-                    }).c('filename').t(file.name)
-                    .up()
-                    .c('size').t(file.size);
-                
-                    _converse.connection.sendIQ(iq, function(stanza) {
-                        self.successfulRequestSlotCB(stanza, cb);
-                    }, function(stanza) {
-                        self.failedRequestSlotCB(stanza, cb);
+                sendMessage (attrs) {
+                    /* Responsible for sending off a text message.
+                     *
+                     *  Parameters:
+                     *    (Message) message - The chat message
+                     */
+                    this.sendMessageStanza(this.messages.create(attrs));
+                },
+
+                notifyUploadFailure (err_msg, error) {
+                    err_msg = err_msg || __("Sorry, failed to upload the file");
+                    this.trigger('showHelpMessages', [err_msg], 'error');
+                    if (error instanceof Error) {
+                        _converse.log(error, Strophe.LogLevel.ERROR);
+                    }
+                },
+
+                sendFile (file) {
+                    _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then((result) => {
+                        if (!result.length) {
+                            this.notifyUploadFailure(__("Sorry, file upload is not supported by your server."));
+                        }
+                        const request_slot_url = result[0].id;
+                        if (!request_slot_url) {
+                            return this.notifyUploadFailure(__("Could not determine request slot URL for file upload"));
+                        }
+                        this.trigger('showHelpMessages', [__('The file upload starts now')], 'info');
+                        this.requestSlot(file, request_slot_url).then((stanza) => {
+                            const slot = stanza.querySelector('slot');
+                            if (slot) {
+                                const put = slot.querySelector('put').getAttribute('url');
+                                const get = slot.querySelector('get').getAttribute('url');
+                                this.uploadFile(put, file)
+                                    .then(_.bind(this.sendMessage, this, {'message': get, 'file': true}))
+                                    .catch(this.notifyUploadFailure.bind(this, null));
+                            } else {
+                                this.notifyUploadFailure();
+                            }
+                        }).catch(this.notifyUploadFailure.bind(this, null));
+                    });
+                },
+
+                sendFiles (files) {
+                    _.each(files, this.sendFile.bind(this));
+                },
+
+                requestSlot (file, request_slot_url) {
+                    /* Send out an IQ stanza to request a file upload slot.
+                     *
+                     * https://xmpp.org/extensions/xep-0363.html#request
+                     */
+                    return new Promise((resolve, reject) => {
+                        const iq = converse.env.$iq({
+                            'from': _converse.jid,
+                            'to': request_slot_url,
+                            'type': 'get'
+                        }).c('request', {
+                            'xmlns': Strophe.NS.HTTPUPLOAD,
+                            'filename': file.name,
+                            'size': file.size,
+                            'content-type': file.type
+                        })
+                        _converse.connection.sendIQ(iq, resolve, reject);
                     });
                 },
                 
-                uploadFile (url, file, callback) {
-                    console.log("uploadFile start");
-                    const xmlhttp = new XMLHttpRequest();
-                    const contentType = 'application/octet-stream';
-                    xmlhttp.onreadystatechange = function() {
-                        if (xmlhttp.readyState === XMLHttpRequest.DONE) {   
-                            console.log("Status: " + xmlhttp.status);
-                            if (xmlhttp.status === 200 || xmlhttp.status === 201) {
-                                if (callback) {
-                                    callback();
-                                }    
+                uploadFile (url, file) {
+                    return new Promise((resolve, reject) => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === XMLHttpRequest.DONE) {   
+                                _converse.log("Status: " + xhr.status, Strophe.LogLevel.INFO);
+                                if (xhr.status === 200 || xhr.status === 201) {
+                                    resolve(url, file);
+                                } else {
+                                    xhr.onerror();
+                                }
                             }
-                            else {
-                                alert(__('Could not upload File please try again.'));
-                            }
-                        }
-                    };
-                
-                    xmlhttp.open('PUT', url, true);
-                    xmlhttp.setRequestHeader("Content-type", contentType);
-                    xmlhttp.send(file);
-                },
-
-                successfulRequestSlotCB (stanza, cb) {
-                    const slot = stanza.getElementsByTagName('slot')[0];
-                
-                    if (slot != undefined) {
-                        var put = slot.getElementsByTagName('put')[0].textContent;
-                        var get = slot.getElementsByTagName('get')[0].textContent;
-                        cb({
-                            put: put,
-                            get: get
-                        });
-                    } else {
-                        this.failedRequestSlotCB(stanza, cb);
-                    }
-                },
-                
-                failedRequestSlotCB (stanza, cb) {
-                    alert(__('Could not upload File please try again.'));
+                        };
+                        xhr.onerror = function () {
+                            reject(xhr.responseText);
+                        };
+                        xhr.open('PUT', url, true);
+                        xhr.setRequestHeader("Content-type", 'application/octet-stream');
+                        xhr.send(file);
+                    });
                 },
 
                 getMessageBody (message) {

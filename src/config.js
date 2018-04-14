@@ -74,6 +74,7 @@ require.config({
         "converse-dragresize":      "src/converse-dragresize",
         "converse-fullscreen":      "src/converse-fullscreen",
         "converse-headline":        "src/converse-headline",
+        "converse-http-file-upload":"src/converse-http-file-upload",
         "converse-mam":             "src/converse-mam",
         "converse-minimize":        "src/converse-minimize",
         "converse-modal":           "src/converse-modal",

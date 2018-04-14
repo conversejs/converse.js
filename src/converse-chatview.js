@@ -28,6 +28,7 @@
             "tpl!spoiler_message",
             "tpl!status_message",
             "tpl!toolbar",
+            "converse-http-file-upload",
             "converse-chatboxes"
     ], factory);
 }(this, function (
@@ -50,7 +51,8 @@
             tpl_spoiler_button,
             tpl_spoiler_message,
             tpl_status_message,
-            tpl_toolbar
+            tpl_toolbar,
+            filetransfer
     ) {
     "use strict";
     const { $msg, Backbone, Promise, Strophe, _, b64_sha1, f, sizzle, moment } = converse.env;
@@ -236,7 +238,6 @@
                     });
                 }
             });
-
 
             _converse.ChatBoxView = Backbone.NativeView.extend({
                 length: 200,
@@ -648,7 +649,14 @@
                     if (attrs.is_spoiler) {
                         this.renderSpoilerMessage(msg, attrs)
                     }
-                    u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
+                    
+                    if (msg_content.textContent.endsWith('mp4')) {
+                        msg_content.innerHTML = u.renderMovieURLs(msg_content);
+                    } else if (msg_content.textContent.endsWith('mp3')) {
+                        msg_content.innerHTML = u.renderAudioURLs(msg_content); 
+                    } else {
+                        u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
+                    }
                     return msg;
                 },
 
@@ -807,7 +815,7 @@
                     return stanza;
                 },
 
-                sendMessage (message) {
+                sendMessage (message, file = null) {
                     /* Responsible for sending off a text message.
                      *
                      *  Parameters:
@@ -815,7 +823,13 @@
                      */
                     // TODO: We might want to send to specfic resources.
                     // Especially in the OTR case.
-                    const messageStanza = this.createMessageStanza(message);
+                    var messageStanza;
+                    if (file !== null) {
+                        messageStanza = this.model.createFileMessageStanza(message, this.model.get('jid'));
+                    }
+                    else {
+                        messageStanza = this.createMessageStanza(message);
+                    }
                     _converse.connection.send(messageStanza);
                     if (_converse.forward_messages) {
                         // Forward the message, so that other connected resources are also aware of it.
@@ -850,7 +864,7 @@
                     }
                 },
 
-                onMessageSubmitted (text, spoiler_hint) {
+                onMessageSubmitted (text, spoiler_hint, file = null) {
                     /* This method gets called once the user has typed a message
                      * and then pressed enter in a chat box.
                      *
@@ -869,9 +883,9 @@
                     if (this.parseMessageForCommands(text)) {
                         return;
                     }
-                    const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint)
+                    const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
                     const message = this.model.messages.create(attrs);
-                    this.sendMessage(message);
+                    this.sendMessage(message, file);
                 },
 
                 getOutgoingMessageAttributes (text, spoiler_hint) {
@@ -1228,12 +1242,10 @@
                 }
             });
 
-
             _converse.on('connected', () => {
                 // Advertise that we support XEP-0382 Message Spoilers
                 _converse.connection.disco.addFeature(Strophe.NS.SPOILER);
             });
-
 
             /************************ BEGIN API ************************/
             _.extend(_converse.api, {

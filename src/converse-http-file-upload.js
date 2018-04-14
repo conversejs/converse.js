@@ -1,3 +1,7 @@
+/**
+ * Adds Support for Http File Upload (XEP-0363)
+ *
+ */
 (function (root, factory) {
     define([
         "converse-core",
@@ -22,11 +26,15 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatview"],
+        dependencies: ["converse-chatboxes", "converse-chatview", "converse-muc-views"],
 
         overrides: {
-
             ChatBoxView:  {
+                events: {
+                    'click .upload-file': 'toggleFileUpload',
+                    'change input.fileupload': 'handleFileSelect'
+                },
+
                 addFileUploadButton (options) {
                     const { __ } = this.__super__._converse;
                     this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
@@ -44,15 +52,26 @@
                             }
                         });
                     return result;
+                },
+
+                toggleFileUpload (ev) {
+                    this.el.querySelector('.input.fileupload').click();
+                },
+
+                handleFileSelect (evt) {
+                    var files = evt.target.files;
+                    var file = files[0];
+                    this.model.sendFile(file, this);
+                }
+            },
+
+            ChatRoomView: {
+                events: {
+                    'click .upload-file': 'toggleFileUpload',
+                    'change .input.fileupload': 'handleFileSelect'
                 }
             }
-        },
-
-        initialize () {
-            /* The initialize function gets called as soon as the plugin is
-             * loaded by converse.js's plugin machinery.
-             */
-            const { _converse } = this;
         }
     });
+    return converse;
 }));

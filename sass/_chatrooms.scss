@@ -250,7 +250,7 @@
                     border: 0;
                     color: $text-color;
                     font-size: $font-size;
-                    height: 289px;
+                    height: 100%;
                     width: 100%;
                     overflow-y: auto;
                     position: absolute;
@@ -260,6 +260,7 @@
                         color: $error-color;
                     }
                     .chatroom-form {
+                        height: 100%;
                         margin-top: 2em;
 
                         label,

@@ -8605,7 +8605,7 @@ body {
         border: 0;
         color: #777;
         font-size: 16px;
-        height: 289px;
+        height: 100%;
         width: 100%;
         overflow-y: auto;
         position: absolute; }
@@ -8615,6 +8615,7 @@ body {
           color: #A53214; }
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form,
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form {
+          height: 100%;
           margin-top: 2em; }
           #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label,
           #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=text],

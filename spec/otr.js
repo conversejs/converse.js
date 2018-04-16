@@ -85,7 +85,7 @@
             test_utils.openChatBoxFor(_converse, contact_jid);
             var chatview = _converse.chatboxviews.get(contact_jid);
             chatview.model.set('otr_status', UNVERIFIED);
-            var stanza = chatview.createMessageStanza(new _converse.Message({ message: 'hello world'}));
+            var stanza = chatview.model.createMessageStanza(new _converse.Message({ message: 'hello world'}));
             var $hints = $(stanza.nodeTree).find('[xmlns="'+Strophe.NS.HINTS+'"]');
             expect($hints.length).toBe(3);
             expect($hints.get(0).tagName).toBe('no-store');
@@ -111,7 +111,7 @@
                 var chatbox = _converse.chatboxes.get(sender_jid);
                 spyOn(_converse.connection, 'send');
                 chatbox.set('otr_status', 1); // Set OTR status to UNVERIFIED, to mock an encrypted session
-                chatbox.trigger('sendMessage', new _converse.Message({ message: msgtext }));
+                chatbox.sendMessage(new _converse.Message({'message': msgtext}));
                 var $sent = $(_converse.connection.send.calls.argsFor(0)[0].tree());
                 expect($sent.find('body').siblings('private').length).toBe(1);
                 expect($sent.find('private').length).toBe(1);

@@ -416,7 +416,7 @@
                     expect(view).toBeDefined();
                     var $toolbar = $(view.el).find('ul.chat-toolbar');
                     expect($toolbar.length).toBe(1);
-                    expect($toolbar.children('li').length).toBe(3);
+                    expect($toolbar.children('li').length).toBe(2);
                     done();
                 }));
 
@@ -754,7 +754,7 @@
                                 'time': moment().format(),
                                 'message': msg_text
                             });
-                            view.sendMessage(message);
+                            view.model.sendMessage(message);
                             var $chat_content = $(view.el).find('.chat-content');
                             var msg_txt = $chat_content.find('.chat-message:last').find('.chat-msg-content').text();
                             expect(msg_txt).toEqual(msg_text);
@@ -770,7 +770,7 @@
                                 'time': moment().format(),
                                 'message': msg_text
                             });
-                            view.sendMessage(message);
+                            view.model.sendMessage(message);
                             msg_txt = $chat_content.find('.chat-message:last').find('.chat-msg-content').text();
                             expect(msg_txt).toEqual(msg_text);
 
@@ -1455,9 +1455,9 @@
                     expect(_converse.emit).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
                     var view = _converse.chatboxviews.get(contact_jid);
                     var message = 'This message is sent from this chatbox';
-                    spyOn(view, 'sendMessage').and.callThrough();
+                    spyOn(view.model, 'sendMessage').and.callThrough();
                     test_utils.sendMessage(view, message);
-                    expect(view.sendMessage).toHaveBeenCalled();
+                    expect(view.model.sendMessage).toHaveBeenCalled();
                     expect(view.model.messages.length, 2);
                     expect(_converse.emit.calls.mostRecent().args, ['messageSend', message]);
                     expect($(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content').text()).toEqual(message);
@@ -1476,9 +1476,9 @@
                     test_utils.openChatBoxFor(_converse, contact_jid);
                     var view = _converse.chatboxviews.get(contact_jid);
                     var message = '<p>This message contains <em>some</em> <b>markup</b></p>';
-                    spyOn(view, 'sendMessage').and.callThrough();
+                    spyOn(view.model, 'sendMessage').and.callThrough();
                     test_utils.sendMessage(view, message);
-                    expect(view.sendMessage).toHaveBeenCalled();
+                    expect(view.model.sendMessage).toHaveBeenCalled();
                     var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('&lt;p&gt;This message contains &lt;em&gt;some&lt;/em&gt; &lt;b&gt;markup&lt;/b&gt;&lt;/p&gt;');
@@ -1497,9 +1497,9 @@
                     test_utils.openChatBoxFor(_converse, contact_jid);
                     var view = _converse.chatboxviews.get(contact_jid);
                     var message = 'This message contains a hyperlink: www.opkode.com';
-                    spyOn(view, 'sendMessage').and.callThrough();
+                    spyOn(view.model, 'sendMessage').and.callThrough();
                     test_utils.sendMessage(view, message);
-                    expect(view.sendMessage).toHaveBeenCalled();
+                    expect(view.model.sendMessage).toHaveBeenCalled();
                     var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
@@ -1518,10 +1518,10 @@
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.openChatBoxFor(_converse, contact_jid);
                     var view = _converse.chatboxviews.get(contact_jid);
-                    spyOn(view, 'sendMessage').and.callThrough();
+                    spyOn(view.model, 'sendMessage').and.callThrough();
                     message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
                     test_utils.sendMessage(view, message);
-                    expect(view.sendMessage).toHaveBeenCalled();
+                    expect(view.model.sendMessage).toHaveBeenCalled();
                     msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%27onmouseover=%27alert%281%29%27whatever">http://www.opkode.com/\'onmouseover=\'alert(1)\'whatever</a>');
@@ -1529,7 +1529,7 @@
                     message = 'http://www.opkode.com/"onmouseover="alert(1)"whatever';
                     test_utils.sendMessage(view, message);
 
-                    expect(view.sendMessage).toHaveBeenCalled();
+                    expect(view.model.sendMessage).toHaveBeenCalled();
                     msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%22onmouseover=%22alert%281%29%22whatever">http://www.opkode.com/"onmouseover="alert(1)"whatever</a>');
@@ -1537,7 +1537,7 @@
                     message = "https://en.wikipedia.org/wiki/Ender's_Game";
                     test_utils.sendMessage(view, message);
 
-                    expect(view.sendMessage).toHaveBeenCalled();
+                    expect(view.model.sendMessage).toHaveBeenCalled();
                     msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">https://en.wikipedia.org/wiki/Ender\'s_Game</a>');
@@ -1545,7 +1545,7 @@
                     message = "https://en.wikipedia.org/wiki/Ender%27s_Game";
                     test_utils.sendMessage(view, message);
 
-                    expect(view.sendMessage).toHaveBeenCalled();
+                    expect(view.model.sendMessage).toHaveBeenCalled();
                     msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">https://en.wikipedia.org/wiki/Ender%27s_Game</a>');
@@ -1564,13 +1564,13 @@
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.openChatBoxFor(_converse, contact_jid);
                     var view = _converse.chatboxviews.get(contact_jid);
-                    spyOn(view, 'sendMessage').and.callThrough();
+                    spyOn(view.model, 'sendMessage').and.callThrough();
                     test_utils.sendMessage(view, message);
 
                     test_utils.waitUntil(function () {
                         return $(view.el).find('.chat-content').find('.chat-message img').length;
                     }, 1000).then(function () {
-                        expect(view.sendMessage).toHaveBeenCalled();
+                        expect(view.model.sendMessage).toHaveBeenCalled();
                         var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
                             '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs-filled.svg"><img class="chat-image"'+
@@ -1581,7 +1581,7 @@
                             return $(view.el).find('.chat-content').find('.chat-message img').length === 2;
                         }, 1000);
                     }).then(function () {
-                        expect(view.sendMessage).toHaveBeenCalled();
+                        expect(view.model.sendMessage).toHaveBeenCalled();
                         var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
                             '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2"><img'+
@@ -1594,7 +1594,7 @@
                             return $(view.el).find('.chat-content').find('.chat-message img').length === 4;
                         }, 1000);
                     }).then(function () {
-                        expect(view.sendMessage).toHaveBeenCalled();
+                        expect(view.model.sendMessage).toHaveBeenCalled();
                         var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
                             '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2">'+
@@ -2722,13 +2722,13 @@
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.openChatBoxFor(_converse, contact_jid);
                     var view = _converse.chatboxviews.get(contact_jid);
-                    spyOn(view, 'sendMessage').and.callThrough();
+                    spyOn(view.model, 'sendMessage').and.callThrough();
                     test_utils.sendMessage(view, message);
 
                     test_utils.waitUntil(function () {
                         return $(view.el).find('.chat-content').find('.chat-message').length;
                     }, 1000).then(function () {
-                        expect(view.sendMessage).toHaveBeenCalled();
+                        expect(view.model.sendMessage).toHaveBeenCalled();
                         var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
                             '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+

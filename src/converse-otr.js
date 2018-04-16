@@ -71,6 +71,18 @@
                     }
                 },
 
+                createMessageStanza () {
+                    const stanza = this.__super__.createMessageStanza.apply(this, arguments);
+                    if (this.get('otr_status') !== UNENCRYPTED || utils.isOTRMessage(stanza.nodeTree)) {
+                        // OTR messages aren't carbon copied
+                        stanza.c('private', {'xmlns': Strophe.NS.CARBONS}).up()
+                              .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                              .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS}).up()
+                              .c('no-copy', {'xmlns': Strophe.NS.HINTS});
+                    }
+                    return stanza;
+                },
+
                 shouldPlayNotification ($message) {
                     /* Don't play a notification if this is an OTR message but
                      * encryption is not yet set up. That would mean that the
@@ -269,18 +281,6 @@
                     if ((_.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || _converse.use_otr_by_default) {
                         this.model.initiateOTR();
                     }
-                },
-
-                createMessageStanza () {
-                    const stanza = this.__super__.createMessageStanza.apply(this, arguments);
-                    if (this.model.get('otr_status') !== UNENCRYPTED || utils.isOTRMessage(stanza.nodeTree)) {
-                        // OTR messages aren't carbon copied
-                        stanza.c('private', {'xmlns': Strophe.NS.CARBONS}).up()
-                              .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
-                              .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS}).up()
-                              .c('no-copy', {'xmlns': Strophe.NS.HINTS});
-                    }
-                    return stanza;
                 },
 
                 parseMessageForCommands (text) {

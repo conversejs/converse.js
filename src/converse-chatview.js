@@ -623,7 +623,6 @@
                         username = attrs.sender === 'me' && __('me') || fullname;
                         template = attrs.is_spoiler ? tpl_spoiler_message : tpl_message;
                     }
-
                     text = u.geoUriToHttp(text, _converse);
 
                     const msg_time = moment(attrs.time) || moment;

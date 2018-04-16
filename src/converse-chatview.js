@@ -1,10 +1,8 @@
-// Converse.js (A browser based XMPP chat client)
+// Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
-/*global define */
 
 (function (root, factory) {
     define([
@@ -21,15 +19,14 @@
             "tpl!error_message",
             "tpl!help_message",
             "tpl!info",
-            "tpl!message",
             "tpl!new_day",
             "tpl!spinner",
             "tpl!spoiler_button",
-            "tpl!spoiler_message",
             "tpl!status_message",
             "tpl!toolbar",
             "converse-http-file-upload",
-            "converse-chatboxes"
+            "converse-chatboxes",
+            "converse-message-view"
     ], factory);
 }(this, function (
             converse,
@@ -45,14 +42,11 @@
             tpl_error_message,
             tpl_help_message,
             tpl_info,
-            tpl_message,
             tpl_new_day,
             tpl_spinner,
             tpl_spoiler_button,
-            tpl_spoiler_message,
             tpl_status_message,
-            tpl_toolbar,
-            filetransfer
+            tpl_toolbar
     ) {
     "use strict";
     const { $msg, Backbone, Promise, Strophe, _, b64_sha1, f, sizzle, moment } = converse.env;
@@ -73,7 +67,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes", "converse-disco"],
+        dependencies: ["converse-chatboxes", "converse-disco", "converse-message-view"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -239,6 +233,7 @@
                 }
             });
 
+
             _converse.ChatBoxView = Backbone.NativeView.extend({
                 length: 200,
                 className: 'chatbox hidden',
@@ -262,6 +257,8 @@
                     this.markScrolled = _.debounce(this._markScrolled, 100);
                     this.createEmojiPicker();
                     this.model.messages.on('add', this.onMessageAdded, this);
+                    this.model.messages.on('rendered', this.scrollDown, this);
+
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.remove, this);
                     // TODO check for changed fullname as well
@@ -513,7 +510,7 @@
                     }
                 },
 
-                showMessage (attrs) {
+                showMessage (message) {
                     /* Inserts a chat message into the content area of the chat box.
                      * Will also insert a new day indicator if the message is on a
                      * different day.
@@ -522,12 +519,12 @@
                      * message, or older than the oldest message.
                      *
                      * Parameters:
-                     *  (Object) attrs: An object containing the message
-                     *      attributes.
+                     *  (Backbone.Model) message: The message object
                      */
-                    const current_msg_date = moment(attrs.time) || moment,
-                        previous_msg_date = this.getLastMessageDate(current_msg_date),
-                        message_el = this.renderMessage(attrs);
+                    const view = new _converse.MessageView({'model': message}),
+                          current_msg_date = moment(message.get('time')) || moment,
+                          previous_msg_date = this.getLastMessageDate(current_msg_date),
+                          message_el = view.el;
 
                     if (_.isNull(previous_msg_date)) {
                         this.content.insertAdjacentElement('afterbegin', message_el);
@@ -536,7 +533,7 @@
                         previous_msg_el.insertAdjacentElement('afterend', message_el);
                     }
                     this.insertDayIndicator(message_el);
-                    this.clearChatStateNotification(attrs.from);
+                    this.clearChatStateNotification(message.get('from'));
                     this.setScrollPosition(message_el);
                 },
 
@@ -561,101 +558,6 @@
                     } else {
                         this.scrollDown();
                     }
-                },
-
-                getExtraMessageTemplateAttributes (attrs) {
-                    /* Provides a hook for sending more attributes to the
-                     * message template.
-                     *
-                     * Parameters:
-                     *  (Object) attrs: An object containing message attributes.
-                     */
-                    if (attrs.is_spoiler) {
-                        return {'label_show': __('Show hidden message')};
-                    } else {
-                        return {}
-                    }
-                },
-
-                getExtraMessageClasses (attrs) {
-                    if (_converse.show_message_load_animation) {
-                        return 'onload ' + (attrs.delayed && 'delayed' || '');
-                    } else {
-                        return attrs.delayed && 'delayed' || '';
-                    }
-                },
-
-                renderSpoilerMessage (msg, attrs) {
-                    /* Render a "spoiler" message, as defined in XEP-0382
-                     *
-                     * Parameters:
-                     *  (HTMLElement) msg: The chat message DOM element
-                     *  (Object) attrs: An object containing the message attributes.
-                     */
-                    const hint = msg.querySelector('.spoiler-hint');
-                    hint.appendChild(document.createTextNode(attrs.spoiler_hint || ''));
-                },
-
-                renderMessage (attrs) {
-                    /* Renders a chat message based on the passed in attributes.
-                     *
-                     * Parameters:
-                     *  (Object) attrs: An object containing the message attributes.
-                     *
-                     *  Returns:
-                     *      The DOM element representing the message.
-                     */
-                    let text = attrs.message,
-                        fullname = this.model.get('fullname') || attrs.fullname,
-                        template, username;
-
-                    const match = text.match(/^\/(.*?)(?: (.*))?$/);
-                    if ((match) && (match[1] === 'me')) {
-                        text = text.replace(/^\/me/, '');
-                        template = tpl_action;
-                        if (attrs.sender === 'me') {
-                            fullname = _converse.xmppstatus.get('fullname') || attrs.fullname;
-                            username = _.isNil(fullname)? _converse.bare_jid: fullname;
-                        } else {
-                            username = attrs.fullname;
-                        }
-                    } else {
-                        username = attrs.sender === 'me' && __('me') || fullname;
-                        template = attrs.is_spoiler ? tpl_spoiler_message : tpl_message;
-                    }
-                    text = u.geoUriToHttp(text, _converse);
-
-                    const msg_time = moment(attrs.time) || moment;
-                    const msg = u.stringToElement(template(
-                        _.extend(this.getExtraMessageTemplateAttributes(attrs), {
-                            'msgid': attrs.msgid,
-                            'sender': attrs.sender,
-                            'time': msg_time.format(_converse.time_format),
-                            'isodate': msg_time.format(),
-                            'username': username,
-                            'extra_classes': this.getExtraMessageClasses(attrs)
-                        })
-                    ));
-                    if (_converse.show_message_load_animation) {
-                        window.setTimeout(
-                            _.partial(u.removeClass, 'onload', msg), 2000);
-                    }
-                    const msg_content = msg.querySelector('.chat-msg-content');
-                    msg_content.innerHTML = u.addEmoji(
-                        _converse, emojione, u.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))
-                    );
-                    if (attrs.is_spoiler) {
-                        this.renderSpoilerMessage(msg, attrs)
-                    }
-                    
-                    if (msg_content.textContent.endsWith('mp4')) {
-                        msg_content.innerHTML = u.renderMovieURLs(msg_content);
-                    } else if (msg_content.textContent.endsWith('mp3')) {
-                        msg_content.innerHTML = u.renderAudioURLs(msg_content); 
-                    } else {
-                        u.renderImageURLs(msg_content).then(this.scrollDown.bind(this));
-                    }
-                    return msg;
                 },
 
                 showHelpMessages (msgs, type, spinner) {
@@ -734,7 +636,8 @@
                 },
 
                 handleTextMessage (message) {
-                    this.showMessage(_.clone(message.attributes));
+                    this.showMessage(message);
+
                     if (u.isNewMessage(message)) {
                         if (message.get('sender') === 'me') {
                             // We remove the "scrolled" flag so that the chat area
@@ -813,7 +716,7 @@
                     }
                 },
 
-                onMessageSubmitted (text, spoiler_hint, file=null) {
+                onMessageSubmitted (text, spoiler_hint) {
                     /* This method gets called once the user has typed a message
                      * and then pressed enter in a chat box.
                      *
@@ -833,7 +736,7 @@
                         return;
                     }
                     const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
-                    this.model.sendMessage(attrs, file);
+                    this.model.sendMessage(attrs);
                 },
 
                 getOutgoingMessageAttributes (text, spoiler_hint) {

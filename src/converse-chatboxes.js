@@ -1,10 +1,8 @@
-// Converse.js (A browser based XMPP chat client)
+// Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
-/*global define */
 
 (function (root, factory) {
     define([
@@ -106,6 +104,7 @@
                     this.messages = new _converse.Messages();
                     this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
                         b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
+                    this.messages.chatbox = this;
 
                     this.save({
                         // The chat_state will be set to ACTIVE once the chat box is opened

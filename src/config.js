@@ -77,6 +77,7 @@ require.config({
         "converse-headline":        "src/converse-headline",
         "converse-http-file-upload":"src/converse-http-file-upload",
         "converse-mam":             "src/converse-mam",
+        "converse-message-view":    "src/converse-message-view",
         "converse-minimize":        "src/converse-minimize",
         "converse-modal":           "src/converse-modal",
         "converse-muc":             "src/converse-muc",

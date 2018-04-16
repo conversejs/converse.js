@@ -515,6 +515,8 @@
                     this.markScrolled = _.debounce(this._markScrolled, 100);
 
                     this.model.messages.on('add', this.onMessageAdded, this);
+                    this.model.messages.on('rendered', this.scrollDown, this);
+
                     this.model.on('change:affiliation', this.renderHeading, this);
                     this.model.on('change:chat_state', this.sendChatState, this);
                     this.model.on('change:connection_status', this.afterConnected, this);
@@ -652,19 +654,6 @@
                         this.scrollDown();
                         this.focus();
                     }
-                },
-
-                getExtraMessageClasses (attrs) {
-                    let extra_classes = _converse.ChatBoxView.prototype
-                            .getExtraMessageClasses.apply(this, arguments);
-
-                    if (this.is_chatroom && attrs.sender === 'them' &&
-                            this.model.isUserMentioned(attrs.message)) {
-                        // Add special class to mark groupchat messages
-                        // in which we are mentioned.
-                        extra_classes += ' mentioned';
-                    }
-                    return extra_classes;
                 },
 
                 getToolbarOptions () {

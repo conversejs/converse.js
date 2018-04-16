@@ -90,11 +90,11 @@
                     msg_content.innerHTML = u.addEmoji(
                         _converse, emojione, u.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))
                     );
-                    
+
                     if (msg_content.textContent.endsWith('mp4')) {
                         msg_content.innerHTML = u.renderMovieURLs(msg_content);
                     } else if (msg_content.textContent.endsWith('mp3')) {
-                        msg_content.innerHTML = u.renderAudioURLs(msg_content); 
+                        msg_content.innerHTML = u.renderAudioURLs(msg_content);
                     } else {
                         u.renderImageURLs(msg_content).then(() => {
                             this.model.collection.trigger('rendered');

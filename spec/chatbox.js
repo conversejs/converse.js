@@ -18,6 +18,7 @@
     var u = converse.env.utils;
 
     return describe("Chatboxes", function () {
+
         describe("A Chatbox", function () {
 
             it("has a /help command to show the available commands",
@@ -238,7 +239,6 @@
                     done();
                 });
             }));
-
 
             it("can be saved to, and retrieved from, browserStorage",
                 mock.initConverseWithPromises(
@@ -654,6 +654,8 @@
                                     return chatbox.get('fullname') === mock.cur_names[0];
                                 }, 100);
                             }).then(function () {
+                                var author_el = chatboxview.el.querySelector('.chat-msg-author');
+                                expect( _.includes(author_el.textContent, 'Max Frankfurter')).toBeTruthy();
                                 done();
                             });
                         }));

@@ -34,7 +34,6 @@
                     'click .upload-file': 'toggleFileUpload',
                     'change input.fileupload': 'onFileSelection'
                 },
-                
 
                 toggleFileUpload (ev) {
                     this.el.querySelector('input.fileupload').click();

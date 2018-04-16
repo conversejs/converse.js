@@ -43,14 +43,6 @@
                 },
 
                 render () {
-                    /* Renders a chat message based on the passed in attributes.
-                     *
-                     * Parameters:
-                     *  (Object) attrs: An object containing the message attributes.
-                     *
-                     *  Returns:
-                     *      The DOM element representing the message.
-                     */
                     const chatbox = this.model.collection.chatbox;
 
                     let text = this.model.get('message'),
@@ -105,20 +97,6 @@
                     }
                     this.setElement(msg);
                     return this.el;
-                },
-
-                getExtraMessageTemplateAttributes () {
-                    /* Provides a hook for sending more attributes to the
-                     * message template.
-                     *
-                     * Parameters:
-                     *  (Object) attrs: An object containing message attributes.
-                     */
-                    if (this.model.get('is_spoiler')) {
-                        return {};
-                    } else {
-                        return {}
-                    }
                 },
 
                 getExtraMessageClasses () {

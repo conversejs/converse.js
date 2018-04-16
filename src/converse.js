@@ -13,7 +13,6 @@ if (typeof define !== 'undefined') {
         "converse-dragresize",      // Allows chat boxes to be resized by dragging them
         "converse-fullscreen",
         "converse-headline",        // Support for headline messages
-        "converse-http-file-upload",// Support for XEP-0363
         "converse-mam",             // XEP-0313 Message Archive Management
         "converse-minimize",        // Allows chat boxes to be minimized
         "converse-muc",             // XEP-0045 Multi-user chat

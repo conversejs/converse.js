@@ -3,15 +3,15 @@
 //
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
+
 (function (root, factory) {
     define([
-            "converse-core",
-            "xss",
-            "emojione",
-            "tpl!action",
-            "tpl!message",
-            "tpl!spoiler_message"
+        "converse-core",
+        "xss",
+        "emojione",
+        "tpl!action",
+        "tpl!message",
+        "tpl!spoiler_message"
     ], factory);
 }(this, function (
             converse,

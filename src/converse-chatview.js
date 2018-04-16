@@ -20,11 +20,11 @@
             "tpl!help_message",
             "tpl!info",
             "tpl!new_day",
+            "tpl!toolbar_fileupload",
             "tpl!spinner",
             "tpl!spoiler_button",
             "tpl!status_message",
             "tpl!toolbar",
-            "converse-http-file-upload",
             "converse-chatboxes",
             "converse-message-view"
     ], factory);
@@ -43,6 +43,7 @@
             tpl_help_message,
             tpl_info,
             tpl_new_day,
+            tpl_toolbar_fileupload,
             tpl_spinner,
             tpl_spoiler_button,
             tpl_status_message,
@@ -240,15 +241,17 @@
                 is_chatroom: false,  // Leaky abstraction from MUC
 
                 events: {
+                    'change input.fileupload': 'onFileSelection',
                     'click .close-chatbox-button': 'close',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .send-button': 'onFormSubmitted',
                     'click .toggle-call': 'toggleCall',
                     'click .toggle-clear': 'clearMessages',
+                    'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .toggle-spoiler': 'toggleSpoilerMessage',
-                    'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
+                    'click .upload-file': 'toggleFileUpload',
                     'keypress .chat-textarea': 'keyPressed'
                 },
 
@@ -296,6 +299,7 @@
                     );
                     this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
                     this.addSpoilerButton(options);
+                    this.addFileUploadButton();
                     this.insertEmojiPicker();
                     return this;
                 },
@@ -320,6 +324,22 @@
                             'unread_msgs': __('You have unread messages')
                         }));
                     this.renderToolbar();
+                },
+
+                toggleFileUpload (ev) {
+                    this.el.querySelector('input.fileupload').click();
+                },
+
+                onFileSelection (evt) {
+                    this.model.sendFiles(evt.target.files);
+                },
+
+                addFileUploadButton (options) {
+                    _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then((result) => {
+                        this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
+                            'beforeend',
+                            tpl_toolbar_fileupload({'tooltip_upload_file': __('Choose a file to send')}));
+                    });
                 },
 
                 addSpoilerButton (options) {

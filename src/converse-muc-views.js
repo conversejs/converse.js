@@ -497,17 +497,19 @@
                 className: 'chatbox chatroom hidden',
                 is_chatroom: true,
                 events: {
+                    'change .input.fileupload': 'onFileSelection',
                     'click .close-chatbox-button': 'close',
                     'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
-                    'click .toggle-smiley': 'toggleEmojiMenu',
-                    'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
-                    'click .toggle-clear': 'clearChatRoomMessages',
-                    'click .toggle-call': 'toggleCall',
-                    'click .toggle-occupants': 'toggleOccupants',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant': 'onOccupantClicked',
-                    'keypress .chat-textarea': 'keyPressed',
-                    'click .send-button': 'onFormSubmitted'
+                    'click .send-button': 'onFormSubmitted',
+                    'click .toggle-call': 'toggleCall',
+                    'click .toggle-clear': 'clearChatRoomMessages',
+                    'click .toggle-occupants': 'toggleOccupants',
+                    'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
+                    'click .toggle-smiley': 'toggleEmojiMenu',
+                    'click .upload-file': 'toggleFileUpload',
+                    'keypress .chat-textarea': 'keyPressed'
                 },
 
                 initialize () {

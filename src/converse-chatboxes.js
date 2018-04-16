@@ -144,8 +144,8 @@
                     return stanza;
                 },
 
-                sendMessageStanza (message, file) {
-                    const messageStanza = this.createMessageStanza(message, file);
+                sendMessageStanza (message) {
+                    const messageStanza = this.createMessageStanza(message);
                     _converse.connection.send(messageStanza);
                     if (_converse.forward_messages) {
                         // Forward the message, so that other connected resources are also aware of it.

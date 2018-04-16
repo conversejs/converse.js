@@ -780,10 +780,10 @@
                     .c("x", {xmlns: "jabber:x:event"}).c(_converse.COMPOSING);
                     _converse.connection.send(msg);
                     this.model.messages.create({
-                        fullname: this.model.get('nick'),
-                        sender: 'me',
-                        time: moment().format(),
-                        message: text,
+                        'fullname': this.model.get('nick'),
+                        'sender': 'me',
+                        'time': moment().format(),
+                        'message': text,
                         msgid
                     });
                 },
@@ -826,18 +826,13 @@
                     this.showErrorMessage(__("Error: could not execute the command"), true);
                 },
 
-                // the notNeeded-Parameter is there so this method has the same amount of parameters as converse-chatview.js->onMessageSubmitted
-                // this allows to call the same method from diffrent plugins 
-                onMessageSubmitted (text, notNeeded = null, file = null) {
+                onMessageSubmitted (text, spoiler_hint) {
                     /* Gets called when the user presses enter to send off a
                      * message in a chat room.
                      *
                      * Parameters:
                      *    (String) text - The message text.
                      */
-                    if (file !== null) {
-                        return this.model.sendChatRoomFile(text,this.model.get('jid'));
-                    }
                     if (_converse.muc_disable_moderator_commands) {
                         return this.sendChatRoomMessage(text);
                     }

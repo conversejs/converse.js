@@ -862,10 +862,10 @@
                     var message = '/me is tired';
                     var nick = mock.chatroom_names[0],
                         msg = $msg({
-                            from: 'lounge@localhost/'+nick,
-                            id: (new Date()).getTime(),
-                            to: 'dummy@localhost',
-                            type: 'groupchat'
+                            'from': 'lounge@localhost/'+nick,
+                            'id': (new Date()).getTime(),
+                            'to': 'dummy@localhost',
+                            'type': 'groupchat'
                         }).c('body').t(message).tree();
                     view.model.onMessage(msg);
                     expect(_.includes($(view.el).find('.chat-msg-author').text(), '**Dyon van de Wege')).toBeTruthy();
@@ -3306,6 +3306,7 @@
                                     to: 'dummy@localhost',
                                     type: 'groupchat'
                                 }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+
                             view.model.onMessage(msg);
 
                             // Check that the notification appears inside the chatbox in the DOM

@@ -182,6 +182,7 @@
                           'features_fetched': false,
                           'roomconfig': {},
                           'type': converse.CHATROOMS_TYPE,
+                          'message_type': 'groupchat'
                         }
                     );
                 },

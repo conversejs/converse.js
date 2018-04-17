@@ -7,14 +7,18 @@
 (function (root, factory) {
     define([
         "converse-core",
+        "emojione",
         "tpl!chatboxes",
         "backbone.overview"
     ], factory);
-}(this, function (converse, tpl_chatboxes) {
+}(this, function (converse, emojione, tpl_chatboxes) {
     "use strict";
 
     const { $msg, Backbone, Promise, Strophe, b64_sha1, moment, utils, _ } = converse.env;
+    const u = converse.env.utils;
+
     Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
+
 
     converse.plugins.add('converse-chatboxes', {
 
@@ -74,10 +78,100 @@
 
 
             _converse.Message = Backbone.Model.extend({
-                defaults(){
+
+                defaults () {
                     return {
-                        msgid: _converse.connection.getUniqueId()
+                        'msgid': _converse.connection.getUniqueId(),
+                        'time': moment().format()
                     };
+                },
+
+                initialize () {
+                    if (this.get('file')) {
+                        this.on('change:put', this.uploadFile, this);
+
+                        if (!_.includes([_converse.SUCCESS, _converse.FAILURE], this.get('upload'))) {
+                            this.getRequestSlotURL();
+                        }
+                    }
+                },
+
+                sendSlotRequestStanza () {
+                    /* Send out an IQ stanza to request a file upload slot.
+                     *
+                     * https://xmpp.org/extensions/xep-0363.html#request
+                     */
+                    const file = this.get('file');
+                    return new Promise((resolve, reject) => {
+                        const iq = converse.env.$iq({
+                            'from': _converse.jid,
+                            'to': this.get('slot_request_url'),
+                            'type': 'get'
+                        }).c('request', {
+                            'xmlns': Strophe.NS.HTTPUPLOAD,
+                            'filename': file.name,
+                            'size': file.size,
+                            'content-type': file.type
+                        })
+                        _converse.connection.sendIQ(iq, resolve, reject);
+                    });
+                },
+
+                getRequestSlotURL () {
+                    this.sendSlotRequestStanza().then((stanza) => {
+                        const slot = stanza.querySelector('slot');
+                        if (slot) {
+                            this.save({
+                                'get':  slot.querySelector('get').getAttribute('url'),
+                                'put': slot.querySelector('put').getAttribute('url'),
+                            });
+                        } else {
+                            return this.save({
+                                'type': 'error',
+                                'message': __("Sorry, could not determine upload URL.")
+                            });
+                        }
+                    }).catch((e) => {
+                        _converse.log(e, Strophe.LogLevel.ERROR);
+                        return this.save({
+                            'type': 'error',
+                            'message': __("Sorry, could not determine upload URL.")
+                        });
+                    });
+                },
+
+                uploadFile () {
+                    const xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = () => {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            _converse.log("Status: " + xhr.status, Strophe.LogLevel.INFO);
+                            if (xhr.status === 200 || xhr.status === 201) {
+                                this.save({
+                                    'upload': _converse.SUCCESS,
+                                    'message': this.get('get')
+                                });
+                            } else {
+                                this.save({
+                                    'upload': _converse.FAILURE,
+                                    'message': __('Sorry, could not succesfully upload your file')
+                                });
+                            }
+                        }
+                    };
+                    xhr.upload.addEventListener("progress", (evt) => {
+                        if (evt.lengthComputable) {
+                            this.set('progress', evt.loaded / evt.total);
+                        }
+                    }, false);
+                    xhr.onerror = () => {
+                        this.save({
+                            'upload': _converse.FAILURE,
+                            'message': __('Sorry, could not succesfully upload your file')
+                        });
+                    };
+                    xhr.open('PUT', this.get('put'), true);
+                    xhr.setRequestHeader("Content-type", 'application/octet-stream');
+                    xhr.send(this.get('file'));
                 }
             });
 
@@ -97,6 +191,7 @@
                     'num_unread': 0,
                     'show_avatar': true,
                     'type': 'chatbox',
+                    'message_type': 'chat',
                     'url': ''
                 },
 
@@ -105,6 +200,12 @@
                     this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
                         b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
                     this.messages.chatbox = this;
+
+                    this.messages.on('change:upload', (message) => {
+                        if (message.get('upload') === _converse.SUCCESS) {
+                            this.sendMessageStanza(message);
+                        }
+                    });
 
                     this.save({
                         // The chat_state will be set to ACTIVE once the chat box is opened
@@ -125,7 +226,7 @@
                     const stanza = $msg({
                             'from': _converse.connection.jid,
                             'to': this.get('jid'),
-                            'type': 'chat',
+                            'type': this.get('message_type'),
                             'id': message.get('msgid')
                         }).c('body').t(message.get('message')).up()
                           .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
@@ -149,15 +250,32 @@
                     if (_converse.forward_messages) {
                         // Forward the message, so that other connected resources are also aware of it.
                         _converse.connection.send(
-                            $msg({ to: _converse.bare_jid, type: 'chat', id: message.get('msgid') })
-                            .c('forwarded', {'xmlns': Strophe.NS.FORWARD})
-                            .c('delay', {
-                                'xmns': Strophe.NS.DELAY,
-                                'stamp': moment().format()
-                            }).up()
-                            .cnode(messageStanza.tree())
+                            $msg({
+                                'to': _converse.bare_jid,
+                                'type': this.get('message_type'),
+                                'id': message.get('msgid')
+                            }).c('forwarded', {'xmlns': Strophe.NS.FORWARD})
+                                .c('delay', {
+                                        'xmns': Strophe.NS.DELAY,
+                                        'stamp': moment().format()
+                                }).up()
+                              .cnode(messageStanza.tree())
                         );
                     }
+                },
+
+                getOutgoingMessageAttributes (text, spoiler_hint) {
+                    const fullname = _converse.xmppstatus.get('fullname'),
+                        is_spoiler = this.get('composing_spoiler');
+
+                    return {
+                        'fullname': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
+                        'sender': 'me',
+                        'time': moment().format(),
+                        'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
+                        'is_spoiler': is_spoiler,
+                        'spoiler_hint': is_spoiler ? spoiler_hint : undefined
+                    };
                 },
 
                 sendMessage (attrs) {
@@ -169,83 +287,25 @@
                     this.sendMessageStanza(this.messages.create(attrs));
                 },
 
-                notifyUploadFailure (err_msg, error) {
-                    err_msg = err_msg || __("Sorry, failed to upload the file");
-                    this.trigger('showHelpMessages', [err_msg], 'error');
-                    if (error instanceof Error) {
-                        _converse.log(error, Strophe.LogLevel.ERROR);
-                    }
-                },
-
-                sendFile (file) {
-                    _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then((result) => {
-                        if (!result.length) {
-                            this.notifyUploadFailure(__("Sorry, file upload is not supported by your server."));
-                        }
-                        const request_slot_url = result[0].id;
-                        if (!request_slot_url) {
-                            return this.notifyUploadFailure(__("Could not determine request slot URL for file upload"));
-                        }
-                        this.trigger('showHelpMessages', [__('The file upload starts now')], 'info');
-                        this.requestSlot(file, request_slot_url).then((stanza) => {
-                            const slot = stanza.querySelector('slot');
-                            if (slot) {
-                                const put = slot.querySelector('put').getAttribute('url');
-                                const get = slot.querySelector('get').getAttribute('url');
-                                this.uploadFile(put, file)
-                                    .then(_.bind(this.sendMessage, this, {'message': get, 'file': true}))
-                                    .catch(this.notifyUploadFailure.bind(this, null));
-                            } else {
-                                this.notifyUploadFailure();
-                            }
-                        }).catch(this.notifyUploadFailure.bind(this, null));
-                    });
-                },
-
                 sendFiles (files) {
-                    _.each(files, this.sendFile.bind(this));
-                },
-
-                requestSlot (file, request_slot_url) {
-                    /* Send out an IQ stanza to request a file upload slot.
-                     *
-                     * https://xmpp.org/extensions/xep-0363.html#request
-                     */
-                    return new Promise((resolve, reject) => {
-                        const iq = converse.env.$iq({
-                            'from': _converse.jid,
-                            'to': request_slot_url,
-                            'type': 'get'
-                        }).c('request', {
-                            'xmlns': Strophe.NS.HTTPUPLOAD,
-                            'filename': file.name,
-                            'size': file.size,
-                            'content-type': file.type
-                        })
-                        _converse.connection.sendIQ(iq, resolve, reject);
-                    });
-                },
-                
-                uploadFile (url, file) {
-                    return new Promise((resolve, reject) => {
-                        const xhr = new XMLHttpRequest();
-                        xhr.onreadystatechange = function () {
-                            if (xhr.readyState === XMLHttpRequest.DONE) {   
-                                _converse.log("Status: " + xhr.status, Strophe.LogLevel.INFO);
-                                if (xhr.status === 200 || xhr.status === 201) {
-                                    resolve(url, file);
-                                } else {
-                                    xhr.onerror();
-                                }
-                            }
-                        };
-                        xhr.onerror = function () {
-                            reject(xhr.responseText);
-                        };
-                        xhr.open('PUT', url, true);
-                        xhr.setRequestHeader("Content-type", 'application/octet-stream');
-                        xhr.send(file);
-                    });
+                    _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then((result) => {
+                        const slot_request_url = _.get(result.pop(), 'id');
+                        if (!slot_request_url) {
+                            const err_msg = __("Sorry, looks like file upload is not supported by your server.");
+                            return this.trigger('showHelpMessages', [err_msg], 'error');
+                        }
+                        _.each(files, (file) => {
+                            this.messages.create(
+                                _.extend(
+                                    this.getOutgoingMessageAttributes(), {
+                                    'file': file,
+                                    'progress': 0,
+                                    'slot_request_url': slot_request_url,
+                                    'type': this.get('message_type'),
+                                })
+                            );
+                        });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                 getMessageBody (message) {
@@ -255,7 +315,7 @@
                             _.propertyOf(message.querySelector('body'))('textContent');
                 },
 
-                getMessageAttributes (message, delay, original_stanza) {
+                getMessageAttributesFromStanza (message, delay, original_stanza) {
                     /* Parses a passed in message stanza and returns an object
                      * of attributes.
                      *
@@ -292,10 +352,10 @@
                     let sender, fullname;
                     if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === _converse.bare_jid)) {
                         sender = 'me';
-                        fullname = _converse.xmppstatus.get('fullname') || from;
+                        fullname = _converse.xmppstatus.get('fullname');
                     } else {
                         sender = 'them';
-                        fullname = this.get('fullname') || from;
+                        fullname = this.get('fullname');
                     }
                     const spoiler = message.querySelector(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`);
                     const attrs = {
@@ -320,7 +380,7 @@
                     /* Create a Backbone.Message object inside this chat box
                      * based on the identified message stanza.
                      */
-                    return this.messages.create(this.getMessageAttributes.apply(this, arguments));
+                    return this.messages.create(this.getMessageAttributesFromStanza.apply(this, arguments));
                 },
 
                 newMessageWillBeHidden () {

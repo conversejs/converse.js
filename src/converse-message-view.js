@@ -10,16 +10,18 @@
         "xss",
         "emojione",
         "tpl!action",
+        "tpl!file",
         "tpl!message",
         "tpl!spoiler_message"
     ], factory);
 }(this, function (
-            converse,
-            xss,
-            emojione,
-            tpl_action,
-            tpl_message,
-            tpl_spoiler_message
+        converse,
+        xss,
+        emojione,
+        tpl_action,
+        tpl_file,
+        tpl_message,
+        tpl_spoiler_message
     ) {
     "use strict";
     const { Backbone, _, moment } = converse.env;
@@ -38,60 +40,57 @@
             _converse.MessageView = Backbone.NativeView.extend({
 
                 initialize () {
-                    this.model.collection.chatbox.on('change:fullname', this.render, this);
+                    const chatbox = this.model.collection.chatbox;
+                    chatbox.on('change:fullname', (chatbox) => this.model.save('fullname', chatbox.get('fullname')));
+
+                    this.model.on('change:fullname', this.render, this);
+                    this.model.on('change:progress', this.renderFileUploadProgresBar, this);
+                    this.model.on('change:type', this.render, this);
+                    this.model.on('change:upload', this.render, this);
                     this.render();
                 },
 
                 render () {
-                    const chatbox = this.model.collection.chatbox;
+                    if (this.model.get('file') && !this.model.get('message')) {
+                        return this.renderFileUploadProgresBar();
+                    }
+                    let template, username,
+                        text = this.model.get('message');
 
-                    let text = this.model.get('message'),
-                        fullname = chatbox.get('fullname') || chatbox.get('jid'),
-                        template, username;
-
-                    const match = text.match(/^\/(.*?)(?: (.*))?$/);
-                    if ((match) && (match[1] === 'me')) {
-                        text = text.replace(/^\/me/, '');
-                        template = tpl_action;
-                        if (this.model.get('sender') === 'me') {
-                            fullname = _converse.xmppstatus.get('fullname') || this.model.get('fullname');
-                            username = _.isNil(fullname)? _converse.bare_jid: fullname;
-                        } else {
-                            username = this.model.get('fullname');
-                        }
+                    // TODO: store proper username on the message itself
+                    if (this.isMeCommand()) {
+                        const arr = this.getValuesForMeCommand();
+                        template = arr[0];
+                        username = arr[1];
+                        text = arr[2];
                     } else {
-                        username = this.model.get('sender') === 'me' && __('me') || fullname;
+                        const fullname = _converse.xmppstatus.get('fullname') || this.model.get('fullname');
+                        username = this.model.get('sender') === 'me' && __('me') || fullname || this.model.get('from');
                         template = this.model.get('is_spoiler') ? tpl_spoiler_message : tpl_message;
                     }
-                    text = u.geoUriToHttp(text, _converse);
-
-                    const msg_time = moment(this.model.get('time')) || moment;
+                    const moment_time = moment(this.model.get('time'));
                     const msg = u.stringToElement(template(
                         _.extend(this.model.toJSON(), {
-                            'time': msg_time.format(_converse.time_format),
-                            'isodate': msg_time.format(),
+                            'pretty_time': moment_time.format(_converse.time_format),
+                            'time': moment_time.format(),
                             'username': username,
                             'extra_classes': this.getExtraMessageClasses(),
                             'label_show': __('Show hidden message')
                         })
                     ));
-                    if (_converse.show_message_load_animation) {
-                        window.setTimeout(_.partial(u.removeClass, 'onload', msg), 2000);
-                    }
                     const msg_content = msg.querySelector('.chat-msg-content');
-                    msg_content.innerHTML = u.addEmoji(
-                        _converse, emojione, u.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))
-                    );
+                    text = xss.filterXSS(text, {'whiteList': {}});
+                    msg_content.innerHTML = _.flow(
+                        _.partial(u.geoUriToHttp, _, _converse.geouri_replacement),
+                        _.partial(u.addHyperlinks, _),
+                        _.partial(u.addEmoji, _converse, emojione, _),
+                        u.renderMovieURLs,
+                        u.renderAudioURLs
+                    )(text);
 
-                    if (msg_content.textContent.endsWith('mp4')) {
-                        msg_content.innerHTML = u.renderMovieURLs(msg_content);
-                    } else if (msg_content.textContent.endsWith('mp3')) {
-                        msg_content.innerHTML = u.renderAudioURLs(msg_content);
-                    } else {
-                        u.renderImageURLs(msg_content).then(() => {
-                            this.model.collection.trigger('rendered');
-                        });
-                    }
+                    u.renderImageURLs(msg_content).then(() => {
+                        this.model.collection.trigger('rendered');
+                    });
                     if (!_.isNil(this.el.parentElement)) {
                         this.el.parentElement.replaceChild(msg, this.el);
                     }
@@ -99,13 +98,42 @@
                     return this.el;
                 },
 
-                getExtraMessageClasses () {
-                    let extra_classes;
-                    if (_converse.show_message_load_animation) {
-                        extra_classes =  'onload ' + (this.model.get('delayed') && 'delayed' || '');
-                    } else {
-                        extra_classes = this.model.get('delayed') && 'delayed' || '';
+                renderFileUploadProgresBar () {
+                    const msg = u.stringToElement(tpl_file(this.model.toJSON()));
+                    if (!_.isNil(this.el.parentElement)) {
+                        this.el.parentElement.replaceChild(msg, this.el);
                     }
+                    this.setElement(msg);
+                    return this.el;
+                },
+
+                isMeCommand () {
+                    const match = this.model.get('message').match(/^\/(.*?)(?: (.*))?$/);
+                    return match && match[1] === 'me';
+                },
+
+                getValuesForMeCommand() {
+                    let username, text;
+                    const match = this.model.get('message').match(/^\/(.*?)(?: (.*))?$/);
+                    if (match && match[1] === 'me') {
+                        text = this.model.get('message').replace(/^\/me/, '');
+                    }
+                    if (this.model.get('sender') === 'me') {
+                        const fullname = _converse.xmppstatus.get('fullname') || this.model.get('fullname');
+                        username = _.isNil(fullname) ? _converse.bare_jid : fullname;
+                    } else {
+                        username = this.model.get('fullname') || this.model.get('from');
+                    }
+                    return [tpl_action, username, text]
+                },
+
+                processMessageText () {
+                    var text = this.get('message');
+                    text = u.geoUriToHttp(text, _converse.geouri_replacement);
+                },
+
+                getExtraMessageClasses () {
+                    let extra_classes = this.model.get('delayed') && 'delayed' || '';
                     if (this.model.get('type') === 'groupchat' && this.model.get('sender') === 'them') {
                         if (this.model.collection.chatbox.isUserMentioned(this.model.get('message'))) {
                             // Add special class to mark groupchat messages

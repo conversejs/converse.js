@@ -105,7 +105,6 @@
                 'chatview_avatar_height': 32,
                 'chatview_avatar_width': 32,
                 'show_toolbar': true,
-                'show_message_load_animation': false,
                 'time_format': 'HH:mm',
                 'visible_toolbar_buttons': {
                     'call': false,
@@ -613,24 +612,25 @@
                 showChatStateNotification (message) {
                     /* Support for XEP-0085, Chat State Notifications */
                     let text;
-                    const from = message.get('from');
-                    const data = `data-csn=${from}`;
+                    const from = message.get('from'),
+                          username = message.get('fullname') || from,
+                          data = `data-csn=${from}`;
                     this.clearChatStateNotification(from);
 
                     if (message.get('chat_state') === _converse.COMPOSING) {
                         if (message.get('sender') === 'me') {
                             text = __('Typing from another device');
                         } else {
-                            text = message.get('fullname')+' '+__('is typing');
+                            text = username +' '+__('is typing');
                         }
                     } else if (message.get('chat_state') === _converse.PAUSED) {
                         if (message.get('sender') === 'me') {
                             text = __('Stopped typing on the other device');
                         } else {
-                            text = message.get('fullname')+' '+__('has stopped typing');
+                            text = username +' '+__('has stopped typing');
                         }
                     } else if (message.get('chat_state') === _converse.GONE) {
-                        text = message.get('fullname')+' '+__('has gone away');
+                        text = username +' '+__('has gone away');
                     } else {
                         return;
                     }
@@ -707,7 +707,7 @@
                         if (message.get('chat_state')) {
                             this.showChatStateNotification(message);
                         }
-                        if (message.get('message')) {
+                        if (message.get('file') || message.get('message')) {
                             this.handleTextMessage(message);
                         }
                     }
@@ -755,27 +755,8 @@
                     if (this.parseMessageForCommands(text)) {
                         return;
                     }
-                    const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
+                    const attrs = this.model.getOutgoingMessageAttributes(text, spoiler_hint);
                     this.model.sendMessage(attrs);
-                },
-
-                getOutgoingMessageAttributes (text, spoiler_hint) {
-                    /* Overridable method which returns the attributes to be
-                     * passed to Backbone.Message's constructor.
-                     */
-                    const fullname = _converse.xmppstatus.get('fullname'),
-                        is_spoiler = this.model.get('composing_spoiler'),
-                        attrs = {
-                            'fullname': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
-                            'sender': 'me',
-                            'time': moment().format(),
-                            'message': u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse),
-                            'is_spoiler': is_spoiler
-                        };
-                    if (is_spoiler) {
-                        attrs.spoiler_hint = spoiler_hint;
-                    }
-                    return attrs;
                 },
 
                 sendChatState () {

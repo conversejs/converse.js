@@ -204,12 +204,14 @@
                 }));
 
                 describe("when clicked", function () {
+
                     it("a file upload slot is requested", mock.initConverseWithAsync(function (done, _converse) {
                         test_utils.waitUntilDiscoConfirmed(
                             _converse, _converse.domain,
                             [{'category': 'server', 'type':'IM'}],
                             ['http://jabber.org/protocol/disco#items'], [], 'info').then(function () {
 
+                            var send_backup = XMLHttpRequest.prototype.send;
                             var IQ_stanzas = _converse.connection.IQ_stanzas;
 
                             test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.tld'], 'items').then(function () {
@@ -224,11 +226,11 @@
                                         'lastModifiedDate': "",
                                         'name': "my-juliet.jpg"
                                     };
-                                    view.model.sendFile(file);
+                                    view.model.sendFiles([file]);
                                     return test_utils.waitUntil(function () {
                                         return _.filter(IQ_stanzas, function (iq) {
                                             return iq.nodeTree.querySelector('iq[to="upload.montague.tld"] request');
-                                        });
+                                        }).length > 0;
                                     }).then(function () {
                                         var iq = IQ_stanzas.pop();
                                         expect(iq.toLocaleString()).toBe(
@@ -243,6 +245,9 @@
                                                 "content-type='image/jpeg'/>"+
                                             "</iq>");
 
+                                        var base_url = document.URL.split(window.location.pathname)[0];
+                                        var message = base_url+"/logo/conversejs-filled.svg";
+
                                         var stanza = Strophe.xmlHtmlNode(
                                             "<iq from='upload.montague.tld'"+
                                             "    id='"+iq.nodeTree.getAttribute('id')+"'"+
@@ -253,11 +258,21 @@
                                             "    <header name='Authorization'>Basic Base64String==</header>"+
                                             "    <header name='Cookie'>foo=bar; user=romeo</header>"+
                                             "    </put>"+
-                                            "    <get url='https://download.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg' />"+
+                                            "    <get url='"+message+"' />"+
                                             "</slot>"+
                                             "</iq>").firstElementChild;
-                                        spyOn(view.model, 'uploadFile').and.callFake(function () {
-                                            return new window.Promise((resolve, reject) => { resolve(); });
+
+                                        spyOn(XMLHttpRequest.prototype, 'send').and.callFake(function () {
+                                            const message = view.model.messages.at(0);
+                                            expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('0');
+                                            message.set('progress', 0.5);
+                                            expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('0.5');
+                                            message.set('progress', 1);
+                                            expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('1');
+                                            message.save({
+                                                'upload': _converse.SUCCESS,
+                                                'message': message.get('get')
+                                            });
                                         });
                                         var sent_stanza;
                                         spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
@@ -267,19 +282,27 @@
 
                                         return test_utils.waitUntil(function () {
                                             return sent_stanza;
-                                        }).then(function () {
-                                            expect(view.model.uploadFile).toHaveBeenCalled();
+                                        }, 1000).then(function () {
                                             expect(sent_stanza.toLocaleString()).toBe(
                                                 "<message from='dummy@localhost/resource' "+
                                                     "to='irini.vlastuin@localhost' "+
                                                     "type='chat' "+
                                                     "id='"+sent_stanza.nodeTree.getAttribute('id')+"' xmlns='jabber:client'>"+
-                                                        "<body>https://download.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg</body>"+
+                                                        "<body>"+message+"</body>"+
                                                         "<active xmlns='http://jabber.org/protocol/chatstates'/>"+
                                                         "<x xmlns='jabber:x:oob'>"+
-                                                            "<url>https://download.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg</url>"+
+                                                            "<url>"+message+"</url>"+
                                                         "</x>"+
                                                 "</message>");
+                                            return test_utils.waitUntil(function () {
+                                                return view.el.querySelector('.chat-image');
+                                            }, 1000);
+                                        }).then(function () {
+                                            // Check that the image renders
+                                            expect(view.el.querySelector('.chat-message .chat-msg-content').innerHTML).toEqual(
+                                                '<a target="_blank" rel="noopener" href="http://localhost:8000/logo/conversejs-filled.svg">'+
+                                                    '<img class="chat-image" src="http://localhost:8000/logo/conversejs-filled.svg"></a>')
+                                            XMLHttpRequest.prototype.send = send_backup;
                                             done();
                                         });
                                     });

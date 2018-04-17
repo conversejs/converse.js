@@ -213,12 +213,18 @@
             ))
     };
 
-    u.renderMovieURLs = function (obj) {
-        return "<video controls><source src=\"" + obj.textContent + "\" type=\"video/mp4\"></video>";
+    u.renderMovieURLs = function (text) {
+        if (text.endsWith('mp4')) {
+            return "<video controls><source src=\"" + text + "\" type=\"video/mp4\"></video>";
+        }
+        return text;
     };
 
-    u.renderAudioURLs = function (obj) {
-        return "<audio controls><source src=\"" + obj.textContent + "\" type=\"audio/mpeg\"></audio>";
+    u.renderAudioURLs = function (text) {
+        if (text.endsWith('mp3')) {
+            return "<audio controls><source src=\"" + text+ "\" type=\"audio/mpeg\"></audio>";
+        }
+        return text;
     };
 
     u.slideInAllElements = function (elements, duration=300) {
@@ -714,9 +720,9 @@
         el.dispatchEvent(evt);
     };
 
-    u.geoUriToHttp = function(text, _converse) {
+    u.geoUriToHttp = function(text, geouri_replacement) {
         const regex = /geo:([\-0-9.]+),([\-0-9.]+)(?:,([\-0-9.]+))?(?:\?(.*))?/g;
-        return text.replace(regex, _converse.geouri_replacement);
+        return text.replace(regex, geouri_replacement);
     };
 
     u.httpToGeoUri = function(text, _converse) {

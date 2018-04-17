@@ -128,8 +128,8 @@
             //
             // New functions which don't exist yet can also be added.
             ChatBox: {
-                getMessageAttributes (message, delay, original_stanza) {
-                    const attrs = this.__super__.getMessageAttributes.apply(this, arguments);
+                getMessageAttributesFromStanza (message, delay, original_stanza) {
+                    const attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
                     const archive_id = getMessageArchiveID(original_stanza);
                     if (archive_id) {
                         attrs.archive_id = archive_id;

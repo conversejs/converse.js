@@ -705,7 +705,7 @@
                             expect(chatbox.messages.length).toEqual(1);
                             var msg_obj = chatbox.messages.models[0];
                             expect(msg_obj.get('message')).toEqual(message);
-                            expect(msg_obj.get('fullname')).toEqual(sender_jid);
+                            expect(msg_obj.get('fullname')).toEqual(undefined);
                             expect(msg_obj.get('sender')).toEqual('them');
                             expect(msg_obj.get('delayed')).toEqual(false);
                             // Now check that the message appears inside the chatbox in the DOM
@@ -714,6 +714,7 @@
                             expect(msg_txt).toEqual(message);
                             var sender_txt = $chat_content.find('span.chat-msg-them').text();
                             expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
+                            expect(sender_txt.indexOf('max.frankfurter@localhost')).not.toBe(-1);
                             done();
                         }));
                     });

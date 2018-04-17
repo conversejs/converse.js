@@ -162,6 +162,7 @@
                                 function (result) {
                                     expect(result.length).toBe(1);
                                     expect(result[0].get('jid')).toBe('upload.localhost');
+                                    expect(result[0].dataforms.where({'FORM_TYPE': {value: "urn:xmpp:http:upload:0", type: "hidden"}}).length).toBe(1);
                                     done();
                                 }
                             );

@@ -37,6 +37,11 @@
                 initialize () {
                     this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
 
+                    this.dataforms = new Backbone.Collection();
+                    this.dataforms.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                        b64_sha1(`converse.dataforms-{this.get('jid')}`)
+                    );
+
                     this.features = new Backbone.Collection();
                     this.features.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                         b64_sha1(`converse.features-${this.get('jid')}`)
@@ -155,6 +160,18 @@
                             'name': identity.getAttribute('name')
                         });
                     });
+
+                    _.each(sizzle('x[type="result"][xmlns="jabber:x:data"]', stanza), (form) => {
+                        const data = {};
+                        _.each(form.querySelectorAll('field'), (field) => {
+                            data[field.getAttribute('var')] = {
+                                'value': _.get(field.querySelector('value'), 'textContent'),
+                                'type': field.getAttribute('type')
+                            };
+                        });
+                        this.dataforms.create(data);
+                    });
+
                     if (stanza.querySelector('feature[var="'+Strophe.NS.DISCO_ITEMS+'"]')) {
                         this.queryForItems();
                     }

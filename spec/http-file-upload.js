@@ -174,7 +174,6 @@
 
         describe("When supported", function () {
 
-
             describe("A file upload toolbar button", function () {
 
                 it("appears in private chats", mock.initConverseWithAsync(function (done, _converse) {
@@ -442,6 +441,88 @@
                     }));
                 });
             });
+
+            describe("While a file is being uploaded", function () {
+
+                it("shows a progress bar", mock.initConverseWithAsync(function (done, _converse) {
+                    test_utils.waitUntilDiscoConfirmed(
+                        _converse, _converse.domain,
+                        [{'category': 'server', 'type':'IM'}],
+                        ['http://jabber.org/protocol/disco#items'], [], 'info').then(function () {
+
+                        var send_backup = XMLHttpRequest.prototype.send;
+                        var IQ_stanzas = _converse.connection.IQ_stanzas;
+
+                        test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.tld'], 'items').then(function () {
+                            test_utils.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []).then(function () {
+                                test_utils.createContacts(_converse, 'current');
+                                var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+                                test_utils.openChatBoxFor(_converse, contact_jid);
+                                var view = _converse.chatboxviews.get(contact_jid);
+                                var file = {
+                                    'type': 'image/jpeg',
+                                    'size': '23456' ,
+                                    'lastModifiedDate': "",
+                                    'name': "my-juliet.jpg"
+                                };
+                                view.model.sendFiles([file]);
+                                return test_utils.waitUntil(function () {
+                                    return _.filter(IQ_stanzas, function (iq) {
+                                        return iq.nodeTree.querySelector('iq[to="upload.montague.tld"] request');
+                                    }).length > 0;
+                                }).then(function () {
+                                    var iq = IQ_stanzas.pop();
+                                    expect(iq.toLocaleString()).toBe(
+                                        "<iq from='dummy@localhost/resource' "+
+                                            "to='upload.montague.tld' "+
+                                            "type='get' "+
+                                            "xmlns='jabber:client' "+
+                                            "id='"+iq.nodeTree.getAttribute('id')+"'>"+
+                                        "<request xmlns='urn:xmpp:http:upload:0' "+
+                                            "filename='my-juliet.jpg' "+
+                                            "size='23456' "+
+                                            "content-type='image/jpeg'/>"+
+                                        "</iq>");
+
+                                    var base_url = document.URL.split(window.location.pathname)[0];
+                                    var message = base_url+"/logo/conversejs-filled.svg";
+
+                                    var stanza = Strophe.xmlHtmlNode(
+                                        "<iq from='upload.montague.tld'"+
+                                        "    id='"+iq.nodeTree.getAttribute('id')+"'"+
+                                        "    to='dummy@localhost/resource'"+
+                                        "    type='result'>"+
+                                        "<slot xmlns='urn:xmpp:http:upload:0'>"+
+                                        "    <put url='https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg'>"+
+                                        "    <header name='Authorization'>Basic Base64String==</header>"+
+                                        "    <header name='Cookie'>foo=bar; user=romeo</header>"+
+                                        "    </put>"+
+                                        "    <get url='"+message+"' />"+
+                                        "</slot>"+
+                                        "</iq>").firstElementChild;
+
+                                    spyOn(XMLHttpRequest.prototype, 'send').and.callFake(function () {
+                                        const message = view.model.messages.at(0);
+                                        expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('0');
+                                        message.set('progress', 0.5);
+                                        expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('0.5');
+                                        message.set('progress', 1);
+                                        expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('1');
+                                        expect(view.el.querySelector('.chat-content .chat-msg-content').textContent).toBe('Uploading file: my-juliet.jpg, 22.91 KB');
+                                        done();
+                                    });
+                                    var sent_stanza;
+                                    spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
+                                        sent_stanza = stanza;
+                                    });
+                                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                                });
+                            });
+                        });
+                    });
+                }));
+            });
+
         });
     });
 }));

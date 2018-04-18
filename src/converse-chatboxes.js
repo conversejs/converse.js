@@ -129,7 +129,7 @@
                         } else {
                             return this.save({
                                 'type': 'error',
-                                'message': __("Sorry, could not determine upload URL.")
+                                'message': __("Sorry, could not determine file upload URL.")
                             });
                         }
                     }).catch((e) => {

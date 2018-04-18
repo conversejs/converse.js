@@ -9,6 +9,7 @@
         "converse-core",
         "xss",
         "emojione",
+        "filesize",
         "tpl!action",
         "tpl!file",
         "tpl!info",
@@ -19,6 +20,7 @@
         converse,
         xss,
         emojione,
+        filesize,
         tpl_action,
         tpl_file,
         tpl_info,
@@ -119,7 +121,10 @@
                 },
 
                 renderFileUploadProgresBar () {
-                    const msg = u.stringToElement(tpl_file(this.model.toJSON()));
+                    const msg = u.stringToElement(tpl_file(
+                        _.extend(this.model.toJSON(),
+                            {'filesize': filesize(this.model.get('file').size)}
+                        )));
                     return this.replaceElement(msg);
                 },
 

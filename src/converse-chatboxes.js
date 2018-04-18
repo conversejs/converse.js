@@ -8,10 +8,11 @@
     define([
         "converse-core",
         "emojione",
+        "filesize",
         "tpl!chatboxes",
         "backbone.overview"
     ], factory);
-}(this, function (converse, emojione, tpl_chatboxes) {
+}(this, function (converse, emojione, filesize, tpl_chatboxes) {
     "use strict";
 
     const { $msg, Backbone, Promise, Strophe, b64_sha1, moment, utils, _ } = converse.env;
@@ -289,21 +290,36 @@
 
                 sendFiles (files) {
                     _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then((result) => {
-                        const slot_request_url = _.get(result.pop(), 'id');
+                        const item = result.pop(),
+                              data = item.dataforms.where({'FORM_TYPE': {'value': Strophe.NS.HTTPUPLOAD, 'type': "hidden"}}).pop(),
+                              max_file_size = window.parseInt(_.get(data, 'attributes.max-file-size.value')),
+                              slot_request_url = _.get(item, 'id');
+
                         if (!slot_request_url) {
-                            const err_msg = __("Sorry, looks like file upload is not supported by your server.");
-                            return this.trigger('showHelpMessages', [err_msg], 'error');
+                            this.messages.create({
+                                'message': __("Sorry, looks like file upload is not supported by your server."),
+                                'type': 'error',
+                            });
+                            return;
                         }
                         _.each(files, (file) => {
-                            this.messages.create(
-                                _.extend(
-                                    this.getOutgoingMessageAttributes(), {
-                                    'file': file,
-                                    'progress': 0,
-                                    'slot_request_url': slot_request_url,
-                                    'type': this.get('message_type'),
-                                })
-                            );
+                            if (!window.isNaN(max_file_size) && window.parseInt(file.size) > max_file_size) {
+                                return this.messages.create({
+                                    'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',
+                                        file.name, filesize(max_file_size)),
+                                    'type': 'error',
+                                });
+                            } else {
+                                this.messages.create(
+                                    _.extend(
+                                        this.getOutgoingMessageAttributes(), {
+                                        'file': file,
+                                        'progress': 0,
+                                        'slot_request_url': slot_request_url,
+                                        'type': this.get('message_type'),
+                                    })
+                                );
+                            }
                         });
                     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },

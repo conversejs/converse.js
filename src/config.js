@@ -29,6 +29,7 @@ require.config({
         "emojione":                 "node_modules/emojione/lib/js/emojione",
         "es6-promise":              "node_modules/es6-promise/dist/es6-promise.auto",
         "eventemitter":             "node_modules/otr/build/dep/eventemitter",
+        "filesize":                 "node_modules/filesize/lib/filesize",
         "form-utils":               "src/utils/form",
         "i18n":                     "src/i18n",
         "jed":                      "node_modules/jed/jed",

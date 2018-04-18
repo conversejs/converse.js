@@ -765,7 +765,7 @@
                             // We send another message, for which an error will
                             // not be received, to test that errors appear
                             // after the relevant message.
-                            msg_text = 'This message will be sent, and not receive an error';
+                            msg_text = 'This message will be sent, and also receive an error';
                             message = view.model.messages.create({
                                 'msgid': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
                                 'fullname': fullname,
@@ -802,12 +802,6 @@
                             _converse.connection._dataRecv(test_utils.createRequest(stanza));
                             expect($chat_content.find('.chat-error').text()).toEqual(error_txt);
 
-                            /* Incoming error messages that are not tied to a
-                             * certain show message (via the msgid attribute),
-                             * are not shown at all. The reason for this is
-                             * that we may get error messages for chat state
-                             * notifications as well.
-                             */
                             stanza = $msg({
                                     'to': _converse.connection.jid,
                                     'type':'error',
@@ -819,7 +813,36 @@
                                 .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                                     .t('Server-to-server connection failed: Connecting failed: connection timeout');
                             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                            expect($chat_content.find('.chat-error').length).toEqual(1);
+                            expect($chat_content.find('.chat-error').length).toEqual(2);
+
+                            // If the last message is already an error message,
+                            // then we don't render it another time.
+                            stanza = $msg({
+                                    'to': _converse.connection.jid,
+                                    'type':'error',
+                                    'id':'another-unused-id',
+                                    'from': sender_jid
+                                })
+                                .c('error', {'type': 'cancel'})
+                                .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
+                                .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
+                                    .t('Server-to-server connection failed: Connecting failed: connection timeout');
+                            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                            expect($chat_content.find('.chat-error').length).toEqual(2);
+
+                            // A different error message will however render
+                            stanza = $msg({
+                                    'to': _converse.connection.jid,
+                                    'type':'error',
+                                    'id':'another-id',
+                                    'from': sender_jid
+                                })
+                                .c('error', {'type': 'cancel'})
+                                .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
+                                .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
+                                    .t('Something else went wrong as well');
+                            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                            expect($chat_content.find('.chat-error').length).toEqual(3);
                             done();
                         }));
                     });

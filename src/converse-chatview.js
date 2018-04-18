@@ -529,33 +529,6 @@
                     }
                 },
 
-                showMessage (message) {
-                    /* Inserts a chat message into the content area of the chat box.
-                     * Will also insert a new day indicator if the message is on a
-                     * different day.
-                     *
-                     * The message to show may either be newer than the newest
-                     * message, or older than the oldest message.
-                     *
-                     * Parameters:
-                     *  (Backbone.Model) message: The message object
-                     */
-                    const view = new _converse.MessageView({'model': message}),
-                          current_msg_date = moment(message.get('time')) || moment,
-                          previous_msg_date = this.getLastMessageDate(current_msg_date),
-                          message_el = view.el;
-
-                    if (_.isNull(previous_msg_date)) {
-                        this.content.insertAdjacentElement('afterbegin', message_el);
-                    } else {
-                        const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date}"]:last`, this.content).pop();
-                        previous_msg_el.insertAdjacentElement('afterend', message_el);
-                    }
-                    this.insertDayIndicator(message_el);
-                    this.clearChatStateNotification(message.get('from'));
-                    this.setScrollPosition(message_el);
-                },
-
                 setScrollPosition (message_el) {
                     /* Given a newly inserted message, determine whether we
                      * should keep the scrollbar in place (so as to not scroll
@@ -655,8 +628,50 @@
                     return !u.isVisible(this.el);
                 },
 
-                handleTextMessage (message) {
-                    this.showMessage(message);
+                insertMessage (view) {
+                    /* Given a view representing a message, insert it inot the
+                     * content area of the chat box.
+                     *
+                     * Parameters:
+                     *  (Backbone.View) message: The message Backbone.View
+                     */
+                    if (view.model.get('type') === 'error') {
+                        const previous_msg_el = this.content.querySelector(`[data-msgid="${view.model.get('msgid')}"]`);
+                        if (previous_msg_el) {
+                            return previous_msg_el.insertAdjacentElement('afterend', view.el);
+                        }
+                    }
+                    const current_msg_date = moment(view.model.get('time')) || moment,
+                            previous_msg_date = this.getLastMessageDate(current_msg_date);
+
+                    if (_.isNull(previous_msg_date)) {
+                        this.content.insertAdjacentElement('afterbegin', view.el);
+                    } else {
+                        const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date}"]:last`, this.content).pop();
+                        if (view.model.get('type') === 'error' &&
+                                u.hasClass('chat-error', previous_msg_el) &&
+                                previous_msg_el.textContent === view.model.get('message')) {
+                            // We don't show a duplicate error message
+                            return;
+                        }
+                        previous_msg_el.insertAdjacentElement('afterend', view.el);
+                    }
+                },
+
+                showMessage (message) {
+                    /* Inserts a chat message into the content area of the chat box.
+                     *
+                     * Will also insert a new day indicator if the message is on a
+                     * different day.
+                     *
+                     * Parameters:
+                     *  (Backbone.Model) message: The message object
+                     */
+                    const view = new _converse.MessageView({'model': message});
+                    this.insertMessage(view);
+                    this.insertDayIndicator(view.el);
+                    this.clearChatStateNotification(message.get('from'));
+                    this.setScrollPosition(view.el);
 
                     if (u.isNewMessage(message)) {
                         if (message.get('sender') === 'me') {
@@ -676,21 +691,6 @@
                     }
                 },
 
-                handleErrorMessage (message) {
-                    const message_el = this.content.querySelector(`[data-msgid="${message.get('msgid')}"]`);
-                    if (!_.isNull(message_el)) {
-                        message_el.insertAdjacentHTML(
-                            'afterend',
-                            tpl_info({
-                                'extra_classes': 'chat-error',
-                                'message': message.get('message'),
-                                'isodate': moment().format(),
-                                'data': ''
-                            }));
-                        this.scrollDown();
-                    }
-                },
-
                 onMessageAdded (message) {
                     /* Handler that gets called when a new message object is created.
                      *
@@ -702,13 +702,13 @@
                         delete this.clear_status_timeout;
                     }
                     if (message.get('type') === 'error') {
-                        this.handleErrorMessage(message);
+                        this.showMessage(message);
                     } else {
                         if (message.get('chat_state')) {
                             this.showChatStateNotification(message);
                         }
                         if (message.get('file') || message.get('message')) {
-                            this.handleTextMessage(message);
+                            this.showMessage(message);
                         }
                     }
                     _converse.emit('messageAdded', {

@@ -204,9 +204,9 @@
                     done();
                 }));
 
-                describe("when clicked", function () {
+                describe("when clicked and a file chosen", function () {
 
-                    it("a file upload slot is requested", mock.initConverseWithAsync(function (done, _converse) {
+                    it("is uploaded and sent out", mock.initConverseWithAsync(function (done, _converse) {
                         test_utils.waitUntilDiscoConfirmed(
                             _converse, _converse.domain,
                             [{'category': 'server', 'type':'IM'}],
@@ -309,6 +309,135 @@
                                     });
                                 });
                             });
+                        });
+                    }));
+
+                    it("shows and error message if the file is too large", mock.initConverseWithAsync(function (done, _converse) {
+                        var IQ_stanzas = _converse.connection.IQ_stanzas;
+                        var IQ_ids =  _converse.connection.IQ_ids;
+                        var send_backup = XMLHttpRequest.prototype.send;
+
+                        test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []).then(function () {
+                            test_utils.waitUntil(function () {
+                                return _.filter(IQ_stanzas, function (iq) {
+                                    return iq.nodeTree.querySelector(
+                                        'iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                                }).length > 0;
+                            }, 300).then(function () {
+                                var stanza = _.filter(IQ_stanzas, function (iq) {
+                                    return iq.nodeTree.querySelector(
+                                        'iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                                })[0];
+                                var info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
+
+                                stanza = $iq({
+                                    'type': 'result',
+                                    'from': 'localhost',
+                                    'to': 'dummy@localhost/resource',
+                                    'id': info_IQ_id
+                                }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
+                                    .c('identity', {
+                                        'category': 'server',
+                                        'type': 'im'}).up()
+                                    .c('feature', {
+                                        'var': 'http://jabber.org/protocol/disco#info'}).up()
+                                    .c('feature', {
+                                        'var': 'http://jabber.org/protocol/disco#items'});
+                                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                                _converse.api.disco.entities.get().then(function(entities) {
+                                    expect(entities.length).toBe(2);
+                                    expect(_.includes(entities.pluck('jid'), 'localhost')).toBe(true);
+                                    expect(_.includes(entities.pluck('jid'), 'dummy@localhost')).toBe(true);
+
+                                    expect(entities.get(_converse.domain).features.length).toBe(2);
+                                    expect(entities.get(_converse.domain).identities.length).toBe(1);
+
+                                    return test_utils.waitUntil(function () {
+                                        // Converse.js sees that the entity has a disco#items feature,
+                                        // so it will make a query for it.
+                                        return _.filter(IQ_stanzas, function (iq) {
+                                            return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
+                                        }).length > 0;
+                                    }, 300);
+                                });
+                            }).then(function () {
+                            var stanza = _.filter(IQ_stanzas, function (iq) {
+                                return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
+                            })[0];
+                            var items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
+                            stanza = $iq({
+                                'type': 'result',
+                                'from': 'localhost',
+                                'to': 'dummy@localhost/resource',
+                                'id': items_IQ_id
+                            }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#items'})
+                                .c('item', {
+                                    'jid': 'upload.localhost',
+                                    'name': 'HTTP File Upload'});
+                                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                                _converse.api.disco.entities.get().then(function (entities) {
+                                    expect(entities.length).toBe(2);
+                                    expect(entities.get('localhost').items.length).toBe(1);
+                                    return test_utils.waitUntil(function () {
+                                        // Converse.js sees that the entity has a disco#info feature,
+                                        // so it will make a query for it.
+                                        return _.filter(IQ_stanzas, function (iq) {
+                                            return iq.nodeTree.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                                        }).length > 0;
+                                    }, 300);
+                                });
+                            }).then(function () {
+                                var stanza = _.filter(IQ_stanzas, function (iq) {
+                                    return iq.nodeTree.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                                })[0];
+                                var IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
+                                expect(stanza.toLocaleString()).toBe(
+                                    "<iq from='dummy@localhost/resource' to='upload.localhost' type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                                        "<query xmlns='http://jabber.org/protocol/disco#info'/>"+
+                                    "</iq>");
+
+                                // Upload service responds and reports a maximum file size of 5MiB
+                                stanza = $iq({'type': 'result', 'to': 'dummy@localhost/resource', 'id': IQ_id, 'from': 'upload.localhost'})
+                                    .c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
+                                        .c('identity', {'category':'store', 'type':'file', 'name':'HTTP File Upload'}).up()
+                                        .c('feature', {'var':'urn:xmpp:http:upload:0'}).up()
+                                        .c('x', {'type':'result', 'xmlns':'jabber:x:data'})
+                                            .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
+                                                .c('value').t('urn:xmpp:http:upload:0').up().up()
+                                            .c('field', {'var':'max-file-size'})
+                                                .c('value').t('5242880');
+                                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                                _converse.api.disco.entities.get().then(function (entities) {
+                                    expect(entities.get('localhost').items.get('upload.localhost').identities.where({'category': 'store'}).length).toBe(1);
+                                    _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then(
+                                        function (result) {
+                                            test_utils.createContacts(_converse, 'current');
+                                            var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+                                            test_utils.openChatBoxFor(_converse, contact_jid);
+                                            var view = _converse.chatboxviews.get(contact_jid);
+                                            var file = {
+                                                'type': 'image/jpeg',
+                                                'size': '5242881',
+                                                'lastModifiedDate': "",
+                                                'name': "my-juliet.jpg"
+                                            };
+                                            view.model.sendFiles([file]);
+                                            return test_utils.waitUntil(function () {
+                                                return view.el.querySelectorAll('.message').length;
+                                            }).then(function () {
+                                                const messages = view.el.querySelectorAll('.message.chat-error');
+                                                expect(messages.length).toBe(1);
+                                                expect(messages[0].textContent).toBe(
+                                                    'The size of your file, my-juliet.jpg, exceeds the maximum allowed by your server, which is 5 MB.');
+                                                done();
+                                            });
+                                        }
+                                    );
+                                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                            })
                         });
                     }));
                 });

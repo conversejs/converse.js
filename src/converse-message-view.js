@@ -11,6 +11,7 @@
         "emojione",
         "tpl!action",
         "tpl!file",
+        "tpl!info",
         "tpl!message",
         "tpl!spoiler_message"
     ], factory);
@@ -20,6 +21,7 @@
         emojione,
         tpl_action,
         tpl_file,
+        tpl_info,
         tpl_message,
         tpl_spoiler_message
     ) {
@@ -53,7 +55,10 @@
                 render () {
                     if (this.model.get('file') && !this.model.get('message')) {
                         return this.renderFileUploadProgresBar();
+                    } else if (this.model.get('type') === 'error') {
+                        return this.renderErrorMessage();
                     }
+
                     let template, username,
                         text = this.model.get('message');
 
@@ -91,6 +96,10 @@
                     u.renderImageURLs(msg_content).then(() => {
                         this.model.collection.trigger('rendered');
                     });
+                    return this.replaceElement(msg);
+                },
+
+                replaceElement (msg) {
                     if (!_.isNil(this.el.parentElement)) {
                         this.el.parentElement.replaceChild(msg, this.el);
                     }
@@ -98,13 +107,20 @@
                     return this.el;
                 },
 
+                renderErrorMessage () {
+                    const moment_time = moment(this.model.get('time')),
+                          msg = u.stringToElement(
+                        tpl_info(_.extend(this.model.toJSON(), {
+                            'extra_classes': 'chat-error',
+                            'isodate': moment_time.format(),
+                            'data': ''
+                        })));
+                    return this.replaceElement(msg);
+                },
+
                 renderFileUploadProgresBar () {
                     const msg = u.stringToElement(tpl_file(this.model.toJSON()));
-                    if (!_.isNil(this.el.parentElement)) {
-                        this.el.parentElement.replaceChild(msg, this.el);
-                    }
-                    this.setElement(msg);
-                    return this.el;
+                    return this.replaceElement(msg);
                 },
 
                 isMeCommand () {

@@ -41,6 +41,7 @@
     Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
     Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
     Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
+    Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
     Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
     Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
     Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');

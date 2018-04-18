@@ -211,7 +211,6 @@
             }
             .chat-message {
                 overflow: auto; // Ensures that content stays inside
-                margin: 0;
 
                 &.onload {
                     animation: colorchange-chatmessage 1s;
@@ -281,7 +280,9 @@
                 padding-right: 0.25em;
                 whitespace: nowrap;
             }
-
+            video {
+                width: 100%
+            }
             progress {
                 margin: 0.5em 0;
                 width: 100%

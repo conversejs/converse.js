@@ -13,12 +13,20 @@
         "es6-promise",
         "lodash.noconflict",
         "strophe",
+        "tpl!audio",
+        "tpl!file",
+        "tpl!image",
+        "tpl!video"
     ], factory);
 }(this, function (
         sizzle,
         Promise,
         _,
-        Strophe
+        Strophe,
+        tpl_audio,
+        tpl_file,
+        tpl_image,
+        tpl_video
     ) {
     "use strict";
     const b64_sha1 = Strophe.SHA1.b64_sha1;
@@ -213,18 +221,56 @@
             ))
     };
 
-    u.renderMovieURLs = function (text) {
-        if (text.endsWith('mp4')) {
-            return "<video controls><source src=\"" + text + "\" type=\"video/mp4\"></video>";
+    u.renderFileURL = function (_converse, url) {
+        if (url.endsWith('mp3') || url.endsWith('mp4') ||
+            url.endsWith('jpg') || url.endsWith('jpeg') ||
+            url.endsWith('png') || url.endsWith('gif') ||
+            url.endsWith('svg')) {
+
+            return url;
         }
-        return text;
+        const name = url.split('/').pop(),
+              { __ } = _converse;
+
+        return tpl_file({
+            'url': url,
+            'label_download': __('Download file: "%1$s', name)
+        })
     };
 
-    u.renderAudioURLs = function (text) {
-        if (text.endsWith('mp3')) {
-            return "<audio controls><source src=\"" + text+ "\" type=\"audio/mpeg\"></audio>";
+    u.renderImageURL = function (_converse, url) {
+        const { __ } = _converse;
+        if (url.endsWith('jpg') || url.endsWith('jpeg') || url.endsWith('png') ||
+            url.endsWith('gif') || url.endsWith('svg')) {
+
+            return tpl_image({
+                'url': url,
+                'label_download': __('Download image file')
+            })
         }
-        return text;
+        return url;
+    };
+
+    u.renderMovieURL = function (_converse, url) {
+        const { __ } = _converse;
+        if (url.endsWith('mp4')) {
+            return tpl_video({
+                'url': url,
+                'label_download': __('Download video file')
+            })
+        }
+        return url;
+    };
+
+    u.renderAudioURL = function (_converse, url) {
+        const { __ } = _converse;
+        if (url.endsWith('mp3')) {
+            return tpl_audio({
+                'url': url,
+                'label_download': __('Download audio file')
+            })
+        }
+        return url;
     };
 
     u.slideInAllElements = function (elements, duration=300) {

@@ -11,7 +11,7 @@
         "emojione",
         "filesize",
         "tpl!action",
-        "tpl!file",
+        "tpl!file_progress",
         "tpl!info",
         "tpl!message",
         "tpl!spoiler_message"
@@ -22,7 +22,7 @@
         emojione,
         filesize,
         tpl_action,
-        tpl_file,
+        tpl_file_progress,
         tpl_info,
         tpl_message,
         tpl_spoiler_message
@@ -85,16 +85,27 @@
                             'label_show': __('Show hidden message')
                         })
                     ));
-                    const msg_content = msg.querySelector('.chat-msg-content');
-                    text = xss.filterXSS(text, {'whiteList': {}});
-                    msg_content.innerHTML = _.flow(
-                        _.partial(u.geoUriToHttp, _, _converse.geouri_replacement),
-                        _.partial(u.addHyperlinks, _),
-                        _.partial(u.addEmoji, _converse, emojione, _),
-                        u.renderMovieURLs,
-                        u.renderAudioURLs
-                    )(text);
 
+                    var url = this.model.get('oob_url');
+                    if (url) {
+                        const msg_media = msg.querySelector('.chat-msg-media');
+                        msg_media.innerHTML = _.flow(
+                            _.partial(u.renderFileURL, _converse),
+                            _.partial(u.renderMovieURL, _converse),
+                            _.partial(u.renderAudioURL, _converse),
+                            _.partial(u.renderImageURL, _converse)
+                        )(url);
+                    }
+
+                    const msg_content = msg.querySelector('.chat-msg-content');
+                    if (text !== url) {
+                        text = xss.filterXSS(text, {'whiteList': {}});
+                        msg_content.innerHTML = _.flow(
+                            _.partial(u.geoUriToHttp, _, _converse.geouri_replacement),
+                            u.addHyperlinks,
+                            _.partial(u.addEmoji, _converse, emojione, _)
+                        )(text);
+                    }
                     u.renderImageURLs(msg_content).then(() => {
                         this.model.collection.trigger('rendered');
                     });
@@ -121,7 +132,7 @@
                 },
 
                 renderFileUploadProgresBar () {
-                    const msg = u.stringToElement(tpl_file(
+                    const msg = u.stringToElement(tpl_file_progress(
                         _.extend(this.model.toJSON(),
                             {'filesize': filesize(this.model.get('file').size)}
                         )));

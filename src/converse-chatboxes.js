@@ -10,15 +10,14 @@
         "emojione",
         "filesize",
         "tpl!chatboxes",
-        "backbone.overview"
+        "backbone.overview",
+        "form-utils"
     ], factory);
 }(this, function (converse, emojione, filesize, tpl_chatboxes) {
     "use strict";
 
-    const { $msg, Backbone, Promise, Strophe, b64_sha1, moment, utils, _ } = converse.env;
+    const { $msg, Backbone, Promise, Strophe, b64_sha1, moment, sizzle, utils, _ } = converse.env;
     const u = converse.env.utils;
-
-    Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
 
 
     converse.plugins.add('converse-chatboxes', {
@@ -373,6 +372,7 @@
                         sender = 'them';
                         fullname = this.get('fullname');
                     }
+
                     const spoiler = message.querySelector(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`);
                     const attrs = {
                         'type': type,
@@ -386,6 +386,10 @@
                         'time': time,
                         'is_spoiler': !_.isNull(spoiler)
                     };
+                    _.each(sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, message), (xform) => {
+                        attrs['oob_url'] = xform.querySelector('url').textContent;
+                        attrs['oob_desc'] = xform.querySelector('url').textContent;
+                    });
                     if (spoiler) {
                         attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
                     }
@@ -679,7 +683,13 @@
                 return _converse.chatboxviews.get(chatbox.get('id'));
             };
 
+
             /************************ BEGIN Event Handlers ************************/
+            _converse.on('addClientFeatures', () => {
+                _converse.connection.disco.addFeature(Strophe.NS.HTTPUPLOAD);
+                _converse.connection.disco.addFeature(Strophe.NS.OUTOFBAND);
+            });
+
             _converse.api.listen.on('pluginsInitialized', () => {
                 _converse.chatboxes = new _converse.ChatBoxes();
                 _converse.chatboxviews = new _converse.ChatBoxViews({

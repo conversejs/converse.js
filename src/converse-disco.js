@@ -161,7 +161,7 @@
                         });
                     });
 
-                    _.each(sizzle('x[type="result"][xmlns="jabber:x:data"]', stanza), (form) => {
+                    _.each(sizzle(`x[type="result"][xmlns="${Strophe.NS.XFORM}"]`, stanza), (form) => {
                         const data = {};
                         _.each(form.querySelectorAll('field'), (field) => {
                             data[field.getAttribute('var')] = {
@@ -172,7 +172,7 @@
                         this.dataforms.create(data);
                     });
 
-                    if (stanza.querySelector('feature[var="'+Strophe.NS.DISCO_ITEMS+'"]')) {
+                    if (stanza.querySelector(`feature[var="${Strophe.NS.DISCO_ITEMS}"]`)) {
                         this.queryForItems();
                     }
                     _.forEach(stanza.querySelectorAll('feature'), (feature) => {

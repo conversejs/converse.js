@@ -1578,6 +1578,171 @@
                     done();
                 }));
 
+                it("will render audio from oob mp3 URLs",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
+
+                    test_utils.createContacts(_converse, 'current');
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    var view = _converse.chatboxviews.get(contact_jid);
+                    spyOn(view.model, 'sendMessage').and.callThrough();
+
+                    var stanza = Strophe.xmlHtmlNode(
+                        "<message from='"+contact_jid+"'"+
+                        "         type='chat'"+
+                        "         to='dummy@localhost/resource'>"+
+                        "    <body>Have you heard this funny audio?</body>"+
+                        "    <x xmlns='jabber:x:oob'><url>http://localhost/audio.mp3</url></x>"+
+                        "</message>").firstChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                    test_utils.waitUntil(function () {
+                        return view.el.querySelectorAll('.chat-content .chat-message audio').length;
+                    }, 1000).then(function () {
+                        var msg = view.el.querySelector('.chat-message .chat-msg-content');
+                        expect(msg.outerHTML).toEqual('<span class="chat-msg-content">Have you heard this funny audio?</span>');
+                        var media = view.el.querySelector('.chat-message .chat-msg-media');
+                        expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                            '<audio controls=""><source src="http://localhost/audio.mp3" type="audio/mpeg"></audio>'+
+                            '<a target="_blank" rel="noopener" href="http://localhost/audio.mp3">Download audio file</a>');
+
+                        // If the <url> and <body> contents is the same, don't duplicate.
+                        var stanza = Strophe.xmlHtmlNode(
+                            "<message from='"+contact_jid+"'"+
+                            "         type='chat'"+
+                            "         to='dummy@localhost/resource'>"+
+                            "    <body>http://localhost/audio.mp3</body>"+
+                            "    <x xmlns='jabber:x:oob'><url>http://localhost/audio.mp3</url></x>"+
+                            "</message>").firstChild;
+                        _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                        msg = view.el.querySelector('.chat-message:last-child .chat-msg-content');
+                        expect(msg.innerHTML).toEqual('');
+                        media = view.el.querySelector('.chat-message:last-child .chat-msg-media');
+                        expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                            '<audio controls=""><source src="http://localhost/audio.mp3" type="audio/mpeg"></audio>'+
+                            '<a target="_blank" rel="noopener" href="http://localhost/audio.mp3">Download audio file</a>');
+                        done();
+                    });
+                }));
+
+                it("will render video from oob mp4 URLs",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
+
+                    test_utils.createContacts(_converse, 'current');
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    var view = _converse.chatboxviews.get(contact_jid);
+                    spyOn(view.model, 'sendMessage').and.callThrough();
+
+                    var stanza = Strophe.xmlHtmlNode(
+                        "<message from='"+contact_jid+"'"+
+                        "         type='chat'"+
+                        "         to='dummy@localhost/resource'>"+
+                        "    <body>Have you seen this funny video?</body>"+
+                        "    <x xmlns='jabber:x:oob'><url>http://localhost/video.mp4</url></x>"+
+                        "</message>").firstChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                    test_utils.waitUntil(function () {
+                        return view.el.querySelectorAll('.chat-content .chat-message video').length;
+                    }, 1000).then(function () {
+                        var msg = view.el.querySelector('.chat-message .chat-msg-content');
+                        expect(msg.outerHTML).toEqual('<span class="chat-msg-content">Have you seen this funny video?</span>');
+                        var media = view.el.querySelector('.chat-message .chat-msg-media');
+                        expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                            '<video controls=""><source src="http://localhost/video.mp4" type="video/mp4"></video>'+
+                            '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file</a>');
+
+                        // If the <url> and <body> contents is the same, don't duplicate.
+                        var stanza = Strophe.xmlHtmlNode(
+                            "<message from='"+contact_jid+"'"+
+                            "         type='chat'"+
+                            "         to='dummy@localhost/resource'>"+
+                            "    <body>http://localhost/video.mp4</body>"+
+                            "    <x xmlns='jabber:x:oob'><url>http://localhost/video.mp4</url></x>"+
+                            "</message>").firstChild;
+                        _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                        msg = view.el.querySelector('.chat-message:last-child .chat-msg-content');
+                        expect(msg.innerHTML).toEqual('');
+                        media = view.el.querySelector('.chat-message:last-child .chat-msg-media');
+                        expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                            '<video controls=""><source src="http://localhost/video.mp4" type="video/mp4"></video>'+
+                            '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file</a>');
+                        done();
+                    });
+                }));
+
+                it("will render download links for files from oob URLs",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
+
+                    test_utils.createContacts(_converse, 'current');
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    var view = _converse.chatboxviews.get(contact_jid);
+                    spyOn(view.model, 'sendMessage').and.callThrough();
+
+                    var stanza = Strophe.xmlHtmlNode(
+                        "<message from='"+contact_jid+"'"+
+                        "         type='chat'"+
+                        "         to='dummy@localhost/resource'>"+
+                        "    <body>Have you downloaded this funny file?</body>"+
+                        "    <x xmlns='jabber:x:oob'><url>http://localhost/funny.pdf</url></x>"+
+                        "</message>").firstChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                    test_utils.waitUntil(function () {
+                        return view.el.querySelectorAll('.chat-content .chat-message a').length;
+                    }, 1000).then(function () {
+                        var msg = view.el.querySelector('.chat-message .chat-msg-content');
+                        expect(msg.outerHTML).toEqual('<span class="chat-msg-content">Have you downloaded this funny file?</span>');
+                        var media = view.el.querySelector('.chat-message .chat-msg-media');
+                        expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                            '<a target="_blank" rel="noopener" href="http://localhost/funny.pdf">Download file: "funny.pdf</a>');
+                        done();
+                    });
+                }));
+
+                it("will render images from oob URLs",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
+
+                    test_utils.createContacts(_converse, 'current');
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    var view = _converse.chatboxviews.get(contact_jid);
+                    spyOn(view.model, 'sendMessage').and.callThrough();
+                    var base_url = document.URL.split(window.location.pathname)[0];
+                    var url = base_url+"/logo/conversejs-filled.svg";
+
+                    var stanza = Strophe.xmlHtmlNode(
+                        "<message from='"+contact_jid+"'"+
+                        "         type='chat'"+
+                        "         to='dummy@localhost/resource'>"+
+                        "    <body>Have you seen this funny image?</body>"+
+                        "    <x xmlns='jabber:x:oob'><url>"+url+"</url></x>"+
+                        "</message>").firstChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                    test_utils.waitUntil(function () {
+                        return view.el.querySelectorAll('.chat-content .chat-message img').length;
+                    }, 1000).then(function () {
+                        var msg = view.el.querySelector('.chat-message .chat-msg-content');
+                        expect(msg.outerHTML).toEqual('<span class="chat-msg-content">Have you seen this funny image?</span>');
+                        var media = view.el.querySelector('.chat-message .chat-msg-media');
+                        expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                            '<img class="chat-image" src="http://localhost:8000/logo/conversejs-filled.svg">');
+                        done();
+                    });
+                }));
 
                 it("will render images from their URLs",
                     mock.initConverseWithPromises(
@@ -1672,10 +1837,10 @@
                     var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                     // <composing> state
                     var msg = $msg({
-                            from: sender_jid,
-                            to: _converse.connection.jid,
-                            type: 'chat',
-                            id: (new Date()).getTime()
+                            'from': sender_jid,
+                            'to': _converse.connection.jid,
+                            'type': 'chat',
+                            'id': (new Date()).getTime()
                         }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                     _converse.chatboxes.onMessage(msg);
                     expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));

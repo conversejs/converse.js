@@ -7435,8 +7435,7 @@ body {
       font-style: italic; }
     #converse-embedded-chat .chatbox .chat-body .chat-message,
     #conversejs .chatbox .chat-body .chat-message {
-      overflow: auto;
-      margin: 0; }
+      overflow: auto; }
       #converse-embedded-chat .chatbox .chat-body .chat-message.onload,
       #conversejs .chatbox .chat-body .chat-message.onload {
         animation: colorchange-chatmessage 1s;
@@ -7497,6 +7496,9 @@ body {
     #conversejs .chatbox .chat-content .toggle-spoiler:before {
       padding-right: 0.25em;
       whitespace: nowrap; }
+    #converse-embedded-chat .chatbox .chat-content video,
+    #conversejs .chatbox .chat-content video {
+      width: 100%; }
     #converse-embedded-chat .chatbox .chat-content progress,
     #conversejs .chatbox .chat-content progress {
       margin: 0.5em 0;

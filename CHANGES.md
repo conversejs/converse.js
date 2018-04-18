@@ -5,7 +5,8 @@
 ## New Features
 
 - #161 XEP-0363: HTTP File Upload
-- mp4 and mp3 files will now be playable directly in chat
+- Support for rendering URLs sent according to XEP-0066 Out of Band Data.
+- mp4 and mp3 files when sent as XEP-0066 Out of Band Data, will now be playable directly in chat
 
 ## 4.0.0 (Unreleased)
 

@@ -178,7 +178,7 @@
                 line-height: $line-height-small;
                 color: $chat-head-color;
                 font-size: $font-size-small;
-                margin: 0.5em;
+                margin: 0.5em 0;
                 &.badge {
                     color: $chat-head-text-color;
                 }
@@ -209,7 +209,8 @@
             }
             .chat-message {
                 overflow: auto; // Ensures that content stays inside
-                margin: 0.3em;
+                margin: 0;
+                padding: 0.4em 0;
 
                 &.onload {
                     animation: colorchange-chatmessage 1s;
@@ -267,7 +268,7 @@
         }
         .chat-content {
             height: 100%;
-            padding: 0.5em;
+            padding: 1em;
             font-size: 13px;
             color: $text-color;
             overflow-y: auto;
@@ -278,6 +279,10 @@
             .toggle-spoiler:before {
                 padding-right: 0.25em;
                 whitespace: nowrap;
+            }
+
+            progress {
+                width: 100%
             }
         }
         .chat-content-sendbutton {

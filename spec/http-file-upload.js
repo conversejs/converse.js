@@ -40,10 +40,10 @@
                          *  </query>
                          *  </iq>
                          */
-                        var stanza = _.filter(IQ_stanzas, function (iq) {
+                        var stanza = _.find(IQ_stanzas, function (iq) {
                             return iq.nodeTree.querySelector(
                                 'iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
-                        })[0];
+                        });
                         var info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
 
                         stanza = $iq({
@@ -88,9 +88,9 @@
                          *  </query>
                          *  </iq>
                          */
-                    var stanza = _.filter(IQ_stanzas, function (iq) {
+                    var stanza = _.find(IQ_stanzas, function (iq) {
                         return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
-                    })[0];
+                    });
                     var items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                     stanza = $iq({
                         'type': 'result',
@@ -115,9 +115,9 @@
                             }, 300);
                         });
                     }).then(function () {
-                        var stanza = _.filter(IQ_stanzas, function (iq) {
+                        var stanza = _.find(IQ_stanzas, function (iq) {
                             return iq.nodeTree.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
-                        })[0];
+                        });
                         var IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                         expect(stanza.toLocaleString()).toBe(
                             "<iq from='dummy@localhost/resource' to='upload.localhost' type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
@@ -323,10 +323,10 @@
                                         'iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                                 }).length > 0;
                             }, 300).then(function () {
-                                var stanza = _.filter(IQ_stanzas, function (iq) {
+                                var stanza = _.find(IQ_stanzas, function (iq) {
                                     return iq.nodeTree.querySelector(
                                         'iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
-                                })[0];
+                                });
                                 var info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
 
                                 stanza = $iq({
@@ -361,9 +361,9 @@
                                     }, 300);
                                 });
                             }).then(function () {
-                            var stanza = _.filter(IQ_stanzas, function (iq) {
+                            var stanza = _.find(IQ_stanzas, function (iq) {
                                 return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
-                            })[0];
+                            });
                             var items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                             stanza = $iq({
                                 'type': 'result',
@@ -388,9 +388,9 @@
                                     }, 300);
                                 });
                             }).then(function () {
-                                var stanza = _.filter(IQ_stanzas, function (iq) {
+                                var stanza = _.find(IQ_stanzas, function (iq) {
                                     return iq.nodeTree.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
-                                })[0];
+                                });
                                 var IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                                 expect(stanza.toLocaleString()).toBe(
                                     "<iq from='dummy@localhost/resource' to='upload.localhost' type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+

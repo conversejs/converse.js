@@ -49,9 +49,9 @@
                      *  </query>
                      *  </iq>
                      */
-                    var stanza = _.filter(IQ_stanzas, function (iq) {
+                    var stanza = _.find(IQ_stanzas, function (iq) {
                         return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
-                    })[0];
+                    });
                     var info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                     stanza = $iq({
                         'type': 'result',
@@ -128,9 +128,9 @@
                              * </query>
                              * </iq>
                              */
-                            var stanza = _.filter(IQ_stanzas, function (iq) {
+                            var stanza = _.find(IQ_stanzas, function (iq) {
                                 return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
-                            })[0];
+                            });
                             var items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                             stanza = $iq({
                                 'type': 'result',

@@ -174,11 +174,13 @@
                 margin: 0;
                 padding: 5px;
             }
+            .message {
+                margin: 0.5em 0;
+            }
             .chat-info {
                 line-height: $line-height-small;
                 color: $chat-head-color;
                 font-size: $font-size-small;
-                margin: 0.5em 0;
                 &.badge {
                     color: $chat-head-text-color;
                 }
@@ -210,7 +212,6 @@
             .chat-message {
                 overflow: auto; // Ensures that content stays inside
                 margin: 0;
-                padding: 0.4em 0;
 
                 &.onload {
                     animation: colorchange-chatmessage 1s;
@@ -282,6 +283,7 @@
             }
 
             progress {
+                margin: 0.5em 0;
                 width: 100%
             }
         }

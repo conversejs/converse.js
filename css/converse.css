@@ -6780,7 +6780,7 @@ body.reset {
     z-index: 1031;
     position: fixed;
     bottom: 0;
-    height: auto;
+    height: 2.7rem;
     right: 0; }
   #conversejs ::-webkit-input-placeholder {
     /* Chrome/Opera/Safari */
@@ -7345,12 +7345,14 @@ body.reset {
       font-size: 14px;
       margin: 0;
       padding: 5px; }
+    #converse-embedded-chat .chatbox .chat-body .message,
+    #conversejs .chatbox .chat-body .message {
+      margin: 0.5em 0; }
     #converse-embedded-chat .chatbox .chat-body .chat-info,
     #conversejs .chatbox .chat-body .chat-info {
       line-height: 14px;
       color: #3AA569;
-      font-size: 12px;
-      margin: 0.5em 0; }
+      font-size: 12px; }
       #converse-embedded-chat .chatbox .chat-body .chat-info.badge,
       #conversejs .chatbox .chat-body .chat-info.badge {
         color: white; }
@@ -7381,8 +7383,7 @@ body.reset {
     #converse-embedded-chat .chatbox .chat-body .chat-message,
     #conversejs .chatbox .chat-body .chat-message {
       overflow: auto;
-      margin: 0;
-      padding: 0.4em 0; }
+      margin: 0; }
       #converse-embedded-chat .chatbox .chat-body .chat-message.onload,
       #conversejs .chatbox .chat-body .chat-message.onload {
         animation: colorchange-chatmessage 1s;
@@ -7445,6 +7446,7 @@ body.reset {
       whitespace: nowrap; }
     #converse-embedded-chat .chatbox .chat-content progress,
     #conversejs .chatbox .chat-content progress {
+      margin: 0.5em 0;
       width: 100%; }
   #converse-embedded-chat .chatbox .chat-content-sendbutton,
   #conversejs .chatbox .chat-content-sendbutton {

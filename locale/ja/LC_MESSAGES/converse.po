@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-04-04 05:38+0000\n"
+"PO-Revision-Date: 2018-04-19 04:47+0000\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.20-dev\n"
+"X-Generator: Weblate 3.0-dev\n"
 
 #: dist/converse-no-dependencies.js:7402
 msgid "The connection has dropped, attempting to reconnect."
@@ -271,17 +271,16 @@ msgid "Filter"
 msgstr "絞り込み"
 
 #: dist/converse-no-dependencies.js:16901
-#, fuzzy
 msgid "Filter by contact name"
-msgstr "名前"
+msgstr "相手先名で絞り込み"
 
 #: dist/converse-no-dependencies.js:16902
 msgid "Filter by group name"
-msgstr ""
+msgstr "グループ名で絞り込み"
 
 #: dist/converse-no-dependencies.js:16903
 msgid "Filter by status"
-msgstr ""
+msgstr "在席状況で絞り込み"
 
 #: dist/converse-no-dependencies.js:16904
 msgid "Any"
@@ -390,9 +389,8 @@ msgid "Change chat status"
 msgstr "在席状況を変更"
 
 #: dist/converse-no-dependencies.js:18119
-#, fuzzy
 msgid "Personal status message"
-msgstr "私信"
+msgstr "個別の在席状況メッセージ"
 
 #: dist/converse-no-dependencies.js:18162
 #, javascript-format
@@ -722,7 +720,7 @@ msgstr "発言制限なし談話室"
 
 #: dist/converse-no-dependencies.js:22888
 msgid "Query for Chatrooms"
-msgstr ""
+msgstr "談話室へのクエリ"
 
 #: dist/converse-no-dependencies.js:22889
 msgid "Server address"
@@ -985,9 +983,8 @@ msgid "Add a new room"
 msgstr "新しい談話室を追加"
 
 #: dist/converse-no-dependencies.js:24495
-#, fuzzy
 msgid "Query for rooms"
-msgstr "ユーザーを談話室から締め出す"
+msgstr "談話室へのクエリ"
 
 #: dist/converse-no-dependencies.js:24534
 #, javascript-format

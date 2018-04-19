@@ -8,44 +8,47 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2016-04-07 10:23+0000\n"
-"Last-Translator: Meskó Balázs <meskobalazs@gmail.com>\n"
-"Language-Team: Hungarian\n"
+"PO-Revision-Date: 2018-04-21 08:04+0000\n"
+"Last-Translator: Szilágyi Gyula <gyula.n7@gmail.com>\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/conversejs/"
+"translations/hu/>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.0-dev\n"
 "domain: converse\n"
 "lang: hu\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.8.5\n"
 
 #: dist/converse-no-dependencies.js:7402
 msgid "The connection has dropped, attempting to reconnect."
-msgstr ""
+msgstr "A kapcsolat megszakadt, megpróbál újra csatlakozni."
 
 #: dist/converse-no-dependencies.js:7500
-#, fuzzy
 msgid "An error occurred while connecting to the chat server."
-msgstr "Hiba történt az adatok mentése közben."
+msgstr "Hiba történt a chat szerverhez való csatlakozás közben."
 
 #: dist/converse-no-dependencies.js:7507
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
-msgstr ""
+msgstr "Jabber-azonosítója és/vagy jelszava helytelen. Kérem, próbálja újra."
 
 #: dist/converse-no-dependencies.js:7519
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
 msgstr ""
+"Sajnáljuk, nem tudtunk csatlakozni a domainhez tartozó XMPP gazdagéphez: %1$s"
 
 #: dist/converse-no-dependencies.js:7521
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
+"Az XMPP kiszolgáló nem ajánlott fel támogatott hitelesítési mechanizmust"
 
 #: dist/converse-no-dependencies.js:8208
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
-msgstr "Sajnáljuk, hiba történt a hozzáadás során"
+msgstr "Sajnáljuk, hiba történt a(z) %1$s nevű névjegy hozzáadása során."
 
 #: dist/converse-no-dependencies.js:8395
 msgid "This client does not allow presence subscriptions"
@@ -62,14 +65,12 @@ msgstr "A csevegés bezárása"
 #: dist/converse-no-dependencies.js:14316
 #: dist/converse-no-dependencies.js:14353
 #: dist/converse-no-dependencies.js:23128
-#, fuzzy
 msgid "You have unread messages"
-msgstr "Üzenetek törlése"
+msgstr "Olvasatlan üzenetei vannak"
 
 #: dist/converse-no-dependencies.js:14339
-#, fuzzy
 msgid "Hidden message"
-msgstr "Személyes üzenet"
+msgstr "Rejtett üzenet"
 
 #: dist/converse-no-dependencies.js:14341
 msgid "Personal message"
@@ -78,21 +79,19 @@ msgstr "Személyes üzenet"
 #: dist/converse-no-dependencies.js:14348
 #: dist/converse-no-dependencies.js:23125
 msgid "Send"
-msgstr ""
+msgstr "Elküld"
 
 #: dist/converse-no-dependencies.js:14349
 msgid "Optional hint"
-msgstr ""
+msgstr "Választható tipp"
 
 #: dist/converse-no-dependencies.js:14405
-#, fuzzy
 msgid "Click to write as a normal (non-spoiler) message"
-msgstr "Egyedi státusz üzenet írása"
+msgstr "Kattintson normál (nem spoiler) üzenet írásához"
 
 #: dist/converse-no-dependencies.js:14407
-#, fuzzy
 msgid "Click to write your message as a spoiler"
-msgstr "Egyedi státusz üzenet írása"
+msgstr "Kattintson spoiler üzenet írásához"
 
 #: dist/converse-no-dependencies.js:14411
 msgid "Clear all messages"
@@ -108,9 +107,8 @@ msgstr "Hívás indítása"
 
 #: dist/converse-no-dependencies.js:14603
 #: dist/converse-no-dependencies.js:15055
-#, fuzzy
 msgid "Show hidden message"
-msgstr "Mutasd a menüt"
+msgstr "Rejtett üzenet megjelenítése"
 
 #: dist/converse-no-dependencies.js:14652
 msgid "me"
@@ -118,7 +116,7 @@ msgstr "Én"
 
 #: dist/converse-no-dependencies.js:14708
 msgid "Typing from another device"
-msgstr ""
+msgstr "Gépelés másik eszközről"
 
 #: dist/converse-no-dependencies.js:14710
 msgid "is typing"
@@ -126,7 +124,7 @@ msgstr "gépel..."
 
 #: dist/converse-no-dependencies.js:14716
 msgid "Stopped typing on the other device"
-msgstr ""
+msgstr "Abbahagyta a gépelést a másik eszközön"
 
 #: dist/converse-no-dependencies.js:14718
 msgid "has stopped typing"
@@ -158,7 +156,7 @@ msgstr "Törölni szeretné az eddigi üzeneteket?"
 
 #: dist/converse-no-dependencies.js:15050
 msgid "Hide hidden message"
-msgstr ""
+msgstr "Rejtett üzenet elrejtése"
 
 #: dist/converse-no-dependencies.js:15068
 #: dist/converse-no-dependencies.js:26656
@@ -248,21 +246,19 @@ msgstr "Partner neve"
 #: dist/converse-no-dependencies.js:16785
 #: dist/converse-no-dependencies.js:23016
 msgid "Optional nickname"
-msgstr ""
+msgstr "Választható becenév"
 
 #: dist/converse-no-dependencies.js:16788
-#, fuzzy
 msgid "Add a Contact"
-msgstr "Új partner felvétele"
+msgstr "Új névjegy felvétele"
 
 #: dist/converse-no-dependencies.js:16789
 msgid "XMPP Address"
-msgstr ""
+msgstr "XMPP Cím"
 
 #: dist/converse-no-dependencies.js:16791
-#, fuzzy
 msgid "name@example.org"
-msgstr "pl. felhasznalo@pelda.hu"
+msgstr "felhasznalo@pelda.hu"
 
 #: dist/converse-no-dependencies.js:16792
 msgid "Add"
@@ -271,32 +267,31 @@ msgstr "Hozzáad"
 #: dist/converse-no-dependencies.js:16863
 #: dist/converse-no-dependencies.js:18652
 msgid "Please enter a valid XMPP address"
-msgstr ""
+msgstr "Kérjük, adjon meg érvényes XMPP címet"
 
 #: dist/converse-no-dependencies.js:16900
 msgid "Filter"
-msgstr ""
+msgstr "Szűrő"
 
 #: dist/converse-no-dependencies.js:16901
-#, fuzzy
 msgid "Filter by contact name"
-msgstr "Partner neve"
+msgstr "Szűrés névjegy szerint"
 
 #: dist/converse-no-dependencies.js:16902
 msgid "Filter by group name"
-msgstr ""
+msgstr "Szűrés csoport szerint"
 
 #: dist/converse-no-dependencies.js:16903
 msgid "Filter by status"
-msgstr ""
+msgstr "Szűrés állapot szerint"
 
 #: dist/converse-no-dependencies.js:16904
 msgid "Any"
-msgstr ""
+msgstr "Bármilyen"
 
 #: dist/converse-no-dependencies.js:16905
 msgid "Unread"
-msgstr ""
+msgstr "Olvasatlan"
 
 #: dist/converse-no-dependencies.js:16906
 #: dist/converse-no-dependencies.js:18115
@@ -305,7 +300,7 @@ msgstr "Elérhető"
 
 #: dist/converse-no-dependencies.js:16907
 msgid "Chatty"
-msgstr ""
+msgstr "Beszédes"
 
 #: dist/converse-no-dependencies.js:16908
 #: dist/converse-no-dependencies.js:18111
@@ -319,7 +314,7 @@ msgstr "Távol"
 
 #: dist/converse-no-dependencies.js:16910
 msgid "Extended Away"
-msgstr ""
+msgstr "Hosszú távollét"
 
 #: dist/converse-no-dependencies.js:16911
 #: dist/converse-no-dependencies.js:18114
@@ -328,33 +323,33 @@ msgstr "Nem elérhető"
 
 #: dist/converse-no-dependencies.js:17062
 #: dist/converse-no-dependencies.js:17099
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to remove %1$s as a contact"
-msgstr "Partner törlése"
+msgstr "Kattintson %1$s ismerősének eltávolításához"
 
 #: dist/converse-no-dependencies.js:17068
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to accept the contact request from %1$s"
-msgstr "Partner felvételének elfogadása"
+msgstr "Kattintson %1$s kapcsolatkérésének elfogadásához"
 
 #: dist/converse-no-dependencies.js:17069
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to decline the contact request from %1$s"
-msgstr "Partner felvételének megtagadása"
+msgstr "Kattintson %1$s kapcsolatkérésének elutasításához"
 
 #: dist/converse-no-dependencies.js:17098
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to chat with %1$s (JID: %2$s)"
-msgstr "Csevegés indítása ezzel a partnerünkkel"
+msgstr "Kattintson a csevegés megkezdéséhez %1$s partnerrel (JID: %2$s)"
 
 #: dist/converse-no-dependencies.js:17145
 msgid "Are you sure you want to remove this contact?"
 msgstr "Valóban törölni szeretné a csevegőpartnerét?"
 
 #: dist/converse-no-dependencies.js:17153
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
-msgstr "Sajnáljuk, hiba történt a törlés során"
+msgstr "Sajnáljuk, hiba történt %1$s mint ismerős eltávolítása közben."
 
 #: dist/converse-no-dependencies.js:17175
 msgid "Are you sure you want to decline this contact request?"
@@ -366,12 +361,12 @@ msgstr "Új partner felvétele"
 
 #: dist/converse-no-dependencies.js:18097
 msgid "Your Profile"
-msgstr ""
+msgstr "Profilod"
 
 #: dist/converse-no-dependencies.js:18098
 #: dist/converse-no-dependencies.js:18110
 msgid "Close"
-msgstr ""
+msgstr "Bezár"
 
 #: dist/converse-no-dependencies.js:18112
 #: dist/converse-no-dependencies.js:20805
@@ -389,19 +384,16 @@ msgid "Save"
 msgstr "Ment"
 
 #: dist/converse-no-dependencies.js:18117
-#, fuzzy
 msgid "Away for long"
-msgstr "hosszú ideje távol"
+msgstr "Hosszú ideje távol"
 
 #: dist/converse-no-dependencies.js:18118
-#, fuzzy
 msgid "Change chat status"
-msgstr "Saját státusz beállítása"
+msgstr "Csevegési állapot módosítása"
 
 #: dist/converse-no-dependencies.js:18119
-#, fuzzy
 msgid "Personal status message"
-msgstr "Személyes üzenet"
+msgstr "Személyes állapot üzenet"
 
 #: dist/converse-no-dependencies.js:18162
 #, javascript-format
@@ -410,7 +402,7 @@ msgstr "%1$s vagyok"
 
 #: dist/converse-no-dependencies.js:18165
 msgid "Change settings"
-msgstr ""
+msgstr "Beállítások módosítása"
 
 #: dist/converse-no-dependencies.js:18166
 msgid "Click to change your chat status"
@@ -422,12 +414,11 @@ msgstr "Kilépés"
 
 #: dist/converse-no-dependencies.js:18168
 msgid "Your profile"
-msgstr ""
+msgstr "Profilod"
 
 #: dist/converse-no-dependencies.js:18191
-#, fuzzy
 msgid "Are you sure you want to log out?"
-msgstr "Valóban törölni szeretné a csevegőpartnerét?"
+msgstr "Biztosan ki akar jelentkezni?"
 
 #: dist/converse-no-dependencies.js:18199
 #: dist/converse-no-dependencies.js:18209
@@ -451,18 +442,16 @@ msgid "offline"
 msgstr "nem elérhető"
 
 #: dist/converse-no-dependencies.js:18644
-#, fuzzy
 msgid "Username"
-msgstr "XMPP/Jabber azonosító:"
+msgstr "Felhasználónév"
 
 #: dist/converse-no-dependencies.js:18644
 msgid "user@domain"
-msgstr ""
+msgstr "felhasználó@tartomány"
 
 #: dist/converse-no-dependencies.js:18738
-#, fuzzy
 msgid "Chat Contacts"
-msgstr "Kapcsolatok"
+msgstr "Csevegőpartnerek"
 
 #: dist/converse-no-dependencies.js:18738
 msgid "Toggle chat"
@@ -481,9 +470,8 @@ msgid "This room does not show unavailable members"
 msgstr "Ez a szoba nem mutatja az elérhetetlen tagokat"
 
 #: dist/converse-no-dependencies.js:19803
-#, fuzzy
 msgid "The room configuration has changed"
-msgstr "A szoba általános konfigurációja módosult"
+msgstr "A szoba konfigurációja megváltozott"
 
 #: dist/converse-no-dependencies.js:19804
 msgid "Room logging is now enabled"
@@ -494,9 +482,8 @@ msgid "Room logging is now disabled"
 msgstr "A szobába a belépés szünetel"
 
 #: dist/converse-no-dependencies.js:19806
-#, fuzzy
 msgid "This room is now no longer anonymous"
-msgstr "Ez a szoba most NEM névtelen"
+msgstr "Ez a szoba most már nem névtelen"
 
 #: dist/converse-no-dependencies.js:19807
 msgid "This room is now semi-anonymous"
@@ -531,13 +518,12 @@ msgstr ""
 "lehetnek jelen"
 
 #: dist/converse-no-dependencies.js:19816
-#, fuzzy
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
 "service is being shut down"
 msgstr ""
-"Kiléptettünk a csevegőszobából, mert a MUC (Multi-User Chat) szolgáltatás "
-"leállításra került."
+"Kiléptettük a csevegőszobából, mert a MUC (Multi-user chat) szolgáltatás "
+"leállításra került"
 
 #. XXX: Note the triple underscore function and not double
 #. * underscore.
@@ -550,37 +536,37 @@ msgstr ""
 #. * strings are picked up by the translation machinery.
 #.
 #: dist/converse-no-dependencies.js:19829
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned"
-msgstr "A szobából kitíltva: %1$s"
+msgstr "%1$s ki lett tiltva"
 
 #: dist/converse-no-dependencies.js:19830
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s's nickname has changed"
 msgstr "%1$s beceneve módosult"
 
 #: dist/converse-no-dependencies.js:19831
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been kicked out"
-msgstr "A szobából kidobva: %1$s"
+msgstr "%1$s ki lett dobva"
 
 #: dist/converse-no-dependencies.js:19832
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr "Taglista módosítás miatt a szobából kiléptetve: %1$s"
+msgstr "%1$s el lett távolítva, tagság változás miatt"
 
 #: dist/converse-no-dependencies.js:19833
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr "A taglistán nem szerepel, így a szobából kiléptetve: %1$s"
+msgstr "%1$s el lett távolítva, mert nem volt tag"
 
 #: dist/converse-no-dependencies.js:19836
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr "A beceneved módosításra került a következőre: %1$s"
+msgstr "A beceneve automatikusan ez lett: %1$s"
 
 #: dist/converse-no-dependencies.js:19837
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Your nickname has been changed to %1$s"
 msgstr "A beceneved a következőre módosult: %1$s"
 
@@ -600,45 +586,42 @@ msgstr "%1$s meghívott a(z) %2$s csevegőszobába. Indok: \"%3$s\""
 #: dist/converse-no-dependencies.js:20799
 #: dist/converse-no-dependencies.js:21458
 msgid "Bookmark this room"
-msgstr ""
+msgstr "Jelöld be ezt a szobát"
 
 #: dist/converse-no-dependencies.js:20800
 msgid "The name for this bookmark:"
-msgstr ""
+msgstr "A könyvjelző neve legyen:"
 
 #: dist/converse-no-dependencies.js:20801
 msgid "Would you like this room to be automatically joined upon startup?"
-msgstr ""
+msgstr "Szeretné ha induláskor automatikusan csatlakozna ehhez a szobához?"
 
 #: dist/converse-no-dependencies.js:20802
 msgid "What should your nickname for this room be?"
-msgstr ""
+msgstr "Mi legyen a beceneve ebben a szobában?"
 
 #: dist/converse-no-dependencies.js:20878
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr "Valóban törölni szeretné a csevegőpartnerét?"
+msgstr "Biztosan el szeretné távolítani a(z) \"%1$s\" könyvjelzőt?"
 
 #: dist/converse-no-dependencies.js:20994
-#, fuzzy
 msgid "Sorry, something went wrong while trying to save your bookmark."
-msgstr "Sajnáljuk, hiba történt a törlés során"
+msgstr "Sajnáljuk, valami hiba történt a könyvjelző mentése közben."
 
 #: dist/converse-no-dependencies.js:21073
 #: dist/converse-no-dependencies.js:21456
-#, fuzzy
 msgid "Leave this room"
-msgstr "Belépés a csevegőszobába"
+msgstr "Szoba elhagyása"
 
 #: dist/converse-no-dependencies.js:21074
 msgid "Remove this bookmark"
-msgstr ""
+msgstr "Könyvjelző eltávolítása"
 
 #: dist/converse-no-dependencies.js:21075
 #: dist/converse-no-dependencies.js:21457
-#, fuzzy
 msgid "Unbookmark this room"
-msgstr "Belépés a csevegőszobába"
+msgstr "Szoba könyvjelzőjének törlése"
 
 #: dist/converse-no-dependencies.js:21076
 #: dist/converse-no-dependencies.js:21459
@@ -653,28 +636,25 @@ msgid "Click to open this room"
 msgstr "Belépés a csevegőszobába"
 
 #: dist/converse-no-dependencies.js:21115
-#, fuzzy
 msgid "Click to toggle the bookmarks list"
-msgstr "Belépés a csevegőszobába"
+msgstr "Kattintsunk a könyvjelzők listájának átváltásához"
 
 #: dist/converse-no-dependencies.js:21116
 msgid "Bookmarks"
-msgstr ""
+msgstr "Könyvjelzők"
 
 #: dist/converse-no-dependencies.js:21493
-#, fuzzy
 msgid "Click to toggle the rooms list"
-msgstr "Belépés a csevegőszobába"
+msgstr "Kattintsunk a szobák listájának átváltásához"
 
 #: dist/converse-no-dependencies.js:21494
-#, fuzzy
 msgid "Open Rooms"
-msgstr "Nyitott szoba"
+msgstr "Nyitott szobák"
 
 #: dist/converse-no-dependencies.js:21538
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to leave the room %1$s?"
-msgstr "Valóban törölni szeretné a csevegőpartnerét?"
+msgstr "Biztosan el akarja hagyni a szobát: %1$s?"
 
 #: dist/converse-no-dependencies.js:22835
 msgid "Description:"
@@ -682,7 +662,7 @@ msgstr "Leírás:"
 
 #: dist/converse-no-dependencies.js:22836
 msgid "Room Address (JID):"
-msgstr ""
+msgstr "Szoba címe (JID):"
 
 #: dist/converse-no-dependencies.js:22837
 msgid "Occupants:"
@@ -744,48 +724,41 @@ msgstr "Moderálatlan"
 
 #: dist/converse-no-dependencies.js:22888
 msgid "Query for Chatrooms"
-msgstr ""
+msgstr "Chatszobák lekérdezése"
 
 #: dist/converse-no-dependencies.js:22889
-#, fuzzy
 msgid "Server address"
-msgstr "Szerver"
+msgstr "Kiszolgáló címe"
 
 #: dist/converse-no-dependencies.js:22890
 msgid "Show rooms"
 msgstr "Létező szobák"
 
 #: dist/converse-no-dependencies.js:22891
-#, fuzzy
 msgid "conference.example.org"
-msgstr "pl. felhasznalo@pelda.hu"
+msgstr "konferencia@pelda.hu"
 
 #: dist/converse-no-dependencies.js:22944
-#, fuzzy
 msgid "No rooms found"
-msgstr "Nincs felhasználó"
+msgstr "Nem található szoba"
 
 #: dist/converse-no-dependencies.js:22961
-#, fuzzy
 msgid "Rooms found:"
-msgstr "Csevegőszobák a(z) %1$s szerveren:"
+msgstr "Talált szobák:"
 
 #: dist/converse-no-dependencies.js:23014
-#, fuzzy
 msgid "Enter a new Chatroom"
-msgstr "Nyitott szoba"
+msgstr "Adjon meg új Csevegőszobát"
 
 #: dist/converse-no-dependencies.js:23015
-#, fuzzy
 msgid "Room address"
-msgstr "Szoba neve"
+msgstr "Szoba címe"
 
 #: dist/converse-no-dependencies.js:23017
 msgid "name@conference.example.org"
-msgstr ""
+msgstr "név@konferencia.példa.hu"
 
 #: dist/converse-no-dependencies.js:23018
-#, fuzzy
 msgid "Join"
 msgstr "Csatlakozás"
 
@@ -794,34 +767,32 @@ msgid "Message"
 msgstr "Üzenet"
 
 #: dist/converse-no-dependencies.js:23152
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a moderator."
-msgstr "Ez a felhasználó egy moderátor"
+msgstr "%1$s többé már nem moderátor."
 
 #: dist/converse-no-dependencies.js:23157
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been given a voice again."
-msgstr "A szobából kidobva: %1$s"
+msgstr "%1$s újra hangot kapott."
 
 #: dist/converse-no-dependencies.js:23163
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been muted."
-msgstr "A szobából kitíltva: %1$s"
+msgstr "%1$s el lett némítva."
 
 #: dist/converse-no-dependencies.js:23168
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a moderator."
-msgstr "Ez a felhasználó egy moderátor"
+msgstr "%1$s most már moderátor."
 
 #: dist/converse-no-dependencies.js:23179
-#, fuzzy
 msgid "Close and leave this room"
-msgstr "Belépés a csevegőszobába"
+msgstr "Bezárja és elhagyja ezt a szobát"
 
 #: dist/converse-no-dependencies.js:23180
-#, fuzzy
 msgid "Configure this room"
-msgstr "Belépés a csevegőszobába"
+msgstr "Szoba konfigurálása"
 
 #: dist/converse-no-dependencies.js:23236
 msgid "Hide the list of occupants"
@@ -833,6 +804,8 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
+"Hiba: a \"%1$s\" parancs két argumentumot tartalmaz, a felhasználó becenevét "
+"és adott esetben az okát."
 
 #: dist/converse-no-dependencies.js:23375
 msgid "Are you sure you want to clear the messages from this room?"
@@ -851,9 +824,8 @@ msgid "Ban user from room"
 msgstr "Felhasználó kitíltása a csevegőszobából"
 
 #: dist/converse-no-dependencies.js:23428
-#, fuzzy
 msgid "Change user role to participant"
-msgstr "A felhasználó taggá tétele"
+msgstr "A felhasználó szerepének változtatása résztvevőre"
 
 #: dist/converse-no-dependencies.js:23430
 msgid "Kick user from room"
@@ -888,13 +860,12 @@ msgid "Revoke user's membership"
 msgstr "Tagság megvonása a felhasználótól"
 
 #: dist/converse-no-dependencies.js:23438
-#, fuzzy
 msgid "Set room subject"
-msgstr "Csevegőszoba téma beállítása"
+msgstr "Szoba témájának beállítása"
 
 #: dist/converse-no-dependencies.js:23439
 msgid "Set room subject (alias for /subject)"
-msgstr ""
+msgstr "Állítsa be a szobát tárgyát (álnév a /tárgynak)"
 
 #: dist/converse-no-dependencies.js:23440
 msgid "Allow muted user to post messages"
@@ -905,20 +876,20 @@ msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
+"A kiválasztott becenév fenntartva vagy jelenleg használatban van, kérjük, "
+"válasszon másikat."
 
 #: dist/converse-no-dependencies.js:23957
-#, fuzzy
 msgid "Please choose your nickname"
-msgstr "Becenév módosítása"
+msgstr "Kérjük, válasszon becenevet"
 
 #: dist/converse-no-dependencies.js:23958
 msgid "Nickname"
 msgstr "Becenév"
 
 #: dist/converse-no-dependencies.js:23959
-#, fuzzy
 msgid "Enter room"
-msgstr "Nyitott szoba"
+msgstr "Belépés a szobába"
 
 #: dist/converse-no-dependencies.js:23982
 msgid "This chatroom requires a password"
@@ -929,124 +900,112 @@ msgid "Password: "
 msgstr "Jelszó: "
 
 #: dist/converse-no-dependencies.js:24081
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "This action was done by %1$s."
-msgstr "A beceneved a következőre módosult: %1$s"
+msgstr "Ezt a műveletet végezte: %1$s."
 
 #: dist/converse-no-dependencies.js:24084
 #: dist/converse-no-dependencies.js:24100
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The reason given is: \"%1$s\"."
-msgstr "Az indok: \""
+msgstr "Ennek ez az oka: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:24119
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the room"
-msgstr "Belépés a csevegőszobába"
+msgstr "%1$s elhagyta, majd újra belépett a szobába"
 
 #: dist/converse-no-dependencies.js:24124
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered the room. \"%2$s\""
-msgstr "Belépés a csevegőszobába"
+msgstr "%1$s belépett a szobába. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:24126
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered the room"
-msgstr "Belépés a csevegőszobába"
+msgstr "%1$s belépett a szobába"
 
 #: dist/converse-no-dependencies.js:24156
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered and left the room. \"%2$s\""
-msgstr "Belépés a csevegőszobába"
+msgstr "%1$s belépett és elhagyta a szobát. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:24158
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered and left the room"
-msgstr "Belépés a csevegőszobába"
+msgstr "%1$s belépett és elhagyta a szobát"
 
 #: dist/converse-no-dependencies.js:24170
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left the room. \"%2$s\""
-msgstr "Belépés a csevegőszobába"
+msgstr "%1$s elhagyta a szobát. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:24172
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left the room"
-msgstr "Belépés a csevegőszobába"
+msgstr "%1$s elhagyta a szobát"
 
 #: dist/converse-no-dependencies.js:24238
-#, fuzzy
 msgid "You are not on the member list of this room."
-msgstr "Nem szerepelsz a csevegőszoba taglistáján"
+msgstr "Nem vagy a szoba taglistáján."
 
 #: dist/converse-no-dependencies.js:24240
-#, fuzzy
 msgid "You have been banned from this room."
-msgstr "Ki lettél tíltva ebből a szobából"
+msgstr "Ki lettél tiltva ebből a szobából."
 
 #: dist/converse-no-dependencies.js:24244
-#, fuzzy
 msgid "No nickname was specified."
-msgstr "Nem lett megadva becenév"
+msgstr "Nem lett megadva becenév."
 
 #: dist/converse-no-dependencies.js:24248
-#, fuzzy
 msgid "You are not allowed to create new rooms."
-msgstr "Nem lehet új csevegőszobát létrehozni"
+msgstr "Nem hozhatsz létre új szobákat."
 
 #: dist/converse-no-dependencies.js:24250
-#, fuzzy
 msgid "Your nickname doesn't conform to this room's policies."
-msgstr "A beceneved ütközik a csevegőszoba szabályzataival"
+msgstr "A beceneved nem felel meg a szoba szabályzatának."
 
 #: dist/converse-no-dependencies.js:24254
-#, fuzzy
 msgid "This room does not (yet) exist."
-msgstr "Ez a szoba (még) nem létezik"
+msgstr "Ez a szoba (még) nem létezik."
 
 #: dist/converse-no-dependencies.js:24256
-#, fuzzy
 msgid "This room has reached its maximum number of occupants."
-msgstr "Ez a csevegőszoba elérte a maximális jelenlévők számát"
+msgstr "Ez a szoba elérte a maximális jelenlévők számát."
 
 #: dist/converse-no-dependencies.js:24380
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic set by %1$s"
-msgstr "A következő témát állította be %1$s: %2$s"
+msgstr "Témát beállította: %1$s"
 
 #: dist/converse-no-dependencies.js:24493
-#, fuzzy
 msgid "Chatrooms"
-msgstr "Létező szobák"
+msgstr "Csevegőszobák"
 
 #: dist/converse-no-dependencies.js:24494
 msgid "Add a new room"
-msgstr ""
+msgstr "Szoba létrehozása"
 
 #: dist/converse-no-dependencies.js:24495
-#, fuzzy
 msgid "Query for rooms"
-msgstr "Felhasználó kitíltása a csevegőszobából"
+msgstr "Szobák lekérdezése"
 
 #: dist/converse-no-dependencies.js:24534
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to mention %1$s in your message."
-msgstr "Belépés a csevegőszobába"
+msgstr "Kattintson, hogy megemlítse őt: %1$s."
 
 #: dist/converse-no-dependencies.js:24535
-#, fuzzy
 msgid "This user is a moderator."
-msgstr "Ez a felhasználó egy moderátor"
+msgstr "Ez a felhasználó egy moderátor."
 
 #: dist/converse-no-dependencies.js:24536
-#, fuzzy
 msgid "This user can send messages in this room."
-msgstr "Ez a felhasználó küldhet üzenetet ebbe a szobába"
+msgstr "Ez a felhasználó küldhet üzeneteket a szobában."
 
 #: dist/converse-no-dependencies.js:24537
-#, fuzzy
 msgid "This user can NOT send messages in this room."
-msgstr "Ez a felhasználó NEM küldhet üzenetet ebbe a szobába"
+msgstr "Ez a felhasználó NEM küldhet üzeneteket a szobában."
 
 #: dist/converse-no-dependencies.js:24591
 msgid "Occupants"
@@ -1058,112 +1017,101 @@ msgid "Invite"
 msgstr "Meghívás"
 
 #: dist/converse-no-dependencies.js:24630
-#, fuzzy
 msgid "Features"
-msgstr "Tulajdonságok:"
+msgstr "Jellemzői"
 
 #: dist/converse-no-dependencies.js:24632
 msgid "Message archiving"
-msgstr ""
+msgstr "Üzenetarchiválás"
 
 #: dist/converse-no-dependencies.js:24633
 msgid "Members only"
-msgstr ""
+msgstr "Csak tagoknak"
 
 #: dist/converse-no-dependencies.js:24636
-#, fuzzy
 msgid "Open"
-msgstr "Nyitott szoba"
+msgstr "Nyitott"
 
 #: dist/converse-no-dependencies.js:24637
-#, fuzzy
 msgid "Password protected"
-msgstr "Jelszó: "
+msgstr "Jelszóval védve"
 
 #: dist/converse-no-dependencies.js:24638
 msgid "Persistent"
-msgstr ""
+msgstr "Állandó"
 
 #: dist/converse-no-dependencies.js:24641
-#, fuzzy
 msgid "Temporary"
-msgstr "Ideiglenes szoba"
+msgstr "Ideiglenes"
 
 #: dist/converse-no-dependencies.js:24643
-#, fuzzy
 msgid "No password"
-msgstr "jelszó"
+msgstr "Nincs jelszó"
 
 #: dist/converse-no-dependencies.js:24644
-#, fuzzy
 msgid "This room is not publicly searchable"
-msgstr "Ez a szoba NEM névtelen"
+msgstr "Ez a szoba nem nyilvános"
 
 #: dist/converse-no-dependencies.js:24645
 msgid "Messages are archived on the server"
-msgstr ""
+msgstr "Üzenetek archiválva vannak a kiszolgálón"
 
 #: dist/converse-no-dependencies.js:24646
-#, fuzzy
 msgid "This room is restricted to members only"
-msgstr "Ez a csevegőszoba elérte a maximális jelenlévők számát"
+msgstr "Ez a szoba csak a tagokra korlátozódik"
 
 #: dist/converse-no-dependencies.js:24647
-#, fuzzy
 msgid "This room is being moderated"
-msgstr "Ez a felhasználó egy moderátor"
+msgstr "Ez a szoba moderált"
 
 #: dist/converse-no-dependencies.js:24648
 msgid "All other room occupants can see your XMPP username"
-msgstr ""
+msgstr "Minden szobatárs megtekintheti az XMPP felhasználónevét"
 
 #: dist/converse-no-dependencies.js:24649
-#, fuzzy
 msgid "Anyone can join this room"
-msgstr "Belépés a csevegőszobába"
+msgstr "Bárki csatlakozhat a szobához"
 
 #: dist/converse-no-dependencies.js:24650
-#, fuzzy
 msgid "This room requires a password before entry"
-msgstr "A csevegőszobába belépéshez jelszó szükséges"
+msgstr "A szobába belépéshez jelszó szükséges"
 
 #: dist/converse-no-dependencies.js:24651
 msgid "This room persists even if it's unoccupied"
-msgstr ""
+msgstr "Ez a szoba akkor is fennmarad, ha üres"
 
 #: dist/converse-no-dependencies.js:24652
-#, fuzzy
 msgid "This room is publicly searchable"
-msgstr "Ez a szoba NEM névtelen"
+msgstr "Ez a szoba nyilvánosan kereshető"
 
 #: dist/converse-no-dependencies.js:24653
 msgid "Only moderators can see your XMPP username"
-msgstr ""
+msgstr "Csak a moderátorok láthatják az Ön XMPP felhasználónevét"
 
 #: dist/converse-no-dependencies.js:24654
 msgid "This room will disappear once the last person leaves"
-msgstr ""
+msgstr "Ez a szoba eltűnik, amint az utolsó ember elhagyja"
 
 #: dist/converse-no-dependencies.js:24655
-#, fuzzy
 msgid "This room is not being moderated"
-msgstr "Ez a szoba NEM névtelen"
+msgstr "Ez a szoba nem moderált"
 
 #: dist/converse-no-dependencies.js:24656
-#, fuzzy
 msgid "This room does not require a password upon entry"
-msgstr "A csevegőszobába belépéshez jelszó szükséges"
+msgstr "Ez a szoba nem igényel jelszót belépéskor"
 
 #: dist/converse-no-dependencies.js:24776
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "You are about to invite %1$s to the chat room \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
-msgstr "Megadhat egy üzenet a meghívás okaként."
+msgstr ""
+"Meghívja %1$s nevű felhasználót a chat szobába \"%2$s\". Opcionálisan "
+"hozzáadhat egy üzenetet, amelyben leírja a meghívás okát."
 
 #: dist/converse-no-dependencies.js:24797
 msgid "Please enter a valid XMPP username"
-msgstr ""
+msgstr "Kérjük, adjon meg érvényes XMPP felhasználónevet"
 
 #: dist/converse-no-dependencies.js:25137
 msgid "Re-establishing encrypted session"
@@ -1347,31 +1295,31 @@ msgstr "befejezett"
 
 #: dist/converse-no-dependencies.js:25539
 msgid "Don't have a chat account?"
-msgstr ""
+msgstr "Nincs csevegő fiókja?"
 
 #: dist/converse-no-dependencies.js:25541
 msgid "Create an account"
-msgstr ""
+msgstr "Fiók létrehozása"
 
 #: dist/converse-no-dependencies.js:25553
 msgid "Create your account"
-msgstr ""
+msgstr "Hozza létre fiókját"
 
 #: dist/converse-no-dependencies.js:25555
 msgid "Please enter the XMPP provider to register with:"
-msgstr ""
+msgstr "Kérjük, adja meg az XMPP szolgáltatót a regisztráláshoz:"
 
 #: dist/converse-no-dependencies.js:25575
 msgid "Already have a chat account?"
-msgstr ""
+msgstr "Már van csevegő fiókja?"
 
 #: dist/converse-no-dependencies.js:25577
 msgid "Log in here"
-msgstr ""
+msgstr "Bejelentkezés itt"
 
 #: dist/converse-no-dependencies.js:25589
 msgid "Account Registration:"
-msgstr ""
+msgstr "Fiók Regisztráció:"
 
 #: dist/converse-no-dependencies.js:25597
 msgid "Register"
@@ -1379,11 +1327,11 @@ msgstr "Regisztráció"
 
 #: dist/converse-no-dependencies.js:25601
 msgid "Choose a different provider"
-msgstr ""
+msgstr "Válasszon egy másik szolgáltatót"
 
 #: dist/converse-no-dependencies.js:25613
 msgid "Hold tight, we're fetching the registration form…"
-msgstr ""
+msgstr "Tartson ki, most kérjük le a regisztrációs űrlapot…"
 
 #: dist/converse-no-dependencies.js:25748
 msgid " e.g. conversejs.org"
@@ -1403,7 +1351,7 @@ msgstr "itt"
 
 #: dist/converse-no-dependencies.js:25844
 msgid "Sorry, we're unable to connect to your chosen provider."
-msgstr ""
+msgstr "Sajnáljuk, de nem tudunk csatlakozni a választott szolgáltatóhoz."
 
 #: dist/converse-no-dependencies.js:25860
 msgid ""
@@ -1414,13 +1362,13 @@ msgstr ""
 "Próbáljon meg egy másikat."
 
 #: dist/converse-no-dependencies.js:25884
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
 msgstr ""
-"Hiba történt a(z) \"%1$s\" kapcsolódásakor. Biztos benne, hogy ez létező "
-"kiszolgáló?"
+"Valami hiba történt a következőhöz kapcsolódás közben: \"%1$s\". Biztos "
+"benne, hogy létezik?"
 
 #: dist/converse-no-dependencies.js:26047
 msgid "Now logging you in"
@@ -1443,23 +1391,22 @@ msgstr ""
 #: dist/converse-no-dependencies.js:26612
 #, javascript-format
 msgid "Notification from %1$s"
-msgstr ""
+msgstr "Értesítő üzenet innen: %1$s"
 
 #: dist/converse-no-dependencies.js:26614
 #: dist/converse-no-dependencies.js:26625
 #: dist/converse-no-dependencies.js:26628
 #, javascript-format
 msgid "%1$s says"
-msgstr ""
+msgstr "%1$s mondja"
 
 #: dist/converse-no-dependencies.js:26662
-#, fuzzy
 msgid "has come online"
-msgstr "kijelentkezett"
+msgstr "elérhető lett"
 
 #: dist/converse-no-dependencies.js:26679
 msgid "wants to be your contact"
-msgstr ""
+msgstr "szeretne ismerősöd lenni"
 
 #: dist/converse-no-dependencies.js:27006
 #: dist/converse-no-dependencies.js:27349

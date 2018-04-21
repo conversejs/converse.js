@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-04-21 08:04+0000\n"
+"PO-Revision-Date: 2018-04-22 10:37+0000\n"
 "Last-Translator: Szilágyi Gyula <gyula.n7@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/hu/>\n"
@@ -56,11 +56,11 @@ msgstr "Ez a kliens nem engedélyezi a jelenlét követését"
 
 #: dist/converse-no-dependencies.js:8494
 msgid "Click to hide these contacts"
-msgstr "A csevegő partnerek elrejtése"
+msgstr "Kattintson ide a névjegyek elrejtéséhez"
 
 #: dist/converse-no-dependencies.js:14263
 msgid "Close this chat box"
-msgstr "A csevegés bezárása"
+msgstr "A csevegőablak bezárása"
 
 #: dist/converse-no-dependencies.js:14316
 #: dist/converse-no-dependencies.js:14353
@@ -120,7 +120,7 @@ msgstr "Gépelés másik eszközről"
 
 #: dist/converse-no-dependencies.js:14710
 msgid "is typing"
-msgstr "gépel..."
+msgstr "gépel"
 
 #: dist/converse-no-dependencies.js:14716
 msgid "Stopped typing on the other device"
@@ -152,7 +152,7 @@ msgstr "Mutasd a menüt"
 
 #: dist/converse-no-dependencies.js:14982
 msgid "Are you sure you want to clear the messages from this chat box?"
-msgstr "Törölni szeretné az eddigi üzeneteket?"
+msgstr "Biztosan törölni szeretné az üzeneteit a csevegési mezőből?"
 
 #: dist/converse-no-dependencies.js:15050
 msgid "Hide hidden message"
@@ -161,7 +161,7 @@ msgstr "Rejtett üzenet elrejtése"
 #: dist/converse-no-dependencies.js:15068
 #: dist/converse-no-dependencies.js:26656
 msgid "has gone offline"
-msgstr "kijelentkezett"
+msgstr "nem elérhetővé vált"
 
 #: dist/converse-no-dependencies.js:15072
 #: dist/converse-no-dependencies.js:26660
@@ -170,7 +170,7 @@ msgstr "elfoglalt"
 
 #: dist/converse-no-dependencies.js:15321
 msgid "XMPP Username:"
-msgstr "XMPP/Jabber azonosító:"
+msgstr "XMPP Felhasználónév:"
 
 #: dist/converse-no-dependencies.js:15327
 msgid "Password:"
@@ -191,33 +191,33 @@ msgstr "Kattintson ide a névtelen bejelentkezéshez"
 
 #: dist/converse-no-dependencies.js:16724
 msgid "This contact is busy"
-msgstr "Elfoglalt"
+msgstr "Ez az ismerős elfoglalt"
 
 #: dist/converse-no-dependencies.js:16725
 msgid "This contact is online"
-msgstr "Elérhető"
+msgstr "Ez az ismerős elérhető"
 
 #: dist/converse-no-dependencies.js:16726
 msgid "This contact is offline"
-msgstr "Nincs bejelentkezve"
+msgstr "Ez az ismerős nem elérhető"
 
 #: dist/converse-no-dependencies.js:16727
 msgid "This contact is unavailable"
-msgstr "Elérhetetlen"
+msgstr "Ez az ismerős elérhetetlen"
 
 #: dist/converse-no-dependencies.js:16728
 msgid "This contact is away for an extended period"
-msgstr "Hosszabb ideje távol"
+msgstr "Ez az ismerős hosszú ideje távol van"
 
 #: dist/converse-no-dependencies.js:16729
 msgid "This contact is away"
-msgstr "Távol"
+msgstr "Ez az ismerős távol van"
 
 #: dist/converse-no-dependencies.js:16732
 #: dist/converse-no-dependencies.js:17433
 #: dist/converse-no-dependencies.js:18415
 msgid "Contacts"
-msgstr "Kapcsolatok"
+msgstr "Névjegyek"
 
 #: dist/converse-no-dependencies.js:16734
 msgid "Groups"
@@ -225,19 +225,19 @@ msgstr "Csoportok"
 
 #: dist/converse-no-dependencies.js:16736
 msgid "My contacts"
-msgstr "Kapcsolataim"
+msgstr "Névjegyeim"
 
 #: dist/converse-no-dependencies.js:16738
 msgid "Pending contacts"
-msgstr "Függőben levő kapcsolatok"
+msgstr "Függő kapcsolatok"
 
 #: dist/converse-no-dependencies.js:16740
 msgid "Contact requests"
-msgstr "Kapcsolatnak jelölés"
+msgstr "Partnerfelvételi kérések"
 
 #: dist/converse-no-dependencies.js:16742
 msgid "Ungrouped"
-msgstr "Nincs csoportosítva"
+msgstr "Nem csoportosított"
 
 #: dist/converse-no-dependencies.js:16785
 msgid "Contact name"
@@ -287,7 +287,7 @@ msgstr "Szűrés állapot szerint"
 
 #: dist/converse-no-dependencies.js:16904
 msgid "Any"
-msgstr "Bármilyen"
+msgstr "Bármi"
 
 #: dist/converse-no-dependencies.js:16905
 msgid "Unread"
@@ -305,7 +305,7 @@ msgstr "Beszédes"
 #: dist/converse-no-dependencies.js:16908
 #: dist/converse-no-dependencies.js:18111
 msgid "Busy"
-msgstr "Foglalt"
+msgstr "Elfoglalt"
 
 #: dist/converse-no-dependencies.js:16909
 #: dist/converse-no-dependencies.js:18109
@@ -325,7 +325,7 @@ msgstr "Nem elérhető"
 #: dist/converse-no-dependencies.js:17099
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
-msgstr "Kattintson %1$s ismerősének eltávolításához"
+msgstr "Kattintson %1$s nevű ismerősének eltávolításához"
 
 #: dist/converse-no-dependencies.js:17068
 #, javascript-format
@@ -357,7 +357,7 @@ msgstr "Valóban elutasítja ezt a partnerkérelmet?"
 
 #: dist/converse-no-dependencies.js:17434
 msgid "Add a contact"
-msgstr "Új partner felvétele"
+msgstr "Új névjegy felvétele"
 
 #: dist/converse-no-dependencies.js:18097
 msgid "Your Profile"
@@ -376,12 +376,12 @@ msgstr "Mégsem"
 
 #: dist/converse-no-dependencies.js:18113
 msgid "Custom status"
-msgstr "Egyedi státusz"
+msgstr "Egyéni állapot"
 
 #: dist/converse-no-dependencies.js:18116
 #: dist/converse-no-dependencies.js:20804
 msgid "Save"
-msgstr "Ment"
+msgstr "Mentés"
 
 #: dist/converse-no-dependencies.js:18117
 msgid "Away for long"
@@ -389,7 +389,7 @@ msgstr "Hosszú ideje távol"
 
 #: dist/converse-no-dependencies.js:18118
 msgid "Change chat status"
-msgstr "Csevegési állapot módosítása"
+msgstr "Chat-állapot módosítása"
 
 #: dist/converse-no-dependencies.js:18119
 msgid "Personal status message"
@@ -406,15 +406,15 @@ msgstr "Beállítások módosítása"
 
 #: dist/converse-no-dependencies.js:18166
 msgid "Click to change your chat status"
-msgstr "Saját státusz beállítása"
+msgstr "Ide kattintva módosíthatja a csevegési állapotát"
 
 #: dist/converse-no-dependencies.js:18167
 msgid "Log out"
-msgstr "Kilépés"
+msgstr "Kijelentkezés"
 
 #: dist/converse-no-dependencies.js:18168
 msgid "Your profile"
-msgstr "Profilod"
+msgstr "Saját profil"
 
 #: dist/converse-no-dependencies.js:18191
 msgid "Are you sure you want to log out?"
@@ -431,7 +431,7 @@ msgstr "elfoglalt"
 
 #: dist/converse-no-dependencies.js:18203
 msgid "away for long"
-msgstr "hosszú ideje távol"
+msgstr "sokáig távol"
 
 #: dist/converse-no-dependencies.js:18205
 msgid "away"
@@ -463,11 +463,11 @@ msgstr "Ez a szoba NEM névtelen"
 
 #: dist/converse-no-dependencies.js:19801
 msgid "This room now shows unavailable members"
-msgstr "Ez a szoba mutatja az elérhetetlen tagokat"
+msgstr "A szoba mostantól nem elérhető tagokat mutat"
 
 #: dist/converse-no-dependencies.js:19802
 msgid "This room does not show unavailable members"
-msgstr "Ez a szoba nem mutatja az elérhetetlen tagokat"
+msgstr "Ez a szoba nem mutat elérhetetlen tagokat"
 
 #: dist/converse-no-dependencies.js:19803
 msgid "The room configuration has changed"
@@ -475,11 +475,11 @@ msgstr "A szoba konfigurációja megváltozott"
 
 #: dist/converse-no-dependencies.js:19804
 msgid "Room logging is now enabled"
-msgstr "A szobába a belépés lehetséges"
+msgstr "A szobába a belépés engedélyezve"
 
 #: dist/converse-no-dependencies.js:19805
 msgid "Room logging is now disabled"
-msgstr "A szobába a belépés szünetel"
+msgstr "A szobába a belépés letiltva"
 
 #: dist/converse-no-dependencies.js:19806
 msgid "This room is now no longer anonymous"
@@ -499,7 +499,7 @@ msgstr "Létrejött egy új csevegőszoba"
 
 #: dist/converse-no-dependencies.js:19812
 msgid "You have been banned from this room"
-msgstr "Ki lettél tíltva ebből a szobából"
+msgstr "Ki lettél tiltva ebből a szobából"
 
 #: dist/converse-no-dependencies.js:19813
 msgid "You have been kicked from this room"
@@ -586,7 +586,7 @@ msgstr "%1$s meghívott a(z) %2$s csevegőszobába. Indok: \"%3$s\""
 #: dist/converse-no-dependencies.js:20799
 #: dist/converse-no-dependencies.js:21458
 msgid "Bookmark this room"
-msgstr "Jelöld be ezt a szobát"
+msgstr "Könyvjelzőzze ezt a szobát"
 
 #: dist/converse-no-dependencies.js:20800
 msgid "The name for this bookmark:"
@@ -637,7 +637,7 @@ msgstr "Belépés a csevegőszobába"
 
 #: dist/converse-no-dependencies.js:21115
 msgid "Click to toggle the bookmarks list"
-msgstr "Kattintsunk a könyvjelzők listájának átváltásához"
+msgstr "Kattintson a könyvjelzők listájára váltáshoz"
 
 #: dist/converse-no-dependencies.js:21116
 msgid "Bookmarks"
@@ -645,11 +645,11 @@ msgstr "Könyvjelzők"
 
 #: dist/converse-no-dependencies.js:21493
 msgid "Click to toggle the rooms list"
-msgstr "Kattintsunk a szobák listájának átváltásához"
+msgstr "Kattintsunk a szobák listájára váltáshoz"
 
 #: dist/converse-no-dependencies.js:21494
 msgid "Open Rooms"
-msgstr "Nyitott szobák"
+msgstr "Szobák megnyitása"
 
 #: dist/converse-no-dependencies.js:21538
 #, javascript-format
@@ -666,11 +666,11 @@ msgstr "Szoba címe (JID):"
 
 #: dist/converse-no-dependencies.js:22837
 msgid "Occupants:"
-msgstr "Jelenlevők:"
+msgstr "Jelenlévők:"
 
 #: dist/converse-no-dependencies.js:22838
 msgid "Features:"
-msgstr "Tulajdonságok:"
+msgstr "Jellemzők:"
 
 #: dist/converse-no-dependencies.js:22839
 msgid "Requires authentication"
@@ -697,7 +697,7 @@ msgstr "NEM névtelen"
 
 #: dist/converse-no-dependencies.js:22844
 msgid "Open room"
-msgstr "Nyitott szoba"
+msgstr "Szoba megnyitása"
 
 #: dist/converse-no-dependencies.js:22845
 msgid "Permanent room"
@@ -706,7 +706,7 @@ msgstr "Állandó szoba"
 #: dist/converse-no-dependencies.js:22846
 #: dist/converse-no-dependencies.js:24639
 msgid "Public"
-msgstr "Nyílvános"
+msgstr "Nyilvános"
 
 #: dist/converse-no-dependencies.js:22847
 #: dist/converse-no-dependencies.js:24640
@@ -732,7 +732,7 @@ msgstr "Kiszolgáló címe"
 
 #: dist/converse-no-dependencies.js:22890
 msgid "Show rooms"
-msgstr "Létező szobák"
+msgstr "Szobák listája"
 
 #: dist/converse-no-dependencies.js:22891
 msgid "conference.example.org"
@@ -809,11 +809,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:23375
 msgid "Are you sure you want to clear the messages from this room?"
-msgstr "Törölni szeretné az üzeneteket ebből a szobából?"
+msgstr "Biztosan törölni szeretné az ebből a szobából származó üzeneteket?"
 
 #: dist/converse-no-dependencies.js:23383
 msgid "Error: could not execute the command"
-msgstr "Hiba: A parancs nem értelmezett"
+msgstr "Hiba: nem sikerült végrehajtani a parancsot"
 
 #: dist/converse-no-dependencies.js:23425
 msgid "Change user's affiliation to admin"
@@ -821,7 +821,7 @@ msgstr "A felhasználó adminisztrátorrá tétele"
 
 #: dist/converse-no-dependencies.js:23426
 msgid "Ban user from room"
-msgstr "Felhasználó kitíltása a csevegőszobából"
+msgstr "Felhasználó kitiltása a szobából"
 
 #: dist/converse-no-dependencies.js:23428
 msgid "Change user role to participant"
@@ -829,7 +829,7 @@ msgstr "A felhasználó szerepének változtatása résztvevőre"
 
 #: dist/converse-no-dependencies.js:23430
 msgid "Kick user from room"
-msgstr "Felhasználó kiléptetése a csevegőszobából"
+msgstr "Felhasználó kirúgása a szobából"
 
 #: dist/converse-no-dependencies.js:23431
 msgid "Write in 3rd person"
@@ -841,7 +841,7 @@ msgstr "Tagság megadása a felhasználónak"
 
 #: dist/converse-no-dependencies.js:23433
 msgid "Remove user's ability to post messages"
-msgstr "A felhasználó nem küldhet üzeneteket"
+msgstr "A felhasználó ne küldhessen üzeneteket"
 
 #: dist/converse-no-dependencies.js:23434
 msgid "Change your nickname"
@@ -1018,7 +1018,7 @@ msgstr "Meghívás"
 
 #: dist/converse-no-dependencies.js:24630
 msgid "Features"
-msgstr "Jellemzői"
+msgstr "Jellemzők"
 
 #: dist/converse-no-dependencies.js:24632
 msgid "Message archiving"
@@ -1050,7 +1050,7 @@ msgstr "Nincs jelszó"
 
 #: dist/converse-no-dependencies.js:24644
 msgid "This room is not publicly searchable"
-msgstr "Ez a szoba nem nyilvános"
+msgstr "Ez a szoba nyilvánosan nem kereshető"
 
 #: dist/converse-no-dependencies.js:24645
 msgid "Messages are archived on the server"
@@ -1120,11 +1120,11 @@ msgstr "Titkosított kapcsolat újraépítése"
 #. We need to generate a new key and instance tag
 #: dist/converse-no-dependencies.js:25148
 msgid "Generating private key."
-msgstr "Privát kulcs generálása"
+msgstr "Privát kulcs generálása."
 
 #: dist/converse-no-dependencies.js:25148
 msgid "Your browser might become unresponsive."
-msgstr "Előfordulhat, hogy a böngésző futása megáll."
+msgstr "Előfordulhat, hogy a böngészője nem reagál."
 
 #: dist/converse-no-dependencies.js:25191
 #, javascript-format
@@ -1144,11 +1144,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:25200
 msgid "Could not verify this user's identify."
-msgstr "A felhasználó ellenőrzése sikertelen."
+msgstr "Nem lehet ellenőrizni a felhasználó azonosítóját."
 
 #: dist/converse-no-dependencies.js:25254
 msgid "Exchanging private key with contact."
-msgstr "Privát kulcs cseréje..."
+msgstr "Privát kulcs kicserélése ismerősével."
 
 #: dist/converse-no-dependencies.js:25369
 msgid "Your messages are not encrypted anymore"
@@ -1159,7 +1159,7 @@ msgid ""
 "Your messages are now encrypted but your contact's identity has not been "
 "verified."
 msgstr ""
-"Az üzenetek titikosítva vannak, de a csevegőpartnerét még nem hitelesítette."
+"Az üzenetek titkosítva vannak, de a csevegőpartnerét még nem hitelesítette."
 
 #: dist/converse-no-dependencies.js:25373
 msgid "Your contact's identify has been verified."
@@ -1172,7 +1172,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:25385
 msgid "Your message could not be sent"
-msgstr "Az üzenet elküldése nem sikerült"
+msgstr "Az üzenet nem küldhető el"
 
 #: dist/converse-no-dependencies.js:25387
 msgid "We received an unencrypted message"
@@ -1227,7 +1227,7 @@ msgstr "Mi a válasz a biztonsági kérdésre?"
 
 #: dist/converse-no-dependencies.js:25435
 msgid "Invalid authentication scheme provided"
-msgstr "Érvénytelen hitelesítési séma."
+msgstr "Érvénytelen hitelesítési séma"
 
 #: dist/converse-no-dependencies.js:25452
 msgid "Your messages are not encrypted. Click here to enable OTR encryption."
@@ -1335,7 +1335,7 @@ msgstr "Tartson ki, most kérjük le a regisztrációs űrlapot…"
 
 #: dist/converse-no-dependencies.js:25748
 msgid " e.g. conversejs.org"
-msgstr "pl. conversejs.org"
+msgstr " pl.: conversejs.org"
 
 #: dist/converse-no-dependencies.js:25794
 msgid "Fetch registration form"
@@ -1372,7 +1372,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:26047
 msgid "Now logging you in"
-msgstr "Belépés..."
+msgstr "Most bejelentkezel"
 
 #: dist/converse-no-dependencies.js:26051
 msgid "Registered successfully"

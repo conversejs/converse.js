@@ -334,9 +334,11 @@
 
                 addFileUploadButton (options) {
                     _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then((result) => {
-                        this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
-                            'beforeend',
-                            tpl_toolbar_fileupload({'tooltip_upload_file': __('Choose a file to send')}));
+                        if (result.length) {
+                            this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
+                                'beforeend',
+                                tpl_toolbar_fileupload({'tooltip_upload_file': __('Choose a file to send')}));
+                        }
                     });
                 },
 

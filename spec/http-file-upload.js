@@ -172,6 +172,51 @@
             }));
         });
 
+        describe("When not supported", function () {
+            describe("A file upload toolbar button", function () {
+
+                it("does not appear in private chats", mock.initConverseWithAsync(function (done, _converse) {
+                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    test_utils.createContacts(_converse, 'current');
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+
+                    test_utils.waitUntilDiscoConfirmed(
+                        _converse, _converse.domain,
+                        [{'category': 'server', 'type':'IM'}],
+                        ['http://jabber.org/protocol/disco#items'], [], 'info').then(function () {
+
+                        test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], [], 'items').then(function () {
+                            var view = _converse.chatboxviews.get(contact_jid);
+                            expect(view.el.querySelector('.chat-toolbar .upload-file')).toBe(null);
+                            done();
+                        });
+                    });
+                }));
+
+                it("does not appear in MUC chats", mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
+
+                    test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                        test_utils.waitUntilDiscoConfirmed(
+                            _converse, _converse.domain,
+                            [{'category': 'server', 'type':'IM'}],
+                            ['http://jabber.org/protocol/disco#items'], [], 'info').then(function () {
+
+                            test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.localhost'], 'items').then(function () {
+                                test_utils.waitUntilDiscoConfirmed(_converse, 'upload.localhost', [], [Strophe.NS.HTTPUPLOAD], []).then(function () {
+                                    var view = _converse.chatboxviews.get('lounge@localhost');
+                                    expect(view.el.querySelector('.chat-toolbar .upload-file')).toBe(null);
+                                    done();
+                                });
+                            });
+                        });
+                    });
+                }));
+
+            });
+        });
+
         describe("When supported", function () {
 
             describe("A file upload toolbar button", function () {

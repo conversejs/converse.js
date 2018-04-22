@@ -7123,8 +7123,7 @@ body.reset {
       #conversejs form.converse-form .text-muted.error {
         color: #A53214; }
   #conversejs form.converse-centered-form {
-    text-align: center;
-    width: 100%; }
+    text-align: center; }
   #conversejs .chat-textarea-chatbox-selected {
     border: 1px solid #578308;
     margin: 0; }

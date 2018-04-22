@@ -704,7 +704,7 @@
                     if (message.get('type') === 'error') {
                         this.showMessage(message);
                     } else {
-                        if (message.get('chat_state')) {
+                        if (message.get('chat_state') && !message.get('delayed')) {
                             this.showChatStateNotification(message);
                         }
                         if (message.get('file') || message.get('message')) {

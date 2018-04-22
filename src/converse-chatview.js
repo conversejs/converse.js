@@ -264,7 +264,6 @@
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.remove, this);
                     // TODO check for changed fullname as well
-                    this.model.on('change:chat_state', this.sendChatState, this);
                     this.model.on('change:chat_status', this.onChatStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.render();
@@ -759,19 +758,6 @@
                     this.model.sendMessage(attrs);
                 },
 
-                sendChatState () {
-                    /* Sends a message with the status of the user in this chat session
-                     * as taken from the 'chat_state' attribute of the chat box.
-                     * See XEP-0085 Chat State Notifications.
-                     */
-                    _converse.connection.send(
-                        $msg({'to':this.model.get('jid'), 'type': 'chat'})
-                            .c(this.model.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES}).up()
-                            .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
-                            .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
-                    );
-                },
-
                 setChatState (state, no_save) {
                     /* Mutator for setting the chat state of this chat session.
                      * Handles clearing of any chat state notification timeouts and
@@ -957,7 +943,7 @@
                         // Immediately sending the chat state, because the
                         // model is going to be destroyed afterwards.
                         this.setChatState(_converse.INACTIVE);
-                        this.sendChatState();
+                        this.model.sendChatState();
                     }
                     try {
                         this.model.destroy();

@@ -520,7 +520,6 @@
                     this.model.messages.on('rendered', this.scrollDown, this);
 
                     this.model.on('change:affiliation', this.renderHeading, this);
-                    this.model.on('change:chat_state', this.sendChatState, this);
                     this.model.on('change:connection_status', this.afterConnected, this);
                     this.model.on('change:description', this.renderHeading, this);
                     this.model.on('change:name', this.renderHeading, this);
@@ -730,27 +729,6 @@
                     if (message.get('chat_state') !== _converse.GONE) {
                         _converse.ChatBoxView.prototype.handleChatStateNotification.apply(this, arguments);
                     }
-                },
-
-                sendChatState () {
-                    /* Sends a message with the status of the user in this chat session
-                     * as taken from the 'chat_state' attribute of the chat box.
-                     * See XEP-0085 Chat State Notifications.
-                     */
-                    if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
-                        return;
-                    }
-                    const chat_state = this.model.get('chat_state');
-                    if (chat_state === _converse.GONE) {
-                        // <gone/> is not applicable within MUC context
-                        return;
-                    }
-                    _converse.connection.send(
-                        $msg({'to':this.model.get('jid'), 'type': 'groupchat'})
-                            .c(chat_state, {'xmlns': Strophe.NS.CHATSTATES}).up()
-                            .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
-                            .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
-                    );
                 },
 
                 sendChatRoomMessage (text) {

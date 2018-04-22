@@ -191,6 +191,8 @@
                     this.constructor.__super__.initialize.apply(this, arguments);
                     this.occupants = new _converse.ChatRoomOccupants();
                     this.registerHandlers();
+
+                    this.on('change:chat_state', this.sendChatState, this);
                 },
 
                 registerHandlers () {
@@ -347,6 +349,27 @@
                     }).c("body").t(text).up()
                       .c("x", {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(text).up();
                       _converse.connection.send(stanza);
+                },
+
+                sendChatState () {
+                    /* Sends a message with the status of the user in this chat session
+                     * as taken from the 'chat_state' attribute of the chat box.
+                     * See XEP-0085 Chat State Notifications.
+                     */
+                    if (this.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
+                        return;
+                    }
+                    const chat_state = this.get('chat_state');
+                    if (chat_state === _converse.GONE) {
+                        // <gone/> is not applicable within MUC context
+                        return;
+                    }
+                    _converse.connection.send(
+                        $msg({'to':this.get('jid'), 'type': 'groupchat'})
+                            .c(chat_state, {'xmlns': Strophe.NS.CHATSTATES}).up()
+                            .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                            .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
+                    );
                 },
 
                 directInvite (recipient, reason) {

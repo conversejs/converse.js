@@ -207,6 +207,8 @@
                         }
                     });
 
+                    this.on('change:chat_state', this.sendChatState, this);
+
                     this.save({
                         // The chat_state will be set to ACTIVE once the chat box is opened
                         // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
@@ -286,6 +288,20 @@
                      */
                     this.sendMessageStanza(this.messages.create(attrs));
                 },
+
+                sendChatState () {
+                    /* Sends a message with the status of the user in this chat session
+                     * as taken from the 'chat_state' attribute of the chat box.
+                     * See XEP-0085 Chat State Notifications.
+                     */
+                    _converse.connection.send(
+                        $msg({'to':this.get('jid'), 'type': 'chat'})
+                            .c(this.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES}).up()
+                            .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                            .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
+                    );
+                },
+
 
                 sendFiles (files) {
                     _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then((result) => {

@@ -585,6 +585,13 @@
                     return this;
                 },
 
+                showChatStateNotification (message) {
+                    if (message.get('sender') === 'me') {
+                        return;
+                    }
+                    return _converse.ChatBoxView.prototype.showChatStateNotification.apply(this, arguments);
+                },
+
                 createOccupantsView () {
                     /* Create the ChatRoomOccupantsView Backbone.NativeView
                      */

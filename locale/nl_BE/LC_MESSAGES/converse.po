@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-04-23 18:39+0000\n"
+"PO-Revision-Date: 2018-04-24 19:36+0000\n"
 "Last-Translator: Nathan Follens <nathan@email.is>\n"
 "Language-Team: Flemish <https://hosted.weblate.org/projects/conversejs/"
 "translations/nl_BE/>\n"
@@ -34,7 +34,7 @@ msgstr "Uwen Jabber-ID en/of uw paswoord is onjuist. Probeerd het opnieuw."
 #: dist/converse-no-dependencies.js:7519
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr "Sorry, we konden geen verbinding maken met dezen XMPP-host: %1$s"
+msgstr "Sorry, we konden geen verbinding maken me’ dezen XMPP-host: %1$s"
 
 #: dist/converse-no-dependencies.js:7521
 msgid "The XMPP server did not offer a supported authentication mechanism"

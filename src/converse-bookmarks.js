@@ -42,7 +42,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes", "converse-muc"],
+        dependencies: ["converse-chatboxes", "converse-muc", "converse-muc-views"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -113,7 +113,7 @@
                 },
 
                 onBookmarked () {
-                    const icon = this.el.querySelector('.icon-pushpin');
+                    const icon = this.el.querySelector('.toggle-bookmark');
                     if (_.isNull(icon)) {
                         return;
                     }
@@ -198,7 +198,7 @@
                         _.forEach(models, function (model) {
                             model.destroy();
                         });
-                        this.el.querySelector('.icon-pushpin').classList.remove('button-on');
+                        this.el.querySelector('.toggle-bookmark').classList.remove('button-on');
                     }
                 }
             }
@@ -268,7 +268,10 @@
 
                 openBookmarkedRoom (bookmark) {
                     if (bookmark.get('autojoin')) {
-                        _converse.api.rooms.open(bookmark.get('jid'), bookmark.get('nick'));
+                        const room = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
+                        if (!room.get('hidden')) {
+                            room.trigger('show');
+                        }
                     }
                     return bookmark;
                 },
@@ -379,7 +382,7 @@
                             'jid': bookmark.getAttribute('jid'),
                             'name': bookmark.getAttribute('name'),
                             'autojoin': bookmark.getAttribute('autojoin') === 'true',
-                            'nick': bookmark.querySelector('nick').textContent
+                            'nick': _.get(bookmark.querySelector('nick'), 'textContent')
                         });
                     });
                 },
@@ -424,7 +427,7 @@
                         'info_remove_bookmark': __('Unbookmark this room'),
                         'info_title': __('Show more information on this room'),
                         'jid': this.model.get('jid'),
-                        'name': this.model.get('name'),
+                        'name': Strophe.xmlunescape(this.model.get('name')),
                         'open_title': __('Click to open this room')
                     });
                 }
@@ -432,11 +435,12 @@
 
             _converse.BookmarksView = Backbone.OrderedListView.extend({
                 tagName: 'div',
-                className: 'bookmarks-list rooms-list-container',
+                className: 'bookmarks-list list-container rooms-list-container',
                 events: {
                     'click .add-bookmark': 'addBookmark',
                     'click .bookmarks-toggle': 'toggleBookmarksList',
-                    'click .remove-bookmark': 'removeBookmark'
+                    'click .remove-bookmark': 'removeBookmark',
+                    'click .open-room': 'openRoom',
                 },
                 listSelector: '.rooms-list',
                 ItemView: _converse.BookmarkView,
@@ -478,11 +482,21 @@
                     const controlboxview = _converse.chatboxviews.get('controlbox');
                     if (!_.isUndefined(controlboxview) &&
                             !_converse.root.contains(this.el)) {
-                        const container = controlboxview.el.querySelector('#chatrooms');
-                        if (!_.isNull(container)) {
-                            container.insertBefore(this.el, container.firstChild);
+                        const el = controlboxview.el.querySelector('.bookmarks-list');
+                        if (!_.isNull(el)) {
+                            el.parentNode.replaceChild(this.el, el);
                         }
                     }
+                },
+
+                openRoom (ev) {
+                    ev.preventDefault();
+                    const name = ev.target.textContent;
+                    const jid = ev.target.getAttribute('data-room-jid');
+                    const data = {
+                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
+                    }
+                    _converse.api.rooms.open(jid, data);
                 },
 
                 removeBookmark: _converse.removeBookmarkViaEvent,
@@ -515,14 +529,15 @@
 
                 toggleBookmarksList (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    if (u.hasClass('icon-opened', ev.target)) {
+                    const icon_el = ev.target.querySelector('.fa');
+                    if (u.hasClass('fa-caret-down', icon_el)) {
                         u.slideIn(this.el.querySelector('.bookmarks'));
                         this.list_model.save({'toggle-state': _converse.CLOSED});
-                        ev.target.classList.remove("icon-opened");
-                        ev.target.classList.add("icon-closed");
+                        icon_el.classList.remove("fa-caret-down");
+                        icon_el.classList.add("fa-caret-right");
                     } else {
-                        ev.target.classList.remove("icon-closed");
-                        ev.target.classList.add("icon-opened");
+                        icon_el.classList.remove("fa-caret-right");
+                        icon_el.classList.add("fa-caret-down");
                         u.slideOut(this.el.querySelector('.bookmarks'));
                         this.list_model.save({'toggle-state': _converse.OPENED});
                     }
@@ -535,7 +550,7 @@
                         _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid),
                         _converse.api.disco.supports(Strophe.NS.PUBSUB+'#publish-options', _converse.bare_jid)
                     ]).then((args) => {
-                        resolve(args[0] && (args[1].supported || _converse.allow_public_bookmarks));
+                        resolve(args[0] && (args[1].length || _converse.allow_public_bookmarks));
                     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }
@@ -562,6 +577,8 @@
                     {'object': _converse, 'event': 'roomsPanelRendered'}
                 ], initBookmarks);
 
+            _converse.on('reconnected', initBookmarks);
+
             _converse.on('connected', () => {
                 // Add a handler for bookmarks pushed from other connected clients
                 // (from the same user obviously)
@@ -572,13 +589,6 @@
                 }, null, 'message', 'headline', null, _converse.bare_jid);
             });
 
-            const afterReconnection = function () {
-                if (!_converse.allow_bookmarks) {
-                    return;
-                }
-                initBookmarks();
-            };
-            _converse.on('reconnected', afterReconnection);
         }
     });
 }));

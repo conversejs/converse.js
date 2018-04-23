@@ -9,15 +9,15 @@
     <meta name="author" content="JC Brand" />
     <meta name="keywords" content="xmpp chat webchat converse.js" />
     <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="node_modules/font-awesome/css/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="css/font-awesome.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/theme.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
     <script src="node_modules/requirejs/require.js"></script>
     <script src="src/config.js"></script>
 </head>
 
-<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
+<body id="page-top" class="reset" data-target=".navbar-custom">
     <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
         <div class="container">
             <div class="navbar-header page-scroll">
@@ -61,6 +61,7 @@
             //     'jdev@conference.jabber.org'
             // ],
             hide_open_bookmarks: true,
+            allow_public_bookmarks: true,
             notify_all_room_messages: [
                 'discuss@conference.conversejs.org'
             ],

@@ -1,10 +1,9 @@
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// Converse.js
+// https://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
-/*global Backbone, define, window, JSON */
+
 (function (root, factory) {
     define(["sizzle",
             "es6-promise",
@@ -39,8 +38,10 @@
     Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
     Strophe.addNamespace('FORWARD', 'urn:xmpp:forward:0');
     Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
+    Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
     Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
     Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
+    Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
     Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
     Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
     Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
@@ -66,6 +67,7 @@
 
     _.extend(_converse, Backbone.Events);
 
+    // Core plugins are whitelisted automatically
     _converse.core_plugins = [
         'converse-bookmarks',
         'converse-chatboxes',
@@ -74,12 +76,17 @@
         'converse-core',
         'converse-disco',
         'converse-dragresize',
+        'converse-dropdown',
         'converse-fullscreen',
         'converse-headline',
+        'converse-http-file-upload',
         'converse-mam',
+        'converse-message-view',
         'converse-minimize',
+        'converse-modal',
         'converse-muc',
         'converse-muc-embedded',
+        'converse-muc-views',
         'converse-notification',
         'converse-otr',
         'converse-ping',
@@ -135,6 +142,9 @@
         9: 'REDIRECT',
        10: 'RECONNECTING',
     };
+
+    _converse.SUCCESS = 'success';
+    _converse.FAILURE = 'failure';
 
     _converse.DEFAULT_IMAGE_TYPE = 'image/png';
     _converse.DEFAULT_IMAGE = "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";
@@ -302,18 +312,21 @@
             expose_rid_and_sid: false,
             filter_by_resource: false,
             forward_messages: false,
+            geouri_regex: /https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
+            geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
             hide_offline_users: false,
             include_offline_state: false,
             jid: undefined,
             keepalive: true,
             locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
             locales: [
-                'af', 'bg', 'ca', 'de', 'es', 'en', 'fr', 'he',
+                'af', 'ar', 'bg', 'ca', 'de', 'es', 'eu', 'en', 'fr', 'he',
                 'hu', 'id', 'it', 'ja', 'nb', 'nl',
                 'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'
             ],
             message_carbons: true,
             message_storage: 'session',
+            nickname: undefined,
             password: undefined,
             prebind_url: null,
             priority: 0,
@@ -329,9 +342,7 @@
             synchronize_availability: true,
             view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
             websocket_url: undefined,
-            whitelisted_plugins: [],
-            xhr_custom_status: false,
-            xhr_custom_status_url: '',
+            whitelisted_plugins: []
         };
         _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
@@ -401,7 +412,7 @@
                 _converse.auto_changed_status = false;
                 // XXX: we should really remember the original state here, and
                 // then set it back to that...
-                _converse.xmppstatus.setStatus(_converse.default_state);
+                _converse.xmppstatus.set('status', _converse.default_state);
             }
         };
 
@@ -414,7 +425,7 @@
                 // This can happen when the connection reconnects.
                 return;
             }
-            const stat = _converse.xmppstatus.getStatus();
+            const stat = _converse.xmppstatus.get('status');
             _converse.idle_seconds++;
             if (_converse.csi_waiting_time > 0 &&
                     _converse.idle_seconds > _converse.csi_waiting_time &&
@@ -425,12 +436,12 @@
                     _converse.idle_seconds > _converse.auto_away &&
                     stat !== 'away' && stat !== 'xa' && stat !== 'dnd') {
                 _converse.auto_changed_status = true;
-                _converse.xmppstatus.setStatus('away');
+                _converse.xmppstatus.set('status', 'away');
             } else if (_converse.auto_xa > 0 &&
                     _converse.idle_seconds > _converse.auto_xa &&
                     stat !== 'xa' && stat !== 'dnd') {
                 _converse.auto_changed_status = true;
-                _converse.xmppstatus.setStatus('xa');
+                _converse.xmppstatus.set('status', 'xa');
             }
         };
 
@@ -615,19 +626,24 @@
             }
         };
 
-        this.initStatus = () =>
-            new Promise((resolve, reject) => {
-                const promise = new u.getResolveablePromise();
+        this.initStatus = (reconnecting) => {
+
+            // If there's no xmppstatus obj, then we were never connected to
+            // begin with, so we set reconnecting to false.
+            reconnecting = _.isUndefined(_converse.xmppstatus) ? false : reconnecting;
+            if (reconnecting) {
+                _converse.onStatusInitialized(reconnecting);
+            } else {
                 this.xmppstatus = new this.XMPPStatus();
                 const id = b64_sha1(`converse.xmppstatus-${_converse.bare_jid}`);
                 this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
                 this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
                 this.xmppstatus.fetch({
-                    success: resolve,
-                    error: resolve
+                    success: _.partial(_converse.onStatusInitialized, reconnecting),
+                    error: _.partial(_converse.onStatusInitialized, reconnecting)
                 });
-                _converse.emit('statusInitialized');
-            });
+            }
+        }
 
         this.initSession = function () {
             _converse.session = new Backbone.Model();
@@ -720,9 +736,9 @@
                 return;
             }
             const carbons_iq = new Strophe.Builder('iq', {
-                from: this.connection.jid,
-                id: 'enablecarbons',
-                type: 'set'
+                'from': this.connection.jid,
+                'id': 'enablecarbons',
+                'type': 'set'
               })
               .c('enable', {xmlns: Strophe.NS.CARBONS});
             this.connection.addHandler((iq) => {
@@ -812,6 +828,7 @@
              * populating the roster etc.) necessary once the connection has
              * been established.
              */
+            _converse.emit('statusInitialized');
             if (reconnecting) {
                 // No need to recreate the roster, otherwise we lose our
                 // cached data. However we still emit an event, to give
@@ -825,9 +842,12 @@
             _converse.roster.onConnected();
             _converse.populateRoster(reconnecting);
             _converse.registerPresenceHandler();
-            if (!reconnecting) {
+            if (reconnecting) {
+                _converse.emit('reconnected');
+            } else {
                 init_promise.resolve();
                 _converse.emit('initialized');
+                _converse.emit('connected');
             }
         };
 
@@ -842,28 +862,11 @@
             /* Called as soon as a new connection has been established, either
              * by logging in or by attaching to an existing BOSH session.
              */
-            // Solves problem of returned PubSub BOSH response not received
-            // by browser.
-            _converse.connection.flush();
-
+            _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
             _converse.setUserJid();
             _converse.initSession();
             _converse.enableCarbons();
-
-            // If there's no xmppstatus obj, then we were never connected to
-            // begin with, so we set reconnecting to false.
-            reconnecting = _.isUndefined(_converse.xmppstatus) ? false : reconnecting;
-            if (reconnecting) {
-                _converse.onStatusInitialized(true);
-                _converse.emit('reconnected');
-            } else {
-                _converse.initStatus()
-                    .then(
-                        _.partial(_converse.onStatusInitialized, false),
-                        _.partial(_converse.onStatusInitialized, false))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                _converse.emit('connected');
-            }
+            _converse.initStatus(reconnecting)
         };
 
         this.RosterContact = Backbone.Model.extend({
@@ -892,7 +895,6 @@
                     'user_id': Strophe.getNodeFromJid(jid)
                 }, attributes));
 
-                this.on('destroy', () => { this.removeFromRoster(); });
                 this.on('change:chat_status', function (item) {
                     _converse.emit('contactStatusChanged', item.attributes);
                 });
@@ -905,16 +907,16 @@
                  *    (String) message - An optional message to explain the
                  *      reason for the subscription request.
                  */
-                this.save('ask', "subscribe"); // ask === 'subscribe' Means we have ask to subscribe to them.
                 const pres = $pres({to: this.get('jid'), type: "subscribe"});
                 if (message && message !== "") {
                     pres.c("status").t(message).up();
                 }
-                const nick = _converse.xmppstatus.get('fullname');
-                if (nick && nick !== "") {
+                const nick = _converse.xmppstatus.get('nickname') || _converse.xmppstatus.get('fullname');
+                if (nick) {
                     pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
                 }
                 _converse.connection.send(pres);
+                this.save('ask', "subscribe"); // ask === 'subscribe' Means we have asked to subscribe to them.
                 return this;
             },
 
@@ -940,7 +942,8 @@
                  *    (String) jid - The Jabber ID of the user who is unsubscribing
                  */
                 _converse.connection.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
-                this.destroy(); // Will cause removeFromRoster to be called.
+                this.removeFromRoster();
+                this.destroy();
             },
 
             unauthorize (message) {
@@ -957,7 +960,7 @@
                  * Parameters:
                  *   (String) message - Optional message to send to the person being authorized
                  */
-                const pres = $pres({to: this.get('jid'), type: "subscribed"});
+                const pres = $pres({'to': this.get('jid'), 'type': "subscribed"});
                 if (message && message !== "") {
                     pres.c("status").t(message);
                 }
@@ -1039,7 +1042,7 @@
                 }
             },
 
-            removeFromRoster (callback) {
+            removeFromRoster (callback, errback) {
                 /* Instruct the XMPP server to remove this contact from our roster
                  * Parameters:
                  *   (Function) callback
@@ -1047,7 +1050,7 @@
                 const iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', {jid: this.get('jid'), subscription: "remove"});
-                _converse.connection.sendIQ(iq, callback, callback);
+                _converse.connection.sendIQ(iq, callback, errback);
                 return this;
             }
         });
@@ -1137,8 +1140,7 @@
                     if (item.getAttribute('action') === 'add') {
                         _converse.roster.addAndSubscribe(
                             item.getAttribute('jid'),
-                            null,
-                            _converse.xmppstatus.get('fullname')
+                            _converse.xmppstatus.get('nickname') || _converse.xmppstatus.get('fullname')
                         );
                     }
                 });
@@ -1165,7 +1167,7 @@
                         contact.subscribe(message);
                     }
                 }
-                this.addContact(jid, name, groups, attributes).then(handler, handler);
+                this.addContactToRoster(jid, name, groups, attributes).then(handler, handler);
             },
 
             sendContactAddIQ (jid, name, groups, callback, errback) {
@@ -1186,7 +1188,7 @@
                 _converse.connection.sendIQ(iq, callback, errback);
             },
 
-            addContact (jid, name, groups, attributes) {
+            addContactToRoster (jid, name, groups, attributes) {
                 /* Adds a RosterContact instance to _converse.roster and
                  * registers the contact on the XMPP server.
                  * Returns a promise which is resolved once the XMPP server has
@@ -1222,7 +1224,7 @@
                 });
             },
 
-            subscribeBack (bare_jid) {
+            subscribeBack (bare_jid, presence) {
                 const contact = this.get(bare_jid);
                 if (contact instanceof _converse.RosterContact) {
                     contact.authorize().subscribe();
@@ -1233,7 +1235,8 @@
                             contact.authorize().subscribe();
                         }
                     }
-                    this.addContact(bare_jid, '', [], { 'subscription': 'from' }).then(handler, handler);
+                    const nickname = _.get(sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop(), 'textContent', null);
+                    this.addContactToRoster(bare_jid, nickname, [], {'subscription': 'from'}).then(handler, handler);
                 }
             },
 
@@ -1317,25 +1320,25 @@
                         return; // We're lazy when adding contacts.
                     }
                     this.create({
-                        ask,
-                        fullname: item.getAttribute("name") || jid,
-                        groups,
-                        jid,
-                        subscription
+                        'ask': ask,
+                        'fullname': item.getAttribute("name") || jid,
+                        'groups': groups,
+                        'jid': jid,
+                        'subscription': subscription
                     }, {sort: false});
                 } else {
                     if (subscription === "remove") {
-                        return contact.destroy(); // will trigger removeFromRoster
+                        return contact.destroy();
                     }
                     // We only find out about requesting contacts via the
                     // presence handler, so if we receive a contact
                     // here, we know they aren't requesting anymore.
                     // see docs/DEVELOPER.rst
                     contact.save({
-                        subscription,
-                        ask,
-                        requesting: null,
-                        groups
+                        'subscription': subscription,
+                        'ask': ask,
+                        'requesting': null,
+                        'groups': groups
                     });
                 }
             },
@@ -1346,13 +1349,13 @@
                  * Note: this method gets completely overridden by converse-vcard.js
                  */
                 const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from')),
-                      nick_el = presence.querySelector(`nick[xmlns="${Strophe.NS.NICK}"]`);
+                      nickname = _.get(sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop(), 'textContent', null);
                 const user_data = {
-                    jid: bare_jid,
-                    subscription: 'none',
-                    ask: null,
-                    requesting: true,
-                    fullname: nick_el && nick_el.textContent || bare_jid,
+                    'jid': bare_jid,
+                    'subscription': 'none',
+                    'ask': null,
+                    'requesting': true,
+                    'fullname': nickname
                 };
                 this.create(user_data);
                 _converse.emit('contactRequest', user_data);
@@ -1371,7 +1374,7 @@
                 }
                 if (_converse.auto_subscribe) {
                     if ((!contact) || (contact.get('subscription') !== 'to')) {
-                        this.subscribeBack(bare_jid);
+                        this.subscribeBack(bare_jid, presence);
                     } else {
                         contact.authorize();
                     }
@@ -1411,6 +1414,23 @@
                         if (status_message) {
                             _converse.xmppstatus.save({'status_message': status_message});
                         }
+                    }
+                    if (_converse.jid === jid && presence_type === 'unavailable') {
+                        // XXX: We've received an "unavailable" presence from our
+                        // own resource. Apparently this happens due to a
+                        // Prosody bug, whereby we send an IQ stanza to remove
+                        // a roster contact, and Prosody then sends
+                        // "unavailable" globally, instead of directed to the
+                        // particular user that's removed.
+                        //
+                        // Here is the bug report: https://prosody.im/issues/1121
+                        //
+                        // I'm not sure whether this might legitimately happen
+                        // in other cases.
+                        //
+                        // As a workaround for now we simply send our presence again,
+                        // otherwise we're treated as offline.
+                        _converse.xmppstatus.sendPresence();
                     }
                     return;
                 } else if (sizzle(`query[xmlns="${Strophe.NS.MUC}"]`, presence).length) {
@@ -1487,17 +1507,26 @@
 
         this.XMPPStatus = Backbone.Model.extend({
 
+            defaults () {
+                return {
+                    "status":  _converse.default_state,
+                    "jid": _converse.bare_jid,
+                    "nickname": _converse.nickname,
+                    "vcard_updated": null
+                }
+            },
+
             initialize () {
-                this.set({
-                    'status' : this.getStatus()
+                this.on('change:status', (item) => {
+                    const status = this.get('status');
+                    this.sendPresence(status);
+                    _converse.emit('statusChanged', status);
                 });
-                this.on('change', (item) => {
-                    if (_.has(item.changed, 'status')) {
-                        _converse.emit('statusChanged', this.get('status'));
-                    }
-                    if (_.has(item.changed, 'status_message')) {
-                        _converse.emit('statusMessageChanged', this.get('status_message'));
-                    }
+
+                this.on('change:status_message', () => {
+                    const status_message = this.get('status_message');
+                    this.sendPresence(this.get('status'), status_message);
+                    _converse.emit('statusMessageChanged', status_message);
                 });
             },
 
@@ -1533,30 +1562,6 @@
 
             sendPresence (type, status_message) {
                 _converse.connection.send(this.constructPresence(type, status_message));
-            },
-
-            setStatus (value) {
-                this.sendPresence(value);
-                this.save({'status': value});
-            },
-
-            getStatus () {
-                return this.get('status') || _converse.default_state;
-            },
-
-            setStatusMessage (status_message) {
-                this.sendPresence(this.getStatus(), status_message);
-                this.save({'status_message': status_message});
-                if (this.xhr_custom_status) {
-                    const xhr = new XMLHttpRequest();
-                    xhr.open('POST', this.xhr_custom_status_url, true);
-                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-                    xhr.send({'msg': status_message});
-                }
-                const prev_status = this.get('status_message');
-                if (prev_status === status_message) {
-                    this.trigger("update-status-ui", this);
-                }
             }
         });
 
@@ -1952,19 +1957,15 @@
         },
         'contacts': {
             'get' (jids) {
-                const _transform = function (jid) {
-                    const contact = _converse.roster.get(Strophe.getBareJidFromJid(jid));
-                    if (contact) {
-                        return contact.attributes;
-                    }
-                    return null;
+                const _getter = function (jid) {
+                    return _converse.roster.get(Strophe.getBareJidFromJid(jid)) || null;
                 };
                 if (_.isUndefined(jids)) {
                     jids = _converse.roster.pluck('jid');
                 } else if (_.isString(jids)) {
-                    return _transform(jids);
+                    return _getter(jids);
                 }
-                return _.map(jids, _transform);
+                return _.map(jids, _getter);
             },
             'add' (jid, name) {
                 if (!_.isString(jid) || !_.includes(jid, '@')) {

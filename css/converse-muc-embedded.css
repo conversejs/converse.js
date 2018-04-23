@@ -15,7 +15,7 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box; }
-  #conversejs.converse-embedded form.pure-form.converse-centered-form {
+  #conversejs.converse-embedded form.converse-centered-form {
     position: absolute;
     top: 30%;
     transform: translateY(-50%); }
@@ -43,11 +43,9 @@
       height: calc(100% - 55px); }
     #conversejs.converse-embedded .chatroom .box-flyout .occupants-heading {
       font-size: 120%; }
-    #conversejs.converse-embedded .chatroom .box-flyout .chat-content {
-      height: calc(100% - 97px); }
-      #conversejs.converse-embedded .chatroom .box-flyout .chat-content .chat-message {
-        margin: 0.5em;
-        font-size: 120%; }
+    #conversejs.converse-embedded .chatroom .box-flyout .chat-content .chat-message {
+      margin: 0.5em;
+      font-size: 120%; }
     #conversejs.converse-embedded .chatroom .box-flyout .sendXMPPMessage .chat-textarea {
       padding: 0.5em;
       font-size: 110%; }

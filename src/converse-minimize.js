@@ -39,7 +39,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatview", "converse-controlbox", "converse-muc", "converse-headline"],
+        dependencies: ["converse-chatview", "converse-controlbox", "converse-muc", "converse-muc-views", "converse-headline"],
 
         enabled (_converse) {
             return _converse.view_mode == 'overlayed';
@@ -65,6 +65,8 @@
             ChatBox: {
                 initialize () {
                     this.__super__.initialize.apply(this, arguments);
+                    this.on('show', this.maximize, this);
+
                     if (this.get('id') === 'controlbox') {
                         return;
                     }
@@ -211,17 +213,6 @@
             },
 
             ChatBoxViews: {
-                showChat (attrs) {
-                    /* Find the chat box and show it. If it doesn't exist, create it.
-                     */
-                    const chatbox = this.__super__.showChat.apply(this, arguments);
-                    const maximize = _.isUndefined(attrs.maximize) ? true : attrs.maximize;
-                    if (chatbox.get('minimized') && maximize) {
-                        chatbox.maximize();
-                    }
-                    return chatbox;
-                },
-
                 getChatBoxWidth (view) {
                     if (!view.model.get('minimized') && u.isVisible(view.el)) {
                         return u.getOuterWidth(view.el, true);
@@ -332,7 +323,7 @@
 
             _converse.MinimizedChatBoxView = Backbone.NativeView.extend({
                 tagName: 'div',
-                className: 'chat-head',
+                className: 'chat-head row no-gutters',
                 events: {
                     'click .close-chatbox-button': 'close',
                     'click .restore-chat': 'restore'
@@ -403,7 +394,7 @@
                 render () {
                     if (!this.el.parentElement) {
                         this.el.innerHTML = tpl_chats_panel();
-                        _converse.chatboxviews.el.appendChild(this.el);
+                        _converse.chatboxviews.insertRowColumn(this.el);
                     }
                     if (this.keys().length === 0) {
                         this.el.classList.add('hidden');

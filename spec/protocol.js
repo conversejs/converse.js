@@ -11,6 +11,7 @@
     var $iq = converse.env.$iq;
     var $pres = converse.env.$pres;
     var _ = converse.env._;
+    var u = converse.env.utils;
     // See:
     // https://xmpp.org/rfcs/rfc3921.html
 
@@ -54,7 +55,7 @@
                     { roster_groups: false },
                     function (done, _converse) {
 
-                var contact, sent_stanza, IQ_id, stanza;
+                var contact, sent_stanza, IQ_id, stanza, modal;
                 test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
                 .then(function () {
                     return test_utils.waitUntil(function () {
@@ -65,10 +66,10 @@
                      * the interaction between roster items and subscription states.
                      */
                     test_utils.openControlBox(_converse);
-                    var panel = _converse.chatboxviews.get('controlbox').contactspanel;
-                    spyOn(panel, "addContactFromForm").and.callThrough();
+                    var cbview = _converse.chatboxviews.get('controlbox');
+
                     spyOn(_converse.roster, "addAndSubscribe").and.callThrough();
-                    spyOn(_converse.roster, "addContact").and.callThrough();
+                    spyOn(_converse.roster, "addContactToRoster").and.callThrough();
                     spyOn(_converse.roster, "sendContactAddIQ").and.callThrough();
                     spyOn(_converse.api.vcard, "get").and.callThrough();
 
@@ -77,21 +78,18 @@
                         sent_stanza = iq;
                         IQ_id = sendIQ.bind(this)(iq, callback, errback);
                     });
-                    panel.delegateEvents(); // Rebind all events so that our spy gets called
 
-                    /* Add a new contact through the UI */
-                    var form = panel.el.querySelector('form.add-xmpp-contact');
-                    expect(_.isNull(form)).toBeTruthy();
-
-                    // Click the "Add a contact" link.
-                    panel.el.querySelector('.toggle-xmpp-contact-form').click();
-
-                    // Check that the form appears
-                    form = panel.el.querySelector('form.add-xmpp-contact');
-                    expect(form.parentElement.offsetHeight).not.toBe(0);
-                    expect(_.includes(form.parentElement.classList, 'collapsed')).toBeFalsy();
+                    cbview.el.querySelector('.add-contact').click()
+                    modal = _converse.rosterview.add_contact_modal;
+                    return test_utils.waitUntil(function () {
+                        return u.isVisible(modal.el);
+                    }, 1000);
+                }).then(function () {
+                    spyOn(modal, "addContactFromForm").and.callThrough();
+                    modal.delegateEvents();
 
                     // Fill in the form and submit
+                    var form = modal.el.querySelector('form.add-xmpp-contact');
                     form.querySelector('input').value = 'contact@example.org';
                     form.querySelector('[type="submit"]').click();
 
@@ -100,14 +98,9 @@
                     * subscription, the user's client SHOULD perform a "roster set"
                     * for the new roster item.
                     */
-                    expect(panel.addContactFromForm).toHaveBeenCalled();
+                    expect(modal.addContactFromForm).toHaveBeenCalled();
                     expect(_converse.roster.addAndSubscribe).toHaveBeenCalled();
-                    expect(_converse.roster.addContact).toHaveBeenCalled();
-
-                    // The form should not be visible anymore (by virtue of its
-                    // parent being collapsed)
-                    expect(form.parentElement.offsetHeight).toBe(0);
-                    expect(_.includes(form.parentElement.classList, 'collapsed')).toBeTrue;
+                    expect(_converse.roster.addContactToRoster).toHaveBeenCalled();
 
                     /* _converse request consists of sending an IQ
                      * stanza of type='set' containing a <query/> element qualified by

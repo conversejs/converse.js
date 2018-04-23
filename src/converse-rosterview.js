@@ -8,28 +8,38 @@
 
 (function (root, factory) {
     define(["converse-core",
+            "tpl!add_contact_modal",
             "tpl!group_header",
             "tpl!pending_contact",
             "tpl!requesting_contact",
             "tpl!roster",
             "tpl!roster_filter",
             "tpl!roster_item",
-            "converse-chatboxes"
+            "tpl!search_contact",
+            "awesomplete",
+            "converse-chatboxes",
+            "converse-modal"
     ], factory);
 }(this, function (
             converse, 
+            tpl_add_contact_modal,
             tpl_group_header,
             tpl_pending_contact,
             tpl_requesting_contact,
             tpl_roster,
             tpl_roster_filter,
-            tpl_roster_item) {
+            tpl_roster_item,
+            tpl_search_contact,
+            Awesomplete
+    ) {
     "use strict";
     const { Backbone, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
     const u = converse.env.utils;
 
 
     converse.plugins.add('converse-rosterview', {
+
+        dependencies: ["converse-modal"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -70,9 +80,10 @@
                   { __ } = _converse;
 
             _converse.api.settings.update({
-                allow_chat_pending_contacts: true,
-                allow_contact_removal: true,
-                show_toolbar: true,
+                'allow_chat_pending_contacts': true,
+                'allow_contact_removal': true,
+                'show_toolbar': true,
+                'xhr_user_search_url': null
             });
             _converse.api.promises.add('rosterViewInitialized');
 
@@ -118,6 +129,102 @@
             };
 
 
+            _converse.AddContactModal = _converse.BootstrapModal.extend({
+                events: {
+                    'submit form': 'addContactFromForm'
+                },
+
+                initialize () {
+                    _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                    this.model.on('change', this.render, this);
+                },
+
+                toHTML () {
+                    const label_nickname = _converse.xhr_user_search_url ? __('Contact name') : __('Optional nickname');
+                    return tpl_add_contact_modal(_.extend(this.model.toJSON(), {
+                        '_converse': _converse,
+                        'heading_new_contact': __('Add a Contact'),
+                        'label_xmpp_address': __('XMPP Address'),
+                        'label_nickname': label_nickname,
+                        'contact_placeholder': __('name@example.org'),
+                        'label_add': __('Add'),
+                    }));
+                },
+
+                afterRender () {
+                    if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
+                        this.initXHRAutoComplete();
+                    } else {
+                        this.initJIDAutoComplete();
+                    }
+                },
+
+                initJIDAutoComplete () {
+                    const jid_input = this.el.querySelector('input[name="jid"]');
+                    const list = _.uniq(_converse.roster.map((item) => Strophe.getDomainFromJid(item.get('jid'))));
+                    new Awesomplete(jid_input, {
+                        'list': list,
+                        'data': function (text, input) {
+                            return input.slice(0, input.indexOf("@")) + "@" + text;
+                        },
+                        'filter': Awesomplete.FILTER_STARTSWITH
+                    });
+                    this.el.addEventListener('shown.bs.modal', () => {
+                        jid_input.focus();
+                    }, false);
+                },
+
+                initXHRAutoComplete () {
+                    const name_input = this.el.querySelector('input[name="name"]');
+                    const jid_input = this.el.querySelector('input[name="jid"]');
+                    const awesomplete = new Awesomplete(name_input, {
+                        'minChars': 1,
+                        'list': []
+                    });
+                    const xhr = new window.XMLHttpRequest();
+                    // `open` must be called after `onload` for mock/testing purposes.
+                    xhr.onload = function () {
+                        if (xhr.responseText) {
+                            awesomplete.list = JSON.parse(xhr.responseText).map((i) => { //eslint-disable-line arrow-body-style
+                                return {'label': i.fullname, 'value': i.jid};
+                            });
+                            awesomplete.evaluate();
+                        }
+                    };
+                    name_input.addEventListener('input', _.debounce(() => {
+                        xhr.open("GET", `${_converse.xhr_user_search_url}?q=${name_input.value}`, true);
+                        xhr.send()
+                    } , 300));
+                    this.el.addEventListener('awesomplete-selectcomplete', (ev) => {
+                        jid_input.value = ev.text.value;
+                        name_input.value = ev.text.label;
+                    });
+                    this.el.addEventListener('shown.bs.modal', () => {
+                        name_input.focus();
+                    }, false);
+                },
+
+                addContactFromForm (ev) {
+                    ev.preventDefault();
+                    const data = new FormData(ev.target),
+                          jid = data.get('jid'),
+                          name = data.get('name');
+                    ev.target.reset();
+
+                    if (!jid || _.compact(jid.split('@')).length < 2) {
+                        this.model.set({
+                            'error_message': __('Please enter a valid XMPP address'),
+                            'jid': jid
+                        })
+                    } else {
+                        _converse.roster.addAndSubscribe(jid, name);
+                        this.model.clear();
+                        this.modal.hide();
+                    }
+                }
+            });
+
+
             _converse.RosterFilter = Backbone.Model.extend({
                 initialize () {
                     this.set({
@@ -129,19 +236,19 @@
             });
 
             _converse.RosterFilterView = Backbone.VDOMView.extend({
-                tagName: 'span',
+                tagName: 'form',
+                className: 'roster-filter-form',
                 events: {
                     "keydown .roster-filter": "liveFilter",
                     "submit form.roster-filter-form": "submitFilter",
-                    "click .onX": "clearFilter",
-                    "mousemove .x": "toggleX",
-                    "change .filter-type": "changeTypeFilter",
+                    "click .clear-input": "clearFilter",
+                    "click .filter-by span": "changeTypeFilter",
                     "change .state-type": "changeChatStateFilter"
                 },
 
                 initialize () {
                     this.model.on('change:filter_type', this.render, this);
-                    this.model.on('change:filter_text', this.renderClearButton, this);
+                    this.model.on('change:filter_text', this.render, this);
                 },
 
                 toHTML () {
@@ -149,9 +256,9 @@
                         _.extend(this.model.toJSON(), {
                             visible: this.shouldBeVisible(),
                             placeholder: __('Filter'),
-                            label_contacts: LABEL_CONTACTS,
-                            label_groups: LABEL_GROUPS,
-                            label_state: __('State'),
+                            title_contact_filter: __('Filter by contact name'),
+                            title_group_filter: __('Filter by group name'),
+                            title_status_filter: __('Filter by status'),
                             label_any: __('Any'),
                             label_unread_messages: __('Unread'),
                             label_online: __('Online'),
@@ -163,28 +270,6 @@
                         }));
                 },
 
-                afterRender () {
-                    this.renderClearButton();
-                },
-
-                renderClearButton () {
-                    const roster_filter = this.el.querySelector('.roster-filter');
-                    if (_.isNull(roster_filter)) {
-                        return;
-                    }
-                    roster_filter.classList[this.tog(roster_filter.value)]('x');
-                },
-
-                tog (v) {
-                    return v?'add':'remove';
-                },
-
-                toggleX (ev) {
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const el = ev.target;
-                    el.classList[this.tog(el.offsetWidth-18 < ev.clientX-el.getBoundingClientRect().left)]('onX');
-                },
-
                 changeChatStateFilter (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     this.model.save({
@@ -194,7 +279,7 @@
 
                 changeTypeFilter (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const type = ev.target.value;
+                    const type = ev.target.dataset.type;
                     if (type === 'state') {
                         this.model.save({
                             'filter_type': type,
@@ -210,7 +295,6 @@
 
                 liveFilter: _.debounce(function (ev) {
                     this.model.save({
-                        'filter_type': this.el.querySelector('.filter-type').value,
                         'filter_text': this.el.querySelector('.roster-filter').value
                     });
                 }, 250),
@@ -233,11 +317,11 @@
                 },
 
                 shouldBeVisible () {
-                    return _converse.roster.length >= 7 || this.isActive();
+                    return _converse.roster.length >= 5 || this.isActive();
                 },
 
                 showOrHide () {
-                    if (this.shouldBeVisible) {
+                    if (this.shouldBeVisible()) {
                         this.show();
                     } else {
                         this.hide();
@@ -264,17 +348,17 @@
                 clearFilter (ev) {
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
-                        ev.target.classList.remove('x');
-                        ev.target.classList.remove('onX');
-                        ev.target.value = '';
+                        u.hideElement(this.el.querySelector('.clear-input'));
                     }
+                    const roster_filter = this.el.querySelector('.roster-filter');
+                    roster_filter.value = '';
                     this.model.save({'filter_text': ''});
                 }
             });
 
             _converse.RosterContactView = Backbone.NativeView.extend({
                 tagName: 'li',
-                className: 'hidden',
+                className: 'd-flex hidden',
 
                 events: {
                     "click .accept-xmpp-request": "acceptRequest",
@@ -355,9 +439,21 @@
                 },
 
                 renderRosterItem (item) {
+                    let status_icon = 'fa-times-circle';
+                    const chat_status = item.get('chat_status') || 'offline';
+                    if (chat_status === 'online') {
+                        status_icon = 'fa-circle';
+                    } else if (chat_status === 'away') {
+                        status_icon = 'fa-dot-circle-o';
+                    } else if (chat_status === 'xa') {
+                        status_icon = 'fa-circle-o';
+                    } else if (chat_status === 'dnd') {
+                        status_icon = 'fa-minus-circle';
+                    }
                     this.el.innerHTML = tpl_roster_item(
                         _.extend(item.toJSON(), {
-                            'desc_status': STATUSES[item.get('chat_status')||'offline'],
+                            'desc_status': STATUSES[chat_status],
+                            'status_icon': status_icon,
                             'desc_chat': __('Click to chat with %1$s (JID: %2$s)', item.get('fullname'), item.get('jid')),
                             'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname')),
                             'allow_contact_removal': _converse.allow_contact_removal,
@@ -390,7 +486,8 @@
 
                 openChat (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    return _converse.chatboxviews.showChat(this.model.attributes, true);
+                    const attrs = this.model.attributes;
+                    _converse.api.chats.open(attrs.jid, attrs);
                 },
 
                 removeContact (ev) {
@@ -398,10 +495,7 @@
                     if (!_converse.allow_contact_removal) { return; }
                     const result = confirm(__("Are you sure you want to remove this contact?"));
                     if (result === true) {
-                        const iq = $iq({type: 'set'})
-                            .c('query', {xmlns: Strophe.NS.ROSTER})
-                            .c('item', {jid: this.model.get('jid'), subscription: "remove"});
-                        _converse.connection.sendIQ(iq,
+                        this.model.removeFromRoster(
                             (iq) => {
                                 this.model.destroy();
                                 this.remove();
@@ -548,29 +642,35 @@
 
                 filter (q, type) {
                     /* Filter the group's contacts based on the query "q".
-                     * The query is matched against the contact's full name.
+                     * 
                      * If all contacts are filtered out (i.e. hidden), then the
                      * group must be filtered out as well.
                      */
+                    if (_.isNil(q)) {
+                        type = type || _converse.rosterview.filter_view.model.get('filter_type');
+                        if (type === 'state') {
+                            q = _converse.rosterview.filter_view.model.get('chat_state');
+                        } else {
+                            q = _converse.rosterview.filter_view.model.get('filter_text');
+                        }
+                    }
                     this.filterOutContacts(this.getFilterMatches(q, type));
                 },
 
                 toggle (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    if (_.includes(ev.target.classList, "icon-opened")) {
+                    const icon_el = ev.target.querySelector('.fa');
+                    if (_.includes(icon_el.classList, "fa-caret-down")) {
                         this.model.save({state: _converse.CLOSED});
                         this.collapse().then(() => {
-                            ev.target.classList.remove("icon-opened");
-                            ev.target.classList.add("icon-closed");
+                            icon_el.classList.remove("fa-caret-down");
+                            icon_el.classList.add("fa-caret-right");
                         });
                     } else {
-                        ev.target.classList.remove("icon-closed");
-                        ev.target.classList.add("icon-opened");
+                        icon_el.classList.remove("fa-caret-right");
+                        icon_el.classList.add("fa-caret-down");
                         this.model.save({state: _converse.OPENED});
-                        this.filter(
-                            _converse.rosterview.el.querySelector('.roster-filter').value,
-                            _converse.rosterview.el.querySelector('.filter-type').value
-                        );
+                        this.filter();
                         u.showElement(this.el);
                         u.slideOut(this.contacts_el);
                     }
@@ -608,8 +708,9 @@
                 },
 
                 onRemove (contact) {
+                    this.remove(contact.get('jid'));
                     if (this.model.contacts.length === 0) {
-                        this.el.parentElement.removeChild(this.el);
+                        this.remove();
                     }
                 }
             });
@@ -624,6 +725,10 @@
                 listSelector: '.roster-contacts',
                 sortEvent: null, // Groups are immutable, so they don't get re-sorted
                 subviewIndex: 'name',
+
+                events: {
+                    'click a.chatbox-btn.add-contact': 'showAddContactModal',
+                },
 
                 initialize () {
                     Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
@@ -642,11 +747,8 @@
                     // assigned to their various groups.
                     _converse.on('rosterGroupsFetched', this.sortAndPositionAllItems.bind(this));
 
-                    // _converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
                     _converse.on('rosterContactsFetched', () => {
-                        _converse.roster.each((contact) => {
-                            this.addRosterContact(contact, {'silent': true});
-                        });
+                        _converse.roster.each((contact) => this.addRosterContact(contact, {'silent': true}));
                         this.update();
                         this.updateFilter();
                         this.trigger('rosterContactsFetchedAndProcessed');
@@ -655,22 +757,21 @@
                 },
 
                 render () {
-                    this.el.innerHTML = "";
-                    this.el.appendChild(this.filter_view.render().el);
-                    this.renderRoster();
-                    if (!_converse.allow_contact_requests) {
-                        // XXX: if we ever support live editing of config then
-                        // we'll need to be able to remove this class on the fly.
-                        this.el.classList.add('no-contact-requests');
-                    }
+                    this.el.innerHTML = tpl_roster({
+                        'heading_contacts': __('Contacts'),
+                        'title_add_contact': __('Add a contact')
+                    });
+                    const form = this.el.querySelector('.roster-filter-form');
+                    this.el.replaceChild(this.filter_view.render().el, form);
+                    this.roster_el = this.el.querySelector('.roster-contacts');
                     return this;
                 },
 
-                renderRoster () {
-                    const div = document.createElement('div');
-                    div.insertAdjacentHTML('beforeend', tpl_roster());
-                    this.roster_el = div.firstChild;
-                    this.el.insertAdjacentElement('beforeend', this.roster_el);
+                showAddContactModal (ev) {
+                    if (_.isUndefined(this.add_contact_modal)) {
+                        this.add_contact_modal = new _converse.AddContactModal({'model': new Backbone.Model()});
+                    }
+                    this.add_contact_modal.show(ev);
                 },
 
                 createRosterFilter () {
@@ -703,16 +804,9 @@
                     if (!u.isVisible(this.roster_el)) {
                         u.showElement(this.roster_el);
                     }
-                    return this.showHideFilter();
-                }, _converse.animate ? 100 : 0),
-
-                showHideFilter () {
-                    if (!u.isVisible(this.el)) {
-                        return;
-                    }
                     this.filter_view.showOrHide();
                     return this;
-                },
+                }, _converse.animate ? 100 : 0),
 
                 filter (query, type) {
                     // First we make sure the filter is restored to its
@@ -798,6 +892,7 @@
 
                 addContactToGroup (contact, name, options) {
                     this.getGroup(name).contacts.add(contact, options);
+                    this.sortAndPositionAllItems();
                 },
 
                 addExistingContact (contact, options) {

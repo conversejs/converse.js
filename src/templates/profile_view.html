@@ -1,0 +1,25 @@
+<div class="userinfo">
+<div class="profile d-flex">
+    {[ if (o.image) { ]}
+    <a class="show-profile" href="#">
+        <img alt="User Avatar" class="avatar align-self-center" height="40px" width="40px" src="data:{{{o.image_type}}};base64,{{{o.image}}}"/>
+    </a>
+    {[ } ]}
+    <span class="username w-100 align-self-center">{{{o.fullname}}}</span>
+    <!-- <a class="chatbox-btn fa fa-vcard align-self-center" title="{{{o.title_your_profile}}}" data-toggle="modal" data-target="#userProfileModal"></a> -->
+    <!-- <a class="chatbox-btn fa fa-cog align-self-center" title="{{{o.title_change_status}}}" data-toggle="modal" data-target="#settingsModal"></a> -->
+    {[ if (o._converse.allow_logout) { ]}
+        <a class="chatbox-btn logout fa fa-sign-out align-self-center" title="{{{o.title_log_out}}}"></a>
+    {[ } ]}
+</div>
+<div class="d-flex xmpp-status">
+    <span class="{{{o.chat_status}}} w-100 align-self-center" data-value="{{{o.chat_status}}}">
+        <span class="fa
+            {[ if (o.chat_status === 'online') { ]} fa-circle {[ } ]}
+            {[ if (o.chat_status === 'dnd') { ]} fa-minus-circle {[ } ]}
+            {[ if (o.chat_status === 'away') { ]} fa-dot-circle-o {[ } ]}
+            {[ if (o.chat_status === 'xa') { ]} fa-circle-o {[ } ]}
+            {[ if (o.chat_status === 'offline') { ]} fa-times-circle {[ } ]}"></span> {{{o.status_message}}}</span>
+    <a class="chatbox-btn change-status fa fa-pencil" title="{{{o.title_change_status}}}" data-toggle="modal" data-target="#changeStatusModal"></a>
+</div>
+</div>

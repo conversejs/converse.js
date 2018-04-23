@@ -1,19 +1,28 @@
-<div class="chat-head chat-head-chatbox">
-    <a class="chatbox-btn close-chatbox-button icon-close" title="{{{o.info_close}}}"></a>
-    {[ if (o.show_avatar) { ]}
-        <img alt="User Avatar"
-            class="avatar"
-            height="{{{o.avatar_height}}}px" width="{{{o.avatar_width}}}px"
-            src="data:{{{o.image_type || o._converse.DEFAULT_IMAGE_TYPE}}};base64,{{{o.image || o._converse.DEFAULT_IMAGE}}}"/>
-    {[ } ]}
-    <div class="chat-title">
-        {[ if (o.url) { ]}
-            <a href="{{{o.url}}}" target="_blank" rel="noopener" class="user">
-        {[ } ]}
-                {{{ o.fullname }}}
-        {[ if (o.url) { ]}
-            </a>
-        {[ } ]}
-        <p class="user-custom-message">{{{ o.status }}}</p>
+<div class="chat-head chat-head-chatbox row no-gutters">
+    <div class="col">
+        <div class="row no-gutters">
+            {[ if (o.show_avatar) { ]}
+            <div class="col-auto">
+                <img alt="User Avatar"
+                    class="avatar"
+                    height="{{{o.avatar_height}}}px" width="{{{o.avatar_width}}}px"
+                    src="data:{{{o.image_type || o._converse.DEFAULT_IMAGE_TYPE}}};base64,{{{o.image || o._converse.DEFAULT_IMAGE}}}"/>
+            </div>
+            {[ } ]}
+            <div class="col chat-title" title="{{{o.jid}}}">
+                {[ if (o.url) { ]}
+                    <a href="{{{o.url}}}" target="_blank" rel="noopener" class="user">
+                {[ } ]}
+                        {{{ o.fullname || o.jid }}}
+                {[ if (o.url) { ]}
+                    </a>
+                {[ } ]}
+                <p class="user-custom-message">{{{ o.status }}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="chatbox-buttons row no-gutters">
+        <a class="chatbox-btn close-chatbox-button fa fa-close" title={{{o.info_close}}}></a>
+        <!-- <a class="chatbox-btn fa fa-vcard" title="Contact profile" data-toggle="modal" data-target="#contactProfileModal"></a> -->
     </div>
 </div>

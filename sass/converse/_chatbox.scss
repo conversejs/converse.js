@@ -1,5 +1,5 @@
 #converse-embedded-chat,
-#conversejs {
+#conversejs:not(.fullscreen) {
     .chat-head {
         border-top-left-radius: $chatbox-border-radius;
         border-top-right-radius: $chatbox-border-radius;
@@ -13,9 +13,16 @@
         }
     }
     .chatbox {
+        min-width: $chat-width!important;
+        width: $chat-width;
+
+        .box-flyout {
+            min-width: $chat-width!important;
+            width: $chat-width;
+        }
+
         .chat-body {
             .chat-message {
-                padding: 0.3em;
                 line-height: $line-height-large;
                 .chat-msg-author {
                     line-height: $line-height-large;
@@ -34,22 +41,14 @@
             .chat-toolbar {
                 li {
                     .toolbar-menu {
+                        min-width: 235px;
+
                         ul {
                             &.emoji-toolbar {
                                 width: 100%;
                                 .emoji-category {
                                     float: left;
                                 }
-                                li {
-                                    padding: 2px;
-                                }
-                            }
-                        }
-                    }
-                    &.toggle-smiley {
-                        ul {
-                            li {
-                                padding: 2px;
                             }
                         }
                     }
@@ -57,4 +56,16 @@
             }
         }
     }
+}
+
+@include media-breakpoint-down(sm) {
+	#conversejs:not(.fullscreen) {
+		> .row {
+			flex-direction: column;
+
+            &.no-gutters {
+                margin: -1em;
+            }
+		}
+	}
 }

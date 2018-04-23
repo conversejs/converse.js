@@ -13,7 +13,6 @@
 
             test_utils.createContacts(_converse, 'current');
             test_utils.openControlBox();
-            test_utils.openContactsPanel(_converse);
             _converse.minimized_chats.toggleview.model.browserStorage._clear();
             _converse.minimized_chats.initToggle();
 
@@ -48,7 +47,6 @@
 
             test_utils.createContacts(_converse, 'current');
             test_utils.openControlBox();
-            test_utils.openContactsPanel(_converse);
             _converse.minimized_chats.toggleview.model.browserStorage._clear();
             _converse.minimized_chats.initToggle();
 
@@ -79,7 +77,6 @@
 
             test_utils.createContacts(_converse, 'current');
             test_utils.openControlBox();
-            test_utils.openContactsPanel(_converse);
             _converse.minimized_chats.toggleview.model.browserStorage._clear();
             _converse.minimized_chats.initToggle();
 
@@ -161,7 +158,7 @@
                         to: 'dummy@localhost',
                         type: 'groupchat'
                     }).c('body').t(message).tree();
-                view.handleMUCMessage(msg);
+                view.model.onMessage(msg);
 
                 expect($(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count')).is(':visible')).toBeTruthy();
                 expect($(_converse.minimized_chats.toggleview.el.querySelector('.unread-message-count')).text()).toBe('1');

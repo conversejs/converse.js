@@ -1,16 +1,24 @@
-// Converse.js (A browser based XMPP chat client)
+// Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
-/*global define */
 
 (function (root, factory) {
-    define(["converse-core", "backbone.overview"], factory);
-}(this, function (converse) {
+    define([
+        "converse-core",
+        "emojione",
+        "filesize",
+        "tpl!chatboxes",
+        "backbone.overview",
+        "form-utils"
+    ], factory);
+}(this, function (converse, emojione, filesize, tpl_chatboxes) {
     "use strict";
-    const { Backbone, Promise, Strophe, b64_sha1, moment, utils, _ } = converse.env;
+
+    const { $msg, Backbone, Promise, Strophe, b64_sha1, moment, sizzle, utils, _ } = converse.env;
+    const u = converse.env.utils;
+
 
     converse.plugins.add('converse-chatboxes', {
 
@@ -31,16 +39,12 @@
                 return this.__super__.logOut.apply(this, arguments);
             },
 
-            initStatus: function () {
+            initStatus: function (reconnecting) {
                 const { _converse } = this.__super__;
-                _converse.chatboxviews.closeAllChatBoxes();
+                if (!reconnecting) {
+                    _converse.chatboxviews.closeAllChatBoxes();
+                }
                 return this.__super__.initStatus.apply(this, arguments);
-            },
-
-            onStatusInitialized: function () {
-                const { _converse } = this.__super__;
-                _converse.chatboxes.onConnected();
-                return this.__super__.onStatusInitialized.apply(this, arguments);
             }
         },
 
@@ -48,7 +52,8 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            const { _converse } = this;
+            const { _converse } = this,
+                { __ } = _converse;
 
             _converse.api.promises.add([
                 'chatBoxesFetched',
@@ -57,7 +62,7 @@
 
             function openChat (jid) {
                 if (!utils.isValidJID(jid)) {
-                    return converse.log(
+                    return _converse.log(
                         `Invalid JID "${jid}" provided in URL fragment`,
                         Strophe.LogLevel.WARN
                     );
@@ -73,10 +78,100 @@
 
 
             _converse.Message = Backbone.Model.extend({
-                defaults(){
+
+                defaults () {
                     return {
-                        msgid: _converse.connection.getUniqueId()
+                        'msgid': _converse.connection.getUniqueId(),
+                        'time': moment().format()
                     };
+                },
+
+                initialize () {
+                    if (this.get('file')) {
+                        this.on('change:put', this.uploadFile, this);
+
+                        if (!_.includes([_converse.SUCCESS, _converse.FAILURE], this.get('upload'))) {
+                            this.getRequestSlotURL();
+                        }
+                    }
+                },
+
+                sendSlotRequestStanza () {
+                    /* Send out an IQ stanza to request a file upload slot.
+                     *
+                     * https://xmpp.org/extensions/xep-0363.html#request
+                     */
+                    const file = this.get('file');
+                    return new Promise((resolve, reject) => {
+                        const iq = converse.env.$iq({
+                            'from': _converse.jid,
+                            'to': this.get('slot_request_url'),
+                            'type': 'get'
+                        }).c('request', {
+                            'xmlns': Strophe.NS.HTTPUPLOAD,
+                            'filename': file.name,
+                            'size': file.size,
+                            'content-type': file.type
+                        })
+                        _converse.connection.sendIQ(iq, resolve, reject);
+                    });
+                },
+
+                getRequestSlotURL () {
+                    this.sendSlotRequestStanza().then((stanza) => {
+                        const slot = stanza.querySelector('slot');
+                        if (slot) {
+                            this.save({
+                                'get':  slot.querySelector('get').getAttribute('url'),
+                                'put': slot.querySelector('put').getAttribute('url'),
+                            });
+                        } else {
+                            return this.save({
+                                'type': 'error',
+                                'message': __("Sorry, could not determine file upload URL.")
+                            });
+                        }
+                    }).catch((e) => {
+                        _converse.log(e, Strophe.LogLevel.ERROR);
+                        return this.save({
+                            'type': 'error',
+                            'message': __("Sorry, could not determine upload URL.")
+                        });
+                    });
+                },
+
+                uploadFile () {
+                    const xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = () => {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            _converse.log("Status: " + xhr.status, Strophe.LogLevel.INFO);
+                            if (xhr.status === 200 || xhr.status === 201) {
+                                this.save({
+                                    'upload': _converse.SUCCESS,
+                                    'message': this.get('get')
+                                });
+                            } else {
+                                this.save({
+                                    'upload': _converse.FAILURE,
+                                    'message': __('Sorry, could not succesfully upload your file')
+                                });
+                            }
+                        }
+                    };
+                    xhr.upload.addEventListener("progress", (evt) => {
+                        if (evt.lengthComputable) {
+                            this.set('progress', evt.loaded / evt.total);
+                        }
+                    }, false);
+                    xhr.onerror = () => {
+                        this.save({
+                            'upload': _converse.FAILURE,
+                            'message': __('Sorry, could not succesfully upload your file')
+                        });
+                    };
+                    xhr.open('PUT', this.get('put'), true);
+                    xhr.setRequestHeader("Content-type", 'application/octet-stream');
+                    xhr.send(this.get('file'));
                 }
             });
 
@@ -89,11 +184,14 @@
 
             _converse.ChatBox = Backbone.Model.extend({
                 defaults: {
-                    'type': 'chatbox',
-                    'show_avatar': true,
                     'bookmarked': false,
                     'chat_state': undefined,
+                    'image': _converse.DEFAULT_IMAGE,
+                    'image_type': _converse.DEFAULT_IMAGE_TYPE,
                     'num_unread': 0,
+                    'show_avatar': true,
+                    'type': 'chatbox',
+                    'message_type': 'chat',
                     'url': ''
                 },
 
@@ -101,6 +199,16 @@
                     this.messages = new _converse.Messages();
                     this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
                         b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
+                    this.messages.chatbox = this;
+
+                    this.messages.on('change:upload', (message) => {
+                        if (message.get('upload') === _converse.SUCCESS) {
+                            this.sendMessageStanza(message);
+                        }
+                    });
+
+                    this.on('change:chat_state', this.sendChatState, this);
+
                     this.save({
                         // The chat_state will be set to ACTIVE once the chat box is opened
                         // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
@@ -110,6 +218,127 @@
                     });
                 },
 
+                createMessageStanza (message) {
+                    /* Given a _converse.Message Backbone.Model, return the XML
+                     * stanza that represents it.
+                     *
+                     *  Parameters:
+                     *    (Object) message - The Backbone.Model representing the message
+                     */
+                    const stanza = $msg({
+                            'from': _converse.connection.jid,
+                            'to': this.get('jid'),
+                            'type': this.get('message_type'),
+                            'id': message.get('msgid')
+                        }).c('body').t(message.get('message')).up()
+                          .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+
+                    if (message.get('is_spoiler')) {
+                        if (message.get('spoiler_hint')) {
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }, message.get('spoiler_hint')).up();
+                        } else {
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }).up();
+                        }
+                    }
+                    if (message.get('file')) {
+                        stanza.c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('message')).up();
+                    }
+                    return stanza;
+                },
+
+                sendMessageStanza (message) {
+                    const messageStanza = this.createMessageStanza(message);
+                    _converse.connection.send(messageStanza);
+                    if (_converse.forward_messages) {
+                        // Forward the message, so that other connected resources are also aware of it.
+                        _converse.connection.send(
+                            $msg({
+                                'to': _converse.bare_jid,
+                                'type': this.get('message_type'),
+                                'id': message.get('msgid')
+                            }).c('forwarded', {'xmlns': Strophe.NS.FORWARD})
+                                .c('delay', {
+                                        'xmns': Strophe.NS.DELAY,
+                                        'stamp': moment().format()
+                                }).up()
+                              .cnode(messageStanza.tree())
+                        );
+                    }
+                },
+
+                getOutgoingMessageAttributes (text, spoiler_hint) {
+                    const fullname = _converse.xmppstatus.get('fullname'),
+                        is_spoiler = this.get('composing_spoiler');
+
+                    return {
+                        'fullname': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
+                        'sender': 'me',
+                        'time': moment().format(),
+                        'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
+                        'is_spoiler': is_spoiler,
+                        'spoiler_hint': is_spoiler ? spoiler_hint : undefined
+                    };
+                },
+
+                sendMessage (attrs) {
+                    /* Responsible for sending off a text message.
+                     *
+                     *  Parameters:
+                     *    (Message) message - The chat message
+                     */
+                    this.sendMessageStanza(this.messages.create(attrs));
+                },
+
+                sendChatState () {
+                    /* Sends a message with the status of the user in this chat session
+                     * as taken from the 'chat_state' attribute of the chat box.
+                     * See XEP-0085 Chat State Notifications.
+                     */
+                    _converse.connection.send(
+                        $msg({'to':this.get('jid'), 'type': 'chat'})
+                            .c(this.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES}).up()
+                            .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                            .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
+                    );
+                },
+
+
+                sendFiles (files) {
+                    _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then((result) => {
+                        const item = result.pop(),
+                              data = item.dataforms.where({'FORM_TYPE': {'value': Strophe.NS.HTTPUPLOAD, 'type': "hidden"}}).pop(),
+                              max_file_size = window.parseInt(_.get(data, 'attributes.max-file-size.value')),
+                              slot_request_url = _.get(item, 'id');
+
+                        if (!slot_request_url) {
+                            this.messages.create({
+                                'message': __("Sorry, looks like file upload is not supported by your server."),
+                                'type': 'error',
+                            });
+                            return;
+                        }
+                        _.each(files, (file) => {
+                            if (!window.isNaN(max_file_size) && window.parseInt(file.size) > max_file_size) {
+                                return this.messages.create({
+                                    'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',
+                                        file.name, filesize(max_file_size)),
+                                    'type': 'error',
+                                });
+                            } else {
+                                this.messages.create(
+                                    _.extend(
+                                        this.getOutgoingMessageAttributes(), {
+                                        'file': file,
+                                        'progress': 0,
+                                        'slot_request_url': slot_request_url,
+                                        'type': this.get('message_type'),
+                                    })
+                                );
+                            }
+                        });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                },
+
                 getMessageBody (message) {
                     const type = message.getAttribute('type');
                     return (type === 'error') ?
@@ -117,7 +346,7 @@
                             _.propertyOf(message.querySelector('body'))('textContent');
                 },
 
-                getMessageAttributes (message, delay, original_stanza) {
+                getMessageAttributesFromStanza (message, delay, original_stanza) {
                     /* Parses a passed in message stanza and returns an object
                      * of attributes.
                      *
@@ -154,14 +383,16 @@
                     let sender, fullname;
                     if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === _converse.bare_jid)) {
                         sender = 'me';
-                        fullname = _converse.xmppstatus.get('fullname') || from;
+                        fullname = _converse.xmppstatus.get('fullname');
                     } else {
                         sender = 'them';
-                        fullname = this.get('fullname') || from;
+                        fullname = this.get('fullname');
                     }
+
                     const spoiler = message.querySelector(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`);
                     const attrs = {
                         'type': type,
+                        'from': from,
                         'chat_state': chat_state,
                         'delayed': delayed,
                         'fullname': fullname,
@@ -171,6 +402,10 @@
                         'time': time,
                         'is_spoiler': !_.isNull(spoiler)
                     };
+                    _.each(sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, message), (xform) => {
+                        attrs['oob_url'] = xform.querySelector('url').textContent;
+                        attrs['oob_desc'] = xform.querySelector('url').textContent;
+                    });
                     if (spoiler) {
                         attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
                     }
@@ -181,7 +416,7 @@
                     /* Create a Backbone.Message object inside this chat box
                      * based on the identified message stanza.
                      */
-                    return this.messages.create(this.getMessageAttributes.apply(this, arguments));
+                    return this.messages.create(this.getMessageAttributesFromStanza.apply(this, arguments));
                 },
 
                 newMessageWillBeHidden () {
@@ -238,11 +473,7 @@
                 },
 
                 onChatBoxesFetched (collection) {
-                    /* Show chat boxes upon receiving them from sessionStorage
-                    *
-                    * This method gets overridden entirely in src/converse-controlbox.js
-                    * if the controlbox plugin is active.
-                    */
+                    /* Show chat boxes upon receiving them from sessionStorage */
                     collection.each((chatbox) => {
                         if (this.chatBoxMayBeShown(chatbox)) {
                             chatbox.trigger('show');
@@ -338,8 +569,11 @@
                         resource = from_resource;
                     }
                     // Get chat box, but only create a new one when the message has a body.
-                    const chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body'))),
-                        msgid = message.getAttribute('id');
+                    const attrs = {
+                        'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
+                    }
+                    const chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(message.querySelector('body'))),
+                          msgid = message.getAttribute('id');
 
                     if (chatbox) {
                         const messages = msgid && chatbox.messages.findWhere({msgid}) || [];
@@ -354,54 +588,30 @@
                     return true;
                 },
 
-                createChatBox (jid, attrs) {
-                    /* Creates a chat box
-                    *
-                    * Parameters:
-                    *    (String) jid - The JID of the user for whom a chat box
-                    *      gets created.
-                    *    (Object) attrs - Optional chat box atributes.
-                    */
-                    const bare_jid = Strophe.getBareJidFromJid(jid),
-                        roster_item = _converse.roster.get(bare_jid);
-                    let roster_info = {};
-
-                    if (! _.isUndefined(roster_item)) {
-                        roster_info = {
-                            'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
-                            'image_type': roster_item.get('image_type'),
-                            'image': roster_item.get('image'),
-                            'url': roster_item.get('url'),
-                        };
-                    } else if (!_converse.allow_non_roster_messaging) {
-                        _converse.log(`Could not get roster item for JID ${bare_jid}`+
-                            ' and allow_non_roster_messaging is set to false',
-                            Strophe.LogLevel.ERROR);
-                        return;
-                    }
-                    return this.create(_.assignIn({
-                            'id': bare_jid,
-                            'jid': bare_jid,
-                            'fullname': jid,
-                            'image_type': _converse.DEFAULT_IMAGE_TYPE,
-                            'image': _converse.DEFAULT_IMAGE,
-                            'url': '',
-                        }, roster_info, attrs || {}));
-                },
-
-                getChatBox (jid, create, attrs) {
+                getChatBox (jid, attrs={}, create) {
                     /* Returns a chat box or optionally return a newly
-                    * created one if one doesn't exist.
-                    *
-                    * Parameters:
-                    *    (String) jid - The JID of the user whose chat box we want
-                    *    (Boolean) create - Should a new chat box be created if none exists?
-                    *    (Object) attrs - Optional chat box atributes.
-                    */
-                    jid = jid.toLowerCase();
+                     * created one if one doesn't exist.
+                     *
+                     * Parameters:
+                     *    (String) jid - The JID of the user whose chat box we want
+                     *    (Boolean) create - Should a new chat box be created if none exists?
+                     *    (Object) attrs - Optional chat box atributes.
+                     */
+                    if (_.isObject(jid)) {
+                        create = attrs;
+                        attrs = jid;
+                        jid = attrs.jid;
+                    }
+                    jid = Strophe.getBareJidFromJid(jid.toLowerCase());
+
                     let  chatbox = this.get(Strophe.getBareJidFromJid(jid));
                     if (!chatbox && create) {
-                        chatbox = this.createChatBox(jid, attrs);
+                        _.extend(attrs, {'jid': jid, 'id': jid});
+                        chatbox = this.create(attrs, {
+                            'error' (model, response) {
+                                _converse.log(response.responseText);
+                            }
+                        });
                     }
                     return chatbox;
                 }
@@ -409,15 +619,10 @@
 
             _converse.ChatBoxViews = Backbone.Overview.extend({
 
-                initialize () {
-                    this.model.on("add", this.onChatBoxAdded, this);
-                    this.model.on("destroy", this.removeChat, this);
-                },
-
                 _ensureElement () {
                     /* Override method from backbone.js
-                    * If the #conversejs element doesn't exist, create it.
-                    */
+                     * If the #conversejs element doesn't exist, create it.
+                     */
                     if (!this.el) {
                         let el = _converse.root.querySelector('#conversejs');
                         if (_.isNull(el)) {
@@ -431,11 +636,37 @@
                                 _converse.root.appendChild(el);
                             }
                         }
+                        if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
+                            el.classList.add('fullscreen');
+                        }
                         el.innerHTML = '';
                         this.setElement(el, false);
                     } else {
                         this.setElement(_.result(this, 'el'), false);
                     }
+                },
+
+                initialize () {
+                    this.model.on("add", this.onChatBoxAdded, this);
+                    this.model.on("destroy", this.removeChat, this);
+                    this.render();
+                },
+
+                render () {
+                    try {
+                        this.el.innerHTML = tpl_chatboxes();
+                    } catch (e) {
+                        this._ensureElement();
+                        this.el.innerHTML = tpl_chatboxes();
+                    }
+                    this.row_el = this.el.querySelector('.row');
+                },
+
+                insertRowColumn (el) {
+                    /* Add a new DOM element (likely a chat box) into the
+                     * the row managed by this overview.
+                     */
+                    this.row_el.insertAdjacentElement('afterBegin', el);
                 },
 
                 onChatBoxAdded (item) {
@@ -459,33 +690,22 @@
 
                 chatBoxMayBeShown (chatbox) {
                     return this.model.chatBoxMayBeShown(chatbox);
-                },
-
-                getChatBox (attrs, create) {
-                    let chatbox  = this.model.get(attrs.jid);
-                    if (!chatbox && create) {
-                        chatbox = this.model.create(attrs, {
-                            'error' (model, response) {
-                                _converse.log(response.responseText);
-                            }
-                        });
-                    }
-                    return chatbox;
-                },
-
-                showChat (attrs) {
-                    /* Find the chat box and show it (if it may be shown).
-                     * If it doesn't exist, create it.
-                     */
-                    const chatbox = this.getChatBox(attrs, true);
-                    if (this.chatBoxMayBeShown(chatbox)) {
-                        chatbox.trigger('show', true);
-                    }
-                    return chatbox;
                 }
             });
 
-            // BEGIN: Event handlers
+            // TODO: move to converse-chatboxviews.js and use there in the API
+            _converse.getViewForChatBox = function (chatbox) {
+                if (!chatbox) { return; }
+                return _converse.chatboxviews.get(chatbox.get('id'));
+            };
+
+
+            /************************ BEGIN Event Handlers ************************/
+            _converse.on('addClientFeatures', () => {
+                _converse.connection.disco.addFeature(Strophe.NS.HTTPUPLOAD);
+                _converse.connection.disco.addFeature(Strophe.NS.OUTOFBAND);
+            });
+
             _converse.api.listen.on('pluginsInitialized', () => {
                 _converse.chatboxes = new _converse.ChatBoxes();
                 _converse.chatboxviews = new _converse.ChatBoxViews({
@@ -498,33 +718,49 @@
                 _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
                 delete _converse.chatboxes.browserStorage;
             });
-            // END: Event handlers
 
-            _converse.getViewForChatBox = function (chatbox) {
-                if (!chatbox) { return; }
-                return _converse.chatboxviews.get(chatbox.get('id'));
-            };
+            _converse.api.listen.on('statusInitialized', () => _converse.chatboxes.onConnected());
+            /************************ END Event Handlers ************************/
 
-            /* We extend the default converse.js API */
+
+            /************************ BEGIN API ************************/
             _.extend(_converse.api, {
                 'chats': {
+                    'create' (jids, attrs) {
+                        if (_.isUndefined(jids)) {
+                            _converse.log(
+                                "chats.create: You need to provide at least one JID",
+                                Strophe.LogLevel.ERROR
+                            );
+                            return null;
+                        }
+
+                        if (_.isString(jids)) {
+                            if (attrs && !_.get(attrs, 'fullname')) {
+                                attrs.fullname = _.get(_converse.api.contacts.get(jids), 'attributes.fullname');
+                            }
+                            const chatbox = _converse.chatboxes.getChatBox(jids, attrs, true);
+                            if (_.isNil(chatbox)) {
+                                _converse.log("Could not open chatbox for JID: "+jids, Strophe.LogLevel.ERROR);
+                                return;
+                            }
+                            return chatbox;
+                        }
+                        return _.map(jids, (jid) => {
+                            attrs.fullname = _.get(_converse.api.contacts.get(jid), 'attributes.fullname');
+                            return _converse.chatboxes.getChatBox(jid, attrs, true).trigger('show');
+                        });
+                    },
                     'open' (jids, attrs) {
                         if (_.isUndefined(jids)) {
                             _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
                             return null;
                         } else if (_.isString(jids)) {
-                            const chatbox = _converse.chatboxes.getChatBox(jids, true, attrs);
-                            if (_.isNil(chatbox)) {
-                                _converse.log("Could not open chatbox for JID: "+jids);
-                                return;
-                            }
-                            return _converse.getViewForChatBox(chatbox.trigger('show'));
+                            const chatbox = _converse.api.chats.create(jids, attrs);
+                            chatbox.trigger('show');
+                            return chatbox;
                         }
-                        return _.map(jids, (jid) =>
-                            _converse.getViewForChatBox(
-                                _converse.chatboxes.getChatBox(jid, true, attrs).trigger('show')
-                            )
-                        );
+                        return _.map(jids, (jid) => _converse.api.chats.create(jid, attrs).trigger('show'));
                     },
                     'get' (jids) {
                         if (_.isUndefined(jids)) {
@@ -533,24 +769,18 @@
                                 // FIXME: Leaky abstraction from MUC. We need to add a
                                 // base type for chat boxes, and check for that.
                                 if (chatbox.get('type') !== 'chatroom') {
-                                    result.push(_converse.getViewForChatBox(chatbox));
+                                    result.push(chatbox);
                                 }
                             });
                             return result;
                         } else if (_.isString(jids)) {
-                            return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids));
+                            return _converse.chatboxes.getChatBox(jids);
                         }
-                        return _.map(jids,
-                            _.partial(
-                                _.flow(
-                                    _converse.chatboxes.getChatBox.bind(_converse.chatboxes),
-                                    _converse.getViewForChatBox.bind(_converse)
-                                ), _, true
-                            )
-                        );
+                        return _.map(jids, _.partial(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _, {}, true));
                     }
                 }
             });
+            /************************ END API ************************/
         }
     });
     return converse;

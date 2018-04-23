@@ -1,0 +1,31 @@
+<div class="modal fade" id="user-profile-modal" tabindex="-1" role="dialog" aria-labelledby="user-profile-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="user-profile-modal-label">{{{o.heading_profile}}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{{o.label_close}}}"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-auto">
+                        {[ if (o.image) { ]}
+                        <a class="show-profile" href="#">
+                            <img alt="User Avatar" class="img-thumbnail avatar align-self-center" height="100px" width="100px" src="data:{{{o.image_type}}};base64,{{{o.image}}}"/>
+                        </a>
+                        {[ } ]}
+                    </div>
+                    <div class="col-auto">
+                        <div classs="row w-100">
+                            <label>Fullname:</label>
+                            <span class="username">{{{o.fullname}}}</span>
+                        </div>
+                        <div classs="row w-100">
+                            <label>XMPP Address:</label>
+                            <span class="username">{{{o.jid}}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

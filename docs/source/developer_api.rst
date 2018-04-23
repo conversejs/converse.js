@@ -695,7 +695,9 @@ To return all contacts, simply call ``get`` without any parameters:
     });
 
 
-The returned roster contact objects have these attributes:
+The returned roster contact is a `Backbone.Model <http://backbonejs.org/#Model>`_ of type _converse.RosterContacts.
+
+It has the following attributes (which should be accessed via `get <http://backbonejs.org/#Model-get>`_).
 
 +----------------+-----------------------------------------------------------------------------------------------------------------+
 | Attribute      |                                                                                                                 |
@@ -833,9 +835,9 @@ To return an array of chatboxes, provide an array of JIDs:
 +-------------------+------------------------------------------+
 | Method            | Description                              |
 +===================+==========================================+
-| close             | Close the chatbox.                      |
+| close             | Close the chatbox.                       |
 +-------------------+------------------------------------------+
-| focus             | Focuses the chatbox textarea            |
+| focus             | Focuses the chatbox textarea             |
 +-------------------+------------------------------------------+
 | model.endOTR      | End an OTR (Off-the-record) session.     |
 +-------------------+------------------------------------------+
@@ -843,13 +845,13 @@ To return an array of chatboxes, provide an array of JIDs:
 +-------------------+------------------------------------------+
 | model.initiateOTR | Start an OTR (off-the-record) session.   |
 +-------------------+------------------------------------------+
-| model.maximize    | Minimize the chatbox.                   |
+| model.maximize    | Minimize the chatbox.                    |
 +-------------------+------------------------------------------+
-| model.minimize    | Maximize the chatbox.                   |
+| model.minimize    | Maximize the chatbox.                    |
 +-------------------+------------------------------------------+
 | model.set         | Set an attribute (i.e. mutator).         |
 +-------------------+------------------------------------------+
-| show              | Opens/shows the chatbox.                |
+| show              | Opens/shows the chatbox.                 |
 +-------------------+------------------------------------------+
 
 *The get and set methods can be used to retrieve and change the following attributes:*
@@ -857,10 +859,35 @@ To return an array of chatboxes, provide an array of JIDs:
 +-------------+-----------------------------------------------------+
 | Attribute   | Description                                         |
 +=============+=====================================================+
-| height      | The height of the chatbox.                         |
+| height      | The height of the chatbox.                          |
 +-------------+-----------------------------------------------------+
-| url         | The URL of the chatbox heading.                    |
+| url         | The URL of the chatbox heading.                     |
 +-------------+-----------------------------------------------------+
+
+The **chatviews** grouping
+--------------------------
+
+.. note:: This is only for private chats.
+
+get
+~~~
+
+Returns a `Backbone.View <http://backbonejs.org/#View>`_ of type _converse.ChatBoxView.
+
+The chat should already be open, otherwise `undefined` will be returned.
+
+To return a single view, provide the JID of the contact:
+
+.. code-block:: javascript
+
+    _converse.api.chatviews.get('buddy@example.com')
+
+To return an array of views, provide an array of JIDs:
+
+.. code-block:: javascript
+
+    _converse.api.chatviews.get(['buddy1@example.com', 'buddy2@example.com'])
+
 
 .. _`listen-grouping`:
 

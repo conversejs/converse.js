@@ -379,22 +379,30 @@ plugins from registering themselves under those names.
 The core, and by default whitelisted, plugins are::
 
     converse-bookmarks
+    converse-chatboxes
     converse-chatview
     converse-controlbox
     converse-core
+    converse-disco
     converse-dragresize
+    converse-fullscreen
     converse-headline
     converse-mam
     converse-minimize
     converse-muc
+    converse-muc-embedded
     converse-notification
     converse-otr
     converse-ping
+    converse-profile
     converse-register
+    converse-roomslist
     converse-rosterview
-    converse-vcard
+    converse-singleton
+    converse-spoilers
+    converse-vcard'
 
-An example from `the embedded room demo <https://conversejs.org/demo/embedded.html>`_
+Example:
 
 .. code-block:: javascript
 
@@ -402,15 +410,11 @@ An example from `the embedded room demo <https://conversejs.org/demo/embedded.ht
         converse.initialize({
             // other settings removed for brevity
             blacklisted_plugins: [
-                'converse-controlbox',
                 'converse-dragresize',
-                'converse-minimize',
-                'converse-vcard'
+                'converse-minimize'
             ],
         });
     });
-
-
 
 
 .. _`bosh-service-url`:
@@ -646,6 +650,21 @@ If you are using prebinding, can specify the fullname of the currently
 logged in user, otherwise the user's vCard will be fetched.
 
 .. _`hide_muc_server`:
+
+geouri_regex
+----------------
+
+* Default:  ``/https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g``
+
+Regular expression used to extract geo coordinates from links to openstreetmap.
+
+geouri_replacement
+----------------
+
+* Default:  ``'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2'``
+
+String used to replace geo-URIs with. Ought to be a link to osm or similar. ``$1`` and ``$2`` is replaced by
+latitude and longitude respectively.
 
 hide_muc_server
 ---------------
@@ -988,6 +1007,15 @@ muc_show_join_leave
 Determines whether Converse.js will show info messages inside a chatroom
 whenever a user joins or leaves it.
 
+nickname
+--------
+
+* Default: ``undefined``
+
+This setting allows you to specify the nickname for the current user.
+The nickname will be included in presence requests to other users and will also
+be used as the default nickname when entering MUC chatrooms.
+
 notify_all_room_messages
 ------------------------
 
@@ -1186,17 +1214,6 @@ the operating system or browser (which might not support emoji).
 
 See also `emojione_image_path`_.
 
-
-show_message_load_animation
----------------------------
-* Default: ``false``
-
-Determines whether a CSS3 background-color fade-out animation is shown when messages
-appear in chats.
-
-Set to ``false`` by default since this option causes performance issues on Firefox.
-
-
 show_only_online_users
 ----------------------
 
@@ -1359,7 +1376,6 @@ visible_toolbar_buttons
 
     {
         call: false,
-        clear: true,
         emoji: true,
         toggle_occupants: true
     }
@@ -1377,8 +1393,6 @@ Allows you to show or hide buttons on the chatboxes' toolbars.
             console.log('Bare buddy JID is', data.model.get('jid'));
             // ... Third-party library code ...
         });
-* *clear*:
-    Provides a button for clearing messages from a chatbox.
 * *emoji*:
     Enables rendering of emoji and provides a toolbar button for choosing them.
 * *toggle_occupants*:
@@ -1427,7 +1441,7 @@ different builds, each for the different modes.
 These were:
 
 * ``converse-mobile.js`` for the ``mobile`` mode
-* ``converse-muc-embedded.js`` for embedding a single MUC room into the page.
+* ``converse-muc-embedded.js`` for embedding a single MUC room into a DOM element with id ``conversejs``
 * ``converse.js`` for the ``overlayed`` mode
 * ``inverse.js`` for the ``fullscreen`` mode
 
@@ -1466,9 +1480,10 @@ when switching view modes.
     JavaScript builds, you'll still need to use different CSS files depending
     on the view mode.
 
-    * For ``overlayed`` this is ``./css/converse.css``
+    * For ``embedded`` you need to use ``./css/converse-muc-embedded.css``
     * For ``fullscreen`` you need ``./css/inverse.css``
     * For ``mobile`` you need to use both ``./css/converse.css`` and ``./css/mobile.css``
+    * For ``overlayed`` this is ``./css/converse.css``
 
     Hopefully in a future release the CSS files will be combined and you'll
     only need ``converse.css``
@@ -1495,91 +1510,45 @@ By default all the core plugins are already whitelisted.
 These are::
 
     converse-bookmarks
+    converse-chatboxes
     converse-chatview
     converse-controlbox
     converse-core
+    converse-disco
     converse-dragresize
+    converse-fullscreen
     converse-headline
     converse-mam
     converse-minimize
     converse-muc
+    converse-muc-embedded
     converse-notification
     converse-otr
     converse-ping
+    converse-profile
     converse-register
+    converse-roomslist
     converse-rosterview
-    converse-vcard
+    converse-singleton
+    converse-spoilers
+    converse-vcard'
 
-If you are using a custom build which excludes some core plugins, then you
-should blacklist them so that malicious scripts can't register their own
-plugins under those names. See `blacklisted_plugins`_ for more info.
+.. note::
+    If you are using a custom build which excludes some core plugins, then you
+    should blacklist them so that malicious scripts can't register their own
+    plugins under those names. See `blacklisted_plugins`_ for more info.
 
-An example from `the embedded room demo <https://conversejs.org/demo/embedded.html>`_
+Example:
 
 .. code-block:: javascript
 
     require(['converse-core', 'converse-muc-embedded'], function (converse) {
         converse.initialize({
             // other settings removed for brevity
-            whitelisted_plugins: ['converse-muc-embedded']
+            whitelisted_plugins: ['myplugin']
         });
     });
 
-
-xhr_custom_status
------------------
-
-* Default:  ``false``
-
-.. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
-
-This option will let converse.js make an AJAX POST with your changed custom chat status to a
-remote server.
-
-xhr_custom_status_url
----------------------
-
-.. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
-
-* Default:  Empty string
-
-Used only in conjunction with ``xhr_custom_status``.
-
-This is the URL to which the AJAX POST request to set the user's custom status
-message will be made.
-
-The message itself is sent in the request under the key ``msg``.
-
-xhr_user_search
----------------
-
-* Default:  ``false``
-
-.. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
-
-There are two ways to add users.
-
-* The user inputs a valid JID (Jabber ID), and the user is added as a pending contact.
-* The user inputs some text (for example part of a first name or last name),
-  an XHR (Ajax Request) will be made to a remote server, and a list of matches are returned.
-  The user can then choose one of the matches to add as a contact.
-
-This setting enables the second mechanism, otherwise by default the first will be used.
-
-*What is expected from the remote server?*
-
-A default JSON encoded list of objects must be returned. Each object
-corresponds to a matched user and needs the keys ``id`` and ``fullname``.
-
-.. code-block:: javascript
-
-    [{"id": "foo", "fullname": "Foo McFoo"}, {"id": "bar", "fullname": "Bar McBar"}]
-
-.. note::
-    Make sure your server script sets the header `Content-Type: application/json`.
 
 xhr_user_search_url
 -------------------
@@ -1587,9 +1556,28 @@ xhr_user_search_url
 .. note::
     XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
 
-* Default:  Empty string
+* Default: ``null``
 
-Used only in conjunction with ``xhr_user_search``.
+There are two ways to add users.
+
+* The user inputs a valid JID (Jabber ID, aka XMPP address), and the user is added as a pending contact.
+* The user inputs some text (for example part of a first name or last name),
+  an XHR (Ajax Request) will be made to a remote server, and a list of matches are returned.
+  The user can then choose one of the matches to add as a contact.
+
+By providing an XHR search URL, you're enabling the second mechanism.
+
+*What is expected from the remote server?*
+
+A default JSON encoded list of objects must be returned. Each object
+corresponds to a matched user and needs the keys ``jid`` and ``fullname``.
+
+.. code-block:: javascript
+
+    [{"jid": "marty@mcfly.net", "fullname": "Marty McFly"}, {"jid": "doc@brown.com", "fullname": "Doc Brown"}]
+
+.. note::
+    Make sure your server script sets the header `Content-Type: application/json`.
 
 This is the URL to which an XHR GET request will be made to fetch user data from your remote server.
 The query string will be included in the request with ``q`` as its key.

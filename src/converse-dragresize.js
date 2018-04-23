@@ -10,7 +10,6 @@
     define(["converse-core",
             "tpl!dragresize",
             "converse-chatview",
-            "converse-muc", // XXX: would like to remove this
             "converse-controlbox"
     ], factory);
 }(this, function (converse, tpl_dragresize) {
@@ -39,7 +38,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatview", "converse-headline"],
+        dependencies: ["converse-chatview", "converse-headline", "converse-muc-views"],
 
         enabled (_converse) {
             return _converse.view_mode == 'overlayed';
@@ -312,8 +311,8 @@
                     return result;
                 },
 
-                renderContactsPanel () {
-                    const result = this.__super__.renderContactsPanel.apply(this, arguments);
+                renderControlBoxPane () {
+                    const result = this.__super__.renderControlBoxPane.apply(this, arguments);
                     this.initDragResize().setDimensions();
                     return result;
                 }

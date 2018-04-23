@@ -1,0 +1,186 @@
+<!-- Register Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="registerModalLabel">Register</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="converse-register">
+                    <div class="form-group">
+                        <label for="domain">Your XMPP provider's domain name:</label>
+                        <input type="text" name="domain" class="form-control" placeholder=" e.g. conversejs.org">
+                    </div>
+                    <p>Tip: A list of public XMPP providers is available
+                        <a href="https://xmpp.net/directory.php" class="url" target="_blank" rel="noopener">here</a>.</p>
+                    <input class="btn btn-primary" type="submit" value="Fetch registration form">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Profile Modal -->
+<div class="modal fade" id="contactProfileModal" tabindex="-1" role="dialog" aria-labelledby="contactProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                    <h5 class="modal-title" id="contactProfileModalLabel">JC Brand User Profile</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Profile Modal -->
+<div class="modal fade" id="userProfileModal" tabindex="-1" role="dialog" aria-labelledby="userProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userProfileModalLabel">Your profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change status Modal -->
+<div class="modal fade" id="changeStatusModal" tabindex="-1" role="dialog" aria-labelledby="changeStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeStatusModalLabel">Change chat status</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="set-xmpp-status" id="set-xmpp-status">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="radio-online" value="online" name="chat_status" class="custom-control-input">
+                            <label class="custom-control-label" for="radio-online">
+                                <span class="fa fa-circle"></span>&nbsp;Online</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="radio-busy" value="busy" name="chat_status" class="custom-control-input">
+                            <label class="custom-control-label" for="radio-busy">
+                                <span class="fa fa-minus-circle"></span>&nbsp;Busy</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="radio-away" value="away" name="chat_status" class="custom-control-input">
+                            <label class="custom-control-label" for="radio-away">
+                                <span class="fa fa-dot-circle-o"></span>&nbsp;Away</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="radio-xa" value="xa" name="chat_status" class="custom-control-input">
+                            <label class="custom-control-label" for="radio-xa">
+                                <span class="fa fa-circle-o"></span>&nbsp;Away for long</label>
+                        </div>
+                    </div>
+
+                    <div class="btn-group w-100">
+                        <input type="text" class="form-control" value="" placeholder="Personal status message">
+                        <span class="clear-input fa fa-times"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add contact Modal -->
+<div class="modal fade" id="addContactModal" tabindex="-1" role="dialog" aria-labelledby="addContactModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addContactModalLabel">Add a contact</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="converse-form add-xmpp-contact">
+                    <div class="form-group">
+                        <input type="text" name="identifier" class="form-control" placeholder="Contact username">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Add</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chatrooms Modal -->
+<div class="modal fade" id="chatroomsModal" tabindex="-1" role="dialog" aria-labelledby="chatroomsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="chatroomsModalLabel">Enter a new Chatroom</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="converse-form add-chatroom">
+                    <div class="form-group">
+                        <label for="chatroom">Room address:</label>
+                        <input type="text" name="chatroom" class="form-control" placeholder="room@conference.example.org">
+                    </div>
+                    <div class="form-group">
+                        <label for="chatroom">Nickname:</label>
+                        <input type="text" name="nickname" class="form-control">
+                    </div>
+                    <input type="submit" class="btn btn-primary" name="join" value="Join">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -14,11 +14,14 @@
     }
     utils.waitUntil = waitUntilPromise.default;
 
-    utils.waitUntilDiscoConfirmed = function (_converse, entity_jid, identities, features) {
+    utils.waitUntilDiscoConfirmed = function (_converse, entity_jid, identities, features, items, type) {
+        if (_.isNil(type)) {
+            type = 'info';
+        }
         var IQ_disco, stanza;
         return utils.waitUntil(function () {
             IQ_disco = _.filter(_converse.connection.IQ_stanzas, function (iq) {
-                return iq.nodeTree.querySelector('query[xmlns="http://jabber.org/protocol/disco#info"]') &&
+                return iq.nodeTree.querySelector('query[xmlns="http://jabber.org/protocol/disco#'+type+'"]') &&
                     iq.nodeTree.getAttribute('to') === entity_jid;
             }).pop();
             return !_.isUndefined(IQ_disco);
@@ -29,13 +32,16 @@
                 'from': entity_jid,
                 'to': 'dummy@localhost/resource',
                 'id': info_IQ_id
-            }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'});
+            }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#'+type});
 
             _.forEach(identities, function (identity) {
-                stanza.c('identity', {'category': 'pubsub', 'type': 'pep'}).up()
+                stanza.c('identity', {'category': identity.category, 'type': identity.type}).up()
             });
             _.forEach(features, function (feature) {
                 stanza.c('feature', {'var': feature}).up();
+            });
+            _.forEach(items, function (item) {
+                stanza.c('item', {'jid': item}).up();
             });
             _converse.connection._dataRecv(utils.createRequest(stanza));
         });
@@ -83,18 +89,6 @@
         return this;
     };
 
-    utils.openContactsPanel = function (converse) {
-        this.openControlBox(converse);
-        var cbview = converse.chatboxviews.get('controlbox');
-        cbview.el.querySelector('#controlbox-tabs li:first-child a').click();
-    };
-
-    utils.openRoomsPanel = function (converse) {
-        utils.openControlBox();
-        var cbview = converse.chatboxviews.get('controlbox');
-        cbview.el.querySelector('#controlbox-tabs li:last-child a').click();
-    };
-
     utils.openChatBoxes = function (converse, amount) {
         var i = 0, jid, views = [];
         for (i; i<amount; i++) {
@@ -108,25 +102,36 @@
         return converse.roster.get(jid).trigger("open");
     };
 
-    utils.openChatRoom = function (_converse, room, server, nick) {
+    utils.openChatRoomViaModal = function (_converse, jid, nick) {
         // Opens a new chatroom
-        this.openControlBox(_converse);
-        this.openRoomsPanel(_converse);
-        var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
-        roomspanel.el.querySelector('input.new-chatroom-name').value = room;
-        roomspanel.el.querySelector('input.new-chatroom-server').value = server;
-        roomspanel.el.querySelector('form input[type="submit"]').click();
-        this.closeControlBox(_converse);
+        return new Promise(function (resolve, reject) {
+            utils.openControlBox(_converse);
+            var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+            roomspanel.el.querySelector('.trigger-add-chatrooms-modal').click();
+            utils.closeControlBox(_converse);
+            const modal = roomspanel.add_room_modal;
+            utils.waitUntil(function () {
+                return u.isVisible(modal.el);
+            }, 1000).then(function () {
+                modal.el.querySelector('input[name="chatroom"]').value = jid;
+                modal.el.querySelector('form input[type="submit"]').click();
+                resolve();
+            }).catch(_.partial(console.error, _));
+        }).catch(_.partial(console.error, _));
     };
 
-    utils.openAndEnterChatRoom = function (converse, room, server, nick) {
+    utils.openChatRoom = function (_converse, room, server, nick) {
+        _converse.api.rooms.open(`${room}@${server}`);
+    };
+
+    utils.openAndEnterChatRoom = function (_converse, room, server, nick) {
         return new Promise(function (resolve, reject) {
-            sinon.spy(converse.connection, 'sendIQ');
-            utils.openChatRoom(converse, room, server);
-            var view = converse.chatboxviews.get((room+'@'+server).toLowerCase());
+            sinon.spy(_converse.connection, 'sendIQ');
+            _converse.api.rooms.open(`${room}@${server}`);
+            var view = _converse.chatboxviews.get((room+'@'+server).toLowerCase());
 
             // We pretend this is a new room, so no disco info is returned.
-            var IQ_id = converse.connection.sendIQ.firstCall.returnValue;
+            var IQ_id = _converse.connection.sendIQ.firstCall.returnValue;
             var features_stanza = $iq({
                     'from': room+'@'+server,
                     'id': IQ_id,
@@ -134,40 +139,40 @@
                     'type': 'error'
                 }).c('error', {'type': 'cancel'})
                     .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
-            converse.connection._dataRecv(utils.createRequest(features_stanza));
+            _converse.connection._dataRecv(utils.createRequest(features_stanza));
 
             utils.waitUntil(function () {
-                return converse.connection.sendIQ.secondCall;
+                return _converse.connection.sendIQ.secondCall;
             }).then(function () {
                 // The XMPP server returns the reserved nick for this user.
-                IQ_id = converse.connection.sendIQ.secondCall.returnValue;
+                IQ_id = _converse.connection.sendIQ.secondCall.returnValue;
                 var stanza = $iq({
                     'type': 'result',
                     'id': IQ_id,
                     'from': view.model.get('jid'),
-                    'to': converse.connection.jid 
+                    'to': _converse.connection.jid 
                 }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
                     .c('identity', {'category': 'conference', 'name': nick, 'type': 'text'});
-                converse.connection._dataRecv(utils.createRequest(stanza));
+                _converse.connection._dataRecv(utils.createRequest(stanza));
                 // The user has just entered the room (because join was called)
                 // and receives their own presence from the server.
                 // See example 24: http://xmpp.org/extensions/xep-0045.html#enter-pres
                 var presence = $pres({
-                        to: converse.connection.jid,
+                        to: _converse.connection.jid,
                         from: room+'@'+server+'/'+nick,
                         id: 'DC352437-C019-40EC-B590-AF29E879AF97'
                 }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
                     .c('item').attrs({
                         affiliation: 'member',
-                        jid: converse.bare_jid,
+                        jid: _converse.bare_jid,
                         role: 'participant'
                     }).up()
                     .c('status').attrs({code:'110'});
-                converse.connection._dataRecv(utils.createRequest(presence));
-                converse.connection.sendIQ.restore();
+                _converse.connection._dataRecv(utils.createRequest(presence));
+                _converse.connection.sendIQ.restore();
                 resolve();
-            });
-        });
+            }).catch(_.partial(console.error, _));
+        }).catch(_.partial(console.error, _));
     };
 
     utils.clearBrowserStorage = function () {

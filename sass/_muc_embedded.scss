@@ -13,7 +13,7 @@
     width: 100%;
 
     form {
-        &.pure-form.converse-centered-form {
+        &.converse-centered-form {
             position: absolute;
             top: 30%;
             transform: translateY(-50%);
@@ -54,7 +54,6 @@
                 font-size: 120%;
             }
             .chat-content {
-                height: calc(100% - #{$toolbar-height + $chat-textarea-height +2px});
                 .chat-message {
                     margin: 0.5em;
                     font-size: 120%;

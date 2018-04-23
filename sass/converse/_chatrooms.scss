@@ -1,0 +1,22 @@
+#conversejs {
+    .chatbox {
+        &.chatroom {
+            min-width: $chatroom-width !important;
+            width: $chatroom-width;
+            .box-flyout {
+                min-width: $chatroom-width !important;
+                width: $chatroom-width;
+            }
+
+            .chatroom-body {
+                .occupants {
+                    .chatroom-features {
+                        .feature {
+                            font-size: $font-size-small;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

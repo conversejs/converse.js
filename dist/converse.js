@@ -7,16 +7,7 @@
 
 /* jshint ignore:start */
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        //Allow using this built library as an AMD module
-        //in another project. That other project will only
-        //see this AMD call, not the internal modules in
-        //the closure below.
-        define([], factory);
-    } else {
-        //Browser globals case.
-        root.converse = factory();
-    }
+    root.converse = factory();
 }(this, function () {
     //almond, and your modules will be inlined here
 /* jshint ignore:end */
@@ -23151,7 +23142,7 @@ return parser;
 })(this);
 
 //! moment.js
-//! version : 2.18.1
+//! version : 2.19.4
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -23185,12 +23176,17 @@ function isObject(input) {
 }
 
 function isObjectEmpty(obj) {
-    var k;
-    for (k in obj) {
-        // even if its not own property I'd still call it non-empty
-        return false;
+    if (Object.getOwnPropertyNames) {
+        return (Object.getOwnPropertyNames(obj).length === 0);
+    } else {
+        var k;
+        for (k in obj) {
+            if (obj.hasOwnProperty(k)) {
+                return false;
+            }
+        }
+        return true;
     }
-    return true;
 }
 
 function isUndefined(input) {
@@ -23284,12 +23280,10 @@ if (Array.prototype.some) {
     };
 }
 
-var some$1 = some;
-
 function isValid(m) {
     if (m._isValid == null) {
         var flags = getParsingFlags(m);
-        var parsedParts = some$1.call(flags.parsedDateParts, function (i) {
+        var parsedParts = some.call(flags.parsedDateParts, function (i) {
             return i != null;
         });
         var isNowValid = !isNaN(m._d.getTime()) &&
@@ -23297,6 +23291,7 @@ function isValid(m) {
             !flags.empty &&
             !flags.invalidMonth &&
             !flags.invalidWeekday &&
+            !flags.weekdayMismatch &&
             !flags.nullInput &&
             !flags.invalidFormat &&
             !flags.userInvalidated &&
@@ -23562,8 +23557,6 @@ if (Object.keys) {
     };
 }
 
-var keys$1 = keys;
-
 var defaultCalendar = {
     sameDay : '[Today at] LT',
     nextDay : '[Tomorrow at] LT',
@@ -23689,56 +23682,6 @@ function getPrioritizedUnits(unitsObj) {
     return units;
 }
 
-function makeGetSet (unit, keepTime) {
-    return function (value) {
-        if (value != null) {
-            set$1(this, unit, value);
-            hooks.updateOffset(this, keepTime);
-            return this;
-        } else {
-            return get(this, unit);
-        }
-    };
-}
-
-function get (mom, unit) {
-    return mom.isValid() ?
-        mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]() : NaN;
-}
-
-function set$1 (mom, unit, value) {
-    if (mom.isValid()) {
-        mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
-    }
-}
-
-// MOMENTS
-
-function stringGet (units) {
-    units = normalizeUnits(units);
-    if (isFunction(this[units])) {
-        return this[units]();
-    }
-    return this;
-}
-
-
-function stringSet (units, value) {
-    if (typeof units === 'object') {
-        units = normalizeObjectUnits(units);
-        var prioritized = getPrioritizedUnits(units);
-        for (var i = 0; i < prioritized.length; i++) {
-            this[prioritized[i].unit](units[prioritized[i].unit]);
-        }
-    } else {
-        units = normalizeUnits(units);
-        if (isFunction(this[units])) {
-            return this[units](value);
-        }
-    }
-    return this;
-}
-
 function zeroFill(number, targetLength, forceSign) {
     var absNumber = '' + Math.abs(number),
         zerosToFill = targetLength - absNumber.length,
@@ -23859,7 +23802,7 @@ var matchTimestamp = /[+-]?\d+(\.\d{1,3})?/; // 123456789 123456789.123
 
 // any word (or two) characters or numbers including two/three word month in arabic.
 // includes scottish gaelic two word and hyphenated months
-var matchWord = /[0-9]*['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+|[\u0600-\u06FF\/]+(\s*?[\u0600-\u06FF]+){1,2}/i;
+var matchWord = /[0-9]{0,256}['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{1,256}|[\u0600-\u06FF\/]{1,256}(\s*?[\u0600-\u06FF]{1,256}){1,2}/i;
 
 
 var regexes = {};
@@ -23929,6 +23872,131 @@ var MILLISECOND = 6;
 var WEEK = 7;
 var WEEKDAY = 8;
 
+// FORMATTING
+
+addFormatToken('Y', 0, 0, function () {
+    var y = this.year();
+    return y <= 9999 ? '' + y : '+' + y;
+});
+
+addFormatToken(0, ['YY', 2], 0, function () {
+    return this.year() % 100;
+});
+
+addFormatToken(0, ['YYYY',   4],       0, 'year');
+addFormatToken(0, ['YYYYY',  5],       0, 'year');
+addFormatToken(0, ['YYYYYY', 6, true], 0, 'year');
+
+// ALIASES
+
+addUnitAlias('year', 'y');
+
+// PRIORITIES
+
+addUnitPriority('year', 1);
+
+// PARSING
+
+addRegexToken('Y',      matchSigned);
+addRegexToken('YY',     match1to2, match2);
+addRegexToken('YYYY',   match1to4, match4);
+addRegexToken('YYYYY',  match1to6, match6);
+addRegexToken('YYYYYY', match1to6, match6);
+
+addParseToken(['YYYYY', 'YYYYYY'], YEAR);
+addParseToken('YYYY', function (input, array) {
+    array[YEAR] = input.length === 2 ? hooks.parseTwoDigitYear(input) : toInt(input);
+});
+addParseToken('YY', function (input, array) {
+    array[YEAR] = hooks.parseTwoDigitYear(input);
+});
+addParseToken('Y', function (input, array) {
+    array[YEAR] = parseInt(input, 10);
+});
+
+// HELPERS
+
+function daysInYear(year) {
+    return isLeapYear(year) ? 366 : 365;
+}
+
+function isLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+// HOOKS
+
+hooks.parseTwoDigitYear = function (input) {
+    return toInt(input) + (toInt(input) > 68 ? 1900 : 2000);
+};
+
+// MOMENTS
+
+var getSetYear = makeGetSet('FullYear', true);
+
+function getIsLeapYear () {
+    return isLeapYear(this.year());
+}
+
+function makeGetSet (unit, keepTime) {
+    return function (value) {
+        if (value != null) {
+            set$1(this, unit, value);
+            hooks.updateOffset(this, keepTime);
+            return this;
+        } else {
+            return get(this, unit);
+        }
+    };
+}
+
+function get (mom, unit) {
+    return mom.isValid() ?
+        mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]() : NaN;
+}
+
+function set$1 (mom, unit, value) {
+    if (mom.isValid() && !isNaN(value)) {
+        if (unit === 'FullYear' && isLeapYear(mom.year()) && mom.month() === 1 && mom.date() === 29) {
+            mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value, mom.month(), daysInMonth(value, mom.month()));
+        }
+        else {
+            mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
+        }
+    }
+}
+
+// MOMENTS
+
+function stringGet (units) {
+    units = normalizeUnits(units);
+    if (isFunction(this[units])) {
+        return this[units]();
+    }
+    return this;
+}
+
+
+function stringSet (units, value) {
+    if (typeof units === 'object') {
+        units = normalizeObjectUnits(units);
+        var prioritized = getPrioritizedUnits(units);
+        for (var i = 0; i < prioritized.length; i++) {
+            this[prioritized[i].unit](units[prioritized[i].unit]);
+        }
+    } else {
+        units = normalizeUnits(units);
+        if (isFunction(this[units])) {
+            return this[units](value);
+        }
+    }
+    return this;
+}
+
+function mod(n, x) {
+    return ((n % x) + x) % x;
+}
+
 var indexOf;
 
 if (Array.prototype.indexOf) {
@@ -23946,10 +24014,13 @@ if (Array.prototype.indexOf) {
     };
 }
 
-var indexOf$1 = indexOf;
-
 function daysInMonth(year, month) {
-    return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+    if (isNaN(year) || isNaN(month)) {
+        return NaN;
+    }
+    var modMonth = mod(month, 12);
+    year += (month - modMonth) / 12;
+    return modMonth === 1 ? (isLeapYear(year) ? 29 : 28) : (31 - modMonth % 7 % 2);
 }
 
 // FORMATTING
@@ -24038,26 +24109,26 @@ function handleStrictParse(monthName, format, strict) {
 
     if (strict) {
         if (format === 'MMM') {
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            ii = indexOf.call(this._shortMonthsParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._longMonthsParse, llc);
+            ii = indexOf.call(this._longMonthsParse, llc);
             return ii !== -1 ? ii : null;
         }
     } else {
         if (format === 'MMM') {
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            ii = indexOf.call(this._shortMonthsParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._longMonthsParse, llc);
+            ii = indexOf.call(this._longMonthsParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._longMonthsParse, llc);
+            ii = indexOf.call(this._longMonthsParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            ii = indexOf.call(this._shortMonthsParse, llc);
             return ii !== -1 ? ii : null;
         }
     }
@@ -24214,72 +24285,6 @@ function computeMonthsParse () {
     this._monthsShortRegex = this._monthsRegex;
     this._monthsStrictRegex = new RegExp('^(' + longPieces.join('|') + ')', 'i');
     this._monthsShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')', 'i');
-}
-
-// FORMATTING
-
-addFormatToken('Y', 0, 0, function () {
-    var y = this.year();
-    return y <= 9999 ? '' + y : '+' + y;
-});
-
-addFormatToken(0, ['YY', 2], 0, function () {
-    return this.year() % 100;
-});
-
-addFormatToken(0, ['YYYY',   4],       0, 'year');
-addFormatToken(0, ['YYYYY',  5],       0, 'year');
-addFormatToken(0, ['YYYYYY', 6, true], 0, 'year');
-
-// ALIASES
-
-addUnitAlias('year', 'y');
-
-// PRIORITIES
-
-addUnitPriority('year', 1);
-
-// PARSING
-
-addRegexToken('Y',      matchSigned);
-addRegexToken('YY',     match1to2, match2);
-addRegexToken('YYYY',   match1to4, match4);
-addRegexToken('YYYYY',  match1to6, match6);
-addRegexToken('YYYYYY', match1to6, match6);
-
-addParseToken(['YYYYY', 'YYYYYY'], YEAR);
-addParseToken('YYYY', function (input, array) {
-    array[YEAR] = input.length === 2 ? hooks.parseTwoDigitYear(input) : toInt(input);
-});
-addParseToken('YY', function (input, array) {
-    array[YEAR] = hooks.parseTwoDigitYear(input);
-});
-addParseToken('Y', function (input, array) {
-    array[YEAR] = parseInt(input, 10);
-});
-
-// HELPERS
-
-function daysInYear(year) {
-    return isLeapYear(year) ? 366 : 365;
-}
-
-function isLeapYear(year) {
-    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-}
-
-// HOOKS
-
-hooks.parseTwoDigitYear = function (input) {
-    return toInt(input) + (toInt(input) > 68 ? 1900 : 2000);
-};
-
-// MOMENTS
-
-var getSetYear = makeGetSet('FullYear', true);
-
-function getIsLeapYear () {
-    return isLeapYear(this.year());
 }
 
 function createDate (y, m, d, h, M, s, ms) {
@@ -24549,48 +24554,48 @@ function handleStrictParse$1(weekdayName, format, strict) {
 
     if (strict) {
         if (format === 'dddd') {
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else if (format === 'ddd') {
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         }
     } else {
         if (format === 'dddd') {
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else if (format === 'ddd') {
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         }
     }
@@ -24979,11 +24984,10 @@ function loadLocale(name) {
             module && module.exports) {
         try {
             oldLocale = globalLocale._abbr;
-            require('./locale/' + name);
-            // because defineLocale currently also sets the global locale, we
-            // want to undo that for lazy loaded locales
+            var aliasedRequire = require;
+            aliasedRequire('./locale/' + name);
             getSetGlobalLocale(oldLocale);
-        } catch (e) { }
+        } catch (e) {}
     }
     return locales[name];
 }
@@ -25059,10 +25063,11 @@ function defineLocale (name, config) {
 
 function updateLocale(name, config) {
     if (config != null) {
-        var locale, parentConfig = baseConfig;
+        var locale, tmpLocale, parentConfig = baseConfig;
         // MERGE
-        if (locales[name] != null) {
-            parentConfig = locales[name]._config;
+        tmpLocale = loadLocale(name);
+        if (tmpLocale != null) {
+            parentConfig = tmpLocale._config;
         }
         config = mergeConfigs(parentConfig, config);
         locale = new Locale(config);
@@ -25109,7 +25114,7 @@ function getLocale (key) {
 }
 
 function listLocales() {
-    return keys$1(locales);
+    return keys(locales);
 }
 
 function checkOverflow (m) {
@@ -25140,6 +25145,156 @@ function checkOverflow (m) {
     }
 
     return m;
+}
+
+// Pick the first defined of two or three arguments.
+function defaults(a, b, c) {
+    if (a != null) {
+        return a;
+    }
+    if (b != null) {
+        return b;
+    }
+    return c;
+}
+
+function currentDateArray(config) {
+    // hooks is actually the exported moment object
+    var nowValue = new Date(hooks.now());
+    if (config._useUTC) {
+        return [nowValue.getUTCFullYear(), nowValue.getUTCMonth(), nowValue.getUTCDate()];
+    }
+    return [nowValue.getFullYear(), nowValue.getMonth(), nowValue.getDate()];
+}
+
+// convert an array to a date.
+// the array should mirror the parameters below
+// note: all values past the year are optional and will default to the lowest possible value.
+// [year, month, day , hour, minute, second, millisecond]
+function configFromArray (config) {
+    var i, date, input = [], currentDate, expectedWeekday, yearToUse;
+
+    if (config._d) {
+        return;
+    }
+
+    currentDate = currentDateArray(config);
+
+    //compute day of the year from weeks and weekdays
+    if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
+        dayOfYearFromWeekInfo(config);
+    }
+
+    //if the day of the year is set, figure out what it is
+    if (config._dayOfYear != null) {
+        yearToUse = defaults(config._a[YEAR], currentDate[YEAR]);
+
+        if (config._dayOfYear > daysInYear(yearToUse) || config._dayOfYear === 0) {
+            getParsingFlags(config)._overflowDayOfYear = true;
+        }
+
+        date = createUTCDate(yearToUse, 0, config._dayOfYear);
+        config._a[MONTH] = date.getUTCMonth();
+        config._a[DATE] = date.getUTCDate();
+    }
+
+    // Default to current date.
+    // * if no year, month, day of month are given, default to today
+    // * if day of month is given, default month and year
+    // * if month is given, default only year
+    // * if year is given, don't default anything
+    for (i = 0; i < 3 && config._a[i] == null; ++i) {
+        config._a[i] = input[i] = currentDate[i];
+    }
+
+    // Zero out whatever was not defaulted, including time
+    for (; i < 7; i++) {
+        config._a[i] = input[i] = (config._a[i] == null) ? (i === 2 ? 1 : 0) : config._a[i];
+    }
+
+    // Check for 24:00:00.000
+    if (config._a[HOUR] === 24 &&
+            config._a[MINUTE] === 0 &&
+            config._a[SECOND] === 0 &&
+            config._a[MILLISECOND] === 0) {
+        config._nextDay = true;
+        config._a[HOUR] = 0;
+    }
+
+    config._d = (config._useUTC ? createUTCDate : createDate).apply(null, input);
+    expectedWeekday = config._useUTC ? config._d.getUTCDay() : config._d.getDay();
+
+    // Apply timezone offset from input. The actual utcOffset can be changed
+    // with parseZone.
+    if (config._tzm != null) {
+        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
+    }
+
+    if (config._nextDay) {
+        config._a[HOUR] = 24;
+    }
+
+    // check for mismatching day of week
+    if (config._w && typeof config._w.d !== 'undefined' && config._w.d !== expectedWeekday) {
+        getParsingFlags(config).weekdayMismatch = true;
+    }
+}
+
+function dayOfYearFromWeekInfo(config) {
+    var w, weekYear, week, weekday, dow, doy, temp, weekdayOverflow;
+
+    w = config._w;
+    if (w.GG != null || w.W != null || w.E != null) {
+        dow = 1;
+        doy = 4;
+
+        // TODO: We need to take the current isoWeekYear, but that depends on
+        // how we interpret now (local, utc, fixed offset). So create
+        // a now version of current config (take local/utc/offset flags, and
+        // create now).
+        weekYear = defaults(w.GG, config._a[YEAR], weekOfYear(createLocal(), 1, 4).year);
+        week = defaults(w.W, 1);
+        weekday = defaults(w.E, 1);
+        if (weekday < 1 || weekday > 7) {
+            weekdayOverflow = true;
+        }
+    } else {
+        dow = config._locale._week.dow;
+        doy = config._locale._week.doy;
+
+        var curWeek = weekOfYear(createLocal(), dow, doy);
+
+        weekYear = defaults(w.gg, config._a[YEAR], curWeek.year);
+
+        // Default to current week.
+        week = defaults(w.w, curWeek.week);
+
+        if (w.d != null) {
+            // weekday -- low day numbers are considered next week
+            weekday = w.d;
+            if (weekday < 0 || weekday > 6) {
+                weekdayOverflow = true;
+            }
+        } else if (w.e != null) {
+            // local weekday -- counting starts from begining of week
+            weekday = w.e + dow;
+            if (w.e < 0 || w.e > 6) {
+                weekdayOverflow = true;
+            }
+        } else {
+            // default to begining of week
+            weekday = dow;
+        }
+    }
+    if (week < 1 || week > weeksInYear(weekYear, dow, doy)) {
+        getParsingFlags(config)._overflowWeeks = true;
+    } else if (weekdayOverflow != null) {
+        getParsingFlags(config)._overflowWeekday = true;
+    } else {
+        temp = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy);
+        config._a[YEAR] = temp.year;
+        config._dayOfYear = temp.dayOfYear;
+    }
 }
 
 // iso 8601 regex
@@ -25233,70 +25388,94 @@ function configFromISO(config) {
 }
 
 // RFC 2822 regex: For details see https://tools.ietf.org/html/rfc2822#section-3.3
-var basicRfcRegex = /^((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d?\d\s(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(?:\d\d)?\d\d\s)(\d\d:\d\d)(\:\d\d)?(\s(?:UT|GMT|[ECMP][SD]T|[A-IK-Za-ik-z]|[+-]\d{4}))$/;
+var rfc2822 = /^(?:(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d{1,2})\s(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(\d{2,4})\s(\d\d):(\d\d)(?::(\d\d))?\s(?:(UT|GMT|[ECMP][SD]T)|([Zz])|([+-]\d{4}))$/;
+
+function extractFromRFC2822Strings(yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr) {
+    var result = [
+        untruncateYear(yearStr),
+        defaultLocaleMonthsShort.indexOf(monthStr),
+        parseInt(dayStr, 10),
+        parseInt(hourStr, 10),
+        parseInt(minuteStr, 10)
+    ];
+
+    if (secondStr) {
+        result.push(parseInt(secondStr, 10));
+    }
+
+    return result;
+}
+
+function untruncateYear(yearStr) {
+    var year = parseInt(yearStr, 10);
+    if (year <= 49) {
+        return 2000 + year;
+    } else if (year <= 999) {
+        return 1900 + year;
+    }
+    return year;
+}
+
+function preprocessRFC2822(s) {
+    // Remove comments and folding whitespace and replace multiple-spaces with a single space
+    return s.replace(/\([^)]*\)|[\n\t]/g, ' ').replace(/(\s\s+)/g, ' ').trim();
+}
+
+function checkWeekday(weekdayStr, parsedInput, config) {
+    if (weekdayStr) {
+        // TODO: Replace the vanilla JS Date object with an indepentent day-of-week check.
+        var weekdayProvided = defaultLocaleWeekdaysShort.indexOf(weekdayStr),
+            weekdayActual = new Date(parsedInput[0], parsedInput[1], parsedInput[2]).getDay();
+        if (weekdayProvided !== weekdayActual) {
+            getParsingFlags(config).weekdayMismatch = true;
+            config._isValid = false;
+            return false;
+        }
+    }
+    return true;
+}
+
+var obsOffsets = {
+    UT: 0,
+    GMT: 0,
+    EDT: -4 * 60,
+    EST: -5 * 60,
+    CDT: -5 * 60,
+    CST: -6 * 60,
+    MDT: -6 * 60,
+    MST: -7 * 60,
+    PDT: -7 * 60,
+    PST: -8 * 60
+};
+
+function calculateOffset(obsOffset, militaryOffset, numOffset) {
+    if (obsOffset) {
+        return obsOffsets[obsOffset];
+    } else if (militaryOffset) {
+        // the only allowed military tz is Z
+        return 0;
+    } else {
+        var hm = parseInt(numOffset, 10);
+        var m = hm % 100, h = (hm - m) / 100;
+        return h * 60 + m;
+    }
+}
 
 // date and time from ref 2822 format
 function configFromRFC2822(config) {
-    var string, match, dayFormat,
-        dateFormat, timeFormat, tzFormat;
-    var timezones = {
-        ' GMT': ' +0000',
-        ' EDT': ' -0400',
-        ' EST': ' -0500',
-        ' CDT': ' -0500',
-        ' CST': ' -0600',
-        ' MDT': ' -0600',
-        ' MST': ' -0700',
-        ' PDT': ' -0700',
-        ' PST': ' -0800'
-    };
-    var military = 'YXWVUTSRQPONZABCDEFGHIKLM';
-    var timezone, timezoneIndex;
-
-    string = config._i
-        .replace(/\([^\)]*\)|[\n\t]/g, ' ') // Remove comments and folding whitespace
-        .replace(/(\s\s+)/g, ' ') // Replace multiple-spaces with a single space
-        .replace(/^\s|\s$/g, ''); // Remove leading and trailing spaces
-    match = basicRfcRegex.exec(string);
-
+    var match = rfc2822.exec(preprocessRFC2822(config._i));
     if (match) {
-        dayFormat = match[1] ? 'ddd' + ((match[1].length === 5) ? ', ' : ' ') : '';
-        dateFormat = 'D MMM ' + ((match[2].length > 10) ? 'YYYY ' : 'YY ');
-        timeFormat = 'HH:mm' + (match[4] ? ':ss' : '');
-
-        // TODO: Replace the vanilla JS Date object with an indepentent day-of-week check.
-        if (match[1]) { // day of week given
-            var momentDate = new Date(match[2]);
-            var momentDay = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][momentDate.getDay()];
-
-            if (match[1].substr(0,3) !== momentDay) {
-                getParsingFlags(config).weekdayMismatch = true;
-                config._isValid = false;
-                return;
-            }
+        var parsedArray = extractFromRFC2822Strings(match[4], match[3], match[2], match[5], match[6], match[7]);
+        if (!checkWeekday(match[1], parsedArray, config)) {
+            return;
         }
 
-        switch (match[5].length) {
-            case 2: // military
-                if (timezoneIndex === 0) {
-                    timezone = ' +0000';
-                } else {
-                    timezoneIndex = military.indexOf(match[5][1].toUpperCase()) - 12;
-                    timezone = ((timezoneIndex < 0) ? ' -' : ' +') +
-                        (('' + timezoneIndex).replace(/^-?/, '0')).match(/..$/)[0] + '00';
-                }
-                break;
-            case 4: // Zone
-                timezone = timezones[match[5]];
-                break;
-            default: // UT or +/-9999
-                timezone = timezones[' GMT'];
-        }
-        match[5] = timezone;
-        config._i = match.splice(1).join('');
-        tzFormat = ' ZZ';
-        config._f = dayFormat + dateFormat + timeFormat + tzFormat;
-        configFromStringAndFormat(config);
+        config._a = parsedArray;
+        config._tzm = calculateOffset(match[8], match[9], match[10]);
+
+        config._d = createUTCDate.apply(null, config._a);
+        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
+
         getParsingFlags(config).rfc2822 = true;
     } else {
         config._isValid = false;
@@ -25339,149 +25518,6 @@ hooks.createFromInputFallback = deprecate(
         config._d = new Date(config._i + (config._useUTC ? ' UTC' : ''));
     }
 );
-
-// Pick the first defined of two or three arguments.
-function defaults(a, b, c) {
-    if (a != null) {
-        return a;
-    }
-    if (b != null) {
-        return b;
-    }
-    return c;
-}
-
-function currentDateArray(config) {
-    // hooks is actually the exported moment object
-    var nowValue = new Date(hooks.now());
-    if (config._useUTC) {
-        return [nowValue.getUTCFullYear(), nowValue.getUTCMonth(), nowValue.getUTCDate()];
-    }
-    return [nowValue.getFullYear(), nowValue.getMonth(), nowValue.getDate()];
-}
-
-// convert an array to a date.
-// the array should mirror the parameters below
-// note: all values past the year are optional and will default to the lowest possible value.
-// [year, month, day , hour, minute, second, millisecond]
-function configFromArray (config) {
-    var i, date, input = [], currentDate, yearToUse;
-
-    if (config._d) {
-        return;
-    }
-
-    currentDate = currentDateArray(config);
-
-    //compute day of the year from weeks and weekdays
-    if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
-        dayOfYearFromWeekInfo(config);
-    }
-
-    //if the day of the year is set, figure out what it is
-    if (config._dayOfYear != null) {
-        yearToUse = defaults(config._a[YEAR], currentDate[YEAR]);
-
-        if (config._dayOfYear > daysInYear(yearToUse) || config._dayOfYear === 0) {
-            getParsingFlags(config)._overflowDayOfYear = true;
-        }
-
-        date = createUTCDate(yearToUse, 0, config._dayOfYear);
-        config._a[MONTH] = date.getUTCMonth();
-        config._a[DATE] = date.getUTCDate();
-    }
-
-    // Default to current date.
-    // * if no year, month, day of month are given, default to today
-    // * if day of month is given, default month and year
-    // * if month is given, default only year
-    // * if year is given, don't default anything
-    for (i = 0; i < 3 && config._a[i] == null; ++i) {
-        config._a[i] = input[i] = currentDate[i];
-    }
-
-    // Zero out whatever was not defaulted, including time
-    for (; i < 7; i++) {
-        config._a[i] = input[i] = (config._a[i] == null) ? (i === 2 ? 1 : 0) : config._a[i];
-    }
-
-    // Check for 24:00:00.000
-    if (config._a[HOUR] === 24 &&
-            config._a[MINUTE] === 0 &&
-            config._a[SECOND] === 0 &&
-            config._a[MILLISECOND] === 0) {
-        config._nextDay = true;
-        config._a[HOUR] = 0;
-    }
-
-    config._d = (config._useUTC ? createUTCDate : createDate).apply(null, input);
-    // Apply timezone offset from input. The actual utcOffset can be changed
-    // with parseZone.
-    if (config._tzm != null) {
-        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
-    }
-
-    if (config._nextDay) {
-        config._a[HOUR] = 24;
-    }
-}
-
-function dayOfYearFromWeekInfo(config) {
-    var w, weekYear, week, weekday, dow, doy, temp, weekdayOverflow;
-
-    w = config._w;
-    if (w.GG != null || w.W != null || w.E != null) {
-        dow = 1;
-        doy = 4;
-
-        // TODO: We need to take the current isoWeekYear, but that depends on
-        // how we interpret now (local, utc, fixed offset). So create
-        // a now version of current config (take local/utc/offset flags, and
-        // create now).
-        weekYear = defaults(w.GG, config._a[YEAR], weekOfYear(createLocal(), 1, 4).year);
-        week = defaults(w.W, 1);
-        weekday = defaults(w.E, 1);
-        if (weekday < 1 || weekday > 7) {
-            weekdayOverflow = true;
-        }
-    } else {
-        dow = config._locale._week.dow;
-        doy = config._locale._week.doy;
-
-        var curWeek = weekOfYear(createLocal(), dow, doy);
-
-        weekYear = defaults(w.gg, config._a[YEAR], curWeek.year);
-
-        // Default to current week.
-        week = defaults(w.w, curWeek.week);
-
-        if (w.d != null) {
-            // weekday -- low day numbers are considered next week
-            weekday = w.d;
-            if (weekday < 0 || weekday > 6) {
-                weekdayOverflow = true;
-            }
-        } else if (w.e != null) {
-            // local weekday -- counting starts from begining of week
-            weekday = w.e + dow;
-            if (w.e < 0 || w.e > 6) {
-                weekdayOverflow = true;
-            }
-        } else {
-            // default to begining of week
-            weekday = dow;
-        }
-    }
-    if (week < 1 || week > weeksInYear(weekYear, dow, doy)) {
-        getParsingFlags(config)._overflowWeeks = true;
-    } else if (weekdayOverflow != null) {
-        getParsingFlags(config)._overflowWeekday = true;
-    } else {
-        temp = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy);
-        config._a[YEAR] = temp.year;
-        config._dayOfYear = temp.dayOfYear;
-    }
-}
 
 // constant that refers to the ISO standard
 hooks.ISO_8601 = function () {};
@@ -25807,7 +25843,7 @@ var ordering = ['year', 'quarter', 'month', 'week', 'day', 'hour', 'minute', 'se
 
 function isDurationValid(m) {
     for (var key in m) {
-        if (!(ordering.indexOf(key) !== -1 && (m[key] == null || !isNaN(m[key])))) {
+        if (!(indexOf.call(ordering, key) !== -1 && (m[key] == null || !isNaN(m[key])))) {
             return false;
         }
     }
@@ -25858,7 +25894,7 @@ function Duration (duration) {
     // day when working around DST, we need to store them separately
     this._days = +days +
         weeks * 7;
-    // It is impossible translate months into days without knowing
+    // It is impossible to translate months into days without knowing
     // which months you are are talking about, so we have to store
     // it separately.
     this._months = +months +
@@ -26105,12 +26141,12 @@ function isUtc () {
 }
 
 // ASP.NET json date format regex
-var aspNetRegex = /^(\-)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)(\.\d*)?)?$/;
+var aspNetRegex = /^(\-|\+)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)(\.\d*)?)?$/;
 
 // from http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
 // somewhat more in line with 4.4.3.2 2004 spec, but allows decimal anywhere
 // and further modified to allow for strings containing both week and day
-var isoRegex = /^(-)?P(?:(-?[0-9,.]*)Y)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)W)?(?:(-?[0-9,.]*)D)?(?:T(?:(-?[0-9,.]*)H)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)S)?)?$/;
+var isoRegex = /^(-|\+)?P(?:([-+]?[0-9,.]*)Y)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)W)?(?:([-+]?[0-9,.]*)D)?(?:T(?:([-+]?[0-9,.]*)H)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)S)?)?$/;
 
 function createDuration (input, key) {
     var duration = input,
@@ -26144,7 +26180,7 @@ function createDuration (input, key) {
             ms : toInt(absRound(match[MILLISECOND] * 1000)) * sign // the millisecond decimal point is included in the match
         };
     } else if (!!(match = isoRegex.exec(input))) {
-        sign = (match[1] === '-') ? -1 : 1;
+        sign = (match[1] === '-') ? -1 : (match[1] === '+') ? 1 : 1;
         duration = {
             y : parseIso(match[2], sign),
             M : parseIso(match[3], sign),
@@ -26247,14 +26283,14 @@ function addSubtract (mom, duration, isAdding, updateOffset) {
 
     updateOffset = updateOffset == null ? true : updateOffset;
 
-    if (milliseconds) {
-        mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding);
+    if (months) {
+        setMonth(mom, get(mom, 'Month') + months * isAdding);
     }
     if (days) {
         set$1(mom, 'Date', get(mom, 'Date') + days * isAdding);
     }
-    if (months) {
-        setMonth(mom, get(mom, 'Month') + months * isAdding);
+    if (milliseconds) {
+        mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding);
     }
     if (updateOffset) {
         hooks.updateOffset(mom, days || months);
@@ -26364,22 +26400,18 @@ function diff (input, units, asFloat) {
 
     units = normalizeUnits(units);
 
-    if (units === 'year' || units === 'month' || units === 'quarter') {
-        output = monthDiff(this, that);
-        if (units === 'quarter') {
-            output = output / 3;
-        } else if (units === 'year') {
-            output = output / 12;
-        }
-    } else {
-        delta = this - that;
-        output = units === 'second' ? delta / 1e3 : // 1000
-            units === 'minute' ? delta / 6e4 : // 1000 * 60
-            units === 'hour' ? delta / 36e5 : // 1000 * 60 * 60
-            units === 'day' ? (delta - zoneDelta) / 864e5 : // 1000 * 60 * 60 * 24, negate dst
-            units === 'week' ? (delta - zoneDelta) / 6048e5 : // 1000 * 60 * 60 * 24 * 7, negate dst
-            delta;
+    switch (units) {
+        case 'year': output = monthDiff(this, that) / 12; break;
+        case 'month': output = monthDiff(this, that); break;
+        case 'quarter': output = monthDiff(this, that) / 3; break;
+        case 'second': output = (this - that) / 1e3; break; // 1000
+        case 'minute': output = (this - that) / 6e4; break; // 1000 * 60
+        case 'hour': output = (this - that) / 36e5; break; // 1000 * 60 * 60
+        case 'day': output = (this - that - zoneDelta) / 864e5; break; // 1000 * 60 * 60 * 24, negate dst
+        case 'week': output = (this - that - zoneDelta) / 6048e5; break; // 1000 * 60 * 60 * 24 * 7, negate dst
+        default: output = this - that;
     }
+
     return asFloat ? output : absFloor(output);
 }
 
@@ -26779,7 +26811,7 @@ addRegexToken('Do', function (isStrict, locale) {
 
 addParseToken(['D', 'DD'], DATE);
 addParseToken('Do', function (input, array) {
-    array[DATE] = toInt(input.match(match1to2)[0], 10);
+    array[DATE] = toInt(input.match(match1to2)[0]);
 });
 
 // MOMENTS
@@ -27357,6 +27389,10 @@ var asWeeks        = makeAs('w');
 var asMonths       = makeAs('M');
 var asYears        = makeAs('y');
 
+function clone$1 () {
+    return createDuration(this);
+}
+
 function get$2 (units) {
     units = normalizeUnits(units);
     return this.isValid() ? this[units + 's']() : NaN;
@@ -27466,6 +27502,10 @@ function humanize (withSuffix) {
 
 var abs$1 = Math.abs;
 
+function sign(x) {
+    return ((x > 0) - (x < 0)) || +x;
+}
+
 function toISOString$1() {
     // for ISO strings we do not use the normal bubbling rules:
     //  * milliseconds bubble up until they become hours
@@ -27500,7 +27540,7 @@ function toISOString$1() {
     var D = days;
     var h = hours;
     var m = minutes;
-    var s = seconds;
+    var s = seconds ? seconds.toFixed(3).replace(/\.?0+$/, '') : '';
     var total = this.asSeconds();
 
     if (!total) {
@@ -27509,15 +27549,19 @@ function toISOString$1() {
         return 'P0D';
     }
 
-    return (total < 0 ? '-' : '') +
-        'P' +
-        (Y ? Y + 'Y' : '') +
-        (M ? M + 'M' : '') +
-        (D ? D + 'D' : '') +
+    var totalSign = total < 0 ? '-' : '';
+    var ymSign = sign(this._months) !== sign(total) ? '-' : '';
+    var daysSign = sign(this._days) !== sign(total) ? '-' : '';
+    var hmsSign = sign(this._milliseconds) !== sign(total) ? '-' : '';
+
+    return totalSign + 'P' +
+        (Y ? ymSign + Y + 'Y' : '') +
+        (M ? ymSign + M + 'M' : '') +
+        (D ? daysSign + D + 'D' : '') +
         ((h || m || s) ? 'T' : '') +
-        (h ? h + 'H' : '') +
-        (m ? m + 'M' : '') +
-        (s ? s + 'S' : '');
+        (h ? hmsSign + h + 'H' : '') +
+        (m ? hmsSign + m + 'M' : '') +
+        (s ? hmsSign + s + 'S' : '');
 }
 
 var proto$2 = Duration.prototype;
@@ -27537,6 +27581,7 @@ proto$2.asMonths       = asMonths;
 proto$2.asYears        = asYears;
 proto$2.valueOf        = valueOf$1;
 proto$2._bubble        = bubble;
+proto$2.clone          = clone$1;
 proto$2.get            = get$2;
 proto$2.milliseconds   = milliseconds;
 proto$2.seconds        = seconds;
@@ -27578,7 +27623,7 @@ addParseToken('x', function (input, array, config) {
 // Side effect imports
 
 
-hooks.version = '2.18.1';
+hooks.version = '2.19.4';
 
 setHookCallback(createLocal);
 
@@ -27605,7 +27650,7 @@ hooks.updateLocale          = updateLocale;
 hooks.locales               = listLocales;
 hooks.weekdaysShort         = listWeekdaysShort;
 hooks.normalizeUnits        = normalizeUnits;
-hooks.relativeTimeRounding = getSetRelativeTimeRounding;
+hooks.relativeTimeRounding  = getSetRelativeTimeRounding;
 hooks.relativeTimeThreshold = getSetRelativeTimeThreshold;
 hooks.calendarFormat        = getCalendarFormat;
 hooks.prototype             = proto;
@@ -27687,6 +27732,149 @@ var af = moment.defineLocale('af', {
 });
 
 return af;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Arabic [ar]
+//! author : Abdel Said: https://github.com/abdelsaid
+//! author : Ahmed Elkhatib
+//! author : forabi https://github.com/forabi
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/ar',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var symbolMap = {
+    '1': '١',
+    '2': '٢',
+    '3': '٣',
+    '4': '٤',
+    '5': '٥',
+    '6': '٦',
+    '7': '٧',
+    '8': '٨',
+    '9': '٩',
+    '0': '٠'
+};
+var numberMap = {
+    '١': '1',
+    '٢': '2',
+    '٣': '3',
+    '٤': '4',
+    '٥': '5',
+    '٦': '6',
+    '٧': '7',
+    '٨': '8',
+    '٩': '9',
+    '٠': '0'
+};
+var pluralForm = function (n) {
+    return n === 0 ? 0 : n === 1 ? 1 : n === 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5;
+};
+var plurals = {
+    s : ['أقل من ثانية', 'ثانية واحدة', ['ثانيتان', 'ثانيتين'], '%d ثوان', '%d ثانية', '%d ثانية'],
+    m : ['أقل من دقيقة', 'دقيقة واحدة', ['دقيقتان', 'دقيقتين'], '%d دقائق', '%d دقيقة', '%d دقيقة'],
+    h : ['أقل من ساعة', 'ساعة واحدة', ['ساعتان', 'ساعتين'], '%d ساعات', '%d ساعة', '%d ساعة'],
+    d : ['أقل من يوم', 'يوم واحد', ['يومان', 'يومين'], '%d أيام', '%d يومًا', '%d يوم'],
+    M : ['أقل من شهر', 'شهر واحد', ['شهران', 'شهرين'], '%d أشهر', '%d شهرا', '%d شهر'],
+    y : ['أقل من عام', 'عام واحد', ['عامان', 'عامين'], '%d أعوام', '%d عامًا', '%d عام']
+};
+var pluralize = function (u) {
+    return function (number, withoutSuffix, string, isFuture) {
+        var f = pluralForm(number),
+            str = plurals[u][pluralForm(number)];
+        if (f === 2) {
+            str = str[withoutSuffix ? 0 : 1];
+        }
+        return str.replace(/%d/i, number);
+    };
+};
+var months = [
+    'كانون الثاني يناير',
+    'شباط فبراير',
+    'آذار مارس',
+    'نيسان أبريل',
+    'أيار مايو',
+    'حزيران يونيو',
+    'تموز يوليو',
+    'آب أغسطس',
+    'أيلول سبتمبر',
+    'تشرين الأول أكتوبر',
+    'تشرين الثاني نوفمبر',
+    'كانون الأول ديسمبر'
+];
+
+var ar = moment.defineLocale('ar', {
+    months : months,
+    monthsShort : months,
+    weekdays : 'الأحد_الإثنين_الثلاثاء_الأربعاء_الخميس_الجمعة_السبت'.split('_'),
+    weekdaysShort : 'أحد_إثنين_ثلاثاء_أربعاء_خميس_جمعة_سبت'.split('_'),
+    weekdaysMin : 'ح_ن_ث_ر_خ_ج_س'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'D/\u200FM/\u200FYYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd D MMMM YYYY HH:mm'
+    },
+    meridiemParse: /ص|م/,
+    isPM : function (input) {
+        return 'م' === input;
+    },
+    meridiem : function (hour, minute, isLower) {
+        if (hour < 12) {
+            return 'ص';
+        } else {
+            return 'م';
+        }
+    },
+    calendar : {
+        sameDay: '[اليوم عند الساعة] LT',
+        nextDay: '[غدًا عند الساعة] LT',
+        nextWeek: 'dddd [عند الساعة] LT',
+        lastDay: '[أمس عند الساعة] LT',
+        lastWeek: 'dddd [عند الساعة] LT',
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : 'بعد %s',
+        past : 'منذ %s',
+        s : pluralize('s'),
+        m : pluralize('m'),
+        mm : pluralize('m'),
+        h : pluralize('h'),
+        hh : pluralize('h'),
+        d : pluralize('d'),
+        dd : pluralize('d'),
+        M : pluralize('M'),
+        MM : pluralize('M'),
+        y : pluralize('y'),
+        yy : pluralize('y')
+    },
+    preparse: function (string) {
+        return string.replace(/[١٢٣٤٥٦٧٨٩٠]/g, function (match) {
+            return numberMap[match];
+        }).replace(/،/g, ',');
+    },
+    postformat: function (string) {
+        return string.replace(/\d/g, function (match) {
+            return symbolMap[match];
+        }).replace(/,/g, '،');
+    },
+    week : {
+        dow : 6, // Saturday is the first day of the week.
+        doy : 12  // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return ar;
 
 })));
 
@@ -27803,17 +27991,17 @@ var ca = moment.defineLocale('ca', {
     monthsParseExact : true,
     weekdays : 'diumenge_dilluns_dimarts_dimecres_dijous_divendres_dissabte'.split('_'),
     weekdaysShort : 'dg._dl._dt._dc._dj._dv._ds.'.split('_'),
-    weekdaysMin : 'Dg_Dl_Dt_Dc_Dj_Dv_Ds'.split('_'),
+    weekdaysMin : 'dg_dl_dt_dc_dj_dv_ds'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
         LT : 'H:mm',
         LTS : 'H:mm:ss',
         L : 'DD/MM/YYYY',
-        LL : '[el] D MMMM [de] YYYY',
+        LL : 'D MMMM [de] YYYY',
         ll : 'D MMM YYYY',
-        LLL : '[el] D MMMM [de] YYYY [a les] H:mm',
+        LLL : 'D MMMM [de] YYYY [a les] H:mm',
         lll : 'D MMM YYYY, H:mm',
-        LLLL : '[el] dddd D MMMM [de] YYYY [a les] H:mm',
+        LLLL : 'dddd D MMMM [de] YYYY [a les] H:mm',
         llll : 'ddd D MMM YYYY, H:mm'
     },
     calendar : {
@@ -27900,7 +28088,7 @@ function processRelativeTime(number, withoutSuffix, key, isFuture) {
 
 var de = moment.defineLocale('de', {
     months : 'Januar_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
-    monthsShort : 'Jan._Febr._Mrz._Apr._Mai_Jun._Jul._Aug._Sept._Okt._Nov._Dez.'.split('_'),
+    monthsShort : 'Jan._Feb._März_Apr._Mai_Juni_Juli_Aug._Sep._Okt._Nov._Dez.'.split('_'),
     monthsParseExact : true,
     weekdays : 'Sonntag_Montag_Dienstag_Mittwoch_Donnerstag_Freitag_Samstag'.split('_'),
     weekdaysShort : 'So._Mo._Di._Mi._Do._Fr._Sa.'.split('_'),
@@ -27964,6 +28152,9 @@ return de;
 var monthsShortDot = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_');
 var monthsShort = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
 
+var monthsParse = [/^ene/i, /^feb/i, /^mar/i, /^abr/i, /^may/i, /^jun/i, /^jul/i, /^ago/i, /^sep/i, /^oct/i, /^nov/i, /^dic/i];
+var monthsRegex = /^(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre|ene\.?|feb\.?|mar\.?|abr\.?|may\.?|jun\.?|jul\.?|ago\.?|sep\.?|oct\.?|nov\.?|dic\.?)/i;
+
 var es = moment.defineLocale('es', {
     months : 'enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre'.split('_'),
     monthsShort : function (m, format) {
@@ -27975,7 +28166,13 @@ var es = moment.defineLocale('es', {
             return monthsShortDot[m.month()];
         }
     },
-    monthsParseExact : true,
+    monthsRegex : monthsRegex,
+    monthsShortRegex : monthsRegex,
+    monthsStrictRegex : /^(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)/i,
+    monthsShortStrictRegex : /^(ene\.?|feb\.?|mar\.?|abr\.?|may\.?|jun\.?|jul\.?|ago\.?|sep\.?|oct\.?|nov\.?|dic\.?)/i,
+    monthsParse : monthsParse,
+    longMonthsParse : monthsParse,
+    shortMonthsParse : monthsParse,
     weekdays : 'domingo_lunes_martes_miércoles_jueves_viernes_sábado'.split('_'),
     weekdaysShort : 'dom._lun._mar._mié._jue._vie._sáb.'.split('_'),
     weekdaysMin : 'do_lu_ma_mi_ju_vi_sá'.split('_'),
@@ -28231,8 +28428,7 @@ return he;
 
 var weekEndings = 'vasárnap hétfőn kedden szerdán csütörtökön pénteken szombaton'.split(' ');
 function translate(number, withoutSuffix, key, isFuture) {
-    var num = number,
-        suffix;
+    var num = number;
     switch (key) {
         case 's':
             return (isFuture || withoutSuffix) ? 'néhány másodperc' : 'néhány másodperce';
@@ -28669,7 +28865,7 @@ var nl = moment.defineLocale('nl', {
 
     weekdays : 'zondag_maandag_dinsdag_woensdag_donderdag_vrijdag_zaterdag'.split('_'),
     weekdaysShort : 'zo._ma._di._wo._do._vr._za.'.split('_'),
-    weekdaysMin : 'Zo_Ma_Di_Wo_Do_Vr_Za'.split('_'),
+    weekdaysMin : 'zo_ma_di_wo_do_vr_za'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
         LT : 'HH:mm',
@@ -28781,7 +28977,24 @@ var pl = moment.defineLocale('pl', {
     calendar : {
         sameDay: '[Dziś o] LT',
         nextDay: '[Jutro o] LT',
-        nextWeek: '[W] dddd [o] LT',
+        nextWeek: function () {
+            switch (this.day()) {
+                case 0:
+                    return '[W niedzielę o] LT';
+
+                case 2:
+                    return '[We wtorek o] LT';
+
+                case 3:
+                    return '[W środę o] LT';
+
+                case 6:
+                    return '[W sobotę o] LT';
+
+                default:
+                    return '[W] dddd [o] LT';
+            }
+        },
         lastDay: '[Wczoraj o] LT',
         lastWeek: function () {
             switch (this.day()) {
@@ -28837,8 +29050,8 @@ return pl;
 
 
 var ptBr = moment.defineLocale('pt-br', {
-    months : 'Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro'.split('_'),
-    monthsShort : 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_'),
+    months : 'janeiro_fevereiro_março_abril_maio_junho_julho_agosto_setembro_outubro_novembro_dezembro'.split('_'),
+    monthsShort : 'jan_fev_mar_abr_mai_jun_jul_ago_set_out_nov_dez'.split('_'),
     weekdays : 'Domingo_Segunda-feira_Terça-feira_Quarta-feira_Quinta-feira_Sexta-feira_Sábado'.split('_'),
     weekdaysShort : 'Dom_Seg_Ter_Qua_Qui_Sex_Sáb'.split('_'),
     weekdaysMin : 'Do_2ª_3ª_4ª_5ª_6ª_Sá'.split('_'),
@@ -28867,6 +29080,7 @@ var ptBr = moment.defineLocale('pt-br', {
         future : 'em %s',
         past : '%s atrás',
         s : 'poucos segundos',
+        ss : '%d segundos',
         m : 'um minuto',
         mm : '%d minutos',
         h : 'uma hora',
@@ -29062,7 +29276,7 @@ var ru = moment.defineLocale('ru', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
     }
 });
 
@@ -29121,9 +29335,9 @@ var tr = moment.defineLocale('tr', {
     calendar : {
         sameDay : '[bugün saat] LT',
         nextDay : '[yarın saat] LT',
-        nextWeek : '[haftaya] dddd [saat] LT',
+        nextWeek : '[gelecek] dddd [saat] LT',
         lastDay : '[dün] LT',
-        lastWeek : '[geçen hafta] dddd [saat] LT',
+        lastWeek : '[geçen] dddd [saat] LT',
         sameElse : 'L'
     },
     relativeTime : {
@@ -29530,6 +29744,8 @@ return zhTw;
 
 })));
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -29541,8 +29757,8 @@ return zhTw;
 
 /*global define */
 (function (root, factory) {
-  define('i18n',["es6-promise", "jed", "lodash.noconflict", "moment", 'moment/locale/af', 'moment/locale/bg', 'moment/locale/ca', 'moment/locale/de', 'moment/locale/es', 'moment/locale/fr', 'moment/locale/he', 'moment/locale/hu', 'moment/locale/id', 'moment/locale/it', 'moment/locale/ja', 'moment/locale/nb', 'moment/locale/nl', 'moment/locale/pl', 'moment/locale/pt-br', 'moment/locale/ru', 'moment/locale/tr', 'moment/locale/uk', 'moment/locale/zh-cn', 'moment/locale/zh-tw'], factory);
-})(this, function (Promise, Jed, _, moment) {
+  define('i18n',["es6-promise", "jed", "lodash.noconflict", "moment", 'moment/locale/af', 'moment/locale/ar', 'moment/locale/bg', 'moment/locale/ca', 'moment/locale/de', 'moment/locale/es', 'moment/locale/fr', 'moment/locale/he', 'moment/locale/hu', 'moment/locale/id', 'moment/locale/it', 'moment/locale/ja', 'moment/locale/nb', 'moment/locale/nl', 'moment/locale/pl', 'moment/locale/pt-br', 'moment/locale/ru', 'moment/locale/tr', 'moment/locale/uk', 'moment/locale/zh-cn', 'moment/locale/zh-tw'], factory);
+})(void 0, function (Promise, Jed, _, moment) {
   'use strict';
 
   function detectLocale(library_check) {
@@ -36016,6 +36232,8 @@ require(["strophe-polyfill"]);
 }));
 /* jshint ignore:end */
 ;
+
+
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 // Converse.js (A browser based XMPP chat client)
@@ -36030,7 +36248,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 /*global define, escape, window */
 (function (root, factory) {
   define('utils',["sizzle", "es6-promise", "lodash.noconflict", "strophe"], factory);
-})(this, function (sizzle, Promise, _, Strophe) {
+})(void 0, function (sizzle, Promise, _, Strophe) {
   "use strict";
 
   var b64_sha1 = Strophe.SHA1.b64_sha1;
@@ -36169,6 +36387,16 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     }
 
     return el;
+  };
+
+  u.ancestor = function (el, selector) {
+    var parent = el;
+
+    while (!_.isNil(parent) && !sizzle.matchesSelector(parent, selector)) {
+      parent = parent.parentElement;
+    }
+
+    return parent;
   };
 
   u.nextUntil = function (el, selector) {
@@ -39419,6 +39647,8 @@ Backbone.sync = function(method, model, options) {
 return Backbone.BrowserStorage;
 }));
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -39429,7 +39659,7 @@ return Backbone.BrowserStorage;
 /*global Backbone, define, window, JSON */
 (function (root, factory) {
   define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "lodash.fp", "polyfill", "i18n", "utils", "moment", "strophe", "pluggable", "backbone.noconflict", "backbone.nativeview", "backbone.browserStorage"], factory);
-})(this, function (sizzle, Promise, _, f, polyfill, i18n, u, moment, Strophe, pluggable, Backbone) {
+})(void 0, function (sizzle, Promise, _, f, polyfill, i18n, u, moment, Strophe, pluggable, Backbone) {
   /* Cannot use this due to Safari bug.
    * See https://github.com/jcbrand/converse.js/issues/196
    */
@@ -39475,9 +39705,10 @@ return Backbone.BrowserStorage;
     'promises': {}
   };
 
-  _.extend(_converse, Backbone.Events);
+  _.extend(_converse, Backbone.Events); // Core plugins are whitelisted automatically
 
-  _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-muc-embedded', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-profile', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Make converse pluggable
+
+  _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-dropdown', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-embedded', 'converse-muc-views', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-profile', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Make converse pluggable
 
   pluggable.enable(_converse, '_converse', 'pluggable'); // Module-level constants
 
@@ -39707,9 +39938,10 @@ return Backbone.BrowserStorage;
       jid: undefined,
       keepalive: true,
       locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
-      locales: ['af', 'bg', 'ca', 'de', 'es', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
+      locales: ['af', 'ar', 'bg', 'ca', 'de', 'es', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
       message_carbons: true,
       message_storage: 'session',
+      nickname: undefined,
       password: undefined,
       prebind_url: null,
       priority: 0,
@@ -39726,9 +39958,7 @@ return Backbone.BrowserStorage;
       view_mode: 'overlayed',
       // Choices are 'overlayed', 'fullscreen', 'mobile'
       websocket_url: undefined,
-      whitelisted_plugins: [],
-      xhr_custom_status: false,
-      xhr_custom_status_url: ''
+      whitelisted_plugins: []
     };
 
     _.assignIn(this, this.default_settings); // Allow only whitelisted configuration attributes to be overwritten
@@ -39808,7 +40038,7 @@ return Backbone.BrowserStorage;
         _converse.auto_changed_status = false; // XXX: we should really remember the original state here, and
         // then set it back to that...
 
-        _converse.xmppstatus.setStatus(_converse.default_state);
+        _converse.xmppstatus.set('status', _converse.default_state);
       }
     };
 
@@ -39822,7 +40052,7 @@ return Backbone.BrowserStorage;
         return;
       }
 
-      var stat = _converse.xmppstatus.getStatus();
+      var stat = _converse.xmppstatus.get('status');
 
       _converse.idle_seconds++;
 
@@ -39833,11 +40063,11 @@ return Backbone.BrowserStorage;
       if (_converse.auto_away > 0 && _converse.idle_seconds > _converse.auto_away && stat !== 'away' && stat !== 'xa' && stat !== 'dnd') {
         _converse.auto_changed_status = true;
 
-        _converse.xmppstatus.setStatus('away');
+        _converse.xmppstatus.set('status', 'away');
       } else if (_converse.auto_xa > 0 && _converse.idle_seconds > _converse.auto_xa && stat !== 'xa' && stat !== 'dnd') {
         _converse.auto_changed_status = true;
 
-        _converse.xmppstatus.setStatus('xa');
+        _converse.xmppstatus.set('status', 'xa');
       }
     };
 
@@ -40052,9 +40282,14 @@ return Backbone.BrowserStorage;
       }
     };
 
-    this.initStatus = function () {
-      return new Promise(function (resolve, reject) {
-        var promise = new u.getResolveablePromise();
+    this.initStatus = function (reconnecting) {
+      // If there's no xmppstatus obj, then we were never connected to
+      // begin with, so we set reconnecting to false.
+      reconnecting = _.isUndefined(_converse.xmppstatus) ? false : reconnecting;
+
+      if (reconnecting) {
+        _converse.onStatusInitialized(reconnecting);
+      } else {
         _this.xmppstatus = new _this.XMPPStatus();
         var id = b64_sha1("converse.xmppstatus-".concat(_converse.bare_jid));
         _this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
@@ -40062,12 +40297,10 @@ return Backbone.BrowserStorage;
         _this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
 
         _this.xmppstatus.fetch({
-          success: resolve,
-          error: resolve
+          success: _.partial(_converse.onStatusInitialized, reconnecting),
+          error: _.partial(_converse.onStatusInitialized, reconnecting)
         });
-
-        _converse.emit('statusInitialized');
-      });
+      }
     };
 
     this.initSession = function () {
@@ -40179,9 +40412,9 @@ return Backbone.BrowserStorage;
       }
 
       var carbons_iq = new Strophe.Builder('iq', {
-        from: this.connection.jid,
-        id: 'enablecarbons',
-        type: 'set'
+        'from': this.connection.jid,
+        'id': 'enablecarbons',
+        'type': 'set'
       }).c('enable', {
         xmlns: Strophe.NS.CARBONS
       });
@@ -40280,6 +40513,8 @@ return Backbone.BrowserStorage;
        * populating the roster etc.) necessary once the connection has
        * been established.
        */
+      _converse.emit('statusInitialized');
+
       if (reconnecting) {
         // No need to recreate the roster, otherwise we lose our
         // cached data. However we still emit an event, to give
@@ -40298,10 +40533,14 @@ return Backbone.BrowserStorage;
 
       _converse.registerPresenceHandler();
 
-      if (!reconnecting) {
+      if (reconnecting) {
+        _converse.emit('reconnected');
+      } else {
         init_promise.resolve();
 
         _converse.emit('initialized');
+
+        _converse.emit('connected');
       }
     };
 
@@ -40316,29 +40555,16 @@ return Backbone.BrowserStorage;
       /* Called as soon as a new connection has been established, either
        * by logging in or by attaching to an existing BOSH session.
        */
-      // Solves problem of returned PubSub BOSH response not received
-      // by browser.
-      _converse.connection.flush();
+      _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
+
 
       _converse.setUserJid();
 
       _converse.initSession();
 
-      _converse.enableCarbons(); // If there's no xmppstatus obj, then we were never connected to
-      // begin with, so we set reconnecting to false.
+      _converse.enableCarbons();
 
-
-      reconnecting = _.isUndefined(_converse.xmppstatus) ? false : reconnecting;
-
-      if (reconnecting) {
-        _converse.onStatusInitialized(true);
-
-        _converse.emit('reconnected');
-      } else {
-        _converse.initStatus().then(_.partial(_converse.onStatusInitialized, false), _.partial(_converse.onStatusInitialized, false)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-
-        _converse.emit('connected');
-      }
+      _converse.initStatus(reconnecting);
     };
 
     this.RosterContact = Backbone.Model.extend({
@@ -40351,8 +40577,6 @@ return Backbone.BrowserStorage;
         'status': ''
       },
       initialize: function initialize(attributes) {
-        var _this3 = this;
-
         var jid = attributes.jid,
             bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase(),
             resource = Strophe.getResourceFromJid(jid);
@@ -40365,9 +40589,6 @@ return Backbone.BrowserStorage;
           'resources': {},
           'user_id': Strophe.getNodeFromJid(jid)
         }, attributes));
-        this.on('destroy', function () {
-          _this3.removeFromRoster();
-        });
         this.on('change:chat_status', function (item) {
           _converse.emit('contactStatusChanged', item.attributes);
         });
@@ -40379,8 +40600,6 @@ return Backbone.BrowserStorage;
          *    (String) message - An optional message to explain the
          *      reason for the subscription request.
          */
-        this.save('ask', "subscribe"); // ask === 'subscribe' Means we have ask to subscribe to them.
-
         var pres = $pres({
           to: this.get('jid'),
           type: "subscribe"
@@ -40390,15 +40609,17 @@ return Backbone.BrowserStorage;
           pres.c("status").t(message).up();
         }
 
-        var nick = _converse.xmppstatus.get('fullname');
+        var nick = _converse.xmppstatus.get('nickname') || _converse.xmppstatus.get('fullname');
 
-        if (nick && nick !== "") {
+        if (nick) {
           pres.c('nick', {
             'xmlns': Strophe.NS.NICK
           }).t(nick).up();
         }
 
         _converse.connection.send(pres);
+
+        this.save('ask', "subscribe"); // ask === 'subscribe' Means we have asked to subscribe to them.
 
         return this;
       },
@@ -40427,7 +40648,8 @@ return Backbone.BrowserStorage;
           'to': this.get('jid')
         }));
 
-        this.destroy(); // Will cause removeFromRoster to be called.
+        this.removeFromRoster();
+        this.destroy();
       },
       unauthorize: function unauthorize(message) {
         /* Unauthorize this contact's presence subscription
@@ -40444,8 +40666,8 @@ return Backbone.BrowserStorage;
          *   (String) message - Optional message to send to the person being authorized
          */
         var pres = $pres({
-          to: this.get('jid'),
-          type: "subscribed"
+          'to': this.get('jid'),
+          'type': "subscribed"
         });
 
         if (message && message !== "") {
@@ -40591,7 +40813,7 @@ return Backbone.BrowserStorage;
         }, Strophe.NS.ROSTERX, 'message', null);
       },
       fetchRosterContacts: function fetchRosterContacts() {
-        var _this4 = this;
+        var _this3 = this;
 
         /* Fetches the roster contacts, first by trying the
          * sessionStorage cache, and if that's empty, then by querying
@@ -40601,7 +40823,7 @@ return Backbone.BrowserStorage;
          * fetched.
          */
         return new Promise(function (resolve, reject) {
-          _this4.fetch({
+          _this3.fetch({
             'add': true,
             'silent': true,
             success: function success(collection) {
@@ -40621,7 +40843,7 @@ return Backbone.BrowserStorage;
       subscribeToSuggestedItems: function subscribeToSuggestedItems(msg) {
         _.each(msg.querySelectorAll('item'), function (item) {
           if (item.getAttribute('action') === 'add') {
-            _converse.roster.addAndSubscribe(item.getAttribute('jid'), null, _converse.xmppstatus.get('fullname'));
+            _converse.roster.addAndSubscribe(item.getAttribute('jid'), _converse.xmppstatus.get('nickname') || _converse.xmppstatus.get('fullname'));
           }
         });
 
@@ -40647,7 +40869,7 @@ return Backbone.BrowserStorage;
           }
         };
 
-        this.addContact(jid, name, groups, attributes).then(handler, handler);
+        this.addContactToRoster(jid, name, groups, attributes).then(handler, handler);
       },
       sendContactAddIQ: function sendContactAddIQ(jid, name, groups, callback, errback) {
         /*  Send an IQ stanza to the XMPP server to add a new roster contact.
@@ -40675,8 +40897,8 @@ return Backbone.BrowserStorage;
 
         _converse.connection.sendIQ(iq, callback, errback);
       },
-      addContact: function addContact(jid, name, groups, attributes) {
-        var _this5 = this;
+      addContactToRoster: function addContactToRoster(jid, name, groups, attributes) {
+        var _this4 = this;
 
         /* Adds a RosterContact instance to _converse.roster and
          * registers the contact on the XMPP server.
@@ -40693,8 +40915,8 @@ return Backbone.BrowserStorage;
           groups = groups || [];
           name = _.isEmpty(name) ? jid : name;
 
-          _this5.sendContactAddIQ(jid, name, groups, function () {
-            var contact = _this5.create(_.assignIn({
+          _this4.sendContactAddIQ(jid, name, groups, function () {
+            var contact = _this4.create(_.assignIn({
               ask: undefined,
               fullname: name,
               groups: groups,
@@ -40715,7 +40937,7 @@ return Backbone.BrowserStorage;
           });
         });
       },
-      subscribeBack: function subscribeBack(bare_jid) {
+      subscribeBack: function subscribeBack(bare_jid, presence) {
         var contact = this.get(bare_jid);
 
         if (contact instanceof _converse.RosterContact) {
@@ -40728,7 +40950,9 @@ return Backbone.BrowserStorage;
             }
           };
 
-          this.addContact(bare_jid, '', [], {
+          var nickname = _.get(sizzle("nick[xmlns=\"".concat(Strophe.NS.NICK, "\"]"), presence).pop(), 'textContent', null);
+
+          this.addContactToRoster(bare_jid, nickname, [], {
             'subscription': 'from'
           }).then(handler, handler);
         }
@@ -40787,7 +41011,7 @@ return Backbone.BrowserStorage;
         return true;
       },
       fetchFromServer: function fetchFromServer() {
-        var _this6 = this;
+        var _this5 = this;
 
         /* Fetch the roster from the XMPP server */
         return new Promise(function (resolve, reject) {
@@ -40798,7 +41022,7 @@ return Backbone.BrowserStorage;
             xmlns: Strophe.NS.ROSTER
           });
 
-          var callback = _.flow(_this6.onReceivedFromServer.bind(_this6), resolve);
+          var callback = _.flow(_this5.onReceivedFromServer.bind(_this5), resolve);
 
           var errback = function errback(iq) {
             var errmsg = "Error while trying to fetch roster from the server";
@@ -40842,17 +41066,17 @@ return Backbone.BrowserStorage;
           }
 
           this.create({
-            ask: ask,
-            fullname: item.getAttribute("name") || jid,
-            groups: groups,
-            jid: jid,
-            subscription: subscription
+            'ask': ask,
+            'fullname': item.getAttribute("name") || jid,
+            'groups': groups,
+            'jid': jid,
+            'subscription': subscription
           }, {
             sort: false
           });
         } else {
           if (subscription === "remove") {
-            return contact.destroy(); // will trigger removeFromRoster
+            return contact.destroy();
           } // We only find out about requesting contacts via the
           // presence handler, so if we receive a contact
           // here, we know they aren't requesting anymore.
@@ -40860,10 +41084,10 @@ return Backbone.BrowserStorage;
 
 
           contact.save({
-            subscription: subscription,
-            ask: ask,
-            requesting: null,
-            groups: groups
+            'subscription': subscription,
+            'ask': ask,
+            'requesting': null,
+            'groups': groups
           });
         }
       },
@@ -40873,13 +41097,14 @@ return Backbone.BrowserStorage;
          * Note: this method gets completely overridden by converse-vcard.js
          */
         var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from')),
-            nick_el = presence.querySelector("nick[xmlns=\"".concat(Strophe.NS.NICK, "\"]"));
+            nickname = _.get(sizzle("nick[xmlns=\"".concat(Strophe.NS.NICK, "\"]"), presence).pop(), 'textContent', null);
+
         var user_data = {
-          jid: bare_jid,
-          subscription: 'none',
-          ask: null,
-          requesting: true,
-          fullname: nick_el && nick_el.textContent || bare_jid
+          'jid': bare_jid,
+          'subscription': 'none',
+          'ask': null,
+          'requesting': true,
+          'fullname': nickname
         };
         this.create(user_data);
 
@@ -40896,7 +41121,7 @@ return Backbone.BrowserStorage;
 
         if (_converse.auto_subscribe) {
           if (!contact || contact.get('subscription') !== 'to') {
-            this.subscribeBack(bare_jid);
+            this.subscribeBack(bare_jid, presence);
           } else {
             contact.authorize();
           }
@@ -40942,6 +41167,24 @@ return Backbone.BrowserStorage;
             }
           }
 
+          if (_converse.jid === jid && presence_type === 'unavailable') {
+            // XXX: We've received an "unavailable" presence from our
+            // own resource. Apparently this happens due to a
+            // Prosody bug, whereby we send an IQ stanza to remove
+            // a roster contact, and Prosody then sends
+            // "unavailable" globally, instead of directed to the
+            // particular user that's removed.
+            //
+            // Here is the bug report: https://prosody.im/issues/1121
+            //
+            // I'm not sure whether this might legitimately happen
+            // in other cases.
+            //
+            // As a workaround for now we simply send our presence again,
+            // otherwise we're treated as offline.
+            _converse.xmppstatus.sendPresence();
+          }
+
           return;
         } else if (sizzle("query[xmlns=\"".concat(Strophe.NS.MUC, "\"]"), presence).length) {
           return; // Ignore MUC
@@ -40982,7 +41225,7 @@ return Backbone.BrowserStorage;
     this.RosterGroups = Backbone.Collection.extend({
       model: _converse.RosterGroup,
       fetchRosterGroups: function fetchRosterGroups() {
-        var _this7 = this;
+        var _this6 = this;
 
         /* Fetches all the roster groups from sessionStorage.
          *
@@ -40990,7 +41233,7 @@ return Backbone.BrowserStorage;
          * returned.
          */
         return new Promise(function (resolve, reject) {
-          _this7.fetch({
+          _this6.fetch({
             silent: true,
             // We need to first have all groups before
             // we can start positioning them, so we set
@@ -41013,20 +41256,30 @@ return Backbone.BrowserStorage;
     });
     this.connfeedback = new this.ConnectionFeedback();
     this.XMPPStatus = Backbone.Model.extend({
+      defaults: function defaults() {
+        return {
+          "status": _converse.default_state,
+          "jid": _converse.bare_jid,
+          "nickname": _converse.nickname,
+          "vcard_updated": null
+        };
+      },
       initialize: function initialize() {
-        var _this8 = this;
+        var _this7 = this;
 
-        this.set({
-          'status': this.getStatus()
+        this.on('change:status', function (item) {
+          var status = _this7.get('status');
+
+          _this7.sendPresence(status);
+
+          _converse.emit('statusChanged', status);
         });
-        this.on('change', function (item) {
-          if (_.has(item.changed, 'status')) {
-            _converse.emit('statusChanged', _this8.get('status'));
-          }
+        this.on('change:status_message', function () {
+          var status_message = _this7.get('status_message');
 
-          if (_.has(item.changed, 'status_message')) {
-            _converse.emit('statusMessageChanged', _this8.get('status_message'));
-          }
+          _this7.sendPresence(_this7.get('status'), status_message);
+
+          _converse.emit('statusMessageChanged', status_message);
         });
       },
       constructPresence: function constructPresence(type, status_message) {
@@ -41058,36 +41311,6 @@ return Backbone.BrowserStorage;
       },
       sendPresence: function sendPresence(type, status_message) {
         _converse.connection.send(this.constructPresence(type, status_message));
-      },
-      setStatus: function setStatus(value) {
-        this.sendPresence(value);
-        this.save({
-          'status': value
-        });
-      },
-      getStatus: function getStatus() {
-        return this.get('status') || _converse.default_state;
-      },
-      setStatusMessage: function setStatusMessage(status_message) {
-        this.sendPresence(this.getStatus(), status_message);
-        this.save({
-          'status_message': status_message
-        });
-
-        if (this.xhr_custom_status) {
-          var xhr = new XMLHttpRequest();
-          xhr.open('POST', this.xhr_custom_status_url, true);
-          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-          xhr.send({
-            'msg': status_message
-          });
-        }
-
-        var prev_status = this.get('status_message');
-
-        if (prev_status === status_message) {
-          this.trigger("update-status-ui", this);
-        }
       }
     });
 
@@ -41499,23 +41722,17 @@ return Backbone.BrowserStorage;
     },
     'contacts': {
       'get': function get(jids) {
-        var _transform = function _transform(jid) {
-          var contact = _converse.roster.get(Strophe.getBareJidFromJid(jid));
-
-          if (contact) {
-            return contact.attributes;
-          }
-
-          return null;
+        var _getter = function _getter(jid) {
+          return _converse.roster.get(Strophe.getBareJidFromJid(jid)) || null;
         };
 
         if (_.isUndefined(jids)) {
           jids = _converse.roster.pluck('jid');
         } else if (_.isString(jids)) {
-          return _transform(jids);
+          return _getter(jids);
         }
 
-        return _.map(jids, _transform);
+        return _.map(jids, _getter);
       },
       'add': function add(jid, name) {
         if (!_.isString(jid) || !_.includes(jid, '@')) {
@@ -41602,727 +41819,1782 @@ return Backbone.BrowserStorage;
   return window.converse;
 });
 //# sourceMappingURL=converse-core.js.map;
-/*!
- * Backbone.Overview 
- *
- * Copyright (c) 2018, JC Brand <jc@opkode.com>
- * Licensed under the Mozilla Public License (MPL) 
- */
+// Native Javascript for Bootstrap 4 v2.0.21 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
-    define('backbone.overview',["underscore", "backbone"], factory);
+    // AMD support:
+    define('bootstrap',[], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    // CommonJS-like:
+    module.exports = factory();
   } else {
-    // RequireJS isn't being used.
-    // Assume underscore and backbone are loaded in <script> tags
-    factory(_ || root._, Backbone || root.Backbone);
+    // Browser globals (root is window)
+    var bsn = factory();
+    root.Alert = bsn.Alert;
+    root.Button = bsn.Button;
+    root.Carousel = bsn.Carousel;
+    root.Collapse = bsn.Collapse;
+    root.Dropdown = bsn.Dropdown;
+    root.Modal = bsn.Modal;
+    root.Popover = bsn.Popover;
+    root.ScrollSpy = bsn.ScrollSpy;
+    root.Tab = bsn.Tab;
+    root.Tooltip = bsn.Tooltip;
   }
-})(this, function (_, Backbone) {
+}(this, function () {
+  
+  /* Native Javascript for Bootstrap 4 | Internal Utility Functions
+  ----------------------------------------------------------------*/
   "use strict";
-
-  var View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
-
-  var Overview = Backbone.Overview = function (options) {
-    /* An Overview is a View that contains and keeps track of sub-views.
-     * Kind of like what a Collection is to a Model.
-     */
-    var that = this;
-    this.views = {};
-    this.keys = _.partial(_.keys, this.views);
-    this.getAll = _.partial(_.identity, this.views);
-
-    this.get = function (id) {
-      return that.views[id];
-    };
-
-    this.xget = function (id) {
-      /* Exclusive get. Returns all instances except the given id. */
-      return _.filter(that.views, function (view, vid) {
-        return vid !== id;
-      });
-    };
-
-    this.add = function (id, view) {
-      that.views[id] = view;
-      return view;
-    };
-
-    this.remove = function (id) {
-      if (typeof id === "undefined") {
-        new View().remove.apply(that);
-      }
-
-      var view = that.views[id];
-
-      if (view) {
-        delete that.views[id];
-        view.remove();
-        return view;
-      }
-    };
-
-    this.removeAll = function () {
-      _.each(_.keys(that.views), that.remove);
-
-      return that;
-    };
-
-    View.apply(this, Array.prototype.slice.apply(arguments));
-  };
-
-  var methods = ['all', 'any', 'chain', 'collect', 'contains', 'detect', 'difference', 'drop', 'each', 'every', 'filter', 'find', 'first', 'foldl', 'foldr', 'forEach', 'head', 'include', 'indexOf', 'initial', 'inject', 'invoke', 'isEmpty', 'last', 'lastIndexOf', 'map', 'max', 'min', 'reduce', 'reduceRight', 'reject', 'rest', 'sample', 'select', 'shuffle', 'size', 'some', 'sortBy', 'tail', 'take', 'toArray', 'without']; // Mix in each Underscore method as a proxy to `Overview#view`.
-
-  _.each(methods, function (method) {
-    Overview.prototype[method] = function () {
-      var args = Array.prototype.slice.call(arguments);
-      args.unshift(this.views);
-      return _[method].apply(_, args);
-    };
-  });
-
-  _.extend(Overview.prototype, View.prototype);
-
-  Overview.extend = View.extend;
-  Backbone.OrderedListView = Backbone.Overview.extend({
-    // The `listItems` attribute denotes the path (from this View) to the
-    // list of items.
-    listItems: 'model',
-    // The `sortEvent` attribute specifies the event which should cause the
-    // ordered list to be sorted.
-    sortEvent: 'change',
-    // The `listSelector` is the selector used to query for the DOM list
-    // element which contains the ordered items.
-    listSelector: '.ordered-items',
-    // The `itemView` is constructor which should be called to create a
-    // View for a new item.
-    ItemView: undefined,
-    initialize: function initialize() {
-      this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
-      this.items = _.get(this, this.listItems);
-      this.items.on('add', this.createItemView, this);
-      this.items.on('add', this.sortEventually, this);
-      this.items.on(this.sortEvent, this.sortEventually, this);
+  
+  // globals
+  var globalObject = typeof global !== 'undefined' ? global : this||window,
+    DOC = document, HTML = DOC.documentElement, body = 'body', // allow the library to be used in <head>
+  
+    // Native Javascript for Bootstrap Global Object
+    BSN = globalObject.BSN = {},
+    supports = BSN.supports = [],
+  
+    // function toggle attributes
+    dataToggle    = 'data-toggle',
+    dataDismiss   = 'data-dismiss',
+    dataSpy       = 'data-spy',
+    dataRide      = 'data-ride',
+  
+    // components
+    stringAlert     = 'Alert',
+    stringButton    = 'Button',
+    stringCarousel  = 'Carousel',
+    stringCollapse  = 'Collapse',
+    stringDropdown  = 'Dropdown',
+    stringModal     = 'Modal',
+    stringPopover   = 'Popover',
+    stringScrollSpy = 'ScrollSpy',
+    stringTab       = 'Tab',
+    stringTooltip   = 'Tooltip',
+  
+    // options DATA API
+    databackdrop      = 'data-backdrop',
+    dataKeyboard      = 'data-keyboard',
+    dataTarget        = 'data-target',
+    dataInterval      = 'data-interval',
+    dataHeight        = 'data-height',
+    dataPause         = 'data-pause',
+    dataTitle         = 'data-title',
+    dataOriginalTitle = 'data-original-title',
+    dataOriginalText  = 'data-original-text',
+    dataDismissible   = 'data-dismissible',
+    dataTrigger       = 'data-trigger',
+    dataAnimation     = 'data-animation',
+    dataContainer     = 'data-container',
+    dataPlacement     = 'data-placement',
+    dataDelay         = 'data-delay',
+    dataOffsetTop     = 'data-offset-top',
+    dataOffsetBottom  = 'data-offset-bottom',
+  
+    // option keys
+    backdrop = 'backdrop', keyboard = 'keyboard', delay = 'delay',
+    content = 'content', target = 'target',
+    interval = 'interval', pause = 'pause', animation = 'animation',
+    placement = 'placement', container = 'container',
+  
+    // box model
+    offsetTop    = 'offsetTop',      offsetBottom   = 'offsetBottom',
+    offsetLeft   = 'offsetLeft',
+    scrollTop    = 'scrollTop',      scrollLeft     = 'scrollLeft',
+    clientWidth  = 'clientWidth',    clientHeight   = 'clientHeight',
+    offsetWidth  = 'offsetWidth',    offsetHeight   = 'offsetHeight',
+    innerWidth   = 'innerWidth',     innerHeight    = 'innerHeight',
+    scrollHeight = 'scrollHeight',   height         = 'height',
+  
+    // aria
+    ariaExpanded = 'aria-expanded',
+    ariaHidden   = 'aria-hidden',
+  
+    // event names
+    clickEvent    = 'click',
+    hoverEvent    = 'hover',
+    keydownEvent  = 'keydown',
+    keyupEvent    = 'keyup', 
+    resizeEvent   = 'resize',
+    scrollEvent   = 'scroll',
+    // originalEvents
+    showEvent     = 'show',
+    shownEvent    = 'shown',
+    hideEvent     = 'hide',
+    hiddenEvent   = 'hidden',
+    closeEvent    = 'close',
+    closedEvent   = 'closed',
+    slidEvent     = 'slid',
+    slideEvent    = 'slide',
+    changeEvent   = 'change',
+  
+    // other
+    getAttribute           = 'getAttribute',
+    setAttribute           = 'setAttribute',
+    hasAttribute           = 'hasAttribute',
+    createElement          = 'createElement',
+    appendChild            = 'appendChild',
+    innerHTML              = 'innerHTML',  
+    getElementsByTagName   = 'getElementsByTagName',
+    preventDefault         = 'preventDefault',
+    getBoundingClientRect  = 'getBoundingClientRect',
+    querySelectorAll       = 'querySelectorAll',
+    getElementsByCLASSNAME = 'getElementsByClassName',
+  
+    indexOf      = 'indexOf',
+    parentNode   = 'parentNode',
+    length       = 'length',
+    toLowerCase  = 'toLowerCase',
+    Transition   = 'Transition',
+    Webkit       = 'Webkit',
+    style        = 'style',
+    push         = 'push',
+    tabindex     = 'tabindex',
+    contains     = 'contains',
+  
+    active     = 'active',
+    showClass  = 'show',
+    collapsing = 'collapsing',
+    disabled   = 'disabled',
+    loading    = 'loading',
+    left       = 'left',
+    right      = 'right',
+    top        = 'top',
+    bottom     = 'bottom',
+  
+    // tooltip / popover
+    mouseHover = ('onmouseleave' in DOC) ? [ 'mouseenter', 'mouseleave'] : [ 'mouseover', 'mouseout' ],
+    tipPositions = /\b(top|bottom|left|right)+/,
+    
+    // modal
+    modalOverlay = 0,
+    fixedTop = 'fixed-top',
+    fixedBottom = 'fixed-bottom',
+    
+    // transitionEnd since 2.0.4
+    supportTransitions = Webkit+Transition in HTML[style] || Transition[toLowerCase]() in HTML[style],
+    transitionEndEvent = Webkit+Transition in HTML[style] ? Webkit[toLowerCase]()+Transition+'End' : Transition[toLowerCase]()+'end',
+  
+    // set new focus element since 2.0.3
+    setFocus = function(element){
+      element.focus ? element.focus() : element.setActive();
     },
-    createItemView: function createItemView(item) {
-      var item_view = this.get(item.get('id'));
-
-      if (!item_view) {
-        item_view = new this.ItemView({
-          model: item
-        });
-        this.add(item.get('id'), item_view);
-      } else {
-        item_view.model = item;
-        item_view.initialize();
-      }
-
-      item_view.render();
-      return item_view;
+  
+    // class manipulation, since 2.0.0 requires polyfill.js
+    addClass = function(element,classNAME) {
+      element.classList.add(classNAME);
     },
-    sortAndPositionAllItems: function sortAndPositionAllItems() {
-      var _this = this;
-
-      this.items.sort();
-      this.items.each(function (item) {
-        if (_.isUndefined(_this.get(item.get('id')))) {
-          _this.createItemView(item);
+    removeClass = function(element,classNAME) {
+      element.classList.remove(classNAME);
+    },
+    hasClass = function(element,classNAME){ // since 2.0.0
+      return element.classList[contains](classNAME);
+    },
+  
+    // selection methods
+    getElementsByClassName = function(element,classNAME) { // returns Array
+      return [].slice.call(element[getElementsByCLASSNAME]( classNAME ));
+    },
+    queryElement = function (selector, parent) {
+      var lookUp = parent ? parent : DOC;
+      return typeof selector === 'object' ? selector : lookUp.querySelector(selector);
+    },
+    getClosest = function (element, selector) { //element is the element and selector is for the closest parent element to find
+      // source http://gomakethings.com/climbing-up-and-down-the-dom-tree-with-vanilla-javascript/
+      var firstChar = selector.charAt(0), selectorSubstring = selector.substr(1);
+      if ( firstChar === '.' ) {// If selector is a class
+        for ( ; element && element !== DOC; element = element[parentNode] ) { // Get closest match
+          if ( queryElement(selector,element[parentNode]) !== null && hasClass(element,selectorSubstring) ) { return element; }
         }
-
-        _this.positionItem(item, _this.el.querySelector(_this.listSelector));
+      } else if ( firstChar === '#' ) { // If selector is an ID
+        for ( ; element && element !== DOC; element = element[parentNode] ) { // Get closest match
+          if ( element.id === selectorSubstring ) { return element; }
+        }
+      }
+      return false;
+    },
+  
+    // event attach jQuery style / trigger  since 1.2.0
+    on = function (element, event, handler) {
+      element.addEventListener(event, handler, false);
+    },
+    off = function(element, event, handler) {
+      element.removeEventListener(event, handler, false);
+    },
+    one = function (element, event, handler) { // one since 2.0.4
+      on(element, event, function handlerWrapper(e){
+        handler(e);
+        off(element, event, handlerWrapper);
       });
     },
-    positionItem: function positionItem(item, list_el) {
-      /* Place the View's DOM element in the correct alphabetical
-       * position in the list.
-       *
-       * IMPORTANT: there's an important implicit assumption being
-       * made here. And that is that initially this method gets called
-       * for each item in the right positional order.
-       *
-       * In other words, it gets called for the 0th, then the
-       * 1st, then the 2nd, 3rd and so on.
-       *
-       * That's why we call it in the "success" handler after
-       * fetching the items, so that we know we have ALL of
-       * them and that they're sorted.
-       */
-      var view = this.get(item.get('id')),
-          index = this.items.indexOf(item);
-
-      if (index === 0) {
-        list_el.insertAdjacentElement('afterbegin', view.el);
-      } else if (index === this.items.length - 1) {
-        list_el.insertAdjacentElement('beforeend', view.el);
-      } else {
-        var neighbour_el = list_el.querySelector('li:nth-child(' + index + ')');
-        neighbour_el.insertAdjacentElement('afterend', view.el);
+    emulateTransitionEnd = function(element,handler){ // emulateTransitionEnd since 2.0.4
+      if (supportTransitions) { one(element, transitionEndEvent, function(e){ handler(e); }); }
+      else { handler(); }
+    },
+    bootstrapCustomEvent = function (eventName, componentName, related) {
+      var OriginalCustomEvent = new CustomEvent( eventName + '.bs.' + componentName);
+      OriginalCustomEvent.relatedTarget = related;
+      this.dispatchEvent(OriginalCustomEvent);
+    },
+  
+    // tooltip / popover stuff
+    getScroll = function() { // also Affix and ScrollSpy uses it
+      return {
+        y : globalObject.pageYOffset || HTML[scrollTop],
+        x : globalObject.pageXOffset || HTML[scrollLeft]
       }
-
-      return view;
+    },
+    styleTip = function(link,element,position,parent) { // both popovers and tooltips (target,tooltip,placement,elementToAppendTo)
+      var elementDimensions = { w : element[offsetWidth], h: element[offsetHeight] },
+          windowWidth = (HTML[clientWidth] || DOC[body][clientWidth]),
+          windowHeight = (HTML[clientHeight] || DOC[body][clientHeight]),
+          rect = link[getBoundingClientRect](),
+          scroll = parent === DOC[body] ? getScroll() : { x: parent[offsetLeft] + parent[scrollLeft], y: parent[offsetTop] + parent[scrollTop] },
+          linkDimensions = { w: rect[right] - rect[left], h: rect[bottom] - rect[top] },
+          arrow = queryElement('.arrow',element),
+          arrowWidth = arrow[offsetWidth], isPopover = hasClass(element,'popover'),
+          topPosition, leftPosition, arrowTop, arrowLeft,
+  
+          halfTopExceed = rect[top] + linkDimensions.h/2 - elementDimensions.h/2 < 0,
+          halfLeftExceed = rect[left] + linkDimensions.w/2 - elementDimensions.w/2 < 0,
+          halfRightExceed = rect[left] + elementDimensions.w/2 + linkDimensions.w/2 >= windowWidth,
+          halfBottomExceed = rect[top] + elementDimensions.h/2 + linkDimensions.h/2 >= windowHeight,
+          topExceed = rect[top] - elementDimensions.h < 0,
+          leftExceed = rect[left] - elementDimensions.w < 0,
+          bottomExceed = rect[top] + elementDimensions.h + linkDimensions.h >= windowHeight,
+          rightExceed = rect[left] + elementDimensions.w + linkDimensions.w >= windowWidth;
+  
+      // recompute position
+      position = (position === left || position === right) && leftExceed && rightExceed ? top : position; // first, when both left and right limits are exceeded, we fall back to top|bottom
+      position = position === top && topExceed ? bottom : position;
+      position = position === bottom && bottomExceed ? top : position;
+      position = position === left && leftExceed ? right : position;
+      position = position === right && rightExceed ? left : position;
+      
+      // apply styling to tooltip or popover
+      if ( position === left || position === right ) { // secondary|side positions
+        if ( position === left ) { // LEFT
+          leftPosition = rect[left] + scroll.x - elementDimensions.w;
+        } else { // RIGHT
+          leftPosition = rect[left] + scroll.x + linkDimensions.w;
+        }
+  
+        // adjust top and arrow
+        if (halfTopExceed) {
+          topPosition = rect[top] + scroll.y;
+          arrowTop = linkDimensions.h/2;
+        } else if (halfBottomExceed) {
+          topPosition = rect[top] + scroll.y - elementDimensions.h + linkDimensions.h;
+          arrowTop = elementDimensions.h - linkDimensions.h/2;
+        } else {
+          topPosition = rect[top] + scroll.y - elementDimensions.h/2 + linkDimensions.h/2;
+          arrowTop = elementDimensions.h/2;
+        }
+      } else if ( position === top || position === bottom ) { // primary|vertical positions
+        if ( position === top) { // TOP
+          topPosition =  rect[top] + scroll.y - elementDimensions.h;
+        } else { // BOTTOM
+          topPosition = rect[top] + scroll.y + linkDimensions.h;
+        }
+        // adjust left | right and also the arrow
+        if (halfLeftExceed) {
+          leftPosition = 0;
+          arrowLeft = rect[left] + linkDimensions.w/2;
+        } else if (halfRightExceed) {
+          leftPosition = windowWidth - elementDimensions.w*1.01;
+          arrowLeft = elementDimensions.w - ( windowWidth - rect[left] ) + linkDimensions.w/2;
+        } else {
+          leftPosition = rect[left] + scroll.x - elementDimensions.w/2 + linkDimensions.w/2;
+          arrowLeft = elementDimensions.w/2;
+        }
+      }
+  
+      // fixing some CSS bug with Bootstrap 4 alpha
+      topPosition = position === top && isPopover ? topPosition - arrowWidth : topPosition;
+      leftPosition = position === left && isPopover ? leftPosition - arrowWidth : leftPosition;
+  
+      // apply style to tooltip/popover and it's arrow
+      element[style][top] = topPosition + 'px';
+      element[style][left] = leftPosition + 'px';
+  
+      arrowTop && (arrow[style][top] = arrowTop + 'px');
+      arrowLeft && (arrow[style][left] = arrowLeft + 'px');
+  
+      element.className[indexOf](position) === -1 && (element.className = element.className.replace(tipPositions,position));
+    };
+  
+  BSN.version = '2.0.21';
+  
+  /* Native Javascript for Bootstrap 4 | Alert
+  -------------------------------------------*/
+  
+  // ALERT DEFINITION
+  // ================
+  var Alert = function( element ) {
+    
+    // initialization element
+    element = queryElement(element);
+  
+    // bind, target alert, duration and stuff
+    var self = this, component = 'alert',
+      alert = getClosest(element,'.'+component),
+      triggerHandler = function(){ hasClass(alert,'fade') ? emulateTransitionEnd(alert,transitionEndHandler) : transitionEndHandler(); },
+      // handlers
+      clickHandler = function(e){
+        alert = getClosest(e[target],'.'+component);
+        element = queryElement('['+dataDismiss+'="'+component+'"]',alert);
+        element && alert && (element === e[target] || element[contains](e[target])) && self.close();
+      },
+      transitionEndHandler = function(){
+        bootstrapCustomEvent.call(alert, closedEvent, component);
+        off(element, clickEvent, clickHandler); // detach it's listener
+        alert[parentNode].removeChild(alert);
+      };
+    
+    // public method
+    this.close = function() {
+      if ( alert && element && hasClass(alert,showClass) ) {
+        bootstrapCustomEvent.call(alert, closeEvent, component);
+        removeClass(alert,showClass);
+        alert && triggerHandler();
+      }
+    };
+  
+    // init
+    if ( !(stringAlert in element ) ) { // prevent adding event handlers twice
+      on(element, clickEvent, clickHandler);
     }
-  });
-  return Backbone.Overview;
-});
-
-//# sourceMappingURL=backbone.overview.js.map;
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
-//
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
-
-/*global define */
-(function (root, factory) {
-  define('converse-chatboxes',["converse-core", "backbone.overview"], factory);
-})(this, function (converse) {
-  "use strict";
-
-  var _converse$env = converse.env,
-      Backbone = _converse$env.Backbone,
-      Promise = _converse$env.Promise,
-      Strophe = _converse$env.Strophe,
-      b64_sha1 = _converse$env.b64_sha1,
-      moment = _converse$env.moment,
-      utils = _converse$env.utils,
-      _ = _converse$env._;
-  converse.plugins.add('converse-chatboxes', {
-    overrides: {
-      // Overrides mentioned here will be picked up by converse.js's
-      // plugin architecture they will replace existing methods on the
-      // relevant objects or classes.
-      disconnect: function disconnect() {
-        var _converse = this.__super__._converse;
-
-        _converse.chatboxviews.closeAllChatBoxes();
-
-        return this.__super__.disconnect.apply(this, arguments);
+    element[stringAlert] = self;
+  };
+  
+  // ALERT DATA API
+  // ==============
+  supports[push]([stringAlert, Alert, '['+dataDismiss+'="alert"]']);
+  
+  
+  /* Native Javascript for Bootstrap 4 | Button
+  ---------------------------------------------*/
+  
+  // BUTTON DEFINITION
+  // ===================
+  var Button = function( element ) {
+  
+    // initialization element
+    element = queryElement(element);
+  
+    // constant
+    var toggled = false, // toggled makes sure to prevent triggering twice the change.bs.button events
+  
+        // strings
+        component = 'button',
+        checked = 'checked',
+        reset = 'reset',
+        LABEL = 'LABEL',
+        INPUT = 'INPUT',
+  
+      // private methods
+      keyHandler = function(e){ 
+        var key = e.which || e.keyCode;
+        key === 32 && e[target] === DOC.activeElement && toggle(e);
       },
-      logOut: function logOut() {
-        var _converse = this.__super__._converse;
-
-        _converse.chatboxviews.closeAllChatBoxes();
-
-        return this.__super__.logOut.apply(this, arguments);
+      preventScroll = function(e){ 
+        var key = e.which || e.keyCode;
+        key === 32 && e[preventDefault]();
       },
-      initStatus: function initStatus() {
-        var _converse = this.__super__._converse;
-
-        _converse.chatboxviews.closeAllChatBoxes();
-
-        return this.__super__.initStatus.apply(this, arguments);
-      },
-      onStatusInitialized: function onStatusInitialized() {
-        var _converse = this.__super__._converse;
-
-        _converse.chatboxes.onConnected();
-
-        return this.__super__.onStatusInitialized.apply(this, arguments);
-      }
-    },
-    initialize: function initialize() {
-      /* The initialize function gets called as soon as the plugin is
-       * loaded by converse.js's plugin machinery.
-       */
-      var _converse = this._converse;
-
-      _converse.api.promises.add(['chatBoxesFetched', 'chatBoxesInitialized']);
-
-      function openChat(jid) {
-        if (!utils.isValidJID(jid)) {
-          return converse.log("Invalid JID \"".concat(jid, "\" provided in URL fragment"), Strophe.LogLevel.WARN);
-        }
-
-        Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(function () {
-          _converse.api.chats.open(jid);
-        });
-      }
-
-      _converse.router.route('converse/chat?jid=:jid', openChat);
-
-      _converse.Message = Backbone.Model.extend({
-        defaults: function defaults() {
-          return {
-            msgid: _converse.connection.getUniqueId()
-          };
-        }
-      });
-      _converse.Messages = Backbone.Collection.extend({
-        model: _converse.Message,
-        comparator: 'time'
-      });
-      _converse.ChatBox = Backbone.Model.extend({
-        defaults: {
-          'type': 'chatbox',
-          'show_avatar': true,
-          'bookmarked': false,
-          'chat_state': undefined,
-          'num_unread': 0,
-          'url': ''
-        },
-        initialize: function initialize() {
-          this.messages = new _converse.Messages();
-          this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](b64_sha1("converse.messages".concat(this.get('jid')).concat(_converse.bare_jid)));
-          this.save({
-            // The chat_state will be set to ACTIVE once the chat box is opened
-            // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
-            'box_id': b64_sha1(this.get('jid')),
-            'time_opened': this.get('time_opened') || moment().valueOf(),
-            'user_id': Strophe.getNodeFromJid(this.get('jid'))
-          });
-        },
-        getMessageBody: function getMessageBody(message) {
-          var type = message.getAttribute('type');
-          return type === 'error' ? _.propertyOf(message.querySelector('error text'))('textContent') : _.propertyOf(message.querySelector('body'))('textContent');
-        },
-        getMessageAttributes: function getMessageAttributes(message, delay, original_stanza) {
-          /* Parses a passed in message stanza and returns an object
-           * of attributes.
-           *
-           * Parameters:
-           *    (XMLElement) message - The message stanza
-           *    (XMLElement) delay - The <delay> node from the
-           *      stanza, if there was one.
-           *    (XMLElement) original_stanza - The original stanza,
-           *      that contains the message stanza, if it was
-           *      contained, otherwise it's the message stanza itself.
-           */
-          var _converse = this.__super__._converse,
-              __ = _converse.__;
-          delay = delay || message.querySelector('delay');
-          var type = message.getAttribute('type'),
-              body = this.getMessageBody(message);
-
-          var delayed = !_.isNull(delay),
-              is_groupchat = type === 'groupchat',
-              chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
-
-          var from;
-
-          if (is_groupchat) {
-            from = Strophe.unescapeNode(Strophe.getResourceFromJid(message.getAttribute('from')));
+      toggle = function(e) {
+        var label = e[target].tagName === LABEL ? e[target] : e[target][parentNode].tagName === LABEL ? e[target][parentNode] : null; // the .btn label
+        
+        if ( !label ) return; //react if a label or its immediate child is clicked
+  
+        var eventTarget = e[target], // the button itself, the target of the handler function
+          labels = getElementsByClassName(eventTarget[parentNode],'btn'), // all the button group buttons
+          input = label[getElementsByTagName](INPUT)[0];
+  
+        if ( !input ) return; //return if no input found
+  
+        // manage the dom manipulation
+        if ( input.type === 'checkbox' ) { //checkboxes
+          if ( !input[checked] ) {
+            addClass(label,active);
+            input[getAttribute](checked);
+            input[setAttribute](checked,checked);
+            input[checked] = true;
           } else {
-            from = Strophe.getBareJidFromJid(message.getAttribute('from'));
+            removeClass(label,active);
+            input[getAttribute](checked);
+            input.removeAttribute(checked);
+            input[checked] = false;
           }
-
-          var time = delayed ? delay.getAttribute('stamp') : moment().format();
-          var sender, fullname;
-
-          if (is_groupchat && from === this.get('nick') || !is_groupchat && from === _converse.bare_jid) {
-            sender = 'me';
-            fullname = _converse.xmppstatus.get('fullname') || from;
-          } else {
-            sender = 'them';
-            fullname = this.get('fullname') || from;
+  
+          if (!toggled) { // prevent triggering the event twice
+            toggled = true;
+            bootstrapCustomEvent.call(input, changeEvent, component); //trigger the change for the input
+            bootstrapCustomEvent.call(element, changeEvent, component); //trigger the change for the btn-group
           }
-
-          var spoiler = message.querySelector("spoiler[xmlns=\"".concat(Strophe.NS.SPOILER, "\"]"));
-          var attrs = {
-            'type': type,
-            'chat_state': chat_state,
-            'delayed': delayed,
-            'fullname': fullname,
-            'message': body || undefined,
-            'msgid': message.getAttribute('id'),
-            'sender': sender,
-            'time': time,
-            'is_spoiler': !_.isNull(spoiler)
-          };
-
-          if (spoiler) {
-            attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
-          }
-
-          return attrs;
-        },
-        createMessage: function createMessage(message, delay, original_stanza) {
-          /* Create a Backbone.Message object inside this chat box
-           * based on the identified message stanza.
-           */
-          return this.messages.create(this.getMessageAttributes.apply(this, arguments));
-        },
-        newMessageWillBeHidden: function newMessageWillBeHidden() {
-          /* Returns a boolean to indicate whether a newly received
-           * message will be visible to the user or not.
-           */
-          return this.get('hidden') || this.get('minimized') || this.isScrolledUp() || _converse.windowState === 'hidden';
-        },
-        incrementUnreadMsgCounter: function incrementUnreadMsgCounter(stanza) {
-          /* Given a newly received message, update the unread counter if
-           * necessary.
-           */
-          if (_.isNull(stanza.querySelector('body'))) {
-            return; // The message has no text
-          }
-
-          if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
-            this.save({
-              'num_unread': this.get('num_unread') + 1
-            });
-
-            _converse.incrementMsgCounter();
-          }
-        },
-        clearUnreadMsgCounter: function clearUnreadMsgCounter() {
-          this.save({
-            'num_unread': 0
-          });
-        },
-        isScrolledUp: function isScrolledUp() {
-          return this.get('scrolled', true);
         }
-      });
-      _converse.ChatBoxes = Backbone.Collection.extend({
-        comparator: 'time_opened',
-        model: function model(attrs, options) {
-          return new _converse.ChatBox(attrs, options);
-        },
-        registerMessageHandler: function registerMessageHandler() {
-          _converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
-
-          _converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
-        },
-        chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
-          return true;
-        },
-        onChatBoxesFetched: function onChatBoxesFetched(collection) {
-          var _this = this;
-
-          /* Show chat boxes upon receiving them from sessionStorage
-          *
-          * This method gets overridden entirely in src/converse-controlbox.js
-          * if the controlbox plugin is active.
-          */
-          collection.each(function (chatbox) {
-            if (_this.chatBoxMayBeShown(chatbox)) {
-              chatbox.trigger('show');
-            }
-          });
-
-          _converse.emit('chatBoxesFetched');
-        },
-        onConnected: function onConnected() {
-          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.chatboxes-".concat(_converse.bare_jid)));
-          this.registerMessageHandler();
-          this.fetch({
-            add: true,
-            success: this.onChatBoxesFetched.bind(this)
-          });
-        },
-        onErrorMessage: function onErrorMessage(message) {
-          /* Handler method for all incoming error message stanzas
-          */
-          // TODO: we can likely just reuse "onMessage" below
-          var from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
-
-          if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
-            return true;
-          } // Get chat box, but only create a new one when the message has a body.
-
-
-          var chatbox = this.getChatBox(from_jid);
-
-          if (!chatbox) {
-            return true;
-          }
-
-          chatbox.createMessage(message, null, message);
-          return true;
-        },
-        onMessage: function onMessage(message) {
-          /* Handler method for all incoming single-user chat "message"
-           * stanzas.
-           *
-           * Parameters:
-           *    (XMLElement) message - The incoming message stanza
-           */
-          var contact_jid,
-              delay,
-              resource,
-              from_jid = message.getAttribute('from'),
-              to_jid = message.getAttribute('to');
-          var original_stanza = message,
-              to_resource = Strophe.getResourceFromJid(to_jid),
-              is_carbon = !_.isNull(message.querySelector("received[xmlns=\"".concat(Strophe.NS.CARBONS, "\"]")));
-
-          if (_converse.filter_by_resource && to_resource && to_resource !== _converse.resource) {
-            _converse.log("onMessage: Ignoring incoming message intended for a different resource: ".concat(to_jid), Strophe.LogLevel.INFO);
-
-            return true;
-          } else if (utils.isHeadlineMessage(_converse, message)) {
-            // XXX: Ideally we wouldn't have to check for headline
-            // messages, but Prosody sends headline messages with the
-            // wrong type ('chat'), so we need to filter them out here.
-            _converse.log("onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ".concat(from_jid), Strophe.LogLevel.INFO);
-
-            return true;
-          }
-
-          var forwarded = message.querySelector('forwarded');
-
-          if (!_.isNull(forwarded)) {
-            var forwarded_message = forwarded.querySelector('message');
-            var forwarded_from = forwarded_message.getAttribute('from');
-
-            if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
-              // Prevent message forging via carbons
-              //
-              // https://xmpp.org/extensions/xep-0280.html#security
-              return true;
-            }
-
-            message = forwarded_message;
-            delay = forwarded.querySelector('delay');
-            from_jid = message.getAttribute('from');
-            to_jid = message.getAttribute('to');
-          }
-
-          var from_bare_jid = Strophe.getBareJidFromJid(from_jid),
-              from_resource = Strophe.getResourceFromJid(from_jid),
-              is_me = from_bare_jid === _converse.bare_jid;
-
-          if (is_me) {
-            // I am the sender, so this must be a forwarded message...
-            contact_jid = Strophe.getBareJidFromJid(to_jid);
-            resource = Strophe.getResourceFromJid(to_jid);
-          } else {
-            contact_jid = from_bare_jid;
-            resource = from_resource;
-          } // Get chat box, but only create a new one when the message has a body.
-
-
-          var chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body'))),
-              msgid = message.getAttribute('id');
-
-          if (chatbox) {
-            var messages = msgid && chatbox.messages.findWhere({
-              msgid: msgid
-            }) || [];
-
-            if (_.isEmpty(messages)) {
-              // Only create the message when we're sure it's not a
-              // duplicate
-              chatbox.incrementUnreadMsgCounter(original_stanza);
-              chatbox.createMessage(message, delay, original_stanza);
-            }
-          }
-
-          _converse.emit('message', {
-            'stanza': original_stanza,
-            'chatbox': chatbox
-          });
-
-          return true;
-        },
-        createChatBox: function createChatBox(jid, attrs) {
-          /* Creates a chat box
-          *
-          * Parameters:
-          *    (String) jid - The JID of the user for whom a chat box
-          *      gets created.
-          *    (Object) attrs - Optional chat box atributes.
-          */
-          var bare_jid = Strophe.getBareJidFromJid(jid),
-              roster_item = _converse.roster.get(bare_jid);
-
-          var roster_info = {};
-
-          if (!_.isUndefined(roster_item)) {
-            roster_info = {
-              'fullname': _.isEmpty(roster_item.get('fullname')) ? jid : roster_item.get('fullname'),
-              'image_type': roster_item.get('image_type'),
-              'image': roster_item.get('image'),
-              'url': roster_item.get('url')
-            };
-          } else if (!_converse.allow_non_roster_messaging) {
-            _converse.log("Could not get roster item for JID ".concat(bare_jid) + ' and allow_non_roster_messaging is set to false', Strophe.LogLevel.ERROR);
-
-            return;
-          }
-
-          return this.create(_.assignIn({
-            'id': bare_jid,
-            'jid': bare_jid,
-            'fullname': jid,
-            'image_type': _converse.DEFAULT_IMAGE_TYPE,
-            'image': _converse.DEFAULT_IMAGE,
-            'url': ''
-          }, roster_info, attrs || {}));
-        },
-        getChatBox: function getChatBox(jid, create, attrs) {
-          /* Returns a chat box or optionally return a newly
-          * created one if one doesn't exist.
-          *
-          * Parameters:
-          *    (String) jid - The JID of the user whose chat box we want
-          *    (Boolean) create - Should a new chat box be created if none exists?
-          *    (Object) attrs - Optional chat box atributes.
-          */
-          jid = jid.toLowerCase();
-          var chatbox = this.get(Strophe.getBareJidFromJid(jid));
-
-          if (!chatbox && create) {
-            chatbox = this.createChatBox(jid, attrs);
-          }
-
-          return chatbox;
-        }
-      });
-      _converse.ChatBoxViews = Backbone.Overview.extend({
-        initialize: function initialize() {
-          this.model.on("add", this.onChatBoxAdded, this);
-          this.model.on("destroy", this.removeChat, this);
-        },
-        _ensureElement: function _ensureElement() {
-          /* Override method from backbone.js
-          * If the #conversejs element doesn't exist, create it.
-          */
-          if (!this.el) {
-            var el = _converse.root.querySelector('#conversejs');
-
-            if (_.isNull(el)) {
-              el = document.createElement('div');
-              el.setAttribute('id', 'conversejs');
-
-              var body = _converse.root.querySelector('body');
-
-              if (body) {
-                body.appendChild(el);
-              } else {
-                // Perhaps inside a web component?
-                _converse.root.appendChild(el);
+  
+        if ( input.type === 'radio' && !toggled ) { // radio buttons
+          if ( !input[checked] ) { // don't trigger if already active
+            addClass(label,active);
+            input[setAttribute](checked,checked);
+            input[checked] = true;
+            bootstrapCustomEvent.call(input, changeEvent, component); //trigger the change for the input
+            bootstrapCustomEvent.call(element, changeEvent, component); //trigger the change for the btn-group
+  
+            toggled = true;
+            for (var i = 0, ll = labels[length]; i<ll; i++) {
+              var otherLabel = labels[i], otherInput = otherLabel[getElementsByTagName](INPUT)[0];
+              if ( otherLabel !== label && hasClass(otherLabel,active) )  {
+                removeClass(otherLabel,active);
+                otherInput.removeAttribute(checked);
+                otherInput[checked] = false;
+                bootstrapCustomEvent.call(otherInput, changeEvent, component); // trigger the change
               }
             }
-
-            el.innerHTML = '';
-            this.setElement(el, false);
-          } else {
-            this.setElement(_.result(this, 'el'), false);
           }
-        },
-        onChatBoxAdded: function onChatBoxAdded(item) {
-          // Views aren't created here, since the core code doesn't
-          // contain any views. Instead, they're created in overrides in
-          // plugins, such as in converse-chatview.js and converse-muc.js
-          return this.get(item.get('id'));
-        },
-        removeChat: function removeChat(item) {
-          this.remove(item.get('id'));
-        },
-        closeAllChatBoxes: function closeAllChatBoxes() {
-          /* This method gets overridden in src/converse-controlbox.js if
-          * the controlbox plugin is active.
-          */
-          this.each(function (view) {
-            view.close();
-          });
-          return this;
-        },
-        chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
-          return this.model.chatBoxMayBeShown(chatbox);
-        },
-        getChatBox: function getChatBox(attrs, create) {
-          var chatbox = this.model.get(attrs.jid);
-
-          if (!chatbox && create) {
-            chatbox = this.model.create(attrs, {
-              'error': function error(model, response) {
-                _converse.log(response.responseText);
-              }
-            });
-          }
-
-          return chatbox;
-        },
-        showChat: function showChat(attrs) {
-          /* Find the chat box and show it (if it may be shown).
-           * If it doesn't exist, create it.
-           */
-          var chatbox = this.getChatBox(attrs, true);
-
-          if (this.chatBoxMayBeShown(chatbox)) {
-            chatbox.trigger('show', true);
-          }
-
-          return chatbox;
         }
-      }); // BEGIN: Event handlers
-
-      _converse.api.listen.on('pluginsInitialized', function () {
-        _converse.chatboxes = new _converse.ChatBoxes();
-        _converse.chatboxviews = new _converse.ChatBoxViews({
-          'model': _converse.chatboxes
+        setTimeout( function() { toggled = false; }, 50 );
+      };
+  
+    // init
+    if ( !( stringButton in element ) ) { // prevent adding event handlers twice
+      on( element, clickEvent, toggle );
+      queryElement('['+tabindex+']',element) && on( element, keyupEvent, keyHandler ), 
+                                                on( element, keydownEvent, preventScroll );    
+    }
+  
+    // activate items on load
+    var labelsToACtivate = getElementsByClassName(element, 'btn'), lbll = labelsToACtivate[length];
+    for (var i=0; i<lbll; i++) {
+      !hasClass(labelsToACtivate[i],active) && queryElement('input:checked',labelsToACtivate[i]) 
+                                            && addClass(labelsToACtivate[i],active);
+    }
+    element[stringButton] = this;
+  };
+  
+  // BUTTON DATA API
+  // =================
+  supports[push]( [ stringButton, Button, '['+dataToggle+'="buttons"]' ] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | Carousel
+  ----------------------------------------------*/
+  
+  // CAROUSEL DEFINITION
+  // ===================
+  var Carousel = function( element, options ) {
+  
+    // initialization element
+    element = queryElement( element );
+  
+    // set options
+    options = options || {};
+  
+    // DATA API
+    var intervalAttribute = element[getAttribute](dataInterval),
+        intervalOption = options[interval],
+        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute) || 5000,  // bootstrap carousel default interval
+        pauseData = element[getAttribute](dataPause) === hoverEvent || false,
+        keyboardData = element[getAttribute](dataKeyboard) === 'true' || false,
+      
+        // strings
+        component = 'carousel',
+        paused = 'paused',
+        direction = 'direction',
+        carouselItem = 'carousel-item',
+        dataSlideTo = 'data-slide-to'; 
+  
+    this[keyboard] = options[keyboard] === true || keyboardData;
+    this[pause] = (options[pause] === hoverEvent || pauseData) ? hoverEvent : false; // false / hover
+  
+    this[interval] = typeof intervalOption === 'number' ? intervalOption
+                   : intervalData === 0 ? 0
+                   : intervalData;
+  
+    // bind, event targets
+    var self = this, index = element.index = 0, timer = element.timer = 0, 
+      isSliding = false, // isSliding prevents click event handlers when animation is running
+      slides = getElementsByClassName(element,carouselItem), total = slides[length],
+      slideDirection = this[direction] = left,
+      leftArrow = getElementsByClassName(element,component+'-control-prev')[0], 
+      rightArrow = getElementsByClassName(element,component+'-control-next')[0],
+      indicator = queryElement( '.'+component+'-indicators', element ),
+      indicators = indicator && indicator[getElementsByTagName]( "LI" ) || [];
+  
+    // handlers
+    var pauseHandler = function () {
+        if ( self[interval] !==false && !hasClass(element,paused) ) {
+          addClass(element,paused);
+          !isSliding && clearInterval( timer );
+        }
+      },
+      resumeHandler = function() {
+        if ( self[interval] !== false && hasClass(element,paused) ) {
+          removeClass(element,paused);
+          !isSliding && clearInterval( timer );
+          !isSliding && self.cycle();
+        }
+      },
+      indicatorHandler = function(e) {
+        e[preventDefault]();
+        if (isSliding) return;
+  
+        var eventTarget = e[target]; // event target | the current active item
+  
+        if ( eventTarget && !hasClass(eventTarget,active) && eventTarget[getAttribute](dataSlideTo) ) {
+          index = parseInt( eventTarget[getAttribute](dataSlideTo), 10 );
+        } else { return false; }
+  
+        self.slideTo( index ); //Do the slide
+      },
+      controlsHandler = function (e) {
+        e[preventDefault]();
+        if (isSliding) return;
+  
+        var eventTarget = e.currentTarget || e.srcElement;
+  
+        if ( eventTarget === rightArrow ) {
+          index++;
+        } else if ( eventTarget === leftArrow ) {
+          index--;
+        }
+  
+        self.slideTo( index ); //Do the slide
+      },
+      keyHandler = function (e) {
+        if (isSliding) return;
+        switch (e.which) {
+          case 39:
+            index++;
+            break;
+          case 37:
+            index--;
+            break;
+          default: return;
+        }
+        self.slideTo( index ); //Do the slide
+      },
+      // private methods
+      isElementInScrollRange = function () {
+        var rect = element[getBoundingClientRect](),
+          viewportHeight = globalObject[innerHeight] || HTML[clientHeight]
+        return rect[top] <= viewportHeight && rect[bottom] >= 0; // bottom && top
+      },    
+      setActivePage = function( pageIndex ) { //indicators
+        for ( var i = 0, icl = indicators[length]; i < icl; i++ ) {
+          removeClass(indicators[i],active);
+        }
+        if (indicators[pageIndex]) addClass(indicators[pageIndex], active);
+      };
+  
+  
+    // public methods
+    this.cycle = function() {
+      timer = setInterval(function() {
+        isElementInScrollRange() && (index++, self.slideTo( index ) );
+      }, this[interval]);
+    };
+    this.slideTo = function( next ) {
+      if (isSliding) return; // when controled via methods, make sure to check again      
+      
+      var activeItem = this.getActiveIndex(), // the current active
+          orientation;
+      
+      // determine slideDirection first
+      if  ( (activeItem < next ) || (activeItem === 0 && next === total -1 ) ) {
+        slideDirection = self[direction] = left; // next
+      } else if  ( (activeItem > next) || (activeItem === total - 1 && next === 0 ) ) {
+        slideDirection = self[direction] = right; // prev
+      }
+  
+      // find the right next index 
+      if ( next < 0 ) { next = total - 1; } 
+      else if ( next === total ){ next = 0; }
+  
+      // update index
+      index = next;
+  
+      orientation = slideDirection === left ? 'next' : 'prev'; //determine type
+      bootstrapCustomEvent.call(element, slideEvent, component, slides[next]); // here we go with the slide
+  
+      isSliding = true;
+      clearInterval(timer);
+      setActivePage( next );
+  
+      if ( supportTransitions && hasClass(element,'slide') ) {
+  
+        addClass(slides[next],carouselItem +'-'+ orientation);
+        slides[next][offsetWidth];
+        addClass(slides[next],carouselItem +'-'+ slideDirection);
+        addClass(slides[activeItem],carouselItem +'-'+ slideDirection);
+  
+        one(slides[activeItem], transitionEndEvent, function(e) {
+          var timeout = e[target] !== slides[activeItem] ? e.elapsedTime*1000 : 0;
+          
+          setTimeout(function(){
+            isSliding = false;
+  
+            addClass(slides[next],active);
+            removeClass(slides[activeItem],active);
+  
+            removeClass(slides[next],carouselItem +'-'+ orientation);
+            removeClass(slides[next],carouselItem +'-'+ slideDirection);
+            removeClass(slides[activeItem],carouselItem +'-'+ slideDirection);
+  
+            bootstrapCustomEvent.call(element, slidEvent, component, slides[next]);
+  
+            if ( !DOC.hidden && self[interval] && !hasClass(element,paused) ) {
+              self.cycle();
+            }
+          },timeout+100);
         });
-
-        _converse.emit('chatBoxesInitialized');
-      });
-
-      _converse.api.listen.on('beforeTearDown', function () {
-        _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
-
-
-        delete _converse.chatboxes.browserStorage;
-      }); // END: Event handlers
-
-
-      _converse.getViewForChatBox = function (chatbox) {
-        if (!chatbox) {
+  
+      } else {
+        addClass(slides[next],active);
+        slides[next][offsetWidth];
+        removeClass(slides[activeItem],active);
+        setTimeout(function() {
+          isSliding = false;
+          if ( self[interval] && !hasClass(element,paused) ) {
+            self.cycle();
+          }
+          bootstrapCustomEvent.call(element, slidEvent, component, slides[next]);
+        }, 100 );
+      }
+    };
+    this.getActiveIndex = function () {
+      return slides[indexOf](getElementsByClassName(element,carouselItem+' active')[0]) || 0;
+    };
+  
+    // init
+    if ( !(stringCarousel in element ) ) { // prevent adding event handlers twice
+  
+      if ( self[pause] && self[interval] ) {
+        on( element, mouseHover[0], pauseHandler );
+        on( element, mouseHover[1], resumeHandler );
+        on( element, 'touchstart', pauseHandler );
+        on( element, 'touchend', resumeHandler );
+      }
+    
+      rightArrow && on( rightArrow, clickEvent, controlsHandler );
+      leftArrow && on( leftArrow, clickEvent, controlsHandler );
+    
+      indicator && on( indicator, clickEvent, indicatorHandler );
+      self[keyboard] === true && on( globalObject, keydownEvent, keyHandler );
+    }
+    if (self.getActiveIndex()<0) {
+      slides[length] && addClass(slides[0],active);
+      indicators[length] && setActivePage(0);
+    }
+  
+    if ( self[interval] ){ self.cycle(); }
+    element[stringCarousel] = self;
+  };
+  
+  // CAROUSEL DATA API
+  // =================
+  supports[push]( [ stringCarousel, Carousel, '['+dataRide+'="carousel"]' ] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | Collapse
+  -----------------------------------------------*/
+  
+  // COLLAPSE DEFINITION
+  // ===================
+  var Collapse = function( element, options ) {
+  
+    // initialization element
+    element = queryElement(element);
+  
+    // set options
+    options = options || {};
+  
+    // event targets and constants
+    var accordion = null, collapse = null, self = this, 
+      isAnimating = false, // when true it will prevent click handlers
+      accordionData = element[getAttribute]('data-parent'),
+  
+      // component strings
+      component = 'collapse',
+      collapsed = 'collapsed',
+  
+      // private methods
+      openAction = function(collapseElement) {
+        bootstrapCustomEvent.call(collapseElement, showEvent, component);
+        isAnimating = true;
+        addClass(collapseElement,collapsing);
+        removeClass(collapseElement,component);
+        collapseElement[style][height] = collapseElement[scrollHeight] + 'px';
+        
+        emulateTransitionEnd(collapseElement, function() {
+          isAnimating = false;
+          collapseElement[setAttribute](ariaExpanded,'true');
+          removeClass(collapseElement,collapsing);
+          addClass(collapseElement, component);
+          addClass(collapseElement,showClass);
+          collapseElement[style][height] = '';
+          bootstrapCustomEvent.call(collapseElement, shownEvent, component);
+        });
+      },
+      closeAction = function(collapseElement) {
+        bootstrapCustomEvent.call(collapseElement, hideEvent, component);
+        isAnimating = true;
+        collapseElement[style][height] = collapseElement[scrollHeight] + 'px'; // set height first
+        removeClass(collapseElement,component);
+        removeClass(collapseElement,showClass);
+        addClass(collapseElement,collapsing);
+        collapseElement[offsetWidth]; // force reflow to enable transition
+        collapseElement[style][height] = '0px';
+        
+        emulateTransitionEnd(collapseElement, function() {
+          isAnimating = false;
+          collapseElement[setAttribute](ariaExpanded,'false');
+          removeClass(collapseElement,collapsing);
+          addClass(collapseElement,component);
+          collapseElement[style][height] = '';
+          bootstrapCustomEvent.call(collapseElement, hiddenEvent, component);
+        });
+      },
+      getTarget = function() {
+        var href = element.href && element[getAttribute]('href'),
+          parent = element[getAttribute](dataTarget),
+          id = href || ( parent && parent.charAt(0) === '#' ) && parent;
+        return id && queryElement(id);
+      };
+    
+    // public methods
+    this.toggle = function(e) {
+      e[preventDefault]();
+      if (isAnimating) return;
+      if (!hasClass(collapse,showClass)) { self.show(); } 
+      else { self.hide(); }
+    };
+    this.hide = function() {
+      closeAction(collapse);
+      addClass(element,collapsed);
+    };
+    this.show = function() {
+      if ( accordion ) {
+        var activeCollapse = queryElement('.'+component+'.'+showClass,accordion),
+            toggle = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
+                   || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) ),
+            correspondingCollapse = toggle && (toggle[getAttribute](dataTarget) || toggle.href);
+        if ( activeCollapse && toggle && activeCollapse !== collapse ) {
+          closeAction(activeCollapse); 
+          if ( correspondingCollapse.split('#')[1] !== collapse.id ) { addClass(toggle,collapsed); } 
+          else { removeClass(toggle,collapsed); }
+        }
+      }
+  
+      openAction(collapse);
+      removeClass(element,collapsed); 
+    };
+  
+    // init
+    if ( !(stringCollapse in element ) ) { // prevent adding event handlers twice
+      on(element, clickEvent, self.toggle);
+    }
+    collapse = getTarget();
+    accordion = queryElement(options.parent) || accordionData && getClosest(element, accordionData);
+    element[stringCollapse] = self;
+  };
+  
+  // COLLAPSE DATA API
+  // =================
+  supports[push]( [ stringCollapse, Collapse, '['+dataToggle+'="collapse"]' ] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | Dropdown
+  ----------------------------------------------*/
+  
+  // DROPDOWN DEFINITION
+  // ===================
+  var Dropdown = function( element, option ) {
+      
+    // initialization element
+    element = queryElement(element);
+  
+    // set option
+    this.persist = option === true || element[getAttribute]('data-persist') === 'true' || false;
+  
+    // constants, event targets, strings
+    var self = this, children = 'children',
+      parent = element[parentNode],
+      component = 'dropdown', open = 'open',
+      relatedTarget = null,
+      menu = queryElement('.dropdown-menu', parent),
+      menuItems = (function(){
+        var set = menu[children], newSet = [];
+        for ( var i=0; i<set[length]; i++ ){
+          set[i][children][length] && (set[i][children][0].tagName === 'A' && newSet[push](set[i][children][0]));
+          set[i].tagName === 'A' && newSet[push](set[i]);
+        }
+        return newSet;
+      })(),
+  
+      // preventDefault on empty anchor links
+      preventEmptyAnchor = function(anchor){
+        (anchor.href && anchor.href.slice(-1) === '#' || anchor[parentNode] && anchor[parentNode].href 
+          && anchor[parentNode].href.slice(-1) === '#') && this[preventDefault]();    
+      },
+  
+      // toggle dismissible events
+      toggleDismiss = function(){
+        var type = element[open] ? on : off;
+        type(DOC, clickEvent, dismissHandler); 
+        type(DOC, keydownEvent, preventScroll);
+        type(DOC, keyupEvent, keyHandler);
+      },
+  
+      // handlers
+      dismissHandler = function(e) {
+        var eventTarget = e[target], hasData = eventTarget && (stringDropdown in eventTarget || stringDropdown in eventTarget[parentNode]);
+        if ( (eventTarget === menu || menu[contains](eventTarget)) && (self.persist || hasData) ) { return; }
+        else {
+          relatedTarget = eventTarget === element || element[contains](eventTarget) ? element : null;
+          hide();
+        }
+        preventEmptyAnchor.call(e,eventTarget);
+      },
+      clickHandler = function(e) {
+        relatedTarget = element;
+        show();
+        preventEmptyAnchor.call(e,e[target]);
+      },
+      preventScroll = function(e){
+        var key = e.which || e.keyCode;
+        if( key === 38 || key === 40 ) { e[preventDefault](); }
+      },
+      keyHandler = function(e){
+        var key = e.which || e.keyCode,
+          activeItem = DOC.activeElement,
+          idx = menuItems[indexOf](activeItem),
+          isSameElement = activeItem === element,
+          isInsideMenu = menu[contains](activeItem),
+          isMenuItem = activeItem[parentNode] === menu || activeItem[parentNode][parentNode] === menu;          
+  
+        if ( isMenuItem || isSameElement ) { // navigate up | down
+          idx = isSameElement ? 0 
+                              : key === 38 ? (idx>1?idx-1:0)
+                              : key === 40 ? (idx<menuItems[length]-1?idx+1:idx) : idx;
+          menuItems[idx] && setFocus(menuItems[idx]);
+        }
+        if ( (menuItems[length] && isMenuItem // menu has items
+              || !menuItems[length] && (isInsideMenu || isSameElement)  // menu might be a form
+              || !isInsideMenu ) // or the focused element is not in the menu at all
+              && element[open] && key === 27  // menu must be open
+        ) {
+          self.toggle();
+          relatedTarget = null;
+        }
+      },
+  
+      // private methods
+      show = function() {
+        bootstrapCustomEvent.call(parent, showEvent, component, relatedTarget);
+        addClass(menu,showClass);
+        addClass(parent,showClass);
+        menu[setAttribute](ariaExpanded,true);
+        bootstrapCustomEvent.call(parent, shownEvent, component, relatedTarget);
+        element[open] = true;
+        off(element, clickEvent, clickHandler);
+        setTimeout(function(){
+          setFocus( menu[getElementsByTagName]('INPUT')[0] || element ); // focus the first input item | element
+          toggleDismiss();
+        },1);
+      },
+      hide = function() {
+        bootstrapCustomEvent.call(parent, hideEvent, component, relatedTarget);
+        removeClass(menu,showClass);
+        removeClass(parent,showClass);
+        menu[setAttribute](ariaExpanded,false);
+        bootstrapCustomEvent.call(parent, hiddenEvent, component, relatedTarget);
+        element[open] = false;
+        toggleDismiss();
+        setFocus(element);
+        setTimeout(function(){ on(element, clickEvent, clickHandler); },1);
+      };
+  
+    // set initial state to closed
+    element[open] = false;
+  
+    // public methods
+    this.toggle = function() {
+      if (hasClass(parent,showClass) && element[open]) { hide(); } 
+      else { show(); }
+    };
+  
+    // init
+    if ( !(stringDropdown in element) ) { // prevent adding event handlers twice
+      !tabindex in menu && menu[setAttribute](tabindex, '0'); // Fix onblur on Chrome | Safari
+      on(element, clickEvent, clickHandler);
+    }
+  
+    element[stringDropdown] = self;
+  };
+  
+  // DROPDOWN DATA API
+  // =================
+  supports[push]( [stringDropdown, Dropdown, '['+dataToggle+'="dropdown"]'] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | Modal
+  -------------------------------------------*/
+  
+  // MODAL DEFINITION
+  // ===============
+  var Modal = function(element, options) { // element can be the modal/triggering button
+  
+    // the modal (both JavaScript / DATA API init) / triggering button element (DATA API)
+    element = queryElement(element);
+  
+    // determine modal, triggering element
+    var btnCheck = element[getAttribute](dataTarget)||element[getAttribute]('href'),
+      checkModal = queryElement( btnCheck ),
+      modal = hasClass(element,'modal') ? element : checkModal,
+  
+      // strings
+      component = 'modal',
+      staticString = 'static',
+      paddingLeft = 'paddingLeft',
+      paddingRight = 'paddingRight',
+      modalBackdropString = 'modal-backdrop';
+  
+    if ( hasClass(element,'modal') ) { element = null; } // modal is now independent of it's triggering element
+  
+    if ( !modal ) { return; } // invalidate
+  
+    // set options
+    options = options || {};
+  
+    this[keyboard] = options[keyboard] === false || modal[getAttribute](dataKeyboard) === 'false' ? false : true;
+    this[backdrop] = options[backdrop] === staticString || modal[getAttribute](databackdrop) === staticString ? staticString : true;
+    this[backdrop] = options[backdrop] === false || modal[getAttribute](databackdrop) === 'false' ? false : this[backdrop];
+    this[content]  = options[content]; // JavaScript only
+  
+    // bind, constants, event targets and other vars
+    var self = this, relatedTarget = null,
+      bodyIsOverflowing, modalIsOverflowing, scrollbarWidth, overlay,
+  
+      // also find fixed-top / fixed-bottom items
+      fixedItems = getElementsByClassName(HTML,fixedTop).concat(getElementsByClassName(HTML,fixedBottom)),
+  
+      // private methods
+      getWindowWidth = function() {
+        var htmlRect = HTML[getBoundingClientRect]();
+        return globalObject[innerWidth] || (htmlRect[right] - Math.abs(htmlRect[left]));
+      },
+      setScrollbar = function () {
+        var bodyStyle = globalObject.getComputedStyle(DOC[body]),
+            bodyPad = parseInt((bodyStyle[paddingRight]), 10), itemPad;
+        if (bodyIsOverflowing) {
+          DOC[body][style][paddingRight] = (bodyPad + scrollbarWidth) + 'px';
+          if (fixedItems[length]){
+            for (var i = 0; i < fixedItems[length]; i++) {
+              itemPad = globalObject.getComputedStyle(fixedItems[i])[paddingRight];
+              fixedItems[i][style][paddingRight] = ( parseInt(itemPad) + scrollbarWidth) + 'px';
+            }
+          }
+        }
+      },
+      resetScrollbar = function () {
+        DOC[body][style][paddingRight] = '';
+        if (fixedItems[length]){
+          for (var i = 0; i < fixedItems[length]; i++) {
+            fixedItems[i][style][paddingRight] = '';
+          }
+        }
+      },
+      measureScrollbar = function () { // thx walsh
+        var scrollDiv = DOC[createElement]('div'), scrollBarWidth;
+        scrollDiv.className = component+'-scrollbar-measure'; // this is here to stay
+        DOC[body][appendChild](scrollDiv);
+        scrollBarWidth = scrollDiv[offsetWidth] - scrollDiv[clientWidth];
+        DOC[body].removeChild(scrollDiv);
+        return scrollBarWidth;
+      },
+      checkScrollbar = function () {
+        bodyIsOverflowing = DOC[body][clientWidth] < getWindowWidth();
+        modalIsOverflowing = modal[scrollHeight] > HTML[clientHeight];
+        scrollbarWidth = measureScrollbar();
+      },
+      adjustDialog = function () {
+        modal[style][paddingLeft] = !bodyIsOverflowing && modalIsOverflowing ? scrollbarWidth + 'px' : '';
+        modal[style][paddingRight] = bodyIsOverflowing && !modalIsOverflowing ? scrollbarWidth + 'px' : '';
+      },
+      resetAdjustments = function () {
+        modal[style][paddingLeft] = '';
+        modal[style][paddingRight] = '';
+      },
+      createOverlay = function() {
+        modalOverlay = 1;        
+        
+        var newOverlay = DOC[createElement]('div');
+        overlay = queryElement('.'+modalBackdropString);
+  
+        if ( overlay === null ) {
+          newOverlay[setAttribute]('class',modalBackdropString+' fade');
+          overlay = newOverlay;
+          DOC[body][appendChild](overlay);
+        }
+      },
+      removeOverlay = function() {
+        overlay = queryElement('.'+modalBackdropString);
+        if ( overlay && overlay !== null && typeof overlay === 'object' ) {
+          modalOverlay = 0;        
+          DOC[body].removeChild(overlay); overlay = null;
+        }
+        bootstrapCustomEvent.call(modal, hiddenEvent, component);      
+      },
+      keydownHandlerToggle = function() {
+        if (hasClass(modal,showClass)) {
+          on(DOC, keydownEvent, keyHandler);
+        } else {
+          off(DOC, keydownEvent, keyHandler);
+        }
+      },
+      resizeHandlerToggle = function() {
+        if (hasClass(modal,showClass)) {
+          on(globalObject, resizeEvent, self.update);
+        } else {
+          off(globalObject, resizeEvent, self.update);
+        }
+      },
+      dismissHandlerToggle = function() {
+        if (hasClass(modal,showClass)) {
+          on(modal, clickEvent, dismissHandler);
+        } else {
+          off(modal, clickEvent, dismissHandler);
+        }
+      },
+      // triggers
+      triggerShow = function() {
+        setFocus(modal);
+        bootstrapCustomEvent.call(modal, shownEvent, component, relatedTarget);
+      },
+      triggerHide = function() {
+        modal[style].display = '';
+        element && (setFocus(element));
+        
+        setTimeout(function(){
+          if (!getElementsByClassName(DOC,component+' '+showClass)[0]) {
+            resetAdjustments();
+            resetScrollbar();
+            removeClass(DOC[body],component+'-open');
+            overlay && hasClass(overlay,'fade') ? (removeClass(overlay,showClass), emulateTransitionEnd(overlay,removeOverlay)) 
+            : removeOverlay();
+  
+            resizeHandlerToggle();
+            dismissHandlerToggle();
+            keydownHandlerToggle();
+          }
+        }, 50);
+      },
+      // handlers
+      clickHandler = function(e) {
+        var clickTarget = e[target];
+        clickTarget = clickTarget[hasAttribute](dataTarget) || clickTarget[hasAttribute]('href') ? clickTarget : clickTarget[parentNode];
+        if ( clickTarget === element && !hasClass(modal,showClass) ) {
+          modal.modalTrigger = element;
+          relatedTarget = element;
+          self.show();
+          e[preventDefault]();
+        }
+      },
+      keyHandler = function(e) {
+        if (self[keyboard] && e.which == 27 && hasClass(modal,showClass)) {
+          self.hide();
+        }
+      },
+      dismissHandler = function(e) {
+        var clickTarget = e[target];
+        if ( hasClass(modal,showClass) && (clickTarget[parentNode][getAttribute](dataDismiss) === component
+            || clickTarget[getAttribute](dataDismiss) === component
+            || (clickTarget === modal && self[backdrop] !== staticString) ) ) {
+          self.hide(); relatedTarget = null;
+          e[preventDefault]();
+        }
+      };
+  
+    // public methods
+    this.toggle = function() {
+      if ( hasClass(modal,showClass) ) {this.hide();} else {this.show();}
+    };
+    this.show = function() {
+      bootstrapCustomEvent.call(modal, showEvent, component, relatedTarget);
+  
+      // we elegantly hide any opened modal
+      var currentOpen = getElementsByClassName(DOC,component+' '+showClass)[0];
+      currentOpen && currentOpen !== modal && currentOpen.modalTrigger[stringModal].hide();
+  
+      if ( this[backdrop] ) {
+        !modalOverlay && createOverlay();
+      }
+  
+      if ( overlay && modalOverlay && !hasClass(overlay,showClass)) {
+        overlay[offsetWidth]; // force reflow to enable trasition
+        addClass(overlay, showClass);
+      }
+  
+      setTimeout( function() {
+        modal[style].display = 'block';
+  
+        checkScrollbar();
+        setScrollbar();
+        adjustDialog();
+  
+        addClass(DOC[body],component+'-open');
+        addClass(modal,showClass);
+        modal[setAttribute](ariaHidden, false);
+        
+        resizeHandlerToggle();
+        dismissHandlerToggle();
+        keydownHandlerToggle();
+  
+        hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerShow) : triggerShow();
+      }, supportTransitions ? 150 : 0);
+    };
+    this.hide = function() {
+      bootstrapCustomEvent.call(modal, hideEvent, component);
+      overlay = queryElement('.'+modalBackdropString);
+  
+      removeClass(modal,showClass);
+      modal[setAttribute](ariaHidden, true);
+  
+      setTimeout(function(){
+        hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerHide) : triggerHide();
+      }, supportTransitions ? 150 : 0);
+    };
+    this.setContent = function( content ) {
+      queryElement('.'+component+'-content',modal)[innerHTML] = content;
+    };
+    this.update = function() {
+      if (hasClass(modal,showClass)) {
+        checkScrollbar();
+        setScrollbar();
+        adjustDialog();
+      }
+    };
+  
+    // init
+    // prevent adding event handlers over and over
+    // modal is independent of a triggering element
+    if ( !!element && !(stringModal in element) ) {
+      on(element, clickEvent, clickHandler);
+    }
+    if ( !!self[content] ) { self.setContent( self[content] ); }
+    !!element && (element[stringModal] = self);
+  };
+  
+  // DATA API
+  supports[push]( [ stringModal, Modal, '['+dataToggle+'="modal"]' ] );
+  
+  /* Native Javascript for Bootstrap 4 | Popover
+  ----------------------------------------------*/
+  
+  // POPOVER DEFINITION
+  // ==================
+  var Popover = function( element, options ) {
+  
+    // initialization element
+    element = queryElement(element);
+  
+    // set options
+    options = options || {};
+  
+    // DATA API
+    var triggerData = element[getAttribute](dataTrigger), // click / hover / focus
+        animationData = element[getAttribute](dataAnimation), // true / false
+        placementData = element[getAttribute](dataPlacement),
+        dismissibleData = element[getAttribute](dataDismissible),
+        delayData = element[getAttribute](dataDelay),
+        containerData = element[getAttribute](dataContainer),
+  
+        // internal strings
+        component = 'popover',
+        template = 'template',
+        trigger = 'trigger',
+        classString = 'class',
+        div = 'div',
+        fade = 'fade',
+        content = 'content',
+        dataContent = 'data-content',
+        dismissible = 'dismissible',
+        closeBtn = '<button type="button" class="close">×</button>',
+  
+        // check container
+        containerElement = queryElement(options[container]),
+        containerDataElement = queryElement(containerData),       
+        
+        // maybe the element is inside a modal
+        modal = getClosest(element,'.modal'),
+        
+        // maybe the element is inside a fixed navbar
+        navbarFixedTop = getClosest(element,'.'+fixedTop),
+        navbarFixedBottom = getClosest(element,'.'+fixedBottom);
+  
+    // set instance options
+    this[template] = options[template] ? options[template] : null; // JavaScript only
+    this[trigger] = options[trigger] ? options[trigger] : triggerData || hoverEvent;
+    this[animation] = options[animation] && options[animation] !== fade ? options[animation] : animationData || fade;
+    this[placement] = options[placement] ? options[placement] : placementData || top;
+    this[delay] = parseInt(options[delay] || delayData) || 200;
+    this[dismissible] = options[dismissible] || dismissibleData === 'true' ? true : false;
+    this[container] = containerElement ? containerElement 
+                    : containerDataElement ? containerDataElement 
+                    : navbarFixedTop ? navbarFixedTop
+                    : navbarFixedBottom ? navbarFixedBottom
+                    : modal ? modal : DOC[body];
+    
+    // bind, content
+    var self = this, 
+      titleString = element[getAttribute](dataTitle) || null,
+      contentString = element[getAttribute](dataContent) || null;
+  
+    if ( !contentString && !this[template] ) return; // invalidate
+  
+    // constants, vars
+    var popover = null, timer = 0, placementSetting = this[placement],
+      
+      // handlers
+      dismissibleHandler = function(e) {
+        if (popover !== null && e[target] === queryElement('.close',popover)) {
+          self.hide();
+        }
+      },
+  
+      // private methods
+      removePopover = function() {
+        self[container].removeChild(popover);
+        timer = null; popover = null; 
+      },
+      createPopover = function() {
+        titleString = element[getAttribute](dataTitle); // check content again
+        contentString = element[getAttribute](dataContent);
+  
+        popover = DOC[createElement](div);
+  
+        // popover arrow
+        var popoverArrow = DOC[createElement](div);
+        popoverArrow[setAttribute](classString,'arrow');
+        popover[appendChild](popoverArrow);
+  
+        if ( contentString !== null && self[template] === null ) { //create the popover from data attributes
+  
+          popover[setAttribute]('role','tooltip');
+  
+          if (titleString !== null) {
+            var popoverTitle = DOC[createElement]('h3');
+            popoverTitle[setAttribute](classString,component+'-header');
+  
+            popoverTitle[innerHTML] = self[dismissible] ? titleString + closeBtn : titleString;
+            popover[appendChild](popoverTitle);
+          }
+  
+          //set popover content
+          var popoverContent = DOC[createElement](div);
+          popoverContent[setAttribute](classString,component+'-body');
+          popoverContent[innerHTML] = self[dismissible] && titleString === null ? contentString + closeBtn : contentString;
+          popover[appendChild](popoverContent);
+  
+        } else {  // or create the popover from template
+          var popoverTemplate = DOC[createElement](div);
+          popoverTemplate[innerHTML] = self[template];
+          popover[innerHTML] = popoverTemplate.firstChild[innerHTML];
+        }
+  
+        //append to the container
+        self[container][appendChild](popover);
+        popover[style].display = 'block';
+        popover[setAttribute](classString, component+ ' bs-' + component+'-'+placementSetting + ' ' + self[animation]);
+      },
+      showPopover = function () {
+        !hasClass(popover,showClass) && ( addClass(popover,showClass) );
+      },
+      updatePopover = function() {
+        styleTip(element,popover,placementSetting,self[container]);
+      },
+  
+      // event toggle
+      dismissHandlerToggle = function(type){
+        if (clickEvent == self[trigger] || 'focus' == self[trigger]) {
+          !self[dismissible] && type( element, 'blur', self.hide );
+        }
+        self[dismissible] && type( DOC, clickEvent, dismissibleHandler );     
+        type( globalObject, resizeEvent, self.hide );
+      },
+  
+      // triggers
+      showTrigger = function() {
+        dismissHandlerToggle(on);
+        bootstrapCustomEvent.call(element, shownEvent, component);
+      },
+      hideTrigger = function() {
+        dismissHandlerToggle(off);
+        removePopover();
+        bootstrapCustomEvent.call(element, hiddenEvent, component);
+      };
+  
+    // public methods / handlers
+    this.toggle = function() {
+      if (popover === null) { self.show(); } 
+      else { self.hide(); }
+    };
+    this.show = function() {
+      clearTimeout(timer);
+      timer = setTimeout( function() {
+        if (popover === null) {
+          placementSetting = self[placement]; // we reset placement in all cases
+          createPopover();
+          updatePopover();
+          showPopover();
+          bootstrapCustomEvent.call(element, showEvent, component);
+          !!self[animation] ? emulateTransitionEnd(popover, showTrigger) : showTrigger();
+        }
+      }, 20 );
+    };
+    this.hide = function() {
+      clearTimeout(timer);
+      timer = setTimeout( function() {
+        if (popover && popover !== null && hasClass(popover,showClass)) {
+          bootstrapCustomEvent.call(element, hideEvent, component);
+          removeClass(popover,showClass);
+          !!self[animation] ? emulateTransitionEnd(popover, hideTrigger) : hideTrigger();
+        }
+      }, self[delay] );
+    };
+  
+    // init
+    if ( !(stringPopover in element) ) { // prevent adding event handlers twice
+      if (self[trigger] === hoverEvent) {
+        on( element, mouseHover[0], self.show );
+        if (!self[dismissible]) { on( element, mouseHover[1], self.hide ); }
+      } else if (clickEvent == self[trigger] || 'focus' == self[trigger]) {
+        on( element, self[trigger], self.toggle );
+      }
+    }
+    element[stringPopover] = self;
+  };
+  
+  // POPOVER DATA API
+  // ================
+  supports[push]( [ stringPopover, Popover, '['+dataToggle+'="popover"]' ] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | ScrollSpy
+  -----------------------------------------------*/
+  
+  // SCROLLSPY DEFINITION
+  // ====================
+  var ScrollSpy = function(element, options) {
+  
+    // initialization element, the element we spy on
+    element = queryElement(element); 
+  
+    // DATA API
+    var targetData = queryElement(element[getAttribute](dataTarget)),
+        offsetData = element[getAttribute]('data-offset');
+  
+    // set options
+    options = options || {};
+    if ( !options[target] && !targetData ) { return; } // invalidate
+  
+    // event targets, constants
+    var self = this, spyTarget = options[target] && queryElement(options[target]) || targetData,
+        links = spyTarget && spyTarget[getElementsByTagName]('A'),
+        offset = parseInt(offsetData || options['offset']) || 10,      
+        items = [], targetItems = [], scrollOffset,
+        scrollTarget = element[offsetHeight] < element[scrollHeight] ? element : globalObject, // determine which is the real scrollTarget
+        isWindow = scrollTarget === globalObject;  
+  
+    // populate items and targets
+    for (var i=0, il=links[length]; i<il; i++) {
+      var href = links[i][getAttribute]('href'), 
+          targetItem = href && href.charAt(0) === '#' && href.slice(-1) !== '#' && queryElement(href);
+      if ( !!targetItem ) {
+        items[push](links[i]);
+        targetItems[push](targetItem);
+      }
+    }
+  
+    // private methods
+    var updateItem = function(index) {
+        var item = items[index],
+          targetItem = targetItems[index], // the menu item targets this element
+          dropdown = item[parentNode][parentNode],
+          dropdownLink = hasClass(dropdown,'dropdown') && dropdown[getElementsByTagName]('A')[0],
+          targetRect = isWindow && targetItem[getBoundingClientRect](),
+  
+          isActive = hasClass(item,active) || false,
+  
+          topEdge = (isWindow ? targetRect[top] + scrollOffset : targetItem[offsetTop]) - offset,
+          bottomEdge = isWindow ? targetRect[bottom] + scrollOffset - offset : targetItems[index+1] ? targetItems[index+1][offsetTop] - offset : element[scrollHeight],
+  
+          inside = scrollOffset >= topEdge && bottomEdge > scrollOffset;
+  
+        if ( !isActive && inside ) {
+          if ( !hasClass(item,active) ) {
+            addClass(item,active);
+            if (dropdownLink && !hasClass(dropdownLink,active) ) {
+              addClass(dropdownLink,active);
+            }
+            bootstrapCustomEvent.call(element, 'activate', 'scrollspy', items[index]);
+          }
+        } else if ( !inside ) {
+          if ( hasClass(item,active) ) {
+            removeClass(item,active);
+            if (dropdownLink && hasClass(dropdownLink,active) && !getElementsByClassName(item[parentNode],active).length  ) {
+              removeClass(dropdownLink,active);
+            }
+          }
+        } else if ( !inside && !isActive || isActive && inside ) {
           return;
         }
-
-        return _converse.chatboxviews.get(chatbox.get('id'));
-      };
-      /* We extend the default converse.js API */
-
-
-      _.extend(_converse.api, {
-        'chats': {
-          'open': function open(jids, attrs) {
-            if (_.isUndefined(jids)) {
-              _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
-
-              return null;
-            } else if (_.isString(jids)) {
-              var chatbox = _converse.chatboxes.getChatBox(jids, true, attrs);
-
-              if (_.isNil(chatbox)) {
-                _converse.log("Could not open chatbox for JID: " + jids);
-
-                return;
-              }
-
-              return _converse.getViewForChatBox(chatbox.trigger('show'));
-            }
-
-            return _.map(jids, function (jid) {
-              return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jid, true, attrs).trigger('show'));
-            });
-          },
-          'get': function get(jids) {
-            if (_.isUndefined(jids)) {
-              var result = [];
-
-              _converse.chatboxes.each(function (chatbox) {
-                // FIXME: Leaky abstraction from MUC. We need to add a
-                // base type for chat boxes, and check for that.
-                if (chatbox.get('type') !== 'chatroom') {
-                  result.push(_converse.getViewForChatBox(chatbox));
-                }
-              });
-
-              return result;
-            } else if (_.isString(jids)) {
-              return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids));
-            }
-
-            return _.map(jids, _.partial(_.flow(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _converse.getViewForChatBox.bind(_converse)), _, true));
-          }
+      },
+      updateItems = function(){
+        scrollOffset = isWindow ? getScroll().y : element[scrollTop];
+        for (var index=0, itl=items[length]; index<itl; index++) {
+          updateItem(index)
         }
-      });
+      };
+  
+    // public method
+    this.refresh = function () {
+      updateItems();
     }
-  });
-  return converse;
-});
-//# sourceMappingURL=converse-chatboxes.js.map;
+  
+    // init
+    if ( !(stringScrollSpy in element) ) { // prevent adding event handlers twice
+      on( scrollTarget, scrollEvent, self.refresh );
+      on( globalObject, resizeEvent, self.refresh ); 
+    }
+    self.refresh();
+    element[stringScrollSpy] = self;
+  };
+  
+  // SCROLLSPY DATA API
+  // ==================
+  supports[push]( [ stringScrollSpy, ScrollSpy, '['+dataSpy+'="scroll"]' ] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | Tab
+  -----------------------------------------*/
+  
+  // TAB DEFINITION
+  // ==============
+  var Tab = function( element, options ) {
+  
+    // initialization element
+    element = queryElement(element);
+  
+    // DATA API
+    var heightData = element[getAttribute](dataHeight),
+      
+        // strings
+        component = 'tab', height = 'height', float = 'float', isAnimating = 'isAnimating';
+        
+    // set options
+    options = options || {};
+    this[height] = supportTransitions ? (options[height] || heightData === 'true') : false;
+  
+    // bind, event targets
+    var self = this, next,
+      tabs = getClosest(element,'.nav'),
+      tabsContentContainer = false,
+      dropdown = tabs && queryElement('.dropdown-toggle',tabs),
+      activeTab, activeContent, nextContent, containerHeight, equalContents, nextHeight,
+      
+      // trigger
+      triggerEnd = function(){
+        tabsContentContainer[style][height] = '';
+        removeClass(tabsContentContainer,collapsing);
+        tabs[isAnimating] = false;
+      },
+      triggerShow = function() {
+        if (tabsContentContainer) { // height animation
+          if ( equalContents ) {
+            triggerEnd();
+          } else {
+            setTimeout(function(){ // enables height animation
+              tabsContentContainer[style][height] = nextHeight + 'px'; // height animation
+              tabsContentContainer[offsetWidth];
+              emulateTransitionEnd(tabsContentContainer, triggerEnd);
+            },1);
+          }
+        } else {
+          tabs[isAnimating] = false; 
+        }
+        bootstrapCustomEvent.call(next, shownEvent, component, activeTab);
+      },
+      triggerHide = function() {
+        if (tabsContentContainer) {
+          activeContent[style][float] = left;
+          nextContent[style][float] = left;        
+          containerHeight = activeContent[scrollHeight];
+        }
+          
+        addClass(nextContent,active);
+        bootstrapCustomEvent.call(next, showEvent, component, activeTab);
+  
+        removeClass(activeContent,active);
+        bootstrapCustomEvent.call(activeTab, hiddenEvent, component, next);
+        
+        if (tabsContentContainer) {
+          nextHeight = nextContent[scrollHeight];
+          equalContents = nextHeight === containerHeight;
+          addClass(tabsContentContainer,collapsing);
+          tabsContentContainer[style][height] = containerHeight + 'px'; // height animation
+          tabsContentContainer[offsetHeight];
+          activeContent[style][float] = '';
+          nextContent[style][float] = '';   
+        }
+  
+        if ( hasClass(nextContent, 'fade') ) {
+          setTimeout(function(){
+            addClass(nextContent,showClass);
+            emulateTransitionEnd(nextContent,triggerShow);
+          },20);
+        } else { triggerShow(); }        
+      };
+  
+    if (!tabs) return; // invalidate
+  
+    // set default animation state
+    tabs[isAnimating] = false;    
+          
+    // private methods
+    var getActiveTab = function() {
+        var activeTabs = getElementsByClassName(tabs,active), activeTab;
+        if ( activeTabs[length] === 1 && !hasClass(activeTabs[0][parentNode],'dropdown') ) {
+          activeTab = activeTabs[0];
+        } else if ( activeTabs[length] > 1 ) {
+          activeTab = activeTabs[activeTabs[length]-1];
+        }
+        return activeTab;
+      },
+      getActiveContent = function() {
+        return queryElement(getActiveTab()[getAttribute]('href'));
+      },
+      // handler 
+      clickHandler = function(e) {
+        var href = e[target][getAttribute]('href');
+        e[preventDefault]();
+        next = e[target][getAttribute](dataToggle) === component || (href && href.charAt(0) === '#')
+             ? e[target] : e[target][parentNode]; // allow for child elements like icons to use the handler
+        !tabs[isAnimating] && !hasClass(next[parentNode],active) && self.show();
+      };
+  
+    // public method
+    this.show = function() { // the tab we clicked is now the next tab
+      next = next || element;
+      nextContent = queryElement(next[getAttribute]('href')); //this is the actual object, the next tab content to activate
+      activeTab = getActiveTab(); 
+      activeContent = getActiveContent();
+      
+      tabs[isAnimating] = true;
+      removeClass(activeTab,active);
+      addClass(next,active);
+  
+      if ( dropdown ) {
+        if ( !hasClass(element[parentNode],'dropdown-menu') ) {
+          if (hasClass(dropdown,active)) removeClass(dropdown,active);
+        } else {
+          if (!hasClass(dropdown,active)) addClass(dropdown,active);
+        }
+      }
+      
+      bootstrapCustomEvent.call(activeTab, hideEvent, component, next);
+  
+      if (hasClass(activeContent, 'fade')) {
+        removeClass(activeContent,showClass);
+        emulateTransitionEnd(activeContent, triggerHide);
+      } else { triggerHide(); }
+    };
+  
+    // init
+    if ( !(stringTab in element) ) { // prevent adding event handlers twice
+      on(element, clickEvent, clickHandler);
+    }
+    if (self[height]) { tabsContentContainer = getActiveContent()[parentNode]; }
+    element[stringTab] = self;
+  };
+  
+  // TAB DATA API
+  // ============
+  supports[push]( [ stringTab, Tab, '['+dataToggle+'="tab"]' ] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | Tooltip
+  ---------------------------------------------*/
+  
+  // TOOLTIP DEFINITION
+  // ==================
+  var Tooltip = function( element,options ) {
+  
+    // initialization element
+    element = queryElement(element);
+  
+    // set options
+    options = options || {};
+  
+    // DATA API
+    var animationData = element[getAttribute](dataAnimation),
+        placementData = element[getAttribute](dataPlacement),
+        delayData = element[getAttribute](dataDelay),
+        containerData = element[getAttribute](dataContainer),
+        
+        // strings
+        component = 'tooltip',
+        classString = 'class',
+        title = 'title',
+        fade = 'fade',
+        div = 'div',
+  
+        // check container
+        containerElement = queryElement(options[container]),
+        containerDataElement = queryElement(containerData),      
+  
+        // maybe the element is inside a modal
+        modal = getClosest(element,'.modal'),
+        
+        // maybe the element is inside a fixed navbar
+        navbarFixedTop = getClosest(element,'.'+fixedTop),
+        navbarFixedBottom = getClosest(element,'.'+fixedBottom);
+  
+    // set instance options
+    this[animation] = options[animation] && options[animation] !== fade ? options[animation] : animationData || fade;
+    this[placement] = options[placement] ? options[placement] : placementData || top;
+    this[delay] = parseInt(options[delay] || delayData) || 200;
+    this[container] = containerElement ? containerElement 
+                    : containerDataElement ? containerDataElement
+                    : navbarFixedTop ? navbarFixedTop
+                    : navbarFixedBottom ? navbarFixedBottom
+                    : modal ? modal : DOC[body];
+  
+    // bind, event targets, title and constants
+    var self = this, timer = 0, placementSetting = this[placement], tooltip = null,
+      titleString = element[getAttribute](title) || element[getAttribute](dataTitle) || element[getAttribute](dataOriginalTitle);
+  
+    if ( !titleString || titleString == "" ) return; // invalidate
+  
+    // private methods
+    var removeToolTip = function() {
+        self[container].removeChild(tooltip);
+        tooltip = null; timer = null;
+      },
+      createToolTip = function() {
+        titleString = element[getAttribute](title) || element[getAttribute](dataTitle) || element[getAttribute](dataOriginalTitle); // read the title again
+        if ( !titleString || titleString == "" ) return false; // invalidate
+        tooltip = DOC[createElement](div);
+        tooltip[setAttribute]('role',component);
+  
+        // tooltip arrow
+        var tooltipArrow = DOC[createElement](div);
+        tooltipArrow[setAttribute](classString,'arrow');
+        tooltip[appendChild](tooltipArrow);
+    
+        var tooltipInner = DOC[createElement](div);
+        tooltipInner[setAttribute](classString,component+'-inner');
+        tooltip[appendChild](tooltipInner);
+        tooltipInner[innerHTML] = titleString;
+  
+        self[container][appendChild](tooltip);
+        tooltip[setAttribute](classString, component + ' bs-' + component+'-'+placementSetting + ' ' + self[animation]);
+      },
+      updateTooltip = function () {
+        styleTip(element,tooltip,placementSetting,self[container]);
+      },
+      showTooltip = function () {
+        !hasClass(tooltip,showClass) && ( addClass(tooltip,showClass) );
+      },
+      // triggers
+      showTrigger = function() {
+        on( globalObject, resizeEvent, self.hide );
+        bootstrapCustomEvent.call(element, shownEvent, component);
+      },
+      hideTrigger = function() {
+        off( globalObject, resizeEvent, self.hide );
+        removeToolTip();
+        bootstrapCustomEvent.call(element, hiddenEvent, component);
+      };
+  
+    // public methods
+    this.show = function() {
+      clearTimeout(timer);
+      timer = setTimeout( function() {
+        if (tooltip === null) {
+          placementSetting = self[placement]; // we reset placement in all cases
+          if(createToolTip() == false) return;
+          updateTooltip();
+          showTooltip();
+          bootstrapCustomEvent.call(element, showEvent, component);
+          !!self[animation] ? emulateTransitionEnd(tooltip, showTrigger) : showTrigger();
+        }
+      }, 20 );
+    };
+    this.hide = function() {
+      clearTimeout(timer);
+      timer = setTimeout( function() {
+        if (tooltip && hasClass(tooltip,showClass)) {
+          bootstrapCustomEvent.call(element, hideEvent, component);
+          removeClass(tooltip,showClass);
+          !!self[animation] ? emulateTransitionEnd(tooltip, hideTrigger) : hideTrigger();
+        }
+      }, self[delay]);
+    };
+    this.toggle = function() {
+      if (!tooltip) { self.show(); } 
+      else { self.hide(); }
+    };
+  
+    // init
+    if ( !(stringTooltip in element) ) { // prevent adding event handlers twice
+      element[setAttribute](dataOriginalTitle,titleString);
+      element.removeAttribute(title);
+      on(element, mouseHover[0], self.show);
+      on(element, mouseHover[1], self.hide);
+    }
+    element[stringTooltip] = self;
+  };
+  
+  // TOOLTIP DATA API
+  // =================
+  supports[push]( [ stringTooltip, Tooltip, '['+dataToggle+'="tooltip"]' ] );
+  
+  
+  
+  /* Native Javascript for Bootstrap 4 | Initialize Data API
+  --------------------------------------------------------*/
+  var initializeDataAPI = function( constructor, collection ){
+      for (var i=0, l=collection[length]; i<l; i++) {
+        new constructor(collection[i]);
+      }
+    },
+    initCallback = BSN.initCallback = function(lookUp){
+      lookUp = lookUp || DOC;
+      for (var i=0, l=supports[length]; i<l; i++) {
+        initializeDataAPI( supports[i][1], lookUp[querySelectorAll] (supports[i][2]) );
+      }
+    };
+  
+  // bulk initialize all components
+  DOC[body] ? initCallback() : on( DOC, 'DOMContentLoaded', function(){ initCallback(); } );
+  
+  return {
+    Alert: Alert,
+    Button: Button,
+    Carousel: Carousel,
+    Collapse: Collapse,
+    Dropdown: Dropdown,
+    Modal: Modal,
+    Popover: Popover,
+    ScrollSpy: ScrollSpy,
+    Tab: Tab,
+    Tooltip: Tooltip
+  };
+}));
+
 /* jshint maxerr: 10000 */
 /* jslint unused: true */
 /* jshint shadow: true */
@@ -44698,35 +45970,37 @@ return __p
 define('tpl!chatbox_head', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<div class="chat-head chat-head-chatbox">\n    <a class="chatbox-btn close-chatbox-button icon-close" title="' +
-__e(o.info_close) +
-'"></a>\n    ';
+__p += '<div class="chat-head chat-head-chatbox row no-gutters">\n    <div class="col">\n        <div class="row no-gutters">\n            ';
  if (o.show_avatar) { ;
-__p += '\n        <img alt="User Avatar"\n            class="avatar"\n            height="' +
+__p += '\n            <div class="col-auto">\n                <img alt="User Avatar"\n                    class="avatar"\n                    height="' +
 __e(o.avatar_height) +
 'px" width="' +
 __e(o.avatar_width) +
-'px"\n            src="data:' +
+'px"\n                    src="data:' +
 __e(o.image_type || o._converse.DEFAULT_IMAGE_TYPE) +
 ';base64,' +
 __e(o.image || o._converse.DEFAULT_IMAGE) +
-'"/>\n    ';
+'"/>\n            </div>\n            ';
  } ;
-__p += '\n    <div class="chat-title">\n        ';
+__p += '\n            <div class="col chat-title" title="' +
+__e(o.jid) +
+'">\n                ';
  if (o.url) { ;
-__p += '\n            <a href="' +
+__p += '\n                    <a href="' +
 __e(o.url) +
-'" target="_blank" rel="noopener" class="user">\n        ';
+'" target="_blank" rel="noopener" class="user">\n                ';
  } ;
-__p += '\n                ' +
-__e( o.fullname ) +
-'\n        ';
+__p += '\n                        ' +
+__e( o.fullname || o.jid ) +
+'\n                ';
  if (o.url) { ;
-__p += '\n            </a>\n        ';
+__p += '\n                    </a>\n                ';
  } ;
-__p += '\n        <p class="user-custom-message">' +
+__p += '\n                <p class="user-custom-message">' +
 __e( o.status ) +
-'</p>\n    </div>\n</div>\n';
+'</p>\n            </div>\n        </div>\n    </div>\n    <div class="chatbox-buttons row no-gutters">\n        <a class="chatbox-btn close-chatbox-button fa fa-close" title=' +
+__e(o.info_close) +
+'></a>\n        <!-- <a class="chatbox-btn fa fa-vcard" title="Contact profile" data-toggle="modal" data-target="#contactProfileModal"></a> -->\n    </div>\n</div>\n';
 return __p
 };});
 
@@ -44774,7 +46048,7 @@ return __p
 define('tpl!emojis', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-
+__p += '<div class="emoji-picker-container">\n';
  _.forEach(o.emojis_by_category, function (obj, category) { ;
 __p += '\n    <ul class="emoji-picker emoji-picker-' +
 __e(category) +
@@ -44826,7 +46100,7 @@ __e(skintone) +
 ((__t = ( o.transform(':'+skintone+':') )) == null ? '' : __t) +
 ' </a>\n                </li>\n            ';
  }); ;
-__p += '\n        </ul>\n    </li>\n</ul>\n';
+__p += '\n        </ul>\n    </li>\n</ul>\n</div>\n';
 return __p
 };});
 
@@ -44880,7 +46154,7 @@ return __p
 
 define('tpl!new_day', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<time class="message chat-info chat-date" data-isodate="' +
+__p += '<time class="message chat-info chat-date badge badge-info" data-isodate="' +
 __e(o.isodate) +
 '">' +
 __e(o.datestring) +
@@ -44891,7 +46165,7 @@ return __p
 
 define('tpl!spinner', ['lodash'], function(_) {return function(o) {
 var __t, __p = '';
-__p += '<span class="spinner centered"/>\n';
+__p += '<span class="spinner fa fa-spinner centered"/>\n';
 return __p
 };});
 
@@ -44899,15 +46173,15 @@ return __p
 define('tpl!spoiler_button', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<li class="toggle-compose-spoiler">\n    <a class="\n        ';
+__p += '<li class="toggle-compose-spoiler fa ';
  if (o.composing_spoiler)  { ;
-__p += ' icon-eye-blocked ';
+__p += ' fa-eye-slash ';
  } ;
-__p += '\n        ';
+__p += ' ';
  if (!o.composing_spoiler)  { ;
-__p += ' icon-eye ';
+__p += ' fa-eye ';
  } ;
-__p += '"\n        title="' +
+__p += '"\n    title="' +
 ((__t = ( o.label_toggle_spoiler )) == null ? '' : __t) +
 '"></a>\n</li>\n';
 return __p
@@ -44940,25 +46214,188 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  if (o.use_emoji)  { ;
-__p += '\n<li class="toggle-toolbar-menu toggle-smiley">\n    <a class="icon-happy" title="' +
-__e(o.label_insert_smiley) +
-'"></a>\n    <span class="emoji-picker"></span>\n</li>\n';
+__p += '\n<li class="toggle-toolbar-menu toggle-smiley fa fa-smile-o dropup">\n    <div class="emoji-picker dropdown-menu toolbar-menu"></div>\n</li>\n';
  } ;
 __p += '\n';
  if (o.show_call_button)  { ;
-__p += '\n<li class="toggle-call"><a class="icon-phone" title="' +
+__p += '\n<li class="toggle-call fa fa-phone" title="' +
 __e(o.label_start_call) +
-'"></a></li>\n';
- } ;
-__p += '\n';
- if (o.show_clear_button)  { ;
-__p += '\n<li class="toggle-clear"><a class="icon-remove" title="' +
-__e(o.label_clear) +
-'"></a></li>\n';
+'"></li>\n';
  } ;
 __p += '\n';
 return __p
 };});
+
+
+define('tpl!chatboxes', ['lodash'], function(_) {return function(o) {
+var __t, __p = '';
+__p += '<div class="converse-chatboxes row no-gutters"></div>\n<div id="converse-modals" class="modals"></div>\n';
+return __p
+};});
+
+/*!
+ * Backbone.Overview 
+ *
+ * Copyright (c) 2018, JC Brand <jc@opkode.com>
+ * Licensed under the Mozilla Public License (MPL) 
+ */
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define('backbone.overview',["underscore", "backbone"], factory);
+  } else {
+    // RequireJS isn't being used.
+    // Assume underscore and backbone are loaded in <script> tags
+    factory(_ || root._, Backbone || root.Backbone);
+  }
+})(this, function (_, Backbone) {
+  "use strict";
+
+  var View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
+
+  var Overview = Backbone.Overview = function (options) {
+    /* An Overview is a View that contains and keeps track of sub-views.
+     * Kind of like what a Collection is to a Model.
+     */
+    var that = this;
+    this.views = {};
+    this.keys = _.partial(_.keys, this.views);
+    this.getAll = _.partial(_.identity, this.views);
+
+    this.get = function (id) {
+      return that.views[id];
+    };
+
+    this.xget = function (id) {
+      /* Exclusive get. Returns all instances except the given id. */
+      return _.filter(that.views, function (view, vid) {
+        return vid !== id;
+      });
+    };
+
+    this.add = function (id, view) {
+      that.views[id] = view;
+      return view;
+    };
+
+    this.remove = function (id) {
+      if (typeof id === "undefined") {
+        new View().remove.apply(that);
+      }
+
+      var view = that.views[id];
+
+      if (view) {
+        delete that.views[id];
+        view.remove();
+        return view;
+      }
+    };
+
+    this.removeAll = function () {
+      _.each(_.keys(that.views), that.remove);
+
+      return that;
+    };
+
+    View.apply(this, Array.prototype.slice.apply(arguments));
+  };
+
+  var methods = ['all', 'any', 'chain', 'collect', 'contains', 'detect', 'difference', 'drop', 'each', 'every', 'filter', 'find', 'first', 'foldl', 'foldr', 'forEach', 'head', 'include', 'indexOf', 'initial', 'inject', 'invoke', 'isEmpty', 'last', 'lastIndexOf', 'map', 'max', 'min', 'reduce', 'reduceRight', 'reject', 'rest', 'sample', 'select', 'shuffle', 'size', 'some', 'sortBy', 'tail', 'take', 'toArray', 'without']; // Mix in each Underscore method as a proxy to `Overview#view`.
+
+  _.each(methods, function (method) {
+    Overview.prototype[method] = function () {
+      var args = Array.prototype.slice.call(arguments);
+      args.unshift(this.views);
+      return _[method].apply(_, args);
+    };
+  });
+
+  _.extend(Overview.prototype, View.prototype);
+
+  Overview.extend = View.extend;
+  Backbone.OrderedListView = Backbone.Overview.extend({
+    // The `listItems` attribute denotes the path (from this View) to the
+    // list of items.
+    listItems: 'model',
+    // The `sortEvent` attribute specifies the event which should cause the
+    // ordered list to be sorted.
+    sortEvent: 'change',
+    // The `listSelector` is the selector used to query for the DOM list
+    // element which contains the ordered items.
+    listSelector: '.ordered-items',
+    // The `itemView` is constructor which should be called to create a
+    // View for a new item.
+    ItemView: undefined,
+    initialize: function initialize() {
+      this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
+      this.items = _.get(this, this.listItems);
+      this.items.on('add', this.createItemView, this);
+      this.items.on('add', this.sortEventually, this);
+      this.items.on(this.sortEvent, this.sortEventually, this);
+    },
+    createItemView: function createItemView(item) {
+      var item_view = this.get(item.get('id'));
+
+      if (!item_view) {
+        item_view = new this.ItemView({
+          model: item
+        });
+        this.add(item.get('id'), item_view);
+      } else {
+        item_view.model = item;
+        item_view.initialize();
+      }
+
+      item_view.render();
+      return item_view;
+    },
+    sortAndPositionAllItems: function sortAndPositionAllItems() {
+      var _this = this;
+
+      this.items.sort();
+      this.items.each(function (item) {
+        if (_.isUndefined(_this.get(item.get('id')))) {
+          _this.createItemView(item);
+        }
+
+        _this.positionItem(item, _this.el.querySelector(_this.listSelector));
+      });
+    },
+    positionItem: function positionItem(item, list_el) {
+      /* Place the View's DOM element in the correct alphabetical
+       * position in the list.
+       *
+       * IMPORTANT: there's an important implicit assumption being
+       * made here. And that is that initially this method gets called
+       * for each item in the right positional order.
+       *
+       * In other words, it gets called for the 0th, then the
+       * 1st, then the 2nd, 3rd and so on.
+       *
+       * That's why we call it in the "success" handler after
+       * fetching the items, so that we know we have ALL of
+       * them and that they're sorted.
+       */
+      var view = this.get(item.get('id')),
+          index = this.items.indexOf(item);
+
+      if (index === 0) {
+        list_el.insertAdjacentElement('afterbegin', view.el);
+      } else if (index === this.items.length - 1) {
+        list_el.insertAdjacentElement('beforeend', view.el);
+      } else {
+        var neighbour_el = list_el.querySelector('li:nth-child(' + index + ')');
+        neighbour_el.insertAdjacentElement('afterend', view.el);
+      }
+
+      return view;
+    }
+  });
+  return Backbone.Overview;
+});
+
+//# sourceMappingURL=backbone.overview.js.map;
+
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -44969,8 +46406,577 @@ return __p
 
 /*global define */
 (function (root, factory) {
-  define('converse-chatview',["converse-core", "converse-chatboxes", "emojione", "xss", "tpl!action", "tpl!chatbox", "tpl!chatbox_head", "tpl!chatbox_message_form", "tpl!emojis", "tpl!help_message", "tpl!info", "tpl!message", "tpl!new_day", "tpl!spinner", "tpl!spoiler_button", "tpl!spoiler_message", "tpl!toolbar"], factory);
-})(this, function (converse, dummy, emojione, xss, tpl_action, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_help_message, tpl_info, tpl_message, tpl_new_day, tpl_spinner, tpl_spoiler_button, tpl_spoiler_message, tpl_toolbar) {
+  define('converse-chatboxes',["converse-core", "tpl!chatboxes", "backbone.overview"], factory);
+})(void 0, function (converse, tpl_chatboxes) {
+  "use strict";
+
+  var _converse$env = converse.env,
+      Backbone = _converse$env.Backbone,
+      Promise = _converse$env.Promise,
+      Strophe = _converse$env.Strophe,
+      b64_sha1 = _converse$env.b64_sha1,
+      moment = _converse$env.moment,
+      utils = _converse$env.utils,
+      _ = _converse$env._;
+  converse.plugins.add('converse-chatboxes', {
+    overrides: {
+      // Overrides mentioned here will be picked up by converse.js's
+      // plugin architecture they will replace existing methods on the
+      // relevant objects or classes.
+      disconnect: function disconnect() {
+        var _converse = this.__super__._converse;
+
+        _converse.chatboxviews.closeAllChatBoxes();
+
+        return this.__super__.disconnect.apply(this, arguments);
+      },
+      logOut: function logOut() {
+        var _converse = this.__super__._converse;
+
+        _converse.chatboxviews.closeAllChatBoxes();
+
+        return this.__super__.logOut.apply(this, arguments);
+      },
+      initStatus: function initStatus(reconnecting) {
+        var _converse = this.__super__._converse;
+
+        if (!reconnecting) {
+          _converse.chatboxviews.closeAllChatBoxes();
+        }
+
+        return this.__super__.initStatus.apply(this, arguments);
+      }
+    },
+    initialize: function initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      var _converse = this._converse;
+
+      _converse.api.promises.add(['chatBoxesFetched', 'chatBoxesInitialized']);
+
+      function openChat(jid) {
+        if (!utils.isValidJID(jid)) {
+          return converse.log("Invalid JID \"".concat(jid, "\" provided in URL fragment"), Strophe.LogLevel.WARN);
+        }
+
+        Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(function () {
+          _converse.api.chats.open(jid);
+        });
+      }
+
+      _converse.router.route('converse/chat?jid=:jid', openChat);
+
+      _converse.Message = Backbone.Model.extend({
+        defaults: function defaults() {
+          return {
+            msgid: _converse.connection.getUniqueId()
+          };
+        }
+      });
+      _converse.Messages = Backbone.Collection.extend({
+        model: _converse.Message,
+        comparator: 'time'
+      });
+      _converse.ChatBox = Backbone.Model.extend({
+        defaults: {
+          'bookmarked': false,
+          'chat_state': undefined,
+          'image': _converse.DEFAULT_IMAGE,
+          'image_type': _converse.DEFAULT_IMAGE_TYPE,
+          'num_unread': 0,
+          'show_avatar': true,
+          'type': 'chatbox',
+          'url': ''
+        },
+        initialize: function initialize() {
+          this.messages = new _converse.Messages();
+          this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](b64_sha1("converse.messages".concat(this.get('jid')).concat(_converse.bare_jid)));
+          this.save({
+            // The chat_state will be set to ACTIVE once the chat box is opened
+            // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
+            'box_id': b64_sha1(this.get('jid')),
+            'time_opened': this.get('time_opened') || moment().valueOf(),
+            'user_id': Strophe.getNodeFromJid(this.get('jid'))
+          });
+        },
+        getMessageBody: function getMessageBody(message) {
+          var type = message.getAttribute('type');
+          return type === 'error' ? _.propertyOf(message.querySelector('error text'))('textContent') : _.propertyOf(message.querySelector('body'))('textContent');
+        },
+        getMessageAttributes: function getMessageAttributes(message, delay, original_stanza) {
+          /* Parses a passed in message stanza and returns an object
+           * of attributes.
+           *
+           * Parameters:
+           *    (XMLElement) message - The message stanza
+           *    (XMLElement) delay - The <delay> node from the
+           *      stanza, if there was one.
+           *    (XMLElement) original_stanza - The original stanza,
+           *      that contains the message stanza, if it was
+           *      contained, otherwise it's the message stanza itself.
+           */
+          var _converse = this.__super__._converse,
+              __ = _converse.__;
+          delay = delay || message.querySelector('delay');
+          var type = message.getAttribute('type'),
+              body = this.getMessageBody(message);
+
+          var delayed = !_.isNull(delay),
+              is_groupchat = type === 'groupchat',
+              chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
+
+          var from;
+
+          if (is_groupchat) {
+            from = Strophe.unescapeNode(Strophe.getResourceFromJid(message.getAttribute('from')));
+          } else {
+            from = Strophe.getBareJidFromJid(message.getAttribute('from'));
+          }
+
+          var time = delayed ? delay.getAttribute('stamp') : moment().format();
+          var sender, fullname;
+
+          if (is_groupchat && from === this.get('nick') || !is_groupchat && from === _converse.bare_jid) {
+            sender = 'me';
+            fullname = _converse.xmppstatus.get('fullname') || from;
+          } else {
+            sender = 'them';
+            fullname = this.get('fullname') || from;
+          }
+
+          var spoiler = message.querySelector("spoiler[xmlns=\"".concat(Strophe.NS.SPOILER, "\"]"));
+          var attrs = {
+            'type': type,
+            'chat_state': chat_state,
+            'delayed': delayed,
+            'fullname': fullname,
+            'message': body || undefined,
+            'msgid': message.getAttribute('id'),
+            'sender': sender,
+            'time': time,
+            'is_spoiler': !_.isNull(spoiler)
+          };
+
+          if (spoiler) {
+            attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
+          }
+
+          return attrs;
+        },
+        createMessage: function createMessage(message, delay, original_stanza) {
+          /* Create a Backbone.Message object inside this chat box
+           * based on the identified message stanza.
+           */
+          return this.messages.create(this.getMessageAttributes.apply(this, arguments));
+        },
+        newMessageWillBeHidden: function newMessageWillBeHidden() {
+          /* Returns a boolean to indicate whether a newly received
+           * message will be visible to the user or not.
+           */
+          return this.get('hidden') || this.get('minimized') || this.isScrolledUp() || _converse.windowState === 'hidden';
+        },
+        incrementUnreadMsgCounter: function incrementUnreadMsgCounter(stanza) {
+          /* Given a newly received message, update the unread counter if
+           * necessary.
+           */
+          if (_.isNull(stanza.querySelector('body'))) {
+            return; // The message has no text
+          }
+
+          if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+            this.save({
+              'num_unread': this.get('num_unread') + 1
+            });
+
+            _converse.incrementMsgCounter();
+          }
+        },
+        clearUnreadMsgCounter: function clearUnreadMsgCounter() {
+          this.save({
+            'num_unread': 0
+          });
+        },
+        isScrolledUp: function isScrolledUp() {
+          return this.get('scrolled', true);
+        }
+      });
+      _converse.ChatBoxes = Backbone.Collection.extend({
+        comparator: 'time_opened',
+        model: function model(attrs, options) {
+          return new _converse.ChatBox(attrs, options);
+        },
+        registerMessageHandler: function registerMessageHandler() {
+          _converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
+
+          _converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
+        },
+        chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
+          return true;
+        },
+        onChatBoxesFetched: function onChatBoxesFetched(collection) {
+          var _this = this;
+
+          /* Show chat boxes upon receiving them from sessionStorage */
+          collection.each(function (chatbox) {
+            if (_this.chatBoxMayBeShown(chatbox)) {
+              chatbox.trigger('show');
+            }
+          });
+
+          _converse.emit('chatBoxesFetched');
+        },
+        onConnected: function onConnected() {
+          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.chatboxes-".concat(_converse.bare_jid)));
+          this.registerMessageHandler();
+          this.fetch({
+            add: true,
+            success: this.onChatBoxesFetched.bind(this)
+          });
+        },
+        onErrorMessage: function onErrorMessage(message) {
+          /* Handler method for all incoming error message stanzas
+          */
+          // TODO: we can likely just reuse "onMessage" below
+          var from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
+
+          if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
+            return true;
+          } // Get chat box, but only create a new one when the message has a body.
+
+
+          var chatbox = this.getChatBox(from_jid);
+
+          if (!chatbox) {
+            return true;
+          }
+
+          chatbox.createMessage(message, null, message);
+          return true;
+        },
+        onMessage: function onMessage(message) {
+          /* Handler method for all incoming single-user chat "message"
+           * stanzas.
+           *
+           * Parameters:
+           *    (XMLElement) message - The incoming message stanza
+           */
+          var contact_jid,
+              delay,
+              resource,
+              from_jid = message.getAttribute('from'),
+              to_jid = message.getAttribute('to');
+          var original_stanza = message,
+              to_resource = Strophe.getResourceFromJid(to_jid),
+              is_carbon = !_.isNull(message.querySelector("received[xmlns=\"".concat(Strophe.NS.CARBONS, "\"]")));
+
+          if (_converse.filter_by_resource && to_resource && to_resource !== _converse.resource) {
+            _converse.log("onMessage: Ignoring incoming message intended for a different resource: ".concat(to_jid), Strophe.LogLevel.INFO);
+
+            return true;
+          } else if (utils.isHeadlineMessage(_converse, message)) {
+            // XXX: Ideally we wouldn't have to check for headline
+            // messages, but Prosody sends headline messages with the
+            // wrong type ('chat'), so we need to filter them out here.
+            _converse.log("onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ".concat(from_jid), Strophe.LogLevel.INFO);
+
+            return true;
+          }
+
+          var forwarded = message.querySelector('forwarded');
+
+          if (!_.isNull(forwarded)) {
+            var forwarded_message = forwarded.querySelector('message');
+            var forwarded_from = forwarded_message.getAttribute('from');
+
+            if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
+              // Prevent message forging via carbons
+              //
+              // https://xmpp.org/extensions/xep-0280.html#security
+              return true;
+            }
+
+            message = forwarded_message;
+            delay = forwarded.querySelector('delay');
+            from_jid = message.getAttribute('from');
+            to_jid = message.getAttribute('to');
+          }
+
+          var from_bare_jid = Strophe.getBareJidFromJid(from_jid),
+              from_resource = Strophe.getResourceFromJid(from_jid),
+              is_me = from_bare_jid === _converse.bare_jid;
+
+          if (is_me) {
+            // I am the sender, so this must be a forwarded message...
+            contact_jid = Strophe.getBareJidFromJid(to_jid);
+            resource = Strophe.getResourceFromJid(to_jid);
+          } else {
+            contact_jid = from_bare_jid;
+            resource = from_resource;
+          } // Get chat box, but only create a new one when the message has a body.
+
+
+          var attrs = {
+            'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
+          };
+          var chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(message.querySelector('body'))),
+              msgid = message.getAttribute('id');
+
+          if (chatbox) {
+            var messages = msgid && chatbox.messages.findWhere({
+              msgid: msgid
+            }) || [];
+
+            if (_.isEmpty(messages)) {
+              // Only create the message when we're sure it's not a
+              // duplicate
+              chatbox.incrementUnreadMsgCounter(original_stanza);
+              chatbox.createMessage(message, delay, original_stanza);
+            }
+          }
+
+          _converse.emit('message', {
+            'stanza': original_stanza,
+            'chatbox': chatbox
+          });
+
+          return true;
+        },
+        getChatBox: function getChatBox(jid) {
+          var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+          var create = arguments.length > 2 ? arguments[2] : undefined;
+
+          /* Returns a chat box or optionally return a newly
+           * created one if one doesn't exist.
+           *
+           * Parameters:
+           *    (String) jid - The JID of the user whose chat box we want
+           *    (Boolean) create - Should a new chat box be created if none exists?
+           *    (Object) attrs - Optional chat box atributes.
+           */
+          if (_.isObject(jid)) {
+            create = attrs;
+            attrs = jid;
+            jid = attrs.jid;
+          }
+
+          jid = Strophe.getBareJidFromJid(jid.toLowerCase());
+          var chatbox = this.get(Strophe.getBareJidFromJid(jid));
+
+          if (!chatbox && create) {
+            _.extend(attrs, {
+              'jid': jid,
+              'id': jid
+            });
+
+            chatbox = this.create(attrs, {
+              'error': function error(model, response) {
+                _converse.log(response.responseText);
+              }
+            });
+          }
+
+          return chatbox;
+        }
+      });
+      _converse.ChatBoxViews = Backbone.Overview.extend({
+        _ensureElement: function _ensureElement() {
+          /* Override method from backbone.js
+           * If the #conversejs element doesn't exist, create it.
+           */
+          if (!this.el) {
+            var el = _converse.root.querySelector('#conversejs');
+
+            if (_.isNull(el)) {
+              el = document.createElement('div');
+              el.setAttribute('id', 'conversejs');
+
+              var body = _converse.root.querySelector('body');
+
+              if (body) {
+                body.appendChild(el);
+              } else {
+                // Perhaps inside a web component?
+                _converse.root.appendChild(el);
+              }
+            }
+
+            if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
+              el.classList.add('fullscreen');
+            }
+
+            el.innerHTML = '';
+            this.setElement(el, false);
+          } else {
+            this.setElement(_.result(this, 'el'), false);
+          }
+        },
+        initialize: function initialize() {
+          this.model.on("add", this.onChatBoxAdded, this);
+          this.model.on("destroy", this.removeChat, this);
+          this.render();
+        },
+        render: function render() {
+          try {
+            this.el.innerHTML = tpl_chatboxes();
+          } catch (e) {
+            this._ensureElement();
+
+            this.el.innerHTML = tpl_chatboxes();
+          }
+
+          this.row_el = this.el.querySelector('.row');
+        },
+        insertRowColumn: function insertRowColumn(el) {
+          /* Add a new DOM element (likely a chat box) into the
+           * the row managed by this overview.
+           */
+          this.row_el.insertAdjacentElement('afterBegin', el);
+        },
+        onChatBoxAdded: function onChatBoxAdded(item) {
+          // Views aren't created here, since the core code doesn't
+          // contain any views. Instead, they're created in overrides in
+          // plugins, such as in converse-chatview.js and converse-muc.js
+          return this.get(item.get('id'));
+        },
+        removeChat: function removeChat(item) {
+          this.remove(item.get('id'));
+        },
+        closeAllChatBoxes: function closeAllChatBoxes() {
+          /* This method gets overridden in src/converse-controlbox.js if
+          * the controlbox plugin is active.
+          */
+          this.each(function (view) {
+            view.close();
+          });
+          return this;
+        },
+        chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
+          return this.model.chatBoxMayBeShown(chatbox);
+        }
+      }); // TODO: move to converse-chatboxviews.js and use there in the API
+
+      _converse.getViewForChatBox = function (chatbox) {
+        if (!chatbox) {
+          return;
+        }
+
+        return _converse.chatboxviews.get(chatbox.get('id'));
+      };
+      /************************ BEGIN Event Handlers ************************/
+
+
+      _converse.api.listen.on('pluginsInitialized', function () {
+        _converse.chatboxes = new _converse.ChatBoxes();
+        _converse.chatboxviews = new _converse.ChatBoxViews({
+          'model': _converse.chatboxes
+        });
+
+        _converse.emit('chatBoxesInitialized');
+      });
+
+      _converse.api.listen.on('beforeTearDown', function () {
+        _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
+
+
+        delete _converse.chatboxes.browserStorage;
+      });
+
+      _converse.api.listen.on('statusInitialized', function () {
+        return _converse.chatboxes.onConnected();
+      });
+      /************************ END Event Handlers ************************/
+
+      /************************ BEGIN API ************************/
+
+
+      _.extend(_converse.api, {
+        'chats': {
+          'create': function create(jids, attrs) {
+            if (_.isUndefined(jids)) {
+              _converse.log("chats.create: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+
+              return null;
+            }
+
+            if (_.isString(jids)) {
+              if (attrs && !_.get(attrs, 'fullname')) {
+                attrs.fullname = _.get(_converse.api.contacts.get(jids), 'attributes.fullname');
+              }
+
+              var chatbox = _converse.chatboxes.getChatBox(jids, attrs, true);
+
+              if (_.isNil(chatbox)) {
+                _converse.log("Could not open chatbox for JID: " + jids, Strophe.LogLevel.ERROR);
+
+                return;
+              }
+
+              return chatbox;
+            }
+
+            return _.map(jids, function (jid) {
+              attrs.fullname = _.get(_converse.api.contacts.get(jid), 'attributes.fullname');
+              return _converse.chatboxes.getChatBox(jid, attrs, true).trigger('show');
+            });
+          },
+          'open': function open(jids, attrs) {
+            if (_.isUndefined(jids)) {
+              _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+
+              return null;
+            } else if (_.isString(jids)) {
+              var chatbox = _converse.api.chats.create(jids, attrs);
+
+              chatbox.trigger('show');
+              return chatbox;
+            }
+
+            return _.map(jids, function (jid) {
+              return _converse.api.chats.create(jid, attrs).trigger('show');
+            });
+          },
+          'get': function get(jids) {
+            if (_.isUndefined(jids)) {
+              var result = [];
+
+              _converse.chatboxes.each(function (chatbox) {
+                // FIXME: Leaky abstraction from MUC. We need to add a
+                // base type for chat boxes, and check for that.
+                if (chatbox.get('type') !== 'chatroom') {
+                  result.push(chatbox);
+                }
+              });
+
+              return result;
+            } else if (_.isString(jids)) {
+              return _converse.chatboxes.getChatBox(jids);
+            }
+
+            return _.map(jids, _.partial(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _, {}, true));
+          }
+        }
+      });
+      /************************ END API ************************/
+
+    }
+  });
+  return converse;
+});
+//# sourceMappingURL=converse-chatboxes.js.map;
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+
+/*global define */
+(function (root, factory) {
+  define('converse-chatview',["converse-core", "bootstrap", "emojione", "xss", "tpl!action", "tpl!chatbox", "tpl!chatbox_head", "tpl!chatbox_message_form", "tpl!emojis", "tpl!help_message", "tpl!info", "tpl!message", "tpl!new_day", "tpl!spinner", "tpl!spoiler_button", "tpl!spoiler_message", "tpl!toolbar", "converse-chatboxes"], factory);
+})(void 0, function (converse, bootstrap, emojione, xss, tpl_action, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_help_message, tpl_info, tpl_message, tpl_new_day, tpl_spinner, tpl_spoiler_button, tpl_spoiler_message, tpl_toolbar) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -45007,19 +47013,6 @@ return __p
       //
       // New functions which don't exist yet can also be added.
       //
-      registerGlobalEventHandlers: function registerGlobalEventHandlers() {
-        var _converse = this.__super__._converse;
-
-        this.__super__.registerGlobalEventHandlers();
-
-        _converse.root.addEventListener('click', function (ev) {
-          if (_.includes(ev.target.classList, 'toggle-toolbar-menu') || _.includes(ev.target.classList, 'insert-emoji')) {
-            return;
-          }
-
-          u.slideInAllElements(_converse.root.querySelectorAll('.toolbar-menu'));
-        });
-      },
       ChatBoxViews: {
         onChatBoxAdded: function onChatBoxAdded(item) {
           var _converse = this.__super__._converse;
@@ -45045,7 +47038,7 @@ return __p
           __ = _converse.__;
 
       _converse.api.settings.update({
-        'use_emojione': true,
+        'use_emojione': false,
         'emojione_image_path': emojione.imagePathPNG,
         'chatview_avatar_height': 32,
         'chatview_avatar_width': 32,
@@ -45083,8 +47076,8 @@ return __p
           this.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
         }
       });
-      _converse.EmojiPickerView = Backbone.NativeView.extend({
-        className: 'emoji-picker-container toolbar-menu collapsed',
+      _converse.EmojiPickerView = Backbone.VDOMView.extend({
+        className: 'emoji-picker-container',
         events: {
           'click .emoji-category-picker li.emoji-category': 'chooseCategory',
           'click .emoji-skintone-picker li.emoji-skintone': 'chooseSkinTone'
@@ -45092,26 +47085,15 @@ return __p
         initialize: function initialize() {
           this.model.on('change:current_skintone', this.render, this);
           this.model.on('change:current_category', this.render, this);
-          this.setScrollPosition = _.debounce(this.setScrollPosition, 50);
         },
-        render: function render() {
-          var _this = this;
-
-          var emojis_html = tpl_emojis(_.extend(this.model.toJSON(), {
+        toHTML: function toHTML() {
+          return tpl_emojis(_.extend(this.model.toJSON(), {
             'transform': _converse.use_emojione ? emojione.shortnameToImage : emojione.shortnameToUnicode,
             'emojis_by_category': u.getEmojisByCategory(_converse, emojione),
             'toned_emojis': u.getTonedEmojis(_converse),
             'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
             'shouldBeHidden': this.shouldBeHidden
           }));
-          this.el.innerHTML = emojis_html;
-
-          _.forEach(this.el.querySelectorAll('.emoji-picker'), function (el) {
-            el.addEventListener('scroll', _this.setScrollPosition.bind(_this));
-          });
-
-          this.restoreScrollPosition();
-          return this;
         },
         shouldBeHidden: function shouldBeHidden(shortname, current_skintone, toned_emojis) {
           /* Helper method for the template which decides whether an
@@ -45129,16 +47111,6 @@ return __p
           }
 
           return false;
-        },
-        restoreScrollPosition: function restoreScrollPosition() {
-          var current_picker = _.difference(this.el.querySelectorAll('.emoji-picker'), this.el.querySelectorAll('.emoji-picker.hidden'));
-
-          if (current_picker.length === 1 && this.model.get('scroll_position')) {
-            current_picker[0].scrollTop = this.model.get('scroll_position');
-          }
-        },
-        setScrollPosition: function setScrollPosition(ev) {
-          this.model.save('scroll_position', this.content);
         },
         chooseSkinTone: function chooseSkinTone(ev) {
           ev.preventDefault();
@@ -45228,6 +47200,7 @@ return __p
           _converse.emit('chatBoxInitialized', this);
         },
         render: function render() {
+          // XXX: Is this still needed?
           this.el.setAttribute('id', this.model.get('box_id'));
           this.el.innerHTML = tpl_chatbox(_.extend(this.model.toJSON(), {
             unread_msgs: __('You have unread messages')
@@ -45272,7 +47245,7 @@ return __p
           this.renderToolbar();
         },
         addSpoilerButton: function addSpoilerButton(options) {
-          var _this2 = this;
+          var _this = this;
 
           /* Asynchronously adds a button for writing spoiler
            * messages, based on whether the contact's client supports
@@ -45295,12 +47268,12 @@ return __p
             var supported = _.every(f.map(f.get('supported'))(results));
 
             if (supported) {
-              var html = tpl_spoiler_button(_this2.model.toJSON());
+              var html = tpl_spoiler_button(_this.model.toJSON());
 
               if (_converse.visible_toolbar_buttons.emoji) {
-                _this2.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
+                _this.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
               } else {
-                _this2.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
+                _this.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
               }
             }
           });
@@ -45330,7 +47303,6 @@ return __p
             'label_start_call': __('Start a call'),
             'label_toggle_spoiler': label_toggle_spoiler,
             'show_call_button': _converse.visible_toolbar_buttons.call,
-            'show_clear_button': _converse.visible_toolbar_buttons.clear,
             'show_spoiler_button': _converse.visible_toolbar_buttons.spoiler,
             'use_emoji': _converse.visible_toolbar_buttons.emoji
           });
@@ -45355,11 +47327,7 @@ return __p
            * as well as src/converse-muc.js (if those plugins are
            * enabled).
            */
-          var container = _converse.root.querySelector('#conversejs');
-
-          if (this.el.parentNode !== container) {
-            container.insertBefore(this.el, container.firstChild);
-          }
+          _converse.chatboxviews.insertRowColumn(this.el);
 
           return this;
         },
@@ -45570,11 +47538,9 @@ return __p
             } else {
               username = attrs.fullname;
             }
-          } else if (attrs.is_spoiler) {
-            template = tpl_spoiler_message;
           } else {
-            template = tpl_message;
             username = attrs.sender === 'me' && __('me') || fullname;
+            template = attrs.is_spoiler ? tpl_spoiler_message : tpl_message;
           }
 
           var msg_time = moment(attrs.time) || moment;
@@ -45604,10 +47570,10 @@ return __p
           return msg;
         },
         showHelpMessages: function showHelpMessages(msgs, type, spinner) {
-          var _this3 = this;
+          var _this2 = this;
 
           _.each(msgs, function (msg) {
-            _this3.content.insertAdjacentHTML('beforeend', tpl_help_message({
+            _this2.content.insertAdjacentHTML('beforeend', tpl_help_message({
               'isodate': moment().format(),
               'type': type || 'info',
               'message': xss.filterXSS(msg, {
@@ -45942,21 +47908,12 @@ return __p
           this.insertIntoTextArea(target.getAttribute('data-emoji'));
         },
         toggleEmojiMenu: function toggleEmojiMenu(ev) {
-          if (u.hasClass('insert-emoji', ev.target)) {
-            return;
-          }
-
-          if (!_.isUndefined(ev)) {
+          if (_.isUndefined(this.emoji_dropdown)) {
             ev.stopPropagation();
-
-            if (ev.target.classList.contains('emoji-category-picker') || ev.target.classList.contains('emoji-skintone-picker') || ev.target.classList.contains('emoji-category')) {
-              return;
-            }
+            var dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
+            this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
+            this.emoji_dropdown.toggle();
           }
-
-          var elements = _.difference(_converse.root.querySelectorAll('.toolbar-menu'), [this.emoji_picker_view.el]);
-
-          u.slideInAllElements(elements).then(_.partial(u.slideToggleElement, this.emoji_picker_view.el)).then(this.focus.bind(this));
         },
         toggleCall: function toggleCall(ev) {
           ev.stopPropagation();
@@ -46062,33 +48019,27 @@ return __p
           this.el.classList.add('hidden');
           return this;
         },
-        afterShown: function afterShown(focus) {
+        afterShown: function afterShown() {
           if (u.isPersistableModel(this.model)) {
             this.model.clearUnreadMsgCounter();
             this.model.save();
           }
 
           this.setChatState(_converse.ACTIVE);
-          this.scrollDown();
           this.renderEmojiPicker();
-
-          if (focus) {
-            this.focus();
-          }
+          this.scrollDown();
+          this.focus();
         },
-        _show: function _show(focus) {
+        _show: function _show(f) {
           /* Inner show method that gets debounced */
           if (u.isVisible(this.el)) {
-            if (focus) {
-              this.focus();
-            }
-
+            this.focus();
             return;
           }
 
-          u.fadeIn(this.el, _.bind(this.afterShown, this, focus));
+          u.fadeIn(this.el, _.bind(this.afterShown, this));
         },
-        show: function show(focus) {
+        show: function show() {
           if (_.isUndefined(this.debouncedShow)) {
             /* We wrap the method in a debouncer and set it on the
              * instance, so that we have it debounced per instance.
@@ -46175,100 +48126,39 @@ return __p
         // Advertise that we support XEP-0382 Message Spoilers
         _converse.connection.disco.addFeature(Strophe.NS.SPOILER);
       });
+      /************************ BEGIN API ************************/
+
+
+      _.extend(_converse.api, {
+        'chatviews': {
+          'get': function get(jids) {
+            if (_.isUndefined(jids)) {
+              _converse.log("chats.create: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+
+              return null;
+            }
+
+            if (_.isString(jids)) {
+              return _converse.chatboxviews.get(jids);
+            }
+
+            return _.map(jids, function (jid) {
+              return _converse.chatboxviews.get(jids);
+            });
+          }
+        }
+      });
+      /************************ END API ************************/
+
     }
   });
   return converse;
 });
 //# sourceMappingURL=converse-chatview.js.map;
 
-define('tpl!add_contact_dropdown', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<dl class="add-converse-contact dropdown">\n    <dt id="xmpp-contact-search" class="fancy-dropdown">\n        <a class="toggle-xmpp-contact-form icon-plus" href="#" title="' +
-__e(o.label_click_to_chat) +
-'"> ' +
-__e(o.label_add_contact) +
-'</a>\n    </dt>\n    <dd class="search-xmpp">\n        <div class="contact-form-container collapsed"></div>\n        <ul></ul>\n    </dd>\n</dl>\n';
-return __p
-};});
-
-
-define('tpl!add_contact_form', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<form class="pure-form add-xmpp-contact">\n    ';
- if (o.error_message) { ;
-__p += '\n        <span class="pure-form-message error">' +
-__e(o.error_message) +
-'</span>\n    ';
- } ;
-__p += '\n    <input type="text"\n        name="identifier"\n        value="' +
-__e(o.value) +
-'"\n        class="username ';
- if (o.error_message) { ;
-__p += ' error ';
- } ;
-__p += '"\n        placeholder="' +
-__e(o.label_contact_username) +
-'"/>\n    <button class="pure-button button-primary" type="submit">' +
-__e(o.label_add) +
-'</button>\n</form>\n';
-return __p
-};});
-
-
 define('tpl!converse_brand_heading', ['lodash'], function(_) {return function(o) {
 var __t, __p = '';
-__p += '<span class="brand-heading-container">\n    <div class="brand-heading">\n        <i class="icon-conversejs"></i>\n        <span class="brand-name">converse</span>\n    </div>\n</span>\n';
-return __p
-};});
-
-
-define('tpl!contacts_panel', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<form class="pure-form set-xmpp-status" id="set-xmpp-status" action="" method="post">\n    <select id="select-xmpp-status">\n        <option value="online">' +
-__e(o.label_online) +
-'</option>\n        <option value="dnd">' +
-__e(o.label_busy) +
-'</option>\n        <option value="away">' +
-__e(o.label_away) +
-'</option>\n        ';
- if (o.include_offline_state)  { ;
-__p += '\n        <option value="offline">' +
-__e(o.label_offline) +
-'</option>\n        ';
- } ;
-__p += '\n        ';
- if (o.allow_logout)  { ;
-__p += '\n        <option value="logout">' +
-__e(o.label_logout) +
-'</option>\n        ';
- } ;
-__p += '\n    </select>\n</form>\n';
-return __p
-};});
-
-
-define('tpl!contacts_tab', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<a class="s contacts-tab\n   ';
- if (o.is_current) { ;
-__p += ' current ';
- } ;
-__p += '\n   ';
- if (o.num_unread) { ;
-__p += ' unread-msgs ';
- } ;
-__p += '"\n       data-id="users" href="#users">\n    ' +
-__e(o.label_contacts) +
-'\n    ';
- if (o.num_unread) { ;
-__p += '\n        <span class="msgs-indicator">' +
-__e( o.num_unread ) +
-'</span>\n    ';
- } ;
-__p += '\n</a>\n';
+__p += '<span class="brand-heading-container">\n    <div class="brand-heading">\n        <a href="https://conversejs.org" target="_blank" rel="noopener">\n            <i class="icon-conversejs"></i><span class="brand-name">converse</span>\n        </a>\n    </div>\n</span>\n';
 return __p
 };});
 
@@ -46276,9 +48166,9 @@ return __p
 define('tpl!controlbox', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<div class="flyout box-flyout">\n    <div class="chat-head controlbox-head">\n        <ul id="controlbox-tabs"></ul>\n        ';
+__p += '<div class="flyout box-flyout">\n    <div class="chat-head controlbox-head">\n        ';
  if (!o.sticky_controlbox) { ;
-__p += '\n            <a class="chatbox-btn close-chatbox-button icon-close"></a>\n        ';
+__p += '\n            <a class="chatbox-btn close-chatbox-button fa fa-close"></a>\n        ';
  } ;
 __p += '\n    </div>\n    <div class="controlbox-panes"></div>\n</div>\n';
 return __p
@@ -46297,9 +48187,7 @@ return __p
 define('tpl!login_panel', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<div id="converse-login-panel" class="controlbox-pane fade-in">\n    <form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">\n        <legend>' +
-__e(o.__("Login")) +
-'</legend>\n        <div class="conn-feedback fade-in ';
+__p += '<div id="converse-login-panel" class="controlbox-pane fade-in row">\n    <form id="converse-login" class="converse-form" method="post">\n        <div class="conn-feedback fade-in ';
  if (!o.conn_feedback_subject) { ;
 __p += ' hidden ';
  } ;
@@ -46315,29 +48203,29 @@ __p += '">' +
 __e(o.conn_feedback_message) +
 '</p>\n        </div>\n        ';
  if (o.auto_login || o._converse.CONNECTION_STATUS[o.connection_status] === 'CONNECTING') { ;
-__p += '\n            <span class="spinner centered"/>\n        ';
+__p += '\n            <span class="spinner fa fa-spinner centered"/>\n        ';
  } else { ;
 __p += '\n            ';
  if (o.authentication == o.LOGIN || o.authentication == o.EXTERNAL) { ;
-__p += '\n                <label>' +
-__e(o.__("Jabber ID:")) +
-'</label>\n                <input autofocus required\n                    type="text"\n                    name="jid"\n                    placeholder="' +
+__p += '\n                <div class="form-group">\n                    <label for="jid">' +
+__e(o.__("XMPP Username:")) +
+'</label>\n                    <input class="form-control" autofocus required="required" type="text" name="jid" placeholder="' +
 __e(o.placeholder_username) +
-'">\n                ';
+'">\n                </div>\n                ';
  if (o.authentication !== o.EXTERNAL) { ;
-__p += '\n                    <label>' +
+__p += '\n                <div class="form-group">\n                    <label for="password">' +
 __e(o.__("Password:")) +
-'</label>\n                    <input required\n                        type="password" name="password"\n                        placeholder="' +
+'</label>\n                    <input class="form-control" required="required" type="password" name="password" placeholder="' +
 __e(o.__('password')) +
-'">\n                ';
+'">\n                </div>\n                ';
  } ;
-__p += '\n                <input class="pure-button button-primary" type="submit" value="' +
+__p += '\n                <fieldset class="buttons">\n                    <input class="btn btn-primary" type="submit" value="' +
 __e(o.__('Submit')) +
-'">\n            ';
+'">\n                </fieldset>\n            ';
  } ;
 __p += '\n            ';
  if (o.authentication == o.ANONYMOUS) { ;
-__p += '\n                <input class="pure-button button-primary login-anon" type="submit" value="' +
+__p += '\n                <input class="btn btn-primary login-anon" type="submit" value="' +
 __e(o.__('Click here to log in anonymously')) +
 '"/>\n            ';
  } ;
@@ -46352,13 +48240,44 @@ return __p
 };});
 
 
-define('tpl!search_contact', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<li>\n    <form class="search-xmpp-contact">\n        <input type="text"\n            name="identifier"\n            class="username"\n            placeholder="' +
-__e(o.label_contact_name) +
-'"/>\n        <button type="submit">' +
-__e(o.label_search) +
-'</button>\n    </form>\n</li>\n';
+define('tpl!add_contact_modal', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<!-- Add contact Modal -->\n<div class="modal fade" id="add-contact-modal" tabindex="-1" role="dialog" aria-labelledby="addContactModalLabel" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="addContactModalLabel">' +
+__e(o.heading_new_contact) +
+'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <form class="converse-form add-xmpp-contact">\n                <div class="modal-body">\n                    <div class="form-group ';
+ if (o._converse.xhr_user_search_url) { ;
+__p += ' hidden ';
+ } ;
+__p += '">\n                        <label class="clearfix" for="jid">' +
+__e(o.label_xmpp_address) +
+':</label>\n                        <input type="text" name="jid" required="required" value="' +
+__e(o.jid) +
+'"\n                               class="form-control ';
+ if (o.error_message) { ;
+__p += ' is-invalid ';
+ } ;
+__p += '"\n                               placeholder="' +
+__e(o.contact_placeholder) +
+'"/>\n                        ';
+ if (o.error_message) { ;
+__p += '\n                            <div class="invalid-feedback">' +
+__e(o.error_message) +
+'</div>\n                        ';
+ } ;
+__p += '\n                    </div>\n                    <div class="form-group">\n                        <label class="clearfix" for="name">' +
+__e(o.label_nickname) +
+':</label>\n                        <input type="text" name="name" value="' +
+__e(o.nickname) +
+'"\n                               class="form-control ';
+ if (o.error_message) { ;
+__p += ' is-invalid ';
+ } ;
+__p += '"\n                               placeholder="' +
+__e(o.nickname_placeholder) +
+'"/>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="submit" class="btn btn-primary">' +
+__e(o.label_add) +
+'</button>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n';
 return __p
 };});
 
@@ -46366,11 +48285,15 @@ return __p
 define('tpl!group_header', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<a href="#" class="group-toggle icon-' +
-__e(o.toggle_state) +
-'" title="' +
+__p += '<a href="#" class="group-toggle" title="' +
 __e(o.desc_group_toggle) +
-'">' +
+'">\n    <span class="fa ';
+ if (o.toggle_state === o._converse.OPENED) { ;
+__p += ' fa-caret-down ';
+ } else { ;
+__p += ' fa-caret-right ';
+ } ;
+__p += '">\n    </span> ' +
 __e(o.label_group) +
 '</a>\n<ul class="roster-group-contacts ';
  if (o.toggle_state === o._converse.CLOSED) { ;
@@ -46386,19 +48309,19 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  if (o.allow_chat_pending_contacts)  { ;
-__p += '\n<a class="open-chat"href="#">\n';
+__p += '\n<a class="open-chat w-100" href="#">\n';
  } ;
-__p += '\n<span class="pending-contact-name" title="Name: ' +
+__p += '\n<span class="pending-contact-name w-100" title="Name: ' +
 __e(o.fullname) +
-'\nJID: ' +
+' JID: ' +
 __e(o.jid) +
 '">' +
 __e(o.fullname) +
 '</span> \n';
  if (o.allow_chat_pending_contacts)  { ;
-__p += '\n</a>\n';
+__p += '</a>\n';
  } ;
-__p += '\n<a class="remove-xmpp-contact icon-remove" title="' +
+__p += '\n<a class="remove-xmpp-contact fa fa-trash" title="' +
 __e(o.desc_remove) +
 '" href="#"></a>\n';
 return __p
@@ -46410,9 +48333,9 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  if (o.allow_chat_pending_contacts)  { ;
-__p += '\n<a class="open-chat"href="#">\n';
+__p += '\n<a class="open-chat w-100"href="#">\n';
  } ;
-__p += '\n<span class="req-contact-name" title="Name: ' +
+__p += '\n<span class="req-contact-name w-100" title="Name: ' +
 __e(o.fullname) +
 '\nJID: ' +
 __e(o.jid) +
@@ -46422,22 +48345,26 @@ __e(o.fullname) +
  if (o.allow_chat_pending_contacts)  { ;
 __p += '\n</a>\n';
  } ;
-__p += '\n<span class="request-actions">\n    <a class="accept-xmpp-request icon-checkmark" aria-label="' +
+__p += '\n<a class="accept-xmpp-request fa fa-check"\n   aria-label="' +
 __e(o.desc_accept) +
 '" title="' +
 __e(o.desc_accept) +
-'" href="#"></a>\n    <a class="decline-xmpp-request icon-close" aria-label="' +
+'" href="#"></a>\n<a class="decline-xmpp-request fa fa-times"\n   aria-label="' +
 __e(o.desc_decline) +
 '" title="' +
 __e(o.desc_decline) +
-'" href="#"></a>\n</span>\n';
+'" href="#"></a>\n';
 return __p
 };});
 
 
 define('tpl!roster', ['lodash'], function(_) {return function(o) {
-var __t, __p = '';
-__p += '<div class="roster-contacts"></div>\n';
+var __t, __p = '', __e = _.escape;
+__p += '<div class="d-flex">\n    <span class="w-100">' +
+__e(o.heading_contacts) +
+'</span>\n    <a class="chatbox-btn add-contact fa fa-user-plus" title="' +
+__e(o.title_add_contact) +
+'"\n       data-toggle="modal" data-target="#add-contact-modal"></a>\n</div>\n\n<form class="roster-filter-form"></form>\n\n<div class="roster-contacts"></div>\n';
 return __p
 };});
 
@@ -46445,81 +48372,93 @@ return __p
 define('tpl!roster_filter', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<span ';
+__p += '<form class="roster-filter-form input-button-group ';
  if (!o.visible) { ;
-__p += ' class="hidden" ';
+__p += ' hidden ';
  } ;
-__p += '>\n<form class="pure-form roster-filter-form input-button-group">\n    <input value="' +
+__p += '">\n    <div class="form-inline flex-nowrap">\n        <div class="btn-group">\n            <input ';
+ if (o.filter_text) { ;
+__p += ' value="' +
 __e(o.filter_text) +
-'"\n           class="roster-filter roster-filter-' +
-__e(o.filter_type) +
-'"\n           placeholder="' +
+'" ';
+ } ;
+__p += '\n                class="roster-filter form-control ';
+ if (o.filter_type === 'state') { ;
+__p += ' hidden ';
+ } ;
+__p += '"\n                placeholder="' +
 __e(o.placeholder) +
-'">\n    <select class="state-type state-type-' +
-__e(o.filter_type) +
-'">\n        <option value="">' +
+'">\n            <span class="clear-input fa fa-times ';
+ if (!o.filter_text) { ;
+__p += ' hidden ';
+ } ;
+__p += '"></span>\n        </div>\n\n        <select class="form-control state-type ';
+ if (o.filter_type !== 'state') { ;
+__p += ' hidden ';
+ } ;
+__p += '">\n            <option value="">' +
 __e(o.label_any) +
-'</option>\n        <option ';
+'</option>\n            <option ';
  if (o.chat_state === 'unread_messages') { ;
 __p += ' selected="selected" ';
  } ;
-__p += '\n            value="unread_messages">' +
+__p += '\n                value="unread_messages">' +
 __e(o.label_unread_messages) +
-'</option>\n        <option ';
+'</option>\n            <option ';
  if (o.chat_state === 'online') { ;
 __p += ' selected="selected" ';
  } ;
-__p += '\n            value="online">' +
+__p += '\n                value="online">' +
 __e(o.label_online) +
-'</option>\n        <option ';
+'</option>\n            <option ';
  if (o.chat_state === 'chat') { ;
 __p += ' selected="selected" ';
  } ;
-__p += '\n            value="chat">' +
+__p += '\n                value="chat">' +
 __e(o.label_chatty) +
-'</option>\n        <option ';
+'</option>\n            <option ';
  if (o.chat_state === 'dnd') { ;
 __p += ' selected="selected" ';
  } ;
-__p += '\n            value="dnd">' +
+__p += '\n                value="dnd">' +
 __e(o.label_busy) +
-'</option>\n        <option ';
+'</option>\n            <option ';
  if (o.chat_state === 'away') { ;
 __p += ' selected="selected" ';
  } ;
-__p += '\n            value="away">' +
+__p += '\n                value="away">' +
 __e(o.label_away) +
-'</option>\n        <option ';
+'</option>\n            <option ';
  if (o.chat_state === 'xa') { ;
 __p += ' selected="selected" ';
  } ;
-__p += '\n            value="xa">' +
+__p += '\n                value="xa">' +
 __e(o.label_xa) +
-'</option>\n        <option ';
+'</option>\n            <option ';
  if (o.chat_state === 'offline') { ;
 __p += ' selected="selected" ';
  } ;
-__p += '\n            value="offline">' +
+__p += '\n                value="offline">' +
 __e(o.label_offline) +
-'</option>\n    </select>\n    <select class="filter-type">\n        <option ';
+'</option>\n        </select>\n\n        <div class="filter-by d-flex flex-nowrap">\n            <span class="fa fa-user ';
  if (o.filter_type === 'contacts') { ;
-__p += ' selected="selected" ';
+__p += ' selected ';
  } ;
-__p += '\n                value="contacts">' +
-__e(o.label_contacts) +
-'</option>\n        <option ';
+__p += '" data-type="contacts" title="' +
+__e(o.title_contact_filter) +
+'"></span>\n            <span class="fa fa-users ';
  if (o.filter_type === 'groups') { ;
-__p += ' selected="selected" ';
+__p += ' selected ';
  } ;
-__p += '\n                value="groups">' +
-__e(o.label_groups) +
-'</option>\n        <option ';
+__p += '" data-type="groups" title="' +
+__e(o.title_group_filter) +
+'"></span>\n            <span class="fa fa-circle ';
  if (o.filter_type === 'state') { ;
-__p += ' selected="selected" ';
+__p += ' selected ';
  } ;
-__p += '\n                value="state">' +
-__e(o.label_state) +
-'</option>\n    </select>\n</form>\n</span>\n';
+__p += '" data-type="state" title="' +
+__e(o.title_status_filter) +
+'"></span>\n        </div>\n    </div>\n</form>\n';
 return __p
 };});
 
@@ -46527,19 +48466,17 @@ return __p
 define('tpl!roster_item', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<a class="open-chat ';
+__p += '<a class="open-chat w-100 ';
  if (o.num_unread) { ;
 __p += ' unread-msgs ';
  } ;
 __p += '"\n   title="' +
 __e(o.desc_chat) +
-'"\n   href="#">\n    <div class="avatar avatar-' +
-__e(o.chat_status) +
-'">\n        <span class="status-icon icon-' +
-__e(o.chat_status) +
+'" href="#">\n    <span class="fa ' +
+__e(o.status_icon) +
 '" title="' +
 __e(o.desc_status) +
-'"></span>\n    </div>\n    ';
+'"></span>\n    ';
  if (o.num_unread) { ;
 __p += '\n    <span class="msgs-indicator">' +
 __e( o.num_unread ) +
@@ -46551,3118 +48488,24 @@ __p += ' unread-msgs ';
  } ;
 __p += '">' +
 __e(o.fullname) +
-'</span>\n</a>\n';
+'</span></a>\n';
  if (o.allow_contact_removal) { ;
-__p += '\n<a class="remove-xmpp-contact icon-remove" title="' +
+__p += '\n<a class="remove-xmpp-contact fa fa-trash" title="' +
 __e(o.desc_remove) +
 '" href="#"></a>\n';
  } ;
-__p += '\n\n\n';
+__p += '\n';
 return __p
 };});
 
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
-//
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
 
-/*global define */
-(function (root, factory) {
-  define('converse-rosterview',["converse-core", "tpl!group_header", "tpl!pending_contact", "tpl!requesting_contact", "tpl!roster", "tpl!roster_filter", "tpl!roster_item", "converse-chatboxes"], factory);
-})(this, function (converse, tpl_group_header, tpl_pending_contact, tpl_requesting_contact, tpl_roster, tpl_roster_filter, tpl_roster_item) {
-  "use strict";
-
-  var _converse$env = converse.env,
-      Backbone = _converse$env.Backbone,
-      Strophe = _converse$env.Strophe,
-      $iq = _converse$env.$iq,
-      b64_sha1 = _converse$env.b64_sha1,
-      sizzle = _converse$env.sizzle,
-      _ = _converse$env._;
-  var u = converse.env.utils;
-  converse.plugins.add('converse-rosterview', {
-    overrides: {
-      // Overrides mentioned here will be picked up by converse.js's
-      // plugin architecture they will replace existing methods on the
-      // relevant objects or classes.
-      //
-      // New functions which don't exist yet can also be added.
-      afterReconnected: function afterReconnected() {
-        this.__super__.afterReconnected.apply(this, arguments);
-      },
-      _tearDown: function _tearDown() {
-        /* Remove the rosterview when tearing down. It gets created
-         * anew when reconnecting or logging in.
-         */
-        this.__super__._tearDown.apply(this, arguments);
-
-        if (!_.isUndefined(this.rosterview)) {
-          this.rosterview.remove();
-        }
-      },
-      RosterGroups: {
-        comparator: function comparator() {
-          // RosterGroupsComparator only gets set later (once i18n is
-          // set up), so we need to wrap it in this nameless function.
-          var _converse = this.__super__._converse;
-          return _converse.RosterGroupsComparator.apply(this, arguments);
-        }
-      }
-    },
-    initialize: function initialize() {
-      /* The initialize function gets called as soon as the plugin is
-       * loaded by converse.js's plugin machinery.
-       */
-      var _converse = this._converse,
-          __ = _converse.__;
-
-      _converse.api.settings.update({
-        allow_chat_pending_contacts: true,
-        allow_contact_removal: true,
-        show_toolbar: true
-      });
-
-      _converse.api.promises.add('rosterViewInitialized');
-
-      var STATUSES = {
-        'dnd': __('This contact is busy'),
-        'online': __('This contact is online'),
-        'offline': __('This contact is offline'),
-        'unavailable': __('This contact is unavailable'),
-        'xa': __('This contact is away for an extended period'),
-        'away': __('This contact is away')
-      };
-
-      var LABEL_CONTACTS = __('Contacts');
-
-      var LABEL_GROUPS = __('Groups');
-
-      var HEADER_CURRENT_CONTACTS = __('My contacts');
-
-      var HEADER_PENDING_CONTACTS = __('Pending contacts');
-
-      var HEADER_REQUESTING_CONTACTS = __('Contact requests');
-
-      var HEADER_UNGROUPED = __('Ungrouped');
-
-      var HEADER_WEIGHTS = {};
-      HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 0;
-      HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS] = 1;
-      HEADER_WEIGHTS[HEADER_UNGROUPED] = 2;
-      HEADER_WEIGHTS[HEADER_PENDING_CONTACTS] = 3;
-
-      _converse.RosterGroupsComparator = function (a, b) {
-        /* Groups are sorted alphabetically, ignoring case.
-         * However, Ungrouped, Requesting Contacts and Pending Contacts
-         * appear last and in that order.
-         */
-        a = a.get('name');
-        b = b.get('name');
-
-        var special_groups = _.keys(HEADER_WEIGHTS);
-
-        var a_is_special = _.includes(special_groups, a);
-
-        var b_is_special = _.includes(special_groups, b);
-
-        if (!a_is_special && !b_is_special) {
-          return a.toLowerCase() < b.toLowerCase() ? -1 : a.toLowerCase() > b.toLowerCase() ? 1 : 0;
-        } else if (a_is_special && b_is_special) {
-          return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0;
-        } else if (!a_is_special && b_is_special) {
-          return b === HEADER_REQUESTING_CONTACTS ? 1 : -1;
-        } else if (a_is_special && !b_is_special) {
-          return a === HEADER_REQUESTING_CONTACTS ? -1 : 1;
-        }
-      };
-
-      _converse.RosterFilter = Backbone.Model.extend({
-        initialize: function initialize() {
-          this.set({
-            'filter_text': '',
-            'filter_type': 'contacts',
-            'chat_state': ''
-          });
-        }
-      });
-      _converse.RosterFilterView = Backbone.VDOMView.extend({
-        tagName: 'span',
-        events: {
-          "keydown .roster-filter": "liveFilter",
-          "submit form.roster-filter-form": "submitFilter",
-          "click .onX": "clearFilter",
-          "mousemove .x": "toggleX",
-          "change .filter-type": "changeTypeFilter",
-          "change .state-type": "changeChatStateFilter"
-        },
-        initialize: function initialize() {
-          this.model.on('change:filter_type', this.render, this);
-          this.model.on('change:filter_text', this.renderClearButton, this);
-        },
-        toHTML: function toHTML() {
-          return tpl_roster_filter(_.extend(this.model.toJSON(), {
-            visible: this.shouldBeVisible(),
-            placeholder: __('Filter'),
-            label_contacts: LABEL_CONTACTS,
-            label_groups: LABEL_GROUPS,
-            label_state: __('State'),
-            label_any: __('Any'),
-            label_unread_messages: __('Unread'),
-            label_online: __('Online'),
-            label_chatty: __('Chatty'),
-            label_busy: __('Busy'),
-            label_away: __('Away'),
-            label_xa: __('Extended Away'),
-            label_offline: __('Offline')
-          }));
-        },
-        afterRender: function afterRender() {
-          this.renderClearButton();
-        },
-        renderClearButton: function renderClearButton() {
-          var roster_filter = this.el.querySelector('.roster-filter');
-
-          if (_.isNull(roster_filter)) {
-            return;
-          }
-
-          roster_filter.classList[this.tog(roster_filter.value)]('x');
-        },
-        tog: function tog(v) {
-          return v ? 'add' : 'remove';
-        },
-        toggleX: function toggleX(ev) {
-          if (ev && ev.preventDefault) {
-            ev.preventDefault();
-          }
-
-          var el = ev.target;
-          el.classList[this.tog(el.offsetWidth - 18 < ev.clientX - el.getBoundingClientRect().left)]('onX');
-        },
-        changeChatStateFilter: function changeChatStateFilter(ev) {
-          if (ev && ev.preventDefault) {
-            ev.preventDefault();
-          }
-
-          this.model.save({
-            'chat_state': this.el.querySelector('.state-type').value
-          });
-        },
-        changeTypeFilter: function changeTypeFilter(ev) {
-          if (ev && ev.preventDefault) {
-            ev.preventDefault();
-          }
-
-          var type = ev.target.value;
-
-          if (type === 'state') {
-            this.model.save({
-              'filter_type': type,
-              'chat_state': this.el.querySelector('.state-type').value
-            });
-          } else {
-            this.model.save({
-              'filter_type': type,
-              'filter_text': this.el.querySelector('.roster-filter').value
-            });
-          }
-        },
-        liveFilter: _.debounce(function (ev) {
-          this.model.save({
-            'filter_type': this.el.querySelector('.filter-type').value,
-            'filter_text': this.el.querySelector('.roster-filter').value
-          });
-        }, 250),
-        submitFilter: function submitFilter(ev) {
-          if (ev && ev.preventDefault) {
-            ev.preventDefault();
-          }
-
-          this.liveFilter();
-          this.render();
-        },
-        isActive: function isActive() {
-          /* Returns true if the filter is enabled (i.e. if the user
-           * has added values to the filter).
-           */
-          if (this.model.get('filter_type') === 'state' || this.model.get('filter_text')) {
-            return true;
-          }
-
-          return false;
-        },
-        shouldBeVisible: function shouldBeVisible() {
-          return _converse.roster.length >= 7 || this.isActive();
-        },
-        showOrHide: function showOrHide() {
-          if (this.shouldBeVisible) {
-            this.show();
-          } else {
-            this.hide();
-          }
-        },
-        show: function show() {
-          if (u.isVisible(this.el)) {
-            return this;
-          }
-
-          this.el.classList.add('fade-in');
-          this.el.classList.remove('hidden');
-          return this;
-        },
-        hide: function hide() {
-          if (!u.isVisible(this.el)) {
-            return this;
-          }
-
-          this.model.save({
-            'filter_text': '',
-            'chat_state': ''
-          });
-          this.el.classList.add('hidden');
-          return this;
-        },
-        clearFilter: function clearFilter(ev) {
-          if (ev && ev.preventDefault) {
-            ev.preventDefault();
-            ev.target.classList.remove('x');
-            ev.target.classList.remove('onX');
-            ev.target.value = '';
-          }
-
-          this.model.save({
-            'filter_text': ''
-          });
-        }
-      });
-      _converse.RosterContactView = Backbone.NativeView.extend({
-        tagName: 'li',
-        className: 'hidden',
-        events: {
-          "click .accept-xmpp-request": "acceptRequest",
-          "click .decline-xmpp-request": "declineRequest",
-          "click .open-chat": "openChat",
-          "click .remove-xmpp-contact": "removeContact"
-        },
-        initialize: function initialize() {
-          this.model.on("change", this.render, this);
-          this.model.on("remove", this.remove, this);
-          this.model.on("destroy", this.remove, this);
-          this.model.on("open", this.openChat, this);
-        },
-        render: function render() {
-          var that = this;
-
-          if (!this.mayBeShown()) {
-            u.hideElement(this.el);
-            return this;
-          }
-
-          var item = this.model,
-              ask = item.get('ask'),
-              chat_status = item.get('chat_status'),
-              requesting = item.get('requesting'),
-              subscription = item.get('subscription');
-          var classes_to_remove = ['current-xmpp-contact', 'pending-xmpp-contact', 'requesting-xmpp-contact'].concat(_.keys(STATUSES));
-
-          _.each(classes_to_remove, function (cls) {
-            if (_.includes(that.el.className, cls)) {
-              that.el.classList.remove(cls);
-            }
-          });
-
-          this.el.classList.add(chat_status);
-          this.el.setAttribute('data-status', chat_status);
-
-          if (ask === 'subscribe' || subscription === 'from') {
-            /* ask === 'subscribe'
-             *      Means we have asked to subscribe to them.
-             *
-             * subscription === 'from'
-             *      They are subscribed to use, but not vice versa.
-             *      We assume that there is a pending subscription
-             *      from us to them (otherwise we're in a state not
-             *      supported by converse.js).
-             *
-             *  So in both cases the user is a "pending" contact.
-             */
-            this.el.classList.add('pending-xmpp-contact');
-            this.el.innerHTML = tpl_pending_contact(_.extend(item.toJSON(), {
-              'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname')),
-              'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
-            }));
-          } else if (requesting === true) {
-            this.el.classList.add('requesting-xmpp-contact');
-            this.el.innerHTML = tpl_requesting_contact(_.extend(item.toJSON(), {
-              'desc_accept': __("Click to accept the contact request from %1$s", item.get('fullname')),
-              'desc_decline': __("Click to decline the contact request from %1$s", item.get('fullname')),
-              'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
-            }));
-          } else if (subscription === 'both' || subscription === 'to') {
-            this.el.classList.add('current-xmpp-contact');
-            this.el.classList.remove(_.without(['both', 'to'], subscription)[0]);
-            this.el.classList.add(subscription);
-            this.renderRosterItem(item);
-          }
-
-          return this;
-        },
-        renderRosterItem: function renderRosterItem(item) {
-          this.el.innerHTML = tpl_roster_item(_.extend(item.toJSON(), {
-            'desc_status': STATUSES[item.get('chat_status') || 'offline'],
-            'desc_chat': __('Click to chat with %1$s (JID: %2$s)', item.get('fullname'), item.get('jid')),
-            'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname')),
-            'allow_contact_removal': _converse.allow_contact_removal,
-            'num_unread': item.get('num_unread') || 0
-          }));
-          return this;
-        },
-        mayBeShown: function mayBeShown() {
-          /* Return a boolean indicating whether this contact should
-           * generally be visible in the roster.
-           *
-           * It doesn't check for the more specific case of whether
-           * the group it's in is collapsed.
-           */
-          var chatStatus = this.model.get('chat_status');
-
-          if (_converse.show_only_online_users && chatStatus !== 'online' || _converse.hide_offline_users && chatStatus === 'offline') {
-            // If pending or requesting, show
-            if (this.model.get('ask') === 'subscribe' || this.model.get('subscription') === 'from' || this.model.get('requesting') === true) {
-              return true;
-            }
-
-            return false;
-          }
-
-          return true;
-        },
-        openChat: function openChat(ev) {
-          if (ev && ev.preventDefault) {
-            ev.preventDefault();
-          }
-
-          return _converse.chatboxviews.showChat(this.model.attributes, true);
-        },
-        removeContact: function removeContact(ev) {
-          var _this = this;
-
-          if (ev && ev.preventDefault) {
-            ev.preventDefault();
-          }
-
-          if (!_converse.allow_contact_removal) {
-            return;
-          }
-
-          var result = confirm(__("Are you sure you want to remove this contact?"));
-
-          if (result === true) {
-            var iq = $iq({
-              type: 'set'
-            }).c('query', {
-              xmlns: Strophe.NS.ROSTER
-            }).c('item', {
-              jid: this.model.get('jid'),
-              subscription: "remove"
-            });
-
-            _converse.connection.sendIQ(iq, function (iq) {
-              _this.model.destroy();
-
-              _this.remove();
-            }, function (err) {
-              alert(__('Sorry, there was an error while trying to remove %1$s as a contact.', name));
-
-              _converse.log(err, Strophe.LogLevel.ERROR);
-            });
-          }
-        },
-        acceptRequest: function acceptRequest(ev) {
-          var _this2 = this;
-
-          if (ev && ev.preventDefault) {
-            ev.preventDefault();
-          }
-
-          _converse.roster.sendContactAddIQ(this.model.get('jid'), this.model.get('fullname'), [], function () {
-            _this2.model.authorize().subscribe();
-          });
-        },
-        declineRequest: function declineRequest(ev) {
-          if (ev && ev.preventDefault) {
-            ev.preventDefault();
-          }
-
-          var result = confirm(__("Are you sure you want to decline this contact request?"));
-
-          if (result === true) {
-            this.model.unauthorize().destroy();
-          }
-
-          return this;
-        }
-      });
-      _converse.RosterGroupView = Backbone.OrderedListView.extend({
-        tagName: 'div',
-        className: 'roster-group hidden',
-        events: {
-          "click a.group-toggle": "toggle"
-        },
-        ItemView: _converse.RosterContactView,
-        listItems: 'model.contacts',
-        listSelector: '.roster-group-contacts',
-        sortEvent: 'change:chat_status',
-        initialize: function initialize() {
-          Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
-          this.model.contacts.on("change:subscription", this.onContactSubscriptionChange, this);
-          this.model.contacts.on("change:requesting", this.onContactRequestChange, this);
-          this.model.contacts.on("remove", this.onRemove, this);
-
-          _converse.roster.on('change:groups', this.onContactGroupChange, this); // This event gets triggered once *all* contacts (i.e. not
-          // just this group's) have been fetched from browser
-          // storage or the XMPP server and once they've been
-          // assigned to their various groups.
-
-
-          _converse.rosterview.on('rosterContactsFetchedAndProcessed', this.sortAndPositionAllItems.bind(this));
-        },
-        render: function render() {
-          this.el.setAttribute('data-group', this.model.get('name'));
-          this.el.innerHTML = tpl_group_header({
-            'label_group': this.model.get('name'),
-            'desc_group_toggle': this.model.get('description'),
-            'toggle_state': this.model.get('state'),
-            '_converse': _converse
-          });
-          this.contacts_el = this.el.querySelector('.roster-group-contacts');
-          return this;
-        },
-        show: function show() {
-          var _this3 = this;
-
-          u.showElement(this.el);
-
-          _.each(this.getAll(), function (contact_view) {
-            if (contact_view.mayBeShown() && _this3.model.get('state') === _converse.OPENED) {
-              u.showElement(contact_view.el);
-            }
-          });
-
-          return this;
-        },
-        collapse: function collapse() {
-          return u.slideIn(this.contacts_el);
-        },
-        filterOutContacts: function filterOutContacts() {
-          var _this4 = this;
-
-          var contacts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-          /* Given a list of contacts, make sure they're filtered out
-           * (aka hidden) and that all other contacts are visible.
-           *
-           * If all contacts are hidden, then also hide the group
-           * title.
-           */
-          var shown = 0;
-          var all_contact_views = this.getAll();
-
-          _.each(this.model.contacts.models, function (contact) {
-            var contact_view = _this4.get(contact.get('id'));
-
-            if (_.includes(contacts, contact)) {
-              u.hideElement(contact_view.el);
-            } else if (contact_view.mayBeShown()) {
-              u.showElement(contact_view.el);
-              shown += 1;
-            }
-          });
-
-          if (shown) {
-            u.showElement(this.el);
-          } else {
-            u.hideElement(this.el);
-          }
-        },
-        getFilterMatches: function getFilterMatches(q, type) {
-          /* Given the filter query "q" and the filter type "type",
-           * return a list of contacts that need to be filtered out.
-           */
-          if (q.length === 0) {
-            return [];
-          }
-
-          var matches;
-          q = q.toLowerCase();
-
-          if (type === 'state') {
-            if (this.model.get('name') === HEADER_REQUESTING_CONTACTS) {
-              // When filtering by chat state, we still want to
-              // show requesting contacts, even though they don't
-              // have the state in question.
-              matches = this.model.contacts.filter(function (contact) {
-                return u.contains.not('chat_status', q)(contact) && !contact.get('requesting');
-              });
-            } else if (q === 'unread_messages') {
-              matches = this.model.contacts.filter({
-                'num_unread': 0
-              });
-            } else {
-              matches = this.model.contacts.filter(u.contains.not('chat_status', q));
-            }
-          } else {
-            matches = this.model.contacts.filter(u.contains.not('fullname', q));
-          }
-
-          return matches;
-        },
-        filter: function filter(q, type) {
-          /* Filter the group's contacts based on the query "q".
-           * The query is matched against the contact's full name.
-           * If all contacts are filtered out (i.e. hidden), then the
-           * group must be filtered out as well.
-           */
-          this.filterOutContacts(this.getFilterMatches(q, type));
-        },
-        toggle: function toggle(ev) {
-          if (ev && ev.preventDefault) {
-            ev.preventDefault();
-          }
-
-          if (_.includes(ev.target.classList, "icon-opened")) {
-            this.model.save({
-              state: _converse.CLOSED
-            });
-            this.collapse().then(function () {
-              ev.target.classList.remove("icon-opened");
-              ev.target.classList.add("icon-closed");
-            });
-          } else {
-            ev.target.classList.remove("icon-closed");
-            ev.target.classList.add("icon-opened");
-            this.model.save({
-              state: _converse.OPENED
-            });
-            this.filter(_converse.rosterview.el.querySelector('.roster-filter').value, _converse.rosterview.el.querySelector('.filter-type').value);
-            u.showElement(this.el);
-            u.slideOut(this.contacts_el);
-          }
-        },
-        onContactGroupChange: function onContactGroupChange(contact) {
-          var in_this_group = _.includes(contact.get('groups'), this.model.get('name'));
-
-          var cid = contact.get('id');
-          var in_this_overview = !this.get(cid);
-
-          if (in_this_group && !in_this_overview) {
-            this.items.trigger('add', contact);
-          } else if (!in_this_group) {
-            this.removeContact(contact);
-          }
-        },
-        onContactSubscriptionChange: function onContactSubscriptionChange(contact) {
-          if (this.model.get('name') === HEADER_PENDING_CONTACTS && contact.get('subscription') !== 'from') {
-            this.removeContact(contact);
-          }
-        },
-        onContactRequestChange: function onContactRequestChange(contact) {
-          if (this.model.get('name') === HEADER_REQUESTING_CONTACTS && !contact.get('requesting')) {
-            this.removeContact(contact);
-          }
-        },
-        removeContact: function removeContact(contact) {
-          // We suppress events, otherwise the remove event will
-          // also cause the contact's view to be removed from the
-          // "Pending Contacts" group.
-          this.model.contacts.remove(contact, {
-            'silent': true
-          });
-          this.onRemove(contact);
-        },
-        onRemove: function onRemove(contact) {
-          if (this.model.contacts.length === 0) {
-            this.el.parentElement.removeChild(this.el);
-          }
-        }
-      });
-      _converse.RosterView = Backbone.OrderedListView.extend({
-        tagName: 'div',
-        id: 'converse-roster',
-        ItemView: _converse.RosterGroupView,
-        listItems: 'model',
-        listSelector: '.roster-contacts',
-        sortEvent: null,
-        // Groups are immutable, so they don't get re-sorted
-        subviewIndex: 'name',
-        initialize: function initialize() {
-          var _this5 = this;
-
-          Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
-
-          _converse.roster.on("add", this.onContactAdded, this);
-
-          _converse.roster.on('change:groups', this.onContactAdded, this);
-
-          _converse.roster.on('change', this.onContactChange, this);
-
-          _converse.roster.on("destroy", this.update, this);
-
-          _converse.roster.on("remove", this.update, this);
-
-          this.model.on("reset", this.reset, this); // This event gets triggered once *all* contacts (i.e. not
-          // just this group's) have been fetched from browser
-          // storage or the XMPP server and once they've been
-          // assigned to their various groups.
-
-          _converse.on('rosterGroupsFetched', this.sortAndPositionAllItems.bind(this)); // _converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
-
-
-          _converse.on('rosterContactsFetched', function () {
-            _converse.roster.each(function (contact) {
-              _this5.addRosterContact(contact, {
-                'silent': true
-              });
-            });
-
-            _this5.update();
-
-            _this5.updateFilter();
-
-            _this5.trigger('rosterContactsFetchedAndProcessed');
-          });
-
-          this.createRosterFilter();
-        },
-        render: function render() {
-          this.el.innerHTML = "";
-          this.el.appendChild(this.filter_view.render().el);
-          this.renderRoster();
-
-          if (!_converse.allow_contact_requests) {
-            // XXX: if we ever support live editing of config then
-            // we'll need to be able to remove this class on the fly.
-            this.el.classList.add('no-contact-requests');
-          }
-
-          return this;
-        },
-        renderRoster: function renderRoster() {
-          var div = document.createElement('div');
-          div.insertAdjacentHTML('beforeend', tpl_roster());
-          this.roster_el = div.firstChild;
-          this.el.insertAdjacentElement('beforeend', this.roster_el);
-        },
-        createRosterFilter: function createRosterFilter() {
-          // Create a model on which we can store filter properties
-          var model = new _converse.RosterFilter();
-          model.id = b64_sha1("_converse.rosterfilter".concat(_converse.bare_jid));
-          model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
-          this.filter_view = new _converse.RosterFilterView({
-            'model': model
-          });
-          this.filter_view.model.on('change', this.updateFilter, this);
-          this.filter_view.model.fetch();
-        },
-        updateFilter: _.debounce(function () {
-          /* Filter the roster again.
-           * Called whenever the filter settings have been changed or
-           * when contacts have been added, removed or changed.
-           *
-           * Debounced so that it doesn't get called for every
-           * contact fetched from browser storage.
-           */
-          var type = this.filter_view.model.get('filter_type');
-
-          if (type === 'state') {
-            this.filter(this.filter_view.model.get('chat_state'), type);
-          } else {
-            this.filter(this.filter_view.model.get('filter_text'), type);
-          }
-        }, 100),
-        update: _.debounce(function () {
-          if (!u.isVisible(this.roster_el)) {
-            u.showElement(this.roster_el);
-          }
-
-          return this.showHideFilter();
-        }, _converse.animate ? 100 : 0),
-        showHideFilter: function showHideFilter() {
-          if (!u.isVisible(this.el)) {
-            return;
-          }
-
-          this.filter_view.showOrHide();
-          return this;
-        },
-        filter: function filter(query, type) {
-          // First we make sure the filter is restored to its
-          // original state
-          _.each(this.getAll(), function (view) {
-            if (view.model.contacts.length > 0) {
-              view.show().filter('');
-            }
-          }); // Now we can filter
-
-
-          query = query.toLowerCase();
-
-          if (type === 'groups') {
-            _.each(this.getAll(), function (view, idx) {
-              if (!_.includes(view.model.get('name').toLowerCase(), query.toLowerCase())) {
-                u.slideIn(view.el);
-              } else if (view.model.contacts.length > 0) {
-                u.slideOut(view.el);
-              }
-            });
-          } else {
-            _.each(this.getAll(), function (view) {
-              view.filter(query, type);
-            });
-          }
-        },
-        reset: function reset() {
-          _converse.roster.reset();
-
-          this.removeAll();
-          this.render().update();
-          return this;
-        },
-        onContactAdded: function onContactAdded(contact) {
-          this.addRosterContact(contact).update();
-          this.updateFilter();
-        },
-        onContactChange: function onContactChange(contact) {
-          this.updateChatBox(contact).update();
-
-          if (_.has(contact.changed, 'subscription')) {
-            if (contact.changed.subscription === 'from') {
-              this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
-            } else if (_.includes(['both', 'to'], contact.get('subscription'))) {
-              this.addExistingContact(contact);
-            }
-          }
-
-          if (_.has(contact.changed, 'ask') && contact.changed.ask === 'subscribe') {
-            this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
-          }
-
-          if (_.has(contact.changed, 'subscription') && contact.changed.requesting === 'true') {
-            this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
-          }
-
-          this.updateFilter();
-        },
-        updateChatBox: function updateChatBox(contact) {
-          var chatbox = _converse.chatboxes.get(contact.get('jid')),
-              changes = {};
-
-          if (!chatbox) {
-            return this;
-          }
-
-          if (_.has(contact.changed, 'chat_status')) {
-            changes.chat_status = contact.get('chat_status');
-          }
-
-          if (_.has(contact.changed, 'status')) {
-            changes.status = contact.get('status');
-          }
-
-          chatbox.save(changes);
-          return this;
-        },
-        getGroup: function getGroup(name) {
-          /* Returns the group as specified by name.
-           * Creates the group if it doesn't exist.
-           */
-          var view = this.get(name);
-
-          if (view) {
-            return view.model;
-          }
-
-          return this.model.create({
-            name: name,
-            id: b64_sha1(name)
-          });
-        },
-        addContactToGroup: function addContactToGroup(contact, name, options) {
-          this.getGroup(name).contacts.add(contact, options);
-        },
-        addExistingContact: function addExistingContact(contact, options) {
-          var groups;
-
-          if (_converse.roster_groups) {
-            groups = contact.get('groups');
-
-            if (groups.length === 0) {
-              groups = [HEADER_UNGROUPED];
-            }
-          } else {
-            groups = [HEADER_CURRENT_CONTACTS];
-          }
-
-          _.each(groups, _.bind(this.addContactToGroup, this, contact, _, options));
-        },
-        addRosterContact: function addRosterContact(contact, options) {
-          if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to') {
-            this.addExistingContact(contact, options);
-          } else {
-            if (contact.get('ask') === 'subscribe' || contact.get('subscription') === 'from') {
-              this.addContactToGroup(contact, HEADER_PENDING_CONTACTS, options);
-            } else if (contact.get('requesting') === true) {
-              this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS, options);
-            }
-          }
-
-          return this;
-        }
-      });
-      /* -------- Event Handlers ----------- */
-
-      var onChatBoxMaximized = function onChatBoxMaximized(chatboxview) {
-        /* When a chat box gets maximized, the num_unread counter needs
-         * to be cleared, but if chatbox is scrolled up, then num_unread should not be cleared.
-         */
-        var chatbox = chatboxview.model;
-
-        if (chatbox.get('type') !== 'chatroom') {
-          var contact = _.head(_converse.roster.where({
-            'jid': chatbox.get('jid')
-          }));
-
-          if (!_.isUndefined(contact) && !chatbox.isScrolledUp()) {
-            contact.save({
-              'num_unread': 0
-            });
-          }
-        }
-      };
-
-      var onMessageReceived = function onMessageReceived(data) {
-        /* Given a newly received message, update the unread counter on
-         * the relevant roster contact.
-         */
-        var chatbox = data.chatbox;
-
-        if (_.isUndefined(chatbox)) {
-          return;
-        }
-
-        if (_.isNull(data.stanza.querySelector('body'))) {
-          return; // The message has no text
-        }
-
-        if (chatbox.get('type') !== 'chatroom' && u.isNewMessage(data.stanza) && chatbox.newMessageWillBeHidden()) {
-          var contact = _.head(_converse.roster.where({
-            'jid': chatbox.get('jid')
-          }));
-
-          if (!_.isUndefined(contact)) {
-            contact.save({
-              'num_unread': contact.get('num_unread') + 1
-            });
-          }
-        }
-      };
-
-      var onChatBoxScrolledDown = function onChatBoxScrolledDown(data) {
-        var chatbox = data.chatbox;
-
-        if (_.isUndefined(chatbox)) {
-          return;
-        }
-
-        var contact = _.head(_converse.roster.where({
-          'jid': chatbox.get('jid')
-        }));
-
-        if (!_.isUndefined(contact)) {
-          contact.save({
-            'num_unread': 0
-          });
-        }
-      };
-
-      var initRoster = function initRoster() {
-        /* Create an instance of RosterView once the RosterGroups
-         * collection has been created (in converse-core.js)
-         */
-        _converse.rosterview = new _converse.RosterView({
-          'model': _converse.rostergroups
-        });
-
-        _converse.rosterview.render();
-
-        _converse.emit('rosterViewInitialized');
-      };
-
-      _converse.api.listen.on('rosterInitialized', initRoster);
-
-      _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
-
-      _converse.api.listen.on('message', onMessageReceived);
-
-      _converse.api.listen.on('chatBoxMaximized', onChatBoxMaximized);
-
-      _converse.api.listen.on('chatBoxScrolledDown', onChatBoxScrolledDown);
-    }
-  });
-});
-//# sourceMappingURL=converse-rosterview.js.map;
-
-define('tpl!change_status_message', ['lodash'], function(_) {return function(o) {
+define('tpl!search_contact', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<fieldset>\n    <span class="input-button-group">\n        <input type="text" class="custom-xmpp-status" value="' +
-__e(o.status_message) +
-'" placeholder="' +
-__e(o.label_custom_status) +
-'"/>\n        <input type="submit" class="pure-button button-primary" value="' +
-__e(o.label_save) +
-'"/>\n    </span>\n</fieldset>\n';
-return __p
-};});
-
-
-define('tpl!chat_status', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<div class="xmpp-status">\n    <a class="choose-xmpp-status ' +
-__e(o.chat_status) +
-' icon-' +
-__e(o.chat_status) +
-'" data-value="' +
-__e(o.status_message) +
-'" href="#" title="' +
-__e(o.desc_change_status) +
-'">\n        ' +
-__e(o.status_message) +
-'\n    </a>\n    <a class="change-xmpp-status-message icon-pencil" href="#" title="' +
-__e(o.desc_custom_status) +
-'"></a>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!choose_status', ['lodash'], function(_) {return function(o) {
-var __t, __p = '';
-__p += '<dl id="target" class="dropdown">\n    <dt id="fancy-xmpp-status-select" class="fancy-dropdown"></dt>\n    <dd><ul class="xmpp-status-menu"></ul></dd>\n</dl>\n';
-return __p
-};});
-
-
-define('tpl!status_option', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<li>\n    <a href="#" class="' +
-__e( o.value ) +
-'" data-value="' +
-__e( o.value ) +
-'">\n        <span class="icon-' +
-__e( o.value ) +
-'"></span>\n        ' +
-__e( o.text ) +
-'\n    </a>\n</li>\n';
-return __p
-};});
-
-/* Plugin to implement the vCard extension.
- *  http://xmpp.org/extensions/xep-0054.html
- *
- *  Author: Nathan Zorn (nathan.zorn@gmail.com)
- *  AMD support by JC Brand
- */
-(function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define('strophe.vcard',[
-            "strophe"
-        ], function (Strophe) {
-            factory(
-                Strophe.Strophe,
-                Strophe.$build,
-                Strophe.$iq ,
-                Strophe.$msg,
-                Strophe.$pres
-            );
-            return Strophe;
-        });
-    } else {
-        // Browser globals
-        factory(
-            root.Strophe,
-            root.$build,
-            root.$iq ,
-            root.$msg,
-            root.$pres
-        );
-    }
-}(this, function (Strophe, $build, $iq, $msg, $pres) {
-
-    var buildIq = function(type, jid, vCardEl) {
-        var iq = $iq(jid ? {type: type, to: jid} : {type: type});
-        iq.c("vCard", {xmlns: Strophe.NS.VCARD});
-        if (vCardEl) {
-            iq.cnode(vCardEl);
-        }
-        return iq;
-    };
-
-    Strophe.addConnectionPlugin('vcard', {
-        _connection: null,
-        init: function(conn) {
-            this._connection = conn;
-            return Strophe.addNamespace('VCARD', 'vcard-temp');
-        },
-
-        /* Function
-         * Retrieve a vCard for a JID/Entity
-         * Parameters:
-         * (Function) handler_cb - The callback function used to handle the request.
-         * (String) jid - optional - The name of the entity to request the vCard
-         *     If no jid is given, this function retrieves the current user's vcard.
-         * */
-        get: function(handler_cb, jid, error_cb) {
-            var iq = buildIq("get", jid);
-            return this._connection.sendIQ(iq, handler_cb, error_cb);
-        },
-
-        /* Function
-         *  Set an entity's vCard.
-         */
-        set: function(handler_cb, vCardEl, jid, error_cb) {
-            var iq = buildIq("set", jid, vCardEl);
-            return this._connection.sendIQ(iq, handler_cb, error_cb);
-        }
-    });
-}));
-
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
-//
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
-
-/*global define */
-(function (root, factory) {
-  define('converse-vcard',["converse-core", "strophe.vcard"], factory);
-})(this, function (converse) {
-  "use strict";
-
-  var _converse$env = converse.env,
-      Promise = _converse$env.Promise,
-      Strophe = _converse$env.Strophe,
-      _ = _converse$env._,
-      moment = _converse$env.moment,
-      sizzle = _converse$env.sizzle;
-
-  function onVCardData(_converse, jid, iq, callback) {
-    var vcard = iq.querySelector('vCard');
-
-    if (_.isNull(vcard)) {
-      // Some servers return an empty IQ
-      return onVCardError(_converse, jid, iq, callback);
-    }
-
-    var img_type = _.get(vcard.querySelector('TYPE'), 'textContent'),
-        img = _.get(vcard.querySelector('BINVAL'), 'textContent'),
-        url = _.get(vcard.querySelector('URL'), 'textContent'),
-        fullname = _.get(vcard.querySelector('FN'), 'textContent');
-
-    if (jid) {
-      var contact = _converse.roster.get(jid);
-
-      if (contact) {
-        contact.save({
-          'fullname': fullname || _.get(contact, 'fullname', jid),
-          'image_type': img_type,
-          'image': img,
-          'url': url,
-          'vcard_updated': moment().format()
-        });
-      }
-    }
-
-    if (callback) {
-      callback({
-        'stanza': iq,
-        'jid': jid,
-        'fullname': fullname || jid,
-        'image': img,
-        'image_type': img_type,
-        'url': url
-      });
-    }
-  }
-
-  function onVCardError(_converse, jid, iq, errback) {
-    var contact = _converse.roster.get(jid);
-
-    if (contact) {
-      contact.save({
-        'vcard_updated': moment().format()
-      });
-    }
-
-    if (errback) {
-      errback({
-        'stanza': iq,
-        'jid': jid
-      });
-    }
-  }
-
-  function getVCard(_converse, jid) {
-    /* Request the VCard of another user. Returns a promise.
-     *
-     * Parameters:
-     *    (String) jid - The Jabber ID of the user whose VCard
-     *      is being requested.
-     */
-    if (Strophe.getBareJidFromJid(jid) === _converse.bare_jid) {
-      jid = null; // No 'to' attr when getting one's own vCard
-    }
-
-    return new Promise(function (resolve, reject) {
-      if (!_converse.use_vcards) {
-        if (resolve) {
-          resolve({
-            'jid': jid
-          });
-        }
-      } else {
-        _converse.connection.vcard.get(_.partial(onVCardData, _converse, jid, _, resolve), jid, _.partial(onVCardError, _converse, jid, _, resolve));
-      }
-    });
-  }
-
-  function updateChatBoxFromVCard(_converse, jid) {
-    _converse.api.vcard.get(jid).then(function (vcard) {
-      var chatbox = _converse.chatboxes.getChatBox(vcard.jid);
-
-      if (!_.isUndefined(chatbox)) {
-        chatbox.save(_.pick(vcard, ['fullname', 'url', 'image_type', 'image', 'vcard_updated']));
-      }
-    }).catch(function () {
-      _converse.log("updateChatBoxFromVCard: Error occured while attempting to update chatbox with VCard data", Strophe.LogLevel.ERROR);
-    });
-  }
-
-  converse.plugins.add('converse-vcard', {
-    overrides: {
-      // Overrides mentioned here will be picked up by converse.js's
-      // plugin architecture they will replace existing methods on the
-      // relevant objects or classes.
-      //
-      // New functions which don't exist yet can also be added.
-      RosterContacts: {
-        createRequestingContact: function createRequestingContact(presence) {
-          var _converse = this.__super__._converse;
-          var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
-
-          _converse.api.vcard.get(bare_jid).then(_.partial(_converse.createRequestingContactFromVCard, presence)).catch(function (vcard) {
-            _converse.log("Error while retrieving vcard for ".concat(vcard.jid), Strophe.LogLevel.WARN);
-
-            _converse.createRequestingContactFromVCard(presence, vcard.stanza, vcard.jid);
-          });
-        }
-      }
-    },
-    initialize: function initialize() {
-      /* The initialize function gets called as soon as the plugin is
-       * loaded by converse.js's plugin machinery.
-       */
-      var _converse = this._converse;
-
-      _converse.api.settings.update({
-        'use_vcards': true
-      });
-
-      _converse.createRequestingContactFromVCard = function (presence, vcard) {
-        var bare_jid = Strophe.getBareJidFromJid(vcard.jid);
-        var fullname = vcard.fullname;
-
-        if (!fullname) {
-          var nick_el = sizzle("nick[xmlns=\"".concat(Strophe.NS.NICK, "\"]"), presence);
-          fullname = nick_el.length ? nick_el[0].textContent : bare_jid;
-        }
-
-        var user_data = {
-          'jid': bare_jid,
-          'subscription': 'none',
-          'ask': null,
-          'requesting': true,
-          'fullname': fullname,
-          'image': vcard.image,
-          'image_type': vcard.image_type,
-          'url': vcard.url,
-          'vcard_updated': moment().format()
-        };
-
-        _converse.roster.create(user_data);
-
-        _converse.emit('contactRequest', user_data);
-      };
-      /* Event handlers */
-
-
-      _converse.on('addClientFeatures', function () {
-        if (_converse.use_vcards) {
-          _converse.connection.disco.addFeature(Strophe.NS.VCARD);
-        }
-      });
-
-      _converse.on('chatBoxInitialized', function (chatbox) {
-        if (!_converse.use_vcards || chatbox.model.get('type') === 'headline') {
-          return;
-        }
-
-        _converse.api.waitUntil('rosterInitialized').then(function () {
-          var jid = chatbox.model.get('jid'),
-              contact = _converse.roster.get(jid);
-
-          if (contact && !contact.get('vcard_updated') || _.isUndefined(contact) && _converse.allow_non_roster_messaging) {
-            updateChatBoxFromVCard(_converse, jid);
-          }
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-      });
-
-      _converse.on('initialized', function () {
-        _converse.roster.on("add", function (contact) {
-          if (!contact.get('vcard_updated')) {
-            _converse.api.vcard.get(contact.get('jid'));
-          }
-        });
-      });
-
-      _converse.on('statusInitialized', function fetchOwnVCard() {
-        if (_.isNil(_converse.xmppstatus.get('fullname'))) {
-          _converse.api.disco.supports(Strophe.NS.VCARD, _converse.domain).then(function (result) {
-            if (result.supported) {
-              _converse.api.vcard.get(_converse.bare_jid).then(function (vcard) {
-                _converse.xmppstatus.save({
-                  'fullname': vcard.fullname || ''
-                });
-              });
-            }
-          }).catch(function (msg) {
-            _converse.log(msg, Strophe.LogLevel.FATAL);
-          });
-        }
-      });
-
-      _.extend(_converse.api, {
-        'vcard': {
-          'get': function get(jid) {
-            return getVCard(_converse, jid);
-          }
-        }
-      });
-    }
-  });
-});
-//# sourceMappingURL=converse-vcard.js.map;
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
-//
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
-
-/*global define */
-(function (root, factory) {
-  define('converse-profile',["converse-core", "tpl!change_status_message", "tpl!chat_status", "tpl!choose_status", "tpl!status_option", "converse-vcard"], factory);
-})(this, function (converse, tpl_change_status_message, tpl_chat_status, tpl_choose_status, tpl_status_option) {
-  "use strict";
-
-  var _converse$env = converse.env,
-      Strophe = _converse$env.Strophe,
-      Backbone = _converse$env.Backbone,
-      Promise = _converse$env.Promise,
-      utils = _converse$env.utils,
-      _ = _converse$env._,
-      moment = _converse$env.moment;
-  converse.plugins.add('converse-profile', {
-    initialize: function initialize() {
-      /* The initialize function gets called as soon as the plugin is
-       * loaded by converse.js's plugin machinery.
-       */
-      var _converse = this._converse,
-          __ = _converse.__;
-      _converse.XMPPStatusView = Backbone.NativeView.extend({
-        el: "form#set-xmpp-status",
-        events: {
-          "click a.choose-xmpp-status": "toggleOptions",
-          "click #fancy-xmpp-status-select a.change-xmpp-status-message": "renderStatusChangeForm",
-          "submit": "setStatusMessage",
-          "click .dropdown dd ul li a": "setStatus"
-        },
-        initialize: function initialize() {
-          this.model.on("change:status", this.updateStatusUI, this);
-          this.model.on("change:status_message", this.updateStatusUI, this);
-          this.model.on("update-status-ui", this.updateStatusUI, this);
-        },
-        render: function render() {
-          // Replace the default dropdown with something nicer
-          var options = this.el.querySelectorAll('#select-xmpp-status option');
-          var chat_status = this.model.get('status') || 'offline';
-          this.el.innerHTML = tpl_choose_status();
-          this.el.querySelector('#fancy-xmpp-status-select').innerHTML = tpl_chat_status({
-            'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
-            'chat_status': chat_status,
-            'desc_custom_status': __('Click here to write a custom status message'),
-            'desc_change_status': __('Click to change your chat status')
-          }); // iterate through all the <option> elements and add option values
-
-          var options_list = _.map(options, function (el) {
-            return tpl_status_option({
-              'value': el.value,
-              'text': el.text
-            });
-          });
-
-          var options_target = this.el.querySelector(".xmpp-status-menu");
-          options_target.classList.add('collapsed');
-          options_target.innerHTML = options_list.join('');
-          return this;
-        },
-        toggleOptions: function toggleOptions(ev) {
-          ev.preventDefault();
-          utils.slideInAllElements(_converse.root.querySelectorAll('#conversejs .contact-form-container'));
-          utils.slideToggleElement(this.el.querySelector("#target dd ul"));
-        },
-        renderStatusChangeForm: function renderStatusChangeForm(ev) {
-          ev.preventDefault();
-          var xmppstatus = this.el.querySelector('.xmpp-status');
-          xmppstatus.parentNode.classList.add('no-border');
-          xmppstatus.outerHTML = tpl_change_status_message({
-            'status_message': _converse.xmppstatus.get('status_message') || '',
-            'label_custom_status': __('Custom status'),
-            'label_save': __('Save')
-          });
-          this.el.querySelector('.custom-xmpp-status').focus();
-        },
-        setStatusMessage: function setStatusMessage(ev) {
-          ev.preventDefault();
-          this.model.setStatusMessage(ev.target.querySelector('input').value);
-        },
-        setStatus: function setStatus(ev) {
-          ev.preventDefault();
-          var value = ev.target.getAttribute('data-value');
-
-          if (value === 'logout') {
-            _converse.logOut();
-          } else {
-            this.model.setStatus(value);
-          }
-
-          utils.slideIn(this.el.querySelector("#target dd ul"));
-        },
-        getPrettyStatus: function getPrettyStatus(stat) {
-          if (stat === 'chat') {
-            return __('online');
-          } else if (stat === 'dnd') {
-            return __('busy');
-          } else if (stat === 'xa') {
-            return __('away for long');
-          } else if (stat === 'away') {
-            return __('away');
-          } else if (stat === 'offline') {
-            return __('offline');
-          } else {
-            return __(stat) || __('online');
-          }
-        },
-        updateStatusUI: function updateStatusUI(model) {
-          var stat = model.get('status'); // For translators: the %1$s part gets replaced with the status
-          // Example, I am online
-
-          var status_message = model.get('status_message') || __("I am %1$s", this.getPrettyStatus(stat));
-
-          var fancy_select = this.el.querySelector('#fancy-xmpp-status-select');
-          fancy_select.classList.remove('no-border');
-          fancy_select.innerHTML = tpl_chat_status({
-            'chat_status': stat,
-            'status_message': status_message,
-            'desc_custom_status': __('Click here to write a custom status message'),
-            'desc_change_status': __('Click to change your chat status')
-          });
-        }
-      });
-    }
-  });
-});
-//# sourceMappingURL=converse-profile.js.map;
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
-//
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
-
-/*global define */
-(function (root, factory) {
-  define('converse-controlbox',["converse-core", "lodash.fp", "tpl!add_contact_dropdown", "tpl!add_contact_form", "tpl!converse_brand_heading", "tpl!contacts_panel", "tpl!contacts_tab", "tpl!controlbox", "tpl!controlbox_toggle", "tpl!login_panel", "tpl!search_contact", "converse-chatview", "converse-rosterview", "converse-profile"], factory);
-})(this, function (converse, fp, tpl_add_contact_dropdown, tpl_add_contact_form, tpl_brand_heading, tpl_contacts_panel, tpl_contacts_tab, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel, tpl_search_contact) {
-  "use strict";
-
-  var USERS_PANEL_ID = 'users';
-  var CHATBOX_TYPE = 'chatbox';
-  var _converse$env = converse.env,
-      Strophe = _converse$env.Strophe,
-      Backbone = _converse$env.Backbone,
-      Promise = _converse$env.Promise,
-      _ = _converse$env._,
-      moment = _converse$env.moment;
-  var u = converse.env.utils;
-  var CONNECTION_STATUS_CSS_CLASS = {
-    'Error': 'error',
-    'Connecting': 'info',
-    'Connection failure': 'error',
-    'Authenticating': 'info',
-    'Authentication failure': 'error',
-    'Connected': 'info',
-    'Disconnected': 'error',
-    'Disconnecting': 'warn',
-    'Attached': 'info',
-    'Redirect': 'info',
-    'Reconnecting': 'warn'
-  };
-  var PRETTY_CONNECTION_STATUS = {
-    0: 'Error',
-    1: 'Connecting',
-    2: 'Connection failure',
-    3: 'Authenticating',
-    4: 'Authentication failure',
-    5: 'Connected',
-    6: 'Disconnected',
-    7: 'Disconnecting',
-    8: 'Attached',
-    9: 'Redirect',
-    10: 'Reconnecting'
-  };
-  var REPORTABLE_STATUSES = [0, // ERROR'
-  1, // CONNECTING
-  2, // CONNFAIL
-  3, // AUTHENTICATING
-  4, // AUTHFAIL
-  7, // DISCONNECTING
-  10 // RECONNECTING
-  ];
-  converse.plugins.add('converse-controlbox', {
-    /* Plugin dependencies are other plugins which might be
-     * overridden or relied upon, and therefore need to be loaded before
-     * this plugin.
-     *
-     * If the setting "strict_plugin_dependencies" is set to true,
-     * an error will be raised if the plugin is not found. By default it's
-     * false, which means these plugins are only loaded opportunistically.
-     *
-     * NB: These plugins need to have already been loaded via require.js.
-     */
-    dependencies: ["converse-chatboxes"],
-    overrides: {
-      // Overrides mentioned here will be picked up by converse.js's
-      // plugin architecture they will replace existing methods on the
-      // relevant objects or classes.
-      //
-      // New functions which don't exist yet can also be added.
-      _tearDown: function _tearDown() {
-        this.__super__._tearDown.apply(this, arguments);
-
-        if (this.rosterview) {
-          // Removes roster groups
-          this.rosterview.model.off().reset();
-          this.rosterview.each(function (groupview) {
-            groupview.removeAll();
-            groupview.remove();
-          });
-          this.rosterview.removeAll().remove();
-        }
-      },
-      clearSession: function clearSession() {
-        this.__super__.clearSession.apply(this, arguments);
-
-        var chatboxes = _.get(this, 'chatboxes', null);
-
-        if (!_.isNil(chatboxes)) {
-          var controlbox = chatboxes.get('controlbox');
-
-          if (controlbox && controlbox.collection && controlbox.collection.browserStorage) {
-            controlbox.save({
-              'connected': false
-            });
-          }
-        }
-      },
-      ChatBoxes: {
-        chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
-          return this.__super__.chatBoxMayBeShown.apply(this, arguments) && chatbox.get('id') !== 'controlbox';
-        },
-        onChatBoxesFetched: function onChatBoxesFetched(collection, resp) {
-          this.__super__.onChatBoxesFetched.apply(this, arguments);
-
-          var _converse = this.__super__._converse;
-
-          if (!_.includes(_.map(collection, 'id'), 'controlbox')) {
-            _converse.addControlBox();
-          }
-
-          this.get('controlbox').save({
-            connected: true
-          });
-        }
-      },
-      ChatBoxViews: {
-        onChatBoxAdded: function onChatBoxAdded(item) {
-          var _converse = this.__super__._converse;
-
-          if (item.get('box_id') === 'controlbox') {
-            var view = this.get(item.get('id'));
-
-            if (view) {
-              view.model = item;
-              view.initialize();
-              return view;
-            } else {
-              view = new _converse.ControlBoxView({
-                model: item
-              });
-              return this.add(item.get('id'), view);
-            }
-          } else {
-            return this.__super__.onChatBoxAdded.apply(this, arguments);
-          }
-        },
-        closeAllChatBoxes: function closeAllChatBoxes() {
-          var _converse = this.__super__._converse;
-          this.each(function (view) {
-            if (view.model.get('id') === 'controlbox' && (_converse.disconnection_cause !== _converse.LOGOUT || _converse.show_controlbox_by_default)) {
-              return;
-            }
-
-            view.close();
-          });
-          return this;
-        },
-        getChatBoxWidth: function getChatBoxWidth(view) {
-          var _converse = this.__super__._converse;
-          var controlbox = this.get('controlbox');
-
-          if (view.model.get('id') === 'controlbox') {
-            /* We return the width of the controlbox or its toggle,
-             * depending on which is visible.
-             */
-            if (!controlbox || !u.isVisible(controlbox.el)) {
-              return u.getOuterWidth(_converse.controlboxtoggle.el, true);
-            } else {
-              return u.getOuterWidth(controlbox.el, true);
-            }
-          } else {
-            return this.__super__.getChatBoxWidth.apply(this, arguments);
-          }
-        }
-      },
-      ChatBox: {
-        initialize: function initialize() {
-          if (this.get('id') === 'controlbox') {
-            this.set({
-              'time_opened': moment(0).valueOf()
-            });
-          } else {
-            this.__super__.initialize.apply(this, arguments);
-          }
-        }
-      },
-      ChatBoxView: {
-        insertIntoDOM: function insertIntoDOM() {
-          var view = this.__super__._converse.chatboxviews.get("controlbox");
-
-          if (view) {
-            view.el.insertAdjacentElement('afterend', this.el);
-          } else {
-            this.__super__.insertIntoDOM.apply(this, arguments);
-          }
-
-          return this;
-        }
-      }
-    },
-    initialize: function initialize() {
-      /* The initialize function gets called as soon as the plugin is
-       * loaded by converse.js's plugin machinery.
-       */
-      var _converse = this._converse,
-          __ = _converse.__;
-
-      _converse.api.settings.update({
-        allow_logout: true,
-        default_domain: undefined,
-        locked_domain: undefined,
-        show_controlbox_by_default: false,
-        sticky_controlbox: false,
-        xhr_user_search: false,
-        xhr_user_search_url: ''
-      });
-
-      _converse.api.promises.add('controlboxInitialized');
-
-      var LABEL_CONTACTS = __('Contacts');
-
-      _converse.addControlBox = function () {
-        _converse.chatboxes.add({
-          id: 'controlbox',
-          box_id: 'controlbox',
-          type: 'controlbox',
-          closed: !_converse.show_controlbox_by_default
-        });
-      };
-
-      _converse.ControlBoxView = _converse.ChatBoxView.extend({
-        tagName: 'div',
-        className: 'chatbox',
-        id: 'controlbox',
-        events: {
-          'click a.close-chatbox-button': 'close',
-          'click ul#controlbox-tabs li a': 'switchTab'
-        },
-        initialize: function initialize() {
-          if (_.isUndefined(_converse.controlboxtoggle)) {
-            _converse.controlboxtoggle = new _converse.ControlBoxToggle();
-
-            _converse.controlboxtoggle.el.insertAdjacentElement('afterend', this.el);
-          }
-
-          this.model.on('change:connected', this.onConnected, this);
-          this.model.on('destroy', this.hide, this);
-          this.model.on('hide', this.hide, this);
-          this.model.on('show', this.show, this);
-          this.model.on('change:closed', this.ensureClosedState, this);
-          this.render();
-
-          if (this.model.get('connected')) {
-            _converse.api.waitUntil('rosterViewInitialized').then(this.insertRoster.bind(this)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-          }
-
-          _converse.emit('controlboxInitialized', this);
-        },
-        render: function render() {
-          if (this.model.get('connected')) {
-            if (_.isUndefined(this.model.get('closed'))) {
-              this.model.set('closed', !_converse.show_controlbox_by_default);
-            }
-          }
-
-          if (!this.model.get('closed')) {
-            this.show();
-          } else {
-            this.hide();
-          }
-
-          this.el.innerHTML = tpl_controlbox(_.extend(this.model.toJSON(), {
-            'sticky_controlbox': _converse.sticky_controlbox
-          }));
-
-          if (!_converse.connection.connected || !_converse.connection.authenticated || _converse.connection.disconnecting) {
-            this.renderLoginPanel();
-          } else if (this.model.get('connected') && (!this.contactspanel || !u.isVisible(this.contactspanel.el))) {
-            this.renderContactsPanel();
-          }
-
-          return this;
-        },
-        onConnected: function onConnected() {
-          if (this.model.get('connected')) {
-            this.render();
-
-            _converse.api.waitUntil('rosterViewInitialized').then(this.insertRoster.bind(this)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-
-            this.model.save();
-          }
-        },
-        insertRoster: function insertRoster() {
-          /* Place the rosterview inside the "Contacts" panel. */
-          this.contactspanel.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el);
-          return this;
-        },
-        createBrandHeadingHTML: function createBrandHeadingHTML() {
-          return tpl_brand_heading();
-        },
-        insertBrandHeading: function insertBrandHeading() {
-          var heading_el = this.el.querySelector('.brand-heading-container');
-
-          if (_.isNull(heading_el)) {
-            var el = this.el.querySelector('.controlbox-head');
-            el.insertAdjacentHTML('beforeend', this.createBrandHeadingHTML());
-          } else {
-            heading_el.outerHTML = this.createBrandHeadingHTML();
-          }
-        },
-        renderLoginPanel: function renderLoginPanel() {
-          this.el.classList.add("logged-out");
-
-          if (_.isNil(this.loginpanel)) {
-            this.loginpanel = new _converse.LoginPanel({
-              'model': new _converse.LoginPanelModel()
-            });
-            var panes = this.el.querySelector('.controlbox-panes');
-            panes.innerHTML = '';
-            panes.appendChild(this.loginpanel.render().el);
-            this.insertBrandHeading();
-          } else {
-            this.loginpanel.render();
-          }
-
-          return this;
-        },
-        renderContactsPanel: function renderContactsPanel() {
-          /* Renders the "Contacts" panel of the controlbox.
-           *
-           * This will only be called after the user has already been
-           * logged in.
-           */
-          if (this.loginpanel) {
-            this.loginpanel.remove();
-            delete this.loginpanel;
-          }
-
-          this.el.classList.remove("logged-out");
-
-          if (_.isUndefined(this.model.get('active-panel'))) {
-            this.model.save({
-              'active-panel': USERS_PANEL_ID
-            });
-          }
-
-          this.contactspanel = new _converse.ContactsPanel({
-            'parent_el': this.el.querySelector('.controlbox-panes')
-          });
-          this.contactspanel.insertIntoDOM();
-          _converse.xmppstatusview = new _converse.XMPPStatusView({
-            'model': _converse.xmppstatus
-          });
-
-          _converse.xmppstatusview.render();
-        },
-        close: function close(ev) {
-          if (ev && ev.preventDefault) {
-            ev.preventDefault();
-          }
-
-          if (_converse.sticky_controlbox) {
-            return;
-          }
-
-          if (_converse.connection.connected && !_converse.connection.disconnecting) {
-            this.model.save({
-              'closed': true
-            });
-          } else {
-            this.model.trigger('hide');
-          }
-
-          _converse.emit('controlBoxClosed', this);
-
-          return this;
-        },
-        ensureClosedState: function ensureClosedState() {
-          if (this.model.get('closed')) {
-            this.hide();
-          } else {
-            this.show();
-          }
-        },
-        hide: function hide(callback) {
-          if (_converse.sticky_controlbox) {
-            return;
-          }
-
-          u.addClass('hidden', this.el);
-
-          _converse.emit('chatBoxClosed', this);
-
-          if (!_converse.connection.connected) {
-            _converse.controlboxtoggle.render();
-          }
-
-          _converse.controlboxtoggle.show(callback);
-
-          return this;
-        },
-        onControlBoxToggleHidden: function onControlBoxToggleHidden() {
-          this.model.set('closed', false);
-          this.el.classList.remove('hidden');
-
-          _converse.emit('controlBoxOpened', this);
-        },
-        show: function show() {
-          _converse.controlboxtoggle.hide(this.onControlBoxToggleHidden.bind(this));
-
-          return this;
-        },
-        switchTab: function switchTab(ev) {
-          if (ev && ev.preventDefault) {
-            ev.preventDefault();
-          }
-
-          var tab = u.hasClass('msgs-indicator', ev.target) ? ev.target.parentNode : ev.target,
-              sibling_li = tab.parentNode.nextElementSibling || tab.parentNode.previousElementSibling,
-              sibling = sibling_li.firstChild,
-              sibling_panel = _converse.root.querySelector(sibling.getAttribute('href')),
-              tab_panel = _converse.root.querySelector(tab.getAttribute('href'));
-
-          u.hideElement(sibling_panel);
-          u.removeClass('current', sibling);
-          u.addClass('current', tab);
-          u.removeClass('hidden', tab_panel);
-
-          if (!_.isUndefined(_converse.chatboxes.browserStorage)) {
-            this.model.save({
-              'active-panel': tab.getAttribute('data-id')
-            });
-          }
-
-          return this;
-        },
-        showHelpMessages: function showHelpMessages() {
-          /* Override showHelpMessages in ChatBoxView, for now do nothing.
-           *
-           * Parameters:
-           *  (Array) msgs: Array of messages
-           */
-          return;
-        }
-      });
-      _converse.LoginPanelModel = Backbone.Model.extend({
-        defaults: {
-          // Passed-by-reference. Fine in this case because there's
-          // only one such model.
-          'errors': []
-        }
-      });
-      _converse.LoginPanel = Backbone.VDOMView.extend({
-        tagName: 'div',
-        id: "converse-login-panel",
-        className: 'controlbox-pane fade-in',
-        events: {
-          'submit form#converse-login': 'authenticate',
-          'change input': 'validate'
-        },
-        initialize: function initialize(cfg) {
-          this.model.on('change', this.render, this);
-          this.listenTo(_converse.connfeedback, 'change', this.render);
-        },
-        toHTML: function toHTML() {
-          var connection_status = _converse.connfeedback.get('connection_status');
-
-          var feedback_class, pretty_status;
-
-          if (_.includes(REPORTABLE_STATUSES, connection_status)) {
-            pretty_status = PRETTY_CONNECTION_STATUS[connection_status];
-            feedback_class = CONNECTION_STATUS_CSS_CLASS[pretty_status];
-          }
-
-          return tpl_login_panel(_.extend(this.model.toJSON(), {
-            '__': __,
-            '_converse': _converse,
-            'ANONYMOUS': _converse.ANONYMOUS,
-            'EXTERNAL': _converse.EXTERNAL,
-            'LOGIN': _converse.LOGIN,
-            'PREBIND': _converse.PREBIND,
-            'auto_login': _converse.auto_login,
-            'authentication': _converse.authentication,
-            'connection_status': connection_status,
-            'conn_feedback_class': feedback_class,
-            'conn_feedback_subject': pretty_status,
-            'conn_feedback_message': _converse.connfeedback.get('message'),
-            'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain')
-          }));
-        },
-        validate: function validate() {
-          var form = this.el.querySelector('form');
-          var jid_element = form.querySelector('input[name=jid]');
-
-          if (jid_element.value && !_converse.locked_domain && !_converse.default_domain && !u.isValidJID(jid_element.value)) {
-            jid_element.setCustomValidity(__('Please enter a valid XMPP address'));
-            return false;
-          }
-
-          jid_element.setCustomValidity('');
-          return true;
-        },
-        authenticate: function authenticate(ev) {
-          /* Authenticate the user based on a form submission event.
-           */
-          if (ev && ev.preventDefault) {
-            ev.preventDefault();
-          }
-
-          if (_converse.authentication === _converse.ANONYMOUS) {
-            this.connect(_converse.jid, null);
-            return;
-          }
-
-          if (!this.validate()) {
-            return;
-          }
-
-          var jid = ev.target.querySelector('input[name=jid]').value;
-
-          if (_converse.locked_domain) {
-            jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
-          } else if (_converse.default_domain && !_.includes(jid, '@')) {
-            jid = jid + '@' + _converse.default_domain;
-          }
-
-          this.connect(jid, _.get(ev.target.querySelector('input[name=password]'), 'value'));
-        },
-        connect: function connect(jid, password) {
-          if (jid) {
-            var resource = Strophe.getResourceFromJid(jid);
-
-            if (!resource) {
-              jid = jid.toLowerCase() + _converse.generateResource();
-            } else {
-              jid = Strophe.getBareJidFromJid(jid).toLowerCase() + '/' + resource;
-            }
-          }
-
-          if (_.includes(["converse/login", "converse/register"], Backbone.history.getFragment())) {
-            _converse.router.navigate('', {
-              'replace': true
-            });
-          }
-
-          _converse.connection.reset();
-
-          _converse.connection.connect(jid, password, _converse.onConnectStatusChanged);
-        }
-      });
-      _converse.ContactsPanel = Backbone.NativeView.extend({
-        tagName: 'div',
-        className: 'controlbox-pane',
-        id: 'users',
-        events: {
-          'click a.toggle-xmpp-contact-form': 'toggleContactForm',
-          'submit form.add-xmpp-contact': 'addContactFromForm',
-          'submit form.search-xmpp-contact': 'searchContacts',
-          'click a.subscribe-to-user': 'addContactFromList'
-        },
-        initialize: function initialize(cfg) {
-          this.parent_el = cfg.parent_el;
-          this.tab_el = document.createElement('li');
-
-          _converse.chatboxes.on('change:num_unread', this.renderTab, this);
-
-          _converse.chatboxes.on('add', _.debounce(this.renderTab, 100), this);
-        },
-        render: function render() {
-          this.renderTab();
-          var widgets = tpl_contacts_panel({
-            label_online: __('Online'),
-            label_busy: __('Busy'),
-            label_away: __('Away'),
-            label_offline: __('Offline'),
-            label_logout: __('Log out'),
-            include_offline_state: _converse.include_offline_state,
-            allow_logout: _converse.allow_logout
-          });
-
-          if (_converse.allow_contact_requests) {
-            widgets += tpl_add_contact_dropdown({
-              label_click_to_chat: __('Click to add new chat contacts'),
-              label_add_contact: __('Add a contact')
-            });
-          }
-
-          this.el.innerHTML = widgets;
-
-          var controlbox = _converse.chatboxes.get('controlbox');
-
-          if (controlbox.get('active-panel') !== USERS_PANEL_ID) {
-            this.el.classList.add('hidden');
-          }
-
-          return this;
-        },
-        renderTab: function renderTab() {
-          var controlbox = _converse.chatboxes.get('controlbox');
-
-          if (_.isNil(controlbox)) {
-            return;
-          }
-
-          var chats = fp.filter(_.partial(u.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
-          this.tab_el.innerHTML = tpl_contacts_tab({
-            'label_contacts': LABEL_CONTACTS,
-            'is_current': controlbox.get('active-panel') === USERS_PANEL_ID,
-            'num_unread': fp.sum(fp.map(fp.curry(u.getAttribute)('num_unread'), chats))
-          });
-        },
-        insertIntoDOM: function insertIntoDOM() {
-          this.parent_el.appendChild(this.render().el);
-          this.tabs = this.parent_el.parentNode.querySelector('#controlbox-tabs');
-          this.tabs.appendChild(this.tab_el);
-          return this;
-        },
-        generateAddContactHTML: function generateAddContactHTML() {
-          var settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-          if (_converse.xhr_user_search) {
-            return tpl_search_contact({
-              label_contact_name: __('Contact name'),
-              label_search: __('Search')
-            });
-          } else {
-            return tpl_add_contact_form(_.assign({
-              error_message: null,
-              label_contact_username: __('e.g. user@example.org'),
-              label_add: __('Add'),
-              value: ''
-            }, settings));
-          }
-        },
-        toggleContactForm: function toggleContactForm(ev) {
-          ev.preventDefault();
-          this.el.querySelector('.search-xmpp div').innerHTML = this.generateAddContactHTML();
-          var dropdown = this.el.querySelector('.contact-form-container');
-          u.slideToggleElement(dropdown).then(function () {
-            if (u.isVisible(dropdown)) {
-              dropdown.querySelector('input.username').focus();
-            }
-          });
-        },
-        searchContacts: function searchContacts(ev) {
-          ev.preventDefault();
-          var search_query = ev.target.querySelector('input.username').value,
-              url = _converse.xhr_user_search_url + "?q=" + search_query,
-              xhr = new XMLHttpRequest();
-          xhr.open('GET', url, true);
-          xhr.setRequestHeader('Accept', "application/json, text/javascript");
-
-          xhr.onload = function () {
-            if (xhr.status >= 200 && xhr.status < 400) {
-              var data = JSON.parse(xhr.responseText),
-                  ul = _converse.root.querySelector('.search-xmpp ul');
-
-              u.removeElement(ul.querySelector('li.found-user'));
-              u.removeElement(ul.querySelector('li.chat-info'));
-
-              if (!data.length) {
-                var no_users_text = __('No users found');
-
-                ul.insertAdjacentHTML('beforeEnd', "<li class=\"chat-info\">".concat(no_users_text, "</li>"));
-              } else {
-                var title_subscribe = __('Click to add as a chat contact');
-
-                _.each(data, function (obj) {
-                  var li = u.stringToElement('<li class="found-user"></li>'),
-                      a = u.stringToElement("<a class=\"subscribe-to-user\" href=\"#\" title=\"".concat(title_subscribe, "\"></a>")),
-                      jid = Strophe.getNodeFromJid(obj.id) + "@" + Strophe.getDomainFromJid(obj.id);
-                  a.setAttribute('data-recipient', jid);
-                  a.textContent = obj.fullname;
-                  li.appendChild(a);
-                  u.appendChild(li);
-                });
-              }
-            } else {
-              xhr.onerror();
-            }
-          };
-
-          xhr.onerror = function () {
-            _converse.log('Could not fetch contacts via XHR', Strophe.LogLevel.ERROR);
-          };
-
-          xhr.send();
-        },
-        addContactFromForm: function addContactFromForm(ev) {
-          ev.preventDefault();
-          var input = ev.target.querySelector('input');
-          var jid = input.value;
-
-          if (!jid || _.compact(jid.split('@')).length < 2) {
-            this.el.querySelector('.search-xmpp div').innerHTML = this.generateAddContactHTML({
-              error_message: __('Please enter a valid XMPP address'),
-              label_contact_username: __('e.g. user@example.org'),
-              label_add: __('Add'),
-              value: jid
-            });
-            return;
-          }
-
-          _converse.roster.addAndSubscribe(jid);
-
-          u.slideIn(this.el.querySelector('.contact-form-container'));
-        },
-        addContactFromList: function addContactFromList(ev) {
-          ev.preventDefault();
-          var jid = ev.target.getAttribute('data-recipient'),
-              name = ev.target.textContent;
-
-          _converse.roster.addAndSubscribe(jid, name);
-
-          var parent = ev.target.parentNode;
-          parent.parentNode.removeChild(parent);
-          u.slideIn(this.el.querySelector('.contact-form-container'));
-        }
-      });
-      _converse.ControlBoxToggle = Backbone.NativeView.extend({
-        tagName: 'a',
-        className: 'toggle-controlbox hidden',
-        id: 'toggle-controlbox',
-        events: {
-          'click': 'onClick'
-        },
-        attributes: {
-          'href': "#"
-        },
-        initialize: function initialize() {
-          var _this = this;
-
-          _converse.chatboxviews.el.insertAdjacentElement('afterBegin', this.render().el);
-
-          var that = this;
-
-          _converse.api.waitUntil('initialized').then(function () {
-            _this.render();
-          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-        },
-        render: function render() {
-          // We let the render method of ControlBoxView decide whether
-          // the ControlBox or the Toggle must be shown. This prevents
-          // artifacts (i.e. on page load the toggle is shown only to then
-          // seconds later be hidden in favor of the control box).
-          this.el.innerHTML = tpl_controlbox_toggle({
-            'label_toggle': _converse.connection.connected ? __('Contacts') : __('Toggle chat')
-          });
-          return this;
-        },
-        hide: function hide(callback) {
-          u.hideElement(this.el);
-          callback();
-        },
-        show: function show(callback) {
-          u.fadeIn(this.el, callback);
-        },
-        showControlBox: function showControlBox() {
-          var controlbox = _converse.chatboxes.get('controlbox');
-
-          if (!controlbox) {
-            controlbox = _converse.addControlBox();
-          }
-
-          if (_converse.connection.connected) {
-            controlbox.save({
-              closed: false
-            });
-          } else {
-            controlbox.trigger('show');
-          }
-        },
-        onClick: function onClick(e) {
-          e.preventDefault();
-
-          if (u.isVisible(_converse.root.querySelector("#controlbox"))) {
-            var controlbox = _converse.chatboxes.get('controlbox');
-
-            if (_converse.connection.connected) {
-              controlbox.save({
-                closed: true
-              });
-            } else {
-              controlbox.trigger('hide');
-            }
-          } else {
-            this.showControlBox();
-          }
-        }
-      });
-      Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxesInitialized')]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-
-      var disconnect = function disconnect() {
-        /* Upon disconnection, set connected to `false`, so that if
-         * we reconnect,
-         * "onConnected" will be called, to fetch the roster again and
-         * to send out a presence stanza.
-         */
-        var view = _converse.chatboxviews.get('controlbox');
-
-        view.model.set({
-          connected: false
-        });
-        view.el.querySelector('#controlbox-tabs').innerHTML = '';
-        view.renderLoginPanel();
-      };
-
-      _converse.on('disconnected', disconnect);
-
-      var afterReconnected = function afterReconnected() {
-        /* After reconnection makes sure the controlbox is aware.
-         */
-        var view = _converse.chatboxviews.get('controlbox');
-
-        if (view.model.get('connected')) {
-          _converse.chatboxviews.get("controlbox").onConnected();
-        } else {
-          view.model.set({
-            connected: true
-          });
-        }
-      };
-
-      _converse.on('reconnected', afterReconnected);
-    }
-  });
-});
-//# sourceMappingURL=converse-controlbox.js.map;
-
-define('tpl!field', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<field var="' +
-__e(o.name) +
-'">\n';
- if (_.isArray(o.value)) { ;
-__p += '\n    ';
- _.each(o.value,function(arrayValue) { ;
-__p += '<value>' +
-__e(arrayValue) +
-'</value>';
- }); ;
-__p += '\n';
- } else { ;
-__p += '\n    <value>' +
-__e(o.value) +
-'</value>\n';
- } ;
-__p += '</field>\n';
-return __p
-};});
-
-
-define('tpl!select_option', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<option value="' +
-__e(o.value) +
-'" ';
- if (o.selected) { ;
-__p += ' selected="selected" ';
- } ;
-__p += ' >' +
-__e(o.label) +
-'</option>\n';
-return __p
-};});
-
-
-define('tpl!form_select', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<label>\n    ' +
-__e(o.label) +
-'\n    <select name="' +
-__e(o.name) +
-'"  ';
- if (o.multiple) { ;
-__p += ' multiple="multiple" ';
- } ;
-__p += '>' +
-((__t = (o.options)) == null ? '' : __t) +
-'</select>\n</label>\n';
-return __p
-};});
-
-
-define('tpl!form_textarea', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<label class="label-ta">' +
-__e(o.label) +
-'</label>\n<textarea name="' +
-__e(o.name) +
-'">' +
-__e(o.value) +
-'</textarea>\n';
-return __p
-};});
-
-
-define('tpl!form_checkbox', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<label class="checkbox" for="' +
-__e(o.name) +
-'">' +
-__e(o.label) +
-'<input name="' +
-__e(o.name) +
-'" type="' +
-__e(o.type) +
-'" ' +
-__e(o.checked) +
-'></label>\n\n';
-return __p
-};});
-
-
-define('tpl!form_username', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-
- if (o.label) { ;
-__p += '\n<label>\n    ' +
-__e(o.label) +
-'\n</label>\n';
- } ;
-__p += '\n<div class="input-group">\n    <input name="' +
-__e(o.name) +
-'" type="' +
-__e(o.type) +
-'"\n        ';
- if (o.value) { ;
-__p += ' value="' +
-__e(o.value) +
-'" ';
- } ;
-__p += '\n        ';
- if (o.required) { ;
-__p += ' class="required" ';
- } ;
-__p += ' />\n    <span title="' +
-__e(o.domain) +
-'">' +
-__e(o.domain) +
-'</span>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!form_input', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<label>\n    ' +
-__e(o.label) +
-'\n    <input name="' +
-__e(o.name) +
-'" type="' +
-__e(o.type) +
-'" \n        ';
- if (o.placeholder) { ;
-__p += ' placeholder="' +
-__e(o.placeholder) +
-'" ';
- } ;
-__p += '\n        ';
- if (o.value) { ;
-__p += ' value="' +
-__e(o.value) +
-'" ';
- } ;
-__p += '\n        ';
- if (o.required) { ;
-__p += ' class="required" ';
- } ;
-__p += ' >\n</label>\n';
-return __p
-};});
-
-
-define('tpl!form_captcha', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-
- if (o.label) { ;
-__p += '\n<label>\n    ' +
-__e(o.label) +
-'\n</label>\n';
- } ;
-__p += '\n<img src="data:' +
-__e(o.type) +
-';base64,' +
-__e(o.data) +
-'">\n<input name="' +
-__e(o.name) +
-'" type="text" ';
- if (o.required) { ;
-__p += ' class="required" ';
- } ;
-__p += ' >\n\n\n';
-return __p
-};});
-
-
-define('tpl!form_url', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<label>\n    ' +
-__e(o.label) +
-'\n    <a class="form-url" target="_blank" rel="noopener" href="' +
-__e(o.value) +
-'">' +
-__e(o.value) +
-'</a>\n</label>\n';
-return __p
-};});
-
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
-//
-// This is the utilities module.
-//
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
-
-/*global define, escape, Jed */
-(function (root, factory) {
-  define('form-utils',["sizzle", "lodash.noconflict", "utils", "tpl!field", "tpl!select_option", "tpl!form_select", "tpl!form_textarea", "tpl!form_checkbox", "tpl!form_username", "tpl!form_input", "tpl!form_captcha", "tpl!form_url"], factory);
-})(this, function (sizzle, _, u, tpl_field, tpl_select_option, tpl_form_select, tpl_form_textarea, tpl_form_checkbox, tpl_form_username, tpl_form_input, tpl_form_captcha, tpl_form_url) {
-  "use strict";
-
-  var XFORM_TYPE_MAP = {
-    'text-private': 'password',
-    'text-single': 'text',
-    'fixed': 'label',
-    'boolean': 'checkbox',
-    'hidden': 'hidden',
-    'jid-multi': 'textarea',
-    'list-single': 'dropdown',
-    'list-multi': 'dropdown'
-  };
-
-  u.webForm2xForm = function (field) {
-    /* Takes an HTML DOM and turns it into an XForm field.
-     *
-     * Parameters:
-     *      (DOMElement) field - the field to convert
-     */
-    var value;
-
-    if (field.getAttribute('type') === 'checkbox') {
-      value = field.checked && 1 || 0;
-    } else if (field.tagName == "textarea") {
-      value = _.filter(field.value.split('\n'), _.trim);
-    } else {
-      value = field.value;
-    }
-
-    return u.stringToNode(tpl_field({
-      name: field.getAttribute('name'),
-      value: value
-    }));
-  };
-
-  u.xForm2webForm = function (field, stanza, domain) {
-    /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
-     * and turns it into an HTML field.
-     *
-     * Returns either text or a DOM element (which is not ideal, but fine
-     * for now).
-     *
-     *  Parameters:
-     *      (XMLElement) field - the field to convert
-     */
-    if (field.getAttribute('type')) {
-      if (field.getAttribute('type') === 'list-single' || field.getAttribute('type') === 'list-multi') {
-        var values = _.map(u.queryChildren(field, 'value'), _.partial(_.get, _, 'textContent'));
-
-        var options = _.map(u.queryChildren(field, 'option'), function (option) {
-          var value = _.get(option.querySelector('value'), 'textContent');
-
-          return tpl_select_option({
-            'value': value,
-            'label': option.getAttribute('label'),
-            'selected': _.startsWith(values, value),
-            'required': !_.isNil(field.querySelector('required'))
-          });
-        });
-
-        return tpl_form_select({
-          'name': field.getAttribute('var'),
-          'label': field.getAttribute('label'),
-          'options': options.join(''),
-          'multiple': field.getAttribute('type') === 'list-multi',
-          'required': !_.isNil(field.querySelector('required'))
-        });
-      } else if (field.getAttribute('type') === 'fixed') {
-        var text = _.get(field.querySelector('value'), 'textContent');
-
-        return '<p class="form-help">' + text + '</p>';
-      } else if (field.getAttribute('type') === 'jid-multi') {
-        return tpl_form_textarea({
-          'name': field.getAttribute('var'),
-          'label': field.getAttribute('label') || '',
-          'value': _.get(field.querySelector('value'), 'textContent'),
-          'required': !_.isNil(field.querySelector('required'))
-        });
-      } else if (field.getAttribute('type') === 'boolean') {
-        return tpl_form_checkbox({
-          'name': field.getAttribute('var'),
-          'type': XFORM_TYPE_MAP[field.getAttribute('type')],
-          'label': field.getAttribute('label') || '',
-          'checked': _.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
-          'required': !_.isNil(field.querySelector('required'))
-        });
-      } else if (field.getAttribute('var') === 'url') {
-        return tpl_form_url({
-          'label': field.getAttribute('label') || '',
-          'value': _.get(field.querySelector('value'), 'textContent')
-        });
-      } else if (field.getAttribute('var') === 'username') {
-        return tpl_form_username({
-          'domain': ' @' + domain,
-          'name': field.getAttribute('var'),
-          'type': XFORM_TYPE_MAP[field.getAttribute('type')],
-          'label': field.getAttribute('label') || '',
-          'value': _.get(field.querySelector('value'), 'textContent'),
-          'required': !_.isNil(field.querySelector('required'))
-        });
-      } else {
-        return tpl_form_input({
-          'label': field.getAttribute('label') || '',
-          'name': field.getAttribute('var'),
-          'placeholder': null,
-          'required': !_.isNil(field.querySelector('required')),
-          'type': XFORM_TYPE_MAP[field.getAttribute('type')],
-          'value': _.get(field.querySelector('value'), 'textContent')
-        });
-      }
-    } else {
-      if (field.getAttribute('var') === 'ocr') {
-        // Captcha
-        var uri = field.querySelector('uri');
-        var el = sizzle('data[cid="' + uri.textContent.replace(/^cid:/, '') + '"]', stanza)[0];
-        return tpl_form_captcha({
-          'label': field.getAttribute('label'),
-          'name': field.getAttribute('var'),
-          'data': _.get(el, 'textContent'),
-          'type': uri.getAttribute('type'),
-          'required': !_.isNil(field.querySelector('required'))
-        });
-      }
-    }
-  };
-
-  return u;
-});
-//# sourceMappingURL=form-utils.js.map;
-
-define('tpl!chatarea', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<div class="chat-area">\n    <div class="chat-content ';
- if (o.show_send_button) { ;
-__p += 'chat-content-sendbutton';
- } ;
-__p += '"></div>\n    <div class="new-msgs-indicator hidden">▼ ' +
-__e( o.unread_msgs ) +
-' ▼</div>\n    <form class="sendXMPPMessage">\n        ';
- if (o.show_toolbar) { ;
-__p += '\n            <ul class="chat-toolbar no-text-select"></ul>\n        ';
- } ;
-__p += '\n        <textarea type="text" class="chat-textarea ';
- if (o.show_send_button) { ;
-__p += 'chat-textarea-send-button';
- } ;
-__p += '"\n                  placeholder="' +
-__e(o.label_message) +
-'"></textarea>\n    ';
- if (o.show_send_button) { ;
-__p += '\n        <button type="submit" class="pure-button send-button">' +
-__e( o.label_send ) +
-'</button>\n    ';
- } ;
-__p += '\n    </form>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!chatroom', ['lodash'], function(_) {return function(o) {
-var __t, __p = '';
-__p += '<div class="flyout box-flyout">\n    <div class="chat-head chat-head-chatroom"></div>\n    <div class="chat-body chatroom-body"></div>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_disconnect', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<p class="disconnect-msg">' +
-__e(o.disconnect_message) +
-'</p>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_features', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-
- if (o.has_features) { ;
-__p += '\n<p class="occupants-heading">' +
-__e(o.label_features) +
-'</p>\n';
- } ;
-__p += '\n<ul class="features-list">\n';
- if (o.passwordprotected) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_passwordprotected ) +
-'"><span class="icon-lock"></span>' +
-__e( o.label_passwordprotected ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.unsecured) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_unsecured ) +
-'"><span class="icon-unlocked"></span>' +
-__e( o.label_unsecured ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.hidden) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_hidden ) +
-'"><span class="icon-eye-blocked"></span>' +
-__e( o.label_hidden ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.public_room) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_public ) +
-'"><span class="icon-eye"></span>' +
-__e( o.label_public ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.membersonly) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_membersonly ) +
-'"><span class="icon-address-book"></span>' +
-__e( o.label_membersonly ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.open) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_open ) +
-'"><span class="icon-globe"></span>' +
-__e( o.label_open ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.persistent) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_persistent ) +
-'"><span class="icon-save"></span>' +
-__e( o.label_persistent ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.temporary) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_temporary ) +
-'"><span class="icon-snowflake"></span>' +
-__e( o.label_temporary ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.nonanonymous) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_nonanonymous ) +
-'"><span class="icon-idcard-dark"></span>' +
-__e( o.label_nonanonymous ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.semianonymous) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_semianonymous ) +
-'"><span class="icon-info"></span>' +
-__e( o.label_semianonymous ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.moderated) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_moderated ) +
-'"><span class="icon-legal"></span>' +
-__e( o.label_moderated ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.unmoderated) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_unmoderated ) +
-'"><span class="icon-info"></span>' +
-__e( o.label_unmoderated ) +
-'</li>\n';
- } ;
-__p += '\n';
- if (o.mam_enabled) { ;
-__p += '\n<li class="feature" title="' +
-__e( o.tt_mam_enabled ) +
-'"><span class="icon-database"></span>' +
-__e( o.label_mam_enabled ) +
-'</li>\n';
- } ;
-__p += '\n</ul>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_form', ['lodash'], function(_) {return function(o) {
-var __t, __p = '';
-__p += '<div class="chatroom-form-container">\n    <form class="pure-form pure-form-stacked converse-form chatroom-form">\n        <fieldset>\n            <span class="spinner centered"/>\n        </fieldset>\n    </form>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_head', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<a class="chatbox-btn close-chatbox-button icon-close" title="' +
-__e(o.info_close) +
-'"></a>\n';
- if (o.affiliation == 'owner') { ;
-__p += '\n    <a class="chatbox-btn configure-chatroom-button icon-wrench" title="' +
-__e(o.info_configure) +
-' "></a>\n';
- } ;
-__p += '\n<div class="chat-title" title="' +
-__e(o.jid) +
-'">\n    ';
- if (o.name && o.name !== o.Strophe.getNodeFromJid(o.jid)) { ;
-__p += '\n        <span class="chatroom-name">' +
-__e( o.name ) +
-'</span>\n    ';
- } else { ;
-__p += '\n        <span class="chatroom-name">' +
-__e( o.Strophe.getNodeFromJid(o.jid) ) +
-'</span>@' +
-__e( o.Strophe.getDomainFromJid(o.jid) ) +
-'\n    ';
- } ;
-__p += '\n    <p class="chatroom-description">' +
-__e( o.description ) +
-'<p/>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_invite', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<form class="pure-form room-invite">\n    ';
- if (o.error_message) { ;
-__p += '\n        <span class="pure-form-message error">' +
-__e(o.error_message) +
-'</span>\n    ';
- } ;
-__p += '\n    <input class="invited-contact" placeholder="' +
-__e(o.label_invitation) +
-'" type="text"/>\n</form>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_join_form', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<form class="pure-form pure-form-stacked converse-form add-chatroom" action="" method="post">\n    <fieldset>\n        <label>' +
-__e(o.label_room_name) +
-'</label>\n        <input type="text" name="chatroom" class="new-chatroom-name" placeholder="' +
-__e(o.label_room_name) +
-'"/>\n        ';
- if (o.server_input_type != 'hidden') { ;
-__p += '\n        <label' +
-__e(o.server_label_global_attr) +
-'>' +
-__e(o.label_server) +
-'</label>\n        ';
- } ;
-__p += '\n        <input type="' +
-__e(o.server_input_type) +
-'"\n               name="server"\n               class="new-chatroom-server"\n               placeholder="' +
-__e(o.label_server) +
-'"\n               value="' +
-__e(o.muc_domain) +
-'"/>\n        <input type="submit" class="pure-button button-primary" name="join" value="' +
-__e(o.label_join) +
-'"/>\n        <input type="button" class="pure-button button-secondary" name="show" id="show-rooms" value="' +
-__e(o.label_show_rooms) +
-'"/>\n    </fieldset>\n</form>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_nickname_form', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form converse-centered-form">\n        <fieldset>\n            <label>' +
-__e(o.heading) +
-'</label>\n            <p class="validation-message">' +
-__e(o.validation_message) +
-'</p>\n            <input type="text" required="required" name="nick" class="new-chatroom-nick" placeholder="' +
-__e(o.label_nickname) +
-'"/>\n        </fieldset>\n        <fieldset>\n            <input type="submit" class="pure-button button-primary" name="join" value="' +
-__e(o.label_join) +
-'"/>\n        </fieldset>\n    </form>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_password_form', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form">\n        <fieldset>\n            <legend>' +
-__e(o.heading) +
-'</legend>\n            <label>' +
-__e(o.label_password) +
-'</label>\n            <input type="password" name="password"/>\n        </fieldset>\n        <fieldset>\n            <input class="pure-button button-primary" type="submit" value="' +
-__e(o.label_submit) +
-'"/>\n        </fieldset>\n    </form>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!chatroom_sidebar', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<!-- <div class="occupants"> -->\n<p class="occupants-heading">' +
-__e(o.label_occupants) +
-'</p>\n<ul class="occupant-list"></ul>\n<div class="chatroom-features"></div>\n<!-- </div> -->\n';
-return __p
-};});
-
-
-define('tpl!chatroom_toolbar', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-
- if (o.use_emoji)  { ;
-__p += '\n<li class="toggle-toolbar-menu toggle-smiley">\n    <a class="icon-happy" title="' +
-__e(o.label_insert_smiley) +
-'"></a>\n    <span class="emoji-picker"></span>\n</li>\n';
- } ;
-__p += '\n';
- if (o.show_call_button)  { ;
-__p += '\n<li class="toggle-call"><a class="icon-phone" title="' +
-__e(o.label_start_call) +
-'"></a></li>\n';
- } ;
-__p += '\n';
- if (o.show_occupants_toggle)  { ;
-__p += '\n<li class="toggle-occupants"><a class="icon-hide-users" title="' +
-__e(o.label_hide_occupants) +
-'"></a></li>\n';
- } ;
-__p += '\n';
- if (o.show_clear_button)  { ;
-__p += '\n<li class="toggle-clear"><a class="icon-trash" title="' +
-__e(o.label_clear) +
-'"></a></li>\n';
- } ;
-__p += '\n\n';
-return __p
-};});
-
-
-define('tpl!chatrooms_tab', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<a class="s rooms-tab\n   ';
- if (o.is_current) { ;
-__p += ' current ';
- } ;
-__p += '\n   ';
- if (o.num_unread) { ;
-__p += ' unread-msgs ';
- } ;
-__p += '"\n       data-id="chatrooms" href="#chatrooms">\n    ' +
-__e(o.label_rooms) +
-'\n    ';
- if (o.num_unread) { ;
-__p += '\n        <span class="msgs-indicator">' +
-__e(o. num_unread ) +
-'</span>\n    ';
- } ;
-__p += '\n</a>\n';
-return __p
-};});
-
-
-define('tpl!occupant', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<li class="' +
-__e( o.role ) +
-' occupant" id="' +
-__e( o.id ) +
-'"\n    ';
- if (o.role === "moderator") { ;
-__p += '\n       title="' +
-__e( o.jid ) +
-' ' +
-__e( o.desc_moderator ) +
-' ' +
-__e( o.hint_occupant ) +
-'"\n    ';
- } ;
-__p += '\n    ';
- if (o.role === "occupant") { ;
-__p += '\n       title="' +
-__e( o.jid ) +
-' ' +
-__e( o.desc_occupant ) +
-' ' +
-__e( o.hint_occupant ) +
-'"\n    ';
- } ;
-__p += '\n    ';
- if (o.role === "visitor") { ;
-__p += '\n       title="' +
-__e( o.jid ) +
-' ' +
-__e( o.desc_visitor ) +
-' ' +
-__e( o.hint_occupant ) +
-'"\n    ';
- } ;
-__p += '\n    ';
- if (!_.includes(["visitor", "occupant", "moderator"], o.role)) { ;
-__p += '\n       title="' +
-__e( o.jid ) +
-' ' +
-__e( o.hint_occupant ) +
-'"\n       ';
- } ;
-__p += '><div class="occupant-status occupant-' +
-__e(o.show) +
-' circle" title="' +
-__e(o.hint_show) +
-'"></div>' +
-__e(o.nick) +
-'</li>\n';
-return __p
-};});
-
-
-define('tpl!room_description', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<!-- FIXME: check markup in mockup -->\n<div class="room-info">\n<p class="room-info"><strong>' +
-__e(o.label_jid) +
-'</strong> ' +
-__e(o.jid) +
-'</p>\n<p class="room-info"><strong>' +
-__e(o.label_desc) +
-'</strong> ' +
-__e(o.desc) +
-'</p>\n<p class="room-info"><strong>' +
-__e(o.label_occ) +
-'</strong> ' +
-__e(o.occ) +
-'</p>\n<p class="room-info"><strong>' +
-__e(o.label_features) +
-'</strong>\n    <ul>\n        ';
- if (o.passwordprotected) { ;
-__p += '\n        <li class="room-info locked">' +
-__e(o.label_requires_auth) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.hidden) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_hidden) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.membersonly) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_requires_invite) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.moderated) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_moderated) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.nonanonymous) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_non_anon) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.open) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_open_room) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.persistent) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_permanent_room) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.publicroom) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_public) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.semianonymous) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_semi_anon) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.temporary) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_temp_room) +
-'</li>\n        ';
- } ;
-__p += '\n        ';
- if (o.unmoderated) { ;
-__p += '\n        <li class="room-info">' +
-__e(o.label_unmoderated) +
-'</li>\n        ';
- } ;
-__p += '\n    </ul>\n</p>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!room_item', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<dd class="available-chatroom">\n<a class="open-room available-room"\n   data-room-jid="' +
-__e(o.jid) +
-'"\n   title="' +
-__e(o.open_title) +
-'"\n   href="#">' +
-__e(o.name) +
-'</a>\n<a class="right room-info icon-room-info"\n   data-room-jid="' +
-__e(o.jid) +
-'"\n   title="' +
-__e(o.info_title) +
-'" href="#">&nbsp;</a>\n</dd>\n';
-return __p
-};});
-
-
-define('tpl!room_panel', ['lodash'], function(_) {return function(o) {
-var __t, __p = '';
-__p += '<form class="add-chatroom"></form>\n<div class="rooms-list-container">\n    <dl id="available-chatrooms" class="rooms-list"></dl>\n</div>\n';
-return __p
-};});
-
-
-define('tpl!rooms_results', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<dt class="centered">' +
-__e( o.feedback_text ) +
-'</dt>\n';
+__p += '<li>\n    <form class="search-xmpp-contact">\n        <input type="text"\n            name="identifier"\n            class="username"\n            placeholder="' +
+__e(o.label_contact_name) +
+'"/>\n        <button type="submit">' +
+__e(o.label_search) +
+'</button>\n    </form>\n</li>\n';
 return __p
 };});
 
@@ -50182,687 +49025,6 @@ define("awesomplete", (function (global) {
     };
 }(this)));
 
-/*
-  Copyright 2010, François de Metz <francois@2metz.fr>
-*/
-
-/**
- * Disco Strophe Plugin
- * Implement http://xmpp.org/extensions/xep-0030.html
- * TODO: manage node hierarchies, and node on info request
- */
-
-(function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define("strophe.disco", [
-            "strophe"
-        ], function (Strophe) {
-            factory(
-                Strophe.Strophe,
-                Strophe.$build,
-                Strophe.$iq ,
-                Strophe.$msg,
-                Strophe.$pres
-            );
-            return Strophe;
-        });
-    } else {
-        // Browser globals
-        factory(
-            root.Strophe,
-            root.$build,
-            root.$iq ,
-            root.$msg,
-            root.$pres
-        );
-    }
-}(this, function (Strophe, $build, $iq, $msg, $pres) {
-
-Strophe.addConnectionPlugin('disco',
-{
-    _connection: null,
-    _identities : [],
-    _features : [],
-    _items : [],
-    /** Function: init
-     * Plugin init
-     *
-     * Parameters:
-     *   (Strophe.Connection) conn - Strophe connection
-     */
-    init: function(conn)
-    {
-    this._connection = conn;
-        this._identities = [];
-        this._features   = [];
-        this._items      = [];
-        // disco info
-        conn.addHandler(this._onDiscoInfo.bind(this), Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
-        // disco items
-        conn.addHandler(this._onDiscoItems.bind(this), Strophe.NS.DISCO_ITEMS, 'iq', 'get', null, null);
-    },
-    /** Function: addIdentity
-     * See http://xmpp.org/registrar/disco-categories.html
-     * Parameters:
-     *   (String) category - category of identity (like client, automation, etc ...)
-     *   (String) type - type of identity (like pc, web, bot , etc ...)
-     *   (String) name - name of identity in natural language
-     *   (String) lang - lang of name parameter
-     *
-     * Returns:
-     *   Boolean
-     */
-    addIdentity: function(category, type, name, lang)
-    {
-        for (var i=0; i<this._identities.length; i++)
-        {
-            if (this._identities[i].category == category &&
-                this._identities[i].type == type &&
-                this._identities[i].name == name &&
-                this._identities[i].lang == lang)
-            {
-                return false;
-            }
-        }
-        this._identities.push({category: category, type: type, name: name, lang: lang});
-        return true;
-    },
-    /** Function: addFeature
-     *
-     * Parameters:
-     *   (String) var_name - feature name (like jabber:iq:version)
-     *
-     * Returns:
-     *   boolean
-     */
-    addFeature: function(var_name)
-    {
-        for (var i=0; i<this._features.length; i++)
-        {
-             if (this._features[i] == var_name)
-                 return false;
-        }
-        this._features.push(var_name);
-        return true;
-    },
-    /** Function: removeFeature
-     *
-     * Parameters:
-     *   (String) var_name - feature name (like jabber:iq:version)
-     *
-     * Returns:
-     *   boolean
-     */
-    removeFeature: function(var_name)
-    {
-        for (var i=0; i<this._features.length; i++)
-        {
-             if (this._features[i] === var_name){
-                 this._features.splice(i,1);
-                 return true;
-             }
-        }
-        return false;
-    },
-    /** Function: addItem
-     *
-     * Parameters:
-     *   (String) jid
-     *   (String) name
-     *   (String) node
-     *   (Function) call_back
-     *
-     * Returns:
-     *   boolean
-     */
-    addItem: function(jid, name, node, call_back)
-    {
-        if (node && !call_back)
-            return false;
-        this._items.push({jid: jid, name: name, node: node, call_back: call_back});
-        return true;
-    },
-    /** Function: info
-     * Info query
-     *
-     * Parameters:
-     *   (Function) call_back
-     *   (String) jid
-     *   (String) node
-     */
-    info: function(jid, node, success, error, timeout)
-    {
-        var attrs = {xmlns: Strophe.NS.DISCO_INFO};
-        if (node)
-            attrs.node = node;
-
-        var info = $iq({from:this._connection.jid,
-                         to:jid, type:'get'}).c('query', attrs);
-        this._connection.sendIQ(info, success, error, timeout);
-    },
-    /** Function: items
-     * Items query
-     *
-     * Parameters:
-     *   (Function) call_back
-     *   (String) jid
-     *   (String) node
-     */
-    items: function(jid, node, success, error, timeout)
-    {
-        var attrs = {xmlns: Strophe.NS.DISCO_ITEMS};
-        if (node)
-            attrs.node = node;
-
-        var items = $iq({from:this._connection.jid,
-                         to:jid, type:'get'}).c('query', attrs);
-        this._connection.sendIQ(items, success, error, timeout);
-    },
-
-    /** PrivateFunction: _buildIQResult
-     */
-    _buildIQResult: function(stanza, query_attrs)
-    {
-        var id   =  stanza.getAttribute('id');
-        var from = stanza.getAttribute('from');
-        var iqresult = $iq({type: 'result', id: id});
-
-        if (from !== null) {
-            iqresult.attrs({to: from});
-        }
-
-        return iqresult.c('query', query_attrs);
-    },
-
-    /** PrivateFunction: _onDiscoInfo
-     * Called when receive info request
-     */
-    _onDiscoInfo: function(stanza)
-    {
-        var node = stanza.getElementsByTagName('query')[0].getAttribute('node');
-        var attrs = {xmlns: Strophe.NS.DISCO_INFO};
-        var i;
-        if (node)
-        {
-            attrs.node = node;
-        }
-        var iqresult = this._buildIQResult(stanza, attrs);
-        for (i=0; i<this._identities.length; i++)
-        {
-            attrs = {category: this._identities[i].category,
-                         type    : this._identities[i].type};
-            if (this._identities[i].name)
-                attrs.name = this._identities[i].name;
-            if (this._identities[i].lang)
-                attrs['xml:lang'] = this._identities[i].lang;
-            iqresult.c('identity', attrs).up();
-        }
-        for (i=0; i<this._features.length; i++)
-        {
-            iqresult.c('feature', {'var':this._features[i]}).up();
-        }
-        this._connection.send(iqresult.tree());
-        return true;
-    },
-    /** PrivateFunction: _onDiscoItems
-     * Called when receive items request
-     */
-    _onDiscoItems: function(stanza)
-    {
-        var query_attrs = {xmlns: Strophe.NS.DISCO_ITEMS};
-        var node = stanza.getElementsByTagName('query')[0].getAttribute('node');
-        var items, i;
-        if (node)
-        {
-            query_attrs.node = node;
-            items = [];
-            for (i = 0; i < this._items.length; i++)
-            {
-                if (this._items[i].node == node)
-                {
-                    items = this._items[i].call_back(stanza);
-                    break;
-                }
-            }
-        }
-        else
-        {
-            items = this._items;
-        }
-        var iqresult = this._buildIQResult(stanza, query_attrs);
-        for (i = 0; i < items.length; i++)
-        {
-            var attrs = {jid:  items[i].jid};
-            if (items[i].name)
-                attrs.name = items[i].name;
-            if (items[i].node)
-                attrs.node = items[i].node;
-            iqresult.c('item', attrs).up();
-        }
-        this._connection.send(iqresult.tree());
-        return true;
-    }
-});
-}));
-
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
-//
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
-
-/* This is a Converse.js plugin which add support for XEP-0030: Service Discovery */
-
-/*global Backbone, define, window */
-(function (root, factory) {
-  define('converse-disco',["converse-core", "sizzle", "strophe.disco"], factory);
-})(this, function (converse, sizzle) {
-  var _converse$env = converse.env,
-      Backbone = _converse$env.Backbone,
-      Promise = _converse$env.Promise,
-      Strophe = _converse$env.Strophe,
-      b64_sha1 = _converse$env.b64_sha1,
-      utils = _converse$env.utils,
-      _ = _converse$env._;
-  converse.plugins.add('converse-disco', {
-    initialize: function initialize() {
-      /* The initialize function gets called as soon as the plugin is
-       * loaded by converse.js's plugin machinery.
-       */
-      var _converse = this._converse;
-
-      function onDiscoItems(stanza) {
-        _.each(stanza.querySelectorAll('query item'), function (item) {
-          if (item.getAttribute("node")) {
-            // XXX: ignore nodes for now.
-            // See: https://xmpp.org/extensions/xep-0030.html#items-nodes
-            return;
-          }
-
-          var jid = item.getAttribute('jid');
-          var entities = _converse.disco_entities;
-
-          if (_.isUndefined(entities.get(jid))) {
-            entities.create({
-              'jid': jid
-            });
-          }
-        });
-      } // Promises exposed by this plugin
-
-
-      _converse.api.promises.add('discoInitialized');
-
-      _converse.DiscoEntity = Backbone.Model.extend({
-        /* A Disco Entity is a JID addressable entity that can be queried
-         * for features.
-         *
-         * See XEP-0030: https://xmpp.org/extensions/xep-0030.html
-         */
-        idAttribute: 'jid',
-        initialize: function initialize() {
-          this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
-          this.features = new Backbone.Collection();
-          this.features.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.features-".concat(this.get('jid'))));
-          this.features.on('add', this.onFeatureAdded, this);
-          this.identities = new Backbone.Collection();
-          this.identities.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.identities-".concat(this.get('jid'))));
-          this.fetchFeatures();
-        },
-        getIdentity: function getIdentity(category, type) {
-          /* Returns a Promise which resolves with a map indicating
-           * whether a given identity is provided.
-           *
-           * Parameters:
-           *    (String) category - The identity category
-           *    (String) type - The identity type
-           */
-          var entity = this;
-          return new Promise(function (resolve, reject) {
-            function fulfillPromise() {
-              var model = entity.identities.findWhere({
-                'category': category,
-                'type': type
-              });
-              resolve(model);
-            }
-
-            entity.waitUntilFeaturesDiscovered.then(fulfillPromise).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-          });
-        },
-        hasFeature: function hasFeature(feature) {
-          /* Returns a Promise which resolves with a map indicating
-           * whether a given feature is supported.
-           *
-           * Parameters:
-           *    (String) feature - The feature that might be supported.
-           */
-          var entity = this;
-          return new Promise(function (resolve, reject) {
-            function fulfillPromise() {
-              var model = entity.features.findWhere({
-                'var': feature
-              });
-
-              if (model) {
-                resolve({
-                  'supported': true,
-                  'feature': model
-                });
-              } else {
-                resolve({
-                  'supported': false,
-                  'feature': null
-                });
-              }
-            }
-
-            entity.waitUntilFeaturesDiscovered.then(fulfillPromise).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-          });
-        },
-        onFeatureAdded: function onFeatureAdded(feature) {
-          feature.entity = this;
-
-          _converse.emit('serviceDiscovered', feature);
-        },
-        fetchFeatures: function fetchFeatures() {
-          var _this = this;
-
-          if (this.features.browserStorage.records.length === 0) {
-            this.queryInfo();
-          } else {
-            this.features.fetch({
-              add: true,
-              success: function success() {
-                _this.waitUntilFeaturesDiscovered.resolve();
-
-                _this.trigger('featuresDiscovered');
-              }
-            });
-            this.identities.fetch({
-              add: true
-            });
-          }
-        },
-        queryInfo: function queryInfo() {
-          _converse.connection.disco.info(this.get('jid'), null, this.onInfo.bind(this));
-        },
-        queryForItems: function queryForItems() {
-          if (_.isEmpty(this.identities.where({
-            'category': 'server'
-          }))) {
-            // Don't fetch features and items if this is not a
-            // server or a conference component.
-            return;
-          }
-
-          _converse.connection.disco.items(this.get('jid'), null, onDiscoItems);
-        },
-        onInfo: function onInfo(stanza) {
-          var _this2 = this;
-
-          _.forEach(stanza.querySelectorAll('identity'), function (identity) {
-            _this2.identities.create({
-              'category': identity.getAttribute('category'),
-              'type': identity.getAttribute('type'),
-              'name': identity.getAttribute('name')
-            });
-          });
-
-          if (stanza.querySelector('feature[var="' + Strophe.NS.DISCO_ITEMS + '"]')) {
-            this.queryForItems();
-          }
-
-          _.forEach(stanza.querySelectorAll('feature'), function (feature) {
-            _this2.features.create({
-              'var': feature.getAttribute('var'),
-              'from': stanza.getAttribute('from')
-            });
-          });
-
-          this.waitUntilFeaturesDiscovered.resolve();
-          this.trigger('featuresDiscovered');
-        }
-      });
-      _converse.DiscoEntities = Backbone.Collection.extend({
-        model: _converse.DiscoEntity,
-        initialize: function initialize() {
-          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.disco-entities-".concat(_converse.bare_jid)));
-          this.fetchEntities().then(_.partial(_converse.emit, 'discoInitialized'), _.partial(_converse.emit, 'discoInitialized')).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-        },
-        fetchEntities: function fetchEntities() {
-          var _this3 = this;
-
-          return new Promise(function (resolve, reject) {
-            _this3.fetch({
-              add: true,
-              success: function (collection) {
-                if (collection.length === 0 || !collection.get(_converse.domain)) {
-                  this.create({
-                    'jid': _converse.domain
-                  });
-                }
-
-                resolve();
-              }.bind(_this3),
-              error: function error() {
-                reject(new Error("Could not fetch disco entities"));
-              }
-            });
-          });
-        }
-      });
-
-      function addClientFeatures() {
-        /* The strophe.disco.js plugin keeps a list of features which
-         * it will advertise to any #info queries made to it.
-         *
-         * See: http://xmpp.org/extensions/xep-0030.html#info
-         */
-        // See http://xmpp.org/registrar/disco-categories.html
-        _converse.connection.disco.addIdentity('client', 'web', 'Converse.js');
-
-        _converse.connection.disco.addFeature(Strophe.NS.BOSH);
-
-        _converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
-
-        _converse.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
-
-        _converse.connection.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
-
-
-        if (_converse.message_carbons) {
-          _converse.connection.disco.addFeature(Strophe.NS.CARBONS);
-        }
-
-        _converse.emit('addClientFeatures');
-
-        return this;
-      }
-
-      function initializeDisco() {
-        addClientFeatures();
-        _converse.disco_entities = new _converse.DiscoEntities();
-      }
-
-      _converse.api.listen.on('reconnected', initializeDisco);
-
-      _converse.api.listen.on('connected', initializeDisco);
-
-      _converse.api.listen.on('beforeTearDown', function () {
-        if (_converse.disco_entities) {
-          _converse.disco_entities.each(function (entity) {
-            entity.features.reset();
-
-            entity.features.browserStorage._clear();
-          });
-
-          _converse.disco_entities.reset();
-
-          _converse.disco_entities.browserStorage._clear();
-        }
-      });
-      /* We extend the default converse.js API to add methods specific to service discovery */
-
-
-      _.extend(_converse.api, {
-        'disco': {
-          'entities': {
-            'get': function get(entity_jid) {
-              var create = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-              var entity = _converse.disco_entities.get(entity_jid);
-
-              if (entity || !create) {
-                return entity;
-              }
-
-              return _converse.disco_entities.create({
-                'jid': entity_jid
-              });
-            }
-          },
-          'supports': function supports(feature, entity_jid) {
-            /* Returns a Promise which resolves with a map indicating
-             * whether a given feature is supported.
-             *
-             * Parameters:
-             *    (String) feature - The feature that might be
-             *          supported. In the XML stanza, this is the `var`
-             *          attribute of the `<feature>` element. For
-             *          example: 'http://jabber.org/protocol/muc'
-             *    (String) entity_jid - The JID of the entity which might support the feature.
-             */
-            return _converse.api.waitUntil('discoInitialized').then(function () {
-              var entity = _converse.api.disco.entities.get(entity_jid, true);
-
-              return entity.hasFeature(feature);
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-          },
-          'getIdentity': function getIdentity(category, type, entity_jid) {
-            /* Returns a Promise which resolves with a map indicating
-             * whether an identity with a given type is provided by
-             * the entity.
-             *
-             * Parameters:
-             *    (String) category - The identity category.
-             *          In the XML stanza, this is the `category`
-             *          attribute of the `<identity>` element.
-             *          For example: 'pubsub'
-             *    (String) type - The identity type.
-             *          In the XML stanza, this is the `type`
-             *          attribute of the `<identity>` element.
-             *          For example: 'pep'
-             */
-            return _converse.api.waitUntil('discoInitialized').then(function () {
-              var entity = _converse.api.disco.entities.get(entity_jid, true);
-
-              return entity.getIdentity(category, type);
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-          }
-        }
-      });
-    }
-  });
-});
-//# sourceMappingURL=converse-disco.js.map;
-/*!
- * Backbone.OrderedListView
- *
- * Copyright (c) 2017, JC Brand <jc@opkode.com>
- * Licensed under the Mozilla Public License (MPL) 
- */
-(function (root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    define('backbone.orderedlistview',["underscore", "backbone", "backbone.overview"], factory);
-  } else {
-    // RequireJS isn't being used.
-    // Assume underscore and backbone are loaded in <script> tags
-    factory(_ || root._, Backbone || root.Backbone);
-  }
-})(this, function (_, Backbone) {
-  "use strict";
-
-  Backbone.OrderedListView = Backbone.Overview.extend({
-    /* An OrderedListView is a special type of Overview which adds some
-     * methods and conventions for rendering an ordered list of elements.
-     */
-    // The `listItems` attribute denotes the path (from this View) to the
-    // list of items.
-    listItems: 'model',
-    // The `sortEvent` attribute specifies the event which should cause the
-    // ordered list to be sorted.
-    sortEvent: 'change',
-    // The `listSelector` is the selector used to query for the DOM list
-    // element which contains the ordered items.
-    listSelector: '.ordered-items',
-    // The `itemView` is constructor which should be called to create a
-    // View for a new item.
-    ItemView: undefined,
-    // The `subviewIndex` is the attribute of the list element model which
-    // acts as the index of the subview in the overview.
-    // An overview is a "Collection" of views, and they can be retrieved
-    // via an index. By default this is the 'id' attribute, but it could be
-    // set to something else.
-    subviewIndex: 'id',
-    initialize: function initialize() {
-      this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
-      this.items = _.get(this, this.listItems);
-      this.items.on('add', this.sortAndPositionAllItems, this);
-      this.items.on('remove', this.removeView, this);
-
-      if (!_.isNil(this.sortEvent)) {
-        this.items.on(this.sortEvent, this.sortEventually, this);
-      }
-    },
-    createItemView: function createItemView(item) {
-      var item_view = this.get(item.get(this.subviewIndex));
-
-      if (!item_view) {
-        item_view = new this.ItemView({
-          model: item
-        });
-        this.add(item.get(this.subviewIndex), item_view);
-      } else {
-        item_view.model = item;
-        item_view.initialize();
-      }
-
-      item_view.render();
-      return item_view;
-    },
-    removeView: function removeView(item) {
-      this.remove(item.get(this.subviewIndex));
-    },
-    sortAndPositionAllItems: function sortAndPositionAllItems() {
-      var _this = this;
-
-      if (!this.items.length) {
-        return;
-      }
-
-      this.items.sort();
-      var list_el = this.el.querySelector(this.listSelector);
-      var div = document.createElement('div');
-      list_el.parentNode.replaceChild(div, list_el);
-      this.items.each(function (item) {
-        var view = _this.get(item.get(_this.subviewIndex));
-
-        if (_.isUndefined(view)) {
-          view = _this.createItemView(item);
-        }
-
-        list_el.insertAdjacentElement('beforeend', view.el);
-      });
-      div.parentNode.replaceChild(list_el, div);
-    }
-  });
-  return Backbone.OrderedListView;
-});
-
-//# sourceMappingURL=backbone.orderedlistview.js.map;
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define('snabbdom',[],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.snabbdom = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -51764,6 +49926,8 @@ exports.default = vnode;
 });
 //# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5vZGVfbW9kdWxlcy8ucmVnaXN0cnkubnBtanMub3JnL2Jyb3dzZXItcGFjay82LjAuMi9ub2RlX21vZHVsZXMvYnJvd3Nlci1wYWNrL19wcmVsdWRlLmpzIiwiaHRtbGRvbWFwaS5qcyIsInRvdm5vZGUuanMiLCJ2bm9kZS5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtBQ0FBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUNqRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUMzQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EiLCJmaWxlIjoiZ2VuZXJhdGVkLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXNDb250ZW50IjpbIihmdW5jdGlvbiBlKHQsbixyKXtmdW5jdGlvbiBzKG8sdSl7aWYoIW5bb10pe2lmKCF0W29dKXt2YXIgYT10eXBlb2YgcmVxdWlyZT09XCJmdW5jdGlvblwiJiZyZXF1aXJlO2lmKCF1JiZhKXJldHVybiBhKG8sITApO2lmKGkpcmV0dXJuIGkobywhMCk7dmFyIGY9bmV3IEVycm9yKFwiQ2Fubm90IGZpbmQgbW9kdWxlICdcIitvK1wiJ1wiKTt0aHJvdyBmLmNvZGU9XCJNT0RVTEVfTk9UX0ZPVU5EXCIsZn12YXIgbD1uW29dPXtleHBvcnRzOnt9fTt0W29dWzBdLmNhbGwobC5leHBvcnRzLGZ1bmN0aW9uKGUpe3ZhciBuPXRbb11bMV1bZV07cmV0dXJuIHMobj9uOmUpfSxsLGwuZXhwb3J0cyxlLHQsbixyKX1yZXR1cm4gbltvXS5leHBvcnRzfXZhciBpPXR5cGVvZiByZXF1aXJlPT1cImZ1bmN0aW9uXCImJnJlcXVpcmU7Zm9yKHZhciBvPTA7bzxyLmxlbmd0aDtvKyspcyhyW29dKTtyZXR1cm4gc30pIiwiXCJ1c2Ugc3RyaWN0XCI7XG5PYmplY3QuZGVmaW5lUHJvcGVydHkoZXhwb3J0cywgXCJfX2VzTW9kdWxlXCIsIHsgdmFsdWU6IHRydWUgfSk7XG5mdW5jdGlvbiBjcmVhdGVFbGVtZW50KHRhZ05hbWUpIHtcbiAgICByZXR1cm4gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCh0YWdOYW1lKTtcbn1cbmZ1bmN0aW9uIGNyZWF0ZUVsZW1lbnROUyhuYW1lc3BhY2VVUkksIHF1YWxpZmllZE5hbWUpIHtcbiAgICByZXR1cm4gZG9jdW1lbnQuY3JlYXRlRWxlbWVudE5TKG5hbWVzcGFjZVVSSSwgcXVhbGlmaWVkTmFtZSk7XG59XG5mdW5jdGlvbiBjcmVhdGVUZXh0Tm9kZSh0ZXh0KSB7XG4gICAgcmV0dXJuIGRvY3VtZW50LmNyZWF0ZVRleHROb2RlKHRleHQpO1xufVxuZnVuY3Rpb24gY3JlYXRlQ29tbWVudCh0ZXh0KSB7XG4gICAgcmV0dXJuIGRvY3VtZW50LmNyZWF0ZUNvbW1lbnQodGV4dCk7XG59XG5mdW5jdGlvbiBpbnNlcnRCZWZvcmUocGFyZW50Tm9kZSwgbmV3Tm9kZSwgcmVmZXJlbmNlTm9kZSkge1xuICAgIHBhcmVudE5vZGUuaW5zZXJ0QmVmb3JlKG5ld05vZGUsIHJlZmVyZW5jZU5vZGUpO1xufVxuZnVuY3Rpb24gcmVtb3ZlQ2hpbGQobm9kZSwgY2hpbGQpIHtcbiAgICBub2RlLnJlbW92ZUNoaWxkKGNoaWxkKTtcbn1cbmZ1bmN0aW9uIGFwcGVuZENoaWxkKG5vZGUsIGNoaWxkKSB7XG4gICAgbm9kZS5hcHBlbmRDaGlsZChjaGlsZCk7XG59XG5mdW5jdGlvbiBwYXJlbnROb2RlKG5vZGUpIHtcbiAgICByZXR1cm4gbm9kZS5wYXJlbnROb2RlO1xufVxuZnVuY3Rpb24gbmV4dFNpYmxpbmcobm9kZSkge1xuICAgIHJldHVybiBub2RlLm5leHRTaWJsaW5nO1xufVxuZnVuY3Rpb24gdGFnTmFtZShlbG0pIHtcbiAgICByZXR1cm4gZWxtLnRhZ05hbWU7XG59XG5mdW5jdGlvbiBzZXRUZXh0Q29udGVudChub2RlLCB0ZXh0KSB7XG4gICAgbm9kZS50ZXh0Q29udGVudCA9IHRleHQ7XG59XG5mdW5jdGlvbiBnZXRUZXh0Q29udGVudChub2RlKSB7XG4gICAgcmV0dXJuIG5vZGUudGV4dENvbnRlbnQ7XG59XG5mdW5jdGlvbiBpc0VsZW1lbnQobm9kZSkge1xuICAgIHJldHVybiBub2RlLm5vZGVUeXBlID09PSAxO1xufVxuZnVuY3Rpb24gaXNUZXh0KG5vZGUpIHtcbiAgICByZXR1cm4gbm9kZS5ub2RlVHlwZSA9PT0gMztcbn1cbmZ1bmN0aW9uIGlzQ29tbWVudChub2RlKSB7XG4gICAgcmV0dXJuIG5vZGUubm9kZVR5cGUgPT09IDg7XG59XG5leHBvcnRzLmh0bWxEb21BcGkgPSB7XG4gICAgY3JlYXRlRWxlbWVudDogY3JlYXRlRWxlbWVudCxcbiAgICBjcmVhdGVFbGVtZW50TlM6IGNyZWF0ZUVsZW1lbnROUyxcbiAgICBjcmVhdGVUZXh0Tm9kZTogY3JlYXRlVGV4dE5vZGUsXG4gICAgY3JlYXRlQ29tbWVudDogY3JlYXRlQ29tbWVudCxcbiAgICBpbnNlcnRCZWZvcmU6IGluc2VydEJlZm9yZSxcbiAgICByZW1vdmVDaGlsZDogcmVtb3ZlQ2hpbGQsXG4gICAgYXBwZW5kQ2hpbGQ6IGFwcGVuZENoaWxkLFxuICAgIHBhcmVudE5vZGU6IHBhcmVudE5vZGUsXG4gICAgbmV4dFNpYmxpbmc6IG5leHRTaWJsaW5nLFxuICAgIHRhZ05hbWU6IHRhZ05hbWUsXG4gICAgc2V0VGV4dENvbnRlbnQ6IHNldFRleHRDb250ZW50LFxuICAgIGdldFRleHRDb250ZW50OiBnZXRUZXh0Q29udGVudCxcbiAgICBpc0VsZW1lbnQ6IGlzRWxlbWVudCxcbiAgICBpc1RleHQ6IGlzVGV4dCxcbiAgICBpc0NvbW1lbnQ6IGlzQ29tbWVudCxcbn07XG5leHBvcnRzLmRlZmF1bHQgPSBleHBvcnRzLmh0bWxEb21BcGk7XG4vLyMgc291cmNlTWFwcGluZ1VSTD1odG1sZG9tYXBpLmpzLm1hcCIsIlwidXNlIHN0cmljdFwiO1xuT2JqZWN0LmRlZmluZVByb3BlcnR5KGV4cG9ydHMsIFwiX19lc01vZHVsZVwiLCB7IHZhbHVlOiB0cnVlIH0pO1xudmFyIHZub2RlXzEgPSByZXF1aXJlKFwiLi92bm9kZVwiKTtcbnZhciBodG1sZG9tYXBpXzEgPSByZXF1aXJlKFwiLi9odG1sZG9tYXBpXCIpO1xuZnVuY3Rpb24gdG9WTm9kZShub2RlLCBkb21BcGkpIHtcbiAgICB2YXIgYXBpID0gZG9tQXBpICE9PSB1bmRlZmluZWQgPyBkb21BcGkgOiBodG1sZG9tYXBpXzEuZGVmYXVsdDtcbiAgICB2YXIgdGV4dDtcbiAgICBpZiAoYXBpLmlzRWxlbWVudChub2RlKSkge1xuICAgICAgICB2YXIgaWQgPSBub2RlLmlkID8gJyMnICsgbm9kZS5pZCA6ICcnO1xuICAgICAgICB2YXIgY24gPSBub2RlLmdldEF0dHJpYnV0ZSgnY2xhc3MnKTtcbiAgICAgICAgdmFyIGMgPSBjbiA/ICcuJyArIGNuLnNwbGl0KCcgJykuam9pbignLicpIDogJyc7XG4gICAgICAgIHZhciBzZWwgPSBhcGkudGFnTmFtZShub2RlKS50b0xvd2VyQ2FzZSgpICsgaWQgKyBjO1xuICAgICAgICB2YXIgYXR0cnMgPSB7fTtcbiAgICAgICAgdmFyIGNoaWxkcmVuID0gW107XG4gICAgICAgIHZhciBuYW1lXzE7XG4gICAgICAgIHZhciBpID0gdm9pZCAwLCBuID0gdm9pZCAwO1xuICAgICAgICB2YXIgZWxtQXR0cnMgPSBub2RlLmF0dHJpYnV0ZXM7XG4gICAgICAgIHZhciBlbG1DaGlsZHJlbiA9IG5vZGUuY2hpbGROb2RlcztcbiAgICAgICAgZm9yIChpID0gMCwgbiA9IGVsbUF0dHJzLmxlbmd0aDsgaSA8IG47IGkrKykge1xuICAgICAgICAgICAgbmFtZV8xID0gZWxtQXR0cnNbaV0ubm9kZU5hbWU7XG4gICAgICAgICAgICBpZiAobmFtZV8xICE9PSAnaWQnICYmIG5hbWVfMSAhPT0gJ2NsYXNzJykge1xuICAgICAgICAgICAgICAgIGF0dHJzW25hbWVfMV0gPSBlbG1BdHRyc1tpXS5ub2RlVmFsdWU7XG4gICAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgICAgZm9yIChpID0gMCwgbiA9IGVsbUNoaWxkcmVuLmxlbmd0aDsgaSA8IG47IGkrKykge1xuICAgICAgICAgICAgY2hpbGRyZW4ucHVzaCh0b1ZOb2RlKGVsbUNoaWxkcmVuW2ldKSk7XG4gICAgICAgIH1cbiAgICAgICAgcmV0dXJuIHZub2RlXzEuZGVmYXVsdChzZWwsIHsgYXR0cnM6IGF0dHJzIH0sIGNoaWxkcmVuLCB1bmRlZmluZWQsIG5vZGUpO1xuICAgIH1cbiAgICBlbHNlIGlmIChhcGkuaXNUZXh0KG5vZGUpKSB7XG4gICAgICAgIHRleHQgPSBhcGkuZ2V0VGV4dENvbnRlbnQobm9kZSk7XG4gICAgICAgIHJldHVybiB2bm9kZV8xLmRlZmF1bHQodW5kZWZpbmVkLCB1bmRlZmluZWQsIHVuZGVmaW5lZCwgdGV4dCwgbm9kZSk7XG4gICAgfVxuICAgIGVsc2UgaWYgKGFwaS5pc0NvbW1lbnQobm9kZSkpIHtcbiAgICAgICAgdGV4dCA9IGFwaS5nZXRUZXh0Q29udGVudChub2RlKTtcbiAgICAgICAgcmV0dXJuIHZub2RlXzEuZGVmYXVsdCgnIScsIHt9LCBbXSwgdGV4dCwgbm9kZSk7XG4gICAgfVxuICAgIGVsc2Uge1xuICAgICAgICByZXR1cm4gdm5vZGVfMS5kZWZhdWx0KCcnLCB7fSwgW10sIHVuZGVmaW5lZCwgdW5kZWZpbmVkKTtcbiAgICB9XG59XG5leHBvcnRzLnRvVk5vZGUgPSB0b1ZOb2RlO1xuZXhwb3J0cy5kZWZhdWx0ID0gdG9WTm9kZTtcbi8vIyBzb3VyY2VNYXBwaW5nVVJMPXRvdm5vZGUuanMubWFwIiwiXCJ1c2Ugc3RyaWN0XCI7XG5PYmplY3QuZGVmaW5lUHJvcGVydHkoZXhwb3J0cywgXCJfX2VzTW9kdWxlXCIsIHsgdmFsdWU6IHRydWUgfSk7XG5mdW5jdGlvbiB2bm9kZShzZWwsIGRhdGEsIGNoaWxkcmVuLCB0ZXh0LCBlbG0pIHtcbiAgICB2YXIga2V5ID0gZGF0YSA9PT0gdW5kZWZpbmVkID8gdW5kZWZpbmVkIDogZGF0YS5rZXk7XG4gICAgcmV0dXJuIHsgc2VsOiBzZWwsIGRhdGE6IGRhdGEsIGNoaWxkcmVuOiBjaGlsZHJlbixcbiAgICAgICAgdGV4dDogdGV4dCwgZWxtOiBlbG0sIGtleToga2V5IH07XG59XG5leHBvcnRzLnZub2RlID0gdm5vZGU7XG5leHBvcnRzLmRlZmF1bHQgPSB2bm9kZTtcbi8vIyBzb3VyY2VNYXBwaW5nVVJMPXZub2RlLmpzLm1hcCJdfQ==
 ;
+
+
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*!
@@ -51778,7 +49942,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     // CommonJS-like environments
     module.exports = factory(require('snabbdom'), require('snabbdom-attributes'), require('snabbdom-class'), require('snabbdom-dataset'), require('snabbdom-props'), require('snabbdom-style'), require('tovnode'), require('underscore'), require('backbone'));
   }
-})(this, function (snabbdom, snabbdom_attributes, snabbdom_class, snabbdom_dataset, snabbdom_props, snabbdom_style, tovnode, _, Backbone) {
+})(void 0, function (snabbdom, snabbdom_attributes, snabbdom_class, snabbdom_dataset, snabbdom_props, snabbdom_style, tovnode, _, Backbone) {
   "use strict";
 
   var domParser = new DOMParser();
@@ -51847,6 +50011,3309 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   return Backbone.VDOMView;
 });
 //# sourceMappingURL=backbone.vdomview.js.map;
+
+
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define('converse-modal',["converse-core", "bootstrap", "underscore", "backbone", "backbone.vdomview"], factory);
+  }
+})(void 0, function (converse, bootstrap, _, Backbone) {
+  "use strict";
+
+  converse.plugins.add('converse-modal', {
+    initialize: function initialize() {
+      var _converse = this._converse;
+      _converse.BootstrapModal = Backbone.VDOMView.extend({
+        initialize: function initialize() {
+          var _this = this;
+
+          this.render().insertIntoDOM();
+          this.modal = new bootstrap.Modal(this.el, {
+            backdrop: 'static',
+            keyboard: true
+          });
+          this.el.addEventListener('hide.bs.modal', function (event) {
+            if (!_.isNil(_this.trigger_el)) {
+              _this.trigger_el.classList.remove('selected');
+            }
+          }, false);
+        },
+        insertIntoDOM: function insertIntoDOM() {
+          var container_el = _converse.chatboxviews.el.querySelector("#converse-modals");
+
+          container_el.insertAdjacentElement('beforeEnd', this.el);
+        },
+        show: function show(ev) {
+          ev.preventDefault();
+          this.trigger_el = ev.target;
+          this.trigger_el.classList.add('selected');
+          this.modal.show();
+        }
+      });
+    }
+  });
+});
+//# sourceMappingURL=converse-modal.js.map;
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+
+/*global define */
+(function (root, factory) {
+  define('converse-rosterview',["converse-core", "tpl!add_contact_modal", "tpl!group_header", "tpl!pending_contact", "tpl!requesting_contact", "tpl!roster", "tpl!roster_filter", "tpl!roster_item", "tpl!search_contact", "awesomplete", "converse-chatboxes", "converse-modal"], factory);
+})(void 0, function (converse, tpl_add_contact_modal, tpl_group_header, tpl_pending_contact, tpl_requesting_contact, tpl_roster, tpl_roster_filter, tpl_roster_item, tpl_search_contact, Awesomplete) {
+  "use strict";
+
+  var _converse$env = converse.env,
+      Backbone = _converse$env.Backbone,
+      Strophe = _converse$env.Strophe,
+      $iq = _converse$env.$iq,
+      b64_sha1 = _converse$env.b64_sha1,
+      sizzle = _converse$env.sizzle,
+      _ = _converse$env._;
+  var u = converse.env.utils;
+  converse.plugins.add('converse-rosterview', {
+    dependencies: ["converse-modal"],
+    overrides: {
+      // Overrides mentioned here will be picked up by converse.js's
+      // plugin architecture they will replace existing methods on the
+      // relevant objects or classes.
+      //
+      // New functions which don't exist yet can also be added.
+      afterReconnected: function afterReconnected() {
+        this.__super__.afterReconnected.apply(this, arguments);
+      },
+      _tearDown: function _tearDown() {
+        /* Remove the rosterview when tearing down. It gets created
+         * anew when reconnecting or logging in.
+         */
+        this.__super__._tearDown.apply(this, arguments);
+
+        if (!_.isUndefined(this.rosterview)) {
+          this.rosterview.remove();
+        }
+      },
+      RosterGroups: {
+        comparator: function comparator() {
+          // RosterGroupsComparator only gets set later (once i18n is
+          // set up), so we need to wrap it in this nameless function.
+          var _converse = this.__super__._converse;
+          return _converse.RosterGroupsComparator.apply(this, arguments);
+        }
+      }
+    },
+    initialize: function initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      var _converse = this._converse,
+          __ = _converse.__;
+
+      _converse.api.settings.update({
+        'allow_chat_pending_contacts': true,
+        'allow_contact_removal': true,
+        'show_toolbar': true,
+        'xhr_user_search_url': null
+      });
+
+      _converse.api.promises.add('rosterViewInitialized');
+
+      var STATUSES = {
+        'dnd': __('This contact is busy'),
+        'online': __('This contact is online'),
+        'offline': __('This contact is offline'),
+        'unavailable': __('This contact is unavailable'),
+        'xa': __('This contact is away for an extended period'),
+        'away': __('This contact is away')
+      };
+
+      var LABEL_CONTACTS = __('Contacts');
+
+      var LABEL_GROUPS = __('Groups');
+
+      var HEADER_CURRENT_CONTACTS = __('My contacts');
+
+      var HEADER_PENDING_CONTACTS = __('Pending contacts');
+
+      var HEADER_REQUESTING_CONTACTS = __('Contact requests');
+
+      var HEADER_UNGROUPED = __('Ungrouped');
+
+      var HEADER_WEIGHTS = {};
+      HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 0;
+      HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS] = 1;
+      HEADER_WEIGHTS[HEADER_UNGROUPED] = 2;
+      HEADER_WEIGHTS[HEADER_PENDING_CONTACTS] = 3;
+
+      _converse.RosterGroupsComparator = function (a, b) {
+        /* Groups are sorted alphabetically, ignoring case.
+         * However, Ungrouped, Requesting Contacts and Pending Contacts
+         * appear last and in that order.
+         */
+        a = a.get('name');
+        b = b.get('name');
+
+        var special_groups = _.keys(HEADER_WEIGHTS);
+
+        var a_is_special = _.includes(special_groups, a);
+
+        var b_is_special = _.includes(special_groups, b);
+
+        if (!a_is_special && !b_is_special) {
+          return a.toLowerCase() < b.toLowerCase() ? -1 : a.toLowerCase() > b.toLowerCase() ? 1 : 0;
+        } else if (a_is_special && b_is_special) {
+          return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0;
+        } else if (!a_is_special && b_is_special) {
+          return b === HEADER_REQUESTING_CONTACTS ? 1 : -1;
+        } else if (a_is_special && !b_is_special) {
+          return a === HEADER_REQUESTING_CONTACTS ? -1 : 1;
+        }
+      };
+
+      _converse.AddContactModal = _converse.BootstrapModal.extend({
+        events: {
+          'submit form': 'addContactFromForm'
+        },
+        initialize: function initialize() {
+          _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+
+          this.model.on('change', this.render, this);
+        },
+        toHTML: function toHTML() {
+          var label_nickname = _converse.xhr_user_search_url ? __('Contact name') : __('Optional nickname');
+          return tpl_add_contact_modal(_.extend(this.model.toJSON(), {
+            '_converse': _converse,
+            'heading_new_contact': __('Add a Contact'),
+            'label_xmpp_address': __('XMPP Address'),
+            'label_nickname': label_nickname,
+            'contact_placeholder': __('name@example.org'),
+            'label_add': __('Add')
+          }));
+        },
+        afterRender: function afterRender() {
+          if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
+            this.initXHRAutoComplete();
+          } else {
+            this.initJIDAutoComplete();
+          }
+        },
+        initJIDAutoComplete: function initJIDAutoComplete() {
+          var jid_input = this.el.querySelector('input[name="jid"]');
+
+          var list = _.uniq(_converse.roster.map(function (item) {
+            return Strophe.getDomainFromJid(item.get('jid'));
+          }));
+
+          new Awesomplete(jid_input, {
+            'list': list,
+            'data': function data(text, input) {
+              return input.slice(0, input.indexOf("@")) + "@" + text;
+            },
+            'filter': Awesomplete.FILTER_STARTSWITH
+          });
+          this.el.addEventListener('shown.bs.modal', function () {
+            jid_input.focus();
+          }, false);
+        },
+        initXHRAutoComplete: function initXHRAutoComplete() {
+          var name_input = this.el.querySelector('input[name="name"]');
+          var jid_input = this.el.querySelector('input[name="jid"]');
+          var awesomplete = new Awesomplete(name_input, {
+            'minChars': 1,
+            'list': []
+          });
+          var xhr = new window.XMLHttpRequest(); // `open` must be called after `onload` for mock/testing purposes.
+
+          xhr.onload = function () {
+            if (xhr.responseText) {
+              awesomplete.list = JSON.parse(xhr.responseText).map(function (i) {
+                //eslint-disable-line arrow-body-style
+                return {
+                  'label': i.fullname,
+                  'value': i.jid
+                };
+              });
+              awesomplete.evaluate();
+            }
+          };
+
+          name_input.addEventListener('input', _.debounce(function () {
+            xhr.open("GET", "".concat(_converse.xhr_user_search_url, "?q=").concat(name_input.value), true);
+            xhr.send();
+          }, 300));
+          this.el.addEventListener('awesomplete-selectcomplete', function (ev) {
+            jid_input.value = ev.text.value;
+            name_input.value = ev.text.label;
+          });
+          this.el.addEventListener('shown.bs.modal', function () {
+            name_input.focus();
+          }, false);
+        },
+        addContactFromForm: function addContactFromForm(ev) {
+          ev.preventDefault();
+          var data = new FormData(ev.target),
+              jid = data.get('jid'),
+              name = data.get('name');
+          ev.target.reset();
+
+          if (!jid || _.compact(jid.split('@')).length < 2) {
+            this.model.set({
+              'error_message': __('Please enter a valid XMPP address'),
+              'jid': jid
+            });
+          } else {
+            _converse.roster.addAndSubscribe(jid, name);
+
+            this.model.clear();
+            this.modal.hide();
+          }
+        }
+      });
+      _converse.RosterFilter = Backbone.Model.extend({
+        initialize: function initialize() {
+          this.set({
+            'filter_text': '',
+            'filter_type': 'contacts',
+            'chat_state': ''
+          });
+        }
+      });
+      _converse.RosterFilterView = Backbone.VDOMView.extend({
+        tagName: 'form',
+        className: 'roster-filter-form',
+        events: {
+          "keydown .roster-filter": "liveFilter",
+          "submit form.roster-filter-form": "submitFilter",
+          "click .clear-input": "clearFilter",
+          "click .filter-by span": "changeTypeFilter",
+          "change .state-type": "changeChatStateFilter"
+        },
+        initialize: function initialize() {
+          this.model.on('change:filter_type', this.render, this);
+          this.model.on('change:filter_text', this.render, this);
+        },
+        toHTML: function toHTML() {
+          return tpl_roster_filter(_.extend(this.model.toJSON(), {
+            visible: this.shouldBeVisible(),
+            placeholder: __('Filter'),
+            title_contact_filter: __('Filter by contact name'),
+            title_group_filter: __('Filter by group name'),
+            title_status_filter: __('Filter by status'),
+            label_any: __('Any'),
+            label_unread_messages: __('Unread'),
+            label_online: __('Online'),
+            label_chatty: __('Chatty'),
+            label_busy: __('Busy'),
+            label_away: __('Away'),
+            label_xa: __('Extended Away'),
+            label_offline: __('Offline')
+          }));
+        },
+        changeChatStateFilter: function changeChatStateFilter(ev) {
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          this.model.save({
+            'chat_state': this.el.querySelector('.state-type').value
+          });
+        },
+        changeTypeFilter: function changeTypeFilter(ev) {
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          var type = ev.target.dataset.type;
+
+          if (type === 'state') {
+            this.model.save({
+              'filter_type': type,
+              'chat_state': this.el.querySelector('.state-type').value
+            });
+          } else {
+            this.model.save({
+              'filter_type': type,
+              'filter_text': this.el.querySelector('.roster-filter').value
+            });
+          }
+        },
+        liveFilter: _.debounce(function (ev) {
+          this.model.save({
+            'filter_text': this.el.querySelector('.roster-filter').value
+          });
+        }, 250),
+        submitFilter: function submitFilter(ev) {
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          this.liveFilter();
+          this.render();
+        },
+        isActive: function isActive() {
+          /* Returns true if the filter is enabled (i.e. if the user
+           * has added values to the filter).
+           */
+          if (this.model.get('filter_type') === 'state' || this.model.get('filter_text')) {
+            return true;
+          }
+
+          return false;
+        },
+        shouldBeVisible: function shouldBeVisible() {
+          return _converse.roster.length >= 5 || this.isActive();
+        },
+        showOrHide: function showOrHide() {
+          if (this.shouldBeVisible()) {
+            this.show();
+          } else {
+            this.hide();
+          }
+        },
+        show: function show() {
+          if (u.isVisible(this.el)) {
+            return this;
+          }
+
+          this.el.classList.add('fade-in');
+          this.el.classList.remove('hidden');
+          return this;
+        },
+        hide: function hide() {
+          if (!u.isVisible(this.el)) {
+            return this;
+          }
+
+          this.model.save({
+            'filter_text': '',
+            'chat_state': ''
+          });
+          this.el.classList.add('hidden');
+          return this;
+        },
+        clearFilter: function clearFilter(ev) {
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+            u.hideElement(this.el.querySelector('.clear-input'));
+          }
+
+          var roster_filter = this.el.querySelector('.roster-filter');
+          roster_filter.value = '';
+          this.model.save({
+            'filter_text': ''
+          });
+        }
+      });
+      _converse.RosterContactView = Backbone.NativeView.extend({
+        tagName: 'li',
+        className: 'd-flex hidden',
+        events: {
+          "click .accept-xmpp-request": "acceptRequest",
+          "click .decline-xmpp-request": "declineRequest",
+          "click .open-chat": "openChat",
+          "click .remove-xmpp-contact": "removeContact"
+        },
+        initialize: function initialize() {
+          this.model.on("change", this.render, this);
+          this.model.on("remove", this.remove, this);
+          this.model.on("destroy", this.remove, this);
+          this.model.on("open", this.openChat, this);
+        },
+        render: function render() {
+          var that = this;
+
+          if (!this.mayBeShown()) {
+            u.hideElement(this.el);
+            return this;
+          }
+
+          var item = this.model,
+              ask = item.get('ask'),
+              chat_status = item.get('chat_status'),
+              requesting = item.get('requesting'),
+              subscription = item.get('subscription');
+          var classes_to_remove = ['current-xmpp-contact', 'pending-xmpp-contact', 'requesting-xmpp-contact'].concat(_.keys(STATUSES));
+
+          _.each(classes_to_remove, function (cls) {
+            if (_.includes(that.el.className, cls)) {
+              that.el.classList.remove(cls);
+            }
+          });
+
+          this.el.classList.add(chat_status);
+          this.el.setAttribute('data-status', chat_status);
+
+          if (ask === 'subscribe' || subscription === 'from') {
+            /* ask === 'subscribe'
+             *      Means we have asked to subscribe to them.
+             *
+             * subscription === 'from'
+             *      They are subscribed to use, but not vice versa.
+             *      We assume that there is a pending subscription
+             *      from us to them (otherwise we're in a state not
+             *      supported by converse.js).
+             *
+             *  So in both cases the user is a "pending" contact.
+             */
+            this.el.classList.add('pending-xmpp-contact');
+            this.el.innerHTML = tpl_pending_contact(_.extend(item.toJSON(), {
+              'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname')),
+              'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
+            }));
+          } else if (requesting === true) {
+            this.el.classList.add('requesting-xmpp-contact');
+            this.el.innerHTML = tpl_requesting_contact(_.extend(item.toJSON(), {
+              'desc_accept': __("Click to accept the contact request from %1$s", item.get('fullname')),
+              'desc_decline': __("Click to decline the contact request from %1$s", item.get('fullname')),
+              'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
+            }));
+          } else if (subscription === 'both' || subscription === 'to') {
+            this.el.classList.add('current-xmpp-contact');
+            this.el.classList.remove(_.without(['both', 'to'], subscription)[0]);
+            this.el.classList.add(subscription);
+            this.renderRosterItem(item);
+          }
+
+          return this;
+        },
+        renderRosterItem: function renderRosterItem(item) {
+          var status_icon = 'fa-times-circle';
+          var chat_status = item.get('chat_status') || 'offline';
+
+          if (chat_status === 'online') {
+            status_icon = 'fa-circle';
+          } else if (chat_status === 'away') {
+            status_icon = 'fa-dot-circle-o';
+          } else if (chat_status === 'xa') {
+            status_icon = 'fa-circle-o';
+          } else if (chat_status === 'dnd') {
+            status_icon = 'fa-minus-circle';
+          }
+
+          this.el.innerHTML = tpl_roster_item(_.extend(item.toJSON(), {
+            'desc_status': STATUSES[chat_status],
+            'status_icon': status_icon,
+            'desc_chat': __('Click to chat with %1$s (JID: %2$s)', item.get('fullname'), item.get('jid')),
+            'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname')),
+            'allow_contact_removal': _converse.allow_contact_removal,
+            'num_unread': item.get('num_unread') || 0
+          }));
+          return this;
+        },
+        mayBeShown: function mayBeShown() {
+          /* Return a boolean indicating whether this contact should
+           * generally be visible in the roster.
+           *
+           * It doesn't check for the more specific case of whether
+           * the group it's in is collapsed.
+           */
+          var chatStatus = this.model.get('chat_status');
+
+          if (_converse.show_only_online_users && chatStatus !== 'online' || _converse.hide_offline_users && chatStatus === 'offline') {
+            // If pending or requesting, show
+            if (this.model.get('ask') === 'subscribe' || this.model.get('subscription') === 'from' || this.model.get('requesting') === true) {
+              return true;
+            }
+
+            return false;
+          }
+
+          return true;
+        },
+        openChat: function openChat(ev) {
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          var attrs = this.model.attributes;
+
+          _converse.api.chats.open(attrs.jid, attrs);
+        },
+        removeContact: function removeContact(ev) {
+          var _this = this;
+
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          if (!_converse.allow_contact_removal) {
+            return;
+          }
+
+          var result = confirm(__("Are you sure you want to remove this contact?"));
+
+          if (result === true) {
+            var iq = $iq({
+              type: 'set'
+            }).c('query', {
+              xmlns: Strophe.NS.ROSTER
+            }).c('item', {
+              jid: this.model.get('jid'),
+              subscription: "remove"
+            });
+
+            _converse.connection.sendIQ(iq, function (iq) {
+              _this.model.destroy();
+
+              _this.remove();
+            }, function (err) {
+              alert(__('Sorry, there was an error while trying to remove %1$s as a contact.', name));
+
+              _converse.log(err, Strophe.LogLevel.ERROR);
+            });
+          }
+        },
+        acceptRequest: function acceptRequest(ev) {
+          var _this2 = this;
+
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          _converse.roster.sendContactAddIQ(this.model.get('jid'), this.model.get('fullname'), [], function () {
+            _this2.model.authorize().subscribe();
+          });
+        },
+        declineRequest: function declineRequest(ev) {
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          var result = confirm(__("Are you sure you want to decline this contact request?"));
+
+          if (result === true) {
+            this.model.unauthorize().destroy();
+          }
+
+          return this;
+        }
+      });
+      _converse.RosterGroupView = Backbone.OrderedListView.extend({
+        tagName: 'div',
+        className: 'roster-group hidden',
+        events: {
+          "click a.group-toggle": "toggle"
+        },
+        ItemView: _converse.RosterContactView,
+        listItems: 'model.contacts',
+        listSelector: '.roster-group-contacts',
+        sortEvent: 'change:chat_status',
+        initialize: function initialize() {
+          Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+          this.model.contacts.on("change:subscription", this.onContactSubscriptionChange, this);
+          this.model.contacts.on("change:requesting", this.onContactRequestChange, this);
+          this.model.contacts.on("remove", this.onRemove, this);
+
+          _converse.roster.on('change:groups', this.onContactGroupChange, this); // This event gets triggered once *all* contacts (i.e. not
+          // just this group's) have been fetched from browser
+          // storage or the XMPP server and once they've been
+          // assigned to their various groups.
+
+
+          _converse.rosterview.on('rosterContactsFetchedAndProcessed', this.sortAndPositionAllItems.bind(this));
+        },
+        render: function render() {
+          this.el.setAttribute('data-group', this.model.get('name'));
+          this.el.innerHTML = tpl_group_header({
+            'label_group': this.model.get('name'),
+            'desc_group_toggle': this.model.get('description'),
+            'toggle_state': this.model.get('state'),
+            '_converse': _converse
+          });
+          this.contacts_el = this.el.querySelector('.roster-group-contacts');
+          return this;
+        },
+        show: function show() {
+          var _this3 = this;
+
+          u.showElement(this.el);
+
+          _.each(this.getAll(), function (contact_view) {
+            if (contact_view.mayBeShown() && _this3.model.get('state') === _converse.OPENED) {
+              u.showElement(contact_view.el);
+            }
+          });
+
+          return this;
+        },
+        collapse: function collapse() {
+          return u.slideIn(this.contacts_el);
+        },
+        filterOutContacts: function filterOutContacts() {
+          var _this4 = this;
+
+          var contacts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+          /* Given a list of contacts, make sure they're filtered out
+           * (aka hidden) and that all other contacts are visible.
+           *
+           * If all contacts are hidden, then also hide the group
+           * title.
+           */
+          var shown = 0;
+          var all_contact_views = this.getAll();
+
+          _.each(this.model.contacts.models, function (contact) {
+            var contact_view = _this4.get(contact.get('id'));
+
+            if (_.includes(contacts, contact)) {
+              u.hideElement(contact_view.el);
+            } else if (contact_view.mayBeShown()) {
+              u.showElement(contact_view.el);
+              shown += 1;
+            }
+          });
+
+          if (shown) {
+            u.showElement(this.el);
+          } else {
+            u.hideElement(this.el);
+          }
+        },
+        getFilterMatches: function getFilterMatches(q, type) {
+          /* Given the filter query "q" and the filter type "type",
+           * return a list of contacts that need to be filtered out.
+           */
+          if (q.length === 0) {
+            return [];
+          }
+
+          var matches;
+          q = q.toLowerCase();
+
+          if (type === 'state') {
+            if (this.model.get('name') === HEADER_REQUESTING_CONTACTS) {
+              // When filtering by chat state, we still want to
+              // show requesting contacts, even though they don't
+              // have the state in question.
+              matches = this.model.contacts.filter(function (contact) {
+                return u.contains.not('chat_status', q)(contact) && !contact.get('requesting');
+              });
+            } else if (q === 'unread_messages') {
+              matches = this.model.contacts.filter({
+                'num_unread': 0
+              });
+            } else {
+              matches = this.model.contacts.filter(u.contains.not('chat_status', q));
+            }
+          } else {
+            matches = this.model.contacts.filter(u.contains.not('fullname', q));
+          }
+
+          return matches;
+        },
+        filter: function filter(q, type) {
+          /* Filter the group's contacts based on the query "q".
+           * 
+           * If all contacts are filtered out (i.e. hidden), then the
+           * group must be filtered out as well.
+           */
+          if (_.isNil(q)) {
+            type = type || _converse.rosterview.filter_view.model.get('filter_type');
+
+            if (type === 'state') {
+              q = _converse.rosterview.filter_view.model.get('chat_state');
+            } else {
+              q = _converse.rosterview.filter_view.model.get('filter_text');
+            }
+          }
+
+          this.filterOutContacts(this.getFilterMatches(q, type));
+        },
+        toggle: function toggle(ev) {
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          var icon_el = ev.target.querySelector('.fa');
+
+          if (_.includes(icon_el.classList, "fa-caret-down")) {
+            this.model.save({
+              state: _converse.CLOSED
+            });
+            this.collapse().then(function () {
+              icon_el.classList.remove("fa-caret-down");
+              icon_el.classList.add("fa-caret-right");
+            });
+          } else {
+            icon_el.classList.remove("fa-caret-right");
+            icon_el.classList.add("fa-caret-down");
+            this.model.save({
+              state: _converse.OPENED
+            });
+            this.filter();
+            u.showElement(this.el);
+            u.slideOut(this.contacts_el);
+          }
+        },
+        onContactGroupChange: function onContactGroupChange(contact) {
+          var in_this_group = _.includes(contact.get('groups'), this.model.get('name'));
+
+          var cid = contact.get('id');
+          var in_this_overview = !this.get(cid);
+
+          if (in_this_group && !in_this_overview) {
+            this.items.trigger('add', contact);
+          } else if (!in_this_group) {
+            this.removeContact(contact);
+          }
+        },
+        onContactSubscriptionChange: function onContactSubscriptionChange(contact) {
+          if (this.model.get('name') === HEADER_PENDING_CONTACTS && contact.get('subscription') !== 'from') {
+            this.removeContact(contact);
+          }
+        },
+        onContactRequestChange: function onContactRequestChange(contact) {
+          if (this.model.get('name') === HEADER_REQUESTING_CONTACTS && !contact.get('requesting')) {
+            this.removeContact(contact);
+          }
+        },
+        removeContact: function removeContact(contact) {
+          // We suppress events, otherwise the remove event will
+          // also cause the contact's view to be removed from the
+          // "Pending Contacts" group.
+          this.model.contacts.remove(contact, {
+            'silent': true
+          });
+          this.onRemove(contact);
+        },
+        onRemove: function onRemove(contact) {
+          this.remove(contact.get('jid'));
+
+          if (this.model.contacts.length === 0) {
+            this.remove();
+          }
+        }
+      });
+      _converse.RosterView = Backbone.OrderedListView.extend({
+        tagName: 'div',
+        id: 'converse-roster',
+        ItemView: _converse.RosterGroupView,
+        listItems: 'model',
+        listSelector: '.roster-contacts',
+        sortEvent: null,
+        // Groups are immutable, so they don't get re-sorted
+        subviewIndex: 'name',
+        events: {
+          'click a.chatbox-btn.add-contact': 'showAddContactModal'
+        },
+        initialize: function initialize() {
+          var _this5 = this;
+
+          Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+
+          _converse.roster.on("add", this.onContactAdded, this);
+
+          _converse.roster.on('change:groups', this.onContactAdded, this);
+
+          _converse.roster.on('change', this.onContactChange, this);
+
+          _converse.roster.on("destroy", this.update, this);
+
+          _converse.roster.on("remove", this.update, this);
+
+          this.model.on("reset", this.reset, this); // This event gets triggered once *all* contacts (i.e. not
+          // just this group's) have been fetched from browser
+          // storage or the XMPP server and once they've been
+          // assigned to their various groups.
+
+          _converse.on('rosterGroupsFetched', this.sortAndPositionAllItems.bind(this));
+
+          _converse.on('rosterContactsFetched', function () {
+            _converse.roster.each(function (contact) {
+              return _this5.addRosterContact(contact, {
+                'silent': true
+              });
+            });
+
+            _this5.update();
+
+            _this5.updateFilter();
+
+            _this5.trigger('rosterContactsFetchedAndProcessed');
+          });
+
+          this.createRosterFilter();
+        },
+        render: function render() {
+          this.el.innerHTML = tpl_roster({
+            'heading_contacts': __('Contacts'),
+            'title_add_contact': __('Add a contact')
+          });
+          var form = this.el.querySelector('.roster-filter-form');
+          this.el.replaceChild(this.filter_view.render().el, form);
+          this.roster_el = this.el.querySelector('.roster-contacts');
+          return this;
+        },
+        showAddContactModal: function showAddContactModal(ev) {
+          if (_.isUndefined(this.add_contact_modal)) {
+            this.add_contact_modal = new _converse.AddContactModal({
+              'model': new Backbone.Model()
+            });
+          }
+
+          this.add_contact_modal.show(ev);
+        },
+        createRosterFilter: function createRosterFilter() {
+          // Create a model on which we can store filter properties
+          var model = new _converse.RosterFilter();
+          model.id = b64_sha1("_converse.rosterfilter".concat(_converse.bare_jid));
+          model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
+          this.filter_view = new _converse.RosterFilterView({
+            'model': model
+          });
+          this.filter_view.model.on('change', this.updateFilter, this);
+          this.filter_view.model.fetch();
+        },
+        updateFilter: _.debounce(function () {
+          /* Filter the roster again.
+           * Called whenever the filter settings have been changed or
+           * when contacts have been added, removed or changed.
+           *
+           * Debounced so that it doesn't get called for every
+           * contact fetched from browser storage.
+           */
+          var type = this.filter_view.model.get('filter_type');
+
+          if (type === 'state') {
+            this.filter(this.filter_view.model.get('chat_state'), type);
+          } else {
+            this.filter(this.filter_view.model.get('filter_text'), type);
+          }
+        }, 100),
+        update: _.debounce(function () {
+          if (!u.isVisible(this.roster_el)) {
+            u.showElement(this.roster_el);
+          }
+
+          this.filter_view.showOrHide();
+          return this;
+        }, _converse.animate ? 100 : 0),
+        filter: function filter(query, type) {
+          // First we make sure the filter is restored to its
+          // original state
+          _.each(this.getAll(), function (view) {
+            if (view.model.contacts.length > 0) {
+              view.show().filter('');
+            }
+          }); // Now we can filter
+
+
+          query = query.toLowerCase();
+
+          if (type === 'groups') {
+            _.each(this.getAll(), function (view, idx) {
+              if (!_.includes(view.model.get('name').toLowerCase(), query.toLowerCase())) {
+                u.slideIn(view.el);
+              } else if (view.model.contacts.length > 0) {
+                u.slideOut(view.el);
+              }
+            });
+          } else {
+            _.each(this.getAll(), function (view) {
+              view.filter(query, type);
+            });
+          }
+        },
+        reset: function reset() {
+          _converse.roster.reset();
+
+          this.removeAll();
+          this.render().update();
+          return this;
+        },
+        onContactAdded: function onContactAdded(contact) {
+          this.addRosterContact(contact).update();
+          this.updateFilter();
+        },
+        onContactChange: function onContactChange(contact) {
+          this.updateChatBox(contact).update();
+
+          if (_.has(contact.changed, 'subscription')) {
+            if (contact.changed.subscription === 'from') {
+              this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
+            } else if (_.includes(['both', 'to'], contact.get('subscription'))) {
+              this.addExistingContact(contact);
+            }
+          }
+
+          if (_.has(contact.changed, 'ask') && contact.changed.ask === 'subscribe') {
+            this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
+          }
+
+          if (_.has(contact.changed, 'subscription') && contact.changed.requesting === 'true') {
+            this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
+          }
+
+          this.updateFilter();
+        },
+        updateChatBox: function updateChatBox(contact) {
+          var chatbox = _converse.chatboxes.get(contact.get('jid')),
+              changes = {};
+
+          if (!chatbox) {
+            return this;
+          }
+
+          if (_.has(contact.changed, 'chat_status')) {
+            changes.chat_status = contact.get('chat_status');
+          }
+
+          if (_.has(contact.changed, 'status')) {
+            changes.status = contact.get('status');
+          }
+
+          chatbox.save(changes);
+          return this;
+        },
+        getGroup: function getGroup(name) {
+          /* Returns the group as specified by name.
+           * Creates the group if it doesn't exist.
+           */
+          var view = this.get(name);
+
+          if (view) {
+            return view.model;
+          }
+
+          return this.model.create({
+            name: name,
+            id: b64_sha1(name)
+          });
+        },
+        addContactToGroup: function addContactToGroup(contact, name, options) {
+          this.getGroup(name).contacts.add(contact, options);
+          this.sortAndPositionAllItems();
+        },
+        addExistingContact: function addExistingContact(contact, options) {
+          var groups;
+
+          if (_converse.roster_groups) {
+            groups = contact.get('groups');
+
+            if (groups.length === 0) {
+              groups = [HEADER_UNGROUPED];
+            }
+          } else {
+            groups = [HEADER_CURRENT_CONTACTS];
+          }
+
+          _.each(groups, _.bind(this.addContactToGroup, this, contact, _, options));
+        },
+        addRosterContact: function addRosterContact(contact, options) {
+          if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to') {
+            this.addExistingContact(contact, options);
+          } else {
+            if (contact.get('ask') === 'subscribe' || contact.get('subscription') === 'from') {
+              this.addContactToGroup(contact, HEADER_PENDING_CONTACTS, options);
+            } else if (contact.get('requesting') === true) {
+              this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS, options);
+            }
+          }
+
+          return this;
+        }
+      });
+      /* -------- Event Handlers ----------- */
+
+      var onChatBoxMaximized = function onChatBoxMaximized(chatboxview) {
+        /* When a chat box gets maximized, the num_unread counter needs
+         * to be cleared, but if chatbox is scrolled up, then num_unread should not be cleared.
+         */
+        var chatbox = chatboxview.model;
+
+        if (chatbox.get('type') !== 'chatroom') {
+          var contact = _.head(_converse.roster.where({
+            'jid': chatbox.get('jid')
+          }));
+
+          if (!_.isUndefined(contact) && !chatbox.isScrolledUp()) {
+            contact.save({
+              'num_unread': 0
+            });
+          }
+        }
+      };
+
+      var onMessageReceived = function onMessageReceived(data) {
+        /* Given a newly received message, update the unread counter on
+         * the relevant roster contact.
+         */
+        var chatbox = data.chatbox;
+
+        if (_.isUndefined(chatbox)) {
+          return;
+        }
+
+        if (_.isNull(data.stanza.querySelector('body'))) {
+          return; // The message has no text
+        }
+
+        if (chatbox.get('type') !== 'chatroom' && u.isNewMessage(data.stanza) && chatbox.newMessageWillBeHidden()) {
+          var contact = _.head(_converse.roster.where({
+            'jid': chatbox.get('jid')
+          }));
+
+          if (!_.isUndefined(contact)) {
+            contact.save({
+              'num_unread': contact.get('num_unread') + 1
+            });
+          }
+        }
+      };
+
+      var onChatBoxScrolledDown = function onChatBoxScrolledDown(data) {
+        var chatbox = data.chatbox;
+
+        if (_.isUndefined(chatbox)) {
+          return;
+        }
+
+        var contact = _.head(_converse.roster.where({
+          'jid': chatbox.get('jid')
+        }));
+
+        if (!_.isUndefined(contact)) {
+          contact.save({
+            'num_unread': 0
+          });
+        }
+      };
+
+      var initRoster = function initRoster() {
+        /* Create an instance of RosterView once the RosterGroups
+         * collection has been created (in converse-core.js)
+         */
+        _converse.rosterview = new _converse.RosterView({
+          'model': _converse.rostergroups
+        });
+
+        _converse.rosterview.render();
+
+        _converse.emit('rosterViewInitialized');
+      };
+
+      _converse.api.listen.on('rosterInitialized', initRoster);
+
+      _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
+
+      _converse.api.listen.on('message', onMessageReceived);
+
+      _converse.api.listen.on('chatBoxMaximized', onChatBoxMaximized);
+
+      _converse.api.listen.on('chatBoxScrolledDown', onChatBoxScrolledDown);
+    }
+  });
+});
+//# sourceMappingURL=converse-rosterview.js.map;
+
+define('tpl!chat_status_modal', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<!-- Change status Modal -->\n<div class="modal fade" id="modal-status-change" tabindex="-1" role="dialog" aria-labelledby="changeStatusModalLabel" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="changeStatusModalLabel">' +
+__e(o.modal_title) +
+'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
+__e(o.label_close) +
+'">\n                    <span aria-hidden="true">&times;</span>\n                </button>\n            </div>\n            <form class="set-xmpp-status" id="set-xmpp-status">\n                <div class="modal-body">\n                    <div class="form-group">\n                        <div class="custom-control custom-radio">\n                            <input ';
+ if (o.status === 'online') { ;
+__p += ' checked="checked" ';
+ } ;
+__p += '\n                                   type="radio" id="radio-online" value="online" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-online">\n                                <span class="fa fa-circle"></span>&nbsp;' +
+__e(o.label_online) +
+'</label>\n                        </div>\n                        <div class="custom-control custom-radio">\n                            <input ';
+ if (o.status === 'busy') { ;
+__p += ' checked="checked" ';
+ } ;
+__p += '\n                                   type="radio" id="radio-busy" value="dnd" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-busy">\n                                <span class="fa fa-minus-circle"></span>&nbsp;' +
+__e(o.label_busy) +
+'</label>\n                        </div>\n                        <div class="custom-control custom-radio">\n                            <input ';
+ if (o.status === 'away') { ;
+__p += ' checked="checked" ';
+ } ;
+__p += '\n                                   type="radio" id="radio-away" value="away" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-away">\n                                <span class="fa fa-dot-circle-o"></span>&nbsp;' +
+__e(o.label_away) +
+'</label>\n                        </div>\n                        <div class="custom-control custom-radio">\n                            <input ';
+ if (o.status === 'xa') { ;
+__p += ' checked="checked" ';
+ } ;
+__p += '\n                                   type="radio" id="radio-xa" value="xa" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-xa">\n                                <span class="fa fa-circle-o"></span>&nbsp;' +
+__e(o.label_xa) +
+'</label>\n                        </div>\n                    </div>\n                    <div class="btn-group w-100">\n                        <input name="status_message" type="text" class="form-control" \n                               value="' +
+__e(o.status_message) +
+'" placeholder="' +
+__e(o.placeholder_status_message) +
+'">\n                        <span class="clear-input fa fa-times ';
+ if (!o.status_message) { ;
+__p += ' hidden ';
+ } ;
+__p += '"></span>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="submit" class="btn btn-primary">' +
+__e(o.label_save) +
+'</button>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!profile_modal', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<div class="modal fade" id="user-profile-modal" tabindex="-1" role="dialog" aria-labelledby="user-profile-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="user-profile-modal-label">' +
+__e(o.heading_profile) +
+'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
+__e(o.label_close) +
+'"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                <div class="row">\n                    <div class="col-auto">\n                        ';
+ if (o.image) { ;
+__p += '\n                        <a class="show-profile" href="#">\n                            <img alt="User Avatar" class="img-thumbnail avatar align-self-center" height="100px" width="100px" src="data:' +
+__e(o.image_type) +
+';base64,' +
+__e(o.image) +
+'"/>\n                        </a>\n                        ';
+ } ;
+__p += '\n                    </div>\n                    <div class="col-auto">\n                        <div classs="row w-100">\n                            <label>Fullname:</label>\n                            <span class="username">' +
+__e(o.fullname) +
+'</span>\n                        </div>\n                        <div classs="row w-100">\n                            <label>XMPP Address:</label>\n                            <span class="username">' +
+__e(o.jid) +
+'</span>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!profile_view', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<div class="userinfo">\n<div class="profile d-flex">\n    ';
+ if (o.image) { ;
+__p += '\n    <a class="show-profile" href="#">\n        <img alt="User Avatar" class="avatar align-self-center" height="40px" width="40px" src="data:' +
+__e(o.image_type) +
+';base64,' +
+__e(o.image) +
+'"/>\n    </a>\n    ';
+ } ;
+__p += '\n    <span class="username w-100 align-self-center">' +
+__e(o.fullname) +
+'</span>\n    <!-- <a class="chatbox-btn fa fa-vcard align-self-center" title="' +
+__e(o.title_your_profile) +
+'" data-toggle="modal" data-target="#userProfileModal"></a> -->\n    <!-- <a class="chatbox-btn fa fa-cog align-self-center" title="' +
+__e(o.title_change_status) +
+'" data-toggle="modal" data-target="#settingsModal"></a> -->\n    ';
+ if (o._converse.allow_logout) { ;
+__p += '\n        <a class="chatbox-btn logout fa fa-sign-out align-self-center" title="' +
+__e(o.title_log_out) +
+'"></a>\n    ';
+ } ;
+__p += '\n</div>\n<div class="d-flex xmpp-status">\n    <span class="' +
+__e(o.chat_status) +
+' w-100 align-self-center" data-value="' +
+__e(o.chat_status) +
+'">\n        <span class="fa\n            ';
+ if (o.chat_status === 'online') { ;
+__p += ' fa-circle ';
+ } ;
+__p += '\n            ';
+ if (o.chat_status === 'dnd') { ;
+__p += ' fa-minus-circle ';
+ } ;
+__p += '\n            ';
+ if (o.chat_status === 'away') { ;
+__p += ' fa-dot-circle-o ';
+ } ;
+__p += '\n            ';
+ if (o.chat_status === 'xa') { ;
+__p += ' fa-circle-o ';
+ } ;
+__p += '\n            ';
+ if (o.chat_status === 'offline') { ;
+__p += ' fa-times-circle ';
+ } ;
+__p += '"></span> ' +
+__e(o.status_message) +
+'</span>\n    <a class="chatbox-btn change-status fa fa-pencil" title="' +
+__e(o.title_change_status) +
+'" data-toggle="modal" data-target="#changeStatusModal"></a>\n</div>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!status_option', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<li>\n    <a href="#" class="' +
+__e( o.value ) +
+'" data-value="' +
+__e( o.value ) +
+'">\n        <span class="icon-' +
+__e( o.value ) +
+'"></span>\n        ' +
+__e( o.text ) +
+'\n    </a>\n</li>\n';
+return __p
+};});
+
+/* Plugin to implement the vCard extension.
+ *  http://xmpp.org/extensions/xep-0054.html
+ *
+ *  Author: Nathan Zorn (nathan.zorn@gmail.com)
+ *  AMD support by JC Brand
+ */
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define('strophe.vcard',[
+            "strophe"
+        ], function (Strophe) {
+            factory(
+                Strophe.Strophe,
+                Strophe.$build,
+                Strophe.$iq ,
+                Strophe.$msg,
+                Strophe.$pres
+            );
+            return Strophe;
+        });
+    } else {
+        // Browser globals
+        factory(
+            root.Strophe,
+            root.$build,
+            root.$iq ,
+            root.$msg,
+            root.$pres
+        );
+    }
+}(this, function (Strophe, $build, $iq, $msg, $pres) {
+
+    var buildIq = function(type, jid, vCardEl) {
+        var iq = $iq(jid ? {type: type, to: jid} : {type: type});
+        iq.c("vCard", {xmlns: Strophe.NS.VCARD});
+        if (vCardEl) {
+            iq.cnode(vCardEl);
+        }
+        return iq;
+    };
+
+    Strophe.addConnectionPlugin('vcard', {
+        _connection: null,
+        init: function(conn) {
+            this._connection = conn;
+            return Strophe.addNamespace('VCARD', 'vcard-temp');
+        },
+
+        /* Function
+         * Retrieve a vCard for a JID/Entity
+         * Parameters:
+         * (Function) handler_cb - The callback function used to handle the request.
+         * (String) jid - optional - The name of the entity to request the vCard
+         *     If no jid is given, this function retrieves the current user's vcard.
+         * */
+        get: function(handler_cb, jid, error_cb) {
+            var iq = buildIq("get", jid);
+            return this._connection.sendIQ(iq, handler_cb, error_cb);
+        },
+
+        /* Function
+         *  Set an entity's vCard.
+         */
+        set: function(handler_cb, vCardEl, jid, error_cb) {
+            var iq = buildIq("set", jid, vCardEl);
+            return this._connection.sendIQ(iq, handler_cb, error_cb);
+        }
+    });
+}));
+
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+
+/*global define */
+(function (root, factory) {
+  define('converse-vcard',["converse-core", "strophe.vcard"], factory);
+})(void 0, function (converse) {
+  "use strict";
+
+  var _converse$env = converse.env,
+      Promise = _converse$env.Promise,
+      Strophe = _converse$env.Strophe,
+      _ = _converse$env._,
+      moment = _converse$env.moment,
+      sizzle = _converse$env.sizzle;
+  var u = converse.env.utils;
+
+  function onVCardData(_converse, jid, iq, callback) {
+    var vcard = iq.querySelector('vCard');
+
+    if (_.isNull(vcard)) {
+      // Some servers return an empty IQ
+      return onVCardError(_converse, jid, iq, callback);
+    }
+
+    var img_type = _.get(vcard.querySelector('TYPE'), 'textContent'),
+        img = _.get(vcard.querySelector('BINVAL'), 'textContent'),
+        url = _.get(vcard.querySelector('URL'), 'textContent'),
+        fullname = _.get(vcard.querySelector('FN'), 'textContent');
+
+    if (!u.isSameBareJID(jid, _converse.bare_jid)) {
+      var contact = _converse.roster.get(jid);
+
+      if (contact) {
+        contact.save({
+          'fullname': fullname || _.get(contact, 'fullname', jid),
+          'image_type': img_type,
+          'image': img,
+          'url': url,
+          'vcard_updated': moment().format()
+        });
+      }
+    }
+
+    if (callback) {
+      callback({
+        'stanza': iq,
+        'fullname': fullname,
+        'image': img,
+        'image_type': img_type,
+        'url': url
+      });
+    }
+  }
+
+  function onVCardError(_converse, jid, iq, errback) {
+    var contact = _converse.roster.get(jid);
+
+    if (contact) {
+      contact.save({
+        'vcard_updated': moment().format()
+      });
+    }
+
+    if (errback) {
+      errback({
+        'stanza': iq,
+        'jid': jid
+      });
+    }
+  }
+
+  function getVCard(_converse, jid) {
+    /* Request the VCard of another user. Returns a promise.
+     *
+     * Parameters:
+     *    (String) jid - The Jabber ID of the user whose VCard
+     *      is being requested.
+     */
+    var to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
+    return new Promise(function (resolve, reject) {
+      if (!_converse.use_vcards) {
+        if (resolve) {
+          resolve({
+            'jid': jid
+          });
+        }
+      } else {
+        _converse.connection.vcard.get(_.partial(onVCardData, _converse, jid, _, resolve), to, _.partial(onVCardError, _converse, jid, _, resolve));
+      }
+    });
+  }
+
+  function updateChatBoxFromVCard(_converse, jid) {
+    _converse.api.vcard.get(jid).then(function (vcard) {
+      var chatbox = _converse.chatboxes.getChatBox(jid);
+
+      if (!_.isUndefined(chatbox)) {
+        chatbox.save(_.pick(vcard, ['fullname', 'url', 'image_type', 'image', 'vcard_updated']));
+      }
+    }).catch(function (e) {
+      _converse.log(e, Strophe.LogLevel.ERROR);
+
+      _converse.log("updateChatBoxFromVCard: Error occured while attempting to update chatbox with VCard data", Strophe.LogLevel.ERROR);
+    });
+  }
+
+  converse.plugins.add('converse-vcard', {
+    enabled: function enabled(_converse) {
+      _converse.api.settings.update({
+        'use_vcards': true
+      });
+
+      return _converse.use_vcards;
+    },
+    overrides: {
+      // Overrides mentioned here will be picked up by converse.js's
+      // plugin architecture they will replace existing methods on the
+      // relevant objects or classes.
+      //
+      // New functions which don't exist yet can also be added.
+      RosterContacts: {
+        createRequestingContact: function createRequestingContact(presence) {
+          var _converse = this.__super__._converse;
+          var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
+
+          _converse.api.vcard.get(bare_jid).then(_.partial(_converse.createRequestingContactFromVCard, presence)).catch(function (vcard) {
+            _converse.log("Error while retrieving vcard for ".concat(vcard.jid), Strophe.LogLevel.WARN);
+
+            _converse.createRequestingContactFromVCard(presence, vcard.stanza, vcard.jid);
+          });
+        }
+      }
+    },
+    initialize: function initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      var _converse = this._converse;
+
+      _converse.createRequestingContactFromVCard = function (presence, vcard) {
+        var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
+        var fullname = vcard.fullname;
+
+        if (!fullname) {
+          var nick_el = sizzle("nick[xmlns=\"".concat(Strophe.NS.NICK, "\"]"), presence);
+          fullname = nick_el.length ? nick_el[0].textContent : bare_jid;
+        }
+
+        var user_data = {
+          'jid': bare_jid,
+          'subscription': 'none',
+          'ask': null,
+          'requesting': true,
+          'fullname': fullname,
+          'image': vcard.image,
+          'image_type': vcard.image_type,
+          'url': vcard.url,
+          'vcard_updated': moment().format()
+        };
+
+        _converse.roster.create(user_data);
+
+        _converse.emit('contactRequest', user_data);
+      };
+      /* Event handlers */
+
+
+      _converse.on('addClientFeatures', function () {
+        _converse.connection.disco.addFeature(Strophe.NS.VCARD);
+      });
+
+      _converse.on('chatBoxInitialized', function (chatbox) {
+        if (!_converse.use_vcards || chatbox.model.get('type') === 'headline') {
+          return;
+        }
+
+        _converse.api.waitUntil('rosterInitialized').then(function () {
+          var jid = chatbox.model.get('jid'),
+              contact = _converse.roster.get(jid);
+
+          if (contact && !contact.get('vcard_updated') || _.isUndefined(contact) && _converse.allow_non_roster_messaging) {
+            updateChatBoxFromVCard(_converse, jid);
+          }
+        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+      });
+
+      _converse.on('initialized', function () {
+        _converse.roster.on("add", function (contact) {
+          if (!contact.get('vcard_updated')) {
+            _converse.api.vcard.get(contact.get('jid'));
+          }
+        });
+      });
+
+      _converse.on('statusInitialized', function fetchOwnVCard() {
+        if (_.isNil(_converse.xmppstatus.get('vcard_updated'))) {
+          _converse.api.disco.supports(Strophe.NS.VCARD, _converse.domain).then(function (result) {
+            if (result.supported) {
+              _converse.api.vcard.get(_converse.bare_jid).then(function (vcard) {
+                return _converse.xmppstatus.save(vcard);
+              });
+            }
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        }
+      });
+
+      _.extend(_converse.api, {
+        'vcard': {
+          'get': function get(jid) {
+            return getVCard(_converse, jid);
+          }
+        }
+      });
+    }
+  });
+});
+//# sourceMappingURL=converse-vcard.js.map;
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+
+/*global define */
+(function (root, factory) {
+  define('converse-profile',["converse-core", "bootstrap", "tpl!chat_status_modal", "tpl!profile_modal", "tpl!profile_view", "tpl!status_option", "converse-vcard", "converse-modal"], factory);
+})(void 0, function (converse, bootstrap, tpl_chat_status_modal, tpl_profile_modal, tpl_profile_view, tpl_status_option) {
+  "use strict";
+
+  var _converse$env = converse.env,
+      Strophe = _converse$env.Strophe,
+      Backbone = _converse$env.Backbone,
+      Promise = _converse$env.Promise,
+      utils = _converse$env.utils,
+      _ = _converse$env._,
+      moment = _converse$env.moment;
+  var u = converse.env.utils;
+  converse.plugins.add('converse-profile', {
+    dependencies: ["converse-modal"],
+    initialize: function initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      var _converse = this._converse,
+          __ = _converse.__;
+      _converse.ProfileModal = _converse.BootstrapModal.extend({
+        toHTML: function toHTML() {
+          return tpl_profile_modal(_.extend(this.model.toJSON(), {
+            'heading_profile': __('Your Profile'),
+            'label_close': __('Close')
+          }));
+        }
+      });
+      _converse.ChatStatusModal = _converse.BootstrapModal.extend({
+        events: {
+          "submit form#set-xmpp-status": "onFormSubmitted",
+          "click .clear-input": "clearStatusMessage"
+        },
+        toHTML: function toHTML() {
+          return tpl_chat_status_modal(_.extend(this.model.toJSON(), {
+            'label_away': __('Away'),
+            'label_close': __('Close'),
+            'label_busy': __('Busy'),
+            'label_cancel': __('Cancel'),
+            'label_custom_status': __('Custom status'),
+            'label_offline': __('Offline'),
+            'label_online': __('Online'),
+            'label_save': __('Save'),
+            'label_xa': __('Away for long'),
+            'modal_title': __('Change chat status'),
+            'placeholder_status_message': __('Personal status message')
+          }));
+        },
+        afterRender: function afterRender() {
+          var _this = this;
+
+          this.el.addEventListener('shown.bs.modal', function () {
+            _this.el.querySelector('input[name="status_message"]').focus();
+          }, false);
+        },
+        clearStatusMessage: function clearStatusMessage(ev) {
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+            u.hideElement(this.el.querySelector('.clear-input'));
+          }
+
+          var roster_filter = this.el.querySelector('input[name="status_message"]');
+          roster_filter.value = '';
+        },
+        onFormSubmitted: function onFormSubmitted(ev) {
+          ev.preventDefault();
+          var data = new FormData(ev.target);
+          this.model.save({
+            'status_message': data.get('status_message'),
+            'status': data.get('chat_status')
+          });
+          this.modal.hide();
+        }
+      });
+      _converse.XMPPStatusView = Backbone.VDOMView.extend({
+        tagName: "div",
+        events: {
+          "click a.show-profile": "showProfileModal",
+          "click a.change-status": "showStatusChangeModal",
+          "click .logout": "logOut"
+        },
+        initialize: function initialize() {
+          this.model.on("change", this.render, this);
+        },
+        toHTML: function toHTML() {
+          var chat_status = this.model.get('status') || 'offline';
+          return tpl_profile_view(_.extend(this.model.toJSON(), {
+            'fullname': this.model.get('fullname') || _converse.bare_jid,
+            'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
+            'chat_status': chat_status,
+            '_converse': _converse,
+            'title_change_settings': __('Change settings'),
+            'title_change_status': __('Click to change your chat status'),
+            'title_log_out': __('Log out'),
+            'title_your_profile': __('Your profile')
+          }));
+        },
+        showProfileModal: function showProfileModal(ev) {
+          if (_.isUndefined(this.profile_modal)) {
+            this.profile_modal = new _converse.ProfileModal({
+              model: this.model
+            });
+          }
+
+          this.profile_modal.show(ev);
+        },
+        showStatusChangeModal: function showStatusChangeModal(ev) {
+          if (_.isUndefined(this.status_modal)) {
+            this.status_modal = new _converse.ChatStatusModal({
+              model: this.model
+            });
+          }
+
+          this.status_modal.show(ev);
+        },
+        logOut: function logOut(ev) {
+          ev.preventDefault();
+          var result = confirm(__("Are you sure you want to log out?"));
+
+          if (result === true) {
+            _converse.logOut();
+          }
+        },
+        getPrettyStatus: function getPrettyStatus(stat) {
+          if (stat === 'chat') {
+            return __('online');
+          } else if (stat === 'dnd') {
+            return __('busy');
+          } else if (stat === 'xa') {
+            return __('away for long');
+          } else if (stat === 'away') {
+            return __('away');
+          } else if (stat === 'offline') {
+            return __('offline');
+          } else {
+            return __(stat) || __('online');
+          }
+        }
+      });
+    }
+  });
+});
+//# sourceMappingURL=converse-profile.js.map;
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+
+/*global define */
+(function (root, factory) {
+  define('converse-controlbox',["converse-core", "lodash.fp", "tpl!converse_brand_heading", "tpl!controlbox", "tpl!controlbox_toggle", "tpl!login_panel", "converse-chatview", "converse-rosterview", "converse-profile"], factory);
+})(void 0, function (converse, fp, tpl_brand_heading, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel) {
+  "use strict";
+
+  var CHATBOX_TYPE = 'chatbox';
+  var _converse$env = converse.env,
+      Strophe = _converse$env.Strophe,
+      Backbone = _converse$env.Backbone,
+      Promise = _converse$env.Promise,
+      _ = _converse$env._,
+      moment = _converse$env.moment;
+  var u = converse.env.utils;
+  var CONNECTION_STATUS_CSS_CLASS = {
+    'Error': 'error',
+    'Connecting': 'info',
+    'Connection failure': 'error',
+    'Authenticating': 'info',
+    'Authentication failure': 'error',
+    'Connected': 'info',
+    'Disconnected': 'error',
+    'Disconnecting': 'warn',
+    'Attached': 'info',
+    'Redirect': 'info',
+    'Reconnecting': 'warn'
+  };
+  var PRETTY_CONNECTION_STATUS = {
+    0: 'Error',
+    1: 'Connecting',
+    2: 'Connection failure',
+    3: 'Authenticating',
+    4: 'Authentication failure',
+    5: 'Connected',
+    6: 'Disconnected',
+    7: 'Disconnecting',
+    8: 'Attached',
+    9: 'Redirect',
+    10: 'Reconnecting'
+  };
+  var REPORTABLE_STATUSES = [0, // ERROR'
+  1, // CONNECTING
+  2, // CONNFAIL
+  3, // AUTHENTICATING
+  4, // AUTHFAIL
+  7, // DISCONNECTING
+  10 // RECONNECTING
+  ];
+  converse.plugins.add('converse-controlbox', {
+    /* Plugin dependencies are other plugins which might be
+     * overridden or relied upon, and therefore need to be loaded before
+     * this plugin.
+     *
+     * If the setting "strict_plugin_dependencies" is set to true,
+     * an error will be raised if the plugin is not found. By default it's
+     * false, which means these plugins are only loaded opportunistically.
+     *
+     * NB: These plugins need to have already been loaded via require.js.
+     */
+    dependencies: ["converse-modal", "converse-chatboxes", "converse-rosterview", "converse-chatview"],
+    overrides: {
+      // Overrides mentioned here will be picked up by converse.js's
+      // plugin architecture they will replace existing methods on the
+      // relevant objects or classes.
+      //
+      // New functions which don't exist yet can also be added.
+      _tearDown: function _tearDown() {
+        this.__super__._tearDown.apply(this, arguments);
+
+        if (this.rosterview) {
+          // Removes roster groups
+          this.rosterview.model.off().reset();
+          this.rosterview.each(function (groupview) {
+            groupview.removeAll();
+            groupview.remove();
+          });
+          this.rosterview.removeAll().remove();
+        }
+      },
+      clearSession: function clearSession() {
+        this.__super__.clearSession.apply(this, arguments);
+
+        var chatboxes = _.get(this, 'chatboxes', null);
+
+        if (!_.isNil(chatboxes)) {
+          var controlbox = chatboxes.get('controlbox');
+
+          if (controlbox && controlbox.collection && controlbox.collection.browserStorage) {
+            controlbox.save({
+              'connected': false
+            });
+          }
+        }
+      },
+      ChatBoxes: {
+        chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
+          return this.__super__.chatBoxMayBeShown.apply(this, arguments) && chatbox.get('id') !== 'controlbox';
+        }
+      },
+      ChatBoxViews: {
+        onChatBoxAdded: function onChatBoxAdded(item) {
+          var _converse = this.__super__._converse;
+
+          if (item.get('box_id') === 'controlbox') {
+            var view = this.get(item.get('id'));
+
+            if (view) {
+              view.model = item;
+              view.initialize();
+              return view;
+            } else {
+              view = new _converse.ControlBoxView({
+                model: item
+              });
+              return this.add(item.get('id'), view);
+            }
+          } else {
+            return this.__super__.onChatBoxAdded.apply(this, arguments);
+          }
+        },
+        closeAllChatBoxes: function closeAllChatBoxes() {
+          var _converse = this.__super__._converse;
+          this.each(function (view) {
+            if (view.model.get('id') === 'controlbox' && (_converse.disconnection_cause !== _converse.LOGOUT || _converse.show_controlbox_by_default)) {
+              return;
+            }
+
+            view.close();
+          });
+          return this;
+        },
+        getChatBoxWidth: function getChatBoxWidth(view) {
+          var _converse = this.__super__._converse;
+          var controlbox = this.get('controlbox');
+
+          if (view.model.get('id') === 'controlbox') {
+            /* We return the width of the controlbox or its toggle,
+             * depending on which is visible.
+             */
+            if (!controlbox || !u.isVisible(controlbox.el)) {
+              return u.getOuterWidth(_converse.controlboxtoggle.el, true);
+            } else {
+              return u.getOuterWidth(controlbox.el, true);
+            }
+          } else {
+            return this.__super__.getChatBoxWidth.apply(this, arguments);
+          }
+        }
+      },
+      ChatBox: {
+        initialize: function initialize() {
+          if (this.get('id') === 'controlbox') {
+            this.set({
+              'time_opened': moment(0).valueOf()
+            });
+          } else {
+            this.__super__.initialize.apply(this, arguments);
+          }
+        }
+      },
+      ChatBoxView: {
+        insertIntoDOM: function insertIntoDOM() {
+          var view = this.__super__._converse.chatboxviews.get("controlbox");
+
+          if (view) {
+            view.el.insertAdjacentElement('afterend', this.el);
+          } else {
+            this.__super__.insertIntoDOM.apply(this, arguments);
+          }
+
+          return this;
+        }
+      }
+    },
+    initialize: function initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      var _converse = this._converse,
+          __ = _converse.__;
+
+      _converse.api.settings.update({
+        allow_logout: true,
+        default_domain: undefined,
+        locked_domain: undefined,
+        show_controlbox_by_default: false,
+        sticky_controlbox: false
+      });
+
+      _converse.api.promises.add('controlboxInitialized');
+
+      var LABEL_CONTACTS = __('Contacts');
+
+      _converse.addControlBox = function () {
+        return _converse.chatboxes.add({
+          id: 'controlbox',
+          box_id: 'controlbox',
+          type: 'controlbox',
+          closed: !_converse.show_controlbox_by_default
+        });
+      };
+
+      _converse.ControlBoxView = _converse.ChatBoxView.extend({
+        tagName: 'div',
+        className: 'chatbox',
+        id: 'controlbox',
+        events: {
+          'click a.close-chatbox-button': 'close'
+        },
+        initialize: function initialize() {
+          if (_.isUndefined(_converse.controlboxtoggle)) {
+            _converse.controlboxtoggle = new _converse.ControlBoxToggle();
+          }
+
+          _converse.controlboxtoggle.el.insertAdjacentElement('afterend', this.el);
+
+          this.model.on('change:connected', this.onConnected, this);
+          this.model.on('destroy', this.hide, this);
+          this.model.on('hide', this.hide, this);
+          this.model.on('show', this.show, this);
+          this.model.on('change:closed', this.ensureClosedState, this);
+          this.render();
+
+          if (this.model.get('connected')) {
+            this.insertRoster();
+          }
+
+          _converse.emit('controlboxInitialized', this);
+        },
+        render: function render() {
+          if (this.model.get('connected')) {
+            if (_.isUndefined(this.model.get('closed'))) {
+              this.model.set('closed', !_converse.show_controlbox_by_default);
+            }
+          }
+
+          this.el.innerHTML = tpl_controlbox(_.extend(this.model.toJSON()));
+
+          if (!this.model.get('closed')) {
+            this.show();
+          } else {
+            this.hide();
+          }
+
+          if (!_converse.connection.connected || !_converse.connection.authenticated || _converse.connection.disconnecting) {
+            this.renderLoginPanel();
+          } else if (this.model.get('connected') && (!this.controlbox_pane || !u.isVisible(this.controlbox_pane.el))) {
+            this.renderControlBoxPane();
+          }
+
+          return this;
+        },
+        onConnected: function onConnected() {
+          if (this.model.get('connected')) {
+            this.render();
+            this.insertRoster();
+          }
+        },
+        insertRoster: function insertRoster() {
+          var _this = this;
+
+          /* Place the rosterview inside the "Contacts" panel. */
+          _converse.api.waitUntil('rosterViewInitialized').then(function () {
+            return _this.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el);
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        },
+        createBrandHeadingHTML: function createBrandHeadingHTML() {
+          return tpl_brand_heading({
+            'sticky_controlbox': _converse.sticky_controlbox
+          });
+        },
+        insertBrandHeading: function insertBrandHeading() {
+          var heading_el = this.el.querySelector('.brand-heading-container');
+
+          if (_.isNull(heading_el)) {
+            var el = this.el.querySelector('.controlbox-head');
+            el.insertAdjacentHTML('beforeend', this.createBrandHeadingHTML());
+          } else {
+            heading_el.outerHTML = this.createBrandHeadingHTML();
+          }
+        },
+        renderLoginPanel: function renderLoginPanel() {
+          this.el.classList.add("logged-out");
+
+          if (_.isNil(this.loginpanel)) {
+            this.loginpanel = new _converse.LoginPanel({
+              'model': new _converse.LoginPanelModel()
+            });
+            var panes = this.el.querySelector('.controlbox-panes');
+            panes.innerHTML = '';
+            panes.appendChild(this.loginpanel.render().el);
+            this.insertBrandHeading();
+          } else {
+            this.loginpanel.render();
+          }
+
+          return this;
+        },
+        renderControlBoxPane: function renderControlBoxPane() {
+          /* Renders the "Contacts" panel of the controlbox.
+           *
+           * This will only be called after the user has already been
+           * logged in.
+           */
+          if (this.loginpanel) {
+            this.loginpanel.remove();
+            delete this.loginpanel;
+          }
+
+          this.el.classList.remove("logged-out");
+          this.controlbox_pane = new _converse.ControlBoxPane();
+          this.el.querySelector('.controlbox-panes').insertAdjacentElement('afterBegin', this.controlbox_pane.el);
+        },
+        close: function close(ev) {
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          if (_converse.sticky_controlbox) {
+            return;
+          }
+
+          if (_converse.connection.connected && !_converse.connection.disconnecting) {
+            this.model.save({
+              'closed': true
+            });
+          } else {
+            this.model.trigger('hide');
+          }
+
+          _converse.emit('controlBoxClosed', this);
+
+          return this;
+        },
+        ensureClosedState: function ensureClosedState() {
+          if (this.model.get('closed')) {
+            this.hide();
+          } else {
+            this.show();
+          }
+        },
+        hide: function hide(callback) {
+          if (_converse.sticky_controlbox) {
+            return;
+          }
+
+          u.addClass('hidden', this.el);
+
+          _converse.emit('chatBoxClosed', this);
+
+          if (!_converse.connection.connected) {
+            _converse.controlboxtoggle.render();
+          }
+
+          _converse.controlboxtoggle.show(callback);
+
+          return this;
+        },
+        onControlBoxToggleHidden: function onControlBoxToggleHidden() {
+          this.model.set('closed', false);
+          this.el.classList.remove('hidden');
+
+          _converse.emit('controlBoxOpened', this);
+        },
+        show: function show() {
+          _converse.controlboxtoggle.hide(this.onControlBoxToggleHidden.bind(this));
+
+          return this;
+        },
+        showHelpMessages: function showHelpMessages() {
+          /* Override showHelpMessages in ChatBoxView, for now do nothing.
+           *
+           * Parameters:
+           *  (Array) msgs: Array of messages
+           */
+          return;
+        }
+      });
+      _converse.LoginPanelModel = Backbone.Model.extend({
+        defaults: {
+          // Passed-by-reference. Fine in this case because there's
+          // only one such model.
+          'errors': []
+        }
+      });
+      _converse.LoginPanel = Backbone.VDOMView.extend({
+        tagName: 'div',
+        id: "converse-login-panel",
+        className: 'controlbox-pane fade-in',
+        events: {
+          'submit form#converse-login': 'authenticate',
+          'change input': 'validate'
+        },
+        initialize: function initialize(cfg) {
+          this.model.on('change', this.render, this);
+          this.listenTo(_converse.connfeedback, 'change', this.render);
+        },
+        toHTML: function toHTML() {
+          var connection_status = _converse.connfeedback.get('connection_status');
+
+          var feedback_class, pretty_status;
+
+          if (_.includes(REPORTABLE_STATUSES, connection_status)) {
+            pretty_status = PRETTY_CONNECTION_STATUS[connection_status];
+            feedback_class = CONNECTION_STATUS_CSS_CLASS[pretty_status];
+          }
+
+          return tpl_login_panel(_.extend(this.model.toJSON(), {
+            '__': __,
+            '_converse': _converse,
+            'ANONYMOUS': _converse.ANONYMOUS,
+            'EXTERNAL': _converse.EXTERNAL,
+            'LOGIN': _converse.LOGIN,
+            'PREBIND': _converse.PREBIND,
+            'auto_login': _converse.auto_login,
+            'authentication': _converse.authentication,
+            'connection_status': connection_status,
+            'conn_feedback_class': feedback_class,
+            'conn_feedback_subject': pretty_status,
+            'conn_feedback_message': _converse.connfeedback.get('message'),
+            'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain')
+          }));
+        },
+        validate: function validate() {
+          var form = this.el.querySelector('form');
+          var jid_element = form.querySelector('input[name=jid]');
+
+          if (jid_element.value && !_converse.locked_domain && !_converse.default_domain && !u.isValidJID(jid_element.value)) {
+            jid_element.setCustomValidity(__('Please enter a valid XMPP address'));
+            return false;
+          }
+
+          jid_element.setCustomValidity('');
+          return true;
+        },
+        authenticate: function authenticate(ev) {
+          /* Authenticate the user based on a form submission event.
+           */
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          if (_converse.authentication === _converse.ANONYMOUS) {
+            this.connect(_converse.jid, null);
+            return;
+          }
+
+          if (!this.validate()) {
+            return;
+          }
+
+          var jid = ev.target.querySelector('input[name=jid]').value;
+
+          if (_converse.locked_domain) {
+            jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
+          } else if (_converse.default_domain && !_.includes(jid, '@')) {
+            jid = jid + '@' + _converse.default_domain;
+          }
+
+          this.connect(jid, _.get(ev.target.querySelector('input[name=password]'), 'value'));
+        },
+        connect: function connect(jid, password) {
+          if (jid) {
+            var resource = Strophe.getResourceFromJid(jid);
+
+            if (!resource) {
+              jid = jid.toLowerCase() + _converse.generateResource();
+            } else {
+              jid = Strophe.getBareJidFromJid(jid).toLowerCase() + '/' + resource;
+            }
+          }
+
+          if (_.includes(["converse/login", "converse/register"], Backbone.history.getFragment())) {
+            _converse.router.navigate('', {
+              'replace': true
+            });
+          }
+
+          _converse.connection.reset();
+
+          _converse.connection.connect(jid, password, _converse.onConnectStatusChanged);
+        }
+      });
+      _converse.ControlBoxPane = Backbone.NativeView.extend({
+        tagName: 'div',
+        className: 'controlbox-pane',
+        initialize: function initialize() {
+          _converse.xmppstatusview = new _converse.XMPPStatusView({
+            'model': _converse.xmppstatus
+          });
+          this.el.insertAdjacentElement('afterBegin', _converse.xmppstatusview.render().el);
+        }
+      });
+      _converse.ControlBoxToggle = Backbone.NativeView.extend({
+        tagName: 'a',
+        className: 'toggle-controlbox hidden',
+        id: 'toggle-controlbox',
+        events: {
+          'click': 'onClick'
+        },
+        attributes: {
+          'href': "#"
+        },
+        initialize: function initialize() {
+          _converse.chatboxviews.insertRowColumn(this.render().el);
+
+          _converse.api.waitUntil('initialized').then(this.render.bind(this)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        },
+        render: function render() {
+          // We let the render method of ControlBoxView decide whether
+          // the ControlBox or the Toggle must be shown. This prevents
+          // artifacts (i.e. on page load the toggle is shown only to then
+          // seconds later be hidden in favor of the control box).
+          this.el.innerHTML = tpl_controlbox_toggle({
+            'label_toggle': _converse.connection.connected ? __('Chat Contacts') : __('Toggle chat')
+          });
+          return this;
+        },
+        hide: function hide(callback) {
+          u.hideElement(this.el);
+          callback();
+        },
+        show: function show(callback) {
+          u.fadeIn(this.el, callback);
+        },
+        showControlBox: function showControlBox() {
+          var controlbox = _converse.chatboxes.get('controlbox');
+
+          if (!controlbox) {
+            controlbox = _converse.addControlBox();
+          }
+
+          if (_converse.connection.connected) {
+            controlbox.save({
+              closed: false
+            });
+          } else {
+            controlbox.trigger('show');
+          }
+        },
+        onClick: function onClick(e) {
+          e.preventDefault();
+
+          if (u.isVisible(_converse.root.querySelector("#controlbox"))) {
+            var controlbox = _converse.chatboxes.get('controlbox');
+
+            if (_converse.connection.connected) {
+              controlbox.save({
+                closed: true
+              });
+            } else {
+              controlbox.trigger('hide');
+            }
+          } else {
+            this.showControlBox();
+          }
+        }
+      });
+      Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxesInitialized')]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
+      _converse.on('chatBoxesFetched', function () {
+        var controlbox = _converse.chatboxes.get('controlbox') || _converse.addControlBox();
+
+        controlbox.save({
+          connected: true
+        });
+      });
+
+      var disconnect = function disconnect() {
+        /* Upon disconnection, set connected to `false`, so that if
+         * we reconnect, "onConnected" will be called,
+         * to fetch the roster again and to send out a presence stanza.
+         */
+        var view = _converse.chatboxviews.get('controlbox');
+
+        view.model.set({
+          'connected': false
+        });
+        view.renderLoginPanel();
+      };
+
+      _converse.on('disconnected', disconnect);
+
+      _converse.on('will-reconnect', disconnect);
+    }
+  });
+});
+//# sourceMappingURL=converse-controlbox.js.map;
+
+define('tpl!field', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<field var="' +
+__e(o.name) +
+'">\n';
+ if (_.isArray(o.value)) { ;
+__p += '\n    ';
+ _.each(o.value,function(arrayValue) { ;
+__p += '<value>' +
+__e(arrayValue) +
+'</value>';
+ }); ;
+__p += '\n';
+ } else { ;
+__p += '\n    <value>' +
+__e(o.value) +
+'</value>\n';
+ } ;
+__p += '</field>\n';
+return __p
+};});
+
+
+define('tpl!select_option', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<option value="' +
+__e(o.value) +
+'" ';
+ if (o.selected) { ;
+__p += ' selected="selected" ';
+ } ;
+__p += ' >' +
+__e(o.label) +
+'</option>\n';
+return __p
+};});
+
+
+define('tpl!form_select', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<label>\n    ' +
+__e(o.label) +
+'\n    <select name="' +
+__e(o.name) +
+'"  ';
+ if (o.multiple) { ;
+__p += ' multiple="multiple" ';
+ } ;
+__p += '>' +
+((__t = (o.options)) == null ? '' : __t) +
+'</select>\n</label>\n';
+return __p
+};});
+
+
+define('tpl!form_textarea', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<label class="label-ta">' +
+__e(o.label) +
+'</label>\n<textarea name="' +
+__e(o.name) +
+'">' +
+__e(o.value) +
+'</textarea>\n';
+return __p
+};});
+
+
+define('tpl!form_checkbox', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<label class="checkbox" for="' +
+__e(o.name) +
+'">' +
+__e(o.label) +
+'<input name="' +
+__e(o.name) +
+'" type="' +
+__e(o.type) +
+'" ' +
+__e(o.checked) +
+'></label>\n\n';
+return __p
+};});
+
+
+define('tpl!form_username', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+
+ if (o.label) { ;
+__p += '\n<label>\n    ' +
+__e(o.label) +
+'\n</label>\n';
+ } ;
+__p += '\n<div class="input-group">\n    <input name="' +
+__e(o.name) +
+'" type="' +
+__e(o.type) +
+'"\n        ';
+ if (o.value) { ;
+__p += ' value="' +
+__e(o.value) +
+'" ';
+ } ;
+__p += '\n        ';
+ if (o.required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' />\n    <span title="' +
+__e(o.domain) +
+'">' +
+__e(o.domain) +
+'</span>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!form_input', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<label>\n    ' +
+__e(o.label) +
+'\n    <input name="' +
+__e(o.name) +
+'" type="' +
+__e(o.type) +
+'" \n        ';
+ if (o.placeholder) { ;
+__p += ' placeholder="' +
+__e(o.placeholder) +
+'" ';
+ } ;
+__p += '\n        ';
+ if (o.value) { ;
+__p += ' value="' +
+__e(o.value) +
+'" ';
+ } ;
+__p += '\n        ';
+ if (o.required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' >\n</label>\n';
+return __p
+};});
+
+
+define('tpl!form_captcha', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+
+ if (o.label) { ;
+__p += '\n<label>\n    ' +
+__e(o.label) +
+'\n</label>\n';
+ } ;
+__p += '\n<img src="data:' +
+__e(o.type) +
+';base64,' +
+__e(o.data) +
+'">\n<input name="' +
+__e(o.name) +
+'" type="text" ';
+ if (o.required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' >\n\n\n';
+return __p
+};});
+
+
+define('tpl!form_url', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<label>\n    ' +
+__e(o.label) +
+'\n    <a class="form-url" target="_blank" rel="noopener" href="' +
+__e(o.value) +
+'">' +
+__e(o.value) +
+'</a>\n</label>\n';
+return __p
+};});
+
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// This is the utilities module.
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+
+/*global define, escape, Jed */
+(function (root, factory) {
+  define('form-utils',["sizzle", "lodash.noconflict", "utils", "tpl!field", "tpl!select_option", "tpl!form_select", "tpl!form_textarea", "tpl!form_checkbox", "tpl!form_username", "tpl!form_input", "tpl!form_captcha", "tpl!form_url"], factory);
+})(void 0, function (sizzle, _, u, tpl_field, tpl_select_option, tpl_form_select, tpl_form_textarea, tpl_form_checkbox, tpl_form_username, tpl_form_input, tpl_form_captcha, tpl_form_url) {
+  "use strict";
+
+  var XFORM_TYPE_MAP = {
+    'text-private': 'password',
+    'text-single': 'text',
+    'fixed': 'label',
+    'boolean': 'checkbox',
+    'hidden': 'hidden',
+    'jid-multi': 'textarea',
+    'list-single': 'dropdown',
+    'list-multi': 'dropdown'
+  };
+
+  u.webForm2xForm = function (field) {
+    /* Takes an HTML DOM and turns it into an XForm field.
+     *
+     * Parameters:
+     *      (DOMElement) field - the field to convert
+     */
+    var value;
+
+    if (field.getAttribute('type') === 'checkbox') {
+      value = field.checked && 1 || 0;
+    } else if (field.tagName == "textarea") {
+      value = _.filter(field.value.split('\n'), _.trim);
+    } else {
+      value = field.value;
+    }
+
+    return u.stringToNode(tpl_field({
+      name: field.getAttribute('name'),
+      value: value
+    }));
+  };
+
+  u.xForm2webForm = function (field, stanza, domain) {
+    /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
+     * and turns it into an HTML field.
+     *
+     * Returns either text or a DOM element (which is not ideal, but fine
+     * for now).
+     *
+     *  Parameters:
+     *      (XMLElement) field - the field to convert
+     */
+    if (field.getAttribute('type')) {
+      if (field.getAttribute('type') === 'list-single' || field.getAttribute('type') === 'list-multi') {
+        var values = _.map(u.queryChildren(field, 'value'), _.partial(_.get, _, 'textContent'));
+
+        var options = _.map(u.queryChildren(field, 'option'), function (option) {
+          var value = _.get(option.querySelector('value'), 'textContent');
+
+          return tpl_select_option({
+            'value': value,
+            'label': option.getAttribute('label'),
+            'selected': _.startsWith(values, value),
+            'required': !_.isNil(field.querySelector('required'))
+          });
+        });
+
+        return tpl_form_select({
+          'name': field.getAttribute('var'),
+          'label': field.getAttribute('label'),
+          'options': options.join(''),
+          'multiple': field.getAttribute('type') === 'list-multi',
+          'required': !_.isNil(field.querySelector('required'))
+        });
+      } else if (field.getAttribute('type') === 'fixed') {
+        var text = _.get(field.querySelector('value'), 'textContent');
+
+        return '<p class="form-help">' + text + '</p>';
+      } else if (field.getAttribute('type') === 'jid-multi') {
+        return tpl_form_textarea({
+          'name': field.getAttribute('var'),
+          'label': field.getAttribute('label') || '',
+          'value': _.get(field.querySelector('value'), 'textContent'),
+          'required': !_.isNil(field.querySelector('required'))
+        });
+      } else if (field.getAttribute('type') === 'boolean') {
+        return tpl_form_checkbox({
+          'name': field.getAttribute('var'),
+          'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+          'label': field.getAttribute('label') || '',
+          'checked': _.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
+          'required': !_.isNil(field.querySelector('required'))
+        });
+      } else if (field.getAttribute('var') === 'url') {
+        return tpl_form_url({
+          'label': field.getAttribute('label') || '',
+          'value': _.get(field.querySelector('value'), 'textContent')
+        });
+      } else if (field.getAttribute('var') === 'username') {
+        return tpl_form_username({
+          'domain': ' @' + domain,
+          'name': field.getAttribute('var'),
+          'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+          'label': field.getAttribute('label') || '',
+          'value': _.get(field.querySelector('value'), 'textContent'),
+          'required': !_.isNil(field.querySelector('required'))
+        });
+      } else {
+        return tpl_form_input({
+          'label': field.getAttribute('label') || '',
+          'name': field.getAttribute('var'),
+          'placeholder': null,
+          'required': !_.isNil(field.querySelector('required')),
+          'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+          'value': _.get(field.querySelector('value'), 'textContent')
+        });
+      }
+    } else {
+      if (field.getAttribute('var') === 'ocr') {
+        // Captcha
+        var uri = field.querySelector('uri');
+        var el = sizzle('data[cid="' + uri.textContent.replace(/^cid:/, '') + '"]', stanza)[0];
+        return tpl_form_captcha({
+          'label': field.getAttribute('label'),
+          'name': field.getAttribute('var'),
+          'data': _.get(el, 'textContent'),
+          'type': uri.getAttribute('type'),
+          'required': !_.isNil(field.querySelector('required'))
+        });
+      }
+    }
+  };
+
+  return u;
+});
+//# sourceMappingURL=form-utils.js.map;
+/*
+  Copyright 2010, François de Metz <francois@2metz.fr>
+*/
+
+/**
+ * Disco Strophe Plugin
+ * Implement http://xmpp.org/extensions/xep-0030.html
+ * TODO: manage node hierarchies, and node on info request
+ */
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define("strophe.disco", [
+            "strophe"
+        ], function (Strophe) {
+            factory(
+                Strophe.Strophe,
+                Strophe.$build,
+                Strophe.$iq ,
+                Strophe.$msg,
+                Strophe.$pres
+            );
+            return Strophe;
+        });
+    } else {
+        // Browser globals
+        factory(
+            root.Strophe,
+            root.$build,
+            root.$iq ,
+            root.$msg,
+            root.$pres
+        );
+    }
+}(this, function (Strophe, $build, $iq, $msg, $pres) {
+
+Strophe.addConnectionPlugin('disco',
+{
+    _connection: null,
+    _identities : [],
+    _features : [],
+    _items : [],
+    /** Function: init
+     * Plugin init
+     *
+     * Parameters:
+     *   (Strophe.Connection) conn - Strophe connection
+     */
+    init: function(conn)
+    {
+    this._connection = conn;
+        this._identities = [];
+        this._features   = [];
+        this._items      = [];
+        // disco info
+        conn.addHandler(this._onDiscoInfo.bind(this), Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
+        // disco items
+        conn.addHandler(this._onDiscoItems.bind(this), Strophe.NS.DISCO_ITEMS, 'iq', 'get', null, null);
+    },
+    /** Function: addIdentity
+     * See http://xmpp.org/registrar/disco-categories.html
+     * Parameters:
+     *   (String) category - category of identity (like client, automation, etc ...)
+     *   (String) type - type of identity (like pc, web, bot , etc ...)
+     *   (String) name - name of identity in natural language
+     *   (String) lang - lang of name parameter
+     *
+     * Returns:
+     *   Boolean
+     */
+    addIdentity: function(category, type, name, lang)
+    {
+        for (var i=0; i<this._identities.length; i++)
+        {
+            if (this._identities[i].category == category &&
+                this._identities[i].type == type &&
+                this._identities[i].name == name &&
+                this._identities[i].lang == lang)
+            {
+                return false;
+            }
+        }
+        this._identities.push({category: category, type: type, name: name, lang: lang});
+        return true;
+    },
+    /** Function: addFeature
+     *
+     * Parameters:
+     *   (String) var_name - feature name (like jabber:iq:version)
+     *
+     * Returns:
+     *   boolean
+     */
+    addFeature: function(var_name)
+    {
+        for (var i=0; i<this._features.length; i++)
+        {
+             if (this._features[i] == var_name)
+                 return false;
+        }
+        this._features.push(var_name);
+        return true;
+    },
+    /** Function: removeFeature
+     *
+     * Parameters:
+     *   (String) var_name - feature name (like jabber:iq:version)
+     *
+     * Returns:
+     *   boolean
+     */
+    removeFeature: function(var_name)
+    {
+        for (var i=0; i<this._features.length; i++)
+        {
+             if (this._features[i] === var_name){
+                 this._features.splice(i,1);
+                 return true;
+             }
+        }
+        return false;
+    },
+    /** Function: addItem
+     *
+     * Parameters:
+     *   (String) jid
+     *   (String) name
+     *   (String) node
+     *   (Function) call_back
+     *
+     * Returns:
+     *   boolean
+     */
+    addItem: function(jid, name, node, call_back)
+    {
+        if (node && !call_back)
+            return false;
+        this._items.push({jid: jid, name: name, node: node, call_back: call_back});
+        return true;
+    },
+    /** Function: info
+     * Info query
+     *
+     * Parameters:
+     *   (Function) call_back
+     *   (String) jid
+     *   (String) node
+     */
+    info: function(jid, node, success, error, timeout)
+    {
+        var attrs = {xmlns: Strophe.NS.DISCO_INFO};
+        if (node)
+            attrs.node = node;
+
+        var info = $iq({from:this._connection.jid,
+                         to:jid, type:'get'}).c('query', attrs);
+        this._connection.sendIQ(info, success, error, timeout);
+    },
+    /** Function: items
+     * Items query
+     *
+     * Parameters:
+     *   (Function) call_back
+     *   (String) jid
+     *   (String) node
+     */
+    items: function(jid, node, success, error, timeout)
+    {
+        var attrs = {xmlns: Strophe.NS.DISCO_ITEMS};
+        if (node)
+            attrs.node = node;
+
+        var items = $iq({from:this._connection.jid,
+                         to:jid, type:'get'}).c('query', attrs);
+        this._connection.sendIQ(items, success, error, timeout);
+    },
+
+    /** PrivateFunction: _buildIQResult
+     */
+    _buildIQResult: function(stanza, query_attrs)
+    {
+        var id   =  stanza.getAttribute('id');
+        var from = stanza.getAttribute('from');
+        var iqresult = $iq({type: 'result', id: id});
+
+        if (from !== null) {
+            iqresult.attrs({to: from});
+        }
+
+        return iqresult.c('query', query_attrs);
+    },
+
+    /** PrivateFunction: _onDiscoInfo
+     * Called when receive info request
+     */
+    _onDiscoInfo: function(stanza)
+    {
+        var node = stanza.getElementsByTagName('query')[0].getAttribute('node');
+        var attrs = {xmlns: Strophe.NS.DISCO_INFO};
+        var i;
+        if (node)
+        {
+            attrs.node = node;
+        }
+        var iqresult = this._buildIQResult(stanza, attrs);
+        for (i=0; i<this._identities.length; i++)
+        {
+            attrs = {category: this._identities[i].category,
+                         type    : this._identities[i].type};
+            if (this._identities[i].name)
+                attrs.name = this._identities[i].name;
+            if (this._identities[i].lang)
+                attrs['xml:lang'] = this._identities[i].lang;
+            iqresult.c('identity', attrs).up();
+        }
+        for (i=0; i<this._features.length; i++)
+        {
+            iqresult.c('feature', {'var':this._features[i]}).up();
+        }
+        this._connection.send(iqresult.tree());
+        return true;
+    },
+    /** PrivateFunction: _onDiscoItems
+     * Called when receive items request
+     */
+    _onDiscoItems: function(stanza)
+    {
+        var query_attrs = {xmlns: Strophe.NS.DISCO_ITEMS};
+        var node = stanza.getElementsByTagName('query')[0].getAttribute('node');
+        var items, i;
+        if (node)
+        {
+            query_attrs.node = node;
+            items = [];
+            for (i = 0; i < this._items.length; i++)
+            {
+                if (this._items[i].node == node)
+                {
+                    items = this._items[i].call_back(stanza);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            items = this._items;
+        }
+        var iqresult = this._buildIQResult(stanza, query_attrs);
+        for (i = 0; i < items.length; i++)
+        {
+            var attrs = {jid:  items[i].jid};
+            if (items[i].name)
+                attrs.name = items[i].name;
+            if (items[i].node)
+                attrs.node = items[i].node;
+            iqresult.c('item', attrs).up();
+        }
+        this._connection.send(iqresult.tree());
+        return true;
+    }
+});
+}));
+
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+
+/* This is a Converse.js plugin which add support for XEP-0030: Service Discovery */
+
+/*global Backbone, define, window */
+(function (root, factory) {
+  define('converse-disco',["converse-core", "sizzle", "strophe.disco"], factory);
+})(void 0, function (converse, sizzle) {
+  var _converse$env = converse.env,
+      Backbone = _converse$env.Backbone,
+      Promise = _converse$env.Promise,
+      Strophe = _converse$env.Strophe,
+      b64_sha1 = _converse$env.b64_sha1,
+      utils = _converse$env.utils,
+      _ = _converse$env._;
+  converse.plugins.add('converse-disco', {
+    initialize: function initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      var _converse = this._converse;
+
+      function onDiscoItems(stanza) {
+        _.each(stanza.querySelectorAll('query item'), function (item) {
+          if (item.getAttribute("node")) {
+            // XXX: ignore nodes for now.
+            // See: https://xmpp.org/extensions/xep-0030.html#items-nodes
+            return;
+          }
+
+          var jid = item.getAttribute('jid');
+          var entities = _converse.disco_entities;
+
+          if (_.isUndefined(entities.get(jid))) {
+            entities.create({
+              'jid': jid
+            });
+          }
+        });
+      } // Promises exposed by this plugin
+
+
+      _converse.api.promises.add('discoInitialized');
+
+      _converse.DiscoEntity = Backbone.Model.extend({
+        /* A Disco Entity is a JID addressable entity that can be queried
+         * for features.
+         *
+         * See XEP-0030: https://xmpp.org/extensions/xep-0030.html
+         */
+        idAttribute: 'jid',
+        initialize: function initialize() {
+          this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
+          this.features = new Backbone.Collection();
+          this.features.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.features-".concat(this.get('jid'))));
+          this.features.on('add', this.onFeatureAdded, this);
+          this.identities = new Backbone.Collection();
+          this.identities.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.identities-".concat(this.get('jid'))));
+          this.fetchFeatures();
+        },
+        getIdentity: function getIdentity(category, type) {
+          /* Returns a Promise which resolves with a map indicating
+           * whether a given identity is provided.
+           *
+           * Parameters:
+           *    (String) category - The identity category
+           *    (String) type - The identity type
+           */
+          var entity = this;
+          return new Promise(function (resolve, reject) {
+            function fulfillPromise() {
+              var model = entity.identities.findWhere({
+                'category': category,
+                'type': type
+              });
+              resolve(model);
+            }
+
+            entity.waitUntilFeaturesDiscovered.then(fulfillPromise).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          });
+        },
+        hasFeature: function hasFeature(feature) {
+          /* Returns a Promise which resolves with a map indicating
+           * whether a given feature is supported.
+           *
+           * Parameters:
+           *    (String) feature - The feature that might be supported.
+           */
+          var entity = this;
+          return new Promise(function (resolve, reject) {
+            function fulfillPromise() {
+              var model = entity.features.findWhere({
+                'var': feature
+              });
+
+              if (model) {
+                resolve({
+                  'supported': true,
+                  'feature': model
+                });
+              } else {
+                resolve({
+                  'supported': false,
+                  'feature': null
+                });
+              }
+            }
+
+            entity.waitUntilFeaturesDiscovered.then(fulfillPromise).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          });
+        },
+        onFeatureAdded: function onFeatureAdded(feature) {
+          feature.entity = this;
+
+          _converse.emit('serviceDiscovered', feature);
+        },
+        fetchFeatures: function fetchFeatures() {
+          var _this = this;
+
+          if (this.features.browserStorage.records.length === 0) {
+            this.queryInfo();
+          } else {
+            this.features.fetch({
+              add: true,
+              success: function success() {
+                _this.waitUntilFeaturesDiscovered.resolve();
+
+                _this.trigger('featuresDiscovered');
+              }
+            });
+            this.identities.fetch({
+              add: true
+            });
+          }
+        },
+        queryInfo: function queryInfo() {
+          _converse.connection.disco.info(this.get('jid'), null, this.onInfo.bind(this));
+        },
+        queryForItems: function queryForItems() {
+          if (_.isEmpty(this.identities.where({
+            'category': 'server'
+          }))) {
+            // Don't fetch features and items if this is not a
+            // server or a conference component.
+            return;
+          }
+
+          _converse.connection.disco.items(this.get('jid'), null, onDiscoItems);
+        },
+        onInfo: function onInfo(stanza) {
+          var _this2 = this;
+
+          _.forEach(stanza.querySelectorAll('identity'), function (identity) {
+            _this2.identities.create({
+              'category': identity.getAttribute('category'),
+              'type': identity.getAttribute('type'),
+              'name': identity.getAttribute('name')
+            });
+          });
+
+          if (stanza.querySelector('feature[var="' + Strophe.NS.DISCO_ITEMS + '"]')) {
+            this.queryForItems();
+          }
+
+          _.forEach(stanza.querySelectorAll('feature'), function (feature) {
+            _this2.features.create({
+              'var': feature.getAttribute('var'),
+              'from': stanza.getAttribute('from')
+            });
+          });
+
+          this.waitUntilFeaturesDiscovered.resolve();
+          this.trigger('featuresDiscovered');
+        }
+      });
+      _converse.DiscoEntities = Backbone.Collection.extend({
+        model: _converse.DiscoEntity,
+        initialize: function initialize() {
+          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.disco-entities-".concat(_converse.bare_jid)));
+          this.fetchEntities().then(_.partial(_converse.emit, 'discoInitialized'), _.partial(_converse.emit, 'discoInitialized')).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        },
+        fetchEntities: function fetchEntities() {
+          var _this3 = this;
+
+          return new Promise(function (resolve, reject) {
+            _this3.fetch({
+              add: true,
+              success: function (collection) {
+                if (collection.length === 0 || !collection.get(_converse.domain)) {
+                  this.create({
+                    'jid': _converse.domain
+                  });
+                }
+
+                resolve();
+              }.bind(_this3),
+              error: function error() {
+                reject(new Error("Could not fetch disco entities"));
+              }
+            });
+          });
+        }
+      });
+
+      function addClientFeatures() {
+        /* The strophe.disco.js plugin keeps a list of features which
+         * it will advertise to any #info queries made to it.
+         *
+         * See: http://xmpp.org/extensions/xep-0030.html#info
+         */
+        // See http://xmpp.org/registrar/disco-categories.html
+        _converse.connection.disco.addIdentity('client', 'web', 'Converse.js');
+
+        _converse.connection.disco.addFeature(Strophe.NS.BOSH);
+
+        _converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
+
+        _converse.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
+
+        _converse.connection.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
+
+
+        if (_converse.message_carbons) {
+          _converse.connection.disco.addFeature(Strophe.NS.CARBONS);
+        }
+
+        _converse.emit('addClientFeatures');
+
+        return this;
+      }
+
+      function initializeDisco() {
+        addClientFeatures();
+        _converse.disco_entities = new _converse.DiscoEntities();
+      }
+
+      _converse.api.listen.on('reconnected', initializeDisco);
+
+      _converse.api.listen.on('connected', initializeDisco);
+
+      _converse.api.listen.on('beforeTearDown', function () {
+        if (_converse.disco_entities) {
+          _converse.disco_entities.each(function (entity) {
+            entity.features.reset();
+
+            entity.features.browserStorage._clear();
+          });
+
+          _converse.disco_entities.reset();
+
+          _converse.disco_entities.browserStorage._clear();
+        }
+      });
+      /* We extend the default converse.js API to add methods specific to service discovery */
+
+
+      _.extend(_converse.api, {
+        'disco': {
+          'entities': {
+            'get': function get(entity_jid) {
+              var create = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+              var entity = _converse.disco_entities.get(entity_jid);
+
+              if (entity || !create) {
+                return entity;
+              }
+
+              return _converse.disco_entities.create({
+                'jid': entity_jid
+              });
+            }
+          },
+          'supports': function supports(feature, entity_jid) {
+            /* Returns a Promise which resolves with a map indicating
+             * whether a given feature is supported.
+             *
+             * Parameters:
+             *    (String) feature - The feature that might be
+             *          supported. In the XML stanza, this is the `var`
+             *          attribute of the `<feature>` element. For
+             *          example: 'http://jabber.org/protocol/muc'
+             *    (String) entity_jid - The JID of the entity which might support the feature.
+             */
+            return _converse.api.waitUntil('discoInitialized').then(function () {
+              var entity = _converse.api.disco.entities.get(entity_jid, true);
+
+              return entity.hasFeature(feature);
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          },
+          'getIdentity': function getIdentity(category, type, entity_jid) {
+            /* Returns a Promise which resolves with a map indicating
+             * whether an identity with a given type is provided by
+             * the entity.
+             *
+             * Parameters:
+             *    (String) category - The identity category.
+             *          In the XML stanza, this is the `category`
+             *          attribute of the `<identity>` element.
+             *          For example: 'pubsub'
+             *    (String) type - The identity type.
+             *          In the XML stanza, this is the `type`
+             *          attribute of the `<identity>` element.
+             *          For example: 'pep'
+             */
+            return _converse.api.waitUntil('discoInitialized').then(function () {
+              var entity = _converse.api.disco.entities.get(entity_jid, true);
+
+              return entity.getIdentity(category, type);
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          }
+        }
+      });
+    }
+  });
+});
+//# sourceMappingURL=converse-disco.js.map;
+/*!
+ * Backbone.OrderedListView
+ *
+ * Copyright (c) 2017, JC Brand <jc@opkode.com>
+ * Licensed under the Mozilla Public License (MPL) 
+ */
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define('backbone.orderedlistview',["underscore", "backbone", "backbone.overview"], factory);
+  } else {
+    // RequireJS isn't being used.
+    // Assume underscore and backbone are loaded in <script> tags
+    factory(_ || root._, Backbone || root.Backbone);
+  }
+})(this, function (_, Backbone) {
+  "use strict";
+
+  Backbone.OrderedListView = Backbone.Overview.extend({
+    /* An OrderedListView is a special type of Overview which adds some
+     * methods and conventions for rendering an ordered list of elements.
+     */
+    // The `listItems` attribute denotes the path (from this View) to the
+    // list of items.
+    listItems: 'model',
+    // The `sortEvent` attribute specifies the event which should cause the
+    // ordered list to be sorted.
+    sortEvent: 'change',
+    // The `listSelector` is the selector used to query for the DOM list
+    // element which contains the ordered items.
+    listSelector: '.ordered-items',
+    // The `itemView` is constructor which should be called to create a
+    // View for a new item.
+    ItemView: undefined,
+    // The `subviewIndex` is the attribute of the list element model which
+    // acts as the index of the subview in the overview.
+    // An overview is a "Collection" of views, and they can be retrieved
+    // via an index. By default this is the 'id' attribute, but it could be
+    // set to something else.
+    subviewIndex: 'id',
+    initialize: function initialize() {
+      this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
+      this.items = _.get(this, this.listItems);
+      this.items.on('add', this.sortAndPositionAllItems, this);
+      this.items.on('remove', this.removeView, this);
+
+      if (!_.isNil(this.sortEvent)) {
+        this.items.on(this.sortEvent, this.sortEventually, this);
+      }
+    },
+    createItemView: function createItemView(item) {
+      var item_view = this.get(item.get(this.subviewIndex));
+
+      if (!item_view) {
+        item_view = new this.ItemView({
+          model: item
+        });
+        this.add(item.get(this.subviewIndex), item_view);
+      } else {
+        item_view.model = item;
+        item_view.initialize();
+      }
+
+      item_view.render();
+      return item_view;
+    },
+    removeView: function removeView(item) {
+      this.remove(item.get(this.subviewIndex));
+    },
+    sortAndPositionAllItems: function sortAndPositionAllItems() {
+      var _this = this;
+
+      if (!this.items.length) {
+        return;
+      }
+
+      this.items.sort();
+      var list_el = this.el.querySelector(this.listSelector);
+      var div = document.createElement('div');
+      list_el.parentNode.replaceChild(div, list_el);
+      this.items.each(function (item) {
+        var view = _this.get(item.get(_this.subviewIndex));
+
+        if (_.isUndefined(view)) {
+          view = _this.createItemView(item);
+        }
+
+        list_el.insertAdjacentElement('beforeend', view.el);
+      });
+      div.parentNode.replaceChild(list_el, div);
+    }
+  });
+  return Backbone.OrderedListView;
+});
+
+//# sourceMappingURL=backbone.orderedlistview.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -51860,12 +53327,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  * specified in XEP-0045 Multi-user chat.
  */
 (function (root, factory) {
-  define('converse-muc',["form-utils", "converse-core", "emojione", "lodash.fp", "tpl!chatarea", "tpl!chatroom", "tpl!chatroom_disconnect", "tpl!chatroom_features", "tpl!chatroom_form", "tpl!chatroom_head", "tpl!chatroom_invite", "tpl!chatroom_join_form", "tpl!chatroom_nickname_form", "tpl!chatroom_password_form", "tpl!chatroom_sidebar", "tpl!chatroom_toolbar", "tpl!chatrooms_tab", "tpl!info", "tpl!occupant", "tpl!room_description", "tpl!room_item", "tpl!room_panel", "tpl!rooms_results", "tpl!spinner", "awesomplete", "converse-chatview", "converse-disco", "backbone.overview", "backbone.orderedlistview", "backbone.vdomview"], factory);
-})(this, function (u, converse, emojione, f, tpl_chatarea, tpl_chatroom, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_join_form, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_chatrooms_tab, tpl_info, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
+  define('converse-muc',["form-utils", "converse-core", "converse-chatview", "converse-disco", "backbone.overview", "backbone.orderedlistview", "backbone.vdomview"], factory);
+})(void 0, function (u, converse) {
   "use strict";
 
-  var ROOMS_PANEL_ID = 'chatrooms';
-  var CHATROOMS_TYPE = 'chatroom';
   var MUC_ROLE_WEIGHTS = {
     'moderator': 1,
     'participant': 2,
@@ -51890,21 +53355,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   Strophe.addNamespace('MUC_REGISTER', "jabber:iq:register");
   Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
   Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
-  var ROOM_FEATURES = ['passwordprotected', 'unsecured', 'hidden', 'publicroom', 'membersonly', 'open', 'persistent', 'temporary', 'nonanonymous', 'semianonymous', 'moderated', 'unmoderated', 'mam_enabled'];
-  var ROOM_FEATURES_MAP = {
-    'passwordprotected': 'unsecured',
-    'unsecured': 'passwordprotected',
-    'hidden': 'publicroom',
-    'publicroom': 'hidden',
-    'membersonly': 'open',
-    'open': 'membersonly',
-    'persistent': 'temporary',
-    'temporary': 'persistent',
-    'nonanonymous': 'semianonymous',
-    'semianonymous': 'nonanonymous',
-    'moderated': 'unmoderated',
-    'unmoderated': 'moderated'
-  };
+  converse.CHATROOMS_TYPE = 'chatroom';
+  converse.ROOM_FEATURES = ['passwordprotected', 'unsecured', 'hidden', 'publicroom', 'membersonly', 'open', 'persistent', 'temporary', 'nonanonymous', 'semianonymous', 'moderated', 'unmoderated', 'mam_enabled'];
   converse.ROOMSTATUS = {
     CONNECTED: 0,
     CONNECTING: 1,
@@ -51935,7 +53387,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       // New functions which don't exist yet can also be added.
       _tearDown: function _tearDown() {
         var rooms = this.chatboxes.where({
-          'type': CHATROOMS_TYPE
+          'type': converse.CHATROOMS_TYPE
         });
 
         _.each(rooms, function (room) {
@@ -51950,56 +53402,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         model: function model(attrs, options) {
           var _converse = this.__super__._converse;
 
-          if (attrs.type == CHATROOMS_TYPE) {
+          if (attrs.type == converse.CHATROOMS_TYPE) {
             return new _converse.ChatRoom(attrs, options);
           } else {
             return this.__super__.model.apply(this, arguments);
-          }
-        }
-      },
-      ControlBoxView: {
-        renderRoomsPanel: function renderRoomsPanel() {
-          var _converse = this.__super__._converse;
-          this.roomspanel = new _converse.RoomsPanel({
-            'parent': this.el.querySelector('.controlbox-panes'),
-            'model': new (_converse.RoomsPanelModel.extend({
-              id: b64_sha1("converse.roomspanel".concat(_converse.bare_jid)),
-              // Required by sessionStorage
-              browserStorage: new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.roomspanel".concat(_converse.bare_jid)))
-            }))()
-          });
-          this.roomspanel.insertIntoDOM().model.fetch();
-
-          if (!this.roomspanel.model.get('nick')) {
-            this.roomspanel.model.save({
-              nick: Strophe.getNodeFromJid(_converse.bare_jid)
-            });
-          }
-
-          _converse.emit('roomsPanelRendered');
-        },
-        renderContactsPanel: function renderContactsPanel() {
-          var _converse = this.__super__._converse;
-
-          this.__super__.renderContactsPanel.apply(this, arguments);
-
-          if (_converse.allow_muc) {
-            this.renderRoomsPanel();
-          }
-        }
-      },
-      ChatBoxViews: {
-        onChatBoxAdded: function onChatBoxAdded(item) {
-          var _converse = this.__super__._converse;
-          var view = this.get(item.get('id'));
-
-          if (!view && item.get('type') === CHATROOMS_TYPE) {
-            view = new _converse.ChatRoomView({
-              'model': item
-            });
-            return this.add(item.get('id'), view);
-          } else {
-            return this.__super__.onChatBoxAdded.apply(this, arguments);
           }
         }
       }
@@ -52113,7 +53519,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }
       });
 
-      _converse.api.promises.add(['roomsPanelRendered', 'roomsAutoJoined']);
+      _converse.api.promises.add(['roomsAutoJoined']);
 
       function openRoom(jid) {
         if (!u.isValidMUCJID(jid)) {
@@ -52133,24 +53539,24 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
       _converse.router.route('converse/room?jid=:jid', openRoom);
 
-      function _openChatRoom(settings, bring_to_foreground) {
+      _converse.openChatRoom = function (jid, settings, bring_to_foreground) {
         /* Opens a chat room, making sure that certain attributes
          * are correct, for example that the "type" is set to
          * "chatroom".
          */
-        if (_.isUndefined(settings.jid)) {
-          throw new Error("openChatRoom needs to be called with a JID");
-        }
+        settings.type = converse.CHATROOMS_TYPE;
+        settings.id = jid;
+        settings.box_id = b64_sha1(jid);
 
-        settings.type = CHATROOMS_TYPE;
-        settings.id = settings.jid;
-        settings.box_id = b64_sha1(settings.jid);
-        return _converse.chatboxviews.showChat(settings, bring_to_foreground);
-      }
+        var chatbox = _converse.chatboxes.getChatBox(jid, settings, true);
+
+        chatbox.trigger('show', true);
+        return chatbox;
+      };
 
       _converse.ChatRoom = _converse.ChatBox.extend({
         defaults: function defaults() {
-          return _.assign(_.clone(_converse.ChatBox.prototype.defaults), _.zipObject(ROOM_FEATURES, _.map(ROOM_FEATURES, _.stubFalse)), {
+          return _.assign(_.clone(_converse.ChatBox.prototype.defaults), _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)), {
             // For group chats, we distinguish between generally unread
             // messages and those ones that specifically mention the
             // user.
@@ -52163,10 +53569,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             'affiliation': null,
             'connection_status': converse.ROOMSTATUS.DISCONNECTED,
             'name': '',
+            'nick': _converse.xmppstatus.get('nickname'),
             'description': '',
             'features_fetched': false,
             'roomconfig': {},
-            'type': CHATROOMS_TYPE
+            'type': converse.CHATROOMS_TYPE
           });
         },
         isUserMentioned: function isUserMentioned(message) {
@@ -52212,6 +53619,2804 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           });
         }
       });
+      _converse.ChatRoomOccupant = Backbone.Model.extend({
+        initialize: function initialize(attributes) {
+          this.set(_.extend({
+            'id': _converse.connection.getUniqueId()
+          }, attributes));
+        }
+      });
+      _converse.ChatRoomOccupants = Backbone.Collection.extend({
+        model: _converse.ChatRoomOccupant,
+        comparator: function comparator(occupant1, occupant2) {
+          var role1 = occupant1.get('role') || 'none';
+          var role2 = occupant2.get('role') || 'none';
+
+          if (MUC_ROLE_WEIGHTS[role1] === MUC_ROLE_WEIGHTS[role2]) {
+            var nick1 = occupant1.get('nick').toLowerCase();
+            var nick2 = occupant2.get('nick').toLowerCase();
+            return nick1 < nick2 ? -1 : nick1 > nick2 ? 1 : 0;
+          } else {
+            return MUC_ROLE_WEIGHTS[role1] < MUC_ROLE_WEIGHTS[role2] ? -1 : 1;
+          }
+        }
+      });
+      _converse.RoomsPanelModel = Backbone.Model.extend({
+        defaults: {
+          'muc_domain': ''
+        }
+      });
+
+      _converse.onDirectMUCInvitation = function (message) {
+        /* A direct MUC invitation to join a room has been received
+         * See XEP-0249: Direct MUC invitations.
+         *
+         * Parameters:
+         *  (XMLElement) message: The message stanza containing the
+         *        invitation.
+         */
+        var x_el = sizzle('x[xmlns="jabber:x:conference"]', message).pop(),
+            from = Strophe.getBareJidFromJid(message.getAttribute('from')),
+            room_jid = x_el.getAttribute('jid'),
+            reason = x_el.getAttribute('reason');
+
+        var contact = _converse.roster.get(from),
+            result;
+
+        if (_converse.auto_join_on_invite) {
+          result = true;
+        } else {
+          // Invite request might come from someone not your roster list
+          contact = contact ? contact.get('fullname') : Strophe.getNodeFromJid(from);
+
+          if (!reason) {
+            result = confirm(__("%1$s has invited you to join a chat room: %2$s", contact, room_jid));
+          } else {
+            result = confirm(__('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"', contact, room_jid, reason));
+          }
+        }
+
+        if (result === true) {
+          var chatroom = _converse.openChatRoom(room_jid, {
+            'password': x_el.getAttribute('password')
+          });
+
+          if (chatroom.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
+            _converse.chatboxviews.get(room_jid).join();
+          }
+        }
+      };
+
+      if (_converse.allow_muc_invitations) {
+        var registerDirectInvitationHandler = function registerDirectInvitationHandler() {
+          _converse.connection.addHandler(function (message) {
+            _converse.onDirectMUCInvitation(message);
+
+            return true;
+          }, 'jabber:x:conference', 'message');
+        };
+
+        _converse.on('connected', registerDirectInvitationHandler);
+
+        _converse.on('reconnected', registerDirectInvitationHandler);
+      }
+
+      var getChatRoom = function getChatRoom(jid, attrs, create) {
+        jid = jid.toLowerCase();
+        attrs.type = converse.CHATROOMS_TYPE;
+        attrs.id = jid;
+        attrs.box_id = b64_sha1(jid);
+        return _converse.chatboxes.getChatBox(jid, attrs, create);
+      };
+
+      var createChatRoom = function createChatRoom(jid, attrs) {
+        return getChatRoom(jid, attrs, true);
+      };
+
+      function autoJoinRooms() {
+        /* Automatically join chat rooms, based on the
+         * "auto_join_rooms" configuration setting, which is an array
+         * of strings (room JIDs) or objects (with room JID and other
+         * settings).
+         */
+        _.each(_converse.auto_join_rooms, function (room) {
+          if (_converse.chatboxes.where({
+            'jid': room
+          }).length) {
+            return;
+          }
+
+          if (_.isString(room)) {
+            _converse.api.rooms.open(room);
+          } else if (_.isObject(room)) {
+            _converse.api.rooms.open(room.jid, room.nick);
+          } else {
+            _converse.log('Invalid room criteria specified for "auto_join_rooms"', Strophe.LogLevel.ERROR);
+          }
+        });
+
+        _converse.emit('roomsAutoJoined');
+      }
+
+      function reconnectToChatRooms() {
+        /* Upon a reconnection event from converse, join again
+         * all the open chat rooms.
+         */
+        _converse.chatboxviews.each(function (view) {
+          if (view.model.get('type') === converse.CHATROOMS_TYPE) {
+            view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+            view.registerHandlers();
+            view.join();
+            view.fetchMessages();
+          }
+        });
+      }
+
+      function disconnectChatRooms() {
+        /* When disconnecting, or reconnecting, mark all chat rooms as
+         * disconnected, so that they will be properly entered again
+         * when fetched from session storage.
+         */
+        _converse.chatboxes.each(function (model) {
+          if (model.get('type') === converse.CHATROOMS_TYPE) {
+            model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+          }
+        });
+      }
+      /************************ BEGIN Event Handlers ************************/
+
+
+      _converse.on('addClientFeatures', function () {
+        if (_converse.allow_muc) {
+          _converse.connection.disco.addFeature(Strophe.NS.MUC);
+        }
+
+        if (_converse.allow_muc_invitations) {
+          _converse.connection.disco.addFeature('jabber:x:conference'); // Invites
+
+        }
+      });
+
+      _converse.on('chatBoxesFetched', autoJoinRooms);
+
+      _converse.on('reconnected', reconnectToChatRooms);
+
+      _converse.on('reconnecting', disconnectChatRooms);
+
+      _converse.on('disconnecting', disconnectChatRooms);
+      /************************ END Event Handlers ************************/
+
+      /************************ BEGIN API ************************/
+      // We extend the default converse.js API to add methods specific to MUC chat rooms.
+
+
+      _.extend(_converse.api, {
+        'rooms': {
+          'close': function close(jids) {
+            if (_.isUndefined(jids)) {
+              // FIXME: can't access views here
+              _converse.chatboxviews.each(function (view) {
+                if (view.is_chatroom && view.model) {
+                  view.close();
+                }
+              });
+            } else if (_.isString(jids)) {
+              var view = _converse.chatboxviews.get(jids);
+
+              if (view) {
+                view.close();
+              }
+            } else {
+              _.each(jids, function (jid) {
+                var view = _converse.chatboxviews.get(jid);
+
+                if (view) {
+                  view.close();
+                }
+              });
+            }
+          },
+          'create': function create(jids, attrs) {
+            if (_.isString(attrs)) {
+              attrs = {
+                'nick': attrs
+              };
+            } else if (_.isUndefined(attrs)) {
+              attrs = {};
+            }
+
+            if (_.isUndefined(attrs.maximize)) {
+              attrs.maximize = false;
+            }
+
+            if (!attrs.nick && _converse.muc_nickname_from_jid) {
+              attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
+            }
+
+            if (_.isUndefined(jids)) {
+              throw new TypeError('rooms.create: You need to provide at least one JID');
+            } else if (_.isString(jids)) {
+              return createChatRoom(jids, attrs);
+            }
+
+            return _.map(jids, _.partial(createChatRoom, _, attrs));
+          },
+          'open': function open(jids, attrs) {
+            if (_.isUndefined(jids)) {
+              throw new TypeError('rooms.open: You need to provide at least one JID');
+            } else if (_.isString(jids)) {
+              return _converse.api.rooms.create(jids, attrs).trigger('show');
+            }
+
+            return _.map(jids, function (jid) {
+              return _converse.api.rooms.create(jid, attrs).trigger('show');
+            });
+          },
+          'get': function get(jids, attrs, create) {
+            if (_.isString(attrs)) {
+              attrs = {
+                'nick': attrs
+              };
+            } else if (_.isUndefined(attrs)) {
+              attrs = {};
+            }
+
+            if (_.isUndefined(jids)) {
+              var result = [];
+
+              _converse.chatboxes.each(function (chatbox) {
+                if (chatbox.get('type') === converse.CHATROOMS_TYPE) {
+                  result.push(chatbox);
+                }
+              });
+
+              return result;
+            }
+
+            if (!attrs.nick) {
+              attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
+            }
+
+            if (_.isString(jids)) {
+              return getChatRoom(jids, attrs);
+            }
+
+            return _.map(jids, _.partial(getChatRoom, _, attrs));
+          }
+        }
+      });
+      /************************ END API ************************/
+
+    }
+  });
+});
+//# sourceMappingURL=converse-muc.js.map;
+
+define('tpl!chatroom_bookmark_form', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<div class="chatroom-form-container">\n    <form class="converse-form chatroom-form">\n        <fieldset class="form-group">\n            <legend>' +
+__e(o.heading) +
+'</legend>\n            <label>' +
+__e(o.label_name) +
+'</label>\n            <input type="text" name="name" required="required"/>\n            <label>' +
+__e(o.label_autojoin) +
+'</label>\n            <input type="checkbox" name="autojoin"/>\n            <label>' +
+__e(o.label_nick) +
+'</label>\n            <input type="text" name="nick" value="' +
+__e(o.default_nick) +
+'"/>\n        </fieldset>\n        <fieldset class="form-group">\n            <input class="btn btn-primary" type="submit" value="' +
+__e(o.label_submit) +
+'"/>\n            <input class="btn btn-secondary button-cancel" type="button" value="' +
+__e(o.label_cancel) +
+'"/>\n        </fieldset>\n    </form>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!chatroom_bookmark_toggle', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<a class="chatbox-btn toggle-bookmark fa fa-bookmark\n   ';
+ if (o.bookmarked) {;
+__p += ' button-on ';
+ } ;
+__p += '" title="' +
+__e(o.info_toggle_bookmark) +
+'"></a>\n';
+return __p
+};});
+
+
+define('tpl!bookmark', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<div class="room-item">\n<div class="available-chatroom d-flex flex-row ';
+ if (o.hidden) { ;
+__p += ' hidden ';
+ } ;
+__p += '" data-room-jid="' +
+__e(o.jid) +
+'">\n    <a class="open-room w-100" data-room-jid="' +
+__e(o.jid) +
+'" title="' +
+__e(o.open_title) +
+'" href="#">' +
+__e(o.name) +
+'</a>\n    <a class="remove-bookmark fa fa-bookmark align-self-center ';
+ if (o.bookmarked) { ;
+__p += ' button-on ';
+ } ;
+__p += '"\n       data-room-jid="' +
+__e(o.jid) +
+'" data-bookmark-name="' +
+__e(o.name) +
+'"\n       title="' +
+__e(o.info_remove_bookmark) +
+'" href="#">&nbsp;</a>\n    <a class="room-info fa fa-info-circle align-self-center" data-room-jid="' +
+__e(o.jid) +
+'"\n       title="' +
+__e(o.info_title) +
+'" href="#">&nbsp;</a>\n</div>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!bookmarks_list', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<a href="#" class="rooms-toggle bookmarks-toggle" title="' +
+__e(o.desc_bookmarks) +
+'">\n    <span class="fa ';
+ if (o.toggle_state === o._converse.OPENED) { ;
+__p += ' fa-caret-down ';
+ } else { ;
+__p += ' fa-caret-right ';
+ } ;
+__p += '">\n    </span> ' +
+__e(o.label_bookmarks) +
+'</a>\n<div class="bookmarks rooms-list ';
+ if (o.toggle_state !== o._converse.OPENED) { ;
+__p += ' hidden ';
+ } ;
+__p += '"></div>\n';
+return __p
+};});
+
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+
+/*global define */
+
+/* This is a Converse.js plugin which add support for bookmarks specified
+ * in XEP-0048.
+ */
+(function (root, factory) {
+  define('converse-bookmarks',["converse-core", "converse-muc", "tpl!chatroom_bookmark_form", "tpl!chatroom_bookmark_toggle", "tpl!bookmark", "tpl!bookmarks_list"], factory);
+})(void 0, function (converse, muc, tpl_chatroom_bookmark_form, tpl_chatroom_bookmark_toggle, tpl_bookmark, tpl_bookmarks_list) {
+  var _converse$env = converse.env,
+      Backbone = _converse$env.Backbone,
+      Promise = _converse$env.Promise,
+      Strophe = _converse$env.Strophe,
+      $iq = _converse$env.$iq,
+      b64_sha1 = _converse$env.b64_sha1,
+      sizzle = _converse$env.sizzle,
+      _ = _converse$env._;
+  var u = converse.env.utils;
+  converse.plugins.add('converse-bookmarks', {
+    /* Plugin dependencies are other plugins which might be
+     * overridden or relied upon, and therefore need to be loaded before
+     * this plugin.
+     *
+     * If the setting "strict_plugin_dependencies" is set to true,
+     * an error will be raised if the plugin is not found. By default it's
+     * false, which means these plugins are only loaded opportunistically.
+     *
+     * NB: These plugins need to have already been loaded via require.js.
+     */
+    dependencies: ["converse-chatboxes", "converse-muc", "converse-muc-views"],
+    overrides: {
+      // Overrides mentioned here will be picked up by converse.js's
+      // plugin architecture they will replace existing methods on the
+      // relevant objects or classes.
+      //
+      // New functions which don't exist yet can also be added.
+      clearSession: function clearSession() {
+        this.__super__.clearSession.apply(this, arguments);
+
+        if (!_.isUndefined(this.bookmarks)) {
+          this.bookmarks.reset();
+
+          this.bookmarks.browserStorage._clear();
+
+          window.sessionStorage.removeItem(this.bookmarks.fetched_flag);
+        }
+      },
+      ChatRoomView: {
+        events: {
+          'click .toggle-bookmark': 'toggleBookmark'
+        },
+        initialize: function initialize() {
+          this.__super__.initialize.apply(this, arguments);
+
+          this.model.on('change:bookmarked', this.onBookmarked, this);
+          this.setBookmarkState();
+        },
+        renderBookmarkToggle: function renderBookmarkToggle() {
+          var _converse = this.__super__._converse,
+              __ = _converse.__;
+          var bookmark_button = tpl_chatroom_bookmark_toggle(_.assignIn(this.model.toJSON(), {
+            info_toggle_bookmark: __('Bookmark this room'),
+            bookmarked: this.model.get('bookmarked')
+          }));
+          var close_button = this.el.querySelector('.close-chatbox-button');
+          close_button.insertAdjacentHTML('afterend', bookmark_button);
+        },
+        renderHeading: function renderHeading() {
+          var _this = this;
+
+          this.__super__.renderHeading.apply(this, arguments);
+
+          var _converse = this.__super__._converse;
+
+          if (_converse.allow_bookmarks) {
+            _converse.checkBookmarksSupport().then(function (supported) {
+              if (supported) {
+                _this.renderBookmarkToggle();
+              }
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          }
+        },
+        checkForReservedNick: function checkForReservedNick() {
+          /* Check if the user has a bookmark with a saved nickanme
+           * for this room, and if so use it.
+           * Otherwise delegate to the super method.
+           */
+          var _converse = this.__super__._converse;
+
+          if (_.isUndefined(_converse.bookmarks) || !_converse.allow_bookmarks) {
+            return this.__super__.checkForReservedNick.apply(this, arguments);
+          }
+
+          var model = _converse.bookmarks.findWhere({
+            'jid': this.model.get('jid')
+          });
+
+          if (!_.isUndefined(model) && model.get('nick')) {
+            this.join(model.get('nick'));
+          } else {
+            return this.__super__.checkForReservedNick.apply(this, arguments);
+          }
+        },
+        onBookmarked: function onBookmarked() {
+          var icon = this.el.querySelector('.toggle-bookmark');
+
+          if (_.isNull(icon)) {
+            return;
+          }
+
+          if (this.model.get('bookmarked')) {
+            icon.classList.add('button-on');
+          } else {
+            icon.classList.remove('button-on');
+          }
+        },
+        setBookmarkState: function setBookmarkState() {
+          /* Set whether the room is bookmarked or not.
+           */
+          var _converse = this.__super__._converse;
+
+          if (!_.isUndefined(_converse.bookmarks)) {
+            var models = _converse.bookmarks.where({
+              'jid': this.model.get('jid')
+            });
+
+            if (!models.length) {
+              this.model.save('bookmarked', false);
+            } else {
+              this.model.save('bookmarked', true);
+            }
+          }
+        },
+        renderBookmarkForm: function renderBookmarkForm() {
+          var _converse = this.__super__._converse,
+              __ = _converse.__,
+              body = this.el.querySelector('.chatroom-body');
+
+          _.each(body.children, function (child) {
+            child.classList.add('hidden');
+          }); // Remove any existing forms
+
+
+          _.each(body.querySelectorAll('.chatroom-form-container'), u.removeElement);
+
+          body.insertAdjacentHTML('beforeend', tpl_chatroom_bookmark_form({
+            heading: __('Bookmark this room'),
+            label_name: __('The name for this bookmark:'),
+            label_autojoin: __('Would you like this room to be automatically joined upon startup?'),
+            label_nick: __('What should your nickname for this room be?'),
+            default_nick: this.model.get('nick'),
+            label_submit: __('Save'),
+            label_cancel: __('Cancel')
+          }));
+          var form = body.querySelector('form.chatroom-form');
+          form.addEventListener('submit', this.onBookmarkFormSubmitted.bind(this));
+          form.querySelector('.button-cancel').addEventListener('click', this.closeForm.bind(this));
+        },
+        onBookmarkFormSubmitted: function onBookmarkFormSubmitted(ev) {
+          ev.preventDefault();
+          var _converse = this.__super__._converse;
+
+          _converse.bookmarks.createBookmark({
+            'jid': this.model.get('jid'),
+            'autojoin': _.get(ev.target.querySelector('input[name="autojoin"]'), 'checked') || false,
+            'name': _.get(ev.target.querySelector('input[name=name]'), 'value'),
+            'nick': _.get(ev.target.querySelector('input[name=nick]'), 'value')
+          });
+
+          u.removeElement(this.el.querySelector('div.chatroom-form-container'));
+          this.renderAfterTransition();
+        },
+        toggleBookmark: function toggleBookmark(ev) {
+          if (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+          }
+
+          var _converse = this.__super__._converse;
+
+          var models = _converse.bookmarks.where({
+            'jid': this.model.get('jid')
+          });
+
+          if (!models.length) {
+            this.renderBookmarkForm();
+          } else {
+            _.forEach(models, function (model) {
+              model.destroy();
+            });
+
+            this.el.querySelector('.toggle-bookmark').classList.remove('button-on');
+          }
+        }
+      }
+    },
+    initialize: function initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      var _converse = this._converse,
+          __ = _converse.__; // Configuration values for this plugin
+      // ====================================
+      // Refer to docs/source/configuration.rst for explanations of these
+      // configuration settings.
+
+      _converse.api.settings.update({
+        allow_bookmarks: true,
+        allow_public_bookmarks: false,
+        hide_open_bookmarks: true
+      }); // Promises exposed by this plugin
+
+
+      _converse.api.promises.add('bookmarksInitialized'); // Pure functions on the _converse object
+
+
+      _.extend(_converse, {
+        removeBookmarkViaEvent: function removeBookmarkViaEvent(ev) {
+          /* Remove a bookmark as determined by the passed in
+           * event.
+           */
+          ev.preventDefault();
+          var name = ev.target.getAttribute('data-bookmark-name');
+          var jid = ev.target.getAttribute('data-room-jid');
+
+          if (confirm(__("Are you sure you want to remove the bookmark \"%1$s\"?", name))) {
+            _.invokeMap(_converse.bookmarks.where({
+              'jid': jid
+            }), Backbone.Model.prototype.destroy);
+          }
+        },
+        addBookmarkViaEvent: function addBookmarkViaEvent(ev) {
+          /* Add a bookmark as determined by the passed in
+           * event.
+           */
+          ev.preventDefault();
+          var jid = ev.target.getAttribute('data-room-jid');
+
+          var chatroom = _converse.api.rooms.open(jid, {
+            'bring_to_foreground': true
+          });
+
+          _converse.chatboxviews.get(jid).renderBookmarkForm();
+        }
+      });
+
+      _converse.Bookmark = Backbone.Model;
+      _converse.Bookmarks = Backbone.Collection.extend({
+        model: _converse.Bookmark,
+        comparator: 'name',
+        initialize: function initialize() {
+          this.on('add', _.flow(this.openBookmarkedRoom, this.markRoomAsBookmarked));
+          this.on('remove', this.markRoomAsUnbookmarked, this);
+          this.on('remove', this.sendBookmarkStanza, this);
+          var cache_key = "converse.room-bookmarks".concat(_converse.bare_jid);
+          this.fetched_flag = b64_sha1(cache_key + 'fetched');
+          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(cache_key));
+        },
+        openBookmarkedRoom: function openBookmarkedRoom(bookmark) {
+          if (bookmark.get('autojoin')) {
+            var room = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
+
+            if (!room.get('hidden')) {
+              room.trigger('show');
+            }
+          }
+
+          return bookmark;
+        },
+        fetchBookmarks: function fetchBookmarks() {
+          var deferred = u.getResolveablePromise();
+
+          if (this.browserStorage.records.length > 0) {
+            this.fetch({
+              'success': _.bind(this.onCachedBookmarksFetched, this, deferred),
+              'error': _.bind(this.onCachedBookmarksFetched, this, deferred)
+            });
+          } else if (!window.sessionStorage.getItem(this.fetched_flag)) {
+            // There aren't any cached bookmarks and the
+            // `fetched_flag` is off, so we query the XMPP server.
+            // If nothing is returned from the XMPP server, we set
+            // the `fetched_flag` to avoid calling the server again.
+            this.fetchBookmarksFromServer(deferred);
+          } else {
+            deferred.resolve();
+          }
+
+          return deferred;
+        },
+        onCachedBookmarksFetched: function onCachedBookmarksFetched(deferred) {
+          return deferred.resolve();
+        },
+        createBookmark: function createBookmark(options) {
+          _converse.bookmarks.create(options);
+
+          _converse.bookmarks.sendBookmarkStanza();
+        },
+        sendBookmarkStanza: function sendBookmarkStanza() {
+          var stanza = $iq({
+            'type': 'set',
+            'from': _converse.connection.jid
+          }).c('pubsub', {
+            'xmlns': Strophe.NS.PUBSUB
+          }).c('publish', {
+            'node': 'storage:bookmarks'
+          }).c('item', {
+            'id': 'current'
+          }).c('storage', {
+            'xmlns': 'storage:bookmarks'
+          });
+          this.each(function (model) {
+            stanza = stanza.c('conference', {
+              'name': model.get('name'),
+              'autojoin': model.get('autojoin'),
+              'jid': model.get('jid')
+            }).c('nick').t(model.get('nick')).up().up();
+          });
+          stanza.up().up().up();
+          stanza.c('publish-options').c('x', {
+            'xmlns': Strophe.NS.XFORM,
+            'type': 'submit'
+          }).c('field', {
+            'var': 'FORM_TYPE',
+            'type': 'hidden'
+          }).c('value').t('http://jabber.org/protocol/pubsub#publish-options').up().up().c('field', {
+            'var': 'pubsub#persist_items'
+          }).c('value').t('true').up().up().c('field', {
+            'var': 'pubsub#access_model'
+          }).c('value').t('whitelist');
+
+          _converse.connection.sendIQ(stanza, null, this.onBookmarkError.bind(this));
+        },
+        onBookmarkError: function onBookmarkError(iq) {
+          _converse.log("Error while trying to add bookmark", Strophe.LogLevel.ERROR);
+
+          _converse.log(iq); // We remove all locally cached bookmarks and fetch them
+          // again from the server.
+
+
+          this.reset();
+          this.fetchBookmarksFromServer(null);
+          window.alert(__("Sorry, something went wrong while trying to save your bookmark."));
+        },
+        fetchBookmarksFromServer: function fetchBookmarksFromServer(deferred) {
+          var stanza = $iq({
+            'from': _converse.connection.jid,
+            'type': 'get'
+          }).c('pubsub', {
+            'xmlns': Strophe.NS.PUBSUB
+          }).c('items', {
+            'node': 'storage:bookmarks'
+          });
+
+          _converse.connection.sendIQ(stanza, _.bind(this.onBookmarksReceived, this, deferred), _.bind(this.onBookmarksReceivedError, this, deferred));
+        },
+        markRoomAsBookmarked: function markRoomAsBookmarked(bookmark) {
+          var room = _converse.chatboxes.get(bookmark.get('jid'));
+
+          if (!_.isUndefined(room)) {
+            room.save('bookmarked', true);
+          }
+        },
+        markRoomAsUnbookmarked: function markRoomAsUnbookmarked(bookmark) {
+          var room = _converse.chatboxes.get(bookmark.get('jid'));
+
+          if (!_.isUndefined(room)) {
+            room.save('bookmarked', false);
+          }
+        },
+        createBookmarksFromStanza: function createBookmarksFromStanza(stanza) {
+          var _this2 = this;
+
+          var bookmarks = sizzle('items[node="storage:bookmarks"] ' + 'item#current ' + 'storage[xmlns="storage:bookmarks"] ' + 'conference', stanza);
+
+          _.forEach(bookmarks, function (bookmark) {
+            _this2.create({
+              'jid': bookmark.getAttribute('jid'),
+              'name': bookmark.getAttribute('name'),
+              'autojoin': bookmark.getAttribute('autojoin') === 'true',
+              'nick': bookmark.querySelector('nick').textContent
+            });
+          });
+        },
+        onBookmarksReceived: function onBookmarksReceived(deferred, iq) {
+          this.createBookmarksFromStanza(iq);
+
+          if (!_.isUndefined(deferred)) {
+            return deferred.resolve();
+          }
+        },
+        onBookmarksReceivedError: function onBookmarksReceivedError(deferred, iq) {
+          window.sessionStorage.setItem(this.fetched_flag, true);
+
+          _converse.log('Error while fetching bookmarks', Strophe.LogLevel.WARN);
+
+          _converse.log(iq.outerHTML, Strophe.LogLevel.DEBUG);
+
+          if (!_.isNil(deferred)) {
+            if (iq.querySelector('error[type="cancel"] item-not-found')) {
+              // Not an exception, the user simply doesn't have
+              // any bookmarks.
+              return deferred.resolve();
+            } else {
+              return deferred.reject(new Error("Could not fetch bookmarks"));
+            }
+          }
+        }
+      });
+      _converse.BookmarksList = Backbone.Model.extend({
+        defaults: {
+          "toggle-state": _converse.OPENED
+        }
+      });
+      _converse.BookmarkView = Backbone.VDOMView.extend({
+        toHTML: function toHTML() {
+          return tpl_bookmark({
+            'hidden': _converse.hide_open_bookmarks && _converse.chatboxes.where({
+              'jid': this.model.get('jid')
+            }).length,
+            'bookmarked': true,
+            'info_leave_room': __('Leave this room'),
+            'info_remove': __('Remove this bookmark'),
+            'info_remove_bookmark': __('Unbookmark this room'),
+            'info_title': __('Show more information on this room'),
+            'jid': this.model.get('jid'),
+            'name': Strophe.xmlunescape(this.model.get('name')),
+            'open_title': __('Click to open this room')
+          });
+        }
+      });
+      _converse.BookmarksView = Backbone.OrderedListView.extend({
+        tagName: 'div',
+        className: 'bookmarks-list list-container rooms-list-container',
+        events: {
+          'click .add-bookmark': 'addBookmark',
+          'click .bookmarks-toggle': 'toggleBookmarksList',
+          'click .remove-bookmark': 'removeBookmark',
+          'click .open-room': 'openRoom'
+        },
+        listSelector: '.rooms-list',
+        ItemView: _converse.BookmarkView,
+        subviewIndex: 'jid',
+        initialize: function initialize() {
+          Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+          this.model.on('add', this.showOrHide, this);
+          this.model.on('remove', this.showOrHide, this);
+
+          _converse.chatboxes.on('add', this.renderBookmarkListElement, this);
+
+          _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
+
+          var cachekey = "converse.room-bookmarks".concat(_converse.bare_jid, "-list-model");
+          this.list_model = new _converse.BookmarksList();
+          this.list_model.id = cachekey;
+          this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(cachekey));
+          this.list_model.fetch();
+          this.render();
+          this.sortAndPositionAllItems();
+        },
+        render: function render() {
+          this.el.innerHTML = tpl_bookmarks_list({
+            'toggle_state': this.list_model.get('toggle-state'),
+            'desc_bookmarks': __('Click to toggle the bookmarks list'),
+            'label_bookmarks': __('Bookmarks'),
+            '_converse': _converse
+          });
+          this.showOrHide();
+          this.insertIntoControlBox();
+          return this;
+        },
+        insertIntoControlBox: function insertIntoControlBox() {
+          var controlboxview = _converse.chatboxviews.get('controlbox');
+
+          if (!_.isUndefined(controlboxview) && !_converse.root.contains(this.el)) {
+            var el = controlboxview.el.querySelector('.bookmarks-list');
+
+            if (!_.isNull(el)) {
+              el.parentNode.replaceChild(this.el, el);
+            }
+          }
+        },
+        openRoom: function openRoom(ev) {
+          ev.preventDefault();
+          var name = ev.target.textContent;
+          var jid = ev.target.getAttribute('data-room-jid');
+          var data = {
+            'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
+          };
+
+          _converse.api.rooms.open(jid, data);
+        },
+        removeBookmark: _converse.removeBookmarkViaEvent,
+        addBookmark: _converse.addBookmarkViaEvent,
+        renderBookmarkListElement: function renderBookmarkListElement(chatbox) {
+          var bookmarkview = this.get(chatbox.get('jid'));
+
+          if (_.isNil(bookmarkview)) {
+            // A chat box has been closed, but we don't have a
+            // bookmark for it, so nothing further to do here.
+            return;
+          }
+
+          bookmarkview.render();
+          this.showOrHide();
+        },
+        showOrHide: function showOrHide(item) {
+          if (_converse.hide_open_bookmarks) {
+            var bookmarks = this.model.filter(function (bookmark) {
+              return !_converse.chatboxes.get(bookmark.get('jid'));
+            });
+
+            if (!bookmarks.length) {
+              u.hideElement(this.el);
+              return;
+            }
+          }
+
+          if (this.model.models.length) {
+            u.showElement(this.el);
+          }
+        },
+        toggleBookmarksList: function toggleBookmarksList(ev) {
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          var icon_el = ev.target.querySelector('.fa');
+
+          if (u.hasClass('fa-caret-down', icon_el)) {
+            u.slideIn(this.el.querySelector('.bookmarks'));
+            this.list_model.save({
+              'toggle-state': _converse.CLOSED
+            });
+            icon_el.classList.remove("fa-caret-down");
+            icon_el.classList.add("fa-caret-right");
+          } else {
+            icon_el.classList.remove("fa-caret-right");
+            icon_el.classList.add("fa-caret-down");
+            u.slideOut(this.el.querySelector('.bookmarks'));
+            this.list_model.save({
+              'toggle-state': _converse.OPENED
+            });
+          }
+        }
+      });
+
+      _converse.checkBookmarksSupport = function () {
+        return new Promise(function (resolve, reject) {
+          Promise.all([_converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid), _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', _converse.bare_jid)]).then(function (args) {
+            resolve(args[0] && (args[1].supported || _converse.allow_public_bookmarks));
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+      };
+
+      var initBookmarks = function initBookmarks() {
+        if (!_converse.allow_bookmarks) {
+          return;
+        }
+
+        _converse.checkBookmarksSupport().then(function (supported) {
+          if (supported) {
+            _converse.bookmarks = new _converse.Bookmarks();
+            _converse.bookmarksview = new _converse.BookmarksView({
+              'model': _converse.bookmarks
+            });
+
+            _converse.bookmarks.fetchBookmarks().catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL)).then(function () {
+              return _converse.emit('bookmarksInitialized');
+            });
+          } else {
+            _converse.emit('bookmarksInitialized');
+          }
+        });
+      };
+
+      u.onMultipleEvents([{
+        'object': _converse,
+        'event': 'chatBoxesFetched'
+      }, {
+        'object': _converse,
+        'event': 'roomsPanelRendered'
+      }], initBookmarks);
+
+      _converse.on('reconnected', initBookmarks);
+
+      _converse.on('connected', function () {
+        // Add a handler for bookmarks pushed from other connected clients
+        // (from the same user obviously)
+        _converse.connection.addHandler(function (message) {
+          if (message.querySelector('event[xmlns="' + Strophe.NS.PUBSUB + '#event"]')) {
+            _converse.bookmarks.createBookmarksFromStanza(message);
+          }
+        }, null, 'message', 'headline', null, _converse.bare_jid);
+      });
+    }
+  });
+});
+//# sourceMappingURL=converse-bookmarks.js.map;
+
+define('tpl!rooms_list', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<a href="#" class="rooms-toggle open-rooms-toggle" title="' +
+__e(o.desc_rooms) +
+'">\n    <span class="fa ';
+ if (o.toggle_state === o._converse.OPENED) { ;
+__p += ' fa-caret-down ';
+ } else { ;
+__p += ' fa-caret-right ';
+ } ;
+__p += '">\n    </span> ' +
+__e(o.label_rooms) +
+'</a>\n<div class="rooms-list open-rooms-list"></div>\n';
+return __p
+};});
+
+
+define('tpl!rooms_list_item', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<div class="room-item">\n<div class="available-chatroom d-flex flex-row ';
+ if (o.num_unread_general) { ;
+__p += ' unread-msgs ';
+ } ;
+__p += '" data-room-jid="' +
+__e(o.jid) +
+'">\n';
+ if (o.num_unread) { ;
+__p += '\n    <span class="msgs-indicator badge badge-info">' +
+__e( o.num_unread ) +
+'</span>\n';
+ } ;
+__p += '\n<a class="open-room available-room w-100"\n    data-room-jid="' +
+__e(o.jid) +
+'"\n    title="' +
+__e(o.open_title) +
+'" href="#">' +
+__e(o.name || o.jid) +
+'</a>\n\n<a class="right close-room icon-leave"\n   data-room-jid="' +
+__e(o.jid) +
+'"\n   data-room-name="' +
+__e(o.name || o.jid) +
+'"\n   title="' +
+__e(o.info_leave_room) +
+'" href="#">&nbsp;</a>\n\n';
+ if (o.allow_bookmarks) { ;
+__p += '\n<a class="fa align-self-center ';
+ if (o.bookmarked) { ;
+__p += ' fa-bookmark remove-bookmark button-on ';
+ } else { ;
+__p += ' add-bookmark fa-bookmark-o ';
+ } ;
+__p += '"\n   data-room-jid="' +
+__e(o.jid) +
+'" data-bookmark-name="' +
+__e(o.name) +
+'"\n   title="';
+ if (o.bookmarked) { ;
+__p += ' ' +
+__e(o.info_remove_bookmark) +
+' ';
+ } else { ;
+__p += ' ' +
+__e(o.info_add_bookmark) +
+' ';
+ } ;
+__p += '"\n   href="#">&nbsp;</a>\n';
+ } ;
+__p += '\n<a class="room-info fa fa-info-circle align-self-center" data-room-jid="' +
+__e(o.jid) +
+'"\n   title="' +
+__e(o.info_title) +
+'" href="#">&nbsp;</a>\n</div>\n<div>\n';
+return __p
+};});
+
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+
+/*global define */
+
+/* This is a non-core Converse.js plugin which shows a list of currently open
+ * rooms in the "Rooms Panel" of the ControlBox.
+ */
+(function (root, factory) {
+  define('converse-roomslist',["utils", "converse-core", "converse-muc", "tpl!rooms_list", "tpl!rooms_list_item"], factory);
+})(void 0, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
+  var _converse$env = converse.env,
+      Backbone = _converse$env.Backbone,
+      Promise = _converse$env.Promise,
+      Strophe = _converse$env.Strophe,
+      b64_sha1 = _converse$env.b64_sha1,
+      sizzle = _converse$env.sizzle,
+      _ = _converse$env._;
+  var u = converse.env.utils;
+  converse.plugins.add('converse-roomslist', {
+    /* Optional dependencies are other plugins which might be
+     * overridden or relied upon, and therefore need to be loaded before
+     * this plugin. They are called "optional" because they might not be
+     * available, in which case any overrides applicable to them will be
+     * ignored.
+     *
+     * It's possible however to make optional dependencies non-optional.
+     * If the setting "strict_plugin_dependencies" is set to true,
+     * an error will be raised if the plugin is not found.
+     *
+     * NB: These plugins need to have already been loaded via require.js.
+     */
+    dependencies: ["converse-controlbox", "converse-muc", "converse-bookmarks"],
+    initialize: function initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      var _converse = this._converse,
+          __ = _converse.__;
+      _converse.OpenRooms = Backbone.Collection.extend({
+        comparator: function comparator(room) {
+          if (room.get('bookmarked')) {
+            var bookmark = _.head(_converse.bookmarksview.model.where({
+              'jid': room.get('jid')
+            }));
+
+            return bookmark.get('name');
+          } else {
+            return room.get('name');
+          }
+        },
+        initialize: function initialize() {
+          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.open-rooms-{_converse.bare_jid}"));
+
+          _converse.chatboxes.on('add', this.onChatBoxAdded, this);
+
+          _converse.chatboxes.on('change:bookmarked', this.onChatBoxChanged, this);
+
+          _converse.chatboxes.on('change:name', this.onChatBoxChanged, this);
+
+          _converse.chatboxes.on('change:num_unread', this.onChatBoxChanged, this);
+
+          _converse.chatboxes.on('change:num_unread_general', this.onChatBoxChanged, this);
+
+          _converse.chatboxes.on('remove', this.onChatBoxRemoved, this);
+
+          this.reset(_.map(_converse.chatboxes.where({
+            'type': 'chatroom'
+          }), 'attributes'));
+        },
+        onChatBoxAdded: function onChatBoxAdded(item) {
+          if (item.get('type') === 'chatroom') {
+            this.create(item.attributes);
+          }
+        },
+        onChatBoxChanged: function onChatBoxChanged(item) {
+          if (item.get('type') === 'chatroom') {
+            var room = this.get(item.get('jid'));
+
+            if (!_.isNil(room)) {
+              room.set(item.attributes);
+            }
+          }
+        },
+        onChatBoxRemoved: function onChatBoxRemoved(item) {
+          if (item.get('type') === 'chatroom') {
+            var room = this.get(item.get('jid'));
+            this.remove(room);
+          }
+        }
+      });
+      _converse.RoomsList = Backbone.Model.extend({
+        defaults: {
+          "toggle-state": _converse.OPENED
+        }
+      });
+      _converse.RoomsListElementView = Backbone.VDOMView.extend({
+        initialize: function initialize() {
+          this.model.on('destroy', this.remove, this);
+          this.model.on('remove', this.remove, this);
+          this.model.on('change:bookmarked', this.render, this);
+          this.model.on('change:name', this.render, this);
+          this.model.on('change:num_unread', this.render, this);
+          this.model.on('change:num_unread_general', this.render, this);
+        },
+        getRoomsListElementName: function getRoomsListElementName() {
+          if (this.model.get('bookmarked') && _converse.bookmarksview) {
+            var bookmark = _.head(_converse.bookmarksview.model.where({
+              'jid': this.model.get('jid')
+            }));
+
+            return bookmark.get('name');
+          } else {
+            return this.model.get('name');
+          }
+        },
+        toHTML: function toHTML() {
+          return tpl_rooms_list_item(_.extend(this.model.toJSON(), {
+            // XXX: By the time this renders, the _converse.bookmarks
+            // collection should already exist if bookmarks are
+            // supported by the XMPP server. So we can use it
+            // as a check for support (other ways of checking are async).
+            'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
+            'info_leave_room': __('Leave this room'),
+            'info_remove_bookmark': __('Unbookmark this room'),
+            'info_add_bookmark': __('Bookmark this room'),
+            'info_title': __('Show more information on this room'),
+            'name': this.getRoomsListElementName(),
+            'open_title': __('Click to open this room')
+          }));
+        }
+      });
+      _converse.RoomsListView = Backbone.OrderedListView.extend({
+        tagName: 'div',
+        className: 'open-rooms-list list-container rooms-list-container',
+        events: {
+          'click .add-bookmark': 'addBookmark',
+          'click .close-room': 'closeRoom',
+          'click .rooms-toggle': 'toggleRoomsList',
+          'click .remove-bookmark': 'removeBookmark',
+          'click .open-room': 'openRoom'
+        },
+        listSelector: '.rooms-list',
+        ItemView: _converse.RoomsListElementView,
+        subviewIndex: 'jid',
+        initialize: function initialize() {
+          Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+          this.model.on('add', this.showOrHide, this);
+          this.model.on('remove', this.showOrHide, this);
+          var cachekey = "converse.roomslist".concat(_converse.bare_jid);
+          this.list_model = new _converse.RoomsList();
+          this.list_model.id = cachekey;
+          this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(cachekey));
+          this.list_model.fetch();
+          this.render();
+          this.sortAndPositionAllItems();
+        },
+        render: function render() {
+          this.el.innerHTML = tpl_rooms_list({
+            'toggle_state': this.list_model.get('toggle-state'),
+            'desc_rooms': __('Click to toggle the rooms list'),
+            'label_rooms': __('Open Rooms'),
+            '_converse': _converse
+          });
+
+          if (this.list_model.get('toggle-state') !== _converse.OPENED) {
+            this.el.querySelector('.open-rooms-list').classList.add('collapsed');
+          }
+
+          this.showOrHide();
+          this.insertIntoControlBox();
+          return this;
+        },
+        insertIntoControlBox: function insertIntoControlBox() {
+          var controlboxview = _converse.chatboxviews.get('controlbox');
+
+          if (!_.isUndefined(controlboxview) && !_converse.root.contains(this.el)) {
+            var el = controlboxview.el.querySelector('.open-rooms-list');
+
+            if (!_.isNull(el)) {
+              el.parentNode.replaceChild(this.el, el);
+            }
+          }
+        },
+        hide: function hide() {
+          u.hideElement(this.el);
+        },
+        show: function show() {
+          u.showElement(this.el);
+        },
+        openRoom: function openRoom(ev) {
+          ev.preventDefault();
+          var name = ev.target.textContent;
+          var jid = ev.target.getAttribute('data-room-jid');
+          var data = {
+            'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
+          };
+
+          _converse.api.rooms.open(jid, data);
+        },
+        closeRoom: function closeRoom(ev) {
+          ev.preventDefault();
+          var name = ev.target.getAttribute('data-room-name');
+          var jid = ev.target.getAttribute('data-room-jid');
+
+          if (confirm(__("Are you sure you want to leave the room %1$s?", name))) {
+            _converse.chatboxviews.get(jid).leave();
+          }
+        },
+        showOrHide: function showOrHide(item) {
+          if (!this.model.models.length) {
+            u.hideElement(this.el);
+          } else {
+            u.showElement(this.el);
+          }
+        },
+        removeBookmark: _converse.removeBookmarkViaEvent,
+        addBookmark: _converse.addBookmarkViaEvent,
+        toggleRoomsList: function toggleRoomsList(ev) {
+          var _this = this;
+
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          var icon_el = ev.target.querySelector('.fa');
+
+          if (icon_el.classList.contains("fa-caret-down")) {
+            utils.slideIn(this.el.querySelector('.open-rooms-list')).then(function () {
+              _this.list_model.save({
+                'toggle-state': _converse.CLOSED
+              });
+
+              icon_el.classList.remove("fa-caret-down");
+              icon_el.classList.add("fa-caret-right");
+            });
+          } else {
+            utils.slideOut(this.el.querySelector('.open-rooms-list')).then(function () {
+              _this.list_model.save({
+                'toggle-state': _converse.OPENED
+              });
+
+              icon_el.classList.remove("fa-caret-right");
+              icon_el.classList.add("fa-caret-down");
+            });
+          }
+        }
+      });
+
+      var initRoomsListView = function initRoomsListView() {
+        _converse.rooms_list_view = new _converse.RoomsListView({
+          'model': new _converse.OpenRooms()
+        });
+      };
+
+      if (_converse.allow_bookmarks) {
+        u.onMultipleEvents([{
+          'object': _converse,
+          'event': 'chatBoxesFetched'
+        }, {
+          'object': _converse,
+          'event': 'roomsPanelRendered'
+        }, {
+          'object': _converse,
+          'event': 'bookmarksInitialized'
+        }], initRoomsListView);
+      } else {
+        u.onMultipleEvents([{
+          'object': _converse,
+          'event': 'chatBoxesFetched'
+        }, {
+          'object': _converse,
+          'event': 'roomsPanelRendered'
+        }], initRoomsListView);
+      }
+
+      _converse.api.listen.on('reconnected', initRoomsListView);
+    }
+  });
+});
+//# sourceMappingURL=converse-roomslist.js.map;
+// http://xmpp.org/extensions/xep-0059.html
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define("strophe.rsm", [
+            "strophe"
+        ], function (Strophe) {
+            factory(
+                Strophe.Strophe,
+                Strophe.$build,
+                Strophe.$iq ,
+                Strophe.$msg,
+                Strophe.$pres
+            );
+            return Strophe;
+        });
+    } else {
+        // Browser globals
+        factory(
+            root.Strophe,
+            root.$build,
+            root.$iq ,
+            root.$msg,
+            root.$pres
+        );
+    }
+}(this, function (Strophe, $build, $iq, $msg, $pres) {
+
+Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
+   
+Strophe.RSM = function(options) {
+  this.attribs = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
+
+  if (typeof options.xml != 'undefined') {
+    this.fromXMLElement(options.xml);
+  } else {
+    for (var ii = 0; ii < this.attribs.length; ii++) {
+      var attrib = this.attribs[ii];
+      this[attrib] = options[attrib];
+    }
+  }
+};
+
+Strophe.RSM.prototype = {
+  toXML: function() {
+    var xml = $build('set', {xmlns: Strophe.NS.RSM});
+    for (var ii = 0; ii < this.attribs.length; ii++) {
+      var attrib = this.attribs[ii];
+      if (typeof this[attrib] != 'undefined') {
+        xml = xml.c(attrib).t(this[attrib].toString()).up();
+      }
+    }
+    return xml.tree();
+  },
+
+  next: function(max) {
+    var newSet = new Strophe.RSM({max: max, after: this.last});
+    return newSet;
+  },
+
+  previous: function(max) {
+    var newSet = new Strophe.RSM({max: max, before: this.first});
+    return newSet;
+  },
+
+  fromXMLElement: function(xmlElement) {
+    for (var ii = 0; ii < this.attribs.length; ii++) {
+      var attrib = this.attribs[ii];
+      var elem = xmlElement.getElementsByTagName(attrib)[0];
+      if (typeof elem != 'undefined' && elem !== null) {
+        this[attrib] = Strophe.getText(elem);
+        if (attrib == 'first') {
+          this.index = elem.getAttribute('index');
+        }
+      }
+    }
+  }
+};
+}));
+
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+
+/*global define */
+// XEP-0059 Result Set Management
+(function (root, factory) {
+  define('converse-mam',["sizzle", "converse-core", "utils", "converse-disco", "strophe.rsm"], factory);
+})(void 0, function (sizzle, converse, utils) {
+  "use strict";
+
+  var CHATROOMS_TYPE = 'chatroom';
+  var _converse$env = converse.env,
+      Promise = _converse$env.Promise,
+      Strophe = _converse$env.Strophe,
+      $iq = _converse$env.$iq,
+      _ = _converse$env._,
+      moment = _converse$env.moment;
+  var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count']; // XEP-0313 Message Archive Management
+
+  var MAM_ATTRIBUTES = ['with', 'start', 'end'];
+
+  function getMessageArchiveID(stanza) {
+    var result = sizzle("result[xmlns=\"".concat(Strophe.NS.MAM, "\"]"), stanza).pop();
+
+    if (!_.isUndefined(result)) {
+      return result.getAttribute('id');
+    }
+
+    var stanza_id = sizzle("stanza-id[xmlns=\"".concat(Strophe.NS.SID, "\"]"), stanza).pop();
+
+    if (!_.isUndefined(stanza_id)) {
+      return stanza_id.getAttribute('id');
+    }
+  }
+
+  function queryForArchivedMessages(_converse, options, callback, errback) {
+    /* Internal function, called by the "archive.query" API method.
+     */
+    var date;
+
+    if (_.isFunction(options)) {
+      callback = options;
+      errback = callback;
+    }
+
+    var queryid = _converse.connection.getUniqueId();
+
+    var attrs = {
+      'type': 'set'
+    };
+
+    if (!_.isUndefined(options) && options.groupchat) {
+      if (!options['with']) {
+        // eslint-disable-line dot-notation
+        throw new Error('You need to specify a "with" value containing ' + 'the chat room JID, when querying groupchat messages.');
+      }
+
+      attrs.to = options['with']; // eslint-disable-line dot-notation
+    }
+
+    var stanza = $iq(attrs).c('query', {
+      'xmlns': Strophe.NS.MAM,
+      'queryid': queryid
+    });
+
+    if (!_.isUndefined(options)) {
+      stanza.c('x', {
+        'xmlns': Strophe.NS.XFORM,
+        'type': 'submit'
+      }).c('field', {
+        'var': 'FORM_TYPE',
+        'type': 'hidden'
+      }).c('value').t(Strophe.NS.MAM).up().up();
+
+      if (options['with'] && !options.groupchat) {
+        // eslint-disable-line dot-notation
+        stanza.c('field', {
+          'var': 'with'
+        }).c('value').t(options['with']).up().up(); // eslint-disable-line dot-notation
+      }
+
+      _.each(['start', 'end'], function (t) {
+        if (options[t]) {
+          date = moment(options[t]);
+
+          if (date.isValid()) {
+            stanza.c('field', {
+              'var': t
+            }).c('value').t(date.format()).up().up();
+          } else {
+            throw new TypeError("archive.query: invalid date provided for: ".concat(t));
+          }
+        }
+      });
+
+      stanza.up();
+
+      if (options instanceof Strophe.RSM) {
+        stanza.cnode(options.toXML());
+      } else if (_.intersection(RSM_ATTRIBUTES, _.keys(options)).length) {
+        stanza.cnode(new Strophe.RSM(options).toXML());
+      }
+    }
+
+    var messages = [];
+
+    var message_handler = _converse.connection.addHandler(function (message) {
+      if (options.groupchat && message.getAttribute('from') !== options['with']) {
+        // eslint-disable-line dot-notation
+        return true;
+      }
+
+      var result = message.querySelector('result');
+
+      if (!_.isNull(result) && result.getAttribute('queryid') === queryid) {
+        messages.push(message);
+      }
+
+      return true;
+    }, Strophe.NS.MAM);
+
+    _converse.connection.sendIQ(stanza, function (iq) {
+      _converse.connection.deleteHandler(message_handler);
+
+      if (_.isFunction(callback)) {
+        var set = iq.querySelector('set');
+        var rsm;
+
+        if (!_.isUndefined(set)) {
+          rsm = new Strophe.RSM({
+            xml: set
+          });
+
+          _.extend(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
+        }
+
+        callback(messages, rsm);
+      }
+    }, function () {
+      _converse.connection.deleteHandler(message_handler);
+
+      if (_.isFunction(errback)) {
+        errback.apply(this, arguments);
+      }
+    }, _converse.message_archiving_timeout);
+  }
+
+  converse.plugins.add('converse-mam', {
+    dependencies: ['converse-chatview', 'converse-muc', 'converse-muc-views'],
+    overrides: {
+      // Overrides mentioned here will be picked up by converse.js's
+      // plugin architecture they will replace existing methods on the
+      // relevant objects or classes.
+      //
+      // New functions which don't exist yet can also be added.
+      ChatBox: {
+        getMessageAttributes: function getMessageAttributes(message, delay, original_stanza) {
+          var attrs = this.__super__.getMessageAttributes.apply(this, arguments);
+
+          var archive_id = getMessageArchiveID(original_stanza);
+
+          if (archive_id) {
+            attrs.archive_id = archive_id;
+          }
+
+          return attrs;
+        }
+      },
+      ChatBoxView: {
+        render: function render() {
+          var result = this.__super__.render.apply(this, arguments);
+
+          if (!this.disable_mam) {
+            this.content.addEventListener('scroll', _.debounce(this.onScroll.bind(this), 100));
+          }
+
+          return result;
+        },
+        fetchNewestMessages: function fetchNewestMessages() {
+          var _this = this;
+
+          /* Fetches messages that might have been archived *after*
+           * the last archived message in our local cache.
+           */
+          if (this.disable_mam) {
+            return;
+          }
+
+          var _converse = this.__super__._converse;
+
+          _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(function (result) {
+            // Success
+            if (result.supported) {
+              var most_recent_msg = utils.getMostRecentMessage(_this.model);
+
+              if (_.isNil(most_recent_msg)) {
+                _this.fetchArchivedMessages();
+              } else {
+                var archive_id = most_recent_msg.get('archive_id');
+
+                if (archive_id) {
+                  _this.fetchArchivedMessages({
+                    'after': most_recent_msg.get('archive_id')
+                  });
+                } else {
+                  _this.fetchArchivedMessages({
+                    'start': most_recent_msg.get('time')
+                  });
+                }
+              }
+            }
+          }, function () {
+            // Error
+            _converse.log("Error or timeout while checking for MAM support", Strophe.LogLevel.ERROR);
+          }).catch(function (msg) {
+            _this.clearSpinner();
+
+            _converse.log(msg, Strophe.LogLevel.FATAL);
+          });
+        },
+        fetchArchivedMessagesIfNecessary: function fetchArchivedMessagesIfNecessary() {
+          var _this2 = this;
+
+          /* Check if archived messages should be fetched, and if so, do so. */
+          if (this.disable_mam || this.model.get('mam_initialized')) {
+            return;
+          }
+
+          var _converse = this.__super__._converse;
+
+          _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(function (result) {
+            // Success
+            if (result.supported) {
+              _this2.fetchArchivedMessages();
+            }
+
+            _this2.model.save({
+              'mam_initialized': true
+            });
+          }, function () {
+            // Error
+            _converse.log("Error or timeout while checking for MAM support", Strophe.LogLevel.ERROR);
+          }).catch(function (msg) {
+            _this2.clearSpinner();
+
+            _converse.log(msg, Strophe.LogLevel.FATAL);
+          });
+        },
+        fetchArchivedMessages: function fetchArchivedMessages(options) {
+          var _this3 = this;
+
+          /* Fetch archived chat messages from the XMPP server.
+           *
+           * Then, upon receiving them, call onMessage on the chat
+           * box, so that they are displayed inside it.
+           */
+          var _converse = this.__super__._converse;
+
+          if (!_converse.disco_entities.get(_converse.bare_jid).features.findWhere({
+            'var': Strophe.NS.MAM
+          })) {
+            _converse.log("Attempted to fetch archived messages but this " + "user's server doesn't support XEP-0313", Strophe.LogLevel.WARN);
+
+            return;
+          }
+
+          if (this.disable_mam) {
+            return;
+          }
+
+          this.addSpinner();
+
+          _converse.api.archive.query(_.extend({
+            'before': '',
+            // Page backwards from the most recent message
+            'max': _converse.archived_messages_page_size,
+            'with': this.model.get('jid')
+          }, options), function (messages) {
+            // Success
+            _this3.clearSpinner();
+
+            if (messages.length) {
+              _.each(messages, _converse.chatboxes.onMessage.bind(_converse.chatboxes));
+            }
+          }, function () {
+            // Error
+            _this3.clearSpinner();
+
+            _converse.log("Error or timeout while trying to fetch " + "archived messages", Strophe.LogLevel.ERROR);
+          });
+        },
+        onScroll: function onScroll(ev) {
+          var _converse = this.__super__._converse;
+
+          if (this.content.scrollTop === 0 && this.model.messages.length) {
+            var oldest_message = this.model.messages.at(0);
+            var archive_id = oldest_message.get('archive_id');
+
+            if (archive_id) {
+              this.fetchArchivedMessages({
+                'before': archive_id
+              });
+            } else {
+              this.fetchArchivedMessages({
+                'end': oldest_message.get('time')
+              });
+            }
+          }
+        }
+      },
+      ChatRoomView: {
+        initialize: function initialize() {
+          var _converse = this.__super__._converse;
+
+          this.__super__.initialize.apply(this, arguments);
+
+          this.model.on('change:mam_enabled', this.fetchArchivedMessagesIfNecessary, this);
+          this.model.on('change:connection_status', this.fetchArchivedMessagesIfNecessary, this);
+        },
+        isDuplicate: function isDuplicate(message, original_stanza) {
+          var result = this.__super__.isDuplicate.apply(this, arguments);
+
+          if (result) {
+            return result;
+          }
+
+          var archive_id = getMessageArchiveID(original_stanza);
+
+          if (archive_id) {
+            return this.model.messages.filter({
+              'archive_id': archive_id
+            }).length > 0;
+          }
+        },
+        renderChatArea: function renderChatArea() {
+          var result = this.__super__.renderChatArea.apply(this, arguments);
+
+          if (!this.disable_mam) {
+            this.content.addEventListener('scroll', _.debounce(this.onScroll.bind(this), 100));
+          }
+
+          return result;
+        },
+        handleMUCMessage: function handleMUCMessage(stanza) {
+          /* MAM (message archive management XEP-0313) messages are
+           * ignored, since they're handled separately.
+           */
+          if (sizzle("[xmlns=\"".concat(Strophe.NS.MAM, "\"]"), stanza).length > 0) {
+            return true;
+          }
+
+          return this.__super__.handleMUCMessage.apply(this, arguments);
+        },
+        fetchArchivedMessagesIfNecessary: function fetchArchivedMessagesIfNecessary() {
+          if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED || !this.model.get('mam_enabled') || this.model.get('mam_initialized')) {
+            return;
+          }
+
+          this.fetchArchivedMessages();
+          this.model.save({
+            'mam_initialized': true
+          });
+        },
+        fetchArchivedMessages: function fetchArchivedMessages(options) {
+          /* Fetch archived chat messages for this Chat Room
+           *
+           * Then, upon receiving them, call onChatRoomMessage
+           * so that they are displayed inside it.
+           */
+          var that = this;
+          var _converse = this.__super__._converse;
+          this.addSpinner();
+
+          _converse.api.archive.query(_.extend({
+            'groupchat': true,
+            'before': '',
+            // Page backwards from the most recent message
+            'with': this.model.get('jid'),
+            'max': _converse.archived_messages_page_size
+          }, options), function (messages) {
+            that.clearSpinner();
+
+            if (messages.length) {
+              _.each(messages, that.onChatRoomMessage.bind(that));
+            }
+          }, function () {
+            that.clearSpinner();
+
+            _converse.log("Error while trying to fetch archived messages", Strophe.LogLevel.WARN);
+          });
+        }
+      }
+    },
+    initialize: function initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by Converse.js's plugin machinery.
+       */
+      var _converse = this._converse;
+
+      _converse.api.settings.update({
+        archived_messages_page_size: '50',
+        message_archiving: undefined,
+        // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
+        message_archiving_timeout: 8000 // Time (in milliseconds) to wait before aborting MAM request
+
+      });
+
+      _converse.onMAMError = function (iq) {
+        if (iq.querySelectorAll('feature-not-implemented').length) {
+          _converse.log("Message Archive Management (XEP-0313) not supported by this server", Strophe.LogLevel.WARN);
+        } else {
+          _converse.log("An error occured while trying to set archiving preferences.", Strophe.LogLevel.ERROR);
+
+          _converse.log(iq);
+        }
+      };
+
+      _converse.onMAMPreferences = function (feature, iq) {
+        /* Handle returned IQ stanza containing Message Archive
+         * Management (XEP-0313) preferences.
+         *
+         * XXX: For now we only handle the global default preference.
+         * The XEP also provides for per-JID preferences, which is
+         * currently not supported in converse.js.
+         *
+         * Per JID preferences will be set in chat boxes, so it'll
+         * probbaly be handled elsewhere in any case.
+         */
+        var preference = sizzle("prefs[xmlns=\"".concat(Strophe.NS.MAM, "\"]"), iq).pop();
+        var default_pref = preference.getAttribute('default');
+
+        if (default_pref !== _converse.message_archiving) {
+          var stanza = $iq({
+            'type': 'set'
+          }).c('prefs', {
+            'xmlns': Strophe.NS.MAM,
+            'default': _converse.message_archiving
+          });
+
+          _.each(preference.children, function (child) {
+            stanza.cnode(child).up();
+          });
+
+          _converse.connection.sendIQ(stanza, _.partial(function (feature, iq) {
+            // XXX: Strictly speaking, the server should respond with the updated prefs
+            // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
+            // but Prosody doesn't do this, so we don't rely on it.
+            feature.save({
+              'preferences': {
+                'default': _converse.message_archiving
+              }
+            });
+          }, feature), _converse.onMAMError);
+        } else {
+          feature.save({
+            'preferences': {
+              'default': _converse.message_archiving
+            }
+          });
+        }
+      };
+      /* Event handlers */
+
+
+      _converse.on('serviceDiscovered', function (feature) {
+        var prefs = feature.get('preferences') || {};
+
+        if (feature.get('var') === Strophe.NS.MAM && prefs['default'] !== _converse.message_archiving && // eslint-disable-line dot-notation
+        !_.isUndefined(_converse.message_archiving)) {
+          // Ask the server for archiving preferences
+          _converse.connection.sendIQ($iq({
+            'type': 'get'
+          }).c('prefs', {
+            'xmlns': Strophe.NS.MAM
+          }), _.partial(_converse.onMAMPreferences, feature), _.partial(_converse.onMAMError, feature));
+        }
+      });
+
+      _converse.on('addClientFeatures', function () {
+        _converse.connection.disco.addFeature(Strophe.NS.MAM);
+      });
+
+      _converse.on('afterMessagesFetched', function (chatboxview) {
+        chatboxview.fetchNewestMessages();
+      });
+
+      _converse.on('reconnected', function () {
+        var private_chats = _converse.chatboxviews.filter(function (view) {
+          return _.at(view, 'model.attributes.type')[0] === 'chatbox';
+        });
+
+        _.each(private_chats, function (view) {
+          return view.fetchNewestMessages();
+        });
+      });
+
+      _.extend(_converse.api, {
+        /* Extend default converse.js API to add methods specific to MAM
+         */
+        'archive': {
+          'query': function query(options, callback, errback) {
+            /* Do a MAM (XEP-0313) query for archived messages.
+             *
+             * Parameters:
+             *    (Object) options - Query parameters, either
+             *      MAM-specific or also for Result Set Management.
+             *    (Function) callback - A function to call whenever
+             *      we receive query-relevant stanza.
+             *    (Function) errback - A function to call when an
+             *      error stanza is received.
+             *
+             * The options parameter can also be an instance of
+             * Strophe.RSM to enable easy querying between results pages.
+             *
+             * When the the callback is called, a Strophe.RSM object is
+             * returned on which "next" or "previous" can be called
+             * before passing it in again to this method, to
+             * get the next or previous page in the result set.
+             */
+            if (!_converse.api.connection.connected()) {
+              throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
+            }
+
+            return queryForArchivedMessages(_converse, options, callback, errback);
+          }
+        }
+      });
+    }
+  });
+});
+//# sourceMappingURL=converse-mam.js.map;
+
+define('tpl!add_chatroom_modal', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<div class="modal fade" id="add-chatroom-modal" tabindex="-1" role="dialog" aria-labelledby="add-chatroom-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title"\n                    id="add-chatroom-modal-label">' +
+__e(o.heading_new_chatroom) +
+'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n                    <span aria-hidden="true">&times;</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <form class="converse-form add-chatroom">\n                    <div class="form-group">\n                        <label for="chatroom">' +
+__e(o.label_room_address) +
+':</label>\n                        <input type="text" required="required" name="chatroom" class="form-control" placeholder="' +
+__e(o.chatroom_placeholder) +
+'">\n                    </div>\n                    <div class="form-group">\n                        <label for="nickname">' +
+__e(o.label_nickname) +
+':</label>\n                        <input type="text" name="nickname" value="' +
+__e(o.nick) +
+'" class="form-control">\n                    </div>\n                    <input type="submit" class="btn btn-primary" name="join" value="' +
+__e(o.label_join) +
+'">\n                </form>\n            </div>\n        </div>\n    </div>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!chatarea', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<div class="chat-area col-md-9 col-8">\n    <div class="chat-content ';
+ if (o.show_send_button) { ;
+__p += 'chat-content-sendbutton';
+ } ;
+__p += '"></div>\n    <div class="new-msgs-indicator hidden">▼ ' +
+__e( o.unread_msgs ) +
+' ▼</div>\n    <form class="sendXMPPMessage">\n        ';
+ if (o.show_toolbar) { ;
+__p += '\n            <ul class="chat-toolbar no-text-select"></ul>\n        ';
+ } ;
+__p += '\n        <textarea type="text" class="chat-textarea ';
+ if (o.show_send_button) { ;
+__p += 'chat-textarea-send-button';
+ } ;
+__p += '"\n                  placeholder="' +
+__e(o.label_message) +
+'"></textarea>\n    ';
+ if (o.show_send_button) { ;
+__p += '\n        <button type="submit" class="pure-button send-button">' +
+__e( o.label_send ) +
+'</button>\n    ';
+ } ;
+__p += '\n    </form>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!chatroom', ['lodash'], function(_) {return function(o) {
+var __t, __p = '';
+__p += '<div class="flyout box-flyout">\n    <div class="chat-head chat-head-chatroom row no-gutters"></div>\n    <div class="chat-body chatroom-body row no-gutters"></div>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!chatroom_disconnect', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<p class="disconnect-msg">' +
+__e(o.disconnect_message) +
+'</p>\n';
+return __p
+};});
+
+
+define('tpl!chatroom_features', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+
+ if (o.has_features) { ;
+__p += '\n<p class="occupants-heading">' +
+__e(o.label_features) +
+'</p>\n';
+ } ;
+__p += '\n<ul class="features-list">\n';
+ if (o.passwordprotected) { ;
+__p += '\n<li class="feature" title="' +
+__e( o.tt_passwordprotected ) +
+'"><span class="fa fa-lock"></span>' +
+__e( o.label_passwordprotected ) +
+'</li>\n';
+ } ;
+__p += '\n';
+ if (o.unsecured) { ;
+__p += '\n<li class="feature" title="' +
+__e( o.tt_unsecured ) +
+'"><span class="fa fa-unlock"></span>' +
+__e( o.label_unsecured ) +
+'</li>\n';
+ } ;
+__p += '\n';
+ if (o.hidden) { ;
+__p += '\n<li class="feature" title="' +
+__e( o.tt_hidden ) +
+'"><span class="fa fa-eye-slash"></span>' +
+__e( o.label_hidden ) +
+'</li>\n';
+ } ;
+__p += '\n';
+ if (o.public_room) { ;
+__p += '\n<li class="feature" title="' +
+__e( o.tt_public ) +
+'"><span class="fa fa-eye"></span>' +
+__e( o.label_public ) +
+'</li>\n';
+ } ;
+__p += '\n';
+ if (o.membersonly) { ;
+__p += '\n<li class="feature" title="' +
+__e( o.tt_membersonly ) +
+'"><span class="fa fa-address-book"></span>' +
+__e( o.label_membersonly ) +
+'</li>\n';
+ } ;
+__p += '\n';
+ if (o.open) { ;
+__p += '\n<li class="feature" title="' +
+__e( o.tt_open ) +
+'"><span class="fa fa-globe"></span>' +
+__e( o.label_open ) +
+'</li>\n';
+ } ;
+__p += '\n';
+ if (o.persistent) { ;
+__p += '\n<li class="feature" title="' +
+__e( o.tt_persistent ) +
+'"><span class="fa fa-save"></span>' +
+__e( o.label_persistent ) +
+'</li>\n';
+ } ;
+__p += '\n';
+ if (o.temporary) { ;
+__p += '\n<li class="feature" title="' +
+__e( o.tt_temporary ) +
+'"><span class="fa fa-snowflake-o"></span>' +
+__e( o.label_temporary ) +
+'</li>\n';
+ } ;
+__p += '\n';
+ if (o.nonanonymous) { ;
+__p += '\n<li class="feature" title="' +
+__e( o.tt_nonanonymous ) +
+'"><span class="fa fa-idcard-dark"></span>' +
+__e( o.label_nonanonymous ) +
+'</li>\n';
+ } ;
+__p += '\n';
+ if (o.semianonymous) { ;
+__p += '\n<li class="feature" title="' +
+__e( o.tt_semianonymous ) +
+'"><span class="fa fa-user-secret"></span>' +
+__e( o.label_semianonymous ) +
+'</li>\n';
+ } ;
+__p += '\n';
+ if (o.moderated) { ;
+__p += '\n<li class="feature" title="' +
+__e( o.tt_moderated ) +
+'"><span class="fa fa-gavel"></span>' +
+__e( o.label_moderated ) +
+'</li>\n';
+ } ;
+__p += '\n';
+ if (o.unmoderated) { ;
+__p += '\n<li class="feature" title="' +
+__e( o.tt_unmoderated ) +
+'"><span class="fa fa-info-circle"></span>' +
+__e( o.label_unmoderated ) +
+'</li>\n';
+ } ;
+__p += '\n';
+ if (o.mam_enabled) { ;
+__p += '\n<li class="feature" title="' +
+__e( o.tt_mam_enabled ) +
+'"><span class="fa fa-database"></span>' +
+__e( o.label_mam_enabled ) +
+'</li>\n';
+ } ;
+__p += '\n</ul>\n';
+return __p
+};});
+
+
+define('tpl!chatroom_form', ['lodash'], function(_) {return function(o) {
+var __t, __p = '';
+__p += '<div class="chatroom-form-container">\n    <form class="converse-form chatroom-form">\n        <fieldset class="form-group">\n            <span class="spinner fa fa-spinner centered"/>\n        </fieldset>\n    </form>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!chatroom_head', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<div class="col">\n    <div class="chat-title" title="' +
+__e(o.jid) +
+'">\n        ';
+ if (o.name && o.name !== o.Strophe.getNodeFromJid(o.jid)) { ;
+__p += '\n            <span class="chatroom-name">' +
+__e( o.name ) +
+'</span>\n        ';
+ } else { ;
+__p += '\n            <span class="chatroom-name">' +
+__e( o.Strophe.getNodeFromJid(o.jid) ) +
+'</span>@' +
+__e( o.Strophe.getDomainFromJid(o.jid) ) +
+'\n        ';
+ } ;
+__p += '\n        <p class="chatroom-description">' +
+__e( o.description ) +
+'<p/>\n    </div>\n</div>\n<div class="chatbox-buttons row no-gutters">\n    <a class="chatbox-btn close-chatbox-button fa fa-sign-out" title="' +
+__e(o.info_close) +
+'"></a>\n    ';
+ if (o.affiliation == 'owner') { ;
+__p += '\n    <a class="chatbox-btn configure-chatroom-button fa fa-wrench" title="' +
+__e(o.info_configure) +
+' "></a>\n    ';
+ } ;
+__p += '\n</div>\n';
+return __p
+};});
+
+
+define('tpl!chatroom_invite', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<form class="room-invite">\n    ';
+ if (o.error_message) { ;
+__p += '\n        <span class="error">' +
+__e(o.error_message) +
+'</span>\n    ';
+ } ;
+__p += '\n    <input class="form-control invited-contact" placeholder="' +
+__e(o.label_invitation) +
+'" type="text"/>\n</form>\n';
+return __p
+};});
+
+
+define('tpl!chatroom_nickname_form', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<div class="chatroom-form-container">\n    <form class="converse-form chatroom-form converse-centered-form">\n        <fieldset class="form-group">\n            <label>' +
+__e(o.heading) +
+'</label>\n            <p class="validation-message">' +
+__e(o.validation_message) +
+'</p>\n            <input type="text" required="required" name="nick" class="form-control" placeholder="' +
+__e(o.label_nickname) +
+'"/>\n        </fieldset>\n        <input type="submit" class="btn btn-primary" name="join" value="' +
+__e(o.label_join) +
+'"/>\n    </form>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!chatroom_password_form', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form">\n        <fieldset class="form-group">\n            <legend>' +
+__e(o.heading) +
+'</legend>\n            <label>' +
+__e(o.label_password) +
+'</label>\n            <input type="password" name="password"/>\n        </fieldset>\n        <input class="btn btn-primary" type="submit" value="' +
+__e(o.label_submit) +
+'"/>\n    </form>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!chatroom_sidebar', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<!-- <div class="occupants"> -->\n<p class="occupants-heading">' +
+__e(o.label_occupants) +
+'</p>\n<ul class="occupant-list"></ul>\n<div class="chatroom-features"></div>\n<!-- </div> -->\n';
+return __p
+};});
+
+
+define('tpl!chatroom_toolbar', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+
+ if (o.use_emoji)  { ;
+__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="btn toggle-smiley fa fa-smile-o" title="' +
+__e(o.label_insert_smiley) +
+'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a> \n    <div class="emoji-picker dropdown-menu toolbar-menu"></div>\n</li>\n';
+ } ;
+__p += '\n';
+ if (o.show_call_button)  { ;
+__p += '\n<li class="toggle-call fa fa-phone" title="' +
+__e(o.label_start_call) +
+'"></li>\n';
+ } ;
+__p += '\n';
+ if (o.show_occupants_toggle)  { ;
+__p += '\n<li class="toggle-occupants fa fa-users" title="' +
+__e(o.label_hide_occupants) +
+'"></li>\n';
+ } ;
+__p += '\n';
+return __p
+};});
+
+
+define('tpl!list_chatrooms_modal', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<div class="modal fade" id="list-chatrooms-modal" tabindex="-1" role="dialog" aria-labelledby="list-chatrooms-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title"\n                    id="list-chatrooms-modal-label">' +
+__e(o.heading_list_chatrooms) +
+'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n                    <span aria-hidden="true">&times;</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <form class="converse-form list-chatrooms">\n                    <div class="form-group">\n                        <label for="chatroom">' +
+__e(o.label_server_address) +
+':</label>\n                        <input type="text" value="' +
+__e(o.muc_domain) +
+'" required="required" name="server" class="form-control" placeholder="' +
+__e(o.server_placeholder) +
+'">\n                    </div>\n                    <input type="submit" class="btn btn-primary" name="join" value="' +
+__e(o.label_query) +
+'">\n                </form>\n                <ul class="available-chatrooms list-group"></ul>\n            </div>\n        </div>\n    </div>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!occupant', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<li class="' +
+__e( o.role ) +
+' occupant" id="' +
+__e( o.id ) +
+'"\n    ';
+ if (o.role === "moderator") { ;
+__p += '\n       title="' +
+__e( o.jid ) +
+' ' +
+__e( o.desc_moderator ) +
+' ' +
+__e( o.hint_occupant ) +
+'"\n    ';
+ } ;
+__p += '\n    ';
+ if (o.role === "occupant") { ;
+__p += '\n       title="' +
+__e( o.jid ) +
+' ' +
+__e( o.desc_occupant ) +
+' ' +
+__e( o.hint_occupant ) +
+'"\n    ';
+ } ;
+__p += '\n    ';
+ if (o.role === "visitor") { ;
+__p += '\n       title="' +
+__e( o.jid ) +
+' ' +
+__e( o.desc_visitor ) +
+' ' +
+__e( o.hint_occupant ) +
+'"\n    ';
+ } ;
+__p += '\n    ';
+ if (!_.includes(["visitor", "occupant", "moderator"], o.role)) { ;
+__p += '\n       title="' +
+__e( o.jid ) +
+' ' +
+__e( o.hint_occupant ) +
+'"\n       ';
+ } ;
+__p += '><div class="occupant-status occupant-' +
+__e(o.show) +
+' circle" title="' +
+__e(o.hint_show) +
+'"></div>' +
+__e(o.nick) +
+'</li>\n';
+return __p
+};});
+
+
+define('tpl!room_description', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<!-- FIXME: check markup in mockup -->\n<div class="room-info">\n<p class="room-info"><strong>' +
+__e(o.label_jid) +
+'</strong> ' +
+__e(o.jid) +
+'</p>\n<p class="room-info"><strong>' +
+__e(o.label_desc) +
+'</strong> ' +
+__e(o.desc) +
+'</p>\n<p class="room-info"><strong>' +
+__e(o.label_occ) +
+'</strong> ' +
+__e(o.occ) +
+'</p>\n<p class="room-info"><strong>' +
+__e(o.label_features) +
+'</strong>\n    <ul>\n        ';
+ if (o.passwordprotected) { ;
+__p += '\n        <li class="room-info locked">' +
+__e(o.label_requires_auth) +
+'</li>\n        ';
+ } ;
+__p += '\n        ';
+ if (o.hidden) { ;
+__p += '\n        <li class="room-info">' +
+__e(o.label_hidden) +
+'</li>\n        ';
+ } ;
+__p += '\n        ';
+ if (o.membersonly) { ;
+__p += '\n        <li class="room-info">' +
+__e(o.label_requires_invite) +
+'</li>\n        ';
+ } ;
+__p += '\n        ';
+ if (o.moderated) { ;
+__p += '\n        <li class="room-info">' +
+__e(o.label_moderated) +
+'</li>\n        ';
+ } ;
+__p += '\n        ';
+ if (o.nonanonymous) { ;
+__p += '\n        <li class="room-info">' +
+__e(o.label_non_anon) +
+'</li>\n        ';
+ } ;
+__p += '\n        ';
+ if (o.open) { ;
+__p += '\n        <li class="room-info">' +
+__e(o.label_open_room) +
+'</li>\n        ';
+ } ;
+__p += '\n        ';
+ if (o.persistent) { ;
+__p += '\n        <li class="room-info">' +
+__e(o.label_permanent_room) +
+'</li>\n        ';
+ } ;
+__p += '\n        ';
+ if (o.publicroom) { ;
+__p += '\n        <li class="room-info">' +
+__e(o.label_public) +
+'</li>\n        ';
+ } ;
+__p += '\n        ';
+ if (o.semianonymous) { ;
+__p += '\n        <li class="room-info">' +
+__e(o.label_semi_anon) +
+'</li>\n        ';
+ } ;
+__p += '\n        ';
+ if (o.temporary) { ;
+__p += '\n        <li class="room-info">' +
+__e(o.label_temp_room) +
+'</li>\n        ';
+ } ;
+__p += '\n        ';
+ if (o.unmoderated) { ;
+__p += '\n        <li class="room-info">' +
+__e(o.label_unmoderated) +
+'</li>\n        ';
+ } ;
+__p += '\n    </ul>\n</p>\n</div>\n';
+return __p
+};});
+
+
+define('tpl!room_item', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<li class="room-item list-group-item">\n  <div class="available-chatroom d-flex flex-row">\n    <a class="open-room available-room w-100"\n       data-room-jid="' +
+__e(o.jid) +
+'"\n       data-room-name="' +
+__e(o.name) +
+'"\n       title="' +
+__e(o.open_title) +
+'"\n       href="#">' +
+__e(o.name) +
+'</a>\n    <a class="right room-info icon-room-info"\n       data-room-jid="' +
+__e(o.jid) +
+'"\n       title="' +
+__e(o.info_title) +
+'" href="#">&nbsp;</a>\n  </div>\n</li>\n';
+return __p
+};});
+
+
+define('tpl!room_panel', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<!-- <div id="chatrooms"> -->\n<div class="d-flex">\n    <span class="w-100">' +
+__e(o.heading_chatrooms) +
+'</span>\n    <a class="chatbox-btn trigger-list-chatrooms-modal fa fa-list-ul" title="' +
+__e(o.title_list_rooms) +
+'" data-toggle="modal" data-target="#list-chatrooms-modal"></a>\n    <a class="chatbox-btn trigger-add-chatrooms-modal fa fa-users" title="' +
+__e(o.title_new_room) +
+'" data-toggle="modal" data-target="#add-chatrooms-modal"></a>\n</div>\n<div class="list-container open-rooms-list rooms-list-container"></div>\n<div class="list-container bookmarks-list rooms-list-container"></div>\n<!-- </div> -->\n';
+return __p
+};});
+
+
+define('tpl!rooms_results', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<li class="list-group-item active">' +
+__e( o.feedback_text ) +
+'</dt>\n';
+return __p
+};});
+
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2018, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+
+/* This is a Converse.js plugin which add support for multi-user chat rooms, as
+ * specified in XEP-0045 Multi-user chat.
+ */
+(function (root, factory) {
+  define('converse-muc-views',["converse-core", "emojione", "tpl!add_chatroom_modal", "tpl!chatarea", "tpl!chatroom", "tpl!chatroom_disconnect", "tpl!chatroom_features", "tpl!chatroom_form", "tpl!chatroom_head", "tpl!chatroom_invite", "tpl!chatroom_nickname_form", "tpl!chatroom_password_form", "tpl!chatroom_sidebar", "tpl!chatroom_toolbar", "tpl!info", "tpl!list_chatrooms_modal", "tpl!occupant", "tpl!room_description", "tpl!room_item", "tpl!room_panel", "tpl!rooms_results", "tpl!spinner", "awesomplete", "converse-modal"], factory);
+})(void 0, function (converse, emojione, tpl_add_chatroom_modal, tpl_chatarea, tpl_chatroom, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_info, tpl_list_chatrooms_modal, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
+  "use strict";
+
+  var _converse$env = converse.env,
+      Backbone = _converse$env.Backbone,
+      Promise = _converse$env.Promise,
+      Strophe = _converse$env.Strophe,
+      b64_sha1 = _converse$env.b64_sha1,
+      moment = _converse$env.moment,
+      f = _converse$env.f,
+      sizzle = _converse$env.sizzle,
+      _ = _converse$env._,
+      $build = _converse$env.$build,
+      $iq = _converse$env.$iq,
+      $msg = _converse$env.$msg,
+      $pres = _converse$env.$pres;
+  var u = converse.env.utils;
+  var ROOM_FEATURES_MAP = {
+    'passwordprotected': 'unsecured',
+    'unsecured': 'passwordprotected',
+    'hidden': 'publicroom',
+    'publicroom': 'hidden',
+    'membersonly': 'open',
+    'open': 'membersonly',
+    'persistent': 'temporary',
+    'temporary': 'persistent',
+    'nonanonymous': 'semianonymous',
+    'semianonymous': 'nonanonymous',
+    'moderated': 'unmoderated',
+    'unmoderated': 'moderated'
+  };
+  converse.plugins.add('converse-muc-views', {
+    /* Dependencies are other plugins which might be
+     * overridden or relied upon, and therefore need to be loaded before
+     * this plugin. They are "optional" because they might not be
+     * available, in which case any overrides applicable to them will be
+     * ignored.
+     *
+     * NB: These plugins need to have already been loaded via require.js.
+     *
+     * It's possible to make these dependencies "non-optional".
+     * If the setting "strict_plugin_dependencies" is set to true,
+     * an error will be raised if the plugin is not found.
+     */
+    dependencies: ["converse-modal", "converse-controlbox", "converse-chatview"],
+    overrides: {
+      ControlBoxView: {
+        renderRoomsPanel: function renderRoomsPanel() {
+          var _converse = this.__super__._converse;
+          this.roomspanel = new _converse.RoomsPanel({
+            'model': new (_converse.RoomsPanelModel.extend({
+              id: b64_sha1("converse.roomspanel".concat(_converse.bare_jid)),
+              // Required by sessionStorage
+              browserStorage: new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.roomspanel".concat(_converse.bare_jid)))
+            }))()
+          });
+          this.roomspanel.model.fetch();
+          this.el.querySelector('.controlbox-pane').insertAdjacentElement('beforeEnd', this.roomspanel.render().el);
+
+          if (!this.roomspanel.model.get('nick')) {
+            this.roomspanel.model.save({
+              nick: _converse.xmppstatus.get('nickname') || Strophe.getNodeFromJid(_converse.bare_jid)
+            });
+          }
+
+          _converse.emit('roomsPanelRendered');
+        },
+        renderControlBoxPane: function renderControlBoxPane() {
+          var _converse = this.__super__._converse;
+
+          this.__super__.renderControlBoxPane.apply(this, arguments);
+
+          if (_converse.allow_muc) {
+            this.renderRoomsPanel();
+          }
+        }
+      },
+      ChatBoxViews: {
+        onChatBoxAdded: function onChatBoxAdded(item) {
+          var _converse = this.__super__._converse;
+          var view = this.get(item.get('id'));
+
+          if (!view && item.get('type') === converse.CHATROOMS_TYPE) {
+            view = new _converse.ChatRoomView({
+              'model': item
+            });
+            return this.add(item.get('id'), view);
+          } else {
+            return this.__super__.onChatBoxAdded.apply(this, arguments);
+          }
+        }
+      }
+    },
+    initialize: function initialize() {
+      var _converse = this._converse,
+          __ = _converse.__;
+
+      _converse.api.promises.add(['roomsPanelRendered']);
+
+      function insertRoomInfo(el, stanza) {
+        /* Insert room info (based on returned #disco IQ stanza)
+         *
+         * Parameters:
+         *  (HTMLElement) el: The HTML DOM element that should
+         *      contain the info.
+         *  (XMLElement) stanza: The IQ stanza containing the room
+         *      info.
+         */
+        // All MUC features found here: http://xmpp.org/registrar/disco-features.html
+        el.querySelector('span.spinner').remove();
+        el.querySelector('a.room-info').classList.add('selected');
+        el.insertAdjacentHTML('beforeEnd', tpl_room_description({
+          'jid': stanza.getAttribute('from'),
+          'desc': _.get(_.head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
+          'occ': _.get(_.head(sizzle('field[var="muc#roominfo_occupants"] value', stanza)), 'textContent'),
+          'hidden': sizzle('feature[var="muc_hidden"]', stanza).length,
+          'membersonly': sizzle('feature[var="muc_membersonly"]', stanza).length,
+          'moderated': sizzle('feature[var="muc_moderated"]', stanza).length,
+          'nonanonymous': sizzle('feature[var="muc_nonanonymous"]', stanza).length,
+          'open': sizzle('feature[var="muc_open"]', stanza).length,
+          'passwordprotected': sizzle('feature[var="muc_passwordprotected"]', stanza).length,
+          'persistent': sizzle('feature[var="muc_persistent"]', stanza).length,
+          'publicroom': sizzle('feature[var="muc_publicroom"]', stanza).length,
+          'semianonymous': sizzle('feature[var="muc_semianonymous"]', stanza).length,
+          'temporary': sizzle('feature[var="muc_temporary"]', stanza).length,
+          'unmoderated': sizzle('feature[var="muc_unmoderated"]', stanza).length,
+          'label_desc': __('Description:'),
+          'label_jid': __('Room Address (JID):'),
+          'label_occ': __('Occupants:'),
+          'label_features': __('Features:'),
+          'label_requires_auth': __('Requires authentication'),
+          'label_hidden': __('Hidden'),
+          'label_requires_invite': __('Requires an invitation'),
+          'label_moderated': __('Moderated'),
+          'label_non_anon': __('Non-anonymous'),
+          'label_open_room': __('Open room'),
+          'label_permanent_room': __('Permanent room'),
+          'label_public': __('Public'),
+          'label_semi_anon': __('Semi-anonymous'),
+          'label_temp_room': __('Temporary room'),
+          'label_unmoderated': __('Unmoderated')
+        }));
+      }
+
+      function _toggleRoomInfo(ev) {
+        /* Show/hide extra information about a room in a listing. */
+        var parent_el = u.ancestor(ev.target, '.room-item'),
+            div_el = parent_el.querySelector('div.room-info');
+
+        if (div_el) {
+          u.slideIn(div_el).then(u.removeElement);
+          parent_el.querySelector('a.room-info').classList.remove('selected');
+        } else {
+          parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
+
+          _converse.connection.disco.info(ev.target.getAttribute('data-room-jid'), null, _.partial(insertRoomInfo, parent_el));
+        }
+      }
+
+      _converse.ListChatRoomsModal = _converse.BootstrapModal.extend({
+        events: {
+          'submit form': 'showRooms',
+          'click a.room-info': 'toggleRoomInfo',
+          'change input[name=nick]': 'setNick',
+          'change input[name=server]': 'setDomain',
+          'click .open-room': 'openRoom'
+        },
+        initialize: function initialize() {
+          _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+
+          this.model.on('change:muc_domain', this.onDomainChange, this);
+        },
+        toHTML: function toHTML() {
+          return tpl_list_chatrooms_modal(_.extend(this.model.toJSON(), {
+            'heading_list_chatrooms': __('Query for Chatrooms'),
+            'label_server_address': __('Server address'),
+            'label_query': __('Show rooms'),
+            'server_placeholder': __('conference.example.org')
+          }));
+        },
+        afterRender: function afterRender() {
+          var _this = this;
+
+          this.el.addEventListener('shown.bs.modal', function () {
+            _this.el.querySelector('input[name="server"]').focus();
+          }, false);
+        },
+        openRoom: function openRoom(ev) {
+          ev.preventDefault();
+          var jid = ev.target.getAttribute('data-room-jid');
+          var name = ev.target.getAttribute('data-room-name');
+          this.modal.hide();
+
+          _converse.api.rooms.open(jid, {
+            'name': name
+          });
+        },
+        toggleRoomInfo: function toggleRoomInfo(ev) {
+          ev.preventDefault();
+
+          _toggleRoomInfo(ev);
+        },
+        onDomainChange: function onDomainChange(model) {
+          if (_converse.auto_list_rooms) {
+            this.updateRoomsList();
+          }
+        },
+        roomStanzaItemToHTMLElement: function roomStanzaItemToHTMLElement(room) {
+          var name = Strophe.unescapeNode(room.getAttribute('name') || room.getAttribute('jid'));
+          var div = document.createElement('div');
+          div.innerHTML = tpl_room_item({
+            'name': Strophe.xmlunescape(name),
+            'jid': room.getAttribute('jid'),
+            'open_title': __('Click to open this room'),
+            'info_title': __('Show more information on this room')
+          });
+          return div.firstChild;
+        },
+        removeSpinner: function removeSpinner() {
+          _.each(this.el.querySelectorAll('span.spinner'), function (el) {
+            return el.parentNode.removeChild(el);
+          });
+        },
+        informNoRoomsFound: function informNoRoomsFound() {
+          var chatrooms_el = this.el.querySelector('.available-chatrooms');
+          chatrooms_el.innerHTML = tpl_rooms_results({
+            'feedback_text': __('No rooms found')
+          });
+          var input_el = this.el.querySelector('input[name="server"]');
+          input_el.classList.remove('hidden');
+          this.removeSpinner();
+        },
+        onRoomsFound: function onRoomsFound(iq) {
+          /* Handle the IQ stanza returned from the server, containing
+           * all its public rooms.
+           */
+          var available_chatrooms = this.el.querySelector('.available-chatrooms');
+          this.rooms = iq.querySelectorAll('query item');
+
+          if (this.rooms.length) {
+            // For translators: %1$s is a variable and will be
+            // replaced with the XMPP server name
+            available_chatrooms.innerHTML = tpl_rooms_results({
+              'feedback_text': __('Rooms found:')
+            });
+            var fragment = document.createDocumentFragment();
+
+            var children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil);
+
+            _.each(children, function (child) {
+              return fragment.appendChild(child);
+            });
+
+            available_chatrooms.appendChild(fragment);
+            this.removeSpinner();
+          } else {
+            this.informNoRoomsFound();
+          }
+
+          return true;
+        },
+        updateRoomsList: function updateRoomsList() {
+          /* Send an IQ stanza to the server asking for all rooms
+           */
+          _converse.connection.sendIQ($iq({
+            to: this.model.get('muc_domain'),
+            from: _converse.connection.jid,
+            type: "get"
+          }).c("query", {
+            xmlns: Strophe.NS.DISCO_ITEMS
+          }), this.onRoomsFound.bind(this), this.informNoRoomsFound.bind(this), 5000);
+        },
+        showRooms: function showRooms(ev) {
+          ev.preventDefault();
+          var data = new FormData(ev.target);
+          this.model.save('muc_domain', data.get('server'));
+          this.updateRoomsList();
+        },
+        setDomain: function setDomain(ev) {
+          this.model.save({
+            muc_domain: ev.target.value
+          });
+        },
+        setNick: function setNick(ev) {
+          this.model.save({
+            nick: ev.target.value
+          });
+        }
+      });
+      _converse.AddChatRoomModal = _converse.BootstrapModal.extend({
+        events: {
+          'submit form.add-chatroom': 'openChatRoom'
+        },
+        toHTML: function toHTML() {
+          return tpl_add_chatroom_modal(_.extend(this.model.toJSON(), {
+            'heading_new_chatroom': __('Enter a new Chatroom'),
+            'label_room_address': __('Room address'),
+            'label_nickname': __('Optional nickname'),
+            'chatroom_placeholder': __('name@conference.example.org'),
+            'label_join': __('Join')
+          }));
+        },
+        afterRender: function afterRender() {
+          var _this2 = this;
+
+          this.el.addEventListener('shown.bs.modal', function () {
+            _this2.el.querySelector('input[name="chatroom"]').focus();
+          }, false);
+        },
+        parseRoomDataFromEvent: function parseRoomDataFromEvent(form) {
+          var data = new FormData(form);
+          var jid = data.get('chatroom');
+          var server = Strophe.getDomainFromJid(jid);
+          this.model.save('muc_domain', server);
+          return {
+            'jid': jid,
+            'nick': data.get('nickname')
+          };
+        },
+        openChatRoom: function openChatRoom(ev) {
+          ev.preventDefault();
+          var data = this.parseRoomDataFromEvent(ev.target);
+
+          _converse.api.rooms.open(data.jid, data);
+
+          this.modal.hide();
+          ev.target.reset();
+        }
+      });
       _converse.ChatRoomView = _converse.ChatBoxView.extend({
         /* Backbone.NativeView which renders a chat room, based upon the view
          * for normal one-on-one chat boxes.
@@ -52227,14 +56432,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
           'click .toggle-clear': 'clearChatRoomMessages',
           'click .toggle-call': 'toggleCall',
-          'click .toggle-occupants a': 'toggleOccupants',
+          'click .toggle-occupants': 'toggleOccupants',
           'click .new-msgs-indicator': 'viewUnreadMessages',
           'click .occupant': 'onOccupantClicked',
           'keypress .chat-textarea': 'keyPressed',
           'click .send-button': 'onFormSubmitted'
         },
         initialize: function initialize() {
-          var _this = this;
+          var _this3 = this;
 
           this.scrollDown = _.debounce(this._scrollDown, 250);
           this.markScrolled = _.debounce(this._markScrolled, 100);
@@ -52253,11 +56458,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
           if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
             var handler = function handler() {
-              _this.join();
+              _this3.join();
 
-              _this.fetchMessages();
+              _this3.fetchMessages();
 
-              _converse.emit('chatRoomOpened', _this);
+              _converse.emit('chatRoomOpened', _this3);
             };
 
             this.getRoomFeatures().then(handler, handler);
@@ -52343,7 +56548,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             description: this.model.get('description') || ''
           }));
         },
-        afterShown: function afterShown(focus) {
+        afterShown: function afterShown() {
           /* Override from converse-chatview, specifically to avoid
            * the 'active' chat state from being sent out prematurely.
            *
@@ -52356,30 +56561,23 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
           this.occupantsview.setOccupantsHeight();
           this.scrollDown();
-
-          if (focus) {
-            this.focus();
-          }
+          this.renderEmojiPicker();
         },
-        show: function show(focus) {
+        show: function show() {
           if (u.isVisible(this.el)) {
-            if (focus) {
-              this.focus();
-            }
-
+            this.focus();
             return;
           } // Override from converse-chatview in order to not use
           // "fadeIn", which causes flashing.
 
 
           u.showElement(this.el);
-          this.afterShown(focus);
+          this.afterShown();
         },
         afterConnected: function afterConnected() {
           if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
             this.setChatState(_converse.ACTIVE);
             this.scrollDown();
-            this.renderEmojiPicker();
             this.focus();
           }
         },
@@ -52407,25 +56605,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           this.leave();
         },
         setOccupantsVisibility: function setOccupantsVisibility() {
+          var icon_el = this.el.querySelector('.toggle-occupants');
+
           if (this.model.get('hidden_occupants')) {
-            var icon_el = this.el.querySelector('.icon-hide-users');
-
-            if (!_.isNull(icon_el)) {
-              icon_el.classList.remove('icon-hide-users');
-              icon_el.classList.add('icon-show-users');
-            }
-
             this.el.querySelector('.chat-area').classList.add('full');
             u.hideElement(this.el.querySelector('.occupants'));
           } else {
-            var _icon_el = this.el.querySelector('.icon-show-users');
-
-            if (!_.isNull(_icon_el)) {
-              _icon_el.classList.remove('icon-show-users');
-
-              _icon_el.classList.add('icon-hide-users');
-            }
-
             this.el.querySelector('.chat-area').classList.remove('full');
             this.el.querySelector('.occupants').classList.remove('hidden');
           }
@@ -52646,7 +56831,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           return _.flatMap(arguments[0], this.parseMemberListIQ);
         },
         getJidsWithAffiliations: function getJidsWithAffiliations(affiliations) {
-          var _this2 = this;
+          var _this4 = this;
 
           /* Returns a map of JIDs that have the affiliations
            * as provided.
@@ -52656,13 +56841,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           }
 
           return new Promise(function (resolve, reject) {
-            var promises = _.map(affiliations, _.partial(_this2.requestMemberList, _this2.model.get('jid')));
+            var promises = _.map(affiliations, _.partial(_this4.requestMemberList, _this4.model.get('jid')));
 
-            Promise.all(promises).then(_.flow(_this2.marshallAffiliationIQs.bind(_this2), resolve), _.flow(_this2.marshallAffiliationIQs.bind(_this2), resolve));
+            Promise.all(promises).then(_.flow(_this4.marshallAffiliationIQs.bind(_this4), resolve), _.flow(_this4.marshallAffiliationIQs.bind(_this4), resolve));
           });
         },
         updateMemberLists: function updateMemberLists(members, affiliations, deltaFunc) {
-          var _this3 = this;
+          var _this5 = this;
 
           /* Fetch the lists of users with the given affiliations.
            * Then compute the delta between those users and
@@ -52682,7 +56867,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
            *  to update the list.
            */
           this.getJidsWithAffiliations(affiliations).then(function (old_members) {
-            _this3.setAffiliations(deltaFunc(members, old_members));
+            _this5.setAffiliations(deltaFunc(members, old_members));
           });
         },
         directInvite: function directInvite(recipient, reason) {
@@ -53159,7 +57344,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           _converse.ChatBoxView.prototype.close.apply(this, arguments);
         },
         renderConfigurationForm: function renderConfigurationForm(stanza) {
-          var _this4 = this;
+          var _this6 = this;
 
           /* Renders a form given an IQ stanza containing the current
            * room configuration.
@@ -53204,12 +57389,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           last_fieldset_el.querySelector('input[type=button]').addEventListener('click', function (ev) {
             ev.preventDefault();
 
-            _this4.closeForm();
+            _this6.closeForm();
           });
           form_el.addEventListener('submit', function (ev) {
             ev.preventDefault();
 
-            _this4.saveConfiguration(ev.target).then(_this4.getRoomFeatures.bind(_this4));
+            _this6.saveConfiguration(ev.target).then(_this6.getRoomFeatures.bind(_this6));
           }, false);
         },
         sendConfiguration: function sendConfiguration(config, onSuccess, onError) {
@@ -53245,7 +57430,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           return _converse.connection.sendIQ(iq, onSuccess, onError);
         },
         saveConfiguration: function saveConfiguration(form) {
-          var _this5 = this;
+          var _this7 = this;
 
           /* Submit the room configuration form by sending an IQ
            * stanza to the server.
@@ -53260,13 +57445,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             var inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
                 configArray = _.map(inputs, u.webForm2xForm);
 
-            _this5.sendConfiguration(configArray, resolve, reject);
+            _this7.sendConfiguration(configArray, resolve, reject);
 
-            _this5.closeForm();
+            _this7.closeForm();
           });
         },
         autoConfigureChatRoom: function autoConfigureChatRoom() {
-          var _this6 = this;
+          var _this8 = this;
 
           /* Automatically configure room based on the
            * 'roomconfig' data on this view's model.
@@ -53280,7 +57465,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
            */
           var that = this;
           return new Promise(function (resolve, reject) {
-            _this6.fetchRoomConfiguration().then(function (stanza) {
+            _this8.fetchRoomConfiguration().then(function (stanza) {
               var configArray = [],
                   fields = stanza.querySelectorAll('field'),
                   config = that.model.get('roomconfig');
@@ -53326,7 +57511,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           this.renderAfterTransition();
         },
         fetchRoomConfiguration: function fetchRoomConfiguration(handler) {
-          var _this7 = this,
+          var _this9 = this,
               _arguments = arguments;
 
           /* Send an IQ stanza to fetch the room configuration data.
@@ -53338,13 +57523,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
            */
           return new Promise(function (resolve, reject) {
             _converse.connection.sendIQ($iq({
-              'to': _this7.model.get('jid'),
+              'to': _this9.model.get('jid'),
               'type': "get"
             }).c("query", {
               xmlns: Strophe.NS.MUC_OWNER
             }), function (iq) {
               if (handler) {
-                handler.apply(_this7, _arguments);
+                handler.apply(_this9, _arguments);
               }
 
               resolve(iq);
@@ -53396,13 +57581,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           this.model.save(features);
         },
         getRoomFeatures: function getRoomFeatures() {
-          var _this8 = this;
+          var _this10 = this;
 
           /* Fetch the room disco info, parse it and then
            * save it on the Backbone.Model of this chat rooms.
            */
           return new Promise(function (resolve, reject) {
-            _converse.connection.disco.info(_this8.model.get('jid'), null, _.flow(_this8.parseRoomFeatures.bind(_this8), resolve), function () {
+            _converse.connection.disco.info(_this10.model.get('jid'), null, _.flow(_this10.parseRoomFeatures.bind(_this10), resolve), function () {
               reject(new Error("Could not parse the room features"));
             }, 5000);
           });
@@ -53700,7 +57885,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           return notification;
         },
         displayNotificationsforUser: function displayNotificationsforUser(notification) {
-          var _this9 = this;
+          var _this11 = this;
 
           /* Given the notification object generated by
            * parseXUserElement, display any relevant messages and
@@ -53722,9 +57907,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           }
 
           _.each(notification.messages, function (message) {
-            _this9.content.insertAdjacentHTML('beforeend', tpl_info({
+            _this11.content.insertAdjacentHTML('beforeend', tpl_info({
               'data': '',
               'isodate': moment().format(),
+              'extra_classes': 'chat-event',
               'message': message
             }));
           });
@@ -53746,7 +57932,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             last_el.outerHTML = tpl_info({
               'data': "data-leavejoin=\"".concat(nick, "\""),
               'isodate': moment().format(),
-              'message': __('%1$s has left and re-entered the room.', nick)
+              'extra_classes': 'chat-event',
+              'message': __('%1$s has left and re-entered the room', nick)
             });
           } else {
             var message;
@@ -53754,12 +57941,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             if (_.get(stat, 'textContent')) {
               message = __('%1$s has entered the room. "%2$s"', nick, stat.textContent);
             } else {
-              message = __('%1$s has entered the room.', nick);
+              message = __('%1$s has entered the room', nick);
             }
 
             var data = {
               'data': "data-join=\"".concat(nick, "\""),
               'isodate': moment().format(),
+              'extra_classes': 'chat-event',
               'message': message
             };
 
@@ -53785,12 +57973,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             if (_.get(stat, 'textContent')) {
               message = __('%1$s has entered and left the room. "%2$s"', nick, stat.textContent);
             } else {
-              message = __('%1$s has entered and left the room.', nick);
+              message = __('%1$s has entered and left the room', nick);
             }
 
             last_el.outerHTML = tpl_info({
               'data': "data-joinleave=\"".concat(nick, "\""),
               'isodate': moment().format(),
+              'extra_classes': 'chat-event',
               'message': message
             });
           } else {
@@ -53799,12 +57988,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             if (_.get(stat, 'textContent')) {
               _message = __('%1$s has left the room. "%2$s"', nick, stat.textContent);
             } else {
-              _message = __('%1$s has left the room.', nick);
+              _message = __('%1$s has left the room', nick);
             }
 
             var data = {
               'message': _message,
               'isodate': moment().format(),
+              'extra_classes': 'chat-event',
               'data': "data-leave=\"".concat(nick, "\"")
             };
 
@@ -54007,7 +58197,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           this.content.insertAdjacentHTML('beforeend', tpl_info({
             'data': '',
             'isodate': moment().format(),
-            'message': __('Topic set by %1$s to: %2$s', sender, subject)
+            'extra_classes': 'chat-event',
+            'message': __('Topic set by %1$s', sender)
+          }));
+          this.content.insertAdjacentHTML('beforeend', tpl_info({
+            'data': '',
+            'isodate': moment().format(),
+            'extra_classes': 'chat-topic',
+            'message': subject
           }));
           this.scrollDown();
         },
@@ -54105,11 +58302,49 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           return true;
         }
       });
-      _converse.ChatRoomOccupant = Backbone.Model.extend({
-        initialize: function initialize(attributes) {
-          this.set(_.extend({
-            'id': _converse.connection.getUniqueId()
-          }, attributes));
+      _converse.RoomsPanel = Backbone.NativeView.extend({
+        /* Backbone.NativeView which renders MUC section of the control box.
+         *
+         * Chat rooms can be listed, joined and new rooms can be created.
+         */
+        tagName: 'div',
+        className: 'controlbox-pane',
+        id: 'chatrooms',
+        events: {
+          'click a.chatbox-btn.fa-users': 'showAddRoomModal',
+          'click a.chatbox-btn.fa-list-ul': 'showListRoomsModal',
+          'click a.room-info': 'toggleRoomInfo'
+        },
+        render: function render() {
+          this.el.innerHTML = tpl_room_panel({
+            'heading_chatrooms': __('Chatrooms'),
+            'title_new_room': __('Add a new room'),
+            'title_list_rooms': __('Query for rooms')
+          });
+          return this;
+        },
+        toggleRoomInfo: function toggleRoomInfo(ev) {
+          ev.preventDefault();
+
+          _toggleRoomInfo(ev);
+        },
+        showAddRoomModal: function showAddRoomModal(ev) {
+          if (_.isUndefined(this.add_room_modal)) {
+            this.add_room_modal = new _converse.AddChatRoomModal({
+              'model': this.model
+            });
+          }
+
+          this.add_room_modal.show(ev);
+        },
+        showListRoomsModal: function showListRoomsModal(ev) {
+          if (_.isUndefined(this.list_rooms_modal)) {
+            this.list_rooms_modal = new _converse.ListChatRoomsModal({
+              'model': this.model
+            });
+          }
+
+          this.list_rooms_modal.show(ev);
         }
       });
       _converse.ChatRoomOccupantView = Backbone.VDOMView.extend({
@@ -54133,24 +58368,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           this.el.parentElement.removeChild(this.el);
         }
       });
-      _converse.ChatRoomOccupants = Backbone.Collection.extend({
-        model: _converse.ChatRoomOccupant,
-        comparator: function comparator(occupant1, occupant2) {
-          var role1 = occupant1.get('role') || 'none';
-          var role2 = occupant2.get('role') || 'none';
-
-          if (MUC_ROLE_WEIGHTS[role1] === MUC_ROLE_WEIGHTS[role2]) {
-            var nick1 = occupant1.get('nick').toLowerCase();
-            var nick2 = occupant2.get('nick').toLowerCase();
-            return nick1 < nick2 ? -1 : nick1 > nick2 ? 1 : 0;
-          } else {
-            return MUC_ROLE_WEIGHTS[role1] < MUC_ROLE_WEIGHTS[role2] ? -1 : 1;
-          }
-        }
-      });
       _converse.ChatRoomOccupantsView = Backbone.OrderedListView.extend({
         tagName: 'div',
-        className: 'occupants',
+        className: 'occupants col-md-3 col-4',
         listItems: 'model',
         sortEvent: 'change:role',
         listSelector: '.occupant-list',
@@ -54213,7 +58433,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           return this;
         },
         renderRoomFeatures: function renderRoomFeatures() {
-          var picks = _.pick(this.chatroomview.model.attributes, ROOM_FEATURES),
+          var picks = _.pick(this.chatroomview.model.attributes, converse.ROOM_FEATURES),
               iteratee = function iteratee(a, v) {
             return a || v;
           },
@@ -54448,514 +58668,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           el.addEventListener('awesomplete-selectcomplete', this.promptForInvite.bind(this));
         }
       });
-      _converse.MUCJoinForm = Backbone.VDOMView.extend({
-        initialize: function initialize() {
-          this.model.on('change:muc_domain', this.render, this);
-        },
-        toHTML: function toHTML() {
-          return tpl_chatroom_join_form(_.assign(this.model.toJSON(), {
-            'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
-            'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
-            'label_room_name': __('Room name'),
-            'label_nickname': __('Nickname'),
-            'label_server': __('Server'),
-            'label_join': __('Join Room'),
-            'label_show_rooms': __('Show rooms')
-          }));
-        }
-      });
-      _converse.RoomsPanelModel = Backbone.Model.extend({
-        defaults: {
-          'muc_domain': ''
-        }
-      });
-      _converse.RoomsPanel = Backbone.NativeView.extend({
-        /* Backbone.NativeView which renders the "Rooms" tab and accompanying
-         * panel in the control box.
-         *
-         * In this panel, chat rooms can be listed, joined and new rooms
-         * can be created.
-         */
-        tagName: 'div',
-        className: 'controlbox-pane',
-        id: 'chatrooms',
-        events: {
-          'submit form.add-chatroom': 'openChatRoom',
-          'click input#show-rooms': 'showRooms',
-          'click a.open-room': 'openChatRoom',
-          'click a.room-info': 'toggleRoomInfo',
-          'change input[name=server]': 'setDomain',
-          'change input[name=nick]': 'setNick'
-        },
-        initialize: function initialize(cfg) {
-          this.join_form = new _converse.MUCJoinForm({
-            'model': this.model
-          });
-          this.parent_el = cfg.parent;
-          this.tab_el = document.createElement('li');
-          this.model.on('change:muc_domain', this.onDomainChange, this);
-          this.model.on('change:nick', this.onNickChange, this);
 
-          _converse.chatboxes.on('change:num_unread', this.renderTab, this);
-
-          _converse.chatboxes.on('add', _.debounce(this.renderTab, 100), this);
-        },
-        render: function render() {
-          this.el.innerHTML = tpl_room_panel();
-          this.join_form.setElement(this.el.querySelector('.add-chatroom'));
-          this.join_form.render();
-          this.renderTab();
-
-          var controlbox = _converse.chatboxes.get('controlbox');
-
-          if (controlbox.get('active-panel') !== ROOMS_PANEL_ID) {
-            this.el.classList.add('hidden');
-          } else {
-            this.el.classList.remove('hidden');
-          }
-
-          return this;
-        },
-        renderTab: function renderTab() {
-          var controlbox = _converse.chatboxes.get('controlbox');
-
-          var chatrooms = f.filter(_.partial(u.isOfType, CHATROOMS_TYPE), _converse.chatboxes.models);
-          this.tab_el.innerHTML = tpl_chatrooms_tab({
-            'label_rooms': __('Rooms'),
-            'is_current': controlbox.get('active-panel') === ROOMS_PANEL_ID,
-            'num_unread': f.sum(f.map(f.curry(u.getAttribute)('num_unread'), chatrooms))
-          });
-        },
-        insertIntoDOM: function insertIntoDOM() {
-          this.parent_el.appendChild(this.render().el);
-          this.tabs = this.parent_el.parentNode.querySelector('#controlbox-tabs');
-          this.tabs.appendChild(this.tab_el);
-          return this;
-        },
-        onDomainChange: function onDomainChange(model) {
-          if (_converse.auto_list_rooms) {
-            this.updateRoomsList();
-          }
-        },
-        onNickChange: function onNickChange(model) {
-          var nick = this.el.querySelector('input.new-chatroom-nick');
-
-          if (!_.isNull(nick)) {
-            nick.value = model.get('nick');
-          }
-        },
-        removeSpinner: function removeSpinner() {
-          _.each(this.el.querySelectorAll('span.spinner'), function (el) {
-            return el.parentNode.removeChild(el);
-          });
-        },
-        informNoRoomsFound: function informNoRoomsFound() {
-          var chatrooms_el = this.el.querySelector('#available-chatrooms');
-          chatrooms_el.innerHTML = tpl_rooms_results({
-            'feedback_text': __('No rooms found')
-          });
-          var input_el = this.el.querySelector('input#show-rooms');
-          input_el.classList.remove('hidden');
-          this.removeSpinner();
-        },
-        roomStanzaItemToHTMLElement: function roomStanzaItemToHTMLElement(room) {
-          var name = Strophe.unescapeNode(room.getAttribute('name') || room.getAttribute('jid'));
-          var div = document.createElement('div');
-          div.innerHTML = tpl_room_item({
-            'name': name,
-            'jid': room.getAttribute('jid'),
-            'open_title': __('Click to open this room'),
-            'info_title': __('Show more information on this room')
-          });
-          return div.firstChild;
-        },
-        onRoomsFound: function onRoomsFound(iq) {
-          /* Handle the IQ stanza returned from the server, containing
-           * all its public rooms.
-           */
-          var available_chatrooms = this.el.querySelector('#available-chatrooms');
-          this.rooms = iq.querySelectorAll('query item');
-
-          if (this.rooms.length) {
-            // For translators: %1$s is a variable and will be
-            // replaced with the XMPP server name
-            available_chatrooms.innerHTML = tpl_rooms_results({
-              'feedback_text': __('Rooms found')
-            });
-            var fragment = document.createDocumentFragment();
-
-            var children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil);
-
-            _.each(children, function (child) {
-              return fragment.appendChild(child);
-            });
-
-            available_chatrooms.appendChild(fragment);
-            var input_el = this.el.querySelector('input#show-rooms');
-            input_el.classList.remove('hidden');
-            this.removeSpinner();
-          } else {
-            this.informNoRoomsFound();
-          }
-
-          return true;
-        },
-        updateRoomsList: function updateRoomsList() {
-          /* Send an IQ stanza to the server asking for all rooms
-           */
-          _converse.connection.sendIQ($iq({
-            to: this.model.get('muc_domain'),
-            from: _converse.connection.jid,
-            type: "get"
-          }).c("query", {
-            xmlns: Strophe.NS.DISCO_ITEMS
-          }), this.onRoomsFound.bind(this), this.informNoRoomsFound.bind(this), 5000);
-        },
-        showRooms: function showRooms() {
-          var chatrooms_el = this.el.querySelector('#available-chatrooms');
-          var server_el = this.el.querySelector('input.new-chatroom-server');
-          var server = server_el.value;
-
-          if (!server) {
-            server_el.classList.add('error');
-            return;
-          }
-
-          this.el.querySelector('input.new-chatroom-name').classList.remove('error');
-          server_el.classList.remove('error');
-          chatrooms_el.innerHTML = '';
-          var input_el = this.el.querySelector('input#show-rooms');
-          input_el.classList.add('hidden');
-          input_el.insertAdjacentHTML('afterend', tpl_spinner());
-          this.model.save({
-            muc_domain: server
-          });
-          this.updateRoomsList();
-        },
-        insertRoomInfo: function insertRoomInfo(el, stanza) {
-          /* Insert room info (based on returned #disco IQ stanza)
-           *
-           * Parameters:
-           *  (HTMLElement) el: The HTML DOM element that should
-           *      contain the info.
-           *  (XMLElement) stanza: The IQ stanza containing the room
-           *      info.
-           */
-          // All MUC features found here: http://xmpp.org/registrar/disco-features.html
-          el.querySelector('span.spinner').outerHTML = tpl_room_description({
-            'jid': stanza.getAttribute('from'),
-            'desc': _.get(_.head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
-            'occ': _.get(_.head(sizzle('field[var="muc#roominfo_occupants"] value', stanza)), 'textContent'),
-            'hidden': sizzle('feature[var="muc_hidden"]', stanza).length,
-            'membersonly': sizzle('feature[var="muc_membersonly"]', stanza).length,
-            'moderated': sizzle('feature[var="muc_moderated"]', stanza).length,
-            'nonanonymous': sizzle('feature[var="muc_nonanonymous"]', stanza).length,
-            'open': sizzle('feature[var="muc_open"]', stanza).length,
-            'passwordprotected': sizzle('feature[var="muc_passwordprotected"]', stanza).length,
-            'persistent': sizzle('feature[var="muc_persistent"]', stanza).length,
-            'publicroom': sizzle('feature[var="muc_publicroom"]', stanza).length,
-            'semianonymous': sizzle('feature[var="muc_semianonymous"]', stanza).length,
-            'temporary': sizzle('feature[var="muc_temporary"]', stanza).length,
-            'unmoderated': sizzle('feature[var="muc_unmoderated"]', stanza).length,
-            'label_desc': __('Description:'),
-            'label_jid': __('Room Address (JID):'),
-            'label_occ': __('Occupants:'),
-            'label_features': __('Features:'),
-            'label_requires_auth': __('Requires authentication'),
-            'label_hidden': __('Hidden'),
-            'label_requires_invite': __('Requires an invitation'),
-            'label_moderated': __('Moderated'),
-            'label_non_anon': __('Non-anonymous'),
-            'label_open_room': __('Open room'),
-            'label_permanent_room': __('Permanent room'),
-            'label_public': __('Public'),
-            'label_semi_anon': __('Semi-anonymous'),
-            'label_temp_room': __('Temporary room'),
-            'label_unmoderated': __('Unmoderated')
-          });
-        },
-        toggleRoomInfo: function toggleRoomInfo(ev) {
-          /* Show/hide extra information about a room in the listing.
-           */
-          var parent_el = ev.target.parentElement,
-              div_el = parent_el.querySelector('div.room-info');
-
-          if (div_el) {
-            u.slideIn(div_el).then(u.removeElement);
-          } else {
-            parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
-
-            _converse.connection.disco.info(ev.target.getAttribute('data-room-jid'), null, _.partial(this.insertRoomInfo, parent_el));
-          }
-        },
-        parseRoomDataFromEvent: function parseRoomDataFromEvent(ev) {
-          var name, jid;
-
-          if (ev.type === 'click') {
-            name = ev.target.textContent;
-            jid = ev.target.getAttribute('data-room-jid');
-          } else {
-            var name_el = this.el.querySelector('input.new-chatroom-name');
-            var server_el = this.el.querySelector('input.new-chatroom-server');
-            var server = server_el.value;
-            name = name_el.value.trim();
-            name_el.value = ''; // Clear the input
-
-            if (name && server) {
-              jid = Strophe.escapeNode(name.toLowerCase()) + '@' + server.toLowerCase();
-              name_el.classList.remove('error');
-              server_el.classList.remove('error');
-              this.model.save({
-                muc_domain: server
-              });
-            } else {
-              if (!name) {
-                name_el.classList.add('error');
-              }
-
-              if (!server) {
-                server_el.classList.add('error');
-              }
-
-              return;
-            }
-          }
-
-          return {
-            'jid': jid,
-            'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
-          };
-        },
-        openChatRoom: function openChatRoom(ev) {
-          ev.preventDefault();
-          var data = this.parseRoomDataFromEvent(ev);
-
-          if (!_.isUndefined(data)) {
-            _openChatRoom(data);
-          }
-        },
-        setDomain: function setDomain(ev) {
-          this.model.save({
-            muc_domain: ev.target.value
-          });
-        },
-        setNick: function setNick(ev) {
-          this.model.save({
-            nick: ev.target.value
-          });
-        }
-      });
-      /************************ End of ChatRoomView **********************/
-
-      _converse.onDirectMUCInvitation = function (message) {
-        /* A direct MUC invitation to join a room has been received
-         * See XEP-0249: Direct MUC invitations.
-         *
-         * Parameters:
-         *  (XMLElement) message: The message stanza containing the
-         *        invitation.
-         */
-        var x_el = sizzle('x[xmlns="jabber:x:conference"]', message).pop(),
-            from = Strophe.getBareJidFromJid(message.getAttribute('from')),
-            room_jid = x_el.getAttribute('jid'),
-            reason = x_el.getAttribute('reason');
-
-        var contact = _converse.roster.get(from),
-            result;
-
-        if (_converse.auto_join_on_invite) {
-          result = true;
-        } else {
-          // Invite request might come from someone not your roster list
-          contact = contact ? contact.get('fullname') : Strophe.getNodeFromJid(from);
-
-          if (!reason) {
-            result = confirm(__("%1$s has invited you to join a chat room: %2$s", contact, room_jid));
-          } else {
-            result = confirm(__('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"', contact, room_jid, reason));
-          }
-        }
-
-        if (result === true) {
-          var chatroom = _openChatRoom({
-            'jid': room_jid,
-            'password': x_el.getAttribute('password')
-          });
-
-          if (chatroom.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
-            _converse.chatboxviews.get(room_jid).join();
-          }
-        }
-      };
-
-      if (_converse.allow_muc_invitations) {
-        var registerDirectInvitationHandler = function registerDirectInvitationHandler() {
-          _converse.connection.addHandler(function (message) {
-            _converse.onDirectMUCInvitation(message);
-
-            return true;
-          }, 'jabber:x:conference', 'message');
-        };
-
-        _converse.on('connected', registerDirectInvitationHandler);
-
-        _converse.on('reconnected', registerDirectInvitationHandler);
-      }
-
-      function autoJoinRooms() {
-        /* Automatically join chat rooms, based on the
-         * "auto_join_rooms" configuration setting, which is an array
-         * of strings (room JIDs) or objects (with room JID and other
-         * settings).
-         */
-        _.each(_converse.auto_join_rooms, function (room) {
-          if (_converse.chatboxes.where({
-            'jid': room
-          }).length) {
-            return;
-          }
-
-          if (_.isString(room)) {
-            _converse.api.rooms.open(room);
-          } else if (_.isObject(room)) {
-            _converse.api.rooms.open(room.jid, room.nick);
-          } else {
-            _converse.log('Invalid room criteria specified for "auto_join_rooms"', Strophe.LogLevel.ERROR);
-          }
+      function setMUCDomain(domain, controlboxview) {
+        _converse.muc_domain = domain;
+        controlboxview.roomspanel.model.save({
+          'muc_domain': domain
         });
-
-        _converse.emit('roomsAutoJoined');
       }
-
-      _converse.on('chatBoxesFetched', autoJoinRooms);
-
-      _converse.getChatRoom = function (jid, attrs, fetcher) {
-        jid = jid.toLowerCase();
-        return _converse.getViewForChatBox(fetcher(_.extend({
-          'id': jid,
-          'jid': jid,
-          'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-          'type': CHATROOMS_TYPE,
-          'box_id': b64_sha1(jid)
-        }, attrs), attrs.bring_to_foreground));
-      };
-      /* We extend the default converse.js API to add methods specific to MUC
-       * chat rooms.
-       */
-
-
-      _.extend(_converse.api, {
-        'rooms': {
-          'close': function close(jids) {
-            if (_.isUndefined(jids)) {
-              _converse.chatboxviews.each(function (view) {
-                if (view.is_chatroom && view.model) {
-                  view.close();
-                }
-              });
-            } else if (_.isString(jids)) {
-              var view = _converse.chatboxviews.get(jids);
-
-              if (view) {
-                view.close();
-              }
-            } else {
-              _.each(jids, function (jid) {
-                var view = _converse.chatboxviews.get(jid);
-
-                if (view) {
-                  view.close();
-                }
-              });
-            }
-          },
-          'open': function open(jids, attrs) {
-            if (_.isString(attrs)) {
-              attrs = {
-                'nick': attrs
-              };
-            } else if (_.isUndefined(attrs)) {
-              attrs = {};
-            }
-
-            if (_.isUndefined(attrs.maximize)) {
-              attrs.maximize = false;
-            }
-
-            if (!attrs.nick && _converse.muc_nickname_from_jid) {
-              attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
-            }
-
-            if (_.isUndefined(jids)) {
-              throw new TypeError('rooms.open: You need to provide at least one JID');
-            } else if (_.isString(jids)) {
-              return _converse.getChatRoom(jids, attrs, _openChatRoom);
-            }
-
-            return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, _openChatRoom));
-          },
-          'get': function get(jids, attrs, create) {
-            if (_.isString(attrs)) {
-              attrs = {
-                'nick': attrs
-              };
-            } else if (_.isUndefined(attrs)) {
-              attrs = {};
-            }
-
-            if (_.isUndefined(jids)) {
-              var result = [];
-
-              _converse.chatboxes.each(function (chatbox) {
-                if (chatbox.get('type') === CHATROOMS_TYPE) {
-                  result.push(_converse.getViewForChatBox(chatbox));
-                }
-              });
-
-              return result;
-            }
-
-            var fetcher = _.partial(_converse.chatboxviews.getChatBox.bind(_converse.chatboxviews), _, create);
-
-            if (!attrs.nick) {
-              attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
-            }
-
-            if (_.isString(jids)) {
-              return _converse.getChatRoom(jids, attrs, fetcher);
-            }
-
-            return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, fetcher));
-          }
-        }
-      });
-      /* Event handlers */
-
-
-      _converse.on('addClientFeatures', function () {
-        if (_converse.allow_muc) {
-          _converse.connection.disco.addFeature(Strophe.NS.MUC);
-        }
-
-        if (_converse.allow_muc_invitations) {
-          _converse.connection.disco.addFeature('jabber:x:conference'); // Invites
-
-        }
-      });
-
-      _converse.on('reconnected', function reconnectToChatRooms() {
-        /* Upon a reconnection event from converse, join again
-         * all the open chat rooms.
-         */
-        _converse.chatboxviews.each(function (view) {
-          if (view.model.get('type') === CHATROOMS_TYPE) {
-            view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-            view.registerHandlers();
-            view.join();
-            view.fetchMessages();
-          }
-        });
-      });
 
       function setMUCDomainFromDisco(controlboxview) {
         /* Check whether service discovery for the user's domain
@@ -54985,13 +58704,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
       }
 
-      function setMUCDomain(domain, controlboxview) {
-        _converse.muc_domain = domain;
-        controlboxview.roomspanel.model.save({
-          'muc_domain': domain
-        });
-      }
-
       function fetchAndSetMUCDomain(controlboxview) {
         if (controlboxview.model.get('connected')) {
           if (!controlboxview.roomspanel.model.get('muc_domain')) {
@@ -55003,6 +58715,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           }
         }
       }
+      /************************ BEGIN Event Handlers ************************/
+
 
       _converse.on('controlboxInitialized', function (view) {
         if (!_converse.allow_muc) {
@@ -55012,1669 +58726,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         fetchAndSetMUCDomain(view);
         view.model.on('change:connected', _.partial(fetchAndSetMUCDomain, view));
       });
+      /************************ END Event Handlers ************************/
 
-      function disconnectChatRooms() {
-        /* When disconnecting, or reconnecting, mark all chat rooms as
-         * disconnected, so that they will be properly entered again
-         * when fetched from session storage.
-         */
-        _converse.chatboxes.each(function (model) {
-          if (model.get('type') === CHATROOMS_TYPE) {
-            model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-          }
-        });
-      }
-
-      _converse.on('reconnecting', disconnectChatRooms);
-
-      _converse.on('disconnecting', disconnectChatRooms);
     }
   });
 });
-//# sourceMappingURL=converse-muc.js.map;
+//# sourceMappingURL=converse-muc-views.js.map;
 
-define('tpl!chatroom_bookmark_form', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form">\n        <fieldset>\n            <legend>' +
-__e(o.heading) +
-'</legend>\n            <label>' +
-__e(o.label_name) +
-'</label>\n            <input type="text" name="name" required="required"/>\n            <label>' +
-__e(o.label_autojoin) +
-'</label>\n            <input type="checkbox" name="autojoin"/>\n            <label>' +
-__e(o.label_nick) +
-'</label>\n            <input type="text" name="nick" value="' +
-__e(o.default_nick) +
-'"/>\n        </fieldset>\n        <fieldset>\n            <input class="pure-button button-primary" type="submit" value="' +
-__e(o.label_submit) +
-'"/>\n            <input class="pure-button button-cancel" type="button" value="' +
-__e(o.label_cancel) +
-'"/>\n        </fieldset>\n    </form>\n</div>\n';
-return __p
-};});
 
-
-define('tpl!chatroom_bookmark_toggle', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<a class="chatbox-btn toggle-bookmark icon-pushpin\n   ';
- if (o.bookmarked) {;
-__p += '\n    button-on\n   ';
- } ;
-__p += '" title="' +
-__e(o.info_toggle_bookmark) +
-'"></a>\n';
-return __p
-};});
-
-
-define('tpl!bookmark', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<dd class="available-chatroom ';
- if (o.hidden) { ;
-__p += ' hidden ';
- } ;
-__p += '" data-room-jid="' +
-__e(o.jid) +
-'">\n    <a class="open-room" data-room-jid="' +
-__e(o.jid) +
-'" title="' +
-__e(o.open_title) +
-'" href="#">' +
-__e(o.name) +
-'</a>\n    <a class="right remove-bookmark icon-pushpin ';
- if (o.bookmarked) { ;
-__p += ' button-on ';
- } ;
-__p += '"\n       data-room-jid="' +
-__e(o.jid) +
-'" data-bookmark-name="' +
-__e(o.name) +
-'"\n       title="' +
-__e(o.info_remove_bookmark) +
-'" href="#">&nbsp;</a>\n    <a class="right room-info icon-room-info" data-room-jid="' +
-__e(o.jid) +
-'"\n       title="' +
-__e(o.info_title) +
-'" href="#">&nbsp;</a>\n</dd>\n';
-return __p
-};});
-
-
-define('tpl!bookmarks_list', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<a href="#" class="rooms-toggle bookmarks-toggle icon-' +
-__e(o.toggle_state) +
-'" title="' +
-__e(o.desc_bookmarks) +
-'">' +
-__e(o.label_bookmarks) +
-'</a>\n<dl class="bookmarks rooms-list ';
- if (o.toggle_state !== o._converse.OPENED) { ;
-__p += ' hidden ';
- } ;
-__p += '"></dl>\n';
-return __p
-};});
-
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
-//
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
-
-/*global define */
-
-/* This is a Converse.js plugin which add support for bookmarks specified
- * in XEP-0048.
- */
-(function (root, factory) {
-  define('converse-bookmarks',["converse-core", "converse-muc", "tpl!chatroom_bookmark_form", "tpl!chatroom_bookmark_toggle", "tpl!bookmark", "tpl!bookmarks_list"], factory);
-})(this, function (converse, muc, tpl_chatroom_bookmark_form, tpl_chatroom_bookmark_toggle, tpl_bookmark, tpl_bookmarks_list) {
-  var _converse$env = converse.env,
-      Backbone = _converse$env.Backbone,
-      Promise = _converse$env.Promise,
-      Strophe = _converse$env.Strophe,
-      $iq = _converse$env.$iq,
-      b64_sha1 = _converse$env.b64_sha1,
-      sizzle = _converse$env.sizzle,
-      _ = _converse$env._;
-  var u = converse.env.utils;
-  converse.plugins.add('converse-bookmarks', {
-    /* Plugin dependencies are other plugins which might be
-     * overridden or relied upon, and therefore need to be loaded before
-     * this plugin.
-     *
-     * If the setting "strict_plugin_dependencies" is set to true,
-     * an error will be raised if the plugin is not found. By default it's
-     * false, which means these plugins are only loaded opportunistically.
-     *
-     * NB: These plugins need to have already been loaded via require.js.
-     */
-    dependencies: ["converse-chatboxes", "converse-muc"],
-    overrides: {
-      // Overrides mentioned here will be picked up by converse.js's
-      // plugin architecture they will replace existing methods on the
-      // relevant objects or classes.
-      //
-      // New functions which don't exist yet can also be added.
-      clearSession: function clearSession() {
-        this.__super__.clearSession.apply(this, arguments);
-
-        if (!_.isUndefined(this.bookmarks)) {
-          this.bookmarks.reset();
-
-          this.bookmarks.browserStorage._clear();
-
-          window.sessionStorage.removeItem(this.bookmarks.fetched_flag);
-        }
-      },
-      ChatRoomView: {
-        events: {
-          'click .toggle-bookmark': 'toggleBookmark'
-        },
-        initialize: function initialize() {
-          this.__super__.initialize.apply(this, arguments);
-
-          this.model.on('change:bookmarked', this.onBookmarked, this);
-          this.setBookmarkState();
-        },
-        renderBookmarkToggle: function renderBookmarkToggle() {
-          var _converse = this.__super__._converse,
-              __ = _converse.__;
-          var bookmark_button = tpl_chatroom_bookmark_toggle(_.assignIn(this.model.toJSON(), {
-            info_toggle_bookmark: __('Bookmark this room'),
-            bookmarked: this.model.get('bookmarked')
-          }));
-          var close_button = this.el.querySelector('.close-chatbox-button');
-          close_button.insertAdjacentHTML('afterend', bookmark_button);
-        },
-        renderHeading: function renderHeading() {
-          var _this = this;
-
-          this.__super__.renderHeading.apply(this, arguments);
-
-          var _converse = this.__super__._converse;
-
-          if (_converse.allow_bookmarks) {
-            _converse.checkBookmarksSupport().then(function (supported) {
-              if (supported) {
-                _this.renderBookmarkToggle();
-              }
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-          }
-        },
-        checkForReservedNick: function checkForReservedNick() {
-          /* Check if the user has a bookmark with a saved nickanme
-           * for this room, and if so use it.
-           * Otherwise delegate to the super method.
-           */
-          var _converse = this.__super__._converse;
-
-          if (_.isUndefined(_converse.bookmarks) || !_converse.allow_bookmarks) {
-            return this.__super__.checkForReservedNick.apply(this, arguments);
-          }
-
-          var model = _converse.bookmarks.findWhere({
-            'jid': this.model.get('jid')
-          });
-
-          if (!_.isUndefined(model) && model.get('nick')) {
-            this.join(model.get('nick'));
-          } else {
-            return this.__super__.checkForReservedNick.apply(this, arguments);
-          }
-        },
-        onBookmarked: function onBookmarked() {
-          var icon = this.el.querySelector('.icon-pushpin');
-
-          if (_.isNull(icon)) {
-            return;
-          }
-
-          if (this.model.get('bookmarked')) {
-            icon.classList.add('button-on');
-          } else {
-            icon.classList.remove('button-on');
-          }
-        },
-        setBookmarkState: function setBookmarkState() {
-          /* Set whether the room is bookmarked or not.
-           */
-          var _converse = this.__super__._converse;
-
-          if (!_.isUndefined(_converse.bookmarks)) {
-            var models = _converse.bookmarks.where({
-              'jid': this.model.get('jid')
-            });
-
-            if (!models.length) {
-              this.model.save('bookmarked', false);
-            } else {
-              this.model.save('bookmarked', true);
-            }
-          }
-        },
-        renderBookmarkForm: function renderBookmarkForm() {
-          var _converse = this.__super__._converse,
-              __ = _converse.__,
-              body = this.el.querySelector('.chatroom-body');
-
-          _.each(body.children, function (child) {
-            child.classList.add('hidden');
-          }); // Remove any existing forms
-
-
-          _.each(body.querySelectorAll('.chatroom-form-container'), u.removeElement);
-
-          body.insertAdjacentHTML('beforeend', tpl_chatroom_bookmark_form({
-            heading: __('Bookmark this room'),
-            label_name: __('The name for this bookmark:'),
-            label_autojoin: __('Would you like this room to be automatically joined upon startup?'),
-            label_nick: __('What should your nickname for this room be?'),
-            default_nick: this.model.get('nick'),
-            label_submit: __('Save'),
-            label_cancel: __('Cancel')
-          }));
-          var form = body.querySelector('form.chatroom-form');
-          form.addEventListener('submit', this.onBookmarkFormSubmitted.bind(this));
-          form.querySelector('.button-cancel').addEventListener('click', this.closeForm.bind(this));
-        },
-        onBookmarkFormSubmitted: function onBookmarkFormSubmitted(ev) {
-          ev.preventDefault();
-          var _converse = this.__super__._converse;
-
-          _converse.bookmarks.createBookmark({
-            'jid': this.model.get('jid'),
-            'autojoin': _.get(ev.target.querySelector('input[name="autojoin"]'), 'checked') || false,
-            'name': _.get(ev.target.querySelector('input[name=name]'), 'value'),
-            'nick': _.get(ev.target.querySelector('input[name=nick]'), 'value')
-          });
-
-          u.removeElement(this.el.querySelector('div.chatroom-form-container'));
-          this.renderAfterTransition();
-        },
-        toggleBookmark: function toggleBookmark(ev) {
-          if (ev) {
-            ev.preventDefault();
-            ev.stopPropagation();
-          }
-
-          var _converse = this.__super__._converse;
-
-          var models = _converse.bookmarks.where({
-            'jid': this.model.get('jid')
-          });
-
-          if (!models.length) {
-            this.renderBookmarkForm();
-          } else {
-            _.forEach(models, function (model) {
-              model.destroy();
-            });
-
-            this.el.querySelector('.icon-pushpin').classList.remove('button-on');
-          }
-        }
-      }
-    },
-    initialize: function initialize() {
-      /* The initialize function gets called as soon as the plugin is
-       * loaded by converse.js's plugin machinery.
-       */
-      var _converse = this._converse,
-          __ = _converse.__; // Configuration values for this plugin
-      // ====================================
-      // Refer to docs/source/configuration.rst for explanations of these
-      // configuration settings.
-
-      _converse.api.settings.update({
-        allow_bookmarks: true,
-        allow_public_bookmarks: false,
-        hide_open_bookmarks: true
-      }); // Promises exposed by this plugin
-
-
-      _converse.api.promises.add('bookmarksInitialized'); // Pure functions on the _converse object
-
-
-      _.extend(_converse, {
-        removeBookmarkViaEvent: function removeBookmarkViaEvent(ev) {
-          /* Remove a bookmark as determined by the passed in
-           * event.
-           */
-          ev.preventDefault();
-          var name = ev.target.getAttribute('data-bookmark-name');
-          var jid = ev.target.getAttribute('data-room-jid');
-
-          if (confirm(__("Are you sure you want to remove the bookmark \"%1$s\"?", name))) {
-            _.invokeMap(_converse.bookmarks.where({
-              'jid': jid
-            }), Backbone.Model.prototype.destroy);
-          }
-        },
-        addBookmarkViaEvent: function addBookmarkViaEvent(ev) {
-          /* Add a bookmark as determined by the passed in
-           * event.
-           */
-          ev.preventDefault();
-          var jid = ev.target.getAttribute('data-room-jid');
-
-          var chatroom = _converse.api.rooms.open(jid, {
-            'bring_to_foreground': true
-          });
-
-          _converse.chatboxviews.get(jid).renderBookmarkForm();
-        }
-      });
-
-      _converse.Bookmark = Backbone.Model;
-      _converse.Bookmarks = Backbone.Collection.extend({
-        model: _converse.Bookmark,
-        comparator: 'name',
-        initialize: function initialize() {
-          this.on('add', _.flow(this.openBookmarkedRoom, this.markRoomAsBookmarked));
-          this.on('remove', this.markRoomAsUnbookmarked, this);
-          this.on('remove', this.sendBookmarkStanza, this);
-          var cache_key = "converse.room-bookmarks".concat(_converse.bare_jid);
-          this.fetched_flag = b64_sha1(cache_key + 'fetched');
-          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(cache_key));
-        },
-        openBookmarkedRoom: function openBookmarkedRoom(bookmark) {
-          if (bookmark.get('autojoin')) {
-            _converse.api.rooms.open(bookmark.get('jid'), bookmark.get('nick'));
-          }
-
-          return bookmark;
-        },
-        fetchBookmarks: function fetchBookmarks() {
-          var deferred = u.getResolveablePromise();
-
-          if (this.browserStorage.records.length > 0) {
-            this.fetch({
-              'success': _.bind(this.onCachedBookmarksFetched, this, deferred),
-              'error': _.bind(this.onCachedBookmarksFetched, this, deferred)
-            });
-          } else if (!window.sessionStorage.getItem(this.fetched_flag)) {
-            // There aren't any cached bookmarks and the
-            // `fetched_flag` is off, so we query the XMPP server.
-            // If nothing is returned from the XMPP server, we set
-            // the `fetched_flag` to avoid calling the server again.
-            this.fetchBookmarksFromServer(deferred);
-          } else {
-            deferred.resolve();
-          }
-
-          return deferred;
-        },
-        onCachedBookmarksFetched: function onCachedBookmarksFetched(deferred) {
-          return deferred.resolve();
-        },
-        createBookmark: function createBookmark(options) {
-          _converse.bookmarks.create(options);
-
-          _converse.bookmarks.sendBookmarkStanza();
-        },
-        sendBookmarkStanza: function sendBookmarkStanza() {
-          var stanza = $iq({
-            'type': 'set',
-            'from': _converse.connection.jid
-          }).c('pubsub', {
-            'xmlns': Strophe.NS.PUBSUB
-          }).c('publish', {
-            'node': 'storage:bookmarks'
-          }).c('item', {
-            'id': 'current'
-          }).c('storage', {
-            'xmlns': 'storage:bookmarks'
-          });
-          this.each(function (model) {
-            stanza = stanza.c('conference', {
-              'name': model.get('name'),
-              'autojoin': model.get('autojoin'),
-              'jid': model.get('jid')
-            }).c('nick').t(model.get('nick')).up().up();
-          });
-          stanza.up().up().up();
-          stanza.c('publish-options').c('x', {
-            'xmlns': Strophe.NS.XFORM,
-            'type': 'submit'
-          }).c('field', {
-            'var': 'FORM_TYPE',
-            'type': 'hidden'
-          }).c('value').t('http://jabber.org/protocol/pubsub#publish-options').up().up().c('field', {
-            'var': 'pubsub#persist_items'
-          }).c('value').t('true').up().up().c('field', {
-            'var': 'pubsub#access_model'
-          }).c('value').t('whitelist');
-
-          _converse.connection.sendIQ(stanza, null, this.onBookmarkError.bind(this));
-        },
-        onBookmarkError: function onBookmarkError(iq) {
-          _converse.log("Error while trying to add bookmark", Strophe.LogLevel.ERROR);
-
-          _converse.log(iq); // We remove all locally cached bookmarks and fetch them
-          // again from the server.
-
-
-          this.reset();
-          this.fetchBookmarksFromServer(null);
-          window.alert(__("Sorry, something went wrong while trying to save your bookmark."));
-        },
-        fetchBookmarksFromServer: function fetchBookmarksFromServer(deferred) {
-          var stanza = $iq({
-            'from': _converse.connection.jid,
-            'type': 'get'
-          }).c('pubsub', {
-            'xmlns': Strophe.NS.PUBSUB
-          }).c('items', {
-            'node': 'storage:bookmarks'
-          });
-
-          _converse.connection.sendIQ(stanza, _.bind(this.onBookmarksReceived, this, deferred), _.bind(this.onBookmarksReceivedError, this, deferred));
-        },
-        markRoomAsBookmarked: function markRoomAsBookmarked(bookmark) {
-          var room = _converse.chatboxes.get(bookmark.get('jid'));
-
-          if (!_.isUndefined(room)) {
-            room.save('bookmarked', true);
-          }
-        },
-        markRoomAsUnbookmarked: function markRoomAsUnbookmarked(bookmark) {
-          var room = _converse.chatboxes.get(bookmark.get('jid'));
-
-          if (!_.isUndefined(room)) {
-            room.save('bookmarked', false);
-          }
-        },
-        createBookmarksFromStanza: function createBookmarksFromStanza(stanza) {
-          var _this2 = this;
-
-          var bookmarks = sizzle('items[node="storage:bookmarks"] ' + 'item#current ' + 'storage[xmlns="storage:bookmarks"] ' + 'conference', stanza);
-
-          _.forEach(bookmarks, function (bookmark) {
-            _this2.create({
-              'jid': bookmark.getAttribute('jid'),
-              'name': bookmark.getAttribute('name'),
-              'autojoin': bookmark.getAttribute('autojoin') === 'true',
-              'nick': bookmark.querySelector('nick').textContent
-            });
-          });
-        },
-        onBookmarksReceived: function onBookmarksReceived(deferred, iq) {
-          this.createBookmarksFromStanza(iq);
-
-          if (!_.isUndefined(deferred)) {
-            return deferred.resolve();
-          }
-        },
-        onBookmarksReceivedError: function onBookmarksReceivedError(deferred, iq) {
-          window.sessionStorage.setItem(this.fetched_flag, true);
-
-          _converse.log('Error while fetching bookmarks', Strophe.LogLevel.WARN);
-
-          _converse.log(iq.outerHTML, Strophe.LogLevel.DEBUG);
-
-          if (!_.isNil(deferred)) {
-            if (iq.querySelector('error[type="cancel"] item-not-found')) {
-              // Not an exception, the user simply doesn't have
-              // any bookmarks.
-              return deferred.resolve();
-            } else {
-              return deferred.reject(new Error("Could not fetch bookmarks"));
-            }
-          }
-        }
-      });
-      _converse.BookmarksList = Backbone.Model.extend({
-        defaults: {
-          "toggle-state": _converse.OPENED
-        }
-      });
-      _converse.BookmarkView = Backbone.VDOMView.extend({
-        toHTML: function toHTML() {
-          return tpl_bookmark({
-            'hidden': _converse.hide_open_bookmarks && _converse.chatboxes.where({
-              'jid': this.model.get('jid')
-            }).length,
-            'bookmarked': true,
-            'info_leave_room': __('Leave this room'),
-            'info_remove': __('Remove this bookmark'),
-            'info_remove_bookmark': __('Unbookmark this room'),
-            'info_title': __('Show more information on this room'),
-            'jid': this.model.get('jid'),
-            'name': this.model.get('name'),
-            'open_title': __('Click to open this room')
-          });
-        }
-      });
-      _converse.BookmarksView = Backbone.OrderedListView.extend({
-        tagName: 'div',
-        className: 'bookmarks-list rooms-list-container',
-        events: {
-          'click .add-bookmark': 'addBookmark',
-          'click .bookmarks-toggle': 'toggleBookmarksList',
-          'click .remove-bookmark': 'removeBookmark'
-        },
-        listSelector: '.rooms-list',
-        ItemView: _converse.BookmarkView,
-        subviewIndex: 'jid',
-        initialize: function initialize() {
-          Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
-          this.model.on('add', this.showOrHide, this);
-          this.model.on('remove', this.showOrHide, this);
-
-          _converse.chatboxes.on('add', this.renderBookmarkListElement, this);
-
-          _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
-
-          var cachekey = "converse.room-bookmarks".concat(_converse.bare_jid, "-list-model");
-          this.list_model = new _converse.BookmarksList();
-          this.list_model.id = cachekey;
-          this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(cachekey));
-          this.list_model.fetch();
-          this.render();
-          this.sortAndPositionAllItems();
-        },
-        render: function render() {
-          this.el.innerHTML = tpl_bookmarks_list({
-            'toggle_state': this.list_model.get('toggle-state'),
-            'desc_bookmarks': __('Click to toggle the bookmarks list'),
-            'label_bookmarks': __('Bookmarks'),
-            '_converse': _converse
-          });
-          this.showOrHide();
-          this.insertIntoControlBox();
-          return this;
-        },
-        insertIntoControlBox: function insertIntoControlBox() {
-          var controlboxview = _converse.chatboxviews.get('controlbox');
-
-          if (!_.isUndefined(controlboxview) && !_converse.root.contains(this.el)) {
-            var container = controlboxview.el.querySelector('#chatrooms');
-
-            if (!_.isNull(container)) {
-              container.insertBefore(this.el, container.firstChild);
-            }
-          }
-        },
-        removeBookmark: _converse.removeBookmarkViaEvent,
-        addBookmark: _converse.addBookmarkViaEvent,
-        renderBookmarkListElement: function renderBookmarkListElement(chatbox) {
-          var bookmarkview = this.get(chatbox.get('jid'));
-
-          if (_.isNil(bookmarkview)) {
-            // A chat box has been closed, but we don't have a
-            // bookmark for it, so nothing further to do here.
-            return;
-          }
-
-          bookmarkview.render();
-          this.showOrHide();
-        },
-        showOrHide: function showOrHide(item) {
-          if (_converse.hide_open_bookmarks) {
-            var bookmarks = this.model.filter(function (bookmark) {
-              return !_converse.chatboxes.get(bookmark.get('jid'));
-            });
-
-            if (!bookmarks.length) {
-              u.hideElement(this.el);
-              return;
-            }
-          }
-
-          if (this.model.models.length) {
-            u.showElement(this.el);
-          }
-        },
-        toggleBookmarksList: function toggleBookmarksList(ev) {
-          if (ev && ev.preventDefault) {
-            ev.preventDefault();
-          }
-
-          if (u.hasClass('icon-opened', ev.target)) {
-            u.slideIn(this.el.querySelector('.bookmarks'));
-            this.list_model.save({
-              'toggle-state': _converse.CLOSED
-            });
-            ev.target.classList.remove("icon-opened");
-            ev.target.classList.add("icon-closed");
-          } else {
-            ev.target.classList.remove("icon-closed");
-            ev.target.classList.add("icon-opened");
-            u.slideOut(this.el.querySelector('.bookmarks'));
-            this.list_model.save({
-              'toggle-state': _converse.OPENED
-            });
-          }
-        }
-      });
-
-      _converse.checkBookmarksSupport = function () {
-        return new Promise(function (resolve, reject) {
-          Promise.all([_converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid), _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', _converse.bare_jid)]).then(function (args) {
-            resolve(args[0] && (args[1].supported || _converse.allow_public_bookmarks));
-          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-      };
-
-      var initBookmarks = function initBookmarks() {
-        if (!_converse.allow_bookmarks) {
-          return;
-        }
-
-        _converse.checkBookmarksSupport().then(function (supported) {
-          if (supported) {
-            _converse.bookmarks = new _converse.Bookmarks();
-            _converse.bookmarksview = new _converse.BookmarksView({
-              'model': _converse.bookmarks
-            });
-
-            _converse.bookmarks.fetchBookmarks().catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL)).then(function () {
-              return _converse.emit('bookmarksInitialized');
-            });
-          } else {
-            _converse.emit('bookmarksInitialized');
-          }
-        });
-      };
-
-      u.onMultipleEvents([{
-        'object': _converse,
-        'event': 'chatBoxesFetched'
-      }, {
-        'object': _converse,
-        'event': 'roomsPanelRendered'
-      }], initBookmarks);
-
-      _converse.on('connected', function () {
-        // Add a handler for bookmarks pushed from other connected clients
-        // (from the same user obviously)
-        _converse.connection.addHandler(function (message) {
-          if (message.querySelector('event[xmlns="' + Strophe.NS.PUBSUB + '#event"]')) {
-            _converse.bookmarks.createBookmarksFromStanza(message);
-          }
-        }, null, 'message', 'headline', null, _converse.bare_jid);
-      });
-
-      var afterReconnection = function afterReconnection() {
-        if (!_converse.allow_bookmarks) {
-          return;
-        }
-
-        initBookmarks();
-      };
-
-      _converse.on('reconnected', afterReconnection);
-    }
-  });
-});
-//# sourceMappingURL=converse-bookmarks.js.map;
-
-define('tpl!rooms_list', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<a href="#" class="rooms-toggle open-rooms-toggle icon-' +
-__e(o.toggle_state) +
-'" title="' +
-__e(o.desc_rooms) +
-'">' +
-__e(o.label_rooms) +
-'</a>\n<dl class="rooms-list open-rooms-list"></dl>\n';
-return __p
-};});
-
-
-define('tpl!rooms_list_item', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<dd class="available-chatroom ';
- if (o.num_unread_general) { ;
-__p += ' unread-msgs ';
- } ;
-__p += '" data-room-jid="' +
-__e(o.jid) +
-'">\n';
- if (o.num_unread) { ;
-__p += '\n    <span class="msgs-indicator">' +
-__e( o.num_unread ) +
-'</span>\n';
- } ;
-__p += '\n<a class="open-room"\n    data-room-jid="' +
-__e(o.jid) +
-'"\n    title="' +
-__e(o.open_title) +
-'" href="#">' +
-__e(o.name) +
-'</a>\n<a class="right close-room icon-leave"\n   data-room-jid="' +
-__e(o.jid) +
-'"\n   data-room-name="' +
-__e(o.name) +
-'"\n   title="' +
-__e(o.info_leave_room) +
-'" href="#">&nbsp;</a>\n\n';
- if (o.allow_bookmarks) { ;
-__p += '\n<a class="right icon-pushpin ';
- if (o.bookmarked) { ;
-__p += ' remove-bookmark button-on ';
- } else { ;
-__p += ' add-bookmark ';
- } ;
-__p += '"\n   data-room-jid="' +
-__e(o.jid) +
-'" data-bookmark-name="' +
-__e(o.name) +
-'"\n   title="';
- if (o.bookmarked) { ;
-__p += ' ' +
-__e(o.info_remove_bookmark) +
-' ';
- } else { ;
-__p += ' ' +
-__e(o.info_add_bookmark) +
-' ';
- } ;
-__p += '"\n   href="#">&nbsp;</a>\n';
- } ;
-__p += '\n<a class="right room-info icon-room-info" data-room-jid="' +
-__e(o.jid) +
-'"\n   title="' +
-__e(o.info_title) +
-'" href="#">&nbsp;</a>\n</dd>\n';
-return __p
-};});
-
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
-//
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
-
-/*global define */
-
-/* This is a non-core Converse.js plugin which shows a list of currently open
- * rooms in the "Rooms Panel" of the ControlBox.
- */
-(function (root, factory) {
-  define('converse-roomslist',["utils", "converse-core", "converse-muc", "tpl!rooms_list", "tpl!rooms_list_item"], factory);
-})(this, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
-  var _converse$env = converse.env,
-      Backbone = _converse$env.Backbone,
-      Promise = _converse$env.Promise,
-      b64_sha1 = _converse$env.b64_sha1,
-      sizzle = _converse$env.sizzle,
-      _ = _converse$env._;
-  var u = converse.env.utils;
-  converse.plugins.add('converse-roomslist', {
-    /* Optional dependencies are other plugins which might be
-     * overridden or relied upon, and therefore need to be loaded before
-     * this plugin. They are called "optional" because they might not be
-     * available, in which case any overrides applicable to them will be
-     * ignored.
-     *
-     * It's possible however to make optional dependencies non-optional.
-     * If the setting "strict_plugin_dependencies" is set to true,
-     * an error will be raised if the plugin is not found.
-     *
-     * NB: These plugins need to have already been loaded via require.js.
-     */
-    dependencies: ["converse-controlbox", "converse-muc", "converse-bookmarks"],
-    initialize: function initialize() {
-      /* The initialize function gets called as soon as the plugin is
-       * loaded by converse.js's plugin machinery.
-       */
-      var _converse = this._converse,
-          __ = _converse.__;
-      _converse.OpenRooms = Backbone.Collection.extend({
-        comparator: function comparator(room) {
-          if (room.get('bookmarked')) {
-            var bookmark = _.head(_converse.bookmarksview.model.where({
-              'jid': room.get('jid')
-            }));
-
-            return bookmark.get('name');
-          } else {
-            return room.get('name');
-          }
-        },
-        initialize: function initialize() {
-          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.open-rooms-{_converse.bare_jid}"));
-
-          _converse.chatboxes.on('add', this.onChatBoxAdded, this);
-
-          _converse.chatboxes.on('change:bookmarked', this.onChatBoxChanged, this);
-
-          _converse.chatboxes.on('change:name', this.onChatBoxChanged, this);
-
-          _converse.chatboxes.on('change:num_unread', this.onChatBoxChanged, this);
-
-          _converse.chatboxes.on('change:num_unread_general', this.onChatBoxChanged, this);
-
-          _converse.chatboxes.on('remove', this.onChatBoxRemoved, this);
-
-          this.reset(_.map(_converse.chatboxes.where({
-            'type': 'chatroom'
-          }), 'attributes'));
-        },
-        onChatBoxAdded: function onChatBoxAdded(item) {
-          if (item.get('type') === 'chatroom') {
-            this.create(item.attributes);
-          }
-        },
-        onChatBoxChanged: function onChatBoxChanged(item) {
-          if (item.get('type') === 'chatroom') {
-            var room = this.get(item.get('jid'));
-
-            if (!_.isNil(room)) {
-              room.set(item.attributes);
-            }
-          }
-        },
-        onChatBoxRemoved: function onChatBoxRemoved(item) {
-          if (item.get('type') === 'chatroom') {
-            var room = this.get(item.get('jid'));
-            this.remove(room);
-          }
-        }
-      });
-      _converse.RoomsList = Backbone.Model.extend({
-        defaults: {
-          "toggle-state": _converse.OPENED
-        }
-      });
-      _converse.RoomsListElementView = Backbone.VDOMView.extend({
-        initialize: function initialize() {
-          this.model.on('destroy', this.remove, this);
-          this.model.on('remove', this.remove, this);
-          this.model.on('change:bookmarked', this.render, this);
-          this.model.on('change:name', this.render, this);
-          this.model.on('change:num_unread', this.render, this);
-          this.model.on('change:num_unread_general', this.render, this);
-        },
-        getRoomsListElementName: function getRoomsListElementName() {
-          if (this.model.get('bookmarked') && _converse.bookmarksview) {
-            var bookmark = _.head(_converse.bookmarksview.model.where({
-              'jid': this.model.get('jid')
-            }));
-
-            return bookmark.get('name');
-          } else {
-            return this.model.get('name');
-          }
-        },
-        toHTML: function toHTML() {
-          return tpl_rooms_list_item(_.extend(this.model.toJSON(), {
-            // XXX: By the time this renders, the _converse.bookmarks
-            // collection should already exist if bookmarks are
-            // supported by the XMPP server. So we can use it
-            // as a check for support (other ways of checking are async).
-            'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
-            'info_leave_room': __('Leave this room'),
-            'info_remove_bookmark': __('Unbookmark this room'),
-            'info_add_bookmark': __('Bookmark this room'),
-            'info_title': __('Show more information on this room'),
-            'name': this.getRoomsListElementName(),
-            'open_title': __('Click to open this room')
-          }));
-        }
-      });
-      _converse.RoomsListView = Backbone.OrderedListView.extend({
-        tagName: 'div',
-        className: 'open-rooms-list rooms-list-container',
-        events: {
-          'click .add-bookmark': 'addBookmark',
-          'click .close-room': 'closeRoom',
-          'click .open-rooms-toggle': 'toggleRoomsList',
-          'click .remove-bookmark': 'removeBookmark'
-        },
-        listSelector: '.rooms-list',
-        ItemView: _converse.RoomsListElementView,
-        subviewIndex: 'jid',
-        initialize: function initialize() {
-          Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
-          this.model.on('add', this.showOrHide, this);
-          this.model.on('remove', this.showOrHide, this);
-          var cachekey = "converse.roomslist".concat(_converse.bare_jid);
-          this.list_model = new _converse.RoomsList();
-          this.list_model.id = cachekey;
-          this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(cachekey));
-          this.list_model.fetch();
-          this.render();
-          this.sortAndPositionAllItems();
-        },
-        render: function render() {
-          this.el.innerHTML = tpl_rooms_list({
-            'toggle_state': this.list_model.get('toggle-state'),
-            'desc_rooms': __('Click to toggle the rooms list'),
-            'label_rooms': __('Open Rooms')
-          });
-
-          if (this.list_model.get('toggle-state') !== _converse.OPENED) {
-            this.el.querySelector('.open-rooms-list').classList.add('collapsed');
-          }
-
-          this.showOrHide();
-          this.insertIntoControlBox();
-          return this;
-        },
-        insertIntoControlBox: function insertIntoControlBox() {
-          var controlboxview = _converse.chatboxviews.get('controlbox');
-
-          if (!_.isUndefined(controlboxview) && !_converse.root.contains(this.el)) {
-            var container = controlboxview.el.querySelector('#chatrooms');
-
-            if (!_.isNull(container)) {
-              container.insertBefore(this.el, container.firstChild);
-            }
-          }
-        },
-        hide: function hide() {
-          u.hideElement(this.el);
-        },
-        show: function show() {
-          u.showElement(this.el);
-        },
-        closeRoom: function closeRoom(ev) {
-          ev.preventDefault();
-          var name = ev.target.getAttribute('data-room-name');
-          var jid = ev.target.getAttribute('data-room-jid');
-
-          if (confirm(__("Are you sure you want to leave the room \"%1$s\"?", name))) {
-            _converse.chatboxviews.get(jid).leave();
-          }
-        },
-        showOrHide: function showOrHide(item) {
-          if (!this.model.models.length) {
-            u.hideElement(this.el);
-          } else {
-            u.showElement(this.el);
-          }
-        },
-        removeBookmark: _converse.removeBookmarkViaEvent,
-        addBookmark: _converse.addBookmarkViaEvent,
-        toggleRoomsList: function toggleRoomsList(ev) {
-          var _this = this;
-
-          if (ev && ev.preventDefault) {
-            ev.preventDefault();
-          }
-
-          var el = ev.target;
-
-          if (el.classList.contains("icon-opened")) {
-            utils.slideIn(this.el.querySelector('.open-rooms-list')).then(function () {
-              _this.list_model.save({
-                'toggle-state': _converse.CLOSED
-              });
-
-              el.classList.remove("icon-opened");
-              el.classList.add("icon-closed");
-            });
-          } else {
-            utils.slideOut(this.el.querySelector('.open-rooms-list')).then(function () {
-              _this.list_model.save({
-                'toggle-state': _converse.OPENED
-              });
-
-              el.classList.remove("icon-closed");
-              el.classList.add("icon-opened");
-            });
-          }
-        }
-      });
-
-      var initRoomsListView = function initRoomsListView() {
-        _converse.rooms_list_view = new _converse.RoomsListView({
-          'model': new _converse.OpenRooms()
-        });
-      };
-
-      if (_converse.allow_bookmarks) {
-        u.onMultipleEvents([{
-          'object': _converse,
-          'event': 'chatBoxesFetched'
-        }, {
-          'object': _converse,
-          'event': 'roomsPanelRendered'
-        }, {
-          'object': _converse,
-          'event': 'bookmarksInitialized'
-        }], initRoomsListView);
-      } else {
-        u.onMultipleEvents([{
-          'object': _converse,
-          'event': 'chatBoxesFetched'
-        }, {
-          'object': _converse,
-          'event': 'roomsPanelRendered'
-        }], initRoomsListView);
-      }
-
-      _converse.api.listen.on('reconnected', initRoomsListView);
-    }
-  });
-});
-//# sourceMappingURL=converse-roomslist.js.map;
-// http://xmpp.org/extensions/xep-0059.html
-
-(function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define("strophe.rsm", [
-            "strophe"
-        ], function (Strophe) {
-            factory(
-                Strophe.Strophe,
-                Strophe.$build,
-                Strophe.$iq ,
-                Strophe.$msg,
-                Strophe.$pres
-            );
-            return Strophe;
-        });
-    } else {
-        // Browser globals
-        factory(
-            root.Strophe,
-            root.$build,
-            root.$iq ,
-            root.$msg,
-            root.$pres
-        );
-    }
-}(this, function (Strophe, $build, $iq, $msg, $pres) {
-
-Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
-   
-Strophe.RSM = function(options) {
-  this.attribs = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
-
-  if (typeof options.xml != 'undefined') {
-    this.fromXMLElement(options.xml);
-  } else {
-    for (var ii = 0; ii < this.attribs.length; ii++) {
-      var attrib = this.attribs[ii];
-      this[attrib] = options[attrib];
-    }
-  }
-};
-
-Strophe.RSM.prototype = {
-  toXML: function() {
-    var xml = $build('set', {xmlns: Strophe.NS.RSM});
-    for (var ii = 0; ii < this.attribs.length; ii++) {
-      var attrib = this.attribs[ii];
-      if (typeof this[attrib] != 'undefined') {
-        xml = xml.c(attrib).t(this[attrib].toString()).up();
-      }
-    }
-    return xml.tree();
-  },
-
-  next: function(max) {
-    var newSet = new Strophe.RSM({max: max, after: this.last});
-    return newSet;
-  },
-
-  previous: function(max) {
-    var newSet = new Strophe.RSM({max: max, before: this.first});
-    return newSet;
-  },
-
-  fromXMLElement: function(xmlElement) {
-    for (var ii = 0; ii < this.attribs.length; ii++) {
-      var attrib = this.attribs[ii];
-      var elem = xmlElement.getElementsByTagName(attrib)[0];
-      if (typeof elem != 'undefined' && elem !== null) {
-        this[attrib] = Strophe.getText(elem);
-        if (attrib == 'first') {
-          this.index = elem.getAttribute('index');
-        }
-      }
-    }
-  }
-};
-}));
-
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
-//
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
-
-/*global define */
-// XEP-0059 Result Set Management
-(function (root, factory) {
-  define('converse-mam',["sizzle", "converse-core", "utils", "converse-disco", "strophe.rsm"], factory);
-})(this, function (sizzle, converse, utils) {
-  "use strict";
-
-  var CHATROOMS_TYPE = 'chatroom';
-  var _converse$env = converse.env,
-      Promise = _converse$env.Promise,
-      Strophe = _converse$env.Strophe,
-      $iq = _converse$env.$iq,
-      _ = _converse$env._,
-      moment = _converse$env.moment;
-  var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count']; // XEP-0313 Message Archive Management
-
-  var MAM_ATTRIBUTES = ['with', 'start', 'end'];
-
-  function getMessageArchiveID(stanza) {
-    var result = sizzle("result[xmlns=\"".concat(Strophe.NS.MAM, "\"]"), stanza).pop();
-
-    if (!_.isUndefined(result)) {
-      return result.getAttribute('id');
-    }
-
-    var stanza_id = sizzle("stanza-id[xmlns=\"".concat(Strophe.NS.SID, "\"]"), stanza).pop();
-
-    if (!_.isUndefined(stanza_id)) {
-      return stanza_id.getAttribute('id');
-    }
-  }
-
-  function queryForArchivedMessages(_converse, options, callback, errback) {
-    /* Internal function, called by the "archive.query" API method.
-     */
-    var date;
-
-    if (_.isFunction(options)) {
-      callback = options;
-      errback = callback;
-    }
-
-    var queryid = _converse.connection.getUniqueId();
-
-    var attrs = {
-      'type': 'set'
-    };
-
-    if (!_.isUndefined(options) && options.groupchat) {
-      if (!options['with']) {
-        // eslint-disable-line dot-notation
-        throw new Error('You need to specify a "with" value containing ' + 'the chat room JID, when querying groupchat messages.');
-      }
-
-      attrs.to = options['with']; // eslint-disable-line dot-notation
-    }
-
-    var stanza = $iq(attrs).c('query', {
-      'xmlns': Strophe.NS.MAM,
-      'queryid': queryid
-    });
-
-    if (!_.isUndefined(options)) {
-      stanza.c('x', {
-        'xmlns': Strophe.NS.XFORM,
-        'type': 'submit'
-      }).c('field', {
-        'var': 'FORM_TYPE',
-        'type': 'hidden'
-      }).c('value').t(Strophe.NS.MAM).up().up();
-
-      if (options['with'] && !options.groupchat) {
-        // eslint-disable-line dot-notation
-        stanza.c('field', {
-          'var': 'with'
-        }).c('value').t(options['with']).up().up(); // eslint-disable-line dot-notation
-      }
-
-      _.each(['start', 'end'], function (t) {
-        if (options[t]) {
-          date = moment(options[t]);
-
-          if (date.isValid()) {
-            stanza.c('field', {
-              'var': t
-            }).c('value').t(date.format()).up().up();
-          } else {
-            throw new TypeError("archive.query: invalid date provided for: ".concat(t));
-          }
-        }
-      });
-
-      stanza.up();
-
-      if (options instanceof Strophe.RSM) {
-        stanza.cnode(options.toXML());
-      } else if (_.intersection(RSM_ATTRIBUTES, _.keys(options)).length) {
-        stanza.cnode(new Strophe.RSM(options).toXML());
-      }
-    }
-
-    var messages = [];
-
-    var message_handler = _converse.connection.addHandler(function (message) {
-      if (options.groupchat && message.getAttribute('from') !== options['with']) {
-        // eslint-disable-line dot-notation
-        return true;
-      }
-
-      var result = message.querySelector('result');
-
-      if (!_.isNull(result) && result.getAttribute('queryid') === queryid) {
-        messages.push(message);
-      }
-
-      return true;
-    }, Strophe.NS.MAM);
-
-    _converse.connection.sendIQ(stanza, function (iq) {
-      _converse.connection.deleteHandler(message_handler);
-
-      if (_.isFunction(callback)) {
-        var set = iq.querySelector('set');
-        var rsm;
-
-        if (!_.isUndefined(set)) {
-          rsm = new Strophe.RSM({
-            xml: set
-          });
-
-          _.extend(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
-        }
-
-        callback(messages, rsm);
-      }
-    }, function () {
-      _converse.connection.deleteHandler(message_handler);
-
-      if (_.isFunction(errback)) {
-        errback.apply(this, arguments);
-      }
-    }, _converse.message_archiving_timeout);
-  }
-
-  converse.plugins.add('converse-mam', {
-    dependencies: ['converse-chatview', 'converse-muc'],
-    overrides: {
-      // Overrides mentioned here will be picked up by converse.js's
-      // plugin architecture they will replace existing methods on the
-      // relevant objects or classes.
-      //
-      // New functions which don't exist yet can also be added.
-      ChatBox: {
-        getMessageAttributes: function getMessageAttributes(message, delay, original_stanza) {
-          var attrs = this.__super__.getMessageAttributes.apply(this, arguments);
-
-          var archive_id = getMessageArchiveID(original_stanza);
-
-          if (archive_id) {
-            attrs.archive_id = archive_id;
-          }
-
-          return attrs;
-        }
-      },
-      ChatBoxView: {
-        render: function render() {
-          var result = this.__super__.render.apply(this, arguments);
-
-          if (!this.disable_mam) {
-            this.content.addEventListener('scroll', _.debounce(this.onScroll.bind(this), 100));
-          }
-
-          return result;
-        },
-        fetchNewestMessages: function fetchNewestMessages() {
-          var _this = this;
-
-          /* Fetches messages that might have been archived *after*
-           * the last archived message in our local cache.
-           */
-          if (this.disable_mam) {
-            return;
-          }
-
-          var _converse = this.__super__._converse;
-
-          _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(function (result) {
-            // Success
-            if (result.supported) {
-              var most_recent_msg = utils.getMostRecentMessage(_this.model);
-
-              if (_.isNil(most_recent_msg)) {
-                _this.fetchArchivedMessages();
-              } else {
-                var archive_id = most_recent_msg.get('archive_id');
-
-                if (archive_id) {
-                  _this.fetchArchivedMessages({
-                    'after': most_recent_msg.get('archive_id')
-                  });
-                } else {
-                  _this.fetchArchivedMessages({
-                    'start': most_recent_msg.get('time')
-                  });
-                }
-              }
-            }
-          }, function () {
-            // Error
-            _converse.log("Error or timeout while checking for MAM support", Strophe.LogLevel.ERROR);
-          }).catch(function (msg) {
-            _this.clearSpinner();
-
-            _converse.log(msg, Strophe.LogLevel.FATAL);
-          });
-        },
-        fetchArchivedMessagesIfNecessary: function fetchArchivedMessagesIfNecessary() {
-          var _this2 = this;
-
-          /* Check if archived messages should be fetched, and if so, do so. */
-          if (this.disable_mam || this.model.get('mam_initialized')) {
-            return;
-          }
-
-          var _converse = this.__super__._converse;
-
-          _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(function (result) {
-            // Success
-            if (result.supported) {
-              _this2.fetchArchivedMessages();
-            }
-
-            _this2.model.save({
-              'mam_initialized': true
-            });
-          }, function () {
-            // Error
-            _converse.log("Error or timeout while checking for MAM support", Strophe.LogLevel.ERROR);
-          }).catch(function (msg) {
-            _this2.clearSpinner();
-
-            _converse.log(msg, Strophe.LogLevel.FATAL);
-          });
-        },
-        fetchArchivedMessages: function fetchArchivedMessages(options) {
-          var _this3 = this;
-
-          /* Fetch archived chat messages from the XMPP server.
-           *
-           * Then, upon receiving them, call onMessage on the chat
-           * box, so that they are displayed inside it.
-           */
-          var _converse = this.__super__._converse;
-
-          if (!_converse.disco_entities.get(_converse.bare_jid).features.findWhere({
-            'var': Strophe.NS.MAM
-          })) {
-            _converse.log("Attempted to fetch archived messages but this " + "user's server doesn't support XEP-0313", Strophe.LogLevel.WARN);
-
-            return;
-          }
-
-          if (this.disable_mam) {
-            return;
-          }
-
-          this.addSpinner();
-
-          _converse.api.archive.query(_.extend({
-            'before': '',
-            // Page backwards from the most recent message
-            'max': _converse.archived_messages_page_size,
-            'with': this.model.get('jid')
-          }, options), function (messages) {
-            // Success
-            _this3.clearSpinner();
-
-            if (messages.length) {
-              _.each(messages, _converse.chatboxes.onMessage.bind(_converse.chatboxes));
-            }
-          }, function () {
-            // Error
-            _this3.clearSpinner();
-
-            _converse.log("Error or timeout while trying to fetch " + "archived messages", Strophe.LogLevel.ERROR);
-          });
-        },
-        onScroll: function onScroll(ev) {
-          var _converse = this.__super__._converse;
-
-          if (this.content.scrollTop === 0 && this.model.messages.length) {
-            var oldest_message = this.model.messages.at(0);
-            var archive_id = oldest_message.get('archive_id');
-
-            if (archive_id) {
-              this.fetchArchivedMessages({
-                'before': archive_id
-              });
-            } else {
-              this.fetchArchivedMessages({
-                'end': oldest_message.get('time')
-              });
-            }
-          }
-        }
-      },
-      ChatRoomView: {
-        initialize: function initialize() {
-          var _converse = this.__super__._converse;
-
-          this.__super__.initialize.apply(this, arguments);
-
-          this.model.on('change:mam_enabled', this.fetchArchivedMessagesIfNecessary, this);
-          this.model.on('change:connection_status', this.fetchArchivedMessagesIfNecessary, this);
-        },
-        isDuplicate: function isDuplicate(message, original_stanza) {
-          var result = this.__super__.isDuplicate.apply(this, arguments);
-
-          if (result) {
-            return result;
-          }
-
-          var archive_id = getMessageArchiveID(original_stanza);
-
-          if (archive_id) {
-            return this.model.messages.filter({
-              'archive_id': archive_id
-            }).length > 0;
-          }
-        },
-        renderChatArea: function renderChatArea() {
-          var result = this.__super__.renderChatArea.apply(this, arguments);
-
-          if (!this.disable_mam) {
-            this.content.addEventListener('scroll', _.debounce(this.onScroll.bind(this), 100));
-          }
-
-          return result;
-        },
-        handleMUCMessage: function handleMUCMessage(stanza) {
-          /* MAM (message archive management XEP-0313) messages are
-           * ignored, since they're handled separately.
-           */
-          if (sizzle("[xmlns=\"".concat(Strophe.NS.MAM, "\"]"), stanza).length > 0) {
-            return true;
-          }
-
-          return this.__super__.handleMUCMessage.apply(this, arguments);
-        },
-        fetchArchivedMessagesIfNecessary: function fetchArchivedMessagesIfNecessary() {
-          if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED || !this.model.get('mam_enabled') || this.model.get('mam_initialized')) {
-            return;
-          }
-
-          this.fetchArchivedMessages();
-          this.model.save({
-            'mam_initialized': true
-          });
-        },
-        fetchArchivedMessages: function fetchArchivedMessages(options) {
-          /* Fetch archived chat messages for this Chat Room
-           *
-           * Then, upon receiving them, call onChatRoomMessage
-           * so that they are displayed inside it.
-           */
-          var that = this;
-          var _converse = this.__super__._converse;
-          this.addSpinner();
-
-          _converse.api.archive.query(_.extend({
-            'groupchat': true,
-            'before': '',
-            // Page backwards from the most recent message
-            'with': this.model.get('jid'),
-            'max': _converse.archived_messages_page_size
-          }, options), function (messages) {
-            that.clearSpinner();
-
-            if (messages.length) {
-              _.each(messages, that.onChatRoomMessage.bind(that));
-            }
-          }, function () {
-            that.clearSpinner();
-
-            _converse.log("Error while trying to fetch archived messages", Strophe.LogLevel.WARN);
-          });
-        }
-      }
-    },
-    initialize: function initialize() {
-      /* The initialize function gets called as soon as the plugin is
-       * loaded by Converse.js's plugin machinery.
-       */
-      var _converse = this._converse;
-
-      _converse.api.settings.update({
-        archived_messages_page_size: '50',
-        message_archiving: undefined,
-        // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
-        message_archiving_timeout: 8000 // Time (in milliseconds) to wait before aborting MAM request
-
-      });
-
-      _converse.onMAMError = function (iq) {
-        if (iq.querySelectorAll('feature-not-implemented').length) {
-          _converse.log("Message Archive Management (XEP-0313) not supported by this server", Strophe.LogLevel.WARN);
-        } else {
-          _converse.log("An error occured while trying to set archiving preferences.", Strophe.LogLevel.ERROR);
-
-          _converse.log(iq);
-        }
-      };
-
-      _converse.onMAMPreferences = function (feature, iq) {
-        /* Handle returned IQ stanza containing Message Archive
-         * Management (XEP-0313) preferences.
-         *
-         * XXX: For now we only handle the global default preference.
-         * The XEP also provides for per-JID preferences, which is
-         * currently not supported in converse.js.
-         *
-         * Per JID preferences will be set in chat boxes, so it'll
-         * probbaly be handled elsewhere in any case.
-         */
-        var preference = sizzle("prefs[xmlns=\"".concat(Strophe.NS.MAM, "\"]"), iq).pop();
-        var default_pref = preference.getAttribute('default');
-
-        if (default_pref !== _converse.message_archiving) {
-          var stanza = $iq({
-            'type': 'set'
-          }).c('prefs', {
-            'xmlns': Strophe.NS.MAM,
-            'default': _converse.message_archiving
-          });
-
-          _.each(preference.children, function (child) {
-            stanza.cnode(child).up();
-          });
-
-          _converse.connection.sendIQ(stanza, _.partial(function (feature, iq) {
-            // XXX: Strictly speaking, the server should respond with the updated prefs
-            // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
-            // but Prosody doesn't do this, so we don't rely on it.
-            feature.save({
-              'preferences': {
-                'default': _converse.message_archiving
-              }
-            });
-          }, feature), _converse.onMAMError);
-        } else {
-          feature.save({
-            'preferences': {
-              'default': _converse.message_archiving
-            }
-          });
-        }
-      };
-      /* Event handlers */
-
-
-      _converse.on('serviceDiscovered', function (feature) {
-        var prefs = feature.get('preferences') || {};
-
-        if (feature.get('var') === Strophe.NS.MAM && prefs['default'] !== _converse.message_archiving && // eslint-disable-line dot-notation
-        !_.isUndefined(_converse.message_archiving)) {
-          // Ask the server for archiving preferences
-          _converse.connection.sendIQ($iq({
-            'type': 'get'
-          }).c('prefs', {
-            'xmlns': Strophe.NS.MAM
-          }), _.partial(_converse.onMAMPreferences, feature), _.partial(_converse.onMAMError, feature));
-        }
-      });
-
-      _converse.on('addClientFeatures', function () {
-        _converse.connection.disco.addFeature(Strophe.NS.MAM);
-      });
-
-      _converse.on('afterMessagesFetched', function (chatboxview) {
-        chatboxview.fetchNewestMessages();
-      });
-
-      _converse.on('reconnected', function () {
-        var private_chats = _converse.chatboxviews.filter(function (view) {
-          return _.at(view, 'model.attributes.type')[0] === 'chatbox';
-        });
-
-        _.each(private_chats, function (view) {
-          return view.fetchNewestMessages();
-        });
-      });
-
-      _.extend(_converse.api, {
-        /* Extend default converse.js API to add methods specific to MAM
-         */
-        'archive': {
-          'query': function query(options, callback, errback) {
-            /* Do a MAM (XEP-0313) query for archived messages.
-             *
-             * Parameters:
-             *    (Object) options - Query parameters, either
-             *      MAM-specific or also for Result Set Management.
-             *    (Function) callback - A function to call whenever
-             *      we receive query-relevant stanza.
-             *    (Function) errback - A function to call when an
-             *      error stanza is received.
-             *
-             * The options parameter can also be an instance of
-             * Strophe.RSM to enable easy querying between results pages.
-             *
-             * When the the callback is called, a Strophe.RSM object is
-             * returned on which "next" or "previous" can be called
-             * before passing it in again to this method, to
-             * get the next or previous page in the result set.
-             */
-            if (!_converse.api.connection.connected()) {
-              throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
-            }
-
-            return queryForArchivedMessages(_converse, options, callback, errback);
-          }
-        }
-      });
-    }
-  });
-});
-//# sourceMappingURL=converse-mam.js.map;
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -56683,7 +58742,7 @@ Strophe.RSM.prototype = {
 //
 (function (root, factory) {
   define('converse-muc-embedded',["converse-core", "converse-muc"], factory);
-})(this, function (converse) {
+})(void 0, function (converse) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -56741,51 +58800,53 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  if (o.allow_otr)  { ;
-__p += '\n    <li class="toggle-toolbar-menu toggle-otr ' +
+__p += '\n    <li class="toggle-toolbar-menu dropup right" title="' +
+__e(o.otr_tooltip) +
+'">\n        <a class="toggle-otr ' +
 __e(o.otr_status_class) +
 '" title="' +
-__e(o.otr_tooltip) +
-'">\n        <span class="chat-toolbar-text">' +
+__e(o.label_insert_smiley) +
+'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n\n        <span class="chat-toolbar-text">' +
 __e(o.otr_translated_status) +
 '</span>\n        ';
  if (o.otr_status == o.UNENCRYPTED) { ;
-__p += '\n            <span class="icon-unlocked"></span>\n        ';
+__p += '\n            <span class="fa fa-unlock"></span>\n        ';
  } ;
 __p += '\n        ';
  if (o.otr_status == o.UNVERIFIED) { ;
-__p += '\n            <span class="icon-lock"></span>\n        ';
+__p += '\n            <span class="fa fa-lock"></span>\n        ';
  } ;
 __p += '\n        ';
  if (o.otr_status == o.VERIFIED) { ;
-__p += '\n            <span class="icon-lock"></span>\n        ';
+__p += '\n            <span class="fa fa-lock"></span>\n        ';
  } ;
 __p += ' ';
  if (o.otr_status == o.FINISHED) { ;
-__p += '\n            <span class="icon-unlocked"></span>\n        ';
+__p += '\n            <span class="fa fa-unlock"></span>\n        ';
  } ;
-__p += '\n        <ul class="toolbar-menu collapsed">\n            ';
+__p += '\n        </a> \n\n        <ul class="otr-menu toolbar-menu dropdown-menu">\n            ';
  if (o.otr_status == o.UNENCRYPTED) { ;
-__p += '\n               <li><a class="start-otr" href="#">' +
+__p += '\n               <li class="dropdown-item"><a class="start-otr" href="#">' +
 __e(o.label_start_encrypted_conversation) +
 '</a></li>\n            ';
  } ;
 __p += '\n            ';
  if (o.otr_status != o.UNENCRYPTED) { ;
-__p += '\n               <li><a class="start-otr" href="#">' +
+__p += '\n               <li class="dropdown-item"><a class="start-otr" href="#">' +
 __e(o.label_refresh_encrypted_conversation) +
-'</a></li>\n               <li><a class="end-otr" href="#">' +
+'</a></li>\n               <li class="dropdown-item"><a class="end-otr" href="#">' +
 __e(o.label_end_encrypted_conversation) +
-'</a></li>\n               <li><a class="auth-otr" data-scheme="smp" href="#">' +
+'</a></li>\n               <li class="dropdown-item"><a class="auth-otr" data-scheme="smp" href="#">' +
 __e(o.label_verify_with_smp) +
 '</a></li>\n            ';
  } ;
 __p += '\n            ';
  if (o.otr_status == o.UNVERIFIED) { ;
-__p += '\n               <li><a class="auth-otr" data-scheme="fingerprint" href="#">' +
+__p += '\n               <li class="dropdown-item"><a class="auth-otr" data-scheme="fingerprint" href="#">' +
 __e(o.label_verify_with_fingerprints) +
 '</a></li>\n            ';
  } ;
-__p += '\n            <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank" rel="noopener">' +
+__p += '\n            <li class="dropdown-item"><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank" rel="noopener">' +
 __e(o.label_whats_this) +
 '</a></li>\n        </ul>\n    </li>\n';
  } ;
@@ -64032,6 +66093,8 @@ CryptoJS.mode.CTR = (function () {
   }
 
 }));
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -64045,8 +66108,8 @@ CryptoJS.mode.CTR = (function () {
  * encryption of one-on-one chat messages.
  */
 (function (root, factory) {
-  define('converse-otr',["converse-chatview", "tpl!toolbar_otr", 'otr'], factory);
-})(this, function (converse, tpl_toolbar_otr, otr) {
+  define('converse-otr',["converse-chatview", "bootstrap", "tpl!toolbar_otr", 'otr'], factory);
+})(void 0, function (converse, bootstrap, tpl_toolbar_otr, otr) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -64457,13 +66520,12 @@ CryptoJS.mode.CTR = (function () {
           }
         },
         toggleOTRMenu: function toggleOTRMenu(ev) {
-          ev.stopPropagation();
-          var _converse = this.__super__._converse;
-          var menu = this.el.querySelector('.toggle-otr ul');
-
-          var elements = _.difference(_converse.root.querySelectorAll('.toolbar-menu'), [menu]);
-
-          utils.slideInAllElements(elements).then(_.partial(utils.slideToggleElement, menu));
+          if (_.isUndefined(this.otr_dropdown)) {
+            ev.stopPropagation();
+            var dropdown_el = this.el.querySelector('.toggle-otr');
+            this.otr_dropdown = new bootstrap.Dropdown(dropdown_el, true);
+            this.otr_dropdown.toggle();
+          }
         },
         getOTRTooltip: function getOTRTooltip() {
           var _converse = this.__super__._converse,
@@ -64571,35 +66633,35 @@ return __p
 define('tpl!register_panel', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<form id="converse-register" class="pure-form converse-form">\n    <legend>' +
+__p += '<div class="row">\n    <form id="converse-register" class="converse-form">\n        <legend>' +
 __e(o.__("Create your account")) +
-'</legend>\n\n    <label>' +
+'</legend>\n\n        <div class="form-group">\n            <label>' +
 __e(o.__("Please enter the XMPP provider to register with:")) +
-'</label>\n    <p class="form-help">' +
+'</label>\n            <div class="form-errors hidden"></div>\n\n            ';
+ if (o.default_domain) { ;
+__p += '\n                ' +
+__e(o.default_domain) +
+'\n            </div>\n            ';
+ } ;
+__p += '\n            ';
+ if (!o.default_domain) { ;
+__p += '\n                <input class="form-control" autofocus="autofocus" required="required" type="text" name="domain" placeholder="' +
+__e(o.domain_placeholder) +
+'">\n                <p class="form-text text-muted">' +
 __e(o.help_providers) +
 ' <a href="' +
 __e(o.href_providers) +
 '" class="url" target="_blank" rel="noopener">' +
 __e(o.help_providers_link) +
-'</a>.</p>\n    <div class="form-errors hidden"></div>\n\n    ';
- if (o.default_domain) { ;
-__p += '\n        ' +
-__e(o.default_domain) +
-'\n    ';
- } ;
-__p += '\n    ';
- if (!o.default_domain) { ;
-__p += '\n        <input autofocus required type="text" name="domain" placeholder="' +
-__e(o.domain_placeholder) +
-'">\n        <input class="pure-button button-primary" type="submit" value="' +
+'</a>.</p>\n            </div>\n            <fieldset class="buttons">\n                <input class="btn btn-primary" type="submit" value="' +
 __e(o.label_register) +
-'">\n    ';
- } ;
-__p += '\n</form>\n\n<div class="switch-form">\n    <p>' +
+'">\n                <div class="switch-form">\n                    <p>' +
 __e( o.__("Already have a chat account?") ) +
-'</p>\n    <p>\n        <a class="login-here toggle-register-login" href="#converse/login">' +
+'</p>\n                    <p><a class="login-here toggle-register-login" href="#converse/login">' +
 __e(o.__("Log in here")) +
-'</a>\n    </p>\n</div>\n';
+'</a></p>\n                </div>\n            </fieldset>\n            ';
+ } ;
+__p += '\n        </div>\n    </form>\n</div>\n';
 return __p
 };});
 
@@ -64615,11 +66677,11 @@ __e(o.domain) +
 __e(o.title) +
 '</p>\n<p class="instructions">' +
 __e(o.instructions) +
-'</p>\n<div class="form-errors hidden"></div>\n\n<fieldset class="buttons">\n    <input type="submit" class="pure-button button-primary" value="' +
+'</p>\n<div class="form-errors hidden"></div>\n\n<fieldset class="buttons">\n    <input type="submit" class="btn btn-primary" value="' +
 __e(o.__('Register')) +
 '"/>\n    ';
  if (!o.registration_domain) { ;
-__p += '\n        <input type="button" class="pure-button button-cancel" value="' +
+__p += '\n        <input type="button" class="btn btn-secondary button-cancel" value="' +
 __e(o.__('Choose a different provider')) +
 '"/>\n    ';
  } ;
@@ -64631,17 +66693,19 @@ return __p
 define('tpl!registration_request', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<span class="spinner login-submit"></span>\n<p class="info">' +
+__p += '<span class="spinner login-submit fa fa-spinner"></span>\n<p class="info">' +
 __e(o.__("Hold tight, we're fetching the registration form…")) +
 '</p>\n';
  if (o.cancel) { ;
-__p += '\n    <button class="pure-button button-cancel hor_centered">' +
+__p += '\n    <button class="btn btn-secondary button-cancel hor_centered">' +
 __e(o.__('Cancel')) +
 '</button>\n';
  } ;
 __p += '\n';
 return __p
 };});
+
+
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -64657,7 +66721,7 @@ return __p
  */
 (function (root, factory) {
   define('converse-register',["form-utils", "converse-core", "tpl!form_username", "tpl!register_link", "tpl!register_panel", "tpl!registration_form", "tpl!registration_request", "tpl!form_input", "tpl!spinner", "converse-controlbox"], factory);
-})(this, function (utils, converse, tpl_form_username, tpl_register_link, tpl_register_panel, tpl_registration_form, tpl_registration_request, tpl_form_input, tpl_spinner) {
+})(void 0, function (utils, converse, tpl_form_username, tpl_register_link, tpl_register_panel, tpl_registration_form, tpl_registration_request, tpl_form_input, tpl_spinner) {
   "use strict"; // Strophe methods for building stanzas
 
   var _converse$env = converse.env,
@@ -64698,7 +66762,7 @@ return __p
                 'model': this.model
               });
               this.registerlinkview.render();
-              this.el.insertAdjacentElement('beforeend', this.registerlinkview.el);
+              this.el.querySelector('.buttons').insertAdjacentElement('beforeend', this.registerlinkview.el);
             }
 
             this.registerlinkview.render();
@@ -65445,6 +67509,8 @@ return __p
     });
 }));
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -65459,7 +67525,7 @@ return __p
  */
 (function (root, factory) {
   define('converse-ping',["converse-core", "strophe.ping"], factory);
-})(this, function (converse) {
+})(void 0, function (converse) {
   "use strict"; // Strophe methods for building stanzas
 
   var _converse$env = converse.env,
@@ -65567,6 +67633,8 @@ return __p
   });
 });
 //# sourceMappingURL=converse-ping.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -65577,7 +67645,7 @@ return __p
 /*global define */
 (function (root, factory) {
   define('converse-notification',["converse-core"], factory);
-})(this, function (converse) {
+})(void 0, function (converse) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -65875,7 +67943,7 @@ return __p
 
 define('tpl!chatbox_minimize', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<a class="chatbox-btn toggle-chatbox-button icon-minus" title="' +
+__p += '<a class="chatbox-btn toggle-chatbox-button fa fa-minus" title="' +
 __e(o.info_minimize) +
 '"></a>\n';
 return __p
@@ -65886,14 +67954,14 @@ define('tpl!toggle_chats', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p +=
-__e(o.Minimized) +
-' <span id="minimized-count">(' +
 __e(o.num_minimized) +
-')</span>\n<span class="unread-message-count\n    ';
+' ' +
+__e(o.Minimized) +
+'\n<span class="unread-message-count ';
  if (!o.num_unread) { ;
 __p += ' unread-message-count-hidden ';
  } ;
-__p += '"\n    href="#">' +
+__p += '" href="#">' +
 __e(o.num_unread) +
 '</span>\n';
 return __p
@@ -65903,26 +67971,28 @@ return __p
 define('tpl!trimmed_chat', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<a class="chatbox-btn close-chatbox-button icon-close"></a>\n<a class="chat-head-message-count\n    ';
- if (!o.num_unread) { ;
-__p += ' chat-head-message-count-hidden ';
- } ;
-__p += '"\n    href="#">' +
-__e(o.num_unread) +
-'</a>\n<a href="#" class="restore-chat" title="' +
+__p += '<a href="#" class="restore-chat w-100 align-self-center" title="' +
 __e(o.tooltip) +
-'">\n    ' +
-__e(o. title ) +
-'\n</a>\n';
+'">\n    ';
+ if (o.num_unread) { ;
+__p += ' \n        <span class="message-count badge badge-light">' +
+__e(o.num_unread) +
+'</span>\n    ';
+ } ;
+__p += '\n    ' +
+__e(o.title || o.jid ) +
+'\n</a>\n<a class="chatbox-btn close-chatbox-button fa fa-times"></a>\n';
 return __p
 };});
 
 
 define('tpl!chats_panel', ['lodash'], function(_) {return function(o) {
 var __t, __p = '';
-__p += '<a id="toggle-minimized-chats" href="#"></a>\n<div class="flyout minimized-chats-flyout"></div>\n';
+__p += '<a id="toggle-minimized-chats" href="#" class="row no-gutters"></a>\n<div class="flyout minimized-chats-flyout row no-gutters"></div>\n';
 return __p
 };});
+
+
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -65934,7 +68004,7 @@ return __p
 /*global define, window, document */
 (function (root, factory) {
   define('converse-minimize',["converse-core", "tpl!chatbox_minimize", "tpl!toggle_chats", "tpl!trimmed_chat", "tpl!chats_panel", "converse-chatview"], factory);
-})(this, function (converse, tpl_chatbox_minimize, tpl_toggle_chats, tpl_trimmed_chat, tpl_chats_panel) {
+})(void 0, function (converse, tpl_chatbox_minimize, tpl_toggle_chats, tpl_trimmed_chat, tpl_chats_panel) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -65958,7 +68028,7 @@ return __p
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-chatview", "converse-controlbox", "converse-muc", "converse-headline"],
+    dependencies: ["converse-chatview", "converse-controlbox", "converse-muc", "converse-muc-views", "converse-headline"],
     enabled: function enabled(_converse) {
       return _converse.view_mode == 'overlayed';
     },
@@ -65980,6 +68050,8 @@ return __p
       ChatBox: {
         initialize: function initialize() {
           this.__super__.initialize.apply(this, arguments);
+
+          this.on('show', this.maximize, this);
 
           if (this.get('id') === 'controlbox') {
             return;
@@ -66126,19 +68198,6 @@ return __p
         }
       },
       ChatBoxViews: {
-        showChat: function showChat(attrs) {
-          /* Find the chat box and show it. If it doesn't exist, create it.
-           */
-          var chatbox = this.__super__.showChat.apply(this, arguments);
-
-          var maximize = _.isUndefined(attrs.maximize) ? true : attrs.maximize;
-
-          if (chatbox.get('minimized') && maximize) {
-            chatbox.maximize();
-          }
-
-          return chatbox;
-        },
         getChatBoxWidth: function getChatBoxWidth(view) {
           if (!view.model.get('minimized') && u.isVisible(view.el)) {
             return u.getOuterWidth(view.el, true);
@@ -66251,7 +68310,7 @@ return __p
 
       _converse.MinimizedChatBoxView = Backbone.NativeView.extend({
         tagName: 'div',
-        className: 'chat-head',
+        className: 'chat-head row no-gutters',
         events: {
           'click .close-chatbox-button': 'close',
           'click .restore-chat': 'restore'
@@ -66330,7 +68389,7 @@ return __p
           if (!this.el.parentElement) {
             this.el.innerHTML = tpl_chats_panel();
 
-            _converse.chatboxviews.el.appendChild(this.el);
+            _converse.chatboxviews.insertRowColumn(this.el);
           }
 
           if (this.keys().length === 0) {
@@ -66501,6 +68560,8 @@ __p += '<div class="dragresize dragresize-top"></div>\n<div class="dragresize dr
 return __p
 };});
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -66510,9 +68571,8 @@ return __p
 
 /*global define, window, document */
 (function (root, factory) {
-  define('converse-dragresize',["converse-core", "tpl!dragresize", "converse-chatview", "converse-muc", // XXX: would like to remove this
-  "converse-controlbox"], factory);
-})(this, function (converse, tpl_dragresize) {
+  define('converse-dragresize',["converse-core", "tpl!dragresize", "converse-chatview", "converse-controlbox"], factory);
+})(void 0, function (converse, tpl_dragresize) {
   "use strict";
 
   var _ = converse.env._;
@@ -66535,7 +68595,7 @@ return __p
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-chatview", "converse-headline"],
+    dependencies: ["converse-chatview", "converse-headline", "converse-muc-views"],
     enabled: function enabled(_converse) {
       return _converse.view_mode == 'overlayed';
     },
@@ -66821,8 +68881,8 @@ return __p
           this.initDragResize().setDimensions();
           return result;
         },
-        renderContactsPanel: function renderContactsPanel() {
-          var result = this.__super__.renderContactsPanel.apply(this, arguments);
+        renderControlBoxPane: function renderControlBoxPane() {
+          var result = this.__super__.renderControlBoxPane.apply(this, arguments);
 
           this.initDragResize().setDimensions();
           return result;
@@ -66881,6 +68941,8 @@ return __p
   });
 });
 //# sourceMappingURL=converse-dragresize.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -66891,7 +68953,7 @@ return __p
 /*global define */
 (function (root, factory) {
   define('converse-headline',["converse-core", "tpl!chatbox", "converse-chatview"], factory);
-})(this, function (converse, tpl_chatbox) {
+})(void 0, function (converse, tpl_chatbox) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -67040,9 +69102,11 @@ return __p
 
 define('tpl!inverse_brand_heading', ['lodash'], function(_) {return function(o) {
 var __t, __p = '';
-__p += '<span class="brand-heading-container">\n    <h1 class="brand-heading"><i class="icon-conversejs"></i>inVerse</h1>\n    <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client</p>\n    <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> into your own language</p>\n<span>\n';
+__p += '<div class="row">\n    <div class="container brand-heading-container">\n        <h1 class="brand-heading"><i class="icon-conversejs"></i>inVerse</h1>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client</p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> into your own language</p>\n    <div>\n</div>\n';
 return __p
 };});
+
+
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -67066,7 +69130,7 @@ return __p
  */
 (function (root, factory) {
   define('converse-singleton',["converse-core", "converse-chatview"], factory);
-})(this, function (converse) {
+})(void 0, function (converse) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -67090,7 +69154,7 @@ return __p
     // an error will be raised if the plugin is not found.
     //
     // NB: These plugins need to have already been loaded via require.js.
-    dependencies: ['converse-muc', 'converse-controlbox', 'converse-rosterview'],
+    dependencies: ['converse-chatboxes', 'converse-muc', 'converse-controlbox', 'converse-rosterview'],
     enabled: function enabled(_converse) {
       return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
     },
@@ -67101,90 +69165,45 @@ return __p
       //
       // new functions which don't exist yet can also be added.
       ChatBoxes: {
+        chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
+          return !chatbox.get('hidden');
+        },
         createChatBox: function createChatBox(jid, attrs) {
-          /* Make sure new chat boxes are hidden by default.
-           */
+          /* Make sure new chat boxes are hidden by default. */
           attrs = attrs || {};
           attrs.hidden = true;
           return this.__super__.createChatBox.call(this, jid, attrs);
         }
       },
-      RoomsPanel: {
-        parseRoomDataFromEvent: function parseRoomDataFromEvent(ev) {
-          /* We set hidden to false for rooms opened manually by the
-           * user. They should always be shown.
-           */
-          var result = this.__super__.parseRoomDataFromEvent.apply(this, arguments);
-
-          if (_.isUndefined(result)) {
-            return;
-          }
-
-          result.hidden = false;
-          return result;
-        }
-      },
-      ChatBoxViews: {
-        showChat: function showChat(attrs, force) {
-          /* We only have one chat visible at any one
-           * time. So before opening a chat, we make sure all other
-           * chats are hidden.
-           */
-          var _converse = this.__super__._converse;
-          var chatbox = this.getChatBox(attrs, true);
-          var hidden = _.isUndefined(attrs.hidden) ? chatbox.get('hidden') : attrs.hidden;
-
-          if ((force || !hidden) && _converse.connection.authenticated) {
-            _.each(_converse.chatboxviews.xget(chatbox.get('id')), hideChat);
-
-            chatbox.save({
-              'hidden': false
-            });
-          }
-
-          return this.__super__.showChat.apply(this, arguments);
-        }
-      },
       ChatBoxView: {
-        show: function show(focus) {
+        shouldShowOnTextMessage: function shouldShowOnTextMessage() {
+          return false;
+        },
+        _show: function _show(focus) {
           /* We only have one chat visible at any one
            * time. So before opening a chat, we make sure all other
            * chats are hidden.
            */
-          if (!this.model.get('hidden')) {
-            _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
+          _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
 
-            return this.__super__.show.apply(this, arguments);
-          }
+          this.model.set('hidden', false);
+          return this.__super__._show.apply(this, arguments);
         }
       },
       ChatRoomView: {
         show: function show(focus) {
-          if (!this.model.get('hidden')) {
-            _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
+          _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
 
-            return this.__super__.show.apply(this, arguments);
-          }
-        }
-      },
-      RosterContactView: {
-        openChat: function openChat(ev) {
-          /* We only have one chat visible at any one
-           * time. So before opening a chat, we make sure all other
-           * chats are hidden.
-           */
-          _.each(this.__super__._converse.chatboxviews.xget('controlbox'), hideChat);
-
-          this.model.save({
-            'hidden': false
-          });
-          return this.__super__.openChat.apply(this, arguments);
+          this.model.set('hidden', false);
+          return this.__super__.show.apply(this, arguments);
         }
       }
     }
   });
 });
 //# sourceMappingURL=converse-singleton.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -67195,7 +69214,7 @@ return __p
 /*global define */
 (function (root, factory) {
   define('converse-fullscreen',["converse-core", "tpl!inverse_brand_heading", "converse-chatview", "converse-controlbox", "converse-muc", "converse-singleton"], factory);
-})(this, function (converse, tpl_brand_heading) {
+})(void 0, function (converse, tpl_brand_heading) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -67222,25 +69241,12 @@ return __p
 
           el.parentNode.insertAdjacentHTML('afterbegin', this.createBrandHeadingHTML());
         }
-      },
-      ChatRoomView: {
-        afterShown: function afterShown(focus) {
-          /* Make sure chat rooms are scrolled down when opened
-           */
-          this.scrollDown();
-
-          if (focus) {
-            this.focus();
-          }
-
-          return this.__super__.afterShown.apply(this, arguments);
-        }
       }
     },
     initialize: function initialize() {
       this._converse.api.settings.update({
-        chatview_avatar_height: 44,
-        chatview_avatar_width: 44,
+        chatview_avatar_height: 50,
+        chatview_avatar_width: 50,
         hide_open_bookmarks: true,
         show_controlbox_by_default: true,
         sticky_controlbox: true
@@ -67264,7 +69270,9 @@ if (typeof define !== 'undefined') {
         "converse-roomslist",   // Show currently open chat rooms
         "converse-mam",         // XEP-0313 Message Archive Management
         "converse-muc",         // XEP-0045 Multi-user chat
+        "converse-muc-views",   // Views related to MUC
         "converse-muc-embedded",
+        "converse-muc-views",
         "converse-vcard",       // XEP-0054 VCard-temp
         "converse-otr",         // Off-the-record encryption for one-on-one messages
         "converse-register",    // XEP-0077 In-band registration

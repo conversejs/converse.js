@@ -13,6 +13,7 @@
     var Strophe = converse.env.Strophe;
     var $iq = converse.env.$iq;
     var $pres = converse.env.$pres;
+    var u = converse.env.utils;
     // See: https://xmpp.org/rfcs/rfc3921.html
 
     describe("A sent presence stanza", function () {
@@ -56,21 +57,34 @@
             spyOn(view.model, 'sendPresence').and.callThrough();
             spyOn(_converse.connection, 'send').and.callThrough();
 
-            view.el.querySelector('a.change-xmpp-status-message').click();
-            var msg = 'My custom status';
-            view.el.querySelector('input.custom-xmpp-status').value = msg;
-            view.el.querySelector('[type="submit"]').click();
-            expect(view.model.sendPresence).toHaveBeenCalled();
+            var cbview = _converse.chatboxviews.get('controlbox');
+            cbview.el.querySelector('.change-status').click()
+            var modal = _converse.xmppstatusview.status_modal;
+            test_utils.waitUntil(function () {
+                return u.isVisible(modal.el);
+            }, 1000).then(function () {
+                var msg = 'My custom status';
+                modal.el.querySelector('input[name="status_message"]').value = msg;
+                modal.el.querySelector('[type="submit"]').click();
+                expect(view.model.sendPresence).toHaveBeenCalled();
+                expect(_converse.connection.send.calls.mostRecent().args[0].toLocaleString())
+                    .toBe("<presence xmlns='jabber:client'><status>My custom status</status><priority>0</priority></presence>")
 
-            expect(_converse.connection.send.calls.mostRecent().args[0].toLocaleString())
-                .toBe("<presence xmlns='jabber:client'><status>My custom status</status><priority>0</priority></presence>")
-
-            view.el.querySelector('a.choose-xmpp-status').click();
-            view.el.querySelectorAll('.dropdown dd ul li a')[1].click(); // Change status to "dnd"
-
-            expect(_converse.connection.send.calls.mostRecent().args[0].toLocaleString())
-                .toBe("<presence xmlns='jabber:client'><show>dnd</show><status>My custom status</status><priority>0</priority></presence>")
-            done();
+                return test_utils.waitUntil(function () {
+                    return modal.el.getAttribute('aria-hidden') === "true";
+                });
+            }).then(function () {
+                cbview.el.querySelector('.change-status').click()
+                return test_utils.waitUntil(function () {
+                    return modal.el.getAttribute('aria-hidden') === "false";
+                }, 1000);
+            }).then(function () {
+                modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
+                modal.el.querySelector('[type="submit"]').click();
+                expect(_converse.connection.send.calls.mostRecent().args[0].toLocaleString())
+                    .toBe("<presence xmlns='jabber:client'><show>dnd</show><status>My custom status</status><priority>0</priority></presence>")
+                done();
+            });
         }));
     });
 

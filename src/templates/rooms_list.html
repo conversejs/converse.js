@@ -1,2 +1,4 @@
-<a href="#" class="rooms-toggle open-rooms-toggle icon-{{{o.toggle_state}}}" title="{{{o.desc_rooms}}}">{{{o.label_rooms}}}</a>
-<dl class="rooms-list open-rooms-list"></dl>
+<a href="#" class="rooms-toggle open-rooms-toggle" title="{{{o.desc_rooms}}}">
+    <span class="fa {[ if (o.toggle_state === o._converse.OPENED) { ]} fa-caret-down {[ } else { ]} fa-caret-right {[ } ]}">
+    </span> {{{o.label_rooms}}}</a>
+<div class="rooms-list open-rooms-list"></div>

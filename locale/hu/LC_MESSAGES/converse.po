@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-04-22 10:37+0000\n"
+"PO-Revision-Date: 2018-04-24 07:37+0000\n"
 "Last-Translator: Szilágyi Gyula <gyula.n7@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/hu/>\n"
@@ -217,7 +217,7 @@ msgstr "Ez az ismerős távol van"
 #: dist/converse-no-dependencies.js:17433
 #: dist/converse-no-dependencies.js:18415
 msgid "Contacts"
-msgstr "Névjegyek"
+msgstr "Kapcsolatok"
 
 #: dist/converse-no-dependencies.js:16734
 msgid "Groups"

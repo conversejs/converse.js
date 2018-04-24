@@ -653,6 +653,7 @@
                 initialize () {
                     this.model.on("add", this.onChatBoxAdded, this);
                     this.model.on("destroy", this.removeChat, this);
+                    this.el.classList.add(`converse-${_converse.view_mode}`);
                     this.render();
                 },
 

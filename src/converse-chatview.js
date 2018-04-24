@@ -256,10 +256,7 @@
                 },
 
                 initialize () {
-                    this.scrollDown = _.debounce(this._scrollDown, 250);
-                    this.markScrolled = _.debounce(this._markScrolled, 100);
-                    this.show = _.debounce(this._show, 250, {'leading': true});
-
+                    this.initDebounced();
 
                     this.createEmojiPicker();
                     this.model.messages.on('add', this.onMessageAdded, this);
@@ -274,6 +271,12 @@
                     this.fetchMessages();
                     _converse.emit('chatBoxOpened', this);
                     _converse.emit('chatBoxInitialized', this);
+                },
+
+                initDebounced () {
+                    this.scrollDown = _.debounce(this._scrollDown, 250);
+                    this.markScrolled = _.debounce(this._markScrolled, 100);
+                    this.show = _.debounce(this._show, 250, {'leading': true});
                 },
 
                 render () {

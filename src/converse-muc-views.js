@@ -507,8 +507,7 @@
                 },
 
                 initialize () {
-                    this.scrollDown = _.debounce(this._scrollDown, 250);
-                    this.markScrolled = _.debounce(this._markScrolled, 100);
+                    this.initDebounced();
 
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.messages.on('rendered', this.scrollDown, this);

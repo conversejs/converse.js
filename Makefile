@@ -124,7 +124,6 @@ clean:
 	rm dist/*.min.js
 	rm css/theme.min.css
 	rm css/converse.min.css
-	rm css/converse-muc-embedded.css
 	rm css/*.map
 
 .PHONY: dev
@@ -134,13 +133,10 @@ dev: stamp-bundler stamp-npm
 ## Builds
 
 .PHONY: css
-css: dev sass/*.scss css/converse.css css/converse.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css
+css: dev sass/*.scss css/converse.css css/converse.min.css css/theme.min.css css/inverse.css css/inverse.min.css
 
 css/inverse.css:: dev sass sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/inverse/inverse.scss css/inverse.css
-
-css/converse-muc-embedded.css:: dev sass
-	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/_muc_embedded.scss css/converse-muc-embedded.css
 
 css/converse.css:: dev sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss css/converse.css
@@ -151,7 +147,7 @@ css/%.min.css:: css/%.css
 
 .PHONY: watch
 watch: dev
-	$(SASS) --watch -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css sass/inverse/inverse.scss:css/inverse.css
+	$(SASS) --watch -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss:css/converse.css sass/inverse/inverse.scss:css/inverse.css
 
 .PHONY: watchjs
 watchjs: dev

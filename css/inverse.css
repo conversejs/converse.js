@@ -7545,7 +7545,9 @@ body {
       padding: 0.5em;
       width: 100%;
       border: none;
-      min-height: 60px; }
+      min-height: 60px;
+      max-height: 400px;
+      margin-bottom: -4px; }
       #converse-embedded-chat .chatbox .sendXMPPMessage .chat-textarea.spoiler,
       #conversejs .chatbox .sendXMPPMessage .chat-textarea.spoiler {
         height: 42px; }
@@ -8622,6 +8624,7 @@ body {
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form,
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form {
           height: 100%;
+          width: 100%;
           margin-top: 2em; }
           #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label,
           #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=text],

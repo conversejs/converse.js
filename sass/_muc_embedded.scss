@@ -12,16 +12,17 @@
     position: relative;
     width: 100%;
 
-    form {
-        &.converse-centered-form {
-            position: absolute;
-            top: 30%;
-            transform: translateY(-50%);
-        }
+    .converse-chatboxes {
+        z-index: 1031; // One more than bootstrap navbar
+        position: inherit;
+        bottom: auto;
+        height: auto;
+        width: 100%;
     }
 
     .chatroom {
-        width: auto;
+        margin: 0;
+        width: 100%;
     }
     .flyout {
         bottom: auto;
@@ -67,13 +68,8 @@
             }
             .chatroom-body {
                 .chatroom-form-container {
-                    font-size: 180%;
-                    float: left;
                     height: 100%;
                     position: relative;
-                    input {
-                        font-size: 60%;
-                    }
                 }
             }
             .occupants {

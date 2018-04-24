@@ -9,7 +9,7 @@
 </head>
 
 <body class="reset">
-    <div id="conversejs" class="fullscreen">
+    <div id="conversejs" class="fullscreen converse-fullscreen">
         <div class="sidebar"></div>
         <div class="converse-chatboxes row no-gutters">
             <div id="controlbox" class="chatbox">
@@ -27,18 +27,22 @@
                             <div class="chat-title">Chatroom with a very long name</div>
                             <p class="chatroom-topic">May the force be with you</p>
                         </div>
-                        <div class="col-sm-3 col-lg-2">
-                            <div class="chatbox-buttons row no-gutters">
-                                <a class="chatbox-btn fa fa-minus"></a>
-                                <a class="chatbox-btn fa fa-close"></a>
-                                <a class="chatbox-btn fa fa-wrench"></a>
-                            </div>
+                        <div class="chatbox-buttons row no-gutters">
+                            <a class="chatbox-btn fa fa-minus"></a>
+                            <a class="chatbox-btn fa fa-close"></a>
+                            <a class="chatbox-btn fa fa-wrench"></a>
                         </div>
                     </div>
 
                     <div class="chat-body chatroom-body row no-gutters">
                             <div class="chat-area col-md-9 col-8">
                                 <div class="chat-content">
+									<time class="message chat-info chat-date badge badge-info" data-isodate="2018-04-24T00:00:00+02:00">Tuesday Apr 24th 2018</time>
+									<div class="message chat-info chat-event" data-isodate="2018-04-24T18:07:24+02:00" data-join="&quot;jc&quot;">jc has entered the room</div><div class="message chat-message " data-isodate="2018-04-24T18:07:26+02:00" data-msgid="4fb4d101-8124-4f2a-8dfb-2615896b8316">
+										<span class="chat-msg-author chat-msg-me">18:07 me:&nbsp;</span>
+										<span class="chat-msg-content">ee</span>
+										<div class="chat-msg-media"></div>
+									</div>
                                     <div class="chat-message">
                                         <span class="chat-msg-author chat-msg-room">18:50&nbsp;
                                             <canvas height="24" width="24" class="avatar"></canvas>
@@ -101,50 +105,92 @@
                                 </form>
 
                                 <ul class="occupant-list">
-                                    <li class="moderator occupant" title="This user is a moderator. Click to mention luke in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>luke</li>
+                                    <li class="moderator occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Admiral Ackbar</li>
+                                    <li class="moderator occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Padmé Amidala</li>
                                     <li class="participant occupant" title="Click to mention leia in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>leia</li>
-                                    <li class="participant occupant" title="Click to mention Obi-wan Kenobi, Jedi Master in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>Obi-wan Kenobi, Jedi Master</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
+										<div class="occupant-status occupant-online circle" title="Online"></div>Jar Jar Binks</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-away circle" title="Away"></div>C-3PO</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Chewbacca</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Count Dooku</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Boba Fett</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Jabba the Hutt</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Mara Jade</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Queen Jamillia</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Jerec</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Moff Jerjerrod</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Qui-Gon Jinn</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Captain Kael</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Kir Kanos</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Talon Karrde</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Talon Karrde</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Obi-Wan Kenobi</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Darth Maul</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Princess Leia Organa</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Emperor Palpatine</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>R2-D2</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>R5-D4</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Darth Sidious</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Anakin Skywalker</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Luke Skywalker</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Han Solo</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>TC-14</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Booster Terrik</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Mirax Terrik</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Mod Terrik</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Tessek</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Darth Vader</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Supreme Chancellor Finis Valorum</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Nahdar Vebb</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>General Maximilian Veers</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Tahiri Veila</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Asajj Ventress</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Vergere</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>King Veruna</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Vima-Da-Boda</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Quinlan Vos</li>
+                                    <li class="participant occupant" title="Click to mention leia in your message.">
+										<div class="occupant-status occupant-online circle" title="Online"></div>Yoda</li>
                                 </ul>
                                 <div class="chatroom-features">
                                     <p class="occupants-heading">Features</p>

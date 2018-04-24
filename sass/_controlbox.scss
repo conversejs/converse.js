@@ -449,6 +449,9 @@
 
             .chatbox { 
                 .box-flyout {
+                    top: -100vh;
+                    margin-left: 15px; // Counteracts Bootstrap margins, but
+                                       // not clear why needed...
                     left: 0;
                     bottom: 0;
                     border-radius: 0;

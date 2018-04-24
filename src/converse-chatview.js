@@ -251,7 +251,8 @@
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .toggle-spoiler': 'toggleSpoilerMessage',
                     'click .upload-file': 'toggleFileUpload',
-                    'keypress .chat-textarea': 'keyPressed'
+                    'keypress .chat-textarea': 'keyPressed',
+                    'input .chat-textarea': 'inputChanged'
                 },
 
                 initialize () {
@@ -825,6 +826,11 @@
                         // (which would imply an internal command and not a message).
                         this.setChatState(_converse.COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);
                     }
+                },
+
+                inputChanged (ev) {
+                    ev.target.style.height = 'auto'; // Fixes weirdness
+                    ev.target.style.height = (ev.target.scrollHeight) + 'px';
                 },
 
                 clearMessages (ev) {

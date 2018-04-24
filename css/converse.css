@@ -8708,7 +8708,8 @@ body.reset {
   bottom: auto;
   right: auto;
   position: relative;
-  width: 100%; }
+  width: 100%;
+  height: 100%; }
   #conversejs.converse-embedded *, #conversejs.converse-embedded *:before, #conversejs.converse-embedded *:after {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -8717,31 +8718,22 @@ body.reset {
     z-index: 1031;
     position: inherit;
     bottom: auto;
-    height: auto;
+    height: 100%;
     width: 100%; }
   #conversejs.converse-embedded .chatroom {
     margin: 0;
     width: 100%; }
-  #conversejs.converse-embedded .flyout {
-    bottom: auto;
-    display: block;
-    position: relative; }
-  #conversejs.converse-embedded .chatbox {
-    float: none; }
-    #conversejs.converse-embedded .chatbox .box-flyout {
-      box-shadow: none; }
-    #conversejs.converse-embedded .chatbox .chat-title {
-      padding: 0.3em;
-      font-size: 120%; }
+  #conversejs.converse-embedded .chatbox .box-flyout {
+    box-shadow: none;
+    height: 100%; }
+  #conversejs.converse-embedded .chatbox .chat-title {
+    padding: 0.3em;
+    font-size: 120%; }
   #conversejs.converse-embedded .chatbox-btn {
     display: none; }
   #conversejs.converse-embedded .chatroom .box-flyout {
     min-width: auto;
-    width: 100%;
-    height: 55vh; }
-    #conversejs.converse-embedded .chatroom .box-flyout .chat-body {
-      height: -webkit-calc(100% - 55px);
-      height: calc(100% - 55px); }
+    width: 100%; }
     #conversejs.converse-embedded .chatroom .box-flyout .occupants-heading {
       font-size: 120%; }
     #conversejs.converse-embedded .chatroom .box-flyout .chat-content .chat-message {
@@ -8750,9 +8742,11 @@ body.reset {
     #conversejs.converse-embedded .chatroom .box-flyout .sendXMPPMessage .chat-textarea {
       padding: 0.5em;
       font-size: 110%; }
-    #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container {
-      height: 100%;
-      position: relative; }
+    #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body {
+      height: 100%; }
+      #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container {
+        height: 100%;
+        position: relative; }
     #conversejs.converse-embedded .chatroom .box-flyout .occupants .occupant-list {
       padding-left: 0.3em; }
       #conversejs.converse-embedded .chatroom .box-flyout .occupants .occupant-list li.occupant {

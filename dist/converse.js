@@ -48365,11 +48365,7 @@ return __p
           'input .chat-textarea': 'inputChanged'
         },
         initialize: function initialize() {
-          this.scrollDown = _.debounce(this._scrollDown, 250);
-          this.markScrolled = _.debounce(this._markScrolled, 100);
-          this.show = _.debounce(this._show, 250, {
-            'leading': true
-          });
+          this.initDebounced();
           this.createEmojiPicker();
           this.model.messages.on('add', this.onMessageAdded, this);
           this.model.messages.on('rendered', this.scrollDown, this);
@@ -48384,6 +48380,13 @@ return __p
           _converse.emit('chatBoxOpened', this);
 
           _converse.emit('chatBoxInitialized', this);
+        },
+        initDebounced: function initDebounced() {
+          this.scrollDown = _.debounce(this._scrollDown, 250);
+          this.markScrolled = _.debounce(this._markScrolled, 100);
+          this.show = _.debounce(this._show, 250, {
+            'leading': true
+          });
         },
         render: function render() {
           // XXX: Is this still needed?
@@ -56838,8 +56841,7 @@ return __p
           'keypress textarea.chat-textarea': 'keyPressed'
         },
         initialize: function initialize() {
-          this.scrollDown = _.debounce(this._scrollDown, 250);
-          this.markScrolled = _.debounce(this._markScrolled, 100);
+          this.initDebounced();
           this.disable_mam = true; // Don't do MAM queries for this box
 
           this.model.messages.on('add', this.onMessageAdded, this);
@@ -59137,8 +59139,7 @@ return __p
         initialize: function initialize() {
           var _this3 = this;
 
-          this.scrollDown = _.debounce(this._scrollDown, 250);
-          this.markScrolled = _.debounce(this._markScrolled, 100);
+          this.initDebounced();
           this.model.messages.on('add', this.onMessageAdded, this);
           this.model.messages.on('rendered', this.scrollDown, this);
           this.model.on('change:affiliation', this.renderHeading, this);

@@ -151,10 +151,7 @@
                                     'message': this.get('get')
                                 });
                             } else {
-                                this.save({
-                                    'upload': _converse.FAILURE,
-                                    'message': __('Sorry, could not succesfully upload your file')
-                                });
+                                xhr.onerror();
                             }
                         }
                     };
@@ -164,9 +161,14 @@
                         }
                     }, false);
                     xhr.onerror = () => {
+                        let  message = __('Sorry, could not succesfully upload your file.');
+                        if (xhr.responseText) {
+                            message += ' ' + __('Your server\'s response: "%1$s"', xhr.responseText)
+                        }
                         this.save({
+                            'type': 'error',
                             'upload': _converse.FAILURE,
-                            'message': __('Sorry, could not succesfully upload your file')
+                            'message': message
                         });
                     };
                     xhr.open('PUT', this.get('put'), true);

@@ -497,7 +497,7 @@
                 className: 'chatbox chatroom hidden',
                 is_chatroom: true,
                 events: {
-                    'change .input.fileupload': 'onFileSelection',
+                    'change input.fileupload': 'onFileSelection',
                     'click .close-chatbox-button': 'close',
                     'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
                     'click .new-msgs-indicator': 'viewUnreadMessages',

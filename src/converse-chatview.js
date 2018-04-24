@@ -258,6 +258,9 @@
                 initialize () {
                     this.scrollDown = _.debounce(this._scrollDown, 250);
                     this.markScrolled = _.debounce(this._markScrolled, 100);
+                    this.show = _.debounce(this._show, 250, {'leading': true});
+
+
                     this.createEmojiPicker();
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.messages.on('rendered', this.scrollDown, this);
@@ -1007,18 +1010,6 @@
                         return;
                     }
                     u.fadeIn(this.el, _.bind(this.afterShown, this));
-                },
-
-                show () {
-                    if (_.isUndefined(this.debouncedShow)) {
-                        /* We wrap the method in a debouncer and set it on the
-                         * instance, so that we have it debounced per instance.
-                         * Debouncing it on the class-level is too broad.
-                         */
-                        this.debouncedShow = _.debounce(this._show, 250, {'leading': true});
-                    }
-                    this.debouncedShow.apply(this, arguments);
-                    return this;
                 },
 
                 showNewMessagesIndicator () {

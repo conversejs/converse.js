@@ -1,18 +1,14 @@
-// Converse.js (A browser based XMPP chat client)
+// Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
-/*global define */
 
-/* This is a Converse.js plugin which add support for multi-user chat rooms, as
- * specified in XEP-0045 Multi-user chat.
- */
 (function (root, factory) {
     define([
             "form-utils",
             "converse-core",
+            "emojione",
             "converse-chatview",
             "converse-disco",
             "backbone.overview",
@@ -20,7 +16,7 @@
             "backbone.vdomview",
             "muc-utils"
     ], factory);
-}(this, function (u, converse) {
+}(this, function (u, converse, emojione) {
     "use strict";
 
     const MUC_ROLE_WEIGHTS = {
@@ -40,7 +36,6 @@
     Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
 
     converse.MUC_NICK_CHANGED_CODE = "303";
-
     converse.CHATROOMS_TYPE = 'chatroom';
 
     converse.ROOM_FEATURES = [
@@ -304,6 +299,22 @@
                         presence.c("status", exit_msg);
                     }
                     _converse.connection.sendPresence(presence);
+                },
+
+                getOutgoingMessageAttributes (text, spoiler_hint) {
+                    const is_spoiler = this.get('composing_spoiler');
+                    return {
+                        'from': _converse.connection.jid,
+                        'fullname': this.get('nick'),
+                        'is_spoiler': is_spoiler,
+                        'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
+                        'msgid': _converse.connection.getUniqueId(),
+                        'sender': 'me',
+                        'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
+                        'time': moment().format(),
+                        'to': this.get('jid'),
+                        'type': 'groupchat',
+                    };
                 },
 
                 getRoomFeatures () {

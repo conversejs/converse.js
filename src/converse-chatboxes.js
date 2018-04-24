@@ -155,11 +155,13 @@
                             }
                         }
                     };
+
                     xhr.upload.addEventListener("progress", (evt) => {
                         if (evt.lengthComputable) {
                             this.set('progress', evt.loaded / evt.total);
                         }
                     }, false);
+
                     xhr.onerror = () => {
                         let  message = __('Sorry, could not succesfully upload your file.');
                         if (xhr.responseText) {

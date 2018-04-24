@@ -2052,7 +2052,7 @@
                     var sent_stanza;
                     var view = _converse.chatboxviews.get('lounge@localhost');
                     spyOn(view, 'onMessageSubmitted').and.callThrough();
-                    spyOn(view, 'clearChatRoomMessages');
+                    spyOn(view, 'clearMessages');
                     spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
                         sent_stanza = stanza;
                     });
@@ -2106,7 +2106,7 @@
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
                     var view = _converse.chatboxviews.get('lounge@localhost');
                     spyOn(view, 'onMessageSubmitted').and.callThrough();
-                    spyOn(view, 'clearChatRoomMessages');
+                    spyOn(view, 'clearMessages');
                     var textarea = view.el.querySelector('.chat-textarea')
                     textarea.value = '/clear';
                     view.keyPressed({
@@ -2116,7 +2116,7 @@
                     });
 
                     expect(view.onMessageSubmitted).toHaveBeenCalled();
-                    expect(view.clearChatRoomMessages).toHaveBeenCalled();
+                    expect(view.clearMessages).toHaveBeenCalled();
                     done();
                 }).catch(_.partial(console.error, _));
             }));

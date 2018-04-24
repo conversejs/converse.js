@@ -829,7 +829,7 @@
 
                 clearMessages (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const result = confirm(__("Are you sure you want to clear the messages from this chat box?"));
+                    const result = confirm(__("Are you sure you want to clear the messages from this conversation?"));
                     if (result === true) {
                         this.content.innerHTML = '';
                         this.model.messages.reset();

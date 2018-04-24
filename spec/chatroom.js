@@ -2095,7 +2095,7 @@
                             '<subject xmlns="jabber:client">This is yet another subject</subject>'+
                         '</message>');
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("/clear to clear messages",
@@ -2118,7 +2118,7 @@
                     expect(view.onMessageSubmitted).toHaveBeenCalled();
                     expect(view.clearChatRoomMessages).toHaveBeenCalled();
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("/owner to make a user an owner",
@@ -2171,7 +2171,7 @@
                             "</query>"+
                         "</iq>");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("/ban to ban a user",
@@ -2223,7 +2223,7 @@
                             "</query>"+
                         "</iq>");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("/kick to kick a user",
@@ -2301,7 +2301,7 @@
                         view.el.querySelectorAll('.chat-info')[3].textContent).toBe(
                         "annoyingGuy has been kicked out");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
 
@@ -2442,7 +2442,7 @@
                     info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                     expect(info_msgs.pop().textContent).toBe("trustworthyguy is no longer a moderator");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("/mute and /voice to mute and unmute a user",
@@ -2582,7 +2582,7 @@
                     info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                     expect(info_msgs.pop().textContent).toBe("annoyingGuy has been given a voice again");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
         });
 
@@ -2621,7 +2621,7 @@
                     view.el.querySelector('input[type=submit]').click();
                     expect(view.join).toHaveBeenCalledWith('dummy', 'secret');
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will show an error message if the room is members-only and the user not included",
@@ -2644,7 +2644,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($(view.el).find('.chatroom-body p:last').text()).toBe('You are not on the member list of this room.');
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will show an error message if the user has been banned",
@@ -2667,7 +2667,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($(view.el).find('.chatroom-body p:last').text()).toBe('You have been banned from this room.');
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will render a nickname form if a nickname conflict happens and muc_nickname_from_jid=false",
@@ -2694,7 +2694,7 @@
                     $input.val('nicky');
                     view.el.querySelector('input[type=submit]').click();
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will automatically choose a new nickname if a nickname conflict happens and muc_nickname_from_jid=true",
@@ -2756,7 +2756,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(view.join).toHaveBeenCalledWith('dummy-4');
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will show an error message if the user is not allowed to have created the room",
@@ -2779,7 +2779,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($(view.el).find('.chatroom-body p:last').text()).toBe('You are not allowed to create new rooms.');
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will show an error message if the user's nickname doesn't conform to room policy",
@@ -2802,7 +2802,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($(view.el).find('.chatroom-body p:last').text()).toBe("Your nickname doesn't conform to this room's policies.");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will show an error message if the room doesn't yet exist",
@@ -2825,7 +2825,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($(view.el).find('.chatroom-body p:last').text()).toBe("This room does not (yet) exist.");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will show an error message if the room has reached its maximum number of occupants",
@@ -2848,7 +2848,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($(view.el).find('.chatroom-body p:last').text()).toBe("This room has reached its maximum number of occupants.");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
         });
 

@@ -764,7 +764,7 @@
                     this.model.sendMessage(attrs);
                 },
 
-                setChatState (state, no_save) {
+                setChatState (state) {
                     /* Mutator for setting the chat state of this chat session.
                      * Handles clearing of any chat state notification timeouts and
                      * setting new ones if necessary.
@@ -774,7 +774,6 @@
                      *
                      *  Parameters:
                      *    (string) state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
-                     *    (Boolean) no_save - Just do the cleanup or setup but don't actually save the state.
                      */
                     if (!_.isUndefined(this.chat_state_timeout)) {
                         window.clearTimeout(this.chat_state_timeout);
@@ -793,9 +792,7 @@
                             _converse.INACTIVE
                         );
                     }
-                    if (!no_save && this.model.get('chat_state') !== state) {
-                        this.model.set('chat_state', state);
-                    }
+                    this.model.set('chat_state', state);
                     return this;
                 },
 
@@ -824,10 +821,10 @@
                      */
                     if (ev.keyCode === KEY.ENTER) {
                         this.onFormSubmitted(ev);
-                    } else {
+                    } else if (ev.keyCode !== KEY.FORWARD_SLASH && this.model.get('chat_state') !== _converse.COMPOSING) {
                         // Set chat state to composing if keyCode is not a forward-slash
                         // (which would imply an internal command and not a message).
-                        this.setChatState(_converse.COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);
+                        this.setChatState(_converse.COMPOSING);
                     }
                 },
 

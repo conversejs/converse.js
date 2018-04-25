@@ -14,6 +14,7 @@
             white-space: nowrap;
             overflow-y: hidden;
             text-overflow: ellipsis;
+            font-size: $font-size-large;
         }
 
         a, a:visited, a:hover, a:not([href]):not([tabindex]) {
@@ -102,23 +103,6 @@
                 .mentioned {
                     font-weight: bold;
                 }
-                .chat-message {
-                    &.onload {
-                        animation: colorchange-chatmessage-muc 1s;
-                        -webkit-animation: colorchange-chatmessage-muc 1s;
-                    }
-                    .chat-msg-them {
-                        color: $chatroom-message-them-color;
-                        canvas {
-                            background: $red;
-                        }
-                    }
-                    .chat-msg-me {
-                        canvas {
-                            background: $light-blue;
-                        }
-                    }
-                }
                 .disconnect-msg {
                     padding: 2em 2em 0 2em;
                 }
@@ -129,17 +113,12 @@
                     min-width: $chat-width;
                     .new-msgs-indicator {
                         background-color: $chatroom-head-color;
-                        max-width: 70%;
                     }
                     .chat-content {
                         height: 100%;
-                        padding: 0.5em;
                     }
                     &.full {
                         min-width: 100%;
-                        .new-msgs-indicator {
-                            min-width: 100%;
-                        }
                     }
                 }
                 .occupants {

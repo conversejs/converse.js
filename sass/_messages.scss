@@ -1,0 +1,178 @@
+#conversejs {
+    .message {
+
+        &.date-separator {
+            height: 2em;
+            margin: 0;
+            position: relative;
+            text-align: center;
+            z-index: 0;
+
+            .separator {
+                border: 0.5px solid $chat-head-color;
+                margin: 0 1em;
+                position: relative;
+                top: 1em;
+                z-index: 5;
+            }
+
+            .separator-text {
+                background: white;
+                bottom: 1px; // Offset needed due to .separator border size
+                color: #666;
+                display: inline-block;
+                line-height: 2em;
+                padding: 0 1em;
+                position: relative;
+                z-index: 5;
+            }
+        }
+
+        &.chat-info {
+            color: $chat-head-color;
+            font-size: $message-font-size;
+            line-height: $line-height-small;
+            padding: 0.5rem 1rem;
+
+            &.badge {
+                color: $chat-head-text-color;
+            }
+            &.chat-state-notification {
+                font-style: italic;
+            }
+            &.chat-event {
+                clear: left;
+                font-style: italic;
+            }
+            &.chat-error {
+                color: $warning-color;
+                font-weight: bold;
+            }
+            &.chat-date {
+                display: inline-block;
+                margin-top: 1em;
+            }
+        }
+
+        &.chat-image {
+            height: auto;
+            width: auto;
+            max-height: 24em;
+            max-width: 100%;
+        }
+        &.chat-action {
+            font-style: italic;
+        }
+
+        &.chat-msg {
+            display: flex;
+            flex-direction: row;
+            overflow: auto; // Ensures that content stays inside
+            padding: 0.5rem 1rem;
+
+            &.onload {
+                animation: colorchange-chatmessage 1s;
+                -webkit-animation: colorchange-chatmessage 1s;
+            }
+            &.delayed {
+                .chat-msg-them {
+                    color: lighten($message-them-color, 5%);
+                }
+                .chat-msg-me {
+                    color: lighten($link-color, 5%);
+                }
+            }
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.035);
+            }
+
+            .avatar {
+                background: $gray-color;
+                height: 36px;
+                vertical-align: middle;
+                width: 36px;
+            }
+
+            .chat-msg-content {
+                margin-left: 0.5rem;
+            }
+
+            .chat-msg-text {
+                padding: 0;
+                color: #666;
+                max-width: 100%;
+                word-wrap: break-word;
+
+                &.spoiler {
+                    border-radius: $chatbox-border-radius;
+                    padding: 0.5em;
+                }
+                .emojione {
+                    margin-bottom: -6px;
+                }
+            }
+
+            .chat-msg-heading {
+                padding-bottom: 0.5rem;
+                display: block;
+
+                .chat-msg-author {
+                    font-weight: bold;
+                }
+                .chat-msg-time {
+                    padding-left: 0.5em;
+                }
+                .chat-msg-them {
+                    color: $message-them-color;
+                }
+                .chat-msg-me {
+                    color: $link-color;
+                }
+            }
+            &.chat-msg-followup {
+                .chat-msg-heading,
+                .avatar {
+                    display: none;
+                }
+                .chat-msg-content {
+                    margin-left: 2.75rem;
+                }
+            }
+
+        }
+    }
+
+    .chatroom-body .message {
+        &.onload {
+            animation: colorchange-chatmessage-muc 1s;
+            -webkit-animation: colorchange-chatmessage-muc 1s;
+        }
+        &.delayed {
+            .chat-msg-them {
+                color: lighten($chatroom-message-them-color, 5%);
+            }
+            .chat-msg-me {
+                color: lighten($link-color, 5%);
+            }
+        }
+        .chat-msg-them {
+            color: $chatroom-message-them-color;
+        }
+
+        .separator {
+            border: 0.5px solid $chatroom-head-color;
+        }
+    }
+}
+
+@media screen and (max-width: 767px) {
+    #conversejs:not(.converse-embedded)  {
+        .message {
+            &.chat-msg {
+                .chat-msg-author {
+                    white-space: normal;
+                }
+            }
+        }
+    }
+}

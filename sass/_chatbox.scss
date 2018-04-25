@@ -159,6 +159,7 @@
             background-color: $chat-head-color;
             border-bottom-left-radius: $chatbox-border-radius;
             border-bottom-right-radius: $chatbox-border-radius;
+
             @media screen and (max-height: $mobile-landscape-height) {
                 border-bottom-left-radius: 0;
                 border-bottom-right-radius: 0;
@@ -170,92 +171,13 @@
             border-top: 0;
             p {
                 color: $text-color;
-                font-size: $font-size;
+                font-size: $message-font-size;
                 margin: 0;
                 padding: 5px;
             }
-            .message {
-                margin: 0.5em 0;
-            }
-            .chat-info {
-                line-height: $line-height-small;
-                color: $chat-head-color;
-                font-size: $font-size-small;
-                &.badge {
-                    color: $chat-head-text-color;
-                }
-                &.chat-state-notification {
-                    font-style: italic;
-                }
-                &.chat-event {
-                    clear: left;
-                    font-style: italic;
-                }
-                &.chat-error {
-                    color: $warning-color;
-                    font-weight: bold;
-                }
-                &.chat-date {
-                    display: inline-block;
-                    margin-top: 1em;
-                }
-            }
-            .chat-image {
-                height: auto;
-                width: auto;
-                max-height: 24em;
-                max-width: 100%;
-            }
-            .chat-action {
-                font-style: italic;
-            }
-            .chat-message {
-                overflow: auto; // Ensures that content stays inside
-
-                &.onload {
-                    animation: colorchange-chatmessage 1s;
-                    -webkit-animation: colorchange-chatmessage 1s;
-                }
-
-                canvas {
-                    vertical-align: middle;
-                    background: $gray-color;
-                }
-
-                .chat-msg-author {
-                    font-weight: bold;
-                }
-                .chat-msg-them {
-                    color: $message-them-color;
-                }
-                .chat-msg-me {
-                    color: $link-color;
-                }
-                .chat-msg-content {
-                    max-width: 100%;
-                    word-wrap: break-word;
-
-                    &.spoiler {
-                        border-radius: $chatbox-border-radius;
-                        padding: 0.5em;
-                    }
-
-                    .emojione {
-                        margin-bottom: -6px;
-                    }
-                }
-            }
-            .delayed {
-                .chat-msg-them {
-                    color: lighten($message-them-color, 5%);
-                }
-                .chat-msg-me {
-                    color: lighten($link-color, 5%);
-                }
-            }
         }
         .new-msgs-indicator {
-            position: absolute;
+            position: relative;
             width: 100%;
             cursor: pointer;
             background-color: $chat-head-color;
@@ -265,11 +187,11 @@
             text-align: center;
             z-index: 20;
             white-space: nowrap;
+            margin-bottom: 0.25em;
         }
         .chat-content {
             height: 100%;
-            padding: 1em;
-            font-size: 13px;
+            font-size: $message-font-size;
             color: $text-color;
             overflow-y: auto;
             border: 0;
@@ -535,14 +457,6 @@
 
         .chatbox {
             width: calc(100% - 50px);
-
-            .chat-body {
-                .chat-message {
-                    .chat-msg-author {
-                        white-space: normal;
-                    }
-                }
-            }
             .row {
                 .box-flyout {
                     left: 50px;

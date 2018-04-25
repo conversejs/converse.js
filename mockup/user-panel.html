@@ -1,8 +1,8 @@
 <!-- <div id="users" class="controlbox-pane"> -->
 <div class="userinfo">
     <div class="profile d-flex">
-        <canvas height="40px" width="40px" class="avatar align-self-center"></canvas>
-        <span class="username w-100 align-self-center">Walter White</span>
+        <canvas data-avatar="/mockup/images/romeo.jpg" height="40px" width="40px" class="avatar align-self-center"></canvas>
+        <span class="username w-100 align-self-center">Romeo Montague</span>
         <!-- <a class="chatbox-btn fa fa-vcard align-self-center" title="Your profile" data-toggle="modal" data-target="#userProfileModal"></a> -->
         <!-- <a class="chatbox-btn fa fa-cog align-self-center" title="Change settings" data-toggle="modal" data-target="#settingsModal"></a> -->
         <a class="chatbox-btn logout fa fa-sign-out align-self-center" title="Log out"></a>
@@ -68,12 +68,12 @@
                 <span class="fa fa-caret-down"></span> Contact Requests</a>
             <ul class="roster-group-contacts">
                 <li class="offline requesting-xmpp-contact d-flex">
-                    <span class="req-contact-name w-100">Bob Skinstad</span>
+                    <span class="req-contact-name w-100">The Nurse</span>
                     <a class="accept-xmpp-request fa fa-check" title="Click here to accept this contact's request" href="#"></a>
                     <a class="decline-xmpp-request fa fa-times" title="Click here to decline this contact's request" href="#"></a>
                 </li>
                 <li class="offline requesting-xmpp-contact d-flex">
-                    <span class="req-contact-name w-100">André Vos</span>
+                    <span class="req-contact-name w-100">Friar Laurence</span>
                     <a class="accept-xmpp-request fa fa-check" title="Click here to accept this contact's request" href="#"></a>
                     <a class="decline-xmpp-request fa fa-times" title="Click here to decline this contact's request" href="#"></a>
                 </li>
@@ -85,19 +85,14 @@
                 <span class="fa fa-caret-down"></span> Colleagues</a>
 
             <ul>
-                <li class="online current-xmpp-contact d-flex">
-                    <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
-                        <span class="fa fa-circle" title="This contact is online"></span> Victor Matfield</a>
-                    <a class="remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
-                </li>
                 <li class="away current-xmpp-contact d-flex">
                     <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
-                        <span class="fa fa-circle-o" title="this contact is away"></span> William Winterbottom</a>
+                        <span class="fa fa-circle-o" title="this contact is away"></span> Balthasar</a>
                     <a class="remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
                 </li>
                 <li class="dnd current-xmpp-contact d-flex">
                     <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
-                        <span class="fa fa-minus-circle" title="This contact is busy"></span> Gary Teichmann</a>
+                        <span class="fa fa-minus-circle" title="This contact is busy"></span> Escalus, Prince of Verona</a>
                     <a class="remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
                 </li>
             </li>
@@ -107,14 +102,19 @@
             <a href="#" data-group="Family" class="group-toggle" title="Click to hide these contacts">
                 <span class="fa fa-caret-down"></span> Family</a>
             <ul>
-                <li class="away current-xmpp-contact d-flex">
+                <li class="online current-xmpp-contact d-flex">
                     <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
-                        <span class="fa fa-circle-o" title="this contact is away"></span> Allan Donald</a>
+                        <span class="fa fa-circle" title="This contact is online"></span> Benvolio Montague</a>
                     <a class="remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
                 </li>
                 <li class="offline current-xmpp-contact d-flex">
                     <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
-                        <span class="fa fa-times-circle" title="This contact is offline"></span> Corné Krige</a>
+                        <span class="fa fa-times-circle" title="This contact is offline"></span> Montague</a>
+                    <a class="remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
+                </li>
+                <li class="offline current-xmpp-contact d-flex">
+                    <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
+                        <span class="fa fa-times-circle" title="This contact is offline"></span> Lady Montague</a>
                     <a class="remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
                 </li>
             </ul>
@@ -126,12 +126,7 @@
             <ul>
                 <li class="online current-xmpp-contact d-flex">
                     <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
-                        <span class="fa fa-circle" title="This contact is online"></span> John Smit</a>
-                    <a class="remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
-                </li>
-                <li class="online current-xmpp-contact d-flex">
-                    <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
-                        <span class="fa fa-circle" title="This contact is online"></span> Bakkies Botha</a>
+                        <span class="fa fa-circle" title="This contact is online"></span> Mercutio</a>
                     <a class="remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
                 </li>
             </ul>
@@ -143,7 +138,17 @@
             <ul>
                 <li class="online current-xmpp-contact d-flex">
                     <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
-                        <span class="fa fa-circle" title="This contact is online"></span> James Small</a>
+                        <span class="fa fa-circle" title="This contact is online"></span> Gregory</a>
+                    <a class="remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
+                </li>
+                <li class="online current-xmpp-contact d-flex">
+                    <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
+                        <span class="fa fa-circle" title="This contact is online"></span> Peter</a>
+                    <a class="remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
+                </li>
+                <li class="online current-xmpp-contact d-flex">
+                    <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
+                        <span class="fa fa-circle" title="This contact is online"></span> Sampson</a>
                     <a class="remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
                 </li>
             </ul>
@@ -154,11 +159,11 @@
                 <span class="fa fa-caret-down"></span> Pending Contacts</a>
             <ul>
                 <li class="offline pending-xmpp-contact d-flex">
-                    <span class="pending-contact-name w-100">Rassie Erasmus</span>
+                    <span class="pending-contact-name w-100">An Apothecary</span>
                     <a class="remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
                 </li>
                 <li class="offline pending-xmpp-contact d-flex">
-                    <span class="pending-contact-name w-100">Victor Matfield</span>
+                    <span class="pending-contact-name w-100">Abram</span>
                     <a class="remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
                 </li>
             </ul>

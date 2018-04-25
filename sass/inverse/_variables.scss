@@ -97,6 +97,8 @@ $chatbox-hover-height: 6px !default;
 $mobile_landscape_height: 450px !default;
 $mobile_portrait_length: 480px !default;
 
+$message-font-size: 14px !default;
+
 $font-size-tiny: 10px !default;
 $font-size-small: 14px !default;
 $font-size: 16px !default;
@@ -109,7 +111,7 @@ $toolbar-color: $greenish-white !default;
 $line-height-small:  20px !default;
 $line-height:  22px !default;
 $line-height-large:  24px !default;
-$line-height-huge:  26px !default;
+$line-height-huge:  30px !default;
 
 $controlbox-width: 250px !default;
 $chat-width: 100% !default;

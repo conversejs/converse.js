@@ -150,7 +150,7 @@ css/%.min.css:: css/%.css
 
 .PHONY: watch
 watch: dev
-	$(SASS) --watch -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss:css/converse.css sass/inverse/inverse.scss:css/inverse.css
+	$(SASS) --watch -I $(BOURBON) -I $(BOOTSTRAP) sass:css
 
 .PHONY: watchjs
 watchjs: dev

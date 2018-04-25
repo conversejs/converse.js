@@ -94,7 +94,7 @@
 }
 
 @media screen and (max-width: 767px) {
-    #conversejs.fullscreen  {
+    #conversejs:not(.converse-embedded).fullscreen {
         .chatbox {
             width: calc(100% - 50px);
         }

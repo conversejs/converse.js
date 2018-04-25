@@ -1,15 +1,15 @@
-#converse-embedded-chat,
 #conversejs {
     .flyout {
         border-radius: $chatbox-border-radius;
+        bottom: $chatbox-hover-height;
+        position: absolute;
+
         @media screen and (max-height: $mobile-landscape-height) {
             border-radius: 0;
         }
         @media screen and (max-width: $mobile-portrait-length) {
             border-radius: 0;
         }
-        bottom: $chatbox-hover-height;
-        position: absolute;
 
         @media screen and (max-height: $mobile-landscape-height) {
             bottom: 0;
@@ -518,7 +518,7 @@
 }
 
 @media screen and (max-width: 767px) {
-    #conversejs  {
+    #conversejs:not(.converse-embedded)  {
         > .row {
             flex-direction: row-reverse;
         }

@@ -432,7 +432,7 @@
 
 @include media-breakpoint-down(sm) {
 
-    #conversejs {
+    #conversejs:not(.converse-embedded)  {
         left: 0;
         right: 0;
         padding-left: env(safe-area-inset-left);

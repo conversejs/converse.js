@@ -308,7 +308,7 @@
 }
 
 @media screen and (max-width: 767px) {
-    #conversejs  {
+    #conversejs:not(.converse-embedded)  {
         .chatbox {
             .box-flyout {
                 .chatroom-body {

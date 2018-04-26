@@ -20,7 +20,7 @@
                 </div>
             </div>
 
-            <div class="chatbox chatroom" id="chatbox-4a77380f1cd9d392627b0e1469688f9ca44e9392">
+            <div class="chatbox chatroom" id="chatroom">
                 <div class="flyout box-flyout">
                     <div class="chat-head chat-head-chatroom row no-gutters">
                         <div class="col col-9">
@@ -241,6 +241,7 @@
 <script type="text/javascript" src="../../node_modules/lodash/lodash.js"></script>
 <script type="text/javascript" src="../../node_modules/backbone/backbone.js"></script>
 <script type="text/javascript" src="../../node_modules/backbone.nativeview/backbone.nativeview.js"></script>
+<script type="text/javascript" src="avatars.js"></script>
 <script type="text/javascript" src="sidebar.js"></script>
 <script type="text/javascript" src="user-panel.js"></script>
 <script type="text/javascript" src="modals.js"></script>
@@ -251,6 +252,7 @@
         new Modals();
         new Sidebar();
         new UserPanel();
+        window.renderAvatars(document.querySelector('.chatroom'));
     });
 </script>
 

@@ -114,6 +114,23 @@
                                     </div>
 								</div>
 
+                                <div class="message chat-msg {{{o.extra_classes}}}" data-isodate="{{{o.time}}}" data-msgid="{{{o.msgid}}}">
+                                    <canvas data-avatar="/mockup/images/romeo.jpg" height="36" width="36" class="avatar"></canvas>
+                                    <div class="chat-msg-content">
+                                        <span class="chat-msg-heading">
+                                            <span class="chat-msg-author">Romeo Montague</span>
+                                            <span class="chat-msg-time text-muted">19:36</span>
+                                        </span>
+                                        <div class="spoiler-hint">By a name
+                                            <a class="badge badge-info toggle-spoiler" data-toggle-state="closed" href="#"><i class="fa fa-eye"></i>Show more</a>
+                                        </div>
+                                        <div class="chat-msg-text spoiler collapsed">
+                                            I know not how to tell thee who I am: My name, dear saint, is hateful to
+                                            myself, Because it is an enemy to thee. Had I it written, I would tear the word. 
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="message chat-info chat-event" data-isodate="2018-03-07T10:21:09+01:00" data-join="&quot;Mercutio&quot;">Mercutio has entered the room</div>
                                 <div class="message chat-info chat-event" data-isodate="2018-03-07T10:21:09+01:00" data-join="&quot;Mercutio&quot;">Topic set by Mercutio</div>
                                 <div class="message chat-info chat-topic" data-isodate="2018-03-07T10:21:09+01:00">Converse.js: The latest release is 3.3.4. Please be
@@ -241,7 +258,9 @@
 <script type="text/javascript" src="../../node_modules/lodash/lodash.js"></script>
 <script type="text/javascript" src="../../node_modules/backbone/backbone.js"></script>
 <script type="text/javascript" src="../../node_modules/backbone.nativeview/backbone.nativeview.js"></script>
-<script type="text/javascript" src="avatars.js"></script>
+<script type="text/javascript" src="../../node_modules/strophe.js/strophe.js"></script>
+<script type="text/javascript" src="../../src/utils/core.js"></script>
+<script type="text/javascript" src="utils.js"></script>
 <script type="text/javascript" src="sidebar.js"></script>
 <script type="text/javascript" src="user-panel.js"></script>
 <script type="text/javascript" src="modals.js"></script>
@@ -252,7 +271,6 @@
         new Modals();
         new Sidebar();
         new UserPanel();
-        window.renderAvatars(document.querySelector('.chatroom'));
     });
 </script>
 

@@ -82,7 +82,7 @@
                             'time': moment_time.format(),
                             'username': username,
                             'extra_classes': this.getExtraMessageClasses(),
-                            'label_show': __('Show hidden message')
+                            'label_show': __('Show more')
                         })
                     ));
 

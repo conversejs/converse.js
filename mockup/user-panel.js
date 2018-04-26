@@ -16,7 +16,8 @@ const UserPanel = Backbone.NativeView.extend({
                     backdrop: 'static', // we don't want to dismiss Modal when Modal or backdrop is the click event target
                     keyboard: true // we want to dismiss Modal on pressing Esc key
                 }));
-            window.renderAvatars(this.el);
+            window.renderAvatars();
+            window.initSpoilers();
         }
         xhr.send();
     }

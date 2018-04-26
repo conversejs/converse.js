@@ -1,6 +1,6 @@
-<div class="message chat-message {{{o.extra_classes}}}" data-isodate="{{{o.time}}}" data-msgid="{{{o.msgid}}}">
+<div class="message chat-msg {{{o.extra_classes}}}" data-isodate="{{{o.time}}}" data-msgid="{{{o.msgid}}}">
     <span class="chat-msg-author chat-msg-{{{o.sender}}}">{{{o.pretty_time}}} {{{o.username}}}:&nbsp;</span>
     <div class="spoiler-hint">{{{o.spoiler_hint}}}</div>
-    <a class="icon-eye toggle-spoiler" data-toggle-state="closed" href="#">{{{o.label_show}}}</a>
+    <a class="toggle-spoiler" data-toggle-state="closed" href="#"><i class="fa fa-eye"></li>{{{o.label_show}}}</a>
     <div class="chat-msg-content spoiler collapsed"><!-- message gets added here via renderMessage --></div>
 </div>

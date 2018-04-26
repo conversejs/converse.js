@@ -543,7 +543,7 @@
                      * up when using infinite scroll).
                      */
                     if (this.model.get('scrolled')) {
-                        const next_msg_el = u.getNextElement(message_el, ".chat-message");
+                        const next_msg_el = u.getNextElement(message_el, ".chat-msg");
                         if (next_msg_el) {
                             // The currently received message is not new, there
                             // are newer messages after it. So let's see if we
@@ -900,19 +900,21 @@
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
                     }
-                    const toggle_el = ev.target;
+                    const toggle_el = ev.target,
+                        icon_el = toggle_el.firstElementChild;
+
                     u.slideToggleElement(
-                        toggle_el.parentElement.querySelector('.spoiler')
+                        toggle_el.parentElement.parentElement.querySelector('.spoiler')
                     );
                     if (toggle_el.getAttribute("data-toggle-state") == "closed") {
-                        toggle_el.textContent = __('Hide hidden message');
-                        toggle_el.classList.remove("icon-eye");
-                        toggle_el.classList.add("icon-eye-blocked");
+                        toggle_el.textContent = __('Show less');
+                        icon_el.classList.remove("fa-eye");
+                        icon_el.classList.add("fa-eye-slash");
                         toggle_el.setAttribute("data-toggle-state", "open");
                     } else {
-                        toggle_el.textContent = __('Show hidden message');
-                        toggle_el.classList.remove("icon-eye-blocked");
-                        toggle_el.classList.add("icon-eye");
+                        toggle_el.textContent = __('Show more');
+                        icon_el.classList.remove("fa-eye-slash");
+                        icon_el.classList.add("fa-eye");
                         toggle_el.setAttribute("data-toggle-state", "closed");
                     }
                 },

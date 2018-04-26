@@ -112,10 +112,6 @@
             width: $mobile-chat-width;
         }
 
-        .spoiler {
-            background-color: lighten($chat-head-color, 50%);
-        }
-
         .box-flyout {
             display: flex;
             flex-direction: column;
@@ -198,10 +194,6 @@
             background-color: #ffffff;
             line-height: 1.3em;
 
-            .toggle-spoiler:before {
-                padding-right: 0.25em;
-                whitespace: nowrap;
-            }
             video {
                 width: 100%
             }

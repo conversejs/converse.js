@@ -86,6 +86,20 @@
                 background-color: rgba(0, 0, 0, 0.035);
             }
 
+            .spoiler-hint {
+                margin-bottom: 0.5em;
+            }
+            .toggle-spoiler {
+                color: white;
+                i {
+                    color: white;
+                    padding-right: 0.5em;
+                }
+                &:before {
+                    padding-right: 0.25em;
+                    whitespace: nowrap;
+                }
+            }
             .avatar {
                 background: $gray-color;
                 height: 36px;
@@ -103,17 +117,13 @@
                 max-width: 100%;
                 word-wrap: break-word;
 
-                &.spoiler {
-                    border-radius: $chatbox-border-radius;
-                    padding: 0.5em;
-                }
                 .emojione {
                     margin-bottom: -6px;
                 }
             }
 
             .chat-msg-heading {
-                padding-bottom: 0.5rem;
+                padding-bottom: 0.25rem;
                 display: block;
 
                 .chat-msg-author {

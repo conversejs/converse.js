@@ -7305,8 +7305,6 @@ body {
     #conversejs .chatbox {
       margin: 0;
       width: 100%; } }
-  #conversejs .chatbox .spoiler {
-    background-color: #e7f7ee; }
   #conversejs .chatbox .box-flyout {
     display: flex;
     flex-direction: column;
@@ -7380,9 +7378,6 @@ body {
     border: 0;
     background-color: #ffffff;
     line-height: 1.3em; }
-    #conversejs .chatbox .chat-content .toggle-spoiler:before {
-      padding-right: 0.25em;
-      whitespace: nowrap; }
     #conversejs .chatbox .chat-content video {
       width: 100%; }
     #conversejs .chatbox .chat-content progress {
@@ -8603,6 +8598,16 @@ body {
     color: #6899b2; }
   #conversejs .message.chat-msg:hover {
     background-color: rgba(0, 0, 0, 0.035); }
+  #conversejs .message.chat-msg .spoiler-hint {
+    margin-bottom: 0.5em; }
+  #conversejs .message.chat-msg .toggle-spoiler {
+    color: white; }
+    #conversejs .message.chat-msg .toggle-spoiler i {
+      color: white;
+      padding-right: 0.5em; }
+    #conversejs .message.chat-msg .toggle-spoiler:before {
+      padding-right: 0.25em;
+      whitespace: nowrap; }
   #conversejs .message.chat-msg .avatar {
     background: #818479;
     height: 36px;
@@ -8615,13 +8620,10 @@ body {
     color: #666;
     max-width: 100%;
     word-wrap: break-word; }
-    #conversejs .message.chat-msg .chat-msg-text.spoiler {
-      border-radius: 4px;
-      padding: 0.5em; }
     #conversejs .message.chat-msg .chat-msg-text .emojione {
       margin-bottom: -6px; }
   #conversejs .message.chat-msg .chat-msg-heading {
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
     display: block; }
     #conversejs .message.chat-msg .chat-msg-heading .chat-msg-author {
       font-weight: bold; }

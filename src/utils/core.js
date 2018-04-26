@@ -8,16 +8,39 @@
 //
 /*global define, escape, window */
 (function (root, factory) {
-    define([
-        "sizzle",
-        "es6-promise",
-        "lodash.noconflict",
-        "strophe",
-        "tpl!audio",
-        "tpl!file",
-        "tpl!image",
-        "tpl!video"
-    ], factory);
+    if (typeof define === 'function' && define.amd) {
+        define([
+            "sizzle",
+            "es6-promise",
+            "lodash.noconflict",
+            "strophe",
+            "tpl!audio",
+            "tpl!file",
+            "tpl!image",
+            "tpl!video"
+        ], factory);
+    } else {
+        // Used by the mockups
+        const Strophe = {
+            'Strophe': root.Strophe,
+            '$build': root.$build,
+            '$iq': root.$iq,
+            '$msg': root.$msg,
+            '$pres': root.$pres,
+            'SHA1': root.SHA1,
+            'MD5': root.MD5,
+            'b64_hmac_sha1': root.b64_hmac_sha1,
+            'b64_sha1': root.b64_sha1,
+            'str_hmac_sha1': root.str_hmac_sha1,
+            'str_sha1': root.str_sha1
+        };
+        root.converse_utils = factory(
+            root.sizzle,
+            root.Promise,
+            root._,
+            Strophe
+        );
+    }
 }(this, function (
         sizzle,
         Promise,

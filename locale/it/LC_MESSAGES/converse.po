@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
 "PO-Revision-Date: 2018-04-27 21:38+0000\n"
-"Last-Translator: anonymous <>\n"
+"Last-Translator: Ale-Ma <alemassimiani@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/conversejs/"
 "translations/it/>\n"
 "Language: it\n"
@@ -255,13 +255,12 @@ msgid "Optional nickname"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:16788
-#, fuzzy
 msgid "Add a Contact"
-msgstr "Aggiungi contatti"
+msgstr "Aggiungi un Contatto"
 
 #: dist/converse-no-dependencies.js:16789
 msgid "XMPP Address"
-msgstr ""
+msgstr "Indirizzo XMPP"
 
 #: dist/converse-no-dependencies.js:16791
 #, fuzzy
@@ -292,7 +291,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:16903
 msgid "Filter by status"
-msgstr ""
+msgstr "Filtra per stato"
 
 #: dist/converse-no-dependencies.js:16904
 msgid "Any"
@@ -372,12 +371,12 @@ msgstr "Aggiungi contatti"
 
 #: dist/converse-no-dependencies.js:18097
 msgid "Your Profile"
-msgstr ""
+msgstr "Il tuo profilo"
 
 #: dist/converse-no-dependencies.js:18098
 #: dist/converse-no-dependencies.js:18110
 msgid "Close"
-msgstr ""
+msgstr "Chiudi"
 
 #: dist/converse-no-dependencies.js:18112
 #: dist/converse-no-dependencies.js:20805
@@ -416,7 +415,7 @@ msgstr "Sono %1$s"
 
 #: dist/converse-no-dependencies.js:18165
 msgid "Change settings"
-msgstr ""
+msgstr "Modifica impostazioni"
 
 #: dist/converse-no-dependencies.js:18166
 msgid "Click to change your chat status"
@@ -428,7 +427,7 @@ msgstr "Logo out"
 
 #: dist/converse-no-dependencies.js:18168
 msgid "Your profile"
-msgstr ""
+msgstr "Il tuo profilo"
 
 #: dist/converse-no-dependencies.js:18191
 #, fuzzy
@@ -792,9 +791,9 @@ msgid "Message"
 msgstr "Messaggio"
 
 #: dist/converse-no-dependencies.js:23152
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a moderator."
-msgstr "Questo utente è un moderatore."
+msgstr "%1$s non è più un moderatore."
 
 #: dist/converse-no-dependencies.js:23157
 #, fuzzy, javascript-format
@@ -807,9 +806,9 @@ msgid "%1$s has been muted."
 msgstr "%1$s è stato bannato"
 
 #: dist/converse-no-dependencies.js:23168
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a moderator."
-msgstr "Questo utente è un moderatore."
+msgstr "%1$s è ora un moderatore."
 
 #: dist/converse-no-dependencies.js:23179
 msgid "Close and leave this room"
@@ -1010,7 +1009,7 @@ msgstr "Mostra stanze"
 
 #: dist/converse-no-dependencies.js:24494
 msgid "Add a new room"
-msgstr ""
+msgstr "Aggiungi una nuova stanza"
 
 #: dist/converse-no-dependencies.js:24495
 #, fuzzy

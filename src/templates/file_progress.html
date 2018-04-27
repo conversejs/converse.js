@@ -1,4 +1,7 @@
-<div class="message" data-isodate="{{{o.time}}}" data-msgid="{{{o.msgid}}}">
-    <span class="chat-msg-content">Uploading file: <strong>{{{o.file.name}}}</strong>, {{{o.filesize}}}</span>
-    <progress value="{{{o.progress}}}"/>
+<div class="message chat-msg" data-isodate="{{{o.time}}}" data-msgid="{{{o.msgid}}}">
+    <img alt="User Avatar" class="avatar" height="36px" width="36px" src="data:{{{o.image_type}}};base64,{{{o.image}}}"/>
+    <div class="chat-msg-content">
+        <span class="chat-msg-text">Uploading file: <strong>{{{o.file.name}}}</strong>, {{{o.filesize}}}</span>
+        <progress value="{{{o.progress}}}"/>
+    </div>
 </div>

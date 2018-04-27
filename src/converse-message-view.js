@@ -55,7 +55,7 @@
                 },
 
                 render () {
-                    if (this.model.get('file') && !this.model.get('message')) {
+                    if (this.model.get('file') && !this.model.get('oob_url')) {
                         return this.renderFileUploadProgresBar();
                     } else if (this.model.get('type') === 'error') {
                         return this.renderErrorMessage();
@@ -73,7 +73,6 @@
                     } else {
                         username = this.model.get('fullname') || this.model.get('from');
                         template = this.model.get('is_spoiler') ? tpl_spoiler_message : tpl_message;
-
                         if (this.model.get('type') !== 'headline') {
                             if (this.model.get('sender') === 'me') {
                                 image_type = _converse.xmppstatus.get('image_type');
@@ -143,15 +142,29 @@
                 },
 
                 renderFileUploadProgresBar () {
+                    let image, image_type;
+                    if (this.model.get('sender') === 'me') {
+                        image_type = _converse.xmppstatus.get('image_type');
+                        image = _converse.xmppstatus.get('image');
+                    } else {
+                        image_type = this.chatbox.get('image_type');
+                        image = this.chatbox.get('image');
+                    }
                     const msg = u.stringToElement(tpl_file_progress(
-                        _.extend(this.model.toJSON(),
-                            {'filesize': filesize(this.model.get('file').size)}
-                        )));
+                        _.extend(this.model.toJSON(), {
+                            'filesize': filesize(this.model.get('file').size),
+                            'image': image,
+                            'image_type': image_type
+                        })));
                     return this.replaceElement(msg);
                 },
 
                 isMeCommand () {
-                    const match = this.model.get('message').match(/^\/(.*?)(?: (.*))?$/);
+                    const text = this.model.get('message');
+                    if (!text) {
+                        return false;
+                    }
+                    const match = text.match(/^\/(.*?)(?: (.*))?$/);
                     return match && match[1] === 'me';
                 },
 

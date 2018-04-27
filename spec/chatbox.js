@@ -84,12 +84,12 @@
                         return u.isVisible(view.el);
                     }).then(function () {
                         expect(_.includes(view.el.querySelector('.chat-msg-author').textContent, '**Max Frankfurter')).toBeTruthy();
-                        expect($(view.el).find('.chat-msg-content').text()).toBe(' is tired');
+                        expect($(view.el).find('.chat-msg-text').text()).toBe(' is tired');
 
                         message = '/me is as well';
                         test_utils.sendMessage(view, message);
                         expect(_.includes($(view.el).find('.chat-msg-author:last').text(), '**Max Mustermann')).toBeTruthy();
-                        expect($(view.el).find('.chat-msg-content:last').text()).toBe(' is as well');
+                        expect($(view.el).find('.chat-msg-text:last').text()).toBe(' is as well');
                         done();
                     });
                 });
@@ -594,7 +594,7 @@
                             expect(msg_obj.get('delayed')).toEqual(false);
                             // Now check that the message appears inside the chatbox in the DOM
                             var $chat_content = $(chatboxview.el).find('.chat-content');
-                            var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
+                            var msg_txt = $chat_content.find('.chat-msg').find('.chat-msg-text').text();
                             expect(msg_txt).toEqual(message);
                             var sender_txt = $chat_content.find('span.chat-msg-them').text();
                             expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
@@ -710,7 +710,7 @@
                             expect(msg_obj.get('delayed')).toEqual(false);
                             // Now check that the message appears inside the chatbox in the DOM
                             var $chat_content = $(chatboxview.el).find('.chat-content');
-                            var msg_txt = $chat_content.find('.chat-message .chat-msg-content').text();
+                            var msg_txt = $chat_content.find('.chat-msg .chat-msg-text').text();
                             expect(msg_txt).toEqual(message);
                             var sender_txt = $chat_content.find('span.chat-msg-them').text();
                             expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
@@ -759,7 +759,7 @@
                             });
                             view.model.sendMessage(message);
                             var $chat_content = $(view.el).find('.chat-content');
-                            var msg_txt = $chat_content.find('.chat-message:last').find('.chat-msg-content').text();
+                            var msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg-text').text();
                             expect(msg_txt).toEqual(msg_text);
 
                             // We send another message, for which an error will
@@ -774,7 +774,7 @@
                                 'message': msg_text
                             });
                             view.model.sendMessage(message);
-                            msg_txt = $chat_content.find('.chat-message:last').find('.chat-msg-content').text();
+                            msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg-text').text();
                             expect(msg_txt).toEqual(msg_text);
 
                             /* <message xmlns="jabber:client"
@@ -894,7 +894,7 @@
 
                             // Now check that the message appears inside the chatbox in the DOM
                             var $chat_content = $(chatboxview.el).find('.chat-content');
-                            var msg_txt = $chat_content.find('.chat-message:last').find('.chat-msg-content').text();
+                            var msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg-text').text();
                             expect(msg_txt).toEqual(message);
                             return test_utils.waitUntil(function () {
                                 return u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator'));
@@ -957,7 +957,7 @@
                             expect(_converse.chatboxes.getChatBox).toHaveBeenCalled();
                             var chatboxview = _converse.chatboxviews.get(sender_jid);
                             var $chat_content = $(chatboxview.el).find('.chat-content:last');
-                            var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
+                            var msg_txt = $chat_content.find('.chat-msg').find('.chat-msg-text').text();
                             expect(msg_txt).toEqual(message);
                             done();
                         });
@@ -1101,34 +1101,34 @@
                         expect($time.data('isodate')).toEqual(moment('2017-12-31T00:00:00').format());
                         expect($time.text()).toEqual('Sunday Dec 31st 2017')
 
-                        expect($time[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toBe('Older message');
-                        var $el = $chat_content.find('.chat-message:first').find('.chat-msg-content')
+                        expect($time[0].nextElementSibling.querySelector('.chat-msg-text').textContent).toBe('Older message');
+                        var $el = $chat_content.find('.chat-msg:first').find('.chat-msg-text')
                         expect($el.text()).toEqual('Older message');
 
                         $time = $chat_content.find('time:eq(1)');
                         expect($time.data('isodate')).toEqual(moment('2018-01-01T00:00:00').format());
                         expect($time.text()).toEqual("Monday Jan 1st 2018");
-                        expect($time[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toBe('Inbetween message');
-                        $el = $chat_content.find('.chat-message:eq(1)');
-                        expect($el.find('.chat-msg-content').text()).toEqual('Inbetween message');
-                        expect($el[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toEqual('another inbetween message');
-                        $el = $chat_content.find('.chat-message:eq(2)');
-                        expect($el.find('.chat-msg-content').text()).toEqual('another inbetween message');
+                        expect($time[0].nextElementSibling.querySelector('.chat-msg-text').textContent).toBe('Inbetween message');
+                        $el = $chat_content.find('.chat-msg:eq(1)');
+                        expect($el.find('.chat-msg-text').text()).toEqual('Inbetween message');
+                        expect($el[0].nextElementSibling.querySelector('.chat-msg-text').textContent).toEqual('another inbetween message');
+                        $el = $chat_content.find('.chat-msg:eq(2)');
+                        expect($el.find('.chat-msg-text').text()).toEqual('another inbetween message');
 
                         $time = $chat_content.find('time:nth(2)');
                         expect($time.data('isodate')).toEqual(moment('2018-01-02T00:00:00').format());
                         expect($time.text()).toEqual("Tuesday Jan 2nd 2018");
-                        expect($time[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toBe('An earlier message on the next day');
-                        $el = $chat_content.find('.chat-message:eq(3)');
-                        expect($el.find('.chat-msg-content').text()).toEqual('An earlier message on the next day');
+                        expect($time[0].nextElementSibling.querySelector('.chat-msg-text').textContent).toBe('An earlier message on the next day');
+                        $el = $chat_content.find('.chat-msg:eq(3)');
+                        expect($el.find('.chat-msg-text').text()).toEqual('An earlier message on the next day');
 
-                        $el = $chat_content.find('.chat-message:eq(4)');
-                        expect($el.find('.chat-msg-content').text()).toEqual('message');
-                        expect($el[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toEqual('newer message from the next day');
+                        $el = $chat_content.find('.chat-msg:eq(4)');
+                        expect($el.find('.chat-msg-text').text()).toEqual('message');
+                        expect($el[0].nextElementSibling.querySelector('.chat-msg-text').textContent).toEqual('newer message from the next day');
 
                         $time = $chat_content.find('time:last');
                         expect($time.data('isodate')).toEqual(moment().startOf('day').format());
-                        expect($time[0].nextElementSibling.querySelector('.chat-msg-content').textContent).toBe('latest message');
+                        expect($time[0].nextElementSibling.querySelector('.chat-msg-text').textContent).toBe('latest message');
                         done();
                     });
                 }));
@@ -1211,7 +1211,7 @@
                     expect(msg_obj.get('delayed')).toEqual(false);
                     // Now check that the message appears inside the chatbox in the DOM
                     var $chat_content = $(chatboxview.el).find('.chat-content');
-                    var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
+                    var msg_txt = $chat_content.find('.chat-msg').find('.chat-msg-text').text();
                     expect(msg_txt).toEqual(msgtext);
                     var sender_txt = $chat_content.find('span.chat-msg-them').text();
                     expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
@@ -1267,7 +1267,7 @@
                         expect(msg_obj.get('delayed')).toEqual(false);
                         // Now check that the message appears inside the chatbox in the DOM
                         var $chat_content = $(chatboxview.el).find('.chat-content');
-                        var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
+                        var msg_txt = $chat_content.find('.chat-msg').find('.chat-msg-text').text();
                         expect(msg_txt).toEqual(msgtext);
                         done();
                     });
@@ -1421,7 +1421,7 @@
                         expect(msg_obj.get('fullname')).toEqual(contact_name);
                         expect(msg_obj.get('sender')).toEqual('them');
                         expect(msg_obj.get('delayed')).toEqual(true);
-                        msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
+                        msg_txt = $chat_content.find('.chat-msg').find('.chat-msg-text').text();
                         expect(msg_txt).toEqual(message);
                         sender_txt = $chat_content.find('span.chat-msg-them').text();
                         expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
@@ -1459,7 +1459,7 @@
                         expect(msg_obj.get('fullname')).toEqual(contact_name);
                         expect(msg_obj.get('sender')).toEqual('them');
                         expect(msg_obj.get('delayed')).toEqual(false);
-                        msg_txt = $chat_content.find('.chat-message').last().find('.chat-msg-content').text();
+                        msg_txt = $chat_content.find('.chat-msg').last().find('.chat-msg-text').text();
                         expect(msg_txt).toEqual(message);
                         sender_txt = $chat_content.find('span.chat-msg-them').last().text();
                         expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
@@ -1486,7 +1486,7 @@
                     expect(view.model.sendMessage).toHaveBeenCalled();
                     expect(view.model.messages.length, 2);
                     expect(_converse.emit.calls.mostRecent().args, ['messageSend', message]);
-                    expect($(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content').text()).toEqual(message);
+                    expect($(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text').text()).toEqual(message);
                     done();
                 }));
 
@@ -1505,7 +1505,7 @@
                     spyOn(view.model, 'sendMessage').and.callThrough();
                     test_utils.sendMessage(view, message);
                     expect(view.model.sendMessage).toHaveBeenCalled();
-                    var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                    var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('&lt;p&gt;This message contains &lt;em&gt;some&lt;/em&gt; &lt;b&gt;markup&lt;/b&gt;&lt;/p&gt;');
                     done();
@@ -1526,7 +1526,7 @@
                     spyOn(view.model, 'sendMessage').and.callThrough();
                     test_utils.sendMessage(view, message);
                     expect(view.model.sendMessage).toHaveBeenCalled();
-                    var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                    var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
                     done();
@@ -1548,7 +1548,7 @@
                     message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
                     test_utils.sendMessage(view, message);
                     expect(view.model.sendMessage).toHaveBeenCalled();
-                    msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                    msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%27onmouseover=%27alert%281%29%27whatever">http://www.opkode.com/\'onmouseover=\'alert(1)\'whatever</a>');
 
@@ -1556,7 +1556,7 @@
                     test_utils.sendMessage(view, message);
 
                     expect(view.model.sendMessage).toHaveBeenCalled();
-                    msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                    msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%22onmouseover=%22alert%281%29%22whatever">http://www.opkode.com/"onmouseover="alert(1)"whatever</a>');
 
@@ -1564,7 +1564,7 @@
                     test_utils.sendMessage(view, message);
 
                     expect(view.model.sendMessage).toHaveBeenCalled();
-                    msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                    msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">https://en.wikipedia.org/wiki/Ender\'s_Game</a>');
 
@@ -1572,7 +1572,7 @@
                     test_utils.sendMessage(view, message);
 
                     expect(view.model.sendMessage).toHaveBeenCalled();
-                    msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                    msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">https://en.wikipedia.org/wiki/Ender%27s_Game</a>');
                     done();
@@ -1599,11 +1599,11 @@
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                     test_utils.waitUntil(function () {
-                        return view.el.querySelectorAll('.chat-content .chat-message audio').length;
+                        return view.el.querySelectorAll('.chat-content .chat-msg audio').length;
                     }, 1000).then(function () {
-                        var msg = view.el.querySelector('.chat-message .chat-msg-content');
-                        expect(msg.outerHTML).toEqual('<span class="chat-msg-content">Have you heard this funny audio?</span>');
-                        var media = view.el.querySelector('.chat-message .chat-msg-media');
+                        var msg = view.el.querySelector('.chat-msg .chat-msg-text');
+                        expect(msg.outerHTML).toEqual('<span class="chat-msg-text">Have you heard this funny audio?</span>');
+                        var media = view.el.querySelector('.chat-msg .chat-msg-media');
                         expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                             '<audio controls=""><source src="http://localhost/audio.mp3" type="audio/mpeg"></audio>'+
                             '<a target="_blank" rel="noopener" href="http://localhost/audio.mp3">Download audio file</a>');
@@ -1618,9 +1618,9 @@
                             "</message>").firstChild;
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                        msg = view.el.querySelector('.chat-message:last-child .chat-msg-content');
+                        msg = view.el.querySelector('.chat-msg:last-child .chat-msg-text');
                         expect(msg.innerHTML).toEqual('');
-                        media = view.el.querySelector('.chat-message:last-child .chat-msg-media');
+                        media = view.el.querySelector('.chat-msg:last-child .chat-msg-media');
                         expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                             '<audio controls=""><source src="http://localhost/audio.mp3" type="audio/mpeg"></audio>'+
                             '<a target="_blank" rel="noopener" href="http://localhost/audio.mp3">Download audio file</a>');
@@ -1649,11 +1649,11 @@
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                     test_utils.waitUntil(function () {
-                        return view.el.querySelectorAll('.chat-content .chat-message video').length;
+                        return view.el.querySelectorAll('.chat-content .chat-msg video').length;
                     }, 1000).then(function () {
-                        var msg = view.el.querySelector('.chat-message .chat-msg-content');
-                        expect(msg.outerHTML).toEqual('<span class="chat-msg-content">Have you seen this funny video?</span>');
-                        var media = view.el.querySelector('.chat-message .chat-msg-media');
+                        var msg = view.el.querySelector('.chat-msg .chat-msg-text');
+                        expect(msg.outerHTML).toEqual('<span class="chat-msg-text">Have you seen this funny video?</span>');
+                        var media = view.el.querySelector('.chat-msg .chat-msg-media');
                         expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                             '<video controls=""><source src="http://localhost/video.mp4" type="video/mp4"></video>'+
                             '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file</a>');
@@ -1668,9 +1668,9 @@
                             "</message>").firstChild;
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                        msg = view.el.querySelector('.chat-message:last-child .chat-msg-content');
+                        msg = view.el.querySelector('.chat-msg:last-child .chat-msg-text');
                         expect(msg.innerHTML).toEqual('');
-                        media = view.el.querySelector('.chat-message:last-child .chat-msg-media');
+                        media = view.el.querySelector('.chat-msg:last-child .chat-msg-media');
                         expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                             '<video controls=""><source src="http://localhost/video.mp4" type="video/mp4"></video>'+
                             '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file</a>');
@@ -1699,11 +1699,11 @@
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                     test_utils.waitUntil(function () {
-                        return view.el.querySelectorAll('.chat-content .chat-message a').length;
+                        return view.el.querySelectorAll('.chat-content .chat-msg a').length;
                     }, 1000).then(function () {
-                        var msg = view.el.querySelector('.chat-message .chat-msg-content');
-                        expect(msg.outerHTML).toEqual('<span class="chat-msg-content">Have you downloaded this funny file?</span>');
-                        var media = view.el.querySelector('.chat-message .chat-msg-media');
+                        var msg = view.el.querySelector('.chat-msg .chat-msg-text');
+                        expect(msg.outerHTML).toEqual('<span class="chat-msg-text">Have you downloaded this funny file?</span>');
+                        var media = view.el.querySelector('.chat-msg .chat-msg-media');
                         expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                             '<a target="_blank" rel="noopener" href="http://localhost/funny.pdf">Download file: "funny.pdf</a>');
                         done();
@@ -1733,11 +1733,11 @@
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                     test_utils.waitUntil(function () {
-                        return view.el.querySelectorAll('.chat-content .chat-message img').length;
+                        return view.el.querySelectorAll('.chat-content .chat-msg img').length;
                     }, 1000).then(function () {
-                        var msg = view.el.querySelector('.chat-message .chat-msg-content');
-                        expect(msg.outerHTML).toEqual('<span class="chat-msg-content">Have you seen this funny image?</span>');
-                        var media = view.el.querySelector('.chat-message .chat-msg-media');
+                        var msg = view.el.querySelector('.chat-msg .chat-msg-text');
+                        expect(msg.outerHTML).toEqual('<span class="chat-msg-text">Have you seen this funny image?</span>');
+                        var media = view.el.querySelector('.chat-msg .chat-msg-media');
                         expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                             '<img class="chat-image" src="http://localhost:8000/logo/conversejs-filled.svg">');
                         done();
@@ -1759,21 +1759,21 @@
                     test_utils.sendMessage(view, message);
 
                     test_utils.waitUntil(function () {
-                        return $(view.el).find('.chat-content').find('.chat-message img').length;
+                        return $(view.el).find('.chat-content').find('.chat-msg img').length;
                     }, 1000).then(function () {
                         expect(view.model.sendMessage).toHaveBeenCalled();
-                        var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                        var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
                         expect(msg.html()).toEqual(
                             '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs-filled.svg"><img class="chat-image"'+
                             ' src="' + message + '"></a>');
                         message += "?param1=val1&param2=val2";
                         test_utils.sendMessage(view, message);
                         return test_utils.waitUntil(function () {
-                            return $(view.el).find('.chat-content').find('.chat-message img').length === 2;
+                            return $(view.el).find('.chat-content').find('.chat-msg img').length === 2;
                         }, 1000);
                     }).then(function () {
                         expect(view.model.sendMessage).toHaveBeenCalled();
-                        var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                        var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
                         expect(msg.html()).toEqual(
                             '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2"><img'+
                             ' class="chat-image" src="'+message.replace(/&/g, '&amp;')+'"></a>')
@@ -1782,11 +1782,11 @@
                         message += ' hello world '+base_url+"/logo/conversejs-filled.svg";
                         test_utils.sendMessage(view, message);
                         return test_utils.waitUntil(function () {
-                            return $(view.el).find('.chat-content').find('.chat-message img').length === 4;
+                            return $(view.el).find('.chat-content').find('.chat-msg img').length === 4;
                         }, 1000);
                     }).then(function () {
                         expect(view.model.sendMessage).toHaveBeenCalled();
-                        var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                        var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
                         expect(msg.html()).toEqual(
                             '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2">'+
                             '<img class="chat-image" src="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2"></a> hello world '+
@@ -1814,7 +1814,7 @@
                     var chatbox = _converse.chatboxes.get(contact_jid);
                     expect(chatbox.messages.models.length, 1);
                     var msg_object = chatbox.messages.models[0];
-                    var msg_time_author = $(view.el).find('.chat-content').find('.chat-message')
+                    var msg_time_author = $(view.el).find('.chat-content').find('.chat-msg')
                                             .last().find('.chat-msg-author.chat-msg-me').text();
                     var msg_time_rendered = msg_time_author.split(" ",1);
                     var msg_time = moment(msg_object.get('time')).format(_converse.time_format);
@@ -2917,10 +2917,10 @@
                     test_utils.sendMessage(view, message);
 
                     test_utils.waitUntil(function () {
-                        return $(view.el).find('.chat-content').find('.chat-message').length;
+                        return $(view.el).find('.chat-content').find('.chat-msg').length;
                     }, 1000).then(function () {
                         expect(view.model.sendMessage).toHaveBeenCalled();
-                        var msg = $(view.el).find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                        var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
                         expect(msg.html()).toEqual(
                             '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
                             'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.7869'+

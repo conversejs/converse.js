@@ -1,4 +1,6 @@
 <div class="message chat-msg chat-action {{{o.extra_classes}}}" data-isodate="{{{o.time}}}">
-    <span class="chat-msg-author chat-msg-{{{o.sender}}}">{{{o.pretty_time}}} **{{{o.username}}}</span>
-    <span class="chat-msg-content"><!-- message gets added here via renderMessage --></span>
+    <span class="chat-msg-heading">
+        <span class="chat-msg-author">**{{{o.username}}}</span>
+    </span>
+    <p class="chat-msg-text"><!-- message gets added here via renderMessage --></p>
 </div>

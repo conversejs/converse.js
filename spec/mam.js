@@ -40,7 +40,7 @@
                             </result>
                         </message>`).firstElementChild;
                     chatroomview.model.onMessage(stanza);
-                    expect(chatroomview.content.querySelectorAll('.chat-message').length).toBe(1);
+                    expect(chatroomview.content.querySelectorAll('.chat-msg').length).toBe(1);
                     done();
                 });
             }))

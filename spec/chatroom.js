@@ -838,7 +838,7 @@
                             type: 'groupchat'
                         }).c('body').t(message).tree();
                     view.model.onMessage(msg);
-                    expect($(view.el).find('.chat-message').hasClass('mentioned')).toBeTruthy();
+                    expect($(view.el).find('.chat-msg').hasClass('mentioned')).toBeTruthy();
                     done();
                 });
             }));
@@ -869,7 +869,7 @@
                         }).c('body').t(message).tree();
                     view.model.onMessage(msg);
                     expect(_.includes($(view.el).find('.chat-msg-author').text(), '**Dyon van de Wege')).toBeTruthy();
-                    expect($(view.el).find('.chat-msg-content').text()).toBe(' is tired');
+                    expect($(view.el).find('.chat-msg-text').text()).toBe(' is tired');
 
                     message = '/me is as well';
                     msg = $msg({
@@ -880,7 +880,7 @@
                     }).c('body').t(message).tree();
                     view.model.onMessage(msg);
                     expect(_.includes($(view.el).find('.chat-msg-author:last').text(), '**Max Mustermann')).toBeTruthy();
-                    expect($(view.el).find('.chat-msg-content:last').text()).toBe(' is as well');
+                    expect($(view.el).find('.chat-msg-text:last').text()).toBe(' is as well');
                     done();
                 });
             }));
@@ -1463,8 +1463,8 @@
                 }).c('body').t(text);
                 view.model.onMessage(message.nodeTree);
                 var $chat_content = $(view.el).find('.chat-content');
-                expect($chat_content.find('.chat-message').length).toBe(1);
-                expect($chat_content.find('.chat-msg-content').text()).toBe(text);
+                expect($chat_content.find('.chat-msg').length).toBe(1);
+                expect($chat_content.find('.chat-msg-text').text()).toBe(text);
                 expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                 done();
             }));
@@ -1489,7 +1489,7 @@
 
                     expect(_converse.emit).toHaveBeenCalledWith('messageSend', text);
                     var $chat_content = $(view.el).find('.chat-content');
-                    expect($chat_content.find('.chat-message').length).toBe(1);
+                    expect($chat_content.find('.chat-msg').length).toBe(1);
 
                     // Let's check that if we receive the same message again, it's
                     // not shown.
@@ -1500,8 +1500,8 @@
                         id: view.model.messages.at(0).get('msgid')
                     }).c('body').t(text);
                     view.model.onMessage(message.nodeTree);
-                    expect($chat_content.find('.chat-message').length).toBe(1);
-                    expect($chat_content.find('.chat-msg-content').last().text()).toBe(text);
+                    expect($chat_content.find('.chat-msg').length).toBe(1);
+                    expect($chat_content.find('.chat-msg-text').last().text()).toBe(text);
                     // We don't emit an event if it's our own message
                     expect(_converse.emit.calls.count(), 1);
                     done();
@@ -1542,7 +1542,7 @@
 
                         // Now check that the message appears inside the chatbox in the DOM
                         var $chat_content = $(view.el).find('.chat-content');
-                        var msg_txt = $chat_content.find('.chat-message:last').find('.chat-msg-content').text();
+                        var msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg-text').text();
                         expect(msg_txt).toEqual(message);
                         expect(view.content.scrollTop).toBe(0);
                         done();
@@ -3381,8 +3381,8 @@
 
                             var messages = view.el.querySelectorAll('.message');
                             expect(messages.length).toBe(8);
-                            expect(view.el.querySelectorAll('.chat-message').length).toBe(1);
-                            expect(view.el.querySelector('.chat-message .chat-msg-content').textContent).toBe('hello world');
+                            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+                            expect(view.el.querySelector('.chat-msg .chat-msg-text').textContent).toBe('hello world');
 
                             // Test that the composing notifications get removed
                             // via timeout.

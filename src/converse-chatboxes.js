@@ -148,6 +148,7 @@
                             if (xhr.status === 200 || xhr.status === 201) {
                                 this.save({
                                     'upload': _converse.SUCCESS,
+                                    'oob_url': this.get('get'),
                                     'message': this.get('get')
                                 });
                             } else {

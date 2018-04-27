@@ -619,11 +619,11 @@
                     var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                     var chat_content = view.el.querySelector('.chat-content');
                     var $chat_content = $(chat_content);
-                    var time = chat_content.querySelector('time');
-                    expect(time).not.toBe(null);
-                    expect(time.getAttribute('class')).toEqual('message chat-info chat-date badge badge-info');
-                    expect(time.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
-                    expect(time.textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                    var indicator = chat_content.querySelector('.date-separator');
+                    expect(indicator).not.toBe(null);
+                    expect(indicator.getAttribute('class')).toEqual('message date-separator');
+                    expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+                    expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect(chat_content.querySelectorAll('div.chat-info').length).toBe(1);
                     expect(chat_content.querySelector('div.chat-info').textContent).toBe(
                         "dummy has entered the room"
@@ -654,11 +654,13 @@
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                    time = chat_content.querySelector('time[data-isodate="'+moment().startOf('day').format()+'"]');
-                    expect(time).not.toBe(null);
-                    expect(time.getAttribute('class')).toEqual('message chat-info chat-date badge badge-info');
-                    expect(time.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
-                    expect(time.textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                    indicator = chat_content.querySelector('.date-separator[data-isodate="'+moment().startOf('day').format()+'"]');
+                    expect(indicator).not.toBe(null);
+
+                    expect(indicator.getAttribute('class')).toEqual('message date-separator');
+                    expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+                    expect(indicator.querySelector('time').getAttribute('class')).toEqual('separator-text');
+                    expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect(chat_content.querySelector('div.chat-info:last-child').textContent).toBe(
                         "some1 has entered the room"
                     );
@@ -680,11 +682,13 @@
                             });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                    time = chat_content.querySelector('time[data-isodate="'+moment().startOf('day').format()+'"]');
-                    expect(time).not.toBe(null);
-                    expect(time.getAttribute('class')).toEqual('message chat-info chat-date badge badge-info');
-                    expect(time.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
-                    expect(time.textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                    indicator = chat_content.querySelector('.date-separator[data-isodate="'+moment().startOf('day').format()+'"]');
+
+                    expect(indicator).not.toBe(null);
+                    expect(indicator.getAttribute('class')).toEqual('message date-separator');
+                    expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+
+                    expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect($(chat_content).find('div.chat-info').length).toBe(4);
                     expect($(chat_content).find('div.chat-info:last').html()).toBe(
                         'some1 has left the room. '+
@@ -716,10 +720,10 @@
                     var $time = $chat_content.find('time');
                     expect($time.length).toEqual(4);
 
-                    $time = $chat_content.find('time:eq(3)');
-                    expect($time.attr('class')).toEqual('message chat-info chat-date badge badge-info');
-                    expect($time.data('isodate')).toEqual(moment().startOf('day').format());
-                    expect($time.text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                    var $indicator = $chat_content.find('.date-separator:eq(3)');
+                    expect($indicator.attr('class')).toEqual('message date-separator');
+                    expect($indicator.data('isodate')).toEqual(moment().startOf('day').format());
+                    expect($indicator.find('time').text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect($chat_content.find('div.chat-info').length).toBe(5);
                     expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has entered the room");
 
@@ -755,10 +759,11 @@
                     $time = $chat_content.find('time');
                     expect($time.length).toEqual(6);
 
-                    $time = $chat_content.find('time:eq(5)');
-                    expect($time.attr('class')).toEqual('message chat-info chat-date badge badge-info');
-                    expect($time.data('isodate')).toEqual(moment().startOf('day').format());
-                    expect($time.text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                    $indicator = $chat_content.find('.date-separator:eq(5)');
+                    expect($indicator.attr('class')).toEqual('message date-separator');
+                    expect($indicator.data('isodate')).toEqual(moment().startOf('day').format());
+
+                    expect($indicator.find('time').text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect($chat_content.find('div.chat-info').length).toBe(6);
                     expect($chat_content.find('div.chat-info:last').html()).toBe(
                         'newguy has left the room. '+
@@ -2298,7 +2303,7 @@
                             .c('status', {'code': '307'});
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(
-                        view.el.querySelectorAll('.chat-info')[3].textContent).toBe(
+                        view.el.querySelectorAll('.chat-info')[2].textContent).toBe(
                         "annoyingGuy has been kicked out");
                     done();
                 }).catch(_.partial(console.error, _));

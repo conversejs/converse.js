@@ -66,18 +66,6 @@
         'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
     }, console);
 
-    var unescapeHTML = function (htmlEscapedText) {
-        /* Helper method that replace HTML-escaped symbols with equivalent characters
-         * (e.g. transform occurrences of '&amp;' to '&')
-         *
-         * Parameters:
-         *  (String) htmlEscapedText: a String containing the HTML-escaped symbols.
-         */
-        var div = document.createElement('div');
-        div.innerHTML = htmlEscapedText;
-        return div.innerText;
-    };
-
     var isImage = function (url) {
         return new Promise((resolve, reject) => {
             var img = new Image();
@@ -200,6 +188,18 @@
         return matches;
     }
 
+    u.unescapeHTML = function (htmlEscapedText) {
+        /* Helper method that replace HTML-escaped symbols with equivalent characters
+         * (e.g. transform occurrences of '&amp;' to '&')
+         *
+         * Parameters:
+         *  (String) htmlEscapedText: a String containing the HTML-escaped symbols.
+         */
+        var div = document.createElement('div');
+        div.innerHTML = htmlEscapedText;
+        return div.innerText;
+    };
+
     u.escapeHTML = function (string) {
         return string
             .replace(/&/g, "&amp;")
@@ -212,7 +212,11 @@
         return URI.withinString(text, function (url) {
             var uri = new URI(url);
             uri.normalize();
-            return `<a href="${u.escapeHTML(url)}">${u.escapeHTML(uri.readable())}</a>`;
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'http://' + url;
+            }
+            url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+            return `<a target="_blank" rel="noopener" href="${u.escapeHTML(url)}">${u.escapeHTML(uri.readable())}</a>`;
         });
     };
 
@@ -233,9 +237,9 @@
                         i.addEventListener('error', resolve);
 
                         _.each(sizzle(`a[href="${url}"]`, obj), (a) => {
-                            a.innerHTML = tpl_image({
+                            a.outerHTML= tpl_image({
                                 'url': url,
-                                'label_download': __('Download image file')
+                                'label_download': __('Download')
                             })
                         });
                     }).catch(resolve)
@@ -268,7 +272,7 @@
 
             return tpl_image({
                 'url': url,
-                'label_download': __('Download image file')
+                'label_download': __('Download')
             })
         }
         return url;

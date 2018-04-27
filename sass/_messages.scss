@@ -32,7 +32,7 @@
             color: $chat-head-color;
             font-size: $message-font-size;
             line-height: $line-height-small;
-            padding: 0.5rem 1rem;
+            padding: 0.35rem 1rem;
 
             &.badge {
                 color: $chat-head-text-color;
@@ -105,8 +105,17 @@
             .chat-msg-text {
                 padding: 0;
                 color: $message-text-color;
+                word-wrap: break-word;
+                word-break: break-all;
+
                 .emojione {
                     margin-bottom: -6px;
+                }
+            }
+            
+            .chat-msg-media {
+                audio {
+                    width: 100%;
                 }
             }
 
@@ -127,7 +136,8 @@
                     font-weight: bold;
                 }
                 .chat-msg-time {
-                    padding-left: 0.5em;
+                    padding-left: 0.25em;
+                    color: lighten($text-color, 15%);
                 }
             }
             &.chat-action {

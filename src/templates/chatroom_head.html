@@ -1,12 +1,12 @@
 <div class="col col-9">
     <div class="chat-title" title="{{{o.jid}}}">
         {[ if (o.name && o.name !== o.Strophe.getNodeFromJid(o.jid)) { ]}
-            <span class="chatroom-name">{{{ o.name }}}</span>
+            {{{ o.name }}}
         {[ } else { ]}
-            <span class="chatroom-name">{{{ o.Strophe.getNodeFromJid(o.jid) }}}</span>@{{{ o.Strophe.getDomainFromJid(o.jid) }}}
+            {{{ o.Strophe.getNodeFromJid(o.jid) }}}@{{{ o.Strophe.getDomainFromJid(o.jid) }}}
         {[ } ]}
-        <p class="chatroom-description">{{{ o.description }}}<p/>
     </div>
+    <p class="chatroom-description">{{{ o.description }}}<p/>
 </div>
 <div class="chatbox-buttons row no-gutters">
     <a class="chatbox-btn close-chatbox-button fa fa-sign-out" title="{{{o.info_close}}}"></a>

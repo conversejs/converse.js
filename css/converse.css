@@ -8065,12 +8065,15 @@ body.reset {
 #conversejs.converse-embedded .chat-head-chatroom,
 #conversejs .chat-head-chatroom {
   background-color: #E77051; }
-  #conversejs.converse-embedded .chat-head-chatroom .chatroom-topic,
-  #conversejs .chat-head-chatroom .chatroom-topic {
-    white-space: nowrap;
+  #conversejs.converse-embedded .chat-head-chatroom .chatroom-description,
+  #conversejs .chat-head-chatroom .chatroom-description {
+    color: white;
+    font-size: 16px;
+    font-size: 80%;
     overflow-y: hidden;
+    overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 16px; }
+    white-space: nowrap; }
   #conversejs.converse-embedded .chat-head-chatroom a.chatbox-btn.fa, #conversejs.converse-embedded .chat-head-chatroom a:visited.chatbox-btn.fa, #conversejs.converse-embedded .chat-head-chatroom a:hover.chatbox-btn.fa, #conversejs.converse-embedded .chat-head-chatroom a:not([href]):not([tabindex]).chatbox-btn.fa,
   #conversejs .chat-head-chatroom a.chatbox-btn.fa,
   #conversejs .chat-head-chatroom a:visited.chatbox-btn.fa,
@@ -8095,15 +8098,6 @@ body.reset {
     #conversejs.converse-embedded .chat-head-chatroom .chat-title .chatroom-jid,
     #conversejs .chat-head-chatroom .chat-title .chatroom-jid {
       font-size: 12px; }
-    #conversejs.converse-embedded .chat-head-chatroom .chat-title .chatroom-description,
-    #conversejs .chat-head-chatroom .chat-title .chatroom-description {
-      color: white;
-      font-size: 80%;
-      font-style: italic;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      margin: 0.3em 0; }
 #conversejs.converse-embedded .chatroom,
 #conversejs .chatroom {
   width: 400px; }

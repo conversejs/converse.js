@@ -74,12 +74,14 @@
                         username = this.model.get('fullname') || this.model.get('from');
                         template = this.model.get('is_spoiler') ? tpl_spoiler_message : tpl_message;
 
-                        if (this.model.get('sender') === 'me') {
-                            image_type = _converse.xmppstatus.get('image_type');
-                            image = _converse.xmppstatus.get('image');
-                        } else {
-                            image_type = this.chatbox.get('image_type');
-                            image = this.chatbox.get('image');
+                        if (this.model.get('type') !== 'headline') {
+                            if (this.model.get('sender') === 'me') {
+                                image_type = _converse.xmppstatus.get('image_type');
+                                image = _converse.xmppstatus.get('image');
+                            } else {
+                                image_type = this.chatbox.get('image_type');
+                                image = this.chatbox.get('image');
+                            }
                         }
                     }
                     const moment_time = moment(this.model.get('time'));

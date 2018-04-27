@@ -48,10 +48,6 @@
                 color: $warning-color;
                 font-weight: bold;
             }
-            &.chat-date {
-                display: inline-block;
-                margin-top: 1em;
-            }
         }
 
         .chat-image {
@@ -104,14 +100,18 @@
 
             .chat-msg-content {
                 margin-left: 0.5rem;
+                word-wrap: break-word;
+                width: 100%;
+            }
+            &.headline {
+                .chat-msg-content {
+                    margin-left: 0;
+                }
             }
 
             .chat-msg-text {
                 padding: 0;
                 color: #666;
-                max-width: 100%;
-                word-wrap: break-word;
-
                 .emojione {
                     margin-bottom: -6px;
                 }

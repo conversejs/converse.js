@@ -135,8 +135,8 @@
                     const chatbox = _converse.chatboxes.create({
                         'id': from_jid,
                         'jid': from_jid,
-                        'fullname':  from_jid,
                         'type': 'headline',
+                        'from': from_jid
                     });
                     chatbox.createMessage(message, undefined, message);
                     _converse.emit('message', {'chatbox': chatbox, 'stanza': message});

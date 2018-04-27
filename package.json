@@ -58,7 +58,7 @@
     "lodash": "4.17.4",
     "lodash-template-loader": "^2.0.0",
     "moment": "~> 2.19.3 ",
-    "otr": "jcbrand/otr",
+    "otr": "0.2.16",
     "pluggable.js": "2.0.0",
     "po2json": "^0.4.4",
     "requirejs": "2.3.5",
@@ -75,6 +75,7 @@
     "strophejs-plugin-vcard": "0.0.1",
     "text": "requirejs/text#2.0.15",
     "uglify-es": "^3.0.24",
+    "urijs": "^1.19.1",
     "wait-until-promise": "^1.0.0",
     "xss": "^0.3.3"
   },

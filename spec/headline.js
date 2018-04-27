@@ -66,7 +66,8 @@
                 .c('subject').t('SIEVE').up()
                 .c('body').t('&lt;juliet@example.com&gt; You got mail.').up()
                 .c('x', {'xmlns': 'jabber:x:oob'})
-                .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
+                    .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
+
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             expect(
                 _.includes(

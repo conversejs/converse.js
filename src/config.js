@@ -15,6 +15,8 @@ if (typeof(require) === 'undefined') {
 require.config({
     baseUrl: '.',
     paths: {
+        "IPv6":                     "node_modules/urijs/src/IPv6",
+        "SecondLevelDomains":       "node_modules/urijs/src/SecondLevelDomains",
         "almond":                   "node_modules/almond/almond",
         "awesomplete":              "node_modules/awesomplete-avoid-xss/awesomplete",
         "babel":                    "node_modules/requirejs-babel/babel-5.8.34.min",
@@ -42,6 +44,7 @@ require.config({
         "muc-utils":                "src/utils/muc",
         "pluggable":                "node_modules/pluggable.js/dist/pluggable",
         "polyfill":                 "src/polyfill",
+        "punycode":                 "node_modules/urijs/src/punycode",
         "sizzle":                   "node_modules/sizzle/dist/sizzle",
         "snabbdom":                 "node_modules/snabbdom/dist/snabbdom",
         "snabbdom-attributes":      "node_modules/snabbdom/dist/snabbdom-attributes",
@@ -59,6 +62,7 @@ require.config({
         "tovnode":                  "node_modules/snabbdom/dist/tovnode",
         "tpl":                      "node_modules/lodash-template-loader/loader",
         "underscore":               "src/underscore-shim",
+        "uri":                      "node_modules/urijs/src/URI",
         "utils":                    "src/utils/core",
         "vdom-parser":              "node_modules/vdom-parser/dist",
         "xss":                      "node_modules/xss/dist/xss",

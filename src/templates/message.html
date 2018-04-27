@@ -1,5 +1,7 @@
-<div class="message chat-msg {{{o.extra_classes}}}" data-isodate="{{{o.time}}}" data-msgid="{{{o.msgid}}}">
+<div class="message chat-msg {{{o.type}}} {{{o.extra_classes}}}" data-isodate="{{{o.time}}}" data-msgid="{{{o.msgid}}}">
+    {[ if (o.type !== 'headline') { ]}
     <img alt="User Avatar" class="avatar" height="36px" width="36px" src="data:{{{o.image_type}}};base64,{{{o.image}}}"/>
+    {[ } ]}
     <div class="chat-msg-content">
         <span class="chat-msg-heading">
             <span class="chat-msg-author">{{{o.username}}}</span>

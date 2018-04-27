@@ -2021,7 +2021,7 @@
                     });
 
                     expect(view.onMessageSubmitted).toHaveBeenCalled();
-                    const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info:not(.chat-date)'), 0);
+                    const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                     expect(info_messages.length).toBe(17);
                     expect(info_messages.pop().textContent).toBe('/voice: Allow muted user to post messages');
                     expect(info_messages.pop().textContent).toBe('/topic: Set room subject (alias for /subject)');

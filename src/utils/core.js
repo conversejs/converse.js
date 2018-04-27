@@ -14,6 +14,7 @@
             "es6-promise",
             "lodash.noconflict",
             "strophe",
+            "uri",
             "tpl!audio",
             "tpl!file",
             "tpl!image",
@@ -46,6 +47,7 @@
         Promise,
         _,
         Strophe,
+        URI,
         tpl_audio,
         tpl_file,
         tpl_image,
@@ -247,19 +249,19 @@
     };
 
     u.renderFileURL = function (_converse, url) {
-        if (url.endsWith('mp3') || url.endsWith('mp4') ||
-            url.endsWith('jpg') || url.endsWith('jpeg') ||
-            url.endsWith('png') || url.endsWith('gif') ||
-            url.endsWith('svg')) {
+        const uri = new URI(url), { __ } = _converse,
+              filename = uri.filename();
+        if (!_.includes(["https", "http"], uri.protocol()) ||
+            filename.endsWith('mp3') || filename.endsWith('mp4') ||
+            filename.endsWith('jpg') || filename.endsWith('jpeg') ||
+            filename.endsWith('png') || filename.endsWith('gif') ||
+            filename.endsWith('svg')) {
 
             return url;
         }
-        const name = url.split('/').pop(),
-              { __ } = _converse;
-
         return tpl_file({
             'url': url,
-            'label_download': __('Download file: "%1$s', name)
+            'label_download': __('Download: "%1$s', filename)
         })
     };
 

@@ -200,24 +200,20 @@
         return matches;
     }
 
+    u.escapeHTML = function (string) {
+        return string
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    };
+
     u.addHyperlinks = function (text) {
-        const list = text.match(URL_REGEX) || [];
-        var links = [];
-        _.each(list, (match) => {
-            const prot = match.indexOf('http://') === 0 || match.indexOf('https://') === 0 ? '' : 'http://';
-            const url = prot + encodeURI(decodeURI(match)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-            const  a = '<a target="_blank" rel="noopener" href="' + url + '">'+ _.escape(match) + '</a>';
-            // We first insert a hash of the code that will be inserted, and
-            // then later replace that with the code itself. That way we avoid
-            // issues when some matches are substrings of others.
-            links.push(a);
-            text = text.replace(match, b64_sha1(a));
+        return URI.withinString(text, function (url) {
+            var uri = new URI(url);
+            uri.normalize();
+            return `<a href="${u.escapeHTML(url)}">${u.escapeHTML(uri.readable())}</a>`;
         });
-        while (links.length) {
-            const a = links.pop();
-            text = text.replace(b64_sha1(a), a);
-        }
-        return text;
     };
 
     u.renderImageURLs = function (_converse, obj) {

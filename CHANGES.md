@@ -1,24 +1,20 @@
 # Changelog
 
-## Http-File-Upload
+## 4.0.0 (Unreleased)
 
 ## New Features
 
+- geo-URIs (e.g. from Conversations) are now replaced by links to openstreetmap (works in reverse also)
 - Support for rendering URLs sent according to XEP-0066 Out of Band Data.
 - MP4 and MP3 files when sent as XEP-0066 Out of Band Data, are now playable directly in chat
 - Automatically grow/shrink input as text is entered/removed
 - #161 XEP-0363: HTTP File Upload
-
-## 4.0.0 (Unreleased)
+- Add 'Connected' filter by status option
 
 ## UI changes
 
 - The UI is now based on Bootstrap4 and Flexbox is used extensively.
 - #956 Conversation pane should show my own identity in pane header 
-
-## New Features
-
-- geo-URIs (e.g. from Conversations) are now replaced by links to openstreetmap (works in reverse also)
 
 ## Configuration changes 
 

@@ -54,10 +54,10 @@
             }
         }
 
-        &.chat-image {
+        .chat-image {
             height: auto;
             width: auto;
-            max-height: 24em;
+            max-height: 15em;
             max-width: 100%;
         }
         &.chat-action {
@@ -78,10 +78,13 @@
                 background-color: rgba(0, 0, 0, 0.035);
             }
 
+            .spoiler {
+                margin-top: 0.5em;
+            }
             .spoiler-hint {
                 margin-bottom: 0.5em;
             }
-            .toggle-spoiler {
+            .spoiler-toggle {
                 color: white;
                 i {
                     color: white;

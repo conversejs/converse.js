@@ -8387,10 +8387,10 @@ body.reset {
   #conversejs .message.chat-info.chat-date {
     display: inline-block;
     margin-top: 1em; }
-#conversejs .message.chat-image {
+#conversejs .message .chat-image {
   height: auto;
   width: auto;
-  max-height: 24em;
+  max-height: 15em;
   max-width: 100%; }
 #conversejs .message.chat-action {
   font-style: italic; }
@@ -8404,14 +8404,16 @@ body.reset {
     -webkit-animation: colorchange-chatmessage 1s; }
   #conversejs .message.chat-msg:hover {
     background-color: rgba(0, 0, 0, 0.035); }
+  #conversejs .message.chat-msg .spoiler {
+    margin-top: 0.5em; }
   #conversejs .message.chat-msg .spoiler-hint {
     margin-bottom: 0.5em; }
-  #conversejs .message.chat-msg .toggle-spoiler {
+  #conversejs .message.chat-msg .spoiler-toggle {
     color: white; }
-    #conversejs .message.chat-msg .toggle-spoiler i {
+    #conversejs .message.chat-msg .spoiler-toggle i {
       color: white;
       padding-right: 0.5em; }
-    #conversejs .message.chat-msg .toggle-spoiler:before {
+    #conversejs .message.chat-msg .spoiler-toggle:before {
       padding-right: 0.25em;
       whitespace: nowrap; }
   #conversejs .message.chat-msg .avatar {

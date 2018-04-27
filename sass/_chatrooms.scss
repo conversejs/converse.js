@@ -11,7 +11,7 @@
         background-color: $chatroom-head-color;
 
         .chatroom-description {
-            color: white;
+            color: lighten($chatroom-head-color, 25%);
             font-size: $font-size-large;
             font-size: 80%;
             overflow-y: hidden;
@@ -37,10 +37,6 @@
             }
         }
         .chat-title {
-            color: $chatroom-color-lightest;
-            .chatroom-name {
-                color: white;
-            }
             .chatroom-jid {
                 font-size: $font-size-small;
             }

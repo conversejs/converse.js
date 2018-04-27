@@ -19,7 +19,7 @@
             .separator-text {
                 background: white;
                 bottom: 1px; // Offset needed due to .separator border size
-                color: #666;
+                color: $message-text-color;
                 display: inline-block;
                 line-height: 2em;
                 padding: 0 1em;
@@ -91,13 +91,6 @@
                     whitespace: nowrap;
                 }
             }
-            .avatar {
-                background: $gray-color;
-                height: 36px;
-                vertical-align: middle;
-                width: 36px;
-            }
-
             .chat-msg-content {
                 margin-left: 0.5rem;
                 word-wrap: break-word;
@@ -111,13 +104,22 @@
 
             .chat-msg-text {
                 padding: 0;
-                color: #666;
+                color: $message-text-color;
                 .emojione {
                     margin-bottom: -6px;
                 }
             }
 
+            .avatar {
+                margin-top: 0.5em;
+                background: $gray-color;
+                height: 36px;
+                vertical-align: middle;
+                width: 36px;
+            }
             .chat-msg-heading {
+                margin-top: 0.5em;
+                padding-right: 0.25rem;
                 padding-bottom: 0.25rem;
                 display: block;
 
@@ -128,7 +130,14 @@
                     padding-left: 0.5em;
                 }
             }
+            &.chat-action {
+                .chat-msg-heading {
+                    margin-top: 0;
+                }
+            }
             &.chat-msg-followup {
+                padding: 0.25rem 1rem;
+
                 .chat-msg-heading,
                 .avatar {
                     display: none;

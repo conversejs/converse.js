@@ -1,145 +1,36 @@
-/*
-    Color scheme helpers:
-    https://coolors.co/app/264653-2a9d8f-e9c46a-f4a261-e76f51
-    http://paletton.com/#uid=70a0u0kkNs+b4JOgryLpxqpsbkI
- */
-$subdued-color: #A8ABA1 !default;
-$gray-color: #818479 !default;
-$dark-gray-color: #585B51!default;
-$visitor-color: #A8ABA1 !default;
-
-$lightest-blue: #89B7CD;
-$light-blue: #578EA9;
-$blue: #387592;
-$dark-blue: #206485;
-$darkest-blue: #114C68;
-
-$lightest-red: #FFB9A7;
-$light-red: #FF977C;
-$red: #E77051;
-$dark-red: #D24E2B;
-$darkest-red: #A53214;
-
-$lightest-orange: #FFD6A7;
-$light-orange: #E7A151;
-$orange: #E7A151;
-$dark-orange: #D2842B;
-$darkest-orange: #A56214;
-
-$greenish-white: #E7FBF0;
-$reddish-white: #FFECE7;
-
-$lightest-green: #E7FBF0;
-$light-green: #5CBC86;
-$green: #3AA569;
-$dark-green: #1E9652;
-$darkest-green: #0E763B;
-
-$link-color: $light-blue !default;
-$dark-link-color: $dark-blue !default;
-$global-background-color: $light-blue !default;
-
-$inverse-link-color: white !default;
-$link-shadow-color: #FAFAFA !default;
-$text-shadow-color: #FAFAFA !default;
-$text-color: #777 !default;
-$light-text-color: #A8ABA1 !default;
-$border-color: #CCC !default;
-$icon-color: $blue !default;
-$save-button-color: $green !default;
-$send-button-height: 27px !default;
-$send-button-margin: 3px !default;
-
-$message-them-color: $green !default;
-
+$max-chat-textarea-height: 400px !default;
 $emoji-picker-height: 150px !default;
 
-$roster-height: 194px !default;
 $roster-item-height: 30px !default;
 
 $flyout-padding: 1.2em;
 
-$chat-head-color: $green !default;
-$chat-head-text-color: white !default;
-$chat-head-inverse-text-color: white !default;
 $chat-head-height: 62px !default;
-
-$chat-textarea-height: 60px !default;
-$max-chat-textarea-height: 400px !default;
-
-$input-focus-color: #1A9707 !default;
-$highlight-color: #DCF9F6 !default;
 
 $controlbox-dropdown-height: 30px !default;
 $controlbox-head-color: $light-blue !default;
 $controlbox-head-height: 63px !default;
 $controlbox-pane-padding: $flyout-padding !default;
 
-$primary-color: $orange !default;
-$secondary-color: $blue !default;
-$warning-color: $dark-red !default;
-
-$light-background-border-color: #B1BFC4 !default;
-$light-background-color: #FCFDFD !default;
-
-$moderator-color: $red !default;
-$online-color: $green !default;
-$error-color: $darkest-red !default;
-$info-color: $dark-green !default;
-
 $rounded-border-radius: 4px !default;
 
-$button-border-radius: 5px !default;
-$chatbox-border-radius: 4px !default;
-$bottom-gutter-height: 35px !default;
 $chatbox-hover-height: 6px !default;
 
-$mobile_landscape_height: 450px !default;
-$mobile_portrait_length: 480px !default;
-
-$message-font-size: 14px !default;
-
-$font-size-tiny: 10px !default;
 $font-size-small: 14px !default;
 $font-size: 16px !default;
 $font-size-large: 18px !default;
 $font-size-huge: 26px !default;
 $legend-font-size: 18px !default;
 
-$toolbar-color: $greenish-white !default;
-
 $line-height-small:  20px !default;
 $line-height:  22px !default;
 $line-height-large:  24px !default;
 $line-height-huge:  30px !default;
 
-$controlbox-width: 250px !default;
 $chat-width: 100% !default;
 $chat-height: 100%;
-$chat-gutter: 0.5em !default;
-$minimized-chats-width: 130px !default;
 
 $padding: 1em;
 
-$mobile-chat-width: 100% !default;
-$mobile-chat-height: 400px !default;
-$small-mobile-chat-height: 300px !default;
-
-$font-path: "../fonticons/fonts/" !default;
-
 $chatroom-head-height: 62px !default;
 $chatroom-width: 300px !default;
-$chatroom-head-color: $red !default;
-$chatroom-color-light: $light-red !default;
-$chatroom-color-lightest: $light-red !default;
-$chatroom-color-dark: $darkest-red !default;
-$chatroom-message-them-color: $green !default;
-$chatroom-toolbar-color: $reddish-white !default;
-
-$headline-head-color: $orange !default;
-
-$box-close-button-padding-top: 4px !default;
-$box-close-button-padding-bottom: 4px !default;
-$box-close-button-padding-left: 4px !default;
-$box-close-button-padding-right: 4px !default;
-$box-close-font-size: 16px !default;

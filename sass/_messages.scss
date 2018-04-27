@@ -74,14 +74,6 @@
                 animation: colorchange-chatmessage 1s;
                 -webkit-animation: colorchange-chatmessage 1s;
             }
-            &.delayed {
-                .chat-msg-them {
-                    color: lighten($message-them-color, 5%);
-                }
-                .chat-msg-me {
-                    color: lighten($link-color, 5%);
-                }
-            }
             &:hover {
                 background-color: rgba(0, 0, 0, 0.035);
             }
@@ -132,12 +124,6 @@
                 .chat-msg-time {
                     padding-left: 0.5em;
                 }
-                .chat-msg-them {
-                    color: $message-them-color;
-                }
-                .chat-msg-me {
-                    color: $link-color;
-                }
             }
             &.chat-msg-followup {
                 .chat-msg-heading,
@@ -157,18 +143,6 @@
             animation: colorchange-chatmessage-muc 1s;
             -webkit-animation: colorchange-chatmessage-muc 1s;
         }
-        &.delayed {
-            .chat-msg-them {
-                color: lighten($chatroom-message-them-color, 5%);
-            }
-            .chat-msg-me {
-                color: lighten($link-color, 5%);
-            }
-        }
-        .chat-msg-them {
-            color: $chatroom-message-them-color;
-        }
-
         .separator {
             border: 0.5px solid $chatroom-head-color;
         }

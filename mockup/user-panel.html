@@ -14,38 +14,78 @@
     </div>
 </div>
 
-<div id="chatrooms">
+<div id="headlines" class="controlbox-section">
     <div class="d-flex">
-        <span class="w-100">Chatrooms</span>
-        <a class="chatbox-btn fa fa-users" title="Click to add a new room" data-toggle="modal" data-target="#chatroomsModal"></a>
+        <span class="w-100 controlbox-heading">Announcements</span>
     </div>
-    <div class="list-container rooms-list-container">
-        <div class="rooms-list">
-            <div class="available-chatroom d-flex flex-row">
-                <span class="badge badge-info msgs-indicator">1</span>
-                <a class="open-room available-room w-100" data-room-jid="public@conference.test.com" title="Click to open this room" href="chatroom.html">public</a>
-                <a href="#" class="room-info fa fa-info-circle" data-container="body" data-toggle="popover" title="Room info"
-                    data-html="true" data-content="<b>Room Address (JID): </b><br>public@conference.test.com<br><b>Discussions: </b><br>Public discussions<br><b>Participants: </b>1<br><b>Features: </b><br>Non-anonymous">&nbsp;</a>
-                <a href="#" class="fa fa-bookmark" title="Click to bookmark this room">&nbsp;</a>
-                <a href="#" class="fa fa-times" title="Click to leave this room">&nbsp;</a>
+    <div class="list-container">
+        <div class="items-list">
+            <div class="list-item open-headline d-flex flex-row">
+                <a class="w-100" data-jid="montague.lit" title="Click to show" href="chatroom.html">Montague.lit</a>
             </div>
-            <div class="available-chatroom d-flex flex-row">
-                <a class="open-room available-room w-100" data-room-jid="team@conference.test.com" title="Click to open this room" href="chatroom.html">team</a>
-                <a href="#" class="room-info fa fa-info-circle" data-container="body" data-toggle="popover" title="Room info"
-                    data-html="true" data-content="<b>Room Address (JID): </b><br>team@conference.test.com<br><b>Discussions: </b><br>Public discussions<br><b>Participants: </b>1<br><b>Features: </b><br>Non-anonymous">&nbsp;</a>
-            </div>
-            <div class="available-chatroom d-flex flex-row">
-                <a class="open-room available-room w-100" data-room-jid="test@conference.test.com" title="Click to open this room" href="chatroom.html">test</a>
-                <a href="#" class="room-info fa fa-info-circle" data-container="body" data-toggle="popover" title="Room info"
-                    data-html="true" data-content="<b>Room Address (JID): </b><br>test@conference.test.com<br><b>Discussions: </b><br>Public discussions<br><b>Participants: </b>1<br><b>Features: </b><br>Non-anonymous">&nbsp;</a>
+            <div class="list-item open-headline d-flex flex-row">
+                <a class="w-100" data-jid="montague.lit" title="Click to show" href="chatroom.html">Capulet.lit</a>
             </div>
         </div>
     </div>
 </div>
 
-<div id="converse-roster">
+<div id="chatrooms" class="controlbox-section">
     <div class="d-flex">
-        <span class="w-100">Contacts</span>
+        <span class="w-100 controlbox-heading">Group Chats</span>
+        <a class="chatbox-btn fa fa-users" title="Click to add a new room" data-toggle="modal" data-target="#chatroomsModal"></a>
+    </div>
+    <div class="list-container rooms-list-container">
+        <div class="rooms-list items-list">
+            <div class="list-item available-chatroom d-flex flex-row">
+                <a class="open-room available-room w-100" data-room-jid="public@conference.test.com" title="Click to open this room" href="chatroom.html">Capulet's orchard</a>
+                <!-- <span class="badge badge-info msgs-indicator">1</span> -->
+                <a href="#"
+                   class="room-info fa fa-info-circle" data-container="body" data-toggle="popover" title="Room info"
+                   data-html="true" data-content="<b>Room Address (JID): </b><br>public@conference.test.com<br><b>Discussions: </b><br>Public discussions<br><b>Participants: </b>1<br><b>Features: </b><br>Non-anonymous">
+                   &nbsp;</a>
+                <a href="#" class="fa fa-bookmark" title="Click to bookmark this room">&nbsp;</a>
+            </div>
+            <div class="list-item available-chatroom d-flex flex-row">
+                <a class="open-room available-room w-100" data-room-jid="team@conference.test.com" title="Click to open this room" href="chatroom.html">Juliet's Balcony</a>
+                <a href="#"
+                   class="room-info fa fa-info-circle" data-container="body" data-toggle="popover" title="Room info"
+                    data-html="true" data-content="<b>Room Address (JID): </b><br>public@conference.test.com<br><b>Discussions: </b><br>Public discussions<br><b>Participants: </b>1<br><b>Features: </b><br>Non-anonymous">
+                    &nbsp;</a>
+                <a href="#" class="fa fa-bookmark" title="Click to bookmark this room">&nbsp;</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="bookmarks" class="controlbox-section">
+    <div class="d-flex"><span class="w-100 controlbox-heading">Bookmarks</span></div>
+    <div class="list-container rooms-list-container">
+        <div class="rooms-list items-list">
+            <div class="list-item available-chatroom d-flex flex-row">
+                <a class="open-room available-room w-100" data-room-jid="public@conference.test.com" title="Click to open this room" href="chatroom.html">Capulet's orchard</a>
+                <!-- <span class="badge badge-info msgs-indicator">1</span> -->
+                <a href="#"
+                   class="room-info fa fa-info-circle" data-container="body" data-toggle="popover" title="Room info"
+                   data-html="true" data-content="<b>Room Address (JID): </b><br>public@conference.test.com<br><b>Discussions: </b><br>Public discussions<br><b>Participants: </b>1<br><b>Features: </b><br>Non-anonymous">
+                   &nbsp;</a>
+                <a href="#" class="fa fa-bookmark" title="Click to bookmark this room">&nbsp;</a>
+            </div>
+            <div class="list-item available-chatroom d-flex flex-row">
+                <a class="open-room available-room w-100" data-room-jid="team@conference.test.com" title="Click to open this room" href="chatroom.html">Juliet's Balcony</a>
+                <a href="#"
+                   class="room-info fa fa-info-circle" data-container="body" data-toggle="popover" title="Room info"
+                    data-html="true" data-content="<b>Room Address (JID): </b><br>public@conference.test.com<br><b>Discussions: </b><br>Public discussions<br><b>Participants: </b>1<br><b>Features: </b><br>Non-anonymous">
+                    &nbsp;</a>
+                <a href="#" class="fa fa-bookmark" title="Click to bookmark this room">&nbsp;</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="converse-roster" class="controlbox-section">
+    <div class="d-flex">
+        <span class="w-100 controlbox-heading">Contacts</span>
         <a class="chatbox-btn fa fa-user-plus" title="Click to add new chat contacts" data-toggle="modal" data-target="#addContactModal"></a>
     </div>
     <form class="roster-filter-form input-button-group">
@@ -83,7 +123,6 @@
         <div class="roster-group" data-group="Colleagues">
             <a href="#" data-group="Colleagues" class="group-toggle" title="Click to hide these contacts">
                 <span class="fa fa-caret-down"></span> Colleagues</a>
-
             <ul>
                 <li class="away current-xmpp-contact d-flex">
                     <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">

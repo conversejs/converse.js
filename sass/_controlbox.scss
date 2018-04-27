@@ -226,9 +226,23 @@
             }
         }
 
+        .list-container {
+            .items-list {
+                .list-item {
+                    border: none;
+                    clear: both;
+                    color: $text-color;
+                    display: block;
+                    height: 2em;
+                    overflow: hidden;
+                    text-shadow: 0 1px 0 $text-shadow-color;
+                    word-wrap: break-word;
+                }
+            }
+        }
+
         #chatrooms {
             padding: 0;
-            padding-bottom: 0.5em;
 
             form.add-chatroom {
                 input[type=button],
@@ -256,14 +270,6 @@
 
                     .available-chatroom,
                     .open-chatroom {
-                        border: none;
-                        clear: both;
-                        color: $text-color;
-                        display: block;
-                        overflow: hidden;
-                        margin-top: 0.5em;
-                        text-shadow: 0 1px 0 $text-shadow-color;
-                        word-wrap: break-word;
                         a:hover {
                             color: $dark-link-color;
                         }
@@ -310,9 +316,10 @@
             }
         }
 
-        #chatrooms, #converse-roster {
+        .controlbox-section {
             margin: 1em 0 0 0;
-            div.d-flex span {
+
+            .controlbox-heading {
                 margin: 0 0 0.5em 0;
                 text-transform: uppercase;
             }

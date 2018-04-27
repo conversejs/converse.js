@@ -7711,9 +7711,17 @@ body.reset {
       text-overflow: ellipsis; }
     #conversejs #controlbox .controlbox-pane .userinfo .profile {
       margin-bottom: 0.75em; }
+  #conversejs #controlbox .list-container .items-list .list-item {
+    border: none;
+    clear: both;
+    color: #777;
+    display: block;
+    height: 2em;
+    overflow: hidden;
+    text-shadow: 0 1px 0 #FAFAFA;
+    word-wrap: break-word; }
   #conversejs #controlbox #chatrooms {
-    padding: 0;
-    padding-bottom: 0.5em; }
+    padding: 0; }
     #conversejs #controlbox #chatrooms form.add-chatroom {
       margin: 0;
       padding: 0; }
@@ -7730,60 +7738,50 @@ body.reset {
     #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list {
       margin: 0.5em 0;
       text-align: left; }
-      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom,
-      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom {
-        border: none;
-        clear: both;
-        color: #777;
-        display: block;
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom a:hover,
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom a:hover {
+        color: #206485; }
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom a.fa:hover,
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom a.fa:hover {
+        color: #818479; }
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom.unread-msgs .available-room,
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom.unread-msgs .open-room,
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom.unread-msgs .available-room,
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom.unread-msgs .open-room {
+        width: 100%;
+        font-weight: bold; }
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom a.room-info:before,
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom a.room-info:before {
+        font-size: 15px; }
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom a.open-room,
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom a.open-room {
+        width: 68%;
+        float: left;
         overflow: hidden;
-        margin-top: 0.5em;
-        text-shadow: 0 1px 0 #FAFAFA;
-        word-wrap: break-word; }
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom a:hover,
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom a:hover {
-          color: #206485; }
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom a.fa:hover,
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom a.fa:hover {
-          color: #818479; }
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom.unread-msgs .available-room,
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom.unread-msgs .open-room,
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom.unread-msgs .available-room,
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom.unread-msgs .open-room {
-          width: 100%;
-          font-weight: bold; }
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom a.room-info:before,
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom a.room-info:before {
-          font-size: 15px; }
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom a.open-room,
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom a.open-room {
-          width: 68%;
-          float: left;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          padding-right: 0.5em; }
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom a.available-room,
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom a.available-room {
-          width: 85%; }
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom .add-bookmark,
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom .remove-bookmark,
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .add-bookmark,
-        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .remove-bookmark {
-          color: #A8ABA1; }
-          #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom .add-bookmark.button-on,
-          #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom .remove-bookmark.button-on,
-          #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .add-bookmark.button-on,
-          #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .remove-bookmark.button-on {
-            color: #578EA9; }
-            #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom .add-bookmark.button-on:hover,
-            #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom .remove-bookmark.button-on:hover,
-            #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .add-bookmark.button-on:hover,
-            #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .remove-bookmark.button-on:hover {
-              color: #206485; }
-  #conversejs #controlbox #chatrooms, #conversejs #controlbox #converse-roster {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding-right: 0.5em; }
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom a.available-room,
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom a.available-room {
+        width: 85%; }
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom .add-bookmark,
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom .remove-bookmark,
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .add-bookmark,
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .remove-bookmark {
+        color: #A8ABA1; }
+        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom .add-bookmark.button-on,
+        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom .remove-bookmark.button-on,
+        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .add-bookmark.button-on,
+        #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .remove-bookmark.button-on {
+          color: #578EA9; }
+          #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom .add-bookmark.button-on:hover,
+          #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .available-chatroom .remove-bookmark.button-on:hover,
+          #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .add-bookmark.button-on:hover,
+          #conversejs #controlbox #chatrooms .rooms-list-container .rooms-list .open-chatroom .remove-bookmark.button-on:hover {
+            color: #206485; }
+  #conversejs #controlbox .controlbox-section {
     margin: 1em 0 0 0; }
-    #conversejs #controlbox #chatrooms div.d-flex span, #conversejs #controlbox #converse-roster div.d-flex span {
+    #conversejs #controlbox .controlbox-section .controlbox-heading {
       margin: 0 0 0.5em 0;
       text-transform: uppercase; }
   #conversejs #controlbox .dropdown a {
@@ -8344,7 +8342,7 @@ body.reset {
 #conversejs .chatbox.headlines .chat-body {
   background-color: #E7A151;
   border-radius: 4px; }
-  #conversejs .chatbox.headlines .chat-body .chat-message span.chat-msg-them {
+  #conversejs .chatbox.headlines .chat-body .chat-message {
     color: #D2842B; }
 #conversejs .chatbox.headlines .chat-content {
   height: 100%;
@@ -8404,14 +8402,10 @@ body.reset {
   #conversejs .message.chat-msg.onload {
     animation: colorchange-chatmessage 1s;
     -webkit-animation: colorchange-chatmessage 1s; }
-  #conversejs .message.chat-msg.delayed .chat-msg-them {
-    color: #41b875; }
-  #conversejs .message.chat-msg.delayed .chat-msg-me {
-    color: #6899b2; }
   #conversejs .message.chat-msg:hover {
     background-color: rgba(0, 0, 0, 0.035); }
   #conversejs .message.chat-msg .spoiler-hint {
-    margin-bottom: 1em; }
+    margin-bottom: 0.5em; }
   #conversejs .message.chat-msg .toggle-spoiler {
     color: white; }
     #conversejs .message.chat-msg .toggle-spoiler i {
@@ -8441,10 +8435,6 @@ body.reset {
       font-weight: bold; }
     #conversejs .message.chat-msg .chat-msg-heading .chat-msg-time {
       padding-left: 0.5em; }
-    #conversejs .message.chat-msg .chat-msg-heading .chat-msg-them {
-      color: #3AA569; }
-    #conversejs .message.chat-msg .chat-msg-heading .chat-msg-me {
-      color: #578EA9; }
   #conversejs .message.chat-msg.chat-msg-followup .chat-msg-heading,
   #conversejs .message.chat-msg.chat-msg-followup .avatar {
     display: none; }
@@ -8453,12 +8443,6 @@ body.reset {
 #conversejs .chatroom-body .message.onload {
   animation: colorchange-chatmessage-muc 1s;
   -webkit-animation: colorchange-chatmessage-muc 1s; }
-#conversejs .chatroom-body .message.delayed .chat-msg-them {
-  color: #41b875; }
-#conversejs .chatroom-body .message.delayed .chat-msg-me {
-  color: #6899b2; }
-#conversejs .chatroom-body .message .chat-msg-them {
-  color: #3AA569; }
 #conversejs .chatroom-body .message .separator {
   border: 0.5px solid #E77051; }
 

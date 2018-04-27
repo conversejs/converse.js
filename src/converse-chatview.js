@@ -249,7 +249,7 @@
                     'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-smiley': 'toggleEmojiMenu',
-                    'click .toggle-spoiler': 'toggleSpoilerMessage',
+                    'click .spoiler-toggle': 'toggleSpoilerMessage',
                     'click .upload-file': 'toggleFileUpload',
                     'keypress .chat-textarea': 'keyPressed',
                     'input .chat-textarea': 'inputChanged'
@@ -373,7 +373,7 @@
                                 this.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
                             }
                         }
-                    });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                 insertHeading () {
@@ -907,14 +907,16 @@
                         toggle_el.parentElement.parentElement.querySelector('.spoiler')
                     );
                     if (toggle_el.getAttribute("data-toggle-state") == "closed") {
-                        toggle_el.textContent = __('Show less');
+                        toggle_el.textContent = 'Show less';
                         icon_el.classList.remove("fa-eye");
                         icon_el.classList.add("fa-eye-slash");
+                        toggle_el.insertAdjacentElement('afterBegin', icon_el);
                         toggle_el.setAttribute("data-toggle-state", "open");
                     } else {
-                        toggle_el.textContent = __('Show more');
+                        toggle_el.textContent = 'Show more';
                         icon_el.classList.remove("fa-eye-slash");
                         icon_el.classList.add("fa-eye");
+                        toggle_el.insertAdjacentElement('afterBegin', icon_el);
                         toggle_el.setAttribute("data-toggle-state", "closed");
                     }
                 },

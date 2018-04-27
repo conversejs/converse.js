@@ -1509,10 +1509,12 @@
 
             defaults () {
                 return {
-                    "status":  _converse.default_state,
                     "jid": _converse.bare_jid,
                     "nickname": _converse.nickname,
-                    "vcard_updated": null
+                    "status":  _converse.default_state,
+                    "vcard_updated": null,
+                    'image': _converse.DEFAULT_IMAGE,
+                    'image_type': _converse.DEFAULT_IMAGE_TYPE
                 }
             },
 

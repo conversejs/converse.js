@@ -719,6 +719,7 @@
             _converse.RosterView = Backbone.OrderedListView.extend({
                 tagName: 'div',
                 id: 'converse-roster',
+                className: 'controlbox-section',
 
                 ItemView: _converse.RosterGroupView,
                 listItems: 'model',

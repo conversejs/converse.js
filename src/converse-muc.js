@@ -304,15 +304,11 @@
                 getOutgoingMessageAttributes (text, spoiler_hint) {
                     const is_spoiler = this.get('composing_spoiler');
                     return {
-                        'from': _converse.connection.jid,
                         'fullname': this.get('nick'),
                         'is_spoiler': is_spoiler,
                         'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
-                        'msgid': _converse.connection.getUniqueId(),
                         'sender': 'me',
                         'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
-                        'time': moment().format(),
-                        'to': this.get('jid'),
                         'type': 'groupchat',
                     };
                 },

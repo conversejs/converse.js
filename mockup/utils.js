@@ -52,7 +52,7 @@ function toggleSpoilerMessage (ev) {
 }
 
 window.initSpoilers = function () {
-    const spoilers = document.querySelectorAll('.toggle-spoiler');
+    const spoilers = document.querySelectorAll('.spoiler-toggle');
     _.each(spoilers, (spoiler_el) => {
         spoiler_el.addEventListener('click', toggleSpoilerMessage);
     });

@@ -193,7 +193,6 @@
                     'image': _converse.DEFAULT_IMAGE,
                     'image_type': _converse.DEFAULT_IMAGE_TYPE,
                     'num_unread': 0,
-                    'show_avatar': true,
                     'type': 'chatbox',
                     'message_type': 'chat',
                     'url': ''

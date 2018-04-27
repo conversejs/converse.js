@@ -74,7 +74,6 @@
             _converse.HeadlinesBox = _converse.ChatBox.extend({
                 defaults: {
                     'type': 'headline',
-                    'show_avatar': false,
                     'bookmarked': false,
                     'chat_state': undefined,
                     'num_unread': 0,

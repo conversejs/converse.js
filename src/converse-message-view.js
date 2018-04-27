@@ -44,8 +44,8 @@
             _converse.MessageView = Backbone.NativeView.extend({
 
                 initialize () {
-                    const chatbox = this.model.collection.chatbox;
-                    chatbox.on('change:fullname', (chatbox) => this.model.save('fullname', chatbox.get('fullname')));
+                    this.chatbox = this.model.collection.chatbox;
+                    this.chatbox.on('change:fullname', (chatbox) => this.model.save('fullname', chatbox.get('fullname')));
 
                     this.model.on('change:fullname', this.render, this);
                     this.model.on('change:progress', this.renderFileUploadProgresBar, this);
@@ -61,7 +61,7 @@
                         return this.renderErrorMessage();
                     }
 
-                    let template, username,
+                    let template, username, image, image_type,
                         text = this.model.get('message');
 
                     // TODO: store proper username on the message itself
@@ -71,9 +71,16 @@
                         username = arr[1];
                         text = arr[2];
                     } else {
-                        const fullname = _converse.xmppstatus.get('fullname') || this.model.get('fullname');
-                        username = this.model.get('sender') === 'me' && __('me') || fullname || this.model.get('from');
+                        username = this.model.get('fullname') || this.model.get('from');
                         template = this.model.get('is_spoiler') ? tpl_spoiler_message : tpl_message;
+
+                        if (this.model.get('sender') === 'me') {
+                            image_type = _converse.xmppstatus.get('image_type');
+                            image = _converse.xmppstatus.get('image');
+                        } else {
+                            image_type = this.chatbox.get('image_type');
+                            image = this.chatbox.get('image');
+                        }
                     }
                     const moment_time = moment(this.model.get('time'));
                     const msg = u.stringToElement(template(
@@ -82,7 +89,9 @@
                             'time': moment_time.format(),
                             'username': username,
                             'extra_classes': this.getExtraMessageClasses(),
-                            'label_show': __('Show more')
+                            'label_show': __('Show more'),
+                            'image_type': image_type,
+                            'image': image
                         })
                     ));
 
@@ -97,7 +106,7 @@
                         )(url);
                     }
 
-                    const msg_content = msg.querySelector('.chat-msg-content');
+                    const msg_content = msg.querySelector('.chat-msg-text');
                     if (text !== url) {
                         text = xss.filterXSS(text, {'whiteList': {}});
                         msg_content.innerHTML = _.flow(
@@ -106,7 +115,7 @@
                             _.partial(u.addEmoji, _converse, emojione, _)
                         )(text);
                     }
-                    u.renderImageURLs(msg_content).then(() => {
+                    u.renderImageURLs(_converse, msg_content).then(() => {
                         this.model.collection.trigger('rendered');
                     });
                     return this.replaceElement(msg);

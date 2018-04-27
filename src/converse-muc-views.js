@@ -1485,7 +1485,7 @@
                  * Chat rooms can be listed, joined and new rooms can be created.
                  */
                 tagName: 'div',
-                className: 'controlbox-pane',
+                className: 'controlbox-section',
                 id: 'chatrooms',
                 events: {
                     'click a.chatbox-btn.fa-users': 'showAddRoomModal',

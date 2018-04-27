@@ -101,7 +101,6 @@ Brief description of converse.js's dependencies
 
 Converse.js relies on the following dependencies:
 
-* `JQuery <http://jquery.com/>`_ for DOM manipulation and `promises <http://api.jquery.com/promise/>`_.
 * `moment.js <http://momentjs.com/>`_ provides a better API for handling dates and times.
 * `Strophe.js <http://strophe.im/>`_ maintains the XMPP session, is used to
   build XMPP stanzas, to send them, and to register handlers for received stanzas.

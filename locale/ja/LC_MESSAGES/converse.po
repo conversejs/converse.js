@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-04-19 04:47+0000\n"
+"PO-Revision-Date: 2018-04-30 08:38+0000\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
@@ -49,7 +49,7 @@ msgstr "%1$s を相手先として追加しようとする際にエラーが起�
 
 #: dist/converse-no-dependencies.js:8395
 msgid "This client does not allow presence subscriptions"
-msgstr "このクライアントは在籍状況の継読を許可していません"
+msgstr "このクライアントは在籍状況の申込を許可していません"
 
 #: dist/converse-no-dependencies.js:8494
 msgid "Click to hide these contacts"
@@ -140,7 +140,7 @@ msgstr "メッセージを削除"
 
 #: dist/converse-no-dependencies.js:14851
 msgid "Write in the third person"
-msgstr "第三者に書く"
+msgstr "三人称で書く"
 
 #: dist/converse-no-dependencies.js:14851
 #: dist/converse-no-dependencies.js:23429
@@ -645,7 +645,7 @@ msgstr "クリックして談話室一覧を開閉"
 
 #: dist/converse-no-dependencies.js:21494
 msgid "Open Rooms"
-msgstr "談話室を開設"
+msgstr "参加中の談話室"
 
 #: dist/converse-no-dependencies.js:21538
 #, javascript-format
@@ -1018,7 +1018,7 @@ msgstr "主要点"
 
 #: dist/converse-no-dependencies.js:24632
 msgid "Message archiving"
-msgstr "記録保存"
+msgstr "記録保管"
 
 #: dist/converse-no-dependencies.js:24633
 msgid "Members only"
@@ -1050,7 +1050,7 @@ msgstr "この談話室は公に検索されません"
 
 #: dist/converse-no-dependencies.js:24645
 msgid "Messages are archived on the server"
-msgstr "メッセージはサーバ上に保存されます"
+msgstr "メッセージはサーバ上に保管されます"
 
 #: dist/converse-no-dependencies.js:24646
 msgid "This room is restricted to members only"
@@ -1354,9 +1354,7 @@ msgstr "そのプロバイダーに接続できませんでした。"
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
-msgstr ""
-"このプロバイダーは帯域内アカウント登録に対応していません。別のプロバイダーで"
-"試してください。"
+msgstr "このプロバイダーはバンド内アカウント登録に対応していません。別のプロバイダーで試してください。"
 
 #: dist/converse-no-dependencies.js:25884
 #, javascript-format

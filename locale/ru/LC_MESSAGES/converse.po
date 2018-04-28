@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-03-09 10:29+0000\n"
-"Last-Translator: Translator <admin@pochta.cf>\n"
+"PO-Revision-Date: 2018-04-29 18:41+0000\n"
+"Last-Translator: Anton Tikhomirov <anton.d.tikhomirov@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.20-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 3.0-dev\n"
 
 #: dist/converse-no-dependencies.js:7402
 msgid "The connection has dropped, attempting to reconnect."
@@ -241,23 +241,20 @@ msgstr "Имя контакта"
 
 #: dist/converse-no-dependencies.js:16785
 #: dist/converse-no-dependencies.js:23016
-#, fuzzy
 msgid "Optional nickname"
-msgstr "Опционная подсказка"
+msgstr "Имя пользователя по умолчанию"
 
 #: dist/converse-no-dependencies.js:16788
-#, fuzzy
 msgid "Add a Contact"
-msgstr "Добавть контакт"
+msgstr "Добавить контакт"
 
 #: dist/converse-no-dependencies.js:16789
 msgid "XMPP Address"
-msgstr ""
+msgstr "XMPP адрес"
 
 #: dist/converse-no-dependencies.js:16791
-#, fuzzy
 msgid "name@example.org"
-msgstr "например, user@example.com"
+msgstr "например, name@example.org"
 
 #: dist/converse-no-dependencies.js:16792
 msgid "Add"
@@ -273,17 +270,16 @@ msgid "Filter"
 msgstr "Фильтр"
 
 #: dist/converse-no-dependencies.js:16901
-#, fuzzy
 msgid "Filter by contact name"
-msgstr "Имя контакта"
+msgstr "Фильтр по имени"
 
 #: dist/converse-no-dependencies.js:16902
 msgid "Filter by group name"
-msgstr ""
+msgstr "Фильтр по названию группы"
 
 #: dist/converse-no-dependencies.js:16903
 msgid "Filter by status"
-msgstr ""
+msgstr "Фильтр по статусу"
 
 #: dist/converse-no-dependencies.js:16904
 msgid "Any"
@@ -361,12 +357,12 @@ msgstr "Добавть контакт"
 
 #: dist/converse-no-dependencies.js:18097
 msgid "Your Profile"
-msgstr ""
+msgstr "Ваш профиль"
 
 #: dist/converse-no-dependencies.js:18098
 #: dist/converse-no-dependencies.js:18110
 msgid "Close"
-msgstr ""
+msgstr "Закрыть"
 
 #: dist/converse-no-dependencies.js:18112
 #: dist/converse-no-dependencies.js:20805
@@ -384,19 +380,17 @@ msgid "Save"
 msgstr "Сохранить"
 
 #: dist/converse-no-dependencies.js:18117
-#, fuzzy
 msgid "Away for long"
-msgstr "отошёл надолго"
+msgstr "Давно отсутствует"
 
 #: dist/converse-no-dependencies.js:18118
-#, fuzzy
 msgid "Change chat status"
-msgstr "Изменить ваш статус"
+msgstr "Изменить статус чата"
 
 #: dist/converse-no-dependencies.js:18119
 #, fuzzy
 msgid "Personal status message"
-msgstr "Ваше сообщение"
+msgstr "Сообщение о личном статусе"
 
 #: dist/converse-no-dependencies.js:18162
 #, javascript-format
@@ -405,7 +399,7 @@ msgstr "Я %1$s"
 
 #: dist/converse-no-dependencies.js:18165
 msgid "Change settings"
-msgstr ""
+msgstr "Изменить настройки"
 
 #: dist/converse-no-dependencies.js:18166
 msgid "Click to change your chat status"
@@ -417,12 +411,11 @@ msgstr "Выйти"
 
 #: dist/converse-no-dependencies.js:18168
 msgid "Your profile"
-msgstr ""
+msgstr "Ваш профиль"
 
 #: dist/converse-no-dependencies.js:18191
-#, fuzzy
 msgid "Are you sure you want to log out?"
-msgstr "Вы уверены, что хотите удалить этот контакт?"
+msgstr "Вы уверены, что хотите выйти?"
 
 #: dist/converse-no-dependencies.js:18199
 #: dist/converse-no-dependencies.js:18209
@@ -454,9 +447,8 @@ msgid "user@domain"
 msgstr "пользователь@домен"
 
 #: dist/converse-no-dependencies.js:18738
-#, fuzzy
 msgid "Chat Contacts"
-msgstr "Контакты"
+msgstr "Контакты в чате"
 
 #: dist/converse-no-dependencies.js:18738
 msgid "Toggle chat"
@@ -659,7 +651,7 @@ msgid "Open Rooms"
 msgstr "Открыть комнаты"
 
 #: dist/converse-no-dependencies.js:21538
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to leave the room %1$s?"
 msgstr "Вы уверены, что хотите покинуть комнату \"%1$s\"?"
 
@@ -731,35 +723,31 @@ msgstr "Немодерируемый"
 
 #: dist/converse-no-dependencies.js:22888
 msgid "Query for Chatrooms"
-msgstr ""
+msgstr "Очередь в чат"
 
 #: dist/converse-no-dependencies.js:22889
-#, fuzzy
 msgid "Server address"
-msgstr "Сервер"
+msgstr "Адрес сервера"
 
 #: dist/converse-no-dependencies.js:22890
 msgid "Show rooms"
 msgstr "Показать чаты"
 
 #: dist/converse-no-dependencies.js:22891
-#, fuzzy
 msgid "conference.example.org"
-msgstr "например, user@example.com"
+msgstr "например, conference.example.org"
 
 #: dist/converse-no-dependencies.js:22944
 msgid "No rooms found"
 msgstr "Комнаты не найдены"
 
 #: dist/converse-no-dependencies.js:22961
-#, fuzzy
 msgid "Rooms found:"
-msgstr "Комнаты найдены"
+msgstr "Комнат найдено:"
 
 #: dist/converse-no-dependencies.js:23014
-#, fuzzy
 msgid "Enter a new Chatroom"
-msgstr "Войти в комнату"
+msgstr "Войти в новую комнату"
 
 #: dist/converse-no-dependencies.js:23015
 #, fuzzy
@@ -768,12 +756,11 @@ msgstr "Адрес комнаты (идентификатор):"
 
 #: dist/converse-no-dependencies.js:23017
 msgid "name@conference.example.org"
-msgstr ""
+msgstr "например, name@conference.example.org"
 
 #: dist/converse-no-dependencies.js:23018
-#, fuzzy
 msgid "Join"
-msgstr "Присоединться к чату"
+msgstr "Присоединиться"
 
 #: dist/converse-no-dependencies.js:23124
 msgid "Message"
@@ -924,9 +911,9 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "Причиной является: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:24119
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the room"
-msgstr "%1$s покинул и заново вошёл в комнату."
+msgstr "%1$s перезашел в комнату"
 
 #: dist/converse-no-dependencies.js:24124
 #, javascript-format
@@ -934,9 +921,9 @@ msgid "%1$s has entered the room. \"%2$s\""
 msgstr "%1$s вошёл в комнату. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:24126
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered the room"
-msgstr "%1$s вошёл в комнату."
+msgstr "%1$s вошёл в комнату"
 
 #: dist/converse-no-dependencies.js:24156
 #, javascript-format
@@ -944,9 +931,9 @@ msgid "%1$s has entered and left the room. \"%2$s\""
 msgstr "%1$s вошёл и покинул комнату. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:24158
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered and left the room"
-msgstr "%1$s вошёл и покинул комнату."
+msgstr "%1$s вошёл и покинул комнату"
 
 #: dist/converse-no-dependencies.js:24170
 #, javascript-format
@@ -954,9 +941,9 @@ msgid "%1$s has left the room. \"%2$s\""
 msgstr "%1$s покинул комнату. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:24172
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left the room"
-msgstr "%1$s покинул комнату."
+msgstr "%1$s покинул комнату"
 
 #: dist/converse-no-dependencies.js:24238
 msgid "You are not on the member list of this room."
@@ -987,23 +974,21 @@ msgid "This room has reached its maximum number of occupants."
 msgstr "Эта комната достигла максимального количества участников."
 
 #: dist/converse-no-dependencies.js:24380
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic set by %1$s"
-msgstr "Тема %2$s устатновлена %1$s"
+msgstr "Тему установил(а) %1$s"
 
 #: dist/converse-no-dependencies.js:24493
-#, fuzzy
 msgid "Chatrooms"
-msgstr "Показать чаты"
+msgstr "Чаты"
 
 #: dist/converse-no-dependencies.js:24494
 msgid "Add a new room"
-msgstr ""
+msgstr "Добавить новую комнату"
 
 #: dist/converse-no-dependencies.js:24495
-#, fuzzy
 msgid "Query for rooms"
-msgstr "Забанить пользователя в этом чате"
+msgstr "Запросить список комнат"
 
 #: dist/converse-no-dependencies.js:24534
 #, javascript-format

@@ -160,7 +160,6 @@
                     margin-left: 2.75rem;
                 }
             }
-
         }
     }
 
@@ -171,6 +170,18 @@
         }
         .separator {
             border: 0.5px solid $chatroom-head-color;
+        }
+    }
+}
+
+#conversejs.converse-overlayed {
+    .message {
+        &.chat-msg {
+            &.chat-msg-followup {
+                .chat-msg-content {
+                    margin-left: 0;
+                }
+            }
         }
     }
 }

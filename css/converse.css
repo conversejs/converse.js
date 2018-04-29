@@ -8402,19 +8402,23 @@ body.reset {
       whitespace: nowrap; }
   #conversejs .message.chat-msg .chat-msg-content {
     margin-left: 0.5rem;
-    word-wrap: break-word;
     width: 100%; }
   #conversejs .message.chat-msg.headline .chat-msg-content {
     margin-left: 0; }
   #conversejs .message.chat-msg .chat-msg-text {
     padding: 0;
-    color: #666;
-    word-wrap: break-word;
-    word-break: break-all; }
+    color: #666; }
+    #conversejs .message.chat-msg .chat-msg-text a {
+      word-wrap: break-word;
+      word-break: break-all; }
     #conversejs .message.chat-msg .chat-msg-text .emojione {
       margin-bottom: -6px; }
-  #conversejs .message.chat-msg .chat-msg-media audio {
-    width: 100%; }
+  #conversejs .message.chat-msg .chat-msg-media {
+    margin-top: 0.25rem; }
+    #conversejs .message.chat-msg .chat-msg-media a {
+      word-wrap: break-word; }
+    #conversejs .message.chat-msg .chat-msg-media audio {
+      width: 100%; }
   #conversejs .message.chat-msg .avatar {
     margin-top: 0.5em;
     background: #818479;

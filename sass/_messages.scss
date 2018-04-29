@@ -93,7 +93,6 @@
             }
             .chat-msg-content {
                 margin-left: 0.5rem;
-                word-wrap: break-word;
                 width: 100%;
             }
             &.headline {
@@ -105,15 +104,20 @@
             .chat-msg-text {
                 padding: 0;
                 color: $message-text-color;
-                word-wrap: break-word;
-                word-break: break-all;
-
+                a {
+                    word-wrap: break-word;
+                    word-break: break-all;
+                }
                 .emojione {
                     margin-bottom: -6px;
                 }
             }
             
             .chat-msg-media {
+                margin-top: 0.25rem;
+                a {
+                    word-wrap: break-word;
+                }
                 audio {
                     width: 100%;
                 }

@@ -446,8 +446,8 @@
                     }
                 },
 
-                clearUnreadMsgCounter() {
-                    this.save({'num_unread': 0});
+                clearUnreadMsgCounter () {
+                    u.safeSave(this, {'num_unread': 0});
                 },
 
                 isScrolledUp () {

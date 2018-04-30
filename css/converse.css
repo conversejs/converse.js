@@ -8382,7 +8382,7 @@ body.reset {
   display: flex;
   flex-direction: row;
   overflow: auto;
-  padding: 0.5rem 1rem; }
+  padding: 0.25rem 1rem; }
   #conversejs .message.chat-msg.onload {
     animation: colorchange-chatmessage 1s;
     -webkit-animation: colorchange-chatmessage 1s; }
@@ -8437,13 +8437,11 @@ body.reset {
       color: #9d9d9d; }
   #conversejs .message.chat-msg.chat-action .chat-msg-heading {
     margin-top: 0; }
-  #conversejs .message.chat-msg.chat-msg-followup {
-    padding: 0.25rem 1rem; }
-    #conversejs .message.chat-msg.chat-msg-followup .chat-msg-heading,
-    #conversejs .message.chat-msg.chat-msg-followup .avatar {
-      display: none; }
-    #conversejs .message.chat-msg.chat-msg-followup .chat-msg-content {
-      margin-left: 2.75rem; }
+  #conversejs .message.chat-msg.chat-msg-followup .chat-msg-heading,
+  #conversejs .message.chat-msg.chat-msg-followup .avatar {
+    display: none; }
+  #conversejs .message.chat-msg.chat-msg-followup .chat-msg-content {
+    margin-left: 2.75rem; }
 #conversejs .chatroom-body .message.onload {
   animation: colorchange-chatmessage-muc 1s;
   -webkit-animation: colorchange-chatmessage-muc 1s; }

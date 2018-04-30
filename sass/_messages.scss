@@ -64,7 +64,7 @@
             display: flex;
             flex-direction: row;
             overflow: auto; // Ensures that content stays inside
-            padding: 0.5rem 1rem;
+            padding: 0.25rem 1rem;
 
             &.onload {
                 animation: colorchange-chatmessage 1s;
@@ -150,8 +150,6 @@
                 }
             }
             &.chat-msg-followup {
-                padding: 0.25rem 1rem;
-
                 .chat-msg-heading,
                 .avatar {
                     display: none;

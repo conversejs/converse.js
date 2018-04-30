@@ -125,28 +125,35 @@
     };
 
     utils.openAndEnterChatRoom = function (_converse, room, server, nick) {
-        return new Promise(function (resolve, reject) {
-            sinon.spy(_converse.connection, 'sendIQ');
-            _converse.api.rooms.open(`${room}@${server}`);
-            var view = _converse.chatboxviews.get((room+'@'+server).toLowerCase());
+        let last_stanza;
 
+        return new Promise(function (resolve, reject) {
+            _converse.api.rooms.open(`${room}@${server}`);
+            const view = _converse.chatboxviews.get((room+'@'+server).toLowerCase());
             // We pretend this is a new room, so no disco info is returned.
-            var IQ_id = _converse.connection.sendIQ.firstCall.returnValue;
-            var features_stanza = $iq({
+            last_stanza = _.last(_converse.connection.IQ_stanzas).nodeTree;
+            const IQ_id = last_stanza.getAttribute('id');
+            const features_stanza = $iq({
                     'from': room+'@'+server,
                     'id': IQ_id,
-                    'to': nick+'@'+server+'/desktop',
+                    'to': nick+'@'+server,
                     'type': 'error'
                 }).c('error', {'type': 'cancel'})
                     .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
             _converse.connection._dataRecv(utils.createRequest(features_stanza));
 
-            utils.waitUntil(function () {
-                return _converse.connection.sendIQ.secondCall;
+            utils.waitUntil(() => {
+                return _.filter(
+                    _converse.connection.IQ_stanzas, (node) => node.nodeTree.querySelector('query').getAttribute('node') === 'x-roomuser-item'
+                ).length
             }).then(function () {
+                const last_stanza = _.filter(
+                    _converse.connection.IQ_stanzas, (node) => node.nodeTree.querySelector('query').getAttribute('node') === 'x-roomuser-item'
+                ).pop().nodeTree;
+
                 // The XMPP server returns the reserved nick for this user.
-                IQ_id = _converse.connection.sendIQ.secondCall.returnValue;
-                var stanza = $iq({
+                const IQ_id = last_stanza.getAttribute('id');
+                const stanza = $iq({
                     'type': 'result',
                     'id': IQ_id,
                     'from': view.model.get('jid'),
@@ -169,10 +176,9 @@
                     }).up()
                     .c('status').attrs({code:'110'});
                 _converse.connection._dataRecv(utils.createRequest(presence));
-                _converse.connection.sendIQ.restore();
                 resolve();
-            }).catch(_.partial(console.error, _));
-        }).catch(_.partial(console.error, _));
+            });
+        });
     };
 
     utils.clearBrowserStorage = function () {

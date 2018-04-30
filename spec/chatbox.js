@@ -88,6 +88,7 @@
                         test_utils.sendMessage(view, message);
                         expect(_.includes($(view.el).find('.chat-msg-author:last').text(), '**Max Mustermann')).toBeTruthy();
                         expect($(view.el).find('.chat-msg-text:last').text()).toBe(' is as well');
+                        expect($(view.el).find('.chat-msg:last').hasClass('chat-msg-followup')).toBe(false);
                         done();
                     });
                 });

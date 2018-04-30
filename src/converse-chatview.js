@@ -637,7 +637,7 @@
                 },
 
                 insertMessage (view) {
-                    /* Given a view representing a message, insert it inot the
+                    /* Given a view representing a message, insert it into the
                      * content area of the chat box.
                      *
                      * Parameters:
@@ -663,6 +663,45 @@
                             return;
                         }
                         previous_msg_el.insertAdjacentElement('afterend', view.el);
+                        this.markFollowups(view.el);
+                    }
+                },
+
+                markFollowups (el) {
+                    /* Given a message element, determine wether it should be
+                     * marked as a followup message to the previous element.
+                     *
+                     * Also determine whether the element following it is a
+                     * followup message or not.
+                     *
+                     * Followup messages are subsequent ones written by the same
+                     * author with no other conversation elements inbetween and
+                     * posted within 10 minutes of one another.
+                     *
+                     * Parameters:
+                     *  (HTMLElement) el - The message element.
+                     */
+                    const from = el.getAttribute('data-from'),
+                          previous_el = el.previousElementSibling,
+                          date = moment(el.getAttribute('data-isodate'));
+
+                    if (previous_el.getAttribute('data-from') === from &&
+                        date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes'))) {
+
+                        u.addClass('chat-msg-followup', el);
+                    }
+                    const next_el = el.nextElementSibling;
+                    if (!next_el) {
+                        return;
+                    }
+                    if (next_el.getAttribute('data-from') !== from) {
+                        u.removeClass('chat-msg-followup', next_el);
+                    } else {
+                        if (moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes'))) {
+                            u.addClass('chat-msg-followup', next_el);
+                        } else {
+                            u.removeClass('chat-msg-followup', next_el);
+                        }
                     }
                 },
 

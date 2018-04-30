@@ -37,10 +37,10 @@
                     var message = 'This is a received message';
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var msg = $msg({
-                            from: sender_jid,
-                            to: _converse.connection.jid,
-                            type: 'chat',
-                            id: (new Date()).getTime()
+                            'from': sender_jid,
+                            'to': _converse.connection.jid,
+                            'type': 'chat',
+                            'id': (new Date()).getTime()
                         }).c('body').t(message).up()
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
 
@@ -575,6 +575,7 @@
                 expect($day[0].nextElementSibling.querySelector('.chat-msg-text').textContent).toBe('Older message');
 
                 var $el = $chat_content.find('.chat-msg:first').find('.chat-msg-text')
+                expect($el.hasClass('chat-msg-followup')).toBe(false);
                 expect($el.text()).toEqual('Older message');
 
                 $time = $chat_content.find('time:eq(1)');
@@ -589,6 +590,7 @@
                 expect($el[0].nextElementSibling.querySelector('.chat-msg-text').textContent).toEqual('another inbetween message');
                 $el = $chat_content.find('.chat-msg:eq(2)');
                 expect($el.find('.chat-msg-text').text()).toEqual('another inbetween message');
+                expect($el.hasClass('chat-msg-followup')).toBe(true);
 
                 $time = $chat_content.find('time:nth(2)');
                 expect($time.text()).toEqual("Tuesday Jan 2nd 2018");
@@ -599,14 +601,17 @@
 
                 $el = $chat_content.find('.chat-msg:eq(3)');
                 expect($el.find('.chat-msg-text').text()).toEqual('An earlier message on the next day');
+                expect($el.hasClass('chat-msg-followup')).toBe(false);
 
                 $el = $chat_content.find('.chat-msg:eq(4)');
                 expect($el.find('.chat-msg-text').text()).toEqual('message');
                 expect($el[0].nextElementSibling.querySelector('.chat-msg-text').textContent).toEqual('newer message from the next day');
+                expect($el.hasClass('chat-msg-followup')).toBe(false);
 
                 $day = $chat_content.find('.date-separator:last');
                 expect($day.data('isodate')).toEqual(moment().startOf('day').format());
                 expect($day[0].nextElementSibling.querySelector('.chat-msg-text').textContent).toBe('latest message');
+                expect($el.hasClass('chat-msg-followup')).toBe(false);
                 done();
             });
         }));
@@ -701,12 +706,7 @@
                 function (done, _converse) {
 
             var contact, sent_stanza, IQ_id, stanza;
-            test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
-            .then(function () {
-                return test_utils.waitUntil(function () {
-                    return _converse.xmppstatus.get('fullname');
-                }, 300);
-            }).then(function () {
+            test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp']).then(function () {
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
 
@@ -1137,6 +1137,174 @@
             expect(msg_time.textContent).toBe(time);
             done();
         }));
+
+        it("will be correctly identified and rendered as a followup message",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
+            test_utils.createContacts(_converse, 'current');
+            test_utils.openControlBox();
+
+            test_utils.waitUntil(() => $(_converse.rosterview.el).find('.roster-group').length, 300)
+            .then(function () {
+                const base_time = new Date();
+                const ONE_MINUTE_LATER = 60000;
+
+                jasmine.clock().install();
+                jasmine.clock().mockDate(base_time);
+
+                var message, msg;
+                spyOn(_converse, 'log');
+                spyOn(_converse.chatboxes, 'getChatBox').and.callThrough();
+                _converse.filter_by_resource = true;
+                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+
+                _converse.chatboxes.onMessage($msg({
+                        'from': sender_jid,
+                        'to': _converse.connection.jid,
+                        'type': 'chat',
+                        'id': (new Date()).getTime()
+                    }).c('body').t('A message').up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+
+                jasmine.clock().tick(3*ONE_MINUTE_LATER);
+
+                _converse.chatboxes.onMessage($msg({
+                        'from': sender_jid,
+                        'to': _converse.connection.jid,
+                        'type': 'chat',
+                        'id': (new Date()).getTime()
+                    }).c('body').t("Another message 3 minutes later").up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+
+                jasmine.clock().tick(11*ONE_MINUTE_LATER);
+
+                _converse.chatboxes.onMessage($msg({
+                        'from': sender_jid,
+                        'to': _converse.connection.jid,
+                        'type': 'chat',
+                        'id': (new Date()).getTime()
+                    }).c('body').t("Another message 14 minutes since we started").up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+
+                jasmine.clock().tick(1000);
+
+                // Insert <composing> message, to also check that
+                // text messages are inserted correctly with
+                // temporary chat events in the chat contents.
+                _converse.chatboxes.onMessage($msg({
+                        'id': 'aeb219',
+                        'to': _converse.bare_jid,
+                        'xmlns': 'jabber:client',
+                        'from': sender_jid,
+                        'type': 'chat'})
+                    .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
+                    .tree());
+
+                jasmine.clock().tick(1*ONE_MINUTE_LATER);
+
+                _converse.chatboxes.onMessage($msg({
+                        'from': sender_jid,
+                        'to': _converse.connection.jid,
+                        'type': 'chat',
+                        'id': (new Date()).getTime()
+                    }).c('body').t("Another message 1 minute and 1 second since the previous one").up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+
+                jasmine.clock().tick(1*ONE_MINUTE_LATER);
+
+                var view = _converse.chatboxviews.get(sender_jid);
+                test_utils.sendMessage(view, "Another message within 10 minutes, but from a different person");
+
+                var chat_content = view.el.querySelector('.chat-content');
+                expect(chat_content.querySelectorAll('.message').length).toBe(6);
+                expect(chat_content.querySelectorAll('.chat-msg').length).toBe(5);
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(2)'))).toBe(false);
+                expect(chat_content.querySelector('.message:nth-child(2) .chat-msg-text').textContent).toBe("A message");
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(3)'))).toBe(true);
+                expect(chat_content.querySelector('.message:nth-child(3) .chat-msg-text').textContent).toBe(
+                    "Another message 3 minutes later");
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(4)'))).toBe(false);
+                expect(chat_content.querySelector('.message:nth-child(4) .chat-msg-text').textContent).toBe(
+                    "Another message 14 minutes since we started");
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(5)'))).toBe(true);
+                expect(chat_content.querySelector('.message:nth-child(5) .chat-msg-text').textContent).toBe(
+                    "Another message 1 minute and 1 second since the previous one");
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(6)'))).toBe(false);
+                expect(chat_content.querySelector('.message:nth-child(6) .chat-msg-text').textContent).toBe(
+                    "Another message within 10 minutes, but from a different person");
+
+                // Let's add a delayed, inbetween message
+                _converse.chatboxes.onMessage($msg({'id': 'aeb218', 'to': _converse.bare_jid})
+                    .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                        .c('delay', {'xmlns': 'urn:xmpp:delay',
+                                     'stamp': moment(base_time).add(5, 'minutes').format()
+                                    }).up()
+                        .c('message', {
+                            'xmlns': 'jabber:client',
+                            'to': _converse.bare_jid,
+                            'from': sender_jid,
+                            'type': 'chat'})
+                        .c('body').t("A delayed message, sent 5 minutes since we started")
+                        .tree());
+
+                expect(chat_content.querySelectorAll('.message').length).toBe(7);
+                expect(chat_content.querySelectorAll('.chat-msg').length).toBe(6);
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(2)'))).toBe(false);
+                expect(chat_content.querySelector('.message:nth-child(2) .chat-msg-text').textContent).toBe("A message");
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(3)'))).toBe(true);
+                expect(chat_content.querySelector('.message:nth-child(3) .chat-msg-text').textContent).toBe(
+                    "Another message 3 minutes later");
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(4)'))).toBe(true);
+                expect(chat_content.querySelector('.message:nth-child(4) .chat-msg-text').textContent).toBe(
+                    "A delayed message, sent 5 minutes since we started");
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(5)'))).toBe(true);
+                expect(chat_content.querySelector('.message:nth-child(5) .chat-msg-text').textContent).toBe(
+                    "Another message 14 minutes since we started");
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(6)'))).toBe(true);
+                expect(chat_content.querySelector('.message:nth-child(6) .chat-msg-text').textContent).toBe(
+                    "Another message 1 minute and 1 second since the previous one");
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(7)'))).toBe(false);
+
+                _converse.chatboxes.onMessage($msg({'id': 'aeb213', 'to': _converse.bare_jid})
+                    .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                        .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':moment(base_time).add(4, 'minutes').format()}).up()
+                        .c('message', {
+                            'xmlns': 'jabber:client',
+                            'to': sender_jid,
+                            'from': _converse.bare_jid+"/some-other-resource",
+                            'type': 'chat'})
+                        .c('body').t("A carbon message 4 minutes later")
+                        .tree());
+                expect(chat_content.querySelectorAll('.message').length).toBe(8);
+                expect(chat_content.querySelectorAll('.chat-msg').length).toBe(7);
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(2)'))).toBe(false);
+                expect(chat_content.querySelector('.message:nth-child(2) .chat-msg-text').textContent).toBe("A message");
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(3)'))).toBe(true);
+                expect(chat_content.querySelector('.message:nth-child(3) .chat-msg-text').textContent).toBe(
+                    "Another message 3 minutes later");
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(4)'))).toBe(false);
+                expect(chat_content.querySelector('.message:nth-child(4) .chat-msg-text').textContent).toBe(
+                    "A carbon message 4 minutes later");
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(5)'))).toBe(false);
+                expect(chat_content.querySelector('.message:nth-child(5) .chat-msg-text').textContent).toBe(
+                    "A delayed message, sent 5 minutes since we started");
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(6)'))).toBe(true);
+                expect(chat_content.querySelector('.message:nth-child(6) .chat-msg-text').textContent).toBe(
+                    "Another message 14 minutes since we started");
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(7)'))).toBe(true);
+                expect(chat_content.querySelector('.message:nth-child(7) .chat-msg-text').textContent).toBe(
+                    "Another message 1 minute and 1 second since the previous one");
+                expect(u.hasClass('chat-msg-followup', chat_content.querySelector('.message:nth-child(8)'))).toBe(false);
+                expect(chat_content.querySelector('.message:nth-child(8) .chat-msg-text').textContent).toBe(
+                    "Another message within 10 minutes, but from a different person");
+
+                jasmine.clock().uninstall();
+                done();
+            });
+        }));
+
 
         describe("which contains a OOB URL", function () {
 

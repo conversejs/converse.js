@@ -113,11 +113,12 @@ Recently we have started accepting donations via [Patreon](https://www.patreon.c
 
 The following people are making recurring donations:
 
+* An anonymous backer on Liberapay
+* [Guus der Kinderen](https://www.patreon.com/user/creators?u=8302585)
 * [Rafael](https://www.patreon.com/user/creators?u=4340078)
+* [Tilman Beitter](https://www.patreon.com/spicewiesel/creators)
 * [mt7479](https://www.patreon.com/user/creators?u=3892290)
 * [roelra](https://www.patreon.com/user/creators?u=5958918)
-* [Guus der Kinderen](https://www.patreon.com/user/creators?u=8302585)
-* An anonymous backer on Liberapay
 
 Additionally this project is supported by
 

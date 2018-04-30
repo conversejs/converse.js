@@ -8,31 +8,31 @@
     }
 
     bottom: auto;
-    right: auto;
+    height: 100%; // When embedded, it fills the containing element
     position: relative;
+    right: auto;
     width: 100%;
 
-    form {
-        &.converse-centered-form {
-            position: absolute;
-            top: 30%;
-            transform: translateY(-50%);
-        }
+    .converse-chatboxes {
+        z-index: 1031; // One more than bootstrap navbar
+        position: inherit;
+        bottom: auto;
+        height: 100%;
+        width: 100%;
     }
+
+    .flyout {
+        bottom: 0;
+	}
 
     .chatroom {
-        width: auto;
-    }
-    .flyout {
-        bottom: auto;
-        display: block;
-        position: relative;
+        margin: 0;
+        width: 100%;
     }
     .chatbox {
-        float: none;
-
         .box-flyout {
             box-shadow: none;
+            height: 100%;
         }
         .chat-title {
             padding: 0.3em;
@@ -46,10 +46,6 @@
         .box-flyout {
             min-width: auto;
             width: 100%;
-            height: 55vh;
-            .chat-body {
-                @include calc(height, '100% - #{$chat-head-height}');
-            }
             .occupants-heading {
                 font-size: 120%;
             }
@@ -66,14 +62,10 @@
                 }
             }
             .chatroom-body {
+                height: 100%;
                 .chatroom-form-container {
-                    font-size: 180%;
-                    float: left;
                     height: 100%;
                     position: relative;
-                    input {
-                        font-size: 60%;
-                    }
                 }
             }
             .occupants {

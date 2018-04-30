@@ -1,26 +1,47 @@
 # Changelog
 
+## Http-File-Upload
+
+## New Features
+
+- Support for rendering URLs sent according to XEP-0066 Out of Band Data.
+- MP4 and MP3 files when sent as XEP-0066 Out of Band Data, are now playable directly in chat
+- Automatically grow/shrink input as text is entered/removed
+- #161 XEP-0363: HTTP File Upload
+
 ## 4.0.0 (Unreleased)
 
 ## UI changes
 
-The UI is now based on Bootstrap4 and Flexbox is used extensively.
+- The UI is now based on Bootstrap4 and Flexbox is used extensively.
+- #956 Conversation pane should show my own identity in pane header 
+
+## New Features
+
+- geo-URIs (e.g. from Conversations) are now replaced by links to openstreetmap (works in reverse also)
 
 ## Configuration changes 
 
-* Removed the `xhr_custom_status` and `xhr_custom_status_url` configuration
+- Removed the `xhr_custom_status` and `xhr_custom_status_url` configuration
   settings. If you relied on these settings, you can instead listen for the
   [statusMessageChanged](https://conversejs.org/docs/html/events.html#contactstatusmessagechanged)
   event and make the XMLHttpRequest yourself.
-* Removed  `xhr_user_search` in favor of only accepting `xhr_user_search_url` as configuration option.
-* The data returned from the `xhr_user_search_url` must now include the user's
+- Removed  `xhr_user_search` in favor of only accepting `xhr_user_search_url` as configuration option.
+- The data returned from the `xhr_user_search_url` must now include the user's
   `jid` instead of just an `id`.
 - New configuration setting [nickname](https://conversejs.org/docs/html/configurations.html#nickname)
+
+## Architectural changes
+
+- Extracted the views from `converse-muc.js` into `converse-muc-views.js` and
+  where appropriate moved methods from the views into the models/collections.
+  This makes MUC possible in headless mode.
 
 ### Bugfixes
 
 - Spoiler messages didn't include the message author's name.
-
+- Documentation includes utf-8 charset to make minfied versions compatible across platforms. #1017
+- #1026 Typing in MUC shows "Typing from another device"
 
 ## 3.3.4 (2018-03-05)
 

@@ -50,7 +50,6 @@
             .chat-message {
                 line-height: $line-height;
                 font-size: $font-size-small;
-                padding: 0.4em 0;
                 .chat-msg-author {
                     line-height: $line-height;
                 }
@@ -64,7 +63,6 @@
             }
         }
         .chat-content {
-            padding: 0 $padding $padding $padding;
             border-top-left-radius: $chatbox-border-radius;
             border-top-right-radius: $chatbox-border-radius;
         }
@@ -78,7 +76,6 @@
                 width: 100%;
             }
             .toggle-smiley {
-                padding-left: 0.5em;
                 ul {
                     &.emoji-toolbar {
                         .emoji-category-picker {
@@ -96,7 +93,7 @@
 }
 
 @media screen and (max-width: 767px) {
-    #conversejs.fullscreen  {
+    #conversejs:not(.converse-embedded).fullscreen {
         .chatbox {
             width: calc(100% - 50px);
         }

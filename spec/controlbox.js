@@ -241,6 +241,7 @@
                     xhr.onload();
                 }
             };
+            const XMLHttpRequestBackup = window.XMLHttpRequest;
             window.XMLHttpRequest = jasmine.createSpy('XMLHttpRequest');
             XMLHttpRequest.and.callFake(function () {
                 return xhr;
@@ -288,6 +289,7 @@
                 "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                     "<query xmlns='jabber:iq:roster'><item jid='marty@mcfly.net' name='Marty McFly'/></query>"+
                 "</iq>");
+                window.XMLHttpRequest = XMLHttpRequestBackup;
                 done();
             });
         }));

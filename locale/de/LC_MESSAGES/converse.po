@@ -145,6 +145,10 @@ msgstr "tippt nicht mehr"
 msgid "has gone away"
 msgstr "ist jetzt abwesend"
 
+#: src/converse-chatview.js:860
+msgid "Choose a file to send"
+msgstr "Datei versenden"
+
 #: dist/converse-no-dependencies.js:14851
 #: dist/converse-no-dependencies.js:23427
 msgid "Remove messages"

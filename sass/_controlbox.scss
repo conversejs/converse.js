@@ -214,7 +214,6 @@
         .controlbox-pane {
             .userinfo {
                 padding-bottom: 1em;
-                border-bottom: 1px solid $gray-color;
 
                 .username {
                     margin-left: 0.5em;
@@ -227,9 +226,23 @@
             }
         }
 
+        .list-container {
+            .items-list {
+                .list-item {
+                    border: none;
+                    clear: both;
+                    color: $text-color;
+                    display: block;
+                    height: 2em;
+                    overflow: hidden;
+                    text-shadow: 0 1px 0 $text-shadow-color;
+                    word-wrap: break-word;
+                }
+            }
+        }
+
         #chatrooms {
             padding: 0;
-            border-bottom: 1px solid $gray-color;
 
             form.add-chatroom {
                 input[type=button],
@@ -245,7 +258,7 @@
                 .rooms-toggle {
                     display: block;
                     color: $text-color;
-                    margin: 0.5em 0 0.5em 0;
+                    padding: 0 0 0.5rem 0;
                     &:hover {
                         color: $dark-gray-color;
                     }
@@ -257,14 +270,6 @@
 
                     .available-chatroom,
                     .open-chatroom {
-                        border: none;
-                        clear: both;
-                        color: $text-color;
-                        display: block;
-                        overflow: hidden;
-                        padding: 0.2em 0;
-                        text-shadow: 0 1px 0 $text-shadow-color;
-                        word-wrap: break-word;
                         a:hover {
                             color: $dark-link-color;
                         }
@@ -311,9 +316,13 @@
             }
         }
 
-        #chatrooms, #converse-roster {
-            margin-top: 0.75em;
-            padding-bottom: 0.75em;
+        .controlbox-section {
+            margin: 1em 0 0 0;
+
+            .controlbox-heading {
+                margin: 0 0 0.5em 0;
+                text-transform: uppercase;
+            }
         }
 
         .dropdown {
@@ -430,7 +439,7 @@
 
 @include media-breakpoint-down(sm) {
 
-    #conversejs {
+    #conversejs:not(.converse-embedded)  {
         left: 0;
         right: 0;
         padding-left: env(safe-area-inset-left);
@@ -447,6 +456,9 @@
 
             .chatbox { 
                 .box-flyout {
+                    top: -100vh;
+                    margin-left: 15px; // Counteracts Bootstrap margins, but
+                                       // not clear why needed...
                     left: 0;
                     bottom: 0;
                     border-radius: 0;

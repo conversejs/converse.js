@@ -651,6 +651,21 @@ logged in user, otherwise the user's vCard will be fetched.
 
 .. _`hide_muc_server`:
 
+geouri_regex
+----------------
+
+* Default:  ``/https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g``
+
+Regular expression used to extract geo coordinates from links to openstreetmap.
+
+geouri_replacement
+----------------
+
+* Default:  ``'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2'``
+
+String used to replace geo-URIs with. Ought to be a link to osm or similar. ``$1`` and ``$2`` is replaced by
+latitude and longitude respectively.
+
 hide_muc_server
 ---------------
 
@@ -1198,17 +1213,6 @@ render emojis. If set to ``false``, then rendering support will fall back to
 the operating system or browser (which might not support emoji).
 
 See also `emojione_image_path`_.
-
-
-show_message_load_animation
----------------------------
-* Default: ``false``
-
-Determines whether a CSS3 background-color fade-out animation is shown when messages
-appear in chats.
-
-Set to ``false`` by default since this option causes performance issues on Firefox.
-
 
 show_only_online_users
 ----------------------

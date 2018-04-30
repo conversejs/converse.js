@@ -1,0 +1,100 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Overlayed chats</title>
+    <link type="text/css" rel="stylesheet" media="screen" href="../../node_modules/font-awesome/css/font-awesome.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="../../css/converse.css" />
+</head>
+
+<body style="background-color: #578EA9">
+     <div class="converse-bg container">
+          <h1 class="brand-heading"><i class="icon-conversejs"></i>Converse.js</h1>
+     </div>
+
+    <div id="conversejs" class="converse-overlayed">
+        <div class="converse-chatboxes row no-gutters">
+            <div id="controlbox" class="chatbox">
+                <div class="flyout box-flyout">
+                    <div class="controlbox-panes">
+                        <div class="sidebar"></div>
+                        <div class="controlbox-pane"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chatbox" id="chatbox-37c0c87392010303765fe36b05c0967d62c6b70f"></div>
+            <div class="chatbox chatroom" id="chatbox-4a77380f1cd9d392627b0e1469688f9ca44e9392"></div>
+
+            <div id="minimized-chats">
+                <a id="toggle-minimized-chats" href="#" class="row no-gutters">
+                    <span class="badge badge-light">322</span> Minimized
+                </a>
+                <div class="flyout minimized-chats-flyout row no-gutters">
+                    <div class="chat-head chat-head-chatroom row no-gutters">
+                        <a href="#" class="restore-chat w-100 align-self-center" title="Click to maximize this chat">
+                            <span class="badge badge-light">42</span>
+                            Restricted Chatroom
+                        </a>
+                        <a class="chatbox-btn close-chatbox-button fa fa-times"></a>
+                    </div>
+                    <div class="chat-head chat-head-chatbox row no-gutters">
+                        <a href="#" class="restore-chat w-100 align-self-center" title="Click to maximize this chat">
+                            <span class="badge badge-light">4</span>
+                            JC Brand
+                        </a>
+                        <a class="chatbox-btn close-chatbox-button fa fa-times"></a>
+                    </div>
+                    <div class="chat-head chat-head-chatroom row no-gutters">
+                        <a href="#" class="restore-chat w-100 align-self-center" title="Click to maximize this chat">My Chatroom</a>
+                        <a class="chatbox-btn close-chatbox-button fa fa-times"></a>
+                    </div>
+                    <div class="chat-head chat-head-chatbox row no-gutters">
+                        <a href="#" class="restore-chat w-100 align-self-center" title="Click to maximize this chat">Annegreet Gomez</a>
+                        <a class="chatbox-btn close-chatbox-button fa fa-times"></a>
+                    </div>
+                    <div class="chat-head chat-head-chatbox row no-gutters">
+                        <a href="#" class="restore-chat w-100 align-self-center" title="Click to maximize this chat">
+                            <span class="badge badge-light">842</span>
+                            Asmaa Haakman
+                        </a>
+                        <a class="chatbox-btn close-chatbox-button fa fa-times"></a>
+                    </div>
+                    <div class="chat-head chat-head-chatbox row no-gutters">
+                        <a href="#" class="restore-chat w-100 align-self-center">Lena Grunewald</a>
+                        <a class="chatbox-btn close-chatbox-button fa fa-times"></a>
+                    </div>
+                </div>
+            </div>
+            <div id="converse-modals" class="modals"></div>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript" src="../../node_modules/lodash/lodash.js"></script>
+<script type="text/javascript" src="../../node_modules/backbone/backbone.js"></script>
+<script type="text/javascript" src="../../node_modules/backbone.nativeview/backbone.nativeview.js"></script>
+
+<script type="text/javascript" src="../../node_modules/strophe.js/strophe.js"></script>
+<script type="text/javascript" src="../../src/utils/core.js"></script>
+<script type="text/javascript" src="utils.js"></script>
+<script type="text/javascript" src="sidebar.js"></script>
+<script type="text/javascript" src="user-panel.js"></script>
+<script type="text/javascript" src="modals.js"></script>
+<script type="text/javascript" src="chatroom.js"></script>
+<script type="text/javascript" src="chatbox.js"></script>
+
+<script type="text/javascript" src="../../node_modules/bootstrap.native/dist/bootstrap-native-v4.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) { 
+        new Modals();
+        new Sidebar();
+        new UserPanel();    
+        new ChatRoom();
+        new ChatBox();
+    });
+</script>
+
+</html>

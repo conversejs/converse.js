@@ -1,9 +1,9 @@
-// Converse.js (A browser based XMPP chat client)
+// Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
+
 (function (root, factory) {
     define(["converse-core", "converse-muc"], factory);
 }(this, function (converse) {
@@ -14,21 +14,6 @@
 
         enabled (_converse) {
             return _converse.view_mode === 'embedded';
-        },
-
-        overrides: {
-            // Overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
-            // relevant objects or classes.
-            //
-            // New functions which don't exist yet can also be added.
-
-            ChatBoxViews: {
-                initialize () {
-                    this.__super__.initialize.apply(this, arguments);
-                    this.el.classList.add('converse-embedded');
-                }
-            }
         },
 
         initialize () {

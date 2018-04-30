@@ -1,21 +1,23 @@
-// Converse.js (A browser based XMPP chat client)
+// Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
-/*global define */
 
 (function (root, factory) {
     define([
         "converse-core",
+        "emojione",
+        "filesize",
         "tpl!chatboxes",
-        "backbone.overview"
+        "backbone.overview",
+        "form-utils"
     ], factory);
-}(this, function (converse, tpl_chatboxes) {
+}(this, function (converse, emojione, filesize, tpl_chatboxes) {
     "use strict";
 
-    const { Backbone, Promise, Strophe, b64_sha1, moment, utils, _ } = converse.env;
+    const { $msg, Backbone, Promise, Strophe, b64_sha1, moment, sizzle, utils, _ } = converse.env;
+    const u = converse.env.utils;
 
 
     converse.plugins.add('converse-chatboxes', {
@@ -50,7 +52,8 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            const { _converse } = this;
+            const { _converse } = this,
+                { __ } = _converse;
 
             _converse.api.promises.add([
                 'chatBoxesFetched',
@@ -59,7 +62,7 @@
 
             function openChat (jid) {
                 if (!utils.isValidJID(jid)) {
-                    return converse.log(
+                    return _converse.log(
                         `Invalid JID "${jid}" provided in URL fragment`,
                         Strophe.LogLevel.WARN
                     );
@@ -75,10 +78,105 @@
 
 
             _converse.Message = Backbone.Model.extend({
-                defaults(){
+
+                defaults () {
                     return {
-                        msgid: _converse.connection.getUniqueId()
+                        'msgid': _converse.connection.getUniqueId(),
+                        'time': moment().format()
                     };
+                },
+
+                initialize () {
+                    if (this.get('file')) {
+                        this.on('change:put', this.uploadFile, this);
+
+                        if (!_.includes([_converse.SUCCESS, _converse.FAILURE], this.get('upload'))) {
+                            this.getRequestSlotURL();
+                        }
+                    }
+                },
+
+                sendSlotRequestStanza () {
+                    /* Send out an IQ stanza to request a file upload slot.
+                     *
+                     * https://xmpp.org/extensions/xep-0363.html#request
+                     */
+                    const file = this.get('file');
+                    return new Promise((resolve, reject) => {
+                        const iq = converse.env.$iq({
+                            'from': _converse.jid,
+                            'to': this.get('slot_request_url'),
+                            'type': 'get'
+                        }).c('request', {
+                            'xmlns': Strophe.NS.HTTPUPLOAD,
+                            'filename': file.name,
+                            'size': file.size,
+                            'content-type': file.type
+                        })
+                        _converse.connection.sendIQ(iq, resolve, reject);
+                    });
+                },
+
+                getRequestSlotURL () {
+                    this.sendSlotRequestStanza().then((stanza) => {
+                        const slot = stanza.querySelector('slot');
+                        if (slot) {
+                            this.save({
+                                'get':  slot.querySelector('get').getAttribute('url'),
+                                'put': slot.querySelector('put').getAttribute('url'),
+                            });
+                        } else {
+                            return this.save({
+                                'type': 'error',
+                                'message': __("Sorry, could not determine file upload URL.")
+                            });
+                        }
+                    }).catch((e) => {
+                        _converse.log(e, Strophe.LogLevel.ERROR);
+                        return this.save({
+                            'type': 'error',
+                            'message': __("Sorry, could not determine upload URL.")
+                        });
+                    });
+                },
+
+                uploadFile () {
+                    const xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = () => {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            _converse.log("Status: " + xhr.status, Strophe.LogLevel.INFO);
+                            if (xhr.status === 200 || xhr.status === 201) {
+                                this.save({
+                                    'upload': _converse.SUCCESS,
+                                    'oob_url': this.get('get'),
+                                    'message': this.get('get')
+                                });
+                            } else {
+                                xhr.onerror();
+                            }
+                        }
+                    };
+
+                    xhr.upload.addEventListener("progress", (evt) => {
+                        if (evt.lengthComputable) {
+                            this.set('progress', evt.loaded / evt.total);
+                        }
+                    }, false);
+
+                    xhr.onerror = () => {
+                        let  message = __('Sorry, could not succesfully upload your file.');
+                        if (xhr.responseText) {
+                            message += ' ' + __('Your server\'s response: "%1$s"', xhr.responseText)
+                        }
+                        this.save({
+                            'type': 'error',
+                            'upload': _converse.FAILURE,
+                            'message': message
+                        });
+                    };
+                    xhr.open('PUT', this.get('put'), true);
+                    xhr.setRequestHeader("Content-type", 'application/octet-stream');
+                    xhr.send(this.get('file'));
                 }
             });
 
@@ -89,15 +187,15 @@
             });
 
 
-            _converse.ChatBox = Backbone.Model.extend({
+            _converse.ChatBox = _converse.ModelWithDefaultAvatar.extend({
                 defaults: {
                     'bookmarked': false,
                     'chat_state': undefined,
                     'image': _converse.DEFAULT_IMAGE,
                     'image_type': _converse.DEFAULT_IMAGE_TYPE,
                     'num_unread': 0,
-                    'show_avatar': true,
                     'type': 'chatbox',
+                    'message_type': 'chat',
                     'url': ''
                 },
 
@@ -105,6 +203,15 @@
                     this.messages = new _converse.Messages();
                     this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
                         b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
+                    this.messages.chatbox = this;
+
+                    this.messages.on('change:upload', (message) => {
+                        if (message.get('upload') === _converse.SUCCESS) {
+                            this.sendMessageStanza(message);
+                        }
+                    });
+
+                    this.on('change:chat_state', this.sendChatState, this);
 
                     this.save({
                         // The chat_state will be set to ACTIVE once the chat box is opened
@@ -115,6 +222,127 @@
                     });
                 },
 
+                createMessageStanza (message) {
+                    /* Given a _converse.Message Backbone.Model, return the XML
+                     * stanza that represents it.
+                     *
+                     *  Parameters:
+                     *    (Object) message - The Backbone.Model representing the message
+                     */
+                    const stanza = $msg({
+                            'from': _converse.connection.jid,
+                            'to': this.get('jid'),
+                            'type': this.get('message_type'),
+                            'id': message.get('msgid')
+                        }).c('body').t(message.get('message')).up()
+                          .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+
+                    if (message.get('is_spoiler')) {
+                        if (message.get('spoiler_hint')) {
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }, message.get('spoiler_hint')).up();
+                        } else {
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }).up();
+                        }
+                    }
+                    if (message.get('file')) {
+                        stanza.c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('message')).up();
+                    }
+                    return stanza;
+                },
+
+                sendMessageStanza (message) {
+                    const messageStanza = this.createMessageStanza(message);
+                    _converse.connection.send(messageStanza);
+                    if (_converse.forward_messages) {
+                        // Forward the message, so that other connected resources are also aware of it.
+                        _converse.connection.send(
+                            $msg({
+                                'to': _converse.bare_jid,
+                                'type': this.get('message_type'),
+                                'id': message.get('msgid')
+                            }).c('forwarded', {'xmlns': Strophe.NS.FORWARD})
+                                .c('delay', {
+                                        'xmns': Strophe.NS.DELAY,
+                                        'stamp': moment().format()
+                                }).up()
+                              .cnode(messageStanza.tree())
+                        );
+                    }
+                },
+
+                getOutgoingMessageAttributes (text, spoiler_hint) {
+                    const fullname = _converse.xmppstatus.get('fullname'),
+                        is_spoiler = this.get('composing_spoiler');
+
+                    return {
+                        'fullname': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
+                        'sender': 'me',
+                        'time': moment().format(),
+                        'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
+                        'is_spoiler': is_spoiler,
+                        'spoiler_hint': is_spoiler ? spoiler_hint : undefined
+                    };
+                },
+
+                sendMessage (attrs) {
+                    /* Responsible for sending off a text message.
+                     *
+                     *  Parameters:
+                     *    (Message) message - The chat message
+                     */
+                    this.sendMessageStanza(this.messages.create(attrs));
+                },
+
+                sendChatState () {
+                    /* Sends a message with the status of the user in this chat session
+                     * as taken from the 'chat_state' attribute of the chat box.
+                     * See XEP-0085 Chat State Notifications.
+                     */
+                    _converse.connection.send(
+                        $msg({'to':this.get('jid'), 'type': 'chat'})
+                            .c(this.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES}).up()
+                            .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                            .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
+                    );
+                },
+
+
+                sendFiles (files) {
+                    _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then((result) => {
+                        const item = result.pop(),
+                              data = item.dataforms.where({'FORM_TYPE': {'value': Strophe.NS.HTTPUPLOAD, 'type': "hidden"}}).pop(),
+                              max_file_size = window.parseInt(_.get(data, 'attributes.max-file-size.value')),
+                              slot_request_url = _.get(item, 'id');
+
+                        if (!slot_request_url) {
+                            this.messages.create({
+                                'message': __("Sorry, looks like file upload is not supported by your server."),
+                                'type': 'error',
+                            });
+                            return;
+                        }
+                        _.each(files, (file) => {
+                            if (!window.isNaN(max_file_size) && window.parseInt(file.size) > max_file_size) {
+                                return this.messages.create({
+                                    'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',
+                                        file.name, filesize(max_file_size)),
+                                    'type': 'error',
+                                });
+                            } else {
+                                this.messages.create(
+                                    _.extend(
+                                        this.getOutgoingMessageAttributes(), {
+                                        'file': file,
+                                        'progress': 0,
+                                        'slot_request_url': slot_request_url,
+                                        'type': this.get('message_type'),
+                                    })
+                                );
+                            }
+                        });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                },
+
                 getMessageBody (message) {
                     const type = message.getAttribute('type');
                     return (type === 'error') ?
@@ -122,7 +350,7 @@
                             _.propertyOf(message.querySelector('body'))('textContent');
                 },
 
-                getMessageAttributes (message, delay, original_stanza) {
+                getMessageAttributesFromStanza (message, delay, original_stanza) {
                     /* Parses a passed in message stanza and returns an object
                      * of attributes.
                      *
@@ -159,14 +387,16 @@
                     let sender, fullname;
                     if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === _converse.bare_jid)) {
                         sender = 'me';
-                        fullname = _converse.xmppstatus.get('fullname') || from;
+                        fullname = _converse.xmppstatus.get('fullname');
                     } else {
                         sender = 'them';
-                        fullname = this.get('fullname') || from;
+                        fullname = this.get('fullname');
                     }
+
                     const spoiler = message.querySelector(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`);
                     const attrs = {
                         'type': type,
+                        'from': from,
                         'chat_state': chat_state,
                         'delayed': delayed,
                         'fullname': fullname,
@@ -176,6 +406,10 @@
                         'time': time,
                         'is_spoiler': !_.isNull(spoiler)
                     };
+                    _.each(sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, message), (xform) => {
+                        attrs['oob_url'] = xform.querySelector('url').textContent;
+                        attrs['oob_desc'] = xform.querySelector('url').textContent;
+                    });
                     if (spoiler) {
                         attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
                     }
@@ -186,7 +420,7 @@
                     /* Create a Backbone.Message object inside this chat box
                      * based on the identified message stanza.
                      */
-                    return this.messages.create(this.getMessageAttributes.apply(this, arguments));
+                    return this.messages.create(this.getMessageAttributesFromStanza.apply(this, arguments));
                 },
 
                 newMessageWillBeHidden () {
@@ -212,8 +446,8 @@
                     }
                 },
 
-                clearUnreadMsgCounter() {
-                    this.save({'num_unread': 0});
+                clearUnreadMsgCounter () {
+                    u.safeSave(this, {'num_unread': 0});
                 },
 
                 isScrolledUp () {
@@ -419,6 +653,7 @@
                 initialize () {
                     this.model.on("add", this.onChatBoxAdded, this);
                     this.model.on("destroy", this.removeChat, this);
+                    this.el.classList.add(`converse-${_converse.view_mode}`);
                     this.render();
                 },
 
@@ -469,7 +704,13 @@
                 return _converse.chatboxviews.get(chatbox.get('id'));
             };
 
+
             /************************ BEGIN Event Handlers ************************/
+            _converse.on('addClientFeatures', () => {
+                _converse.connection.disco.addFeature(Strophe.NS.HTTPUPLOAD);
+                _converse.connection.disco.addFeature(Strophe.NS.OUTOFBAND);
+            });
+
             _converse.api.listen.on('pluginsInitialized', () => {
                 _converse.chatboxes = new _converse.ChatBoxes();
                 _converse.chatboxviews = new _converse.ChatBoxViews({

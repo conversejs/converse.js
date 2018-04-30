@@ -23,7 +23,6 @@
 
         .chat-body {
             .chat-message {
-                padding: 0.3em;
                 line-height: $line-height-large;
                 .chat-msg-author {
                     line-height: $line-height-large;
@@ -60,7 +59,7 @@
 }
 
 @include media-breakpoint-down(sm) {
-	#conversejs:not(.fullscreen) {
+	#conversejs:not(.converse-fullscreen):not(.converse-embedded) {
 		> .row {
 			flex-direction: column;
 

@@ -10,11 +10,11 @@
  * encryption of one-on-one chat messages.
  */
 (function (root, factory) {
-
-    define([ "converse-chatview",
-            "bootstrap",
-            "tpl!toolbar_otr",
-            'otr'
+    define([
+        "converse-chatview",
+        "bootstrap",
+        "tpl!toolbar_otr",
+        'otr'
     ], factory);
 }(this, function (converse, bootstrap, tpl_toolbar_otr, otr) {
     "use strict";
@@ -70,6 +70,18 @@
                     if (this.get('box_id') !== 'controlbox') {
                         this.save({'otr_status': this.get('otr_status') || UNENCRYPTED});
                     }
+                },
+
+                createMessageStanza () {
+                    const stanza = this.__super__.createMessageStanza.apply(this, arguments);
+                    if (this.get('otr_status') !== UNENCRYPTED || utils.isOTRMessage(stanza.nodeTree)) {
+                        // OTR messages aren't carbon copied
+                        stanza.c('private', {'xmlns': Strophe.NS.CARBONS}).up()
+                              .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                              .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS}).up()
+                              .c('no-copy', {'xmlns': Strophe.NS.HINTS});
+                    }
+                    return stanza;
                 },
 
                 shouldPlayNotification ($message) {
@@ -225,7 +237,7 @@
                             this.trigger('showReceivedOTRMessage', msg);
                         });
                         this.otr.on('io', (msg) => {
-                            this.trigger('sendMessage', new _converse.Message({ message: msg }));
+                            this.sendMessage(new _converse.Message({'message':msg}));
                         });
                         this.otr.on('error', (msg) => {
                             this.trigger('showOTRError', msg);
@@ -270,18 +282,6 @@
                     if ((_.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || _converse.use_otr_by_default) {
                         this.model.initiateOTR();
                     }
-                },
-
-                createMessageStanza () {
-                    const stanza = this.__super__.createMessageStanza.apply(this, arguments);
-                    if (this.model.get('otr_status') !== UNENCRYPTED || utils.isOTRMessage(stanza.nodeTree)) {
-                        // OTR messages aren't carbon copied
-                        stanza.c('private', {'xmlns': Strophe.NS.CARBONS}).up()
-                              .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
-                              .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS}).up()
-                              .c('no-copy', {'xmlns': Strophe.NS.HINTS});
-                    }
-                    return stanza;
                 },
 
                 parseMessageForCommands (text) {

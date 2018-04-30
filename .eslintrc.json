@@ -30,7 +30,7 @@
         "accessor-pairs": "error",
         "array-bracket-spacing": "off",
         "array-callback-return": "error",
-        "arrow-body-style": "error",
+        "arrow-body-style": "off",
         "arrow-parens": "error",
         "arrow-spacing": "error",
         "block-scoped-var": "off",
@@ -57,7 +57,7 @@
             "property"
         ],
         "dot-notation": [
-            "error",
+            "off",
             {
                 "allowKeywords": true
             }
@@ -91,7 +91,7 @@
         "max-depth": "error",
         "max-len": "off",
         "max-lines": "off",
-        "max-nested-callbacks": "error",
+        "max-nested-callbacks": "off",
         "max-params": "off",
         "max-statements": "off",
         "max-statements-per-line": "off",

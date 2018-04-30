@@ -1,3 +1,9 @@
+// Converse.js
+// http://conversejs.org
+//
+// Copyright (c) 2018, the Converse.js developers
+// Licensed under the Mozilla Public License (MPLv2)
+
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define([

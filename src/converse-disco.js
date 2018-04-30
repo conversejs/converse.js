@@ -12,7 +12,7 @@
     define(["converse-core", "sizzle", "strophe.disco"], factory);
 }(this, function (converse, sizzle) {
 
-    const { Backbone, Promise, Strophe, b64_sha1, utils, _ } = converse.env;
+    const { Backbone, Promise, Strophe, b64_sha1, utils, _, f } = converse.env;
 
     converse.plugins.add('converse-disco', {
 
@@ -22,23 +22,9 @@
              */
             const { _converse } = this;
 
-            function onDiscoItems (stanza) {
-                _.each(stanza.querySelectorAll('query item'), (item) => {
-                    if (item.getAttribute("node")) {
-                        // XXX: ignore nodes for now.
-                        // See: https://xmpp.org/extensions/xep-0030.html#items-nodes
-                        return;
-                    }
-                    const jid = item.getAttribute('jid');
-                    const entities = _converse.disco_entities;
-                    if (_.isUndefined(entities.get(jid))) {
-                        entities.create({'jid': jid});
-                    }
-                });
-            }
-
             // Promises exposed by this plugin
             _converse.api.promises.add('discoInitialized');
+
 
             _converse.DiscoEntity = Backbone.Model.extend({
                 /* A Disco Entity is a JID addressable entity that can be queried
@@ -50,6 +36,11 @@
 
                 initialize () {
                     this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
+
+                    this.dataforms = new Backbone.Collection();
+                    this.dataforms.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                        b64_sha1(`converse.dataforms-{this.get('jid')}`)
+                    );
 
                     this.features = new Backbone.Collection();
                     this.features.browserStorage = new Backbone.BrowserStorage[_converse.storage](
@@ -63,6 +54,10 @@
                     );
                     this.fetchFeatures();
 
+                    this.items = new _converse.DiscoEntities();
+                    this.items.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                        b64_sha1(`converse.disco-items-${this.get('jid')}`)
+                    );
                 },
 
                 getIdentity (category, type) {
@@ -98,17 +93,10 @@
                     const entity = this;
                     return new Promise((resolve, reject) => {
                         function fulfillPromise () {
-                            const model = entity.features.findWhere({'var': feature });
-                            if (model) {
-                                resolve({
-                                    'supported': true,
-                                    'feature': model
-                                });
+                            if (entity.features.findWhere({'var': feature})) {
+                                resolve(entity);
                             } else {
-                                resolve({
-                                    'supported': false,
-                                    'feature': null
-                                });
+                                resolve();
                             }
                         }
                         entity.waitUntilFeaturesDiscovered
@@ -141,13 +129,27 @@
                     _converse.connection.disco.info(this.get('jid'), null, this.onInfo.bind(this));
                 },
 
+                onDiscoItems (stanza) {
+                    _.each(stanza.querySelectorAll('query item'), (item) => {
+                        if (item.getAttribute("node")) {
+                            // XXX: ignore nodes for now.
+                            // See: https://xmpp.org/extensions/xep-0030.html#items-nodes
+                            return;
+                        }
+                        const jid = item.getAttribute('jid');
+                        if (_.isUndefined(this.items.get(jid))) {
+                            this.items.create({'jid': jid});
+                        }
+                    });
+                },
+
                 queryForItems () {
                     if (_.isEmpty(this.identities.where({'category': 'server'}))) {
                         // Don't fetch features and items if this is not a
                         // server or a conference component.
                         return;
                     }
-                    _converse.connection.disco.items(this.get('jid'), null, onDiscoItems);
+                    _converse.connection.disco.items(this.get('jid'), null, this.onDiscoItems.bind(this));
                 },
 
                 onInfo (stanza) {
@@ -158,7 +160,19 @@
                             'name': identity.getAttribute('name')
                         });
                     });
-                    if (stanza.querySelector('feature[var="'+Strophe.NS.DISCO_ITEMS+'"]')) {
+
+                    _.each(sizzle(`x[type="result"][xmlns="${Strophe.NS.XFORM}"]`, stanza), (form) => {
+                        const data = {};
+                        _.each(form.querySelectorAll('field'), (field) => {
+                            data[field.getAttribute('var')] = {
+                                'value': _.get(field.querySelector('value'), 'textContent'),
+                                'type': field.getAttribute('type')
+                            };
+                        });
+                        this.dataforms.create(data);
+                    });
+
+                    if (stanza.querySelector(`feature[var="${Strophe.NS.DISCO_ITEMS}"]`)) {
                         this.queryForItems();
                     }
                     _.forEach(stanza.querySelectorAll('feature'), (feature) => {
@@ -175,26 +189,11 @@
             _converse.DiscoEntities = Backbone.Collection.extend({
                 model: _converse.DiscoEntity,
 
-                initialize () {
-                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                        b64_sha1(`converse.disco-entities-${_converse.bare_jid}`)
-                    );
-                    this.fetchEntities().then(
-                        _.partial(_converse.emit, 'discoInitialized'),
-                        _.partial(_converse.emit, 'discoInitialized')
-                    ).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                },
-
                 fetchEntities () {
                     return new Promise((resolve, reject) => {
                         this.fetch({
                             add: true,
-                            success: function (collection) {
-                                if (collection.length === 0 || !collection.get(_converse.domain)) {
-                                    this.create({'jid': _converse.domain});
-                                }
-                                resolve();
-                            }.bind(this),
+                            success: resolve,
                             error () {
                                 reject (new Error("Could not fetch disco entities"));
                             }
@@ -227,6 +226,18 @@
             function initializeDisco () {
                 addClientFeatures();
                 _converse.disco_entities = new _converse.DiscoEntities();
+                _converse.disco_entities.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    b64_sha1(`converse.disco-entities-${_converse.bare_jid}`)
+                );
+
+                _converse.disco_entities.fetchEntities().then((collection) => {
+                    if (collection.length === 0 || !collection.get(_converse.domain)) {
+                        // If we don't have an entity for our own XMPP server,
+                        // create one.
+                        _converse.disco_entities.create({'jid': _converse.domain});
+                    }
+                    _converse.emit('discoInitialized');
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }
             _converse.api.listen.on('reconnected', initializeDisco);
             _converse.api.listen.on('connected', initializeDisco);
@@ -247,28 +258,49 @@
                 'disco': {
                     'entities': {
                         'get' (entity_jid, create=false) {
-                            const entity = _converse.disco_entities.get(entity_jid);
-                            if (entity || !create) {
-                                return entity;
-                            }
-                            return _converse.disco_entities.create({'jid': entity_jid});
+                            return _converse.api.waitUntil('discoInitialized').then(() => {
+                                if (_.isNil(entity_jid)) {
+                                    return _converse.disco_entities;
+                                }
+                                const entity = _converse.disco_entities.get(entity_jid);
+                                if (entity || !create) {
+                                    return entity;
+                                }
+                                return _converse.disco_entities.create({'jid': entity_jid});
+                            });
                         }
                     },
 
                     'supports' (feature, entity_jid) {
-                        /* Returns a Promise which resolves with a map indicating
-                         * whether a given feature is supported.
+                        /* Returns a Promise which resolves with a list containing
+                         * _converse.Entity instances representing the entity
+                         * itself or those items associated with the entity if
+                         * they support the given feature.
                          *
                          * Parameters:
                          *    (String) feature - The feature that might be
-                         *          supported. In the XML stanza, this is the `var`
-                         *          attribute of the `<feature>` element. For
-                         *          example: 'http://jabber.org/protocol/muc'
-                         *    (String) entity_jid - The JID of the entity which might support the feature.
+                         *         supported. In the XML stanza, this is the `var`
+                         *         attribute of the `<feature>` element. For
+                         *         example: 'http://jabber.org/protocol/muc'
+                         *    (String) entity_jid - The JID of the entity
+                         *         (and its associated items) which should be queried
                          */
-                        return _converse.api.waitUntil('discoInitialized').then(() => {
-                            const entity = _converse.api.disco.entities.get(entity_jid, true);
-                            return entity.hasFeature(feature);
+                        if (_.isNil(entity_jid)) {
+                            throw new TypeError('disco.supports: You need to provide an entity JID');
+                        }
+                        return _converse.api.waitUntil('discoInitialized').then((entity) => {
+                            return new Promise((resolve, reject) => {
+                                _converse.api.disco.entities.get(entity_jid, true).then((entity) => {
+                                    Promise.all(
+                                        _.concat(
+                                            entity.items.map((item) => item.hasFeature(feature)),
+                                            entity.hasFeature(feature)
+                                        )
+                                    ).then((result) => {
+                                        resolve(f.filter(f.isObject, result));
+                                    }).catch(reject);
+                                })
+                            });
                         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     },
 
@@ -286,10 +318,13 @@
                          *          In the XML stanza, this is the `type`
                          *          attribute of the `<identity>` element.
                          *          For example: 'pep'
+                         *    (String) entity_jid - The JID of the entity which might have the identity
                          */
-                        return _converse.api.waitUntil('discoInitialized').then(() => {
-                            const entity = _converse.api.disco.entities.get(entity_jid, true);
-                            return entity.getIdentity(category, type);
+                        return new Promise((resolve, reject) => {
+                            _converse.api.waitUntil('discoInitialized').then(() => {
+                                _converse.api.disco.entities.get(entity_jid, true)
+                                    .then((entity) => resolve(entity.getIdentity(category, type)));
+                            })
                         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
                 }

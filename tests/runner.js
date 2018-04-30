@@ -51,10 +51,12 @@ var specs = [
     "spec/controlbox",
     "spec/roster",
     "spec/chatbox",
+    "spec/messages",
     "spec/chatroom",
     "spec/minchats",
     "spec/notification",
-    "spec/register"
+    "spec/register",
+    "spec/http-file-upload"
 ];
 
 require(['console-reporter', 'mock', 'sinon', 'wait-until-promise', 'pluggable'],

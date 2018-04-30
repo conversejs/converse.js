@@ -242,7 +242,6 @@ a:focus {
   }
 }
 .btn {
-  text-transform: uppercase;
   font-family: FontAwesome;
   font-weight: 400;
   -webkit-transition: all 0.3s ease-in-out;

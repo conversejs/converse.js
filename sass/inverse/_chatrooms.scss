@@ -1,4 +1,5 @@
-#conversejs.fullscreen {
+#conversejs.converse-fullscreen,
+#conversejs.converse-mobile {
 
     .chat-head-chatroom {
         height: $chatroom-head-height;
@@ -28,7 +29,6 @@
 
                     .chat-content {
                         border-top-left-radius: $chatbox-border-radius;
-                        padding: 0 $padding $padding $padding;
                     }
                     &.full {
                         max-width: 100%;

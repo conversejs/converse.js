@@ -53,7 +53,7 @@ body.reset {
         z-index: 1031; // One more than bootstrap navbar
         position: fixed;
         bottom: 0;
-        height: auto;
+        height: 2.7rem;
         right: 0;
     }
 
@@ -363,7 +363,7 @@ body.reset {
     }
 
     .avatar {
-        border-radius: 25%;
+        border-radius: 10%;
     }
 
     .activated {
@@ -440,7 +440,6 @@ body.reset {
         }
         &.converse-centered-form {
             text-align: center;
-            width: 100%;
         }
     }
 
@@ -460,7 +459,7 @@ body.reset {
         font-size: 3.75em;
         }
     }
-    #conversejs {
+    #conversejs:not(.converse-embedded)  {
         .chatbox  {
             .chat-body {
                 border-radius: $chatbox-border-radius;

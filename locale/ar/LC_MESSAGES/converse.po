@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-03-16 11:34+0000\n"
+"PO-Revision-Date: 2018-04-24 09:34+0000\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 2.20-dev\n"
+"X-Generator: Weblate 3.0-dev\n"
 
 #: dist/converse-no-dependencies.js:7402
 msgid "The connection has dropped, attempting to reconnect."
@@ -165,9 +165,8 @@ msgid "is busy"
 msgstr "مشغول"
 
 #: dist/converse-no-dependencies.js:15321
-#, fuzzy
 msgid "XMPP Username:"
-msgstr "إسم المستخدِم"
+msgstr "إسم المستخدِم :"
 
 #: dist/converse-no-dependencies.js:15327
 msgid "Password:"
@@ -242,12 +241,10 @@ msgstr "إسم المراسل"
 
 #: dist/converse-no-dependencies.js:16785
 #: dist/converse-no-dependencies.js:23016
-#, fuzzy
 msgid "Optional nickname"
-msgstr "دليل إختياري"
+msgstr "إسم مستعار اختياري"
 
 #: dist/converse-no-dependencies.js:16788
-#, fuzzy
 msgid "Add a Contact"
 msgstr "إضافة مراسل"
 
@@ -256,9 +253,8 @@ msgid "XMPP Address"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:16791
-#, fuzzy
 msgid "name@example.org"
-msgstr "مثال user@example.org"
+msgstr "name@example.org"
 
 #: dist/converse-no-dependencies.js:16792
 msgid "Add"
@@ -274,9 +270,8 @@ msgid "Filter"
 msgstr "عامل التصفية"
 
 #: dist/converse-no-dependencies.js:16901
-#, fuzzy
 msgid "Filter by contact name"
-msgstr "إسم المراسل"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:16902
 msgid "Filter by group name"
@@ -385,19 +380,16 @@ msgid "Save"
 msgstr "حفظ"
 
 #: dist/converse-no-dependencies.js:18117
-#, fuzzy
 msgid "Away for long"
 msgstr "غائب لمدة قد تطول"
 
 #: dist/converse-no-dependencies.js:18118
-#, fuzzy
 msgid "Change chat status"
-msgstr "أنقر لتغيير حالتك للدردشة"
+msgstr "أنقر لتغيير حالة الدردشة"
 
 #: dist/converse-no-dependencies.js:18119
-#, fuzzy
 msgid "Personal status message"
-msgstr "رسالة خاصة"
+msgstr "رسالة الحالة الخاصة"
 
 #: dist/converse-no-dependencies.js:18162
 #, javascript-format
@@ -421,9 +413,8 @@ msgid "Your profile"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:18191
-#, fuzzy
 msgid "Are you sure you want to log out?"
-msgstr "هل أنت متأكد أنك تريد حذف هذا المراسل ؟"
+msgstr "هل أنت متأكد أنك تريد الخروج ؟"
 
 #: dist/converse-no-dependencies.js:18199
 #: dist/converse-no-dependencies.js:18209
@@ -455,7 +446,6 @@ msgid "user@domain"
 msgstr "user@domain"
 
 #: dist/converse-no-dependencies.js:18738
-#, fuzzy
 msgid "Chat Contacts"
 msgstr "جهات الإتصال"
 
@@ -654,9 +644,9 @@ msgid "Open Rooms"
 msgstr "إفتح الغُرف"
 
 #: dist/converse-no-dependencies.js:21538
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to leave the room %1$s?"
-msgstr "هل أنت متأكد أنك تريد مغادرة غرفة \"%1$s\" ؟"
+msgstr "هل أنت متأكد أنك تريد مغادرة غرفة %1$s ؟"
 
 #: dist/converse-no-dependencies.js:22835
 msgid "Description:"
@@ -729,44 +719,38 @@ msgid "Query for Chatrooms"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:22889
-#, fuzzy
 msgid "Server address"
-msgstr "الخادوم"
+msgstr "عنوان الخادوم"
 
 #: dist/converse-no-dependencies.js:22890
 msgid "Show rooms"
 msgstr "عرض غُرف المحادثة"
 
 #: dist/converse-no-dependencies.js:22891
-#, fuzzy
 msgid "conference.example.org"
-msgstr "مثال user@example.org"
+msgstr "conference.example.org"
 
 #: dist/converse-no-dependencies.js:22944
 msgid "No rooms found"
 msgstr "لم يتم العثور على أية غُرفة محادثة"
 
 #: dist/converse-no-dependencies.js:22961
-#, fuzzy
 msgid "Rooms found:"
-msgstr "تم العثور على غرف للمحادثة"
+msgstr "تم العثور على غرف المحادثة :"
 
 #: dist/converse-no-dependencies.js:23014
-#, fuzzy
 msgid "Enter a new Chatroom"
-msgstr "الدخول إلى غرفة المحادثة"
+msgstr "الدخول إلى غرفة محادثة جديدة"
 
 #: dist/converse-no-dependencies.js:23015
-#, fuzzy
 msgid "Room address"
-msgstr "عنوان غرفة المحادثة (JID) :"
+msgstr "عنوان غرفة المحادثة"
 
 #: dist/converse-no-dependencies.js:23017
 msgid "name@conference.example.org"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:23018
-#, fuzzy
 msgid "Join"
 msgstr "الإلتحاق بالغرفة"
 
@@ -917,9 +901,9 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "السبب : \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:24119
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the room"
-msgstr "لقد غادر %1$s غرفة المحادثة ثم قام بالإلتحاق بها."
+msgstr "لقد غادر %1$s غرفة المحادثة ثم قام بالإلتحاق بها"
 
 #: dist/converse-no-dependencies.js:24124
 #, javascript-format
@@ -927,9 +911,9 @@ msgid "%1$s has entered the room. \"%2$s\""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:24126
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered the room"
-msgstr "لقد إلتحق %1$s بغرفة المحادثة."
+msgstr "لقد إلتحق %1$s بغرفة المحادثة"
 
 #: dist/converse-no-dependencies.js:24156
 #, javascript-format
@@ -937,9 +921,9 @@ msgid "%1$s has entered and left the room. \"%2$s\""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:24158
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered and left the room"
-msgstr "لقد إلتحق %1$s بغرفة المحادثة ثم غادرها."
+msgstr "لقد إلتحق %1$s بغرفة المحادثة ثم غادرها"
 
 #: dist/converse-no-dependencies.js:24170
 #, javascript-format
@@ -947,9 +931,9 @@ msgid "%1$s has left the room. \"%2$s\""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:24172
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left the room"
-msgstr "غادر %1$s غرفة المحادثة."
+msgstr "غادر %1$s غرفة المحادثة"
 
 #: dist/converse-no-dependencies.js:24238
 msgid "You are not on the member list of this room."
@@ -980,23 +964,21 @@ msgid "This room has reached its maximum number of occupants."
 msgstr "لقد بلغت غرفة المحادثة هذه الحد الأقصى لاستيعاب الأعضاء."
 
 #: dist/converse-no-dependencies.js:24380
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic set by %1$s"
-msgstr "قام %1$s بتعديل الموضوع إلى : %2$s"
+msgstr "قام %1$s بتحديد الموضوع"
 
 #: dist/converse-no-dependencies.js:24493
-#, fuzzy
 msgid "Chatrooms"
-msgstr "عرض غُرف المحادثة"
+msgstr "غُرف المحادثة"
 
 #: dist/converse-no-dependencies.js:24494
 msgid "Add a new room"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:24495
-#, fuzzy
 msgid "Query for rooms"
-msgstr "طرد المستخدِم من غرفة المحادثة"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:24534
 #, javascript-format

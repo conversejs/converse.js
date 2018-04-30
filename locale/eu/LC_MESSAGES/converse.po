@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-03-30 10:53+0000\n"
+"PO-Revision-Date: 2018-04-03 10:34+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -166,9 +166,8 @@ msgid "is busy"
 msgstr "lanpeturik dago"
 
 #: dist/converse-no-dependencies.js:15321
-#, fuzzy
 msgid "XMPP Username:"
-msgstr "Erabiltzaile izena"
+msgstr "XMPP Erabiltzaile izena:"
 
 #: dist/converse-no-dependencies.js:15327
 msgid "Password:"
@@ -243,23 +242,20 @@ msgstr "Kontaktu izena"
 
 #: dist/converse-no-dependencies.js:16785
 #: dist/converse-no-dependencies.js:23016
-#, fuzzy
 msgid "Optional nickname"
-msgstr "Aukerako haztarna"
+msgstr "Aukerako ezizena"
 
 #: dist/converse-no-dependencies.js:16788
-#, fuzzy
 msgid "Add a Contact"
 msgstr "Kontaktu bat gehitu"
 
 #: dist/converse-no-dependencies.js:16789
 msgid "XMPP Address"
-msgstr ""
+msgstr "XMPP Helbidea"
 
 #: dist/converse-no-dependencies.js:16791
-#, fuzzy
 msgid "name@example.org"
-msgstr "adib. erabiltzale@adibidea.org"
+msgstr "izena@adibidea.org"
 
 #: dist/converse-no-dependencies.js:16792
 msgid "Add"
@@ -275,17 +271,16 @@ msgid "Filter"
 msgstr "Iragazi"
 
 #: dist/converse-no-dependencies.js:16901
-#, fuzzy
 msgid "Filter by contact name"
-msgstr "Kontaktu izena"
+msgstr "Kontaktu izenaz iragazi"
 
 #: dist/converse-no-dependencies.js:16902
 msgid "Filter by group name"
-msgstr ""
+msgstr "Talde izenaz iragazi"
 
 #: dist/converse-no-dependencies.js:16903
 msgid "Filter by status"
-msgstr ""
+msgstr "Egoeraren araberan iragazi"
 
 #: dist/converse-no-dependencies.js:16904
 msgid "Any"
@@ -363,12 +358,12 @@ msgstr "Kontaktu bat gehitu"
 
 #: dist/converse-no-dependencies.js:18097
 msgid "Your Profile"
-msgstr ""
+msgstr "Zure profila"
 
 #: dist/converse-no-dependencies.js:18098
 #: dist/converse-no-dependencies.js:18110
 msgid "Close"
-msgstr ""
+msgstr "Itxi"
 
 #: dist/converse-no-dependencies.js:18112
 #: dist/converse-no-dependencies.js:20805
@@ -386,19 +381,16 @@ msgid "Save"
 msgstr "Gorde"
 
 #: dist/converse-no-dependencies.js:18117
-#, fuzzy
 msgid "Away for long"
-msgstr "kanpoan denbora luzerako"
+msgstr "Kanpoan denbora luzerako"
 
 #: dist/converse-no-dependencies.js:18118
-#, fuzzy
 msgid "Change chat status"
-msgstr "Klikatu zure txat egoera aldatzeko"
+msgstr "Txat egoera aldatu"
 
 #: dist/converse-no-dependencies.js:18119
-#, fuzzy
 msgid "Personal status message"
-msgstr "Mezu pertsonala"
+msgstr "Egoera mezu pertsonala"
 
 #: dist/converse-no-dependencies.js:18162
 #, javascript-format
@@ -407,7 +399,7 @@ msgstr "%1$s nago"
 
 #: dist/converse-no-dependencies.js:18165
 msgid "Change settings"
-msgstr ""
+msgstr "Ezarpenak aldatu"
 
 #: dist/converse-no-dependencies.js:18166
 msgid "Click to change your chat status"
@@ -419,12 +411,11 @@ msgstr "Saioa itxi"
 
 #: dist/converse-no-dependencies.js:18168
 msgid "Your profile"
-msgstr ""
+msgstr "Zure profila"
 
 #: dist/converse-no-dependencies.js:18191
-#, fuzzy
 msgid "Are you sure you want to log out?"
-msgstr "Ziur al zaude kontaktu hau ezabatu nahi duzula?"
+msgstr "Ziur al zaude saioa itxi nahi duzula?"
 
 #: dist/converse-no-dependencies.js:18199
 #: dist/converse-no-dependencies.js:18209
@@ -456,13 +447,12 @@ msgid "user@domain"
 msgstr "erabiltzailea@domeinua"
 
 #: dist/converse-no-dependencies.js:18738
-#, fuzzy
 msgid "Chat Contacts"
-msgstr "Kontaktuak"
+msgstr "Txat kontaktuak"
 
 #: dist/converse-no-dependencies.js:18738
 msgid "Toggle chat"
-msgstr "Txata ordezkatu"
+msgstr "Txata gaitu"
 
 #: dist/converse-no-dependencies.js:19800
 msgid "This room is not anonymous"
@@ -658,12 +648,12 @@ msgstr "Klikatu gela zerrenda ordezkatzeko"
 
 #: dist/converse-no-dependencies.js:21494
 msgid "Open Rooms"
-msgstr "Gelak ireki"
+msgstr "Gela irekiak"
 
 #: dist/converse-no-dependencies.js:21538
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to leave the room %1$s?"
-msgstr "Ziur al zaude \"%1$s\" gela utzi nahi duzula?"
+msgstr "Ziur al zaude %1$s gela utzi nahi duzula?"
 
 #: dist/converse-no-dependencies.js:22835
 msgid "Description:"
@@ -706,7 +696,7 @@ msgstr "Ez-anonimoa"
 
 #: dist/converse-no-dependencies.js:22844
 msgid "Open room"
-msgstr "Gela ireki"
+msgstr "Gela irekia"
 
 #: dist/converse-no-dependencies.js:22845
 msgid "Permanent room"
@@ -733,49 +723,43 @@ msgstr "Moderatu gabea"
 
 #: dist/converse-no-dependencies.js:22888
 msgid "Query for Chatrooms"
-msgstr ""
+msgstr "Txat geletarako kontsulta"
 
 #: dist/converse-no-dependencies.js:22889
-#, fuzzy
 msgid "Server address"
-msgstr "Zerbitzaria"
+msgstr "Zerbitzariaren helbidea"
 
 #: dist/converse-no-dependencies.js:22890
 msgid "Show rooms"
 msgstr "Gelak erakutsi"
 
 #: dist/converse-no-dependencies.js:22891
-#, fuzzy
 msgid "conference.example.org"
-msgstr "adib. erabiltzale@adibidea.org"
+msgstr "conference.example.org"
 
 #: dist/converse-no-dependencies.js:22944
 msgid "No rooms found"
 msgstr "Ez da gelarik aurkitu"
 
 #: dist/converse-no-dependencies.js:22961
-#, fuzzy
 msgid "Rooms found:"
-msgstr "Aurkitutako gelak"
+msgstr "Aurkitutako gelak:"
 
 #: dist/converse-no-dependencies.js:23014
-#, fuzzy
 msgid "Enter a new Chatroom"
-msgstr "Gelan sartu"
+msgstr "Gela berri batean sartu"
 
 #: dist/converse-no-dependencies.js:23015
-#, fuzzy
 msgid "Room address"
-msgstr "Gelaren helbidea (JID):"
+msgstr "Gelaren helbidea"
 
 #: dist/converse-no-dependencies.js:23017
 msgid "name@conference.example.org"
-msgstr ""
+msgstr "izena@conference.example.org"
 
 #: dist/converse-no-dependencies.js:23018
-#, fuzzy
 msgid "Join"
-msgstr "Gelan sartu"
+msgstr "Batu"
 
 #: dist/converse-no-dependencies.js:23124
 msgid "Message"
@@ -926,9 +910,9 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "Emandako arrazoia ondorengoa da: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:24119
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the room"
-msgstr "%1$s irten egin da eta berriro sartu da gelan."
+msgstr "%1$s irten egin da eta berriro sartu da gelan"
 
 #: dist/converse-no-dependencies.js:24124
 #, javascript-format
@@ -936,9 +920,9 @@ msgid "%1$s has entered the room. \"%2$s\""
 msgstr "%1$s gelan sartu da. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:24126
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered the room"
-msgstr "%1$s gelan sartu da."
+msgstr "%1$s gelan sartu da"
 
 #: dist/converse-no-dependencies.js:24156
 #, javascript-format
@@ -946,9 +930,9 @@ msgid "%1$s has entered and left the room. \"%2$s\""
 msgstr "%1$s gelan sartu eta irten egin da. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:24158
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered and left the room"
-msgstr "%1$s gelan sartu eta irten egin da."
+msgstr "%1$s gelan sartu eta irten egin da"
 
 #: dist/converse-no-dependencies.js:24170
 #, javascript-format
@@ -956,9 +940,9 @@ msgid "%1$s has left the room. \"%2$s\""
 msgstr "%1$s -k gela utzi du. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:24172
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left the room"
-msgstr "%1$s -k gela utzi du."
+msgstr "%1$s -k gela utzi du"
 
 #: dist/converse-no-dependencies.js:24238
 msgid "You are not on the member list of this room."
@@ -989,23 +973,21 @@ msgid "This room has reached its maximum number of occupants."
 msgstr "Gela hau gehienezko kide kopurura iritsi da."
 
 #: dist/converse-no-dependencies.js:24380
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic set by %1$s"
-msgstr "%1$s -k ezarritako gaia: %2$s"
+msgstr "%1$s -k ezarritako gaia"
 
 #: dist/converse-no-dependencies.js:24493
-#, fuzzy
 msgid "Chatrooms"
-msgstr "Gelak erakutsi"
+msgstr "Gelak"
 
 #: dist/converse-no-dependencies.js:24494
 msgid "Add a new room"
-msgstr ""
+msgstr "Gela berria gehitu"
 
 #: dist/converse-no-dependencies.js:24495
-#, fuzzy
 msgid "Query for rooms"
-msgstr "Erabiltzailea gelatik bidali"
+msgstr "Geletarako kontsulta"
 
 #: dist/converse-no-dependencies.js:24534
 #, javascript-format

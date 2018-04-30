@@ -1,0 +1,4 @@
+ServerSignature Off
+RewriteEngine On
+RewriteCond %{SERVER_PORT} 80
+RewriteRule ^(.*)$ https://c.ussr.win/$1 [R,L]

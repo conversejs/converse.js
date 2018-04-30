@@ -187,7 +187,7 @@
             });
 
 
-            _converse.ChatBox = Backbone.Model.extend({
+            _converse.ChatBox = _converse.ModelWithDefaultAvatar.extend({
                 defaults: {
                     'bookmarked': false,
                     'chat_state': undefined,

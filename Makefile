@@ -136,10 +136,10 @@ dev: stamp-bundler stamp-npm
 css: dev sass/*.scss css/converse.css css/converse.min.css css/theme.min.css css/inverse.css css/inverse.min.css css/fonts.css
 
 css/inverse.css:: dev sass sass
-	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/inverse/inverse.scss css/inverse.css
+	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/inverse.scss css/inverse.css
 
 css/converse.css:: dev sass
-	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss css/converse.css
+	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/converse.scss css/converse.css
 
 css/fonts.css:: dev sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/font-awesome.scss $@

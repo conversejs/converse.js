@@ -56744,6 +56744,12 @@ __e(o.label_unread_messages) +
  if (o.chat_state === 'online') { ;
 __p += ' selected="selected" ';
  } ;
+__p += '\n                value="connected">' +
+__e(o.label_connected) +
+'</option>\n            <option ';
+ if (o.chat_state === 'connected') { ;
+__p += ' selected="selected" ';
+ } ;
 __p += '\n                value="online">' +
 __e(o.label_online) +
 '</option>\n            <option ';
@@ -57657,6 +57663,7 @@ define("awesomplete", (function (global) {
             title_status_filter: __('Filter by status'),
             label_any: __('Any'),
             label_unread_messages: __('Unread'),
+            label_connected: __('Connected'),
             label_online: __('Online'),
             label_chatty: __('Chatty'),
             label_busy: __('Busy'),
@@ -58040,6 +58047,8 @@ define("awesomplete", (function (global) {
               matches = this.model.contacts.filter({
                 'num_unread': 0
               });
+            } else if (q === 'connected') {
+          matches = this.model.contacts.filter(u.contains('chat_status', 'offline'));
             } else {
               matches = this.model.contacts.filter(u.contains.not('chat_status', q));
             }

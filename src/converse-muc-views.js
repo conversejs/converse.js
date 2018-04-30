@@ -531,6 +531,12 @@
 
                     if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                         const handler = () => {
+                            if (!u.isPersistableModel(this.model)) {
+                                // Happens during tests, nothing to do if this
+                                // is a hanging chatbox (i.e. not in the
+                                // collection anymore).
+                                return;
+                            }
                             this.join();
                             this.fetchMessages();
                             _converse.emit('chatRoomOpened', this);

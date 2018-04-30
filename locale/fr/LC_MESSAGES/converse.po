@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-30 14:36+0200\n"
-"PO-Revision-Date: 2018-02-17 17:06+0000\n"
+"PO-Revision-Date: 2018-04-30 14:12+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2.19\n"
+"X-Generator: Weblate 3.0-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -253,23 +253,20 @@ msgstr "Nom du contact"
 
 #: dist/converse-no-dependencies.js:16785
 #: dist/converse-no-dependencies.js:23016
-#, fuzzy
 msgid "Optional nickname"
-msgstr "Indice optionnel"
+msgstr "Pseudonyme optionnel"
 
 #: dist/converse-no-dependencies.js:16788
-#, fuzzy
 msgid "Add a Contact"
 msgstr "Ajouter un contact"
 
 #: dist/converse-no-dependencies.js:16789
 msgid "XMPP Address"
-msgstr ""
+msgstr "Adresse XMPP"
 
 #: dist/converse-no-dependencies.js:16791
-#, fuzzy
 msgid "name@example.org"
-msgstr "e.g. utilisateur@exemple.org"
+msgstr "nom@exemple.org"
 
 #: dist/converse-no-dependencies.js:16792
 msgid "Add"
@@ -285,17 +282,16 @@ msgid "Filter"
 msgstr "Filtrer"
 
 #: dist/converse-no-dependencies.js:16901
-#, fuzzy
 msgid "Filter by contact name"
-msgstr "Nom du contact"
+msgstr "Filtrer par nom de contact"
 
 #: dist/converse-no-dependencies.js:16902
 msgid "Filter by group name"
-msgstr ""
+msgstr "Filtrer par nom de groupe"
 
 #: dist/converse-no-dependencies.js:16903
 msgid "Filter by status"
-msgstr ""
+msgstr "Filtrer par statut"
 
 #: dist/converse-no-dependencies.js:16904
 msgid "Any"
@@ -375,12 +371,12 @@ msgstr "Ajouter un contact"
 
 #: dist/converse-no-dependencies.js:18097
 msgid "Your Profile"
-msgstr ""
+msgstr "Votre profil"
 
 #: dist/converse-no-dependencies.js:18098
 #: dist/converse-no-dependencies.js:18110
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: dist/converse-no-dependencies.js:18112
 #: dist/converse-no-dependencies.js:20805
@@ -398,19 +394,16 @@ msgid "Save"
 msgstr "Enregistrer"
 
 #: dist/converse-no-dependencies.js:18117
-#, fuzzy
 msgid "Away for long"
-msgstr "absent pour une longue durée"
+msgstr "Absent pour une longue durée"
 
 #: dist/converse-no-dependencies.js:18118
-#, fuzzy
 msgid "Change chat status"
-msgstr "Cliquez pour changer votre statut"
+msgstr "changer votre statut de chat"
 
 #: dist/converse-no-dependencies.js:18119
-#, fuzzy
 msgid "Personal status message"
-msgstr "Message personnel"
+msgstr "Message de statut personnel"
 
 #: dist/converse-no-dependencies.js:18162
 #, javascript-format
@@ -419,7 +412,7 @@ msgstr "Je suis %1$s"
 
 #: dist/converse-no-dependencies.js:18165
 msgid "Change settings"
-msgstr ""
+msgstr "Changer les préférences"
 
 #: dist/converse-no-dependencies.js:18166
 msgid "Click to change your chat status"
@@ -431,12 +424,11 @@ msgstr "Se déconnecter"
 
 #: dist/converse-no-dependencies.js:18168
 msgid "Your profile"
-msgstr ""
+msgstr "Votre profil"
 
 #: dist/converse-no-dependencies.js:18191
-#, fuzzy
 msgid "Are you sure you want to log out?"
-msgstr "Voulez-vous vraiment retirer ce contact ?"
+msgstr "Voulez-vous vraiment vous déconnecter ?"
 
 #: dist/converse-no-dependencies.js:18199
 #: dist/converse-no-dependencies.js:18209
@@ -468,9 +460,8 @@ msgid "user@domain"
 msgstr "utilisateur@domaine"
 
 #: dist/converse-no-dependencies.js:18738
-#, fuzzy
 msgid "Chat Contacts"
-msgstr "Contacts"
+msgstr "Contacts de chat"
 
 #: dist/converse-no-dependencies.js:18738
 msgid "Toggle chat"
@@ -675,9 +666,9 @@ msgid "Open Rooms"
 msgstr "Ouvrir les salons"
 
 #: dist/converse-no-dependencies.js:21538
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to leave the room %1$s?"
-msgstr "Voulez-vous vraiment supprimer le marque-page « %1$s » ?"
+msgstr "Voulez-vous vraiment quitter le salon « %1$s » ?"
 
 #: dist/converse-no-dependencies.js:22835
 msgid "Description:"
@@ -750,44 +741,38 @@ msgid "Query for Chatrooms"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:22889
-#, fuzzy
 msgid "Server address"
-msgstr "Serveur"
+msgstr "Adresse du serveur"
 
 #: dist/converse-no-dependencies.js:22890
 msgid "Show rooms"
 msgstr "Afficher les salons"
 
 #: dist/converse-no-dependencies.js:22891
-#, fuzzy
 msgid "conference.example.org"
-msgstr "e.g. utilisateur@exemple.org"
+msgstr "chat.exemple.org"
 
 #: dist/converse-no-dependencies.js:22944
 msgid "No rooms found"
 msgstr "Aucun salon trouvé"
 
 #: dist/converse-no-dependencies.js:22961
-#, fuzzy
 msgid "Rooms found:"
-msgstr "Salons trouvés"
+msgstr "Salons trouvés :"
 
 #: dist/converse-no-dependencies.js:23014
-#, fuzzy
 msgid "Enter a new Chatroom"
-msgstr "Entrer dans le salon"
+msgstr "Entrer dans un nouveau salon"
 
 #: dist/converse-no-dependencies.js:23015
-#, fuzzy
 msgid "Room address"
-msgstr "Adresse du salon (JID) :"
+msgstr "Adresse du salon"
 
 #: dist/converse-no-dependencies.js:23017
 msgid "name@conference.example.org"
-msgstr ""
+msgstr "nom@chat.example.org"
 
 #: dist/converse-no-dependencies.js:23018
-#, fuzzy
 msgid "Join"
 msgstr "Rejoindre"
 
@@ -940,9 +925,9 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "La raison indiquée est : « %1$s »."
 
 #: dist/converse-no-dependencies.js:24119
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the room"
-msgstr "%1$s a quitté puis rejoint le salon."
+msgstr "%1$s a quitté puis rejoint le salon"
 
 #: dist/converse-no-dependencies.js:24124
 #, javascript-format
@@ -950,9 +935,9 @@ msgid "%1$s has entered the room. \"%2$s\""
 msgstr "%1$s a rejoint le salon. « %2$s »"
 
 #: dist/converse-no-dependencies.js:24126
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered the room"
-msgstr "%1$s a rejoint le salon."
+msgstr "%1$s a rejoint le salon"
 
 #: dist/converse-no-dependencies.js:24156
 #, javascript-format
@@ -960,9 +945,9 @@ msgid "%1$s has entered and left the room. \"%2$s\""
 msgstr "%1$s a rejoint puis quitté le salon. « %2$s »"
 
 #: dist/converse-no-dependencies.js:24158
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has entered and left the room"
-msgstr "%1$s a rejoint puis quitté le salon."
+msgstr "%1$s a rejoint puis quitté le salon"
 
 #: dist/converse-no-dependencies.js:24170
 #, javascript-format
@@ -970,9 +955,9 @@ msgid "%1$s has left the room. \"%2$s\""
 msgstr "%1$s a quitté le salon. « %2$s »"
 
 #: dist/converse-no-dependencies.js:24172
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left the room"
-msgstr "%1$s a quitté le salon."
+msgstr "%1$s a quitté le salon"
 
 #: dist/converse-no-dependencies.js:24238
 msgid "You are not on the member list of this room."
@@ -1003,18 +988,17 @@ msgid "This room has reached its maximum number of occupants."
 msgstr "Ce salon a atteint sa limite maximale d’occupants."
 
 #: dist/converse-no-dependencies.js:24380
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic set by %1$s"
-msgstr "Le sujet « %2$s » a été défini par %1$s"
+msgstr "Le sujet a été défini par %1$s"
 
 #: dist/converse-no-dependencies.js:24493
-#, fuzzy
 msgid "Chatrooms"
-msgstr "Afficher les salons"
+msgstr "Salons"
 
 #: dist/converse-no-dependencies.js:24494
 msgid "Add a new room"
-msgstr ""
+msgstr "Ajouter un nouveau salon"
 
 #: dist/converse-no-dependencies.js:24495
 #, fuzzy

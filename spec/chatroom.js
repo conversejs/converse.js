@@ -13,27 +13,16 @@
 
     return describe("ChatRooms", function () {
         describe("The \"rooms\" API", function () {
-            var original_timeout;
-
-            beforeEach(function() {
-                original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-                jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-            });
-
-            afterEach(function() {
-                jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout;
-            });
 
             it("has a method 'close' which closes rooms by JID or all rooms when called with no arguments",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                    return test_utils.openAndEnterChatRoom(_converse, 'leisure', 'localhost', 'dummy');
-                }).then(function () {
-                    return test_utils.openAndEnterChatRoom(_converse, 'news', 'localhost', 'dummy');
-                }).then(function () {
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy')
+                .then(() => test_utils.openAndEnterChatRoom(_converse, 'leisure', 'localhost', 'dummy'))
+                .then(() => test_utils.openAndEnterChatRoom(_converse, 'news', 'localhost', 'dummy'))
+                .then(() => {
                     expect(u.isVisible(_converse.chatboxviews.get('lounge@localhost').el)).toBeTruthy();
                     expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
                     expect(u.isVisible(_converse.chatboxviews.get('news@localhost').el)).toBeTruthy();
@@ -53,19 +42,16 @@
                     expect(_converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
                     expect(_converse.chatboxviews.get('news@localhost')).toBeUndefined();
                     return test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                }).then(function () {
-                    return test_utils.openAndEnterChatRoom(_converse, 'leisure', 'localhost', 'dummy')
-                }).then(function () {
+                })
+                .then(() => test_utils.openAndEnterChatRoom(_converse, 'leisure', 'localhost', 'dummy'))
+                .then(() => {
                     expect(u.isVisible(_converse.chatboxviews.get('lounge@localhost').el)).toBeTruthy();
                     expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
                     _converse.api.rooms.close();
                     expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                     expect(_converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
-                    return done();
-                }).catch((err) => {
-                    _converse.log(err, Strophe.LogLevel.FATAL);
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("has a method 'get' which returns a wrapped chat room (if it exists)",
@@ -3201,27 +3187,25 @@
 
                     var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var message = 'fires: Your attention is required';
-                    var nick = mock.chatroom_names[0],
-                        msg = $msg({
+                    var nick = mock.chatroom_names[0];
+
+                    view.model.onMessage($msg({
                             from: room_jid+'/'+nick,
                             id: (new Date()).getTime(),
                             to: 'dummy@localhost',
                             type: 'groupchat'
-                        }).c('body').t(message).tree();
-
-                    view.model.onMessage(msg);
+                        }).c('body').t(message).tree());
 
                     expect(roomspanel.el.querySelectorAll('.available-room').length).toBe(1);
                     expect(roomspanel.el.querySelectorAll('.msgs-indicator').length).toBe(1);
                     expect(roomspanel.el.querySelector('.msgs-indicator').textContent).toBe('1');
 
-                    msg = $msg({
-                        from: room_jid+'/'+nick,
-                        id: (new Date()).getTime(),
-                        to: 'dummy@localhost',
-                        type: 'groupchat'
-                    }).c('body').t(message).tree();
-                    view.model.onMessage(msg);
+                    view.model.onMessage($msg({
+                        'from': room_jid+'/'+nick,
+                        'id': (new Date()).getTime(),
+                        'to': 'dummy@localhost',
+                        'type': 'groupchat'
+                    }).c('body').t(message).tree());
 
                     expect(roomspanel.el.querySelectorAll('.available-room').length).toBe(1);
                     expect(roomspanel.el.querySelectorAll('.msgs-indicator').length).toBe(1);

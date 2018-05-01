@@ -18,8 +18,9 @@
 
 ## UI changes
 
+- #956 Conversation pane should show my own identity in pane header
 - The UI is now based on Bootstrap4 and Flexbox is used extensively.
-- #956 Conversation pane should show my own identity in pane header 
+- User Avatars are now shown in chat messages.
 
 ## Configuration changes 
 

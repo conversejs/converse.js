@@ -88,11 +88,9 @@
 
                 initialize () {
                     if (this.get('type') === 'groupchat') {
-                        this.avatar = this.collection.chatbox.avatars.findWhere({'muc_jid': this.get('from')});
+                        this.avatar = _converse.avatars.findWhere({'muc_jid': this.get('from')});
                         if (_.isNil(this.avatar)) {
-                            this.avatar = this.collection.chatbox.avatars.create({
-                                'muc_jid': this.get('from')
-                            });
+                            this.avatar = _converse.avatars.create({'muc_jid': this.get('from')});
                         }
                     }
 

@@ -188,12 +188,6 @@
                     this.occupants.browserStorage = new Backbone.BrowserStorage.session(
                         b64_sha1(`converse.occupants-${_converse.bare_jid}${this.get('jid')}`)
                     );
-                    this.avatars = new _converse.Avatars();
-                    this.avatars.browserStorage = new Backbone.BrowserStorage.session(
-                        b64_sha1(`converse.avatars-${_converse.bare_jid}${this.get('jid')}`)
-                    );
-                    this.avatars.fetch();
-
                     this.registerHandlers();
                     this.on('change:chat_state', this.sendChatState, this);
                 },
@@ -288,14 +282,6 @@
                      *  (String) exit_msg: Optional message to indicate your
                      *      reason for leaving.
                      */
-                    if (_converse.connection.mock) {
-                        // Clear for tests, but keep otherwise.
-                        // We can only get avatars for current occupants in a
-                        // room, so we'd rather cache avatars in the hopes of
-                        // having more hits.
-                        this.avatars.browserStorage._clear();
-                        this.avatars.reset();
-                    }
                     this.occupants.browserStorage._clear();
                     this.occupants.reset();
                     if (_converse.connection.connected) {
@@ -1164,6 +1150,14 @@
             }
 
             /************************ BEGIN Event Handlers ************************/
+            _converse.api.listen.on('pluginsInitialized', () => {
+                _converse.avatars = new _converse.Avatars();
+                _converse.avatars.browserStorage = new Backbone.BrowserStorage.local(
+                    b64_sha1(`converse.avatars-${_converse.bare_jid}`)
+                );
+                _converse.avatars.fetch({'silent': true});
+            });
+
             _converse.on('addClientFeatures', () => {
                 if (_converse.allow_muc) {
                     _converse.connection.disco.addFeature(Strophe.NS.MUC);

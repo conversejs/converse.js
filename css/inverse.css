@@ -6864,7 +6864,6 @@ body.reset {
       #conversejs a.fa:hover, #conversejs a:visited.fa:hover, #conversejs a:hover.fa:hover, #conversejs a:not([href]):not([tabindex]).fa:hover {
         color: #818479; }
   #conversejs canvas {
-    background: #777;
     border-radius: 4px; }
   #conversejs .fa {
     color: #A8ABA1; }
@@ -8609,7 +8608,6 @@ body {
       width: 100%; }
   #conversejs .message.chat-msg .avatar {
     margin-top: 0.5em;
-    background: #818479;
     height: 36px;
     vertical-align: middle;
     width: 36px; }

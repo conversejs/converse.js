@@ -146,6 +146,7 @@
                     img.onload = () => {
                         const ctx = canvas_el.getContext('2d'),
                               ratio = img.width / img.height;
+                        ctx.clearRect(0, 0, canvas_el.width, canvas_el.height);
                         if (ratio < 1) {
                             ctx.drawImage(img, 0, 0, canvas_el.width, canvas_el.height * (1 / ratio));
                         } else {

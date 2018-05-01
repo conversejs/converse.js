@@ -1440,24 +1440,33 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                spyOn(_converse, 'emit');
-                var view = _converse.chatboxviews.get('lounge@localhost');
-                if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
-                var nick = mock.chatroom_names[0];
-                var text = 'This is a received message';
-                var message = $msg({
-                    from: 'lounge@localhost/'+nick,
-                    id: '1',
-                    to: 'dummy@localhost',
-                    type: 'groupchat'
-                }).c('body').t(text);
-                view.model.onMessage(message.nodeTree);
-                var $chat_content = $(view.el).find('.chat-content');
-                expect($chat_content.find('.chat-msg').length).toBe(1);
-                expect($chat_content.find('.chat-msg-text').text()).toBe(text);
-                expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-                done();
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                    spyOn(_converse, 'emit');
+                    var view = _converse.chatboxviews.get('lounge@localhost');
+
+
+                    if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
+                    var nick = mock.chatroom_names[0];
+
+                    view.model.occupants.create({
+                        'nick': nick,
+                        'muc_jid': `${view.model.get('jid')}/${nick}`
+                    });
+
+                    var text = 'This is a received message';
+                    var message = $msg({
+                        from: 'lounge@localhost/'+nick,
+                        id: '1',
+                        to: 'dummy@localhost',
+                        type: 'groupchat'
+                    }).c('body').t(text);
+                    view.model.onMessage(message.nodeTree);
+                    var $chat_content = $(view.el).find('.chat-content');
+                    expect($chat_content.find('.chat-msg').length).toBe(1);
+                    expect($chat_content.find('.chat-msg-text').text()).toBe(text);
+                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                    done();
+                });
             }));
 
             it("shows sent groupchat messages",

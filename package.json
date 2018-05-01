@@ -45,7 +45,7 @@
     "clean-css-cli": "^4.0.10",
     "emojione": "^3.0.3",
     "es6-promise": "^4.1.0",
-    "eslint": "4.19.0",
+    "eslint": "4.19.1",
     "eslint-plugin-lodash": "^2.3.3",
     "filesize": "^3.6.1",
     "font-awesome": "^4.7.0",

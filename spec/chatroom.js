@@ -864,7 +864,7 @@
 
                     message = '/me is as well';
                     msg = $msg({
-                        from: 'lounge@localhost/dummy',
+                        from: 'lounge@localhost/Max Mustermann',
                         id: (new Date()).getTime(),
                         to: 'dummy@localhost',
                         type: 'groupchat'

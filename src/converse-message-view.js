@@ -45,8 +45,14 @@
 
                 initialize () {
                     this.chatbox = this.model.collection.chatbox;
-                    this.chatbox.on('change:fullname', (chatbox) => this.model.save('fullname', chatbox.get('fullname')));
-
+                    this.chatbox.on('change:fullname', (chatbox) => {
+                        if (chatbox.get('type') !== 'chatroom') {
+                            this.model.save({
+                                'fullname': chatbox.get('fullname'),
+                                'username': chatbox.get('fullname')
+                            })
+                        }
+                    });
                     this.model.on('change:fullname', this.render, this);
                     this.model.on('change:progress', this.renderFileUploadProgresBar, this);
                     this.model.on('change:type', this.render, this);
@@ -60,18 +66,13 @@
                     } else if (this.model.get('type') === 'error') {
                         return this.renderErrorMessage();
                     }
-
-                    let template, username, image, image_type,
+                    let template, image, image_type,
                         text = this.model.get('message');
 
-                    // TODO: store proper username on the message itself
                     if (this.isMeCommand()) {
-                        const arr = this.getValuesForMeCommand();
-                        template = arr[0];
-                        username = arr[1];
-                        text = arr[2];
+                        template = tpl_action;
+                        text = this.model.get('message').replace(/^\/me/, '');
                     } else {
-                        username = this.model.get('fullname') || this.model.get('from');
                         template = this.model.get('is_spoiler') ? tpl_spoiler_message : tpl_message;
                         if (this.model.get('type') !== 'headline') {
                             if (this.model.get('sender') === 'me') {
@@ -88,7 +89,6 @@
                         _.extend(this.model.toJSON(), {
                             'pretty_time': moment_time.format(_converse.time_format),
                             'time': moment_time.format(),
-                            'username': username,
                             'extra_classes': this.getExtraMessageClasses(),
                             'label_show': __('Show more'),
                             'image_type': image_type,
@@ -166,21 +166,6 @@
                     }
                     const match = text.match(/^\/(.*?)(?: (.*))?$/);
                     return match && match[1] === 'me';
-                },
-
-                getValuesForMeCommand() {
-                    let username, text;
-                    const match = this.model.get('message').match(/^\/(.*?)(?: (.*))?$/);
-                    if (match && match[1] === 'me') {
-                        text = this.model.get('message').replace(/^\/me/, '');
-                    }
-                    if (this.model.get('sender') === 'me') {
-                        const fullname = _converse.xmppstatus.get('fullname') || this.model.get('fullname');
-                        username = _.isNil(fullname) ? _converse.bare_jid : fullname;
-                    } else {
-                        username = this.model.get('fullname') || this.model.get('from');
-                    }
-                    return [tpl_action, username, text]
                 },
 
                 processMessageText () {

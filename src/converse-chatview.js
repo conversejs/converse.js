@@ -579,14 +579,14 @@
                     return this.scrollDown();
                 },
 
-                clearChatStateNotification (from, isodate) {
+                clearChatStateNotification (username, isodate) {
                     if (isodate) {
                         _.each(
-                            sizzle(`.chat-state-notification[data-csn="${from}"][data-isodate="${isodate}"]`, this.content),
+                            sizzle(`.chat-state-notification[data-csn="${username}"][data-isodate="${isodate}"]`, this.content),
                             u.removeElement
                         );
                     } else {
-                        _.each(sizzle(`.chat-state-notification[data-csn="${from}"]`, this.content), u.removeElement);
+                        _.each(sizzle(`.chat-state-notification[data-csn="${username}"]`, this.content), u.removeElement);
                     }
                 },
 
@@ -594,9 +594,8 @@
                     /* Support for XEP-0085, Chat State Notifications */
                     let text;
                     const from = message.get('from'),
-                          username = message.get('fullname') || from,
-                          data = `data-csn=${from}`;
-                    this.clearChatStateNotification(from);
+                          username = message.get('username');
+                    this.clearChatStateNotification(username);
 
                     if (message.get('chat_state') === _converse.COMPOSING) {
                         if (message.get('sender') === 'me') {
@@ -619,6 +618,7 @@
                     this.content.insertAdjacentHTML(
                         'beforeend',
                         tpl_csn({
+                            'username': username,
                             'message': text,
                             'from': from,
                             'isodate': isodate
@@ -626,7 +626,7 @@
                     this.scrollDown();
 
                     this.clear_status_timeout = window.setTimeout(
-                        this.clearChatStateNotification.bind(this, from, isodate),
+                        this.clearChatStateNotification.bind(this, username, isodate),
                         30000
                     );
                     return message;
@@ -717,7 +717,7 @@
                     const view = new _converse.MessageView({'model': message});
                     this.insertMessage(view);
                     this.insertDayIndicator(view.el);
-                    this.clearChatStateNotification(message.get('from'));
+                    this.clearChatStateNotification(message.get('username'));
                     this.setScrollPosition(view.el);
 
                     if (u.isNewMessage(message)) {

@@ -275,7 +275,8 @@
                         is_spoiler = this.get('composing_spoiler');
 
                     return {
-                        'fullname': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
+                        'fullname': fullname,
+                        'username': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
                         'sender': 'me',
                         'time': moment().format(),
                         'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
@@ -362,50 +363,47 @@
                      *      that contains the message stanza, if it was
                      *      contained, otherwise it's the message stanza itself.
                      */
-                    const { _converse } = this.__super__,
-                          { __ } = _converse;
-
                     delay = delay || message.querySelector('delay');
-                    const type = message.getAttribute('type'),
-                        body = this.getMessageBody(message);
 
-                    const delayed = !_.isNull(delay),
-                        is_groupchat = type === 'groupchat',
-                        chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
-                            message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
-                            message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
-                            message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
-                            message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
+                    const { _converse } = this.__super__,
+                          { __ } = _converse,
+                          spoiler = message.querySelector(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`),
+                          chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
+                                message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
+                                message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
+                                message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
+                                message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
-                    let from;
-                    if (is_groupchat) {
-                        from = Strophe.unescapeNode(Strophe.getResourceFromJid(message.getAttribute('from')));
-                    } else {
-                        from = Strophe.getBareJidFromJid(message.getAttribute('from'));
-                    }
-                    const time = delayed ? delay.getAttribute('stamp') : moment().format();
-                    let sender, fullname;
-                    if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === _converse.bare_jid)) {
-                        sender = 'me';
-                        fullname = _converse.xmppstatus.get('fullname');
-                    } else {
-                        sender = 'them';
-                        fullname = this.get('fullname');
-                    }
-
-                    const spoiler = message.querySelector(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`);
                     const attrs = {
-                        'type': type,
-                        'from': from,
+                        'type': message.getAttribute('type'),
                         'chat_state': chat_state,
-                        'delayed': delayed,
-                        'fullname': fullname,
-                        'message': body || undefined,
+                        'delayed': !_.isNull(delay),
+                        'message': this.getMessageBody(message) || undefined,
                         'msgid': message.getAttribute('id'),
-                        'sender': sender,
-                        'time': time,
+                        'time': delay ? delay.getAttribute('stamp') : moment().format(),
                         'is_spoiler': !_.isNull(spoiler)
                     };
+                    if (attrs.type === 'groupchat') {
+                        attrs.from = message.getAttribute('from');
+                        attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
+                        attrs.username = attrs.nick;
+                        if (attrs.from === this.get('nick')) {
+                            attrs.sender = 'me';
+                        } else {
+                            attrs.sender = 'them';
+                        }
+                    } else {
+                        attrs.from = Strophe.getBareJidFromJid(message.getAttribute('from'));
+                        if (attrs.from === _converse.bare_jid) {
+                            attrs.sender = 'me';
+                            attrs.fullname = _converse.xmppstatus.get('fullname');
+                            attrs.username = attrs.fullname || attrs.from;
+                        } else {
+                            attrs.sender = 'them';
+                            attrs.fullname = this.get('fullname');
+                            attrs.username = attrs.fullname || attrs.from;
+                        }
+                    }
                     _.each(sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, message), (xform) => {
                         attrs['oob_url'] = xform.querySelector('url').textContent;
                         attrs['oob_desc'] = xform.querySelector('url').textContent;

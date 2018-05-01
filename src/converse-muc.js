@@ -305,6 +305,7 @@
                     const is_spoiler = this.get('composing_spoiler');
                     return {
                         'fullname': this.get('nick'),
+                        'username': this.get('nick'),
                         'is_spoiler': is_spoiler,
                         'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
                         'sender': 'me',

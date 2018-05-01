@@ -178,12 +178,15 @@
                     },
 
                     'update' (model, force) {
-                        this.get(model, force).then((vcard) => {
-                            model.save(_.extend(
-                                _.pick(vcard, ['fullname', 'url', 'image_type', 'image', 'vcard_updated']),
-                                {'vcard_updated': moment().format()}
-                            ));
-                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                        return new Promise((resolve, reject) => {
+                            this.get(model, force).then((vcard) => {
+                                model.save(_.extend(
+                                    _.pick(vcard, ['fullname', 'url', 'image_type', 'image', 'vcard_updated']),
+                                    {'vcard_updated': moment().format()}
+                                ));
+                                resolve();
+                            });
+                        });
                     }
                 }
             });

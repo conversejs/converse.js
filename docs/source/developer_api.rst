@@ -1306,6 +1306,8 @@ Fetches the VCard associated with a particular `Backbone.Model` instance
 (by using its `jid` or `muc_jid` attribute) and then updates the model with the
 returned VCard data.
 
+Returns a promise;
+
 Example:
 
 .. code-block:: javascript

@@ -99,8 +99,8 @@
                     const { _converse } = this.__super__;
                     this.roomspanel = new _converse.RoomsPanel({
                         'model': new (_converse.RoomsPanelModel.extend({
-                            id: b64_sha1(`converse.roomspanel${_converse.bare_jid}`), // Required by sessionStorage
-                            browserStorage: new Backbone.BrowserStorage[_converse.storage](
+                            'id': b64_sha1(`converse.roomspanel${_converse.bare_jid}`), // Required by sessionStorage
+                            'browserStorage': new Backbone.BrowserStorage[_converse.storage](
                                 b64_sha1(`converse.roomspanel${_converse.bare_jid}`))
                         }))()
                     });
@@ -1585,8 +1585,6 @@
                     this.chatroomview.model.on('change:unmoderated', this.onFeatureChanged, this);
                     this.chatroomview.model.on('change:unsecured', this.onFeatureChanged, this);
 
-                    const id = b64_sha1(`converse.occupants${_converse.bare_jid}${this.chatroomview.model.get('jid')}`);
-                    this.model.browserStorage = new Backbone.BrowserStorage.session(id);
                     this.render();
                     this.model.fetch({
                         'add': true,

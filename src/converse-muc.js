@@ -185,8 +185,16 @@
                 initialize() {
                     this.constructor.__super__.initialize.apply(this, arguments);
                     this.occupants = new _converse.ChatRoomOccupants();
-                    this.registerHandlers();
+                    this.occupants.browserStorage = new Backbone.BrowserStorage.session(
+                        b64_sha1(`converse.occupants-${_converse.bare_jid}${this.get('jid')}`)
+                    );
+                    this.avatars = new _converse.Avatars();
+                    this.avatars.browserStorage = new Backbone.BrowserStorage.session(
+                        b64_sha1(`converse.avatars-${_converse.bare_jid}${this.get('jid')}`)
+                    );
+                    this.avatars.fetch();
 
+                    this.registerHandlers();
                     this.on('change:chat_state', this.sendChatState, this);
                 },
 
@@ -280,8 +288,16 @@
                      *  (String) exit_msg: Optional message to indicate your
                      *      reason for leaving.
                      */
-                    this.occupants.reset();
+                    if (_converse.connection.mock) {
+                        // Clear for tests, but keep otherwise.
+                        // We can only get avatars for current occupants in a
+                        // room, so we'd rather cache avatars in the hopes of
+                        // having more hits.
+                        this.avatars.browserStorage._clear();
+                        this.avatars.reset();
+                    }
                     this.occupants.browserStorage._clear();
+                    this.occupants.reset();
                     if (_converse.connection.connected) {
                         this.sendUnavailablePresence(exit_msg);
                     }
@@ -304,13 +320,14 @@
                 getOutgoingMessageAttributes (text, spoiler_hint) {
                     const is_spoiler = this.get('composing_spoiler');
                     return {
+                        'from': `${this.get('jid')}/${this.get('nick')}`,
                         'fullname': this.get('nick'),
                         'username': this.get('nick'),
                         'is_spoiler': is_spoiler,
                         'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
                         'sender': 'me',
                         'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
-                        'type': 'groupchat',
+                        'type': 'groupchat'
                     };
                 },
 
@@ -1011,6 +1028,15 @@
                         return MUC_ROLE_WEIGHTS[role1] < MUC_ROLE_WEIGHTS[role2] ? -1 : 1;
                     }
                 },
+            });
+
+
+            _converse.Avatars = Backbone.Collection.extend({
+                model: _converse.ModelWithDefaultAvatar,
+
+                initialize () {
+                    this.on('add', (avatar) => _converse.api.vcard.update(avatar));
+                }
             });
 
 

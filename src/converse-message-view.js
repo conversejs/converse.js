@@ -53,6 +53,9 @@
                             })
                         }
                     });
+                    if (this.model.get('type') === 'groupchat') {
+                        this.model.avatar.on('change:image', this.renderAvatar, this);
+                    }
                     this.model.on('change:fullname', this.render, this);
                     this.model.on('change:progress', this.renderFileUploadProgresBar, this);
                     this.model.on('change:type', this.render, this);
@@ -66,33 +69,28 @@
                     } else if (this.model.get('type') === 'error') {
                         return this.renderErrorMessage();
                     }
-                    let template, image, image_type,
-                        text = this.model.get('message');
-
+                    let template, text = this.model.get('message');
                     if (this.isMeCommand()) {
                         template = tpl_action;
                         text = this.model.get('message').replace(/^\/me/, '');
                     } else {
                         template = this.model.get('is_spoiler') ? tpl_spoiler_message : tpl_message;
-                        if (this.model.get('type') !== 'headline') {
-                            if (this.model.get('sender') === 'me') {
-                                image_type = _converse.xmppstatus.get('image_type');
-                                image = _converse.xmppstatus.get('image');
-                            } else {
-                                image_type = this.chatbox.get('image_type');
-                                image = this.chatbox.get('image');
-                            }
-                        }
                     }
+
+                    let username;
+                    if (this.chatbox.get('type') === 'chatroom') {
+                        username = this.model.get('nick');
+                    } else {
+                        username = this.model.get('fullname') || this.model.get('from');
+                    }
+
                     const moment_time = moment(this.model.get('time'));
                     const msg = u.stringToElement(template(
                         _.extend(this.model.toJSON(), {
                             'pretty_time': moment_time.format(_converse.time_format),
                             'time': moment_time.format(),
                             'extra_classes': this.getExtraMessageClasses(),
-                            'label_show': __('Show more'),
-                            'image_type': image_type,
-                            'image': image
+                            'label_show': __('Show more')
                         })
                     ));
 
@@ -119,7 +117,42 @@
                     u.renderImageURLs(_converse, msg_content).then(() => {
                         this.model.collection.trigger('rendered');
                     });
-                    return this.replaceElement(msg);
+                    this.replaceElement(msg);
+                    if (this.model.get('type') !== 'headline') {
+                        this.renderAvatar();
+                    }
+                },
+
+                renderAvatar () {
+                    const canvas_el = this.el.querySelector('canvas');
+                    if (_.isNull(canvas_el)) {
+                        return;
+                    }
+                    let image, image_type;
+
+                    if (this.chatbox.get('type') === 'chatroom') {
+                        image_type = this.model.avatar.get('image_type');
+                        image = this.model.avatar.get('image');
+                    } else if (this.model.get('sender') === 'me') {
+                        image_type = _converse.xmppstatus.get('image_type');
+                        image = _converse.xmppstatus.get('image');
+                    } else {
+                        image_type = this.chatbox.get('image_type');
+                        image = this.chatbox.get('image');
+                    }
+
+                    const img_src = "data:" + image_type + ";base64," + image,
+                          img = new Image();
+                    img.onload = () => {
+                        const ctx = canvas_el.getContext('2d'),
+                              ratio = img.width / img.height;
+                        if (ratio < 1) {
+                            ctx.drawImage(img, 0, 0, canvas_el.width, canvas_el.height * (1 / ratio));
+                        } else {
+                            ctx.drawImage(img, 0, 0, canvas_el.width, canvas_el.height * ratio);
+                        }
+                    };
+                    img.src = img_src;
                 },
 
                 replaceElement (msg) {

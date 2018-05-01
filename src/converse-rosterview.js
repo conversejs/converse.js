@@ -186,7 +186,7 @@
                     xhr.onload = function () {
                         if (xhr.responseText) {
                             awesomplete.list = JSON.parse(xhr.responseText).map((i) => { //eslint-disable-line arrow-body-style
-                                return {'label': i.fullname, 'value': i.jid};
+                                return {'label': i.fullname || i.jid, 'value': i.jid};
                             });
                             awesomplete.evaluate();
                         }
@@ -416,7 +416,7 @@
                         this.el.classList.add('pending-xmpp-contact');
                         this.el.innerHTML = tpl_pending_contact(
                             _.extend(item.toJSON(), {
-                                'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname')),
+                                'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname') || item.get('jid')),
                                 'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                             })
                         );
@@ -424,8 +424,8 @@
                         this.el.classList.add('requesting-xmpp-contact');
                         this.el.innerHTML = tpl_requesting_contact(
                             _.extend(item.toJSON(), {
-                                'desc_accept': __("Click to accept the contact request from %1$s", item.get('fullname')),
-                                'desc_decline': __("Click to decline the contact request from %1$s", item.get('fullname')),
+                                'desc_accept': __("Click to accept the contact request from %1$s", item.get('fullname') || item.get('jid')),
+                                'desc_decline': __("Click to decline the contact request from %1$s", item.get('fullname') || item.get('jid')),
                                 'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                             })
                         );
@@ -454,8 +454,8 @@
                         _.extend(item.toJSON(), {
                             'desc_status': STATUSES[chat_status],
                             'status_icon': status_icon,
-                            'desc_chat': __('Click to chat with %1$s (JID: %2$s)', item.get('fullname'), item.get('jid')),
-                            'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname')),
+                            'desc_chat': __('Click to chat with %1$s (JID: %2$s)', item.get('fullname') || item.get('jid'), item.get('jid')),
+                            'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname') || item.get('jid')),
                             'allow_contact_removal': _converse.allow_contact_removal,
                             'num_unread': item.get('num_unread') || 0
                         })
@@ -633,9 +633,10 @@
                             );
                         }
                     } else  {
-                        matches = this.model.contacts.filter(
-                            u.contains.not('fullname', q)
-                        );
+                        matches = this.model.contacts.filter((contact) => {
+                            const value = contact.get('fullname') || contact.get('jid');
+                            return _.includes(value.toLowerCase(), q.toLowerCase());
+                        });
                     }
                     return matches;
                 },

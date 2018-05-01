@@ -1206,12 +1206,12 @@
                     this.sendContactAddIQ(jid, name, groups,
                         () => {
                             const contact = this.create(_.assignIn({
-                                ask: undefined,
-                                fullname: name,
+                                'ask': undefined,
+                                'fullname': name,
                                 groups,
                                 jid,
-                                requesting: false,
-                                subscription: 'none'
+                                'requesting': false,
+                                'subscription': 'none'
                             }, attributes), {sort: false});
                             resolve(contact);
                         },

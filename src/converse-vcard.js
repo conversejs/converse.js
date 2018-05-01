@@ -175,29 +175,33 @@
             });
 
             _converse.on('initialized', () => {
-                _converse.roster.on("add", (contact) => {
-                    if (!contact.get('vcard_updated')) {
-                        _converse.api.vcard.get(contact.get('jid'));
-                    }
-                });
+                _converse.roster.on("add", (contact) => _converse.api.vcard.get(contact));
             });
 
             _converse.on('statusInitialized', function fetchOwnVCard () {
-                if (_.isNil(_converse.xmppstatus.get('vcard_updated'))) {
-                    _converse.api.disco.supports(Strophe.NS.VCARD, _converse.domain)
-                        .then((result) => {
-                            if (result.length) {
-                                _converse.api.vcard.get(_converse.bare_jid)
-                                    .then((vcard) => _converse.xmppstatus.save(vcard));
-                            }})
-                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                }
+                _converse.api.disco.supports(Strophe.NS.VCARD, _converse.domain)
+                    .then((result) => {
+                        if (result.length) {
+                            _converse.api.vcard.get(_converse.xmppstatus)
+                                .then((vcard) => _converse.xmppstatus.save(vcard));
+                        }})
+                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             });
 
             _.extend(_converse.api, {
                 'vcard': {
-                    'get' (jid) {
-                        return getVCard(_converse, jid);
+                    'get' (model, force) {
+                        if (_.isString(model)) {
+                            return getVCard(_converse, model);
+                        } else if (!model.get('vcard_updated') || force) {
+                            const jid = model.get('jid') || model.get('muc_jid');
+                            if (!jid) {
+                                throw new Error("No JID to get vcard for!");
+                            }
+                            return getVCard(_converse, jid);
+                        } else {
+                            return {};
+                        }
                     }
                 }
             });

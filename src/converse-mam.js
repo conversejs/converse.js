@@ -271,16 +271,6 @@
 
             ChatRoom: {
 
-                onMessage (stanza) {
-                    /* MAM (message archive management XEP-0313) messages are
-                     * ignored, since they're handled separately.
-                     */
-                    if (sizzle(`[xmlns="${Strophe.NS.MAM}"]`, stanza).length > 0) {
-                        return true;
-                    }
-                    return this.__super__.onMessage.apply(this, arguments);
-                },
-
                 isDuplicate (message, original_stanza) {
                     const result = this.__super__.isDuplicate.apply(this, arguments);
                     if (result) {

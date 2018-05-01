@@ -14,6 +14,7 @@
 - `_converse.api.vcard.get` now also accepts a `Backbone.Model` instance and
   has an additional `force` parameter to force fetching the vcard even if it
   has already been fetched.
+- New API method `_converse.api.vcard.update`.
 
 ## UI changes
 

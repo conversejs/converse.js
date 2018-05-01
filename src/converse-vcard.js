@@ -16,35 +16,18 @@
 
     function onVCardData (_converse, jid, iq, callback) {
         const vcard = iq.querySelector('vCard');
-        if (_.isNull(vcard)) {
-            // Some servers return an empty IQ
-            return onVCardError(_converse, jid, iq, callback);
-        }
-        const img_type = _.get(vcard.querySelector('TYPE'), 'textContent'),
-            img = _.get(vcard.querySelector('BINVAL'), 'textContent'),
-            url = _.get(vcard.querySelector('URL'), 'textContent'),
-            fullname = _.get(vcard.querySelector('FN'), 'textContent');
-
-        if (!u.isSameBareJID(jid, _converse.bare_jid)) {
-            const contact = _converse.roster.get(jid);
-            if (contact) {
-                contact.save({
-                    'fullname': fullname || _.get(contact, 'fullname', jid),
-                    'image_type': img_type,
-                    'image': img,
-                    'url': url,
-                    'vcard_updated': moment().format()
-                });
-            }
+        let result = {};
+        if (!_.isNull(vcard)) {
+            result = {
+                'stanza': iq,
+                'fullname': _.get(vcard.querySelector('FN'), 'textContent'),
+                'image': _.get(vcard.querySelector('BINVAL'), 'textContent'),
+                'image_type': _.get(vcard.querySelector('TYPE'), 'textContent'),
+                'url': _.get(vcard.querySelector('URL'), 'textContent')
+            };
         }
         if (callback) {
-            callback({
-                'stanza': iq,
-                'fullname': fullname,
-                'image': img,
-                'image_type': img_type,
-                'url': url
-            });
+            callback(result);
         }
     }
 
@@ -78,20 +61,11 @@
     }
 
     function updateChatBoxFromVCard (_converse, jid) {
-        _converse.api.vcard.get(jid)
-            .then((vcard) => {
-                const chatbox = _converse.chatboxes.getChatBox(jid);
-                if (!_.isUndefined(chatbox)) {
-                    chatbox.save(_.pick(vcard, ['fullname', 'url', 'image_type', 'image', 'vcard_updated']));
-                }
-            })
-            .catch((e) => {
-                _converse.log(e, Strophe.LogLevel.ERROR);
-                _converse.log(
-                    "updateChatBoxFromVCard: Error occured while attempting to update chatbox with VCard data",
-                    Strophe.LogLevel.ERROR
-                );
-            });
+        const chatbox = _converse.chatboxes.getChatBox(jid);
+        if (_.isNil(chatbox)) {
+            return;
+        }
+        _converse.api.vcard.update(chatbox);
     }
 
 
@@ -175,15 +149,14 @@
             });
 
             _converse.on('initialized', () => {
-                _converse.roster.on("add", (contact) => _converse.api.vcard.get(contact));
+                _converse.roster.on("add", (contact) => _converse.api.vcard.update(contact));
             });
 
             _converse.on('statusInitialized', function fetchOwnVCard () {
                 _converse.api.disco.supports(Strophe.NS.VCARD, _converse.domain)
                     .then((result) => {
                         if (result.length) {
-                            _converse.api.vcard.get(_converse.xmppstatus)
-                                .then((vcard) => _converse.xmppstatus.save(vcard));
+                            _converse.api.vcard.update(_converse.xmppstatus);
                         }})
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             });
@@ -200,8 +173,17 @@
                             }
                             return getVCard(_converse, jid);
                         } else {
-                            return {};
+                            return Promise.resolve({});
                         }
+                    },
+
+                    'update' (model, force) {
+                        this.get(model, force).then((vcard) => {
+                            model.save(_.extend(
+                                _.pick(vcard, ['fullname', 'url', 'image_type', 'image', 'vcard_updated']),
+                                {'vcard_updated': moment().format()}
+                            ));
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                     }
                 }
             });

@@ -1292,3 +1292,30 @@ Example:
 
         }
     });
+
+update
+~~~~~~
+
+Parameters:
+
+* ``model`` a `Backbone.Model` instance
+* ``force`` (optional), a boolean indicating whether the vcard should be
+  fetched again even if it's been fetched before.
+
+Fetches the VCard associated with a particular `Backbone.Model` instance
+(by using its `jid` or `muc_jid` attribute) and then updates the model with the
+returned VCard data.
+
+Example:
+
+.. code-block:: javascript
+
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            _converse.api.waitUntil('rosterContactsFetched').then(() => {
+                const chatbox = _converse.chatboxes.getChatBox('someone@example.org');
+                _converse.api.vcard.update(chatbox);
+            });
+        }
+    });

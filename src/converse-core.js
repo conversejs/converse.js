@@ -1063,8 +1063,8 @@
                 const status1 = contact1.get('chat_status') || 'offline';
                 const status2 = contact2.get('chat_status') || 'offline';
                 if (_converse.STATUS_WEIGHTS[status1] === _converse.STATUS_WEIGHTS[status2]) {
-                    const name1 = contact1.get('fullname').toLowerCase();
-                    const name2 = contact2.get('fullname').toLowerCase();
+                    const name1 = (contact1.get('fullname') || contact1.get('jid')).toLowerCase();
+                    const name2 = (contact2.get('fullname') || contact2.get('jid')).toLowerCase();
                     return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
                 } else  {
                     return _converse.STATUS_WEIGHTS[status1] < _converse.STATUS_WEIGHTS[status2] ? -1 : 1;

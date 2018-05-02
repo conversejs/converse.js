@@ -821,16 +821,9 @@
 
                 isDuplicate (message, original_stanza) {
                     const msgid = message.getAttribute('id'),
-                          jid = message.getAttribute('from'),
-                          resource = Strophe.getResourceFromJid(jid),
-                          sender = resource && Strophe.unescapeNode(resource) || '';
+                          jid = message.getAttribute('from');
                     if (msgid) {
-                        return this.messages.filter(
-                            // Some bots (like HAL in the prosody chatroom)
-                            // respond to commands with the same ID as the
-                            // original message. So we also check the sender.
-                            (msg) => msg.get('msgid') === msgid && msg.get('fullname') === sender
-                        ).length > 0;
+                        return this.messages.where({'msgid': msgid, 'from': jid}).length;
                     }
                     return false;
                 },

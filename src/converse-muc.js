@@ -1127,13 +1127,16 @@
             }
 
             /************************ BEGIN Event Handlers ************************/
-            _converse.api.listen.on('pluginsInitialized', () => {
-                _converse.avatars = new _converse.Avatars();
-                _converse.avatars.browserStorage = new Backbone.BrowserStorage.local(
-                    b64_sha1(`converse.avatars-${_converse.bare_jid}`)
-                );
-                _converse.avatars.fetch({'silent': true});
-            });
+            _converse.initAvatars = function () {
+                if (_.isUndefined(_converse.avatars)) {
+                    _converse.avatars = new _converse.Avatars();
+                    _converse.avatars.browserStorage = new Backbone.BrowserStorage.local(
+                        b64_sha1(`converse.avatars-${_converse.bare_jid}`)
+                    );
+                    _converse.avatars.fetch();
+                }
+            }
+            _converse.api.listen.on('connectionInitialized', () => _converse.initAvatars);
 
             _converse.on('addClientFeatures', () => {
                 if (_converse.allow_muc) {

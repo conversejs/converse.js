@@ -635,7 +635,7 @@
                     } else  {
                         matches = this.model.contacts.filter((contact) => {
                             const value = contact.get('fullname') || contact.get('jid');
-                            return _.includes(value.toLowerCase(), q.toLowerCase());
+                            return !_.includes(value.toLowerCase(), q.toLowerCase());
                         });
                     }
                     return matches;

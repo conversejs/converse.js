@@ -330,7 +330,7 @@
                         function (messages) {
                             that.clearSpinner();
                             if (messages.length) {
-                                _.each(messages, that.model.onMessage.bind(that));
+                                _.each(messages, that.model.onMessage.bind(that.model));
                             }
                         },
                         function () {

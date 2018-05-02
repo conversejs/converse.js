@@ -39,7 +39,7 @@
     Strophe.addNamespace('FORWARD', 'urn:xmpp:forward:0');
     Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
     Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
-    Strophe.addNamespace('MAM', 'urn:xmpp:mam:1');
+    Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
     Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
     Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
     Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');

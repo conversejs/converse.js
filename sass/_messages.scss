@@ -144,8 +144,12 @@
                 }
             }
             &.chat-action {
+                display: block;
+
                 .chat-msg-heading {
+                    float: left;
                     margin-top: 0;
+                    padding-bottom: 0;
                 }
             }
             &.chat-msg-followup {

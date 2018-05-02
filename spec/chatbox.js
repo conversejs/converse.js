@@ -58,11 +58,8 @@
                 var view;
                 test_utils.createContacts(_converse, 'current');
                 test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
+                .then(() => test_utils.waitUntil(() => _converse.xmppstatus.get('fullname')), 300)
                 .then(function () {
-                    return test_utils.waitUntil(function () {
-                        return _converse.xmppstatus.get('fullname');
-                    }, 300);
-                }).then(function () {
                     test_utils.openControlBox();
                     expect(_converse.chatboxes.length).toEqual(1);
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -81,14 +78,35 @@
                     test_utils.waitUntil(function () {
                         return u.isVisible(view.el);
                     }).then(function () {
+                        expect(view.el.querySelectorAll('.chat-action').length).toBe(1);
                         expect(_.includes(view.el.querySelector('.chat-msg-author').textContent, '**Max Frankfurter')).toBeTruthy();
                         expect($(view.el).find('.chat-msg-text').text()).toBe(' is tired');
 
                         message = '/me is as well';
                         test_utils.sendMessage(view, message);
+                        expect(view.el.querySelectorAll('.chat-action').length).toBe(2);
                         expect(_.includes($(view.el).find('.chat-msg-author:last').text(), '**Max Mustermann')).toBeTruthy();
                         expect($(view.el).find('.chat-msg-text:last').text()).toBe(' is as well');
                         expect($(view.el).find('.chat-msg:last').hasClass('chat-msg-followup')).toBe(false);
+
+                        // Check that /me messages after a normal message don't
+                        // get the 'chat-msg-followup' class.
+                        message = 'This a normal message';
+                        test_utils.sendMessage(view, message);
+                        let message_el = view.el.querySelector('.message:last-child');
+                        expect(u.hasClass('chat-msg-followup', message_el)).toBeFalsy();
+
+                        message = '/me wrote a 3rd person message';
+                        test_utils.sendMessage(view, message);
+                        message_el = view.el.querySelector('.message:last-child');
+                        expect(view.el.querySelectorAll('.chat-action').length).toBe(3);
+                        expect($(view.el).find('.chat-msg-text:last').text()).toBe(' wrote a 3rd person message');
+                        expect($(view.el).find('.chat-msg-author:last').is(':visible')).toBeTruthy();
+                        expect(u.hasClass('chat-msg-followup', message_el)).toBeFalsy();
+
+
+                        message = 'This a normal message';
+
                         done();
                     });
                 });

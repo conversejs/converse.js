@@ -8621,8 +8621,12 @@ body {
     #conversejs .message.chat-msg .chat-msg-heading .chat-msg-time {
       padding-left: 0.25em;
       color: #9d9d9d; }
-  #conversejs .message.chat-msg.chat-action .chat-msg-heading {
-    margin-top: 0; }
+  #conversejs .message.chat-msg.chat-action {
+    display: block; }
+    #conversejs .message.chat-msg.chat-action .chat-msg-heading {
+      float: left;
+      margin-top: 0;
+      padding-bottom: 0; }
   #conversejs .message.chat-msg.chat-msg-followup .chat-msg-heading,
   #conversejs .message.chat-msg.chat-msg-followup .avatar {
     display: none; }

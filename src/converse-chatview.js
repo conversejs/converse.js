@@ -683,25 +683,22 @@
                      */
                     const from = el.getAttribute('data-from'),
                           previous_el = el.previousElementSibling,
-                          date = moment(el.getAttribute('data-isodate'));
+                          date = moment(el.getAttribute('data-isodate')),
+                          next_el = el.nextElementSibling;
 
-                    if (previous_el.getAttribute('data-from') === from &&
-                        date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes'))) {
-
+                    if (!u.hasClass('chat-action', el) && !u.hasClass('chat-action', previous_el) &&
+                            previous_el.getAttribute('data-from') === from &&
+                            date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes'))) {
                         u.addClass('chat-msg-followup', el);
                     }
-                    const next_el = el.nextElementSibling;
-                    if (!next_el) {
-                        return;
-                    }
-                    if (next_el.getAttribute('data-from') !== from) {
-                        u.removeClass('chat-msg-followup', next_el);
+                    if (!next_el) { return; }
+
+                    if (!u.hasClass('chat-action', 'el') &&
+                            next_el.getAttribute('data-from') === from &&
+                            moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes'))) {
+                        u.addClass('chat-msg-followup', next_el);
                     } else {
-                        if (moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes'))) {
-                            u.addClass('chat-msg-followup', next_el);
-                        } else {
-                            u.removeClass('chat-msg-followup', next_el);
-                        }
+                        u.removeClass('chat-msg-followup', next_el);
                     }
                 },
 

@@ -343,6 +343,19 @@ auto_join_on_invite
 If true, the user will automatically join a chatroom on invite without any confirm.
 
 
+auto_join_private_chats
+-----------------------
+
+* Default:  ``[]``
+
+Allows you to provide a list of user JIDs for private (i.e. single) chats that
+should automatically be started upon login.
+
+For example::
+
+    `['tom@example.org', 'dick@example.org', 'harry@example.org']`
+
+
 auto_join_rooms
 ---------------
 

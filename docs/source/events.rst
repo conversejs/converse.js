@@ -59,7 +59,7 @@ fetch archived messages from the server.
 The event handler is passed the ``Backbone.View`` instance of the relevant chat
 box.
 
-``_converse.on('afterMessagesFetched', function (chatboxview) { ... });``
+``_converse.api.listen.on('afterMessagesFetched', function (chatboxview) { ... });``
 
 .. _`cachedRoster`:
 
@@ -68,7 +68,7 @@ cachedRoster
 
 The contacts roster has been retrieved from the local cache (`sessionStorage`).
 
-``_converse.on('cachedRoster', function (items) { ... });``
+``_converse.api.listen.on('cachedRoster', function (items) { ... });``
 
 Also available as an `ES2015 Promise <http://es6-features.org/#PromiseUsage>`_:
 
@@ -85,7 +85,7 @@ callButtonClicked
 
 When a call button (i.e. with class .toggle-call) on a chatbox has been clicked.
 
-``_converse.on('callButtonClicked', function (connection, model) { ... });``
+``_converse.api.listen.on('callButtonClicked', function (connection, model) { ... });``
 
 .. _`chatBoxesFetched`:
 
@@ -97,7 +97,7 @@ Any open chatboxes (from this current session) has been retrieved from the local
 You should wait for this event or promise before attempting to do things
 related to open chatboxes.
 
-``_converse.on('chatBoxesFetched', function (items) { ... });``
+``_converse.api.listen.on('chatBoxesFetched', function (items) { ... });``
 
 Also available as an `ES2015 Promise <http://es6-features.org/#PromiseUsage>`_:
 
@@ -112,63 +112,63 @@ chatBoxInitialized
 
 When a chatbox has been initialized. Relevant to converse-chatview.js plugin.
 
-``_converse.on('chatBoxInitialized', function (chatbox) { ... });``
+``_converse.api.listen.on('chatBoxInitialized', function (chatbox) { ... });``
 
 chatBoxOpened
 ~~~~~~~~~~~~~
 
 When a chatbox has been opened. Relevant to converse-chatview.js plugin.
 
-``_converse.on('chatBoxOpened', function (chatbox) { ... });``
+``_converse.api.listen.on('chatBoxOpened', function (chatbox) { ... });``
 
 chatRoomOpened
 ~~~~~~~~~~~~~~
 
 When a chatroom has been opened. Relevant to converse-chatview.js plugin.
 
-``_converse.on('chatRoomOpened', function (chatbox) { ... });``
+``_converse.api.listen.on('chatRoomOpened', function (chatbox) { ... });``
 
 chatBoxClosed
 ~~~~~~~~~~~~~
 
 When a chatbox has been closed. Relevant to converse-chatview.js plugin.
 
-``_converse.on('chatBoxClosed', function (chatbox) { ... });``
+``_converse.api.listen.on('chatBoxClosed', function (chatbox) { ... });``
 
 chatBoxFocused
 ~~~~~~~~~~~~~~
 
 When the focus has been moved to a chatbox. Relevant to converse-chatview.js plugin.
 
-``_converse.on('chatBoxFocused', function (chatbox) { ... });``
+``_converse.api.listen.on('chatBoxFocused', function (chatbox) { ... });``
 
 chatBoxToggled
 ~~~~~~~~~~~~~~
 
 When a chatbox has been minimized or maximized. Relevant to converse-chatview.js plugin.
 
-``_converse.on('chatBoxToggled', function (chatbox) { ... });``
+``_converse.api.listen.on('chatBoxToggled', function (chatbox) { ... });``
 
 connected
 ~~~~~~~~~
 
 After connection has been established and converse.js has got all its ducks in a row.
 
-``_converse.on('connected', function () { ... });``
+``_converse.api.listen.on('connected', function () { ... });``
 
 contactRequest
 ~~~~~~~~~~~~~~
 
 Someone has requested to subscribe to your presence (i.e. to be your contact).
 
-``_converse.on('contactRequest', function (user_data) { ... });``
+``_converse.api.listen.on('contactRequest', function (user_data) { ... });``
 
 contactRemoved
 ~~~~~~~~~~~~~~
 
 The user has removed a contact.
 
-``_converse.on('contactRemoved', function (data) { ... });``
+``_converse.api.listen.on('contactRemoved', function (data) { ... });``
 
 
 contactStatusChanged
@@ -176,14 +176,14 @@ contactStatusChanged
 
 When a chat buddy's chat status has changed.
 
-``_converse.on('contactStatusChanged', function (buddy) { ... });``
+``_converse.api.listen.on('contactStatusChanged', function (buddy) { ... });``
 
 contactStatusMessageChanged
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When a chat buddy's custom status message has changed.
 
-``_converse.on('contactStatusMessageChanged', function (data) { ... });``
+``_converse.api.listen.on('contactStatusMessageChanged', function (data) { ... });``
 
 controlboxInitialized
 ~~~~~~~~~~~~~~~~~~~~~
@@ -194,7 +194,7 @@ The controlbox contains the login and register forms when
 the user is logged out and a list of the user's contacts and group chats when
 logged in.
 
-``_converse.on('controlboxInitialized', function () { ... });``
+``_converse.api.listen.on('controlboxInitialized', function () { ... });``
 
 Also available as an `ES2015 Promise <http://es6-features.org/#PromiseUsage>`_:
 
@@ -211,21 +211,21 @@ Emitted once the ``converse-disco`` plugin has been initialized and the
 ``_converse.disco_entities`` collection will be available and populated with at
 least the service discovery features of the user's own server.
 
-``_converse.on('discoInitialized', function () { ... });``
+``_converse.api.listen.on('discoInitialized', function () { ... });``
 
 disconnected
 ~~~~~~~~~~~~
 
 After converse.js has disconnected from the XMPP server.
 
-``_converse.on('disconnected', function () { ... });``
+``_converse.api.listen.on('disconnected', function () { ... });``
 
 initialized
 ~~~~~~~~~~~
 
 Once converse.js has been initialized.
 
-``_converse.on('initialized', function () { ... });``
+``_converse.api.listen.on('initialized', function () { ... });``
 
 See also `pluginsInitialized`_.
 
@@ -234,7 +234,7 @@ logout
 
 The user has logged out.
 
-``_converse.on('logout', function () { ... });``
+``_converse.api.listen.on('logout', function () { ... });``
 
 messageAdded
 ~~~~~~~~~~~~
@@ -245,7 +245,7 @@ as a `message` attribute which refers to the Message model.
 
 .. code-block:: javascript
 
-    _converse.on('messageAdded', function (data) {
+    _converse.api.listen.on('messageAdded', function (data) {
         // The message is at `data.message`
         // The original chatbox is at `data.chatbox`.
     });
@@ -255,14 +255,14 @@ messageSend
 
 When a message will be sent out.
 
-``_converse.on('messageSend', function (messageText) { ... });``
+``_converse.api.listen.on('messageSend', function (messageText) { ... });``
 
 noResumeableSession
 ~~~~~~~~~~~~~~~~~~~
 
 When keepalive=true but there aren't any stored prebind tokens.
 
-``_converse.on('noResumeableSession', function () { ... });``
+``_converse.api.listen.on('noResumeableSession', function () { ... });``
 
 .. _`pluginsInitialized`:
 
@@ -275,7 +275,7 @@ plugins. In that case, you need to first wait until all plugins have been
 initialized, so that their overrides are active. One example where this is used
 is in `converse-notifications.js <https://github.com/jcbrand/converse.js/blob/master/src/converse-notification.js>`.
 
-``_converse.on('pluginsInitialized', function () { ... });``
+``_converse.api.listen.on('pluginsInitialized', function () { ... });``
 
 Also available as an `ES2015 Promise <http://es6-features.org/#PromiseUsage>`_:
 
@@ -298,7 +298,28 @@ After the connection has dropped and converse.js has reconnected.
 Any Strophe stanza handlers (as registered via `converse.listen.stanza`) will
 have to be registered anew.
 
-``_converse.on('reconnected', function () { ... });``
+.. code-block:: javascript
+
+    _converse.api.listen.on('reconnected', function () { ... });
+
+
+privateChatsAutoJoined
+~~~~~~~~~~~~~~~~~~~~~~
+
+Emitted once any private chats have been automatically joined as specified by
+the _`auto_join_private_chats` settings.
+
+.. code-block:: javascript
+
+    _converse.api.listen.on('privateChatsAutoJoined', function () { ... });
+
+Also available as an `ES2015 Promise <http://es6-features.org/#PromiseUsage>`_.
+
+.. code-block:: javascript
+
+    _converse.api.waitUntil('privateChatsAutoJoined').then(function () {
+        // Your code here...
+    });
 
 roomsAutoJoined
 ---------------
@@ -306,7 +327,9 @@ roomsAutoJoined
 Emitted once any rooms that have been configured to be automatically joined,
 specified via the _`auto_join_rooms` setting, have been entered.
 
-``_converse.on('roomsAutoJoined', function () { ... });``
+.. code-block:: javascript
+
+    _converse.api.listen.on('roomsAutoJoined', function () { ... });
 
 Also available as an `ES2015 Promise <http://es6-features.org/#PromiseUsage>`_:
 
@@ -321,14 +344,14 @@ roomInviteSent
 
 After the user has sent out a direct invitation, to a roster contact, asking them to join a room.
 
-``_converse.on('roomInvite', function (data) { ... });``
+``_converse.api.listen.on('roomInvite', function (data) { ... });``
 
 roomInviteReceived
 ~~~~~~~~~~~~~~~~~~
 
 After the user has sent out a direct invitation, to a roster contact, asking them to join a room.
 
-``_converse.on('roomInvite', function (data) { ... });``
+``_converse.api.listen.on('roomInvite', function (data) { ... });``
 
 .. _`roomsPanelRendered`:
 
@@ -339,7 +362,7 @@ Emitted once the "Rooms" panel in the control box has been rendered.
 Used by `converse-bookmarks` and `converse-roomslist` to know when they can
 render themselves in that panel.
 
-``_converse.on('roomsPanelRendered', function (data) { ... });``
+``_converse.api.listen.on('roomsPanelRendered', function (data) { ... });``
 
 Also available as an `ES2015 Promise <http://es6-features.org/#PromiseUsage>`_:
 
@@ -356,7 +379,7 @@ roster
 
 When the roster has been received from the XMPP server.
 
-``_converse.on('roster', function (items) { ... });``
+``_converse.api.listen.on('roster', function (items) { ... });``
 
 Also available as an `ES2015 Promise <http://es6-features.org/#PromiseUsage>`_:
 
@@ -425,7 +448,7 @@ rosterPush
 
 When the roster receives a push event from server. (i.e. New entry in your buddy list)
 
-``_converse.on('rosterPush', function (items) { ... });``
+``_converse.api.listen.on('rosterPush', function (items) { ... });``
 
 rosterReadyAfterReconnection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -441,7 +464,7 @@ statusInitialized
 
 When the user's own chat status has been initialized.
 
-``_converse.on('statusInitialized', function (status) { ... });``
+``_converse.api.listen.on('statusInitialized', function (status) { ... });``
 
 Also available as an `ES2015 Promise <http://es6-features.org/#PromiseUsage>`_:
 
@@ -456,28 +479,28 @@ statusChanged
 
 When own chat status has changed.
 
-``_converse.on('statusChanged', function (status) { ... });``
+``_converse.api.listen.on('statusChanged', function (status) { ... });``
 
 statusMessageChanged
 ~~~~~~~~~~~~~~~~~~~~
 
 When own custom status message has changed.
 
-``_converse.on('statusMessageChanged', function (message) { ... });``
+``_converse.api.listen.on('statusMessageChanged', function (message) { ... });``
 
 serviceDiscovered
 ~~~~~~~~~~~~~~~~~
 
 When converse.js has learned of a service provided by the XMPP server. See XEP-0030.
 
-``_converse.on('serviceDiscovered', function (service) { ... });``
+``_converse.api.listen.on('serviceDiscovered', function (service) { ... });``
 
 windowStateChanged
 ~~~~~~~~~~~~~~~~~~
 
 When window state has changed. Used to determine when a user left the page and when came back.
 
-``_converse.on('windowStateChanged', function (data) { ... });``
+``_converse.api.listen.on('windowStateChanged', function (data) { ... });``
 
 
 List of events on the ChatRoom Backbone.Model

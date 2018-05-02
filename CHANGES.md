@@ -31,7 +31,8 @@
 - Removed  `xhr_user_search` in favor of only accepting `xhr_user_search_url` as configuration option.
 - The data returned from the `xhr_user_search_url` must now include the user's
   `jid` instead of just an `id`.
-- New configuration setting [nickname](https://conversejs.org/docs/html/configurations.html#nickname)
+- New configuration settings [nickname](https://conversejs.org/docs/html/configurations.html#nickname)
+  and [auto_join_private_chats](https://conversejs.org/docs/html/configurations.html#auto-join-private-chats).
 
 ## Architectural changes
 

@@ -55,9 +55,17 @@
             const { _converse } = this,
                 { __ } = _converse;
 
+            // Configuration values for this plugin
+            // ====================================
+            // Refer to docs/source/configuration.rst for explanations of these
+            // configuration settings.
+            _converse.api.settings.update({
+                auto_join_private_chats: [],
+            });
             _converse.api.promises.add([
                 'chatBoxesFetched',
-                'chatBoxesInitialized'
+                'chatBoxesInitialized',
+                'privateChatsAutoJoined'
             ]);
 
             function openChat (jid) {
@@ -709,8 +717,28 @@
                 return _converse.chatboxviews.get(chatbox.get('id'));
             };
 
+            function autoJoinChats () {
+                /* Automatically join private chats, based on the
+                 * "auto_join_private_chats" configuration setting.
+                 */
+                _.each(_converse.auto_join_private_chats, function (jid) {
+                    if (_converse.chatboxes.where({'jid': jid}).length) {
+                        return;
+                    }
+                    if (_.isString(jid)) {
+                        _converse.api.chats.open(jid);
+                    } else {
+                        _converse.log(
+                            'Invalid jid criteria specified for "auto_join_private_chats"',
+                            Strophe.LogLevel.ERROR);
+                    }
+                });
+                _converse.emit('privateChatsAutoJoined');
+            }
 
             /************************ BEGIN Event Handlers ************************/
+            _converse.on('chatBoxesFetched', autoJoinChats);
+
             _converse.on('addClientFeatures', () => {
                 _converse.connection.disco.addFeature(Strophe.NS.HTTPUPLOAD);
                 _converse.connection.disco.addFeature(Strophe.NS.OUTOFBAND);

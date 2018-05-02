@@ -9,7 +9,6 @@
             "form-utils",
             "converse-core",
             "emojione",
-            "converse-chatview",
             "converse-disco",
             "backbone.overview",
             "backbone.orderedlistview",
@@ -68,7 +67,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-controlbox", "converse-chatview"],
+        dependencies: ["converse-controlbox"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -1122,21 +1121,6 @@
                 _converse.emit('roomsAutoJoined');
             }
 
-
-            function reconnectToChatRooms () {
-                /* Upon a reconnection event from converse, join again
-                 * all the open chat rooms.
-                 */
-                _converse.chatboxviews.each(function (view) {
-                    if (view.model.get('type') === converse.CHATROOMS_TYPE) {
-                        view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-                        view.model.registerHandlers();
-                        view.join();
-                        view.fetchMessages();
-                    }
-                });
-            }
-
             function disconnectChatRooms () {
                 /* When disconnecting, or reconnecting, mark all chat rooms as
                  * disconnected, so that they will be properly entered again
@@ -1167,7 +1151,6 @@
                 }
             });
             _converse.on('chatBoxesFetched', autoJoinRooms);
-            _converse.on('reconnected', reconnectToChatRooms);
             _converse.on('reconnecting', disconnectChatRooms);
             _converse.on('disconnecting', disconnectChatRooms);
             /************************ END Event Handlers ************************/

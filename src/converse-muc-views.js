@@ -1815,6 +1815,21 @@
                 fetchAndSetMUCDomain(view);
                 view.model.on('change:connected', _.partial(fetchAndSetMUCDomain, view));
             });
+
+            function reconnectToChatRooms () {
+                /* Upon a reconnection event from converse, join again
+                 * all the open chat rooms.
+                 */
+                _converse.chatboxviews.each(function (view) {
+                    if (view.model.get('type') === converse.CHATROOMS_TYPE) {
+                        view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+                        view.model.registerHandlers();
+                        view.join();
+                        view.fetchMessages();
+                    }
+                });
+            }
+            _converse.on('reconnected', reconnectToChatRooms);
             /************************ END Event Handlers ************************/
         }
     });

@@ -785,9 +785,9 @@
                 parsePresence (pres) {
                     const id = Strophe.getResourceFromJid(pres.getAttribute("from"));
                     const data = {
-                        nick: id,
-                        type: pres.getAttribute("type"),
-                        states: []
+                        'nick': id,
+                        'type': pres.getAttribute("type"),
+                        'states': []
                     };
                     _.each(pres.childNodes, function (child) {
                         switch (child.nodeName) {
@@ -813,6 +813,8 @@
                                                 }
                                         }
                                     });
+                                } else if (child.getAttribute("xmlns") === Strophe.NS.VCARDUPDATE) {
+                                    data.image_hash = _.get(child.querySelector('photo'), 'textContent');
                                 }
                         }
                     });

@@ -48,6 +48,7 @@
     Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
     Strophe.addNamespace('SPOILER', 'urn:xmpp:spoiler:0');
     Strophe.addNamespace('XFORM', 'jabber:x:data');
+    Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 
     // Use Mustache style syntax for variable interpolation
     /* Configuration of Lodash templates (this config is distinct to the

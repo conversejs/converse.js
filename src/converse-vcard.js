@@ -7,10 +7,10 @@
 /*global define */
 
 (function (root, factory) {
-    define(["converse-core", "strophe.vcard"], factory);
-}(this, function (converse) {
+    define(["converse-core", "crypto", "strophe.vcard"], factory);
+}(this, function (converse, CryptoJS) {
     "use strict";
-    const { Promise, Strophe, _, moment, sizzle } = converse.env;
+    const { Promise, Strophe, SHA1, _, moment, sizzle } = converse.env;
     const u = converse.env.utils;
 
 
@@ -21,10 +21,14 @@
             result = {
                 'stanza': iq,
                 'fullname': _.get(vcard.querySelector('FN'), 'textContent'),
-                'image': _.get(vcard.querySelector('BINVAL'), 'textContent'),
-                'image_type': _.get(vcard.querySelector('TYPE'), 'textContent'),
+                'image': _.get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
+                'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
                 'url': _.get(vcard.querySelector('URL'), 'textContent')
             };
+        }
+        if (result.image) {
+            const word_array_from_b64 = CryptoJS.enc.Base64.parse(result['image']);
+            result['image_type'] = CryptoJS.SHA1(word_array_from_b64).toString()
         }
         if (callback) {
             callback(result);
@@ -121,6 +125,7 @@
                     'fullname': fullname,
                     'image': vcard.image,
                     'image_type': vcard.image_type,
+                    'image_hash': vcard.image_hash,
                     'url': vcard.url,
                     'vcard_updated': moment().format()
                 };
@@ -181,7 +186,7 @@
                         return new Promise((resolve, reject) => {
                             this.get(model, force).then((vcard) => {
                                 model.save(_.extend(
-                                    _.pick(vcard, ['fullname', 'url', 'image_type', 'image', 'vcard_updated']),
+                                    _.pick(vcard, ['fullname', 'url', 'image_type', 'image', 'image_hash']),
                                     {'vcard_updated': moment().format()}
                                 ));
                                 resolve();

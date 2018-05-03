@@ -8412,21 +8412,16 @@ body {
         font-size: 16px;
         height: 100%;
         width: 100%;
-        overflow-y: auto;
-        position: absolute; }
+        overflow-y: auto; }
         #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container .validation-message,
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .validation-message {
           font-size: 90%;
           color: #A53214; }
-        #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form,
-        #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form {
-          height: 100%;
-          margin-top: 2em; }
-          #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label,
-          #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=text],
-          #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label,
-          #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=text] {
-            display: block; }
+        #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label,
+        #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=text],
+        #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label,
+        #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=text] {
+          display: block; }
         #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container input[type=button],
         #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container input[type=submit],
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container input[type=button],

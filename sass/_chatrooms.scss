@@ -222,16 +222,12 @@
                     height: 100%;
                     width: 100%;
                     overflow-y: auto;
-                    position: absolute;
 
                     .validation-message {
                         font-size: 90%;
                         color: $error-color;
                     }
                     .chatroom-form {
-                        height: 100%;
-                        margin-top: 2em;
-
                         label,
                         input[type=text] {
                             display: block;

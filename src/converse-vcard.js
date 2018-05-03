@@ -64,14 +64,6 @@
         });
     }
 
-    function updateChatBoxFromVCard (_converse, jid) {
-        const chatbox = _converse.chatboxes.getChatBox(jid);
-        if (_.isNil(chatbox)) {
-            return;
-        }
-        _converse.api.vcard.update(chatbox);
-    }
-
 
     converse.plugins.add('converse-vcard', {
 
@@ -153,21 +145,6 @@
 
             _converse.on('addClientFeatures', () => {
                 _converse.connection.disco.addFeature(Strophe.NS.VCARD);
-            });
-
-            _converse.on('chatBoxInitialized', (chatbox) => {
-                if (!_converse.use_vcards || chatbox.model.get('type') === 'headline') {
-                    return;
-                }
-                _converse.api.waitUntil('rosterInitialized').then(() => {
-                    const jid = chatbox.model.get('jid'),
-                        contact = _converse.roster.get(jid);
-                    if (contact && !contact.get('vcard_updated') ||
-                        _.isUndefined(contact) && _converse.allow_non_roster_messaging) {
-
-                        updateChatBoxFromVCard(_converse, jid);
-                    }
-                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             });
 
             _converse.on('initialized', () => {

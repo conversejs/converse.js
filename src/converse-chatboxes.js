@@ -206,8 +206,6 @@
                 defaults: {
                     'bookmarked': false,
                     'chat_state': undefined,
-                    'image': _converse.DEFAULT_IMAGE,
-                    'image_type': _converse.DEFAULT_IMAGE_TYPE,
                     'num_unread': 0,
                     'type': 'chatbox',
                     'message_type': 'chat',

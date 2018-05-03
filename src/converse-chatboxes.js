@@ -22,6 +22,8 @@
 
     converse.plugins.add('converse-chatboxes', {
 
+        dependencies: ["converse-vcard"],
+
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -95,9 +97,9 @@
                 },
 
                 initialize () {
-                    this.avatar = _converse.avatars.findWhere({'jid': this.get('from')});
-                    if (_.isNil(this.avatar)) {
-                        this.avatar = _converse.avatars.create({'jid': this.get('from')});
+                    this.vcard = _converse.vcards.findWhere({'jid': this.get('from')});
+                    if (_.isNil(this.vcard)) {
+                        this.vcard = _converse.vcards.create({'jid': this.get('from')});
                     }
 
                     if (this.get('file')) {

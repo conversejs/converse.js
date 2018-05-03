@@ -10,7 +10,7 @@
     define(["converse-core", "crypto", "strophe.vcard"], factory);
 }(this, function (converse, CryptoJS) {
     "use strict";
-    const { Promise, Strophe, SHA1, _, moment, sizzle } = converse.env;
+    const { Backbone, Promise, Strophe, SHA1, _, b64_sha1, moment, sizzle } = converse.env;
     const u = converse.env.utils;
 
 
@@ -110,6 +110,15 @@
              */
             const { _converse } = this;
 
+            _converse.VCards = Backbone.Collection.extend({
+                model: _converse.ModelWithDefaultAvatar,
+
+                initialize () {
+                    this.on('add', (model) => _converse.api.vcard.update(model));
+                }
+            });
+
+
             _converse.createRequestingContactFromVCard = function (presence, vcard) {
                 const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
                 let fullname = vcard.fullname;
@@ -134,6 +143,14 @@
             };
 
             /* Event handlers */
+            _converse.initVCardCollection = function () {
+                _converse.vcards = new _converse.VCards();
+                _converse.vcards.browserStorage = new Backbone.BrowserStorage.local(b64_sha1(`converse.vcards`));
+                _converse.vcards.fetch();
+            }
+            _converse.api.listen.on('connectionInitialized', _converse.initVCardCollection);
+
+
             _converse.on('addClientFeatures', () => {
                 _converse.connection.disco.addFeature(Strophe.NS.VCARD);
             });

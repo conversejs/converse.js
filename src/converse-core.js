@@ -268,17 +268,6 @@
     });
 
 
-    _converse.Avatars = Backbone.Collection.extend({
-        model: _converse.ModelWithDefaultAvatar,
-
-        initialize () {
-            this.on('add', (avatar) => {
-                _converse.api.vcard.update(avatar);
-            });
-        }
-    });
-
-
     _converse.initialize = function (settings, callback) {
         "use strict";
         settings = !_.isUndefined(settings) ? settings : {};
@@ -1820,11 +1809,6 @@
             _converse.emit('connectionInitialized');
         };
 
-        this.initAvatars = function () {
-            _converse.avatars = new _converse.Avatars();
-            _converse.avatars.browserStorage = new Backbone.BrowserStorage.local(b64_sha1(`converse.avatars`));
-            _converse.avatars.fetch();
-        };
 
         this._tearDown = function () {
             /* Remove those views which are only allowed with a valid
@@ -1895,7 +1879,6 @@
         function finishInitialization () {
             _converse.initPlugins();
             _converse.initConnection();
-            _converse.initAvatars();
             _converse.setUpXMLLogging();
             _converse.logIn();
             _converse.registerGlobalEventHandlers();

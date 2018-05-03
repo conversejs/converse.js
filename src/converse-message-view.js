@@ -53,9 +53,7 @@
                             })
                         }
                     });
-                    this.model.avatar.on('change:image', () => {
-                        this.renderAvatar();
-                    });
+                    this.model.vcard.on('change:image', () => this.renderAvatar());
                     this.model.on('change:fullname', this.render, this);
                     this.model.on('change:progress', this.renderFileUploadProgresBar, this);
                     this.model.on('change:type', this.render, this);
@@ -128,8 +126,8 @@
                     if (_.isNull(canvas_el)) {
                         return;
                     }
-                    const image_type = this.model.avatar.get('image_type'),
-                          image = this.model.avatar.get('image'),
+                    const image_type = this.model.vcard.get('image_type'),
+                          image = this.model.vcard.get('image'),
                           img_src = "data:" + image_type + ";base64," + image,
                           img = new Image();
 

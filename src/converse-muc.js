@@ -996,12 +996,12 @@
                 },
 
                 onAvatarChanged () {
-                    this.avatar = _converse.avatars.findWhere({'jid': this.get('from')});
-                    if (!this.avatar) { return; }
+                    const vcard = _converse.vcards.findWhere({'jid': this.get('from')});
+                    if (!vcard) { return; }
 
                     const hash = this.get('image_hash');
-                    if (hash && this.avatar.get('image_hash') !== hash) {
-                        _converse.api.vcard.update(this.avatar);
+                    if (hash && vcard.get('image_hash') !== hash) {
+                        _converse.api.vcard.update(vcard);
                     }
                 }
             });

@@ -783,12 +783,13 @@
                 },
 
                 parsePresence (pres) {
-                    const id = Strophe.getResourceFromJid(pres.getAttribute("from"));
-                    const data = {
-                        'nick': id,
-                        'type': pres.getAttribute("type"),
-                        'states': []
-                    };
+                    const from = pres.getAttribute("from"),
+                          data = {
+                            'from': from,
+                            'nick': Strophe.getResourceFromJid(from),
+                            'type': pres.getAttribute("type"),
+                            'states': []
+                          };
                     _.each(pres.childNodes, function (child) {
                         switch (child.nodeName) {
                             case "status":
@@ -990,6 +991,20 @@
                     this.set(_.extend({
                         'id': _converse.connection.getUniqueId(),
                     }, attributes));
+
+                    this.on('change:image_hash', this.onAvatarChanged, this);
+                },
+
+                onAvatarChanged () {
+                    this.avatar = _converse.avatars.findWhere({
+                        'muc_jid': this.get('from')
+                    });
+                    if (!this.avatar) { return; }
+
+                    const hash = this.get('image_hash');
+                    if (hash && this.avatar.get('image_hash') !== hash) {
+                        _converse.api.vcard.update(this.avatar);
+                    }
                 }
             });
 

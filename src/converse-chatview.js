@@ -346,7 +346,7 @@
                                 'beforeend',
                                 tpl_toolbar_fileupload({'tooltip_upload_file': __('Choose a file to send')}));
                         }
-                    });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                 addSpoilerButton (options) {

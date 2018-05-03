@@ -15,6 +15,7 @@
         "converse-fullscreen":      "builds/converse-fullscreen",
         "converse-headline":        "builds/converse-headline",
         "converse-mam":             "builds/converse-mam",
+        "converse-message-view":    "builds/converse-message-view",
         "converse-minimize":        "builds/converse-minimize",
         "converse-modal":           "builds/converse-modal",
         "converse-muc":             "builds/converse-muc",

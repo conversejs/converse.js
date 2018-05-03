@@ -80,7 +80,6 @@
         'converse-embedded',
         'converse-fullscreen',
         'converse-headline',
-        'converse-http-file-upload',
         'converse-mam',
         'converse-message-view',
         'converse-minimize',

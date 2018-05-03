@@ -8628,21 +8628,23 @@ body.reset {
     bottom: auto;
     height: 100%;
     width: 100%; }
-  #conversejs.converse-embedded .flyout {
-    bottom: 0; }
-  #conversejs.converse-embedded .chatroom {
+  #conversejs.converse-embedded .chatbox {
     margin: 0;
+    height: 100%;
     width: 100%; }
-  #conversejs.converse-embedded .chatbox .box-flyout {
-    box-shadow: none;
-    height: 100%; }
-  #conversejs.converse-embedded .chatbox .chat-title {
-    padding: 0.3em;
-    font-size: 120%; }
+    #conversejs.converse-embedded .chatbox .flyout.box-flyout {
+      bottom: 0;
+      box-shadow: none;
+      height: 100%;
+      min-width: auto;
+      width: 100%; }
+    #conversejs.converse-embedded .chatbox .chat-title {
+      padding: 0.3em;
+      font-size: 120%; }
   #conversejs.converse-embedded .chatbox-btn {
     display: none; }
-  #conversejs.converse-embedded .chatroom .box-flyout {
-    min-width: auto;
+  #conversejs.converse-embedded .chatroom {
+    margin: 0;
     width: 100%; }
     #conversejs.converse-embedded .chatroom .box-flyout .occupants-heading {
       font-size: 120%; }

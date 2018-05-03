@@ -11,12 +11,12 @@ if (typeof define !== 'undefined') {
         "converse-chatview",        // Renders standalone chat boxes for single user chat
         "converse-controlbox",      // The control box
         "converse-dragresize",      // Allows chat boxes to be resized by dragging them
+        "converse-embedded",
         "converse-fullscreen",
         "converse-headline",        // Support for headline messages
         "converse-mam",             // XEP-0313 Message Archive Management
         "converse-minimize",        // Allows chat boxes to be minimized
         "converse-muc",             // XEP-0045 Multi-user chat
-        "converse-muc-embedded",
         "converse-muc-views",
         "converse-muc-views",       // Views related to MUC
         "converse-notification",    // HTML5 Notifications

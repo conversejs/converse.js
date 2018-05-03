@@ -77,7 +77,7 @@
         'converse-core',
         'converse-disco',
         'converse-dragresize',
-        'converse-dropdown',
+        'converse-embedded',
         'converse-fullscreen',
         'converse-headline',
         'converse-http-file-upload',
@@ -86,7 +86,6 @@
         'converse-minimize',
         'converse-modal',
         'converse-muc',
-        'converse-muc-embedded',
         'converse-muc-views',
         'converse-notification',
         'converse-otr',
@@ -1848,12 +1847,8 @@
                 _.forEach([ // eslint-disable-line lodash/prefer-map
                     "converse-bookmarks",
                     "converse-controlbox",
-                    "converse-dragresize",
                     "converse-headline",
-                    "converse-minimize",
-                    "converse-otr",
-                    "converse-register",
-                    "converse-vcard",
+                    "converse-register"
                 ], (name) => {
                     _converse.blacklisted_plugins.push(name)
                 });

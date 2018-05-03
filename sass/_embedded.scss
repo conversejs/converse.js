@@ -21,19 +21,19 @@
         width: 100%;
     }
 
-    .flyout {
-        bottom: 0;
-	}
-
-    .chatroom {
-        margin: 0;
-        width: 100%;
-    }
     .chatbox {
-        .box-flyout {
+        margin: 0;
+        height: 100%;
+        width: 100%;
+
+        .flyout.box-flyout {
+            bottom: 0;
             box-shadow: none;
             height: 100%;
+            min-width: auto;
+            width: 100%;
         }
+
         .chat-title {
             padding: 0.3em;
             font-size: 120%;
@@ -43,9 +43,9 @@
         display: none;
     }
     .chatroom {
+        margin: 0;
+        width: 100%;
         .box-flyout {
-            min-width: auto;
-            width: 100%;
             .occupants-heading {
                 font-size: 120%;
             }

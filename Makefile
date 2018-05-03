@@ -185,8 +185,6 @@ BUILDS = dist/converse.js \
 		 dist/converse.min.js \
          dist/converse-headless.js \
 		 dist/converse-headless.min.js \
-		 dist/converse-muc-embedded.js \
-		 dist/converse-muc-embedded.min.js \
 		 dist/converse-no-dependencies.min.js \
 		 dist/converse-no-dependencies.js
 
@@ -209,10 +207,6 @@ dist/converse-no-dependencies.js: transpile src stamp-npm
 	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
 dist/converse-no-dependencies.min.js: transpile src stamp-npm
 	$(RJS) -o src/build-no-dependencies.js out=dist/converse-no-dependencies.min.js
-dist/converse-muc-embedded.js: transpile src stamp-npm
-	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.js optimize=none 
-dist/converse-muc-embedded.min.js: transpile src stamp-npm
-	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.min.js
 
 .PHONY: dist
 dist:: build

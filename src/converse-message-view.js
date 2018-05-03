@@ -53,9 +53,9 @@
                             })
                         }
                     });
-                    if (this.model.get('type') === 'groupchat') {
-                        this.model.avatar.on('change:image', this.renderAvatar, this);
-                    }
+                    this.model.avatar.on('change:image', () => {
+                        this.renderAvatar();
+                    });
                     this.model.on('change:fullname', this.render, this);
                     this.model.on('change:progress', this.renderFileUploadProgresBar, this);
                     this.model.on('change:type', this.render, this);
@@ -128,21 +128,11 @@
                     if (_.isNull(canvas_el)) {
                         return;
                     }
-                    let image, image_type;
-
-                    if (this.chatbox.get('type') === 'chatroom') {
-                        image_type = this.model.avatar.get('image_type');
-                        image = this.model.avatar.get('image');
-                    } else if (this.model.get('sender') === 'me') {
-                        image_type = _converse.xmppstatus.get('image_type');
-                        image = _converse.xmppstatus.get('image');
-                    } else {
-                        image_type = this.chatbox.get('image_type');
-                        image = this.chatbox.get('image');
-                    }
-
-                    const img_src = "data:" + image_type + ";base64," + image,
+                    const image_type = this.model.avatar.get('image_type'),
+                          image = this.model.avatar.get('image'),
+                          img_src = "data:" + image_type + ";base64," + image,
                           img = new Image();
+
                     img.onload = () => {
                         const ctx = canvas_el.getContext('2d'),
                               ratio = img.width / img.height;

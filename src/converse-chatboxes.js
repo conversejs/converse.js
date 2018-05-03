@@ -95,11 +95,9 @@
                 },
 
                 initialize () {
-                    if (this.get('type') === 'groupchat') {
-                        this.avatar = _converse.avatars.findWhere({'muc_jid': this.get('from')});
-                        if (_.isNil(this.avatar)) {
-                            this.avatar = _converse.avatars.create({'muc_jid': this.get('from')});
-                        }
+                    this.avatar = _converse.avatars.findWhere({'jid': this.get('from')});
+                    if (_.isNil(this.avatar)) {
+                        this.avatar = _converse.avatars.create({'jid': this.get('from')});
                     }
 
                     if (this.get('file')) {

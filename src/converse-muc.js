@@ -67,7 +67,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-controlbox"],
+        dependencies: ["converse-chatboxes", "converse-controlbox"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -996,9 +996,7 @@
                 },
 
                 onAvatarChanged () {
-                    this.avatar = _converse.avatars.findWhere({
-                        'muc_jid': this.get('from')
-                    });
+                    this.avatar = _converse.avatars.findWhere({'jid': this.get('from')});
                     if (!this.avatar) { return; }
 
                     const hash = this.get('image_hash');
@@ -1023,15 +1021,6 @@
                         return MUC_ROLE_WEIGHTS[role1] < MUC_ROLE_WEIGHTS[role2] ? -1 : 1;
                     }
                 },
-            });
-
-
-            _converse.Avatars = Backbone.Collection.extend({
-                model: _converse.ModelWithDefaultAvatar,
-
-                initialize () {
-                    this.on('add', (avatar) => _converse.api.vcard.update(avatar));
-                }
             });
 
 
@@ -1144,15 +1133,6 @@
             }
 
             /************************ BEGIN Event Handlers ************************/
-            _converse.initAvatars = function () {
-                if (_.isUndefined(_converse.avatars)) {
-                    _converse.avatars = new _converse.Avatars();
-                    _converse.avatars.browserStorage = new Backbone.BrowserStorage.local(b64_sha1(`converse.avatars`));
-                    _converse.avatars.fetch();
-                }
-            }
-            _converse.api.listen.on('connectionInitialized', _converse.initAvatars);
-
             _converse.on('addClientFeatures', () => {
                 if (_converse.allow_muc) {
                     _converse.connection.disco.addFeature(Strophe.NS.MUC);

@@ -241,6 +241,44 @@
     _converse.router = new Backbone.Router();
 
 
+    _converse.ModelWithDefaultAvatar = Backbone.Model.extend({
+        defaults: {
+            'image': _converse.DEFAULT_IMAGE,
+            'image_type': _converse.DEFAULT_IMAGE_TYPE
+        },
+
+        set (key, val, options) {
+            // Override Backbone.Model.prototype.set to make sure that the
+            // default `image` and `image_type` values are maintained.
+            let attrs;
+            if (typeof key === 'object') {
+                attrs = key;
+                options = val;
+            } else {
+                (attrs = {})[key] = val;
+            }
+            if (_.has(attrs, 'image') && _.isUndefined(attrs['image'])) {
+                attrs['image'] = _converse.DEFAULT_IMAGE;
+                attrs['image_type'] = _converse.DEFAULT_IMAGE_TYPE;
+                return Backbone.Model.prototype.set.call(this, attrs, options);
+            } else {
+                return Backbone.Model.prototype.set.apply(this, arguments);
+            }
+        }
+    });
+
+
+    _converse.Avatars = Backbone.Collection.extend({
+        model: _converse.ModelWithDefaultAvatar,
+
+        initialize () {
+            this.on('add', (avatar) => {
+                _converse.api.vcard.update(avatar);
+            });
+        }
+    });
+
+
     _converse.initialize = function (settings, callback) {
         "use strict";
         settings = !_.isUndefined(settings) ? settings : {};
@@ -1504,33 +1542,6 @@
         this.connfeedback = new this.ConnectionFeedback();
 
 
-        this.ModelWithDefaultAvatar = Backbone.Model.extend({
-            defaults: {
-                'image': _converse.DEFAULT_IMAGE,
-                'image_type': _converse.DEFAULT_IMAGE_TYPE
-            },
-
-            set (key, val, options) {
-                // Override Backbone.Model.prototype.set to make sure that the
-                // default `image` and `image_type` values are maintained.
-                let attrs;
-                if (typeof key === 'object') {
-                    attrs = key;
-                    options = val;
-                } else {
-                    (attrs = {})[key] = val;
-                }
-                if (_.has(attrs, 'image') && _.isUndefined(attrs['image'])) {
-                    attrs['image'] = _converse.DEFAULT_IMAGE;
-                    attrs['image_type'] = _converse.DEFAULT_IMAGE_TYPE;
-                    return Backbone.Model.prototype.set.call(this, attrs, options);
-                } else {
-                    return Backbone.Model.prototype.set.apply(this, arguments);
-                }
-            }
-        });
-
-
         this.XMPPStatus = this.ModelWithDefaultAvatar.extend({
 
             defaults () {
@@ -1809,6 +1820,12 @@
             _converse.emit('connectionInitialized');
         };
 
+        this.initAvatars = function () {
+            _converse.avatars = new _converse.Avatars();
+            _converse.avatars.browserStorage = new Backbone.BrowserStorage.local(b64_sha1(`converse.avatars`));
+            _converse.avatars.fetch();
+        };
+
         this._tearDown = function () {
             /* Remove those views which are only allowed with a valid
              * connection.
@@ -1878,6 +1895,7 @@
         function finishInitialization () {
             _converse.initPlugins();
             _converse.initConnection();
+            _converse.initAvatars();
             _converse.setUpXMLLogging();
             _converse.logIn();
             _converse.registerGlobalEventHandlers();

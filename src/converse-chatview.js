@@ -102,8 +102,6 @@
             _converse.api.settings.update({
                 'use_emojione': false,
                 'emojione_image_path': emojione.imagePathPNG,
-                'chatview_avatar_height': 32,
-                'chatview_avatar_width': 32,
                 'show_toolbar': true,
                 'time_format': 'HH:mm',
                 'visible_toolbar_buttons': {
@@ -204,23 +202,24 @@
                 }
             });
 
-            _converse.ChatBoxHeading = Backbone.NativeView.extend({
+            _converse.ChatBoxHeading = _converse.ViewWithAvatar.extend({
 
                 initialize () {
-                    this.model.on('change:image', this.render, this);
                     this.model.on('change:status', this.onStatusMessageChanged, this);
-                    this.model.on('change:fullname', this.render, this);
+                    this.model.vcard.on('change', this.render, this);
                 },
 
                 render () {
                     this.el.innerHTML = tpl_chatbox_head(
-                        _.extend(this.model.toJSON(), {
-                            '_converse': _converse,
-                            'avatar_width': _converse.chatview_avatar_width,
-                            'avatar_height': _converse.chatview_avatar_height,
-                            'info_close': __('Close this chat box'),
-                        })
+                        _.extend(
+                            this.model.toJSON(),
+                            this.model.vcard.toJSON(),
+                            { '_converse': _converse,
+                              'info_close': __('Close this chat box')
+                            }
+                        )
                     );
+                    this.renderAvatar();
                     return this;
                 },
 

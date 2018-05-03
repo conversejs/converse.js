@@ -41,7 +41,33 @@
             const { _converse } = this,
                 { __ } = _converse;
 
-            _converse.MessageView = Backbone.NativeView.extend({
+            _converse.ViewWithAvatar = Backbone.NativeView.extend({
+
+                renderAvatar () {
+                    const canvas_el = this.el.querySelector('canvas');
+                    if (_.isNull(canvas_el)) {
+                        return;
+                    }
+                    const image_type = this.model.vcard.get('image_type'),
+                          image = this.model.vcard.get('image'),
+                          img_src = "data:" + image_type + ";base64," + image,
+                          img = new Image();
+
+                    img.onload = () => {
+                        const ctx = canvas_el.getContext('2d'),
+                              ratio = img.width / img.height;
+                        ctx.clearRect(0, 0, canvas_el.width, canvas_el.height);
+                        if (ratio < 1) {
+                            ctx.drawImage(img, 0, 0, canvas_el.width, canvas_el.height * (1 / ratio));
+                        } else {
+                            ctx.drawImage(img, 0, 0, canvas_el.width, canvas_el.height * ratio);
+                        }
+                    };
+                    img.src = img_src;
+                },
+            });
+
+            _converse.MessageView = _converse.ViewWithAvatar.extend({
 
                 initialize () {
                     this.chatbox = this.model.collection.chatbox;
@@ -53,7 +79,7 @@
                             })
                         }
                     });
-                    this.model.vcard.on('change:image', () => this.renderAvatar());
+                    this.model.vcard.on('change:image', this.renderAvatar, this);
                     this.model.on('change:fullname', this.render, this);
                     this.model.on('change:progress', this.renderFileUploadProgresBar, this);
                     this.model.on('change:type', this.render, this);
@@ -119,29 +145,6 @@
                     if (this.model.get('type') !== 'headline') {
                         this.renderAvatar();
                     }
-                },
-
-                renderAvatar () {
-                    const canvas_el = this.el.querySelector('canvas');
-                    if (_.isNull(canvas_el)) {
-                        return;
-                    }
-                    const image_type = this.model.vcard.get('image_type'),
-                          image = this.model.vcard.get('image'),
-                          img_src = "data:" + image_type + ";base64," + image,
-                          img = new Image();
-
-                    img.onload = () => {
-                        const ctx = canvas_el.getContext('2d'),
-                              ratio = img.width / img.height;
-                        ctx.clearRect(0, 0, canvas_el.width, canvas_el.height);
-                        if (ratio < 1) {
-                            ctx.drawImage(img, 0, 0, canvas_el.width, canvas_el.height * (1 / ratio));
-                        } else {
-                            ctx.drawImage(img, 0, 0, canvas_el.width, canvas_el.height * ratio);
-                        }
-                    };
-                    img.src = img_src;
                 },
 
                 replaceElement (msg) {

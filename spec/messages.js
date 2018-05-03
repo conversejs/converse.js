@@ -67,8 +67,11 @@
                     var chat_content = chatboxview.el.querySelector('.chat-content');
                     expect(chat_content.querySelector('.chat-msg .chat-msg-text').textContent).toEqual(message);
                     expect(chat_content.querySelector('.chat-msg-time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-                    expect(chat_content.querySelector('span.chat-msg-author').textContent).toBe('Max Frankfurter');
-                    done();
+                    return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0])
+                    .then(function () {
+                        expect(chat_content.querySelector('span.chat-msg-author').textContent).toBe('Max Frankfurter');
+                        done();
+                    });
                 });
             }));
 
@@ -120,9 +123,7 @@
                     test_utils.waitUntil(function () { return vcard_fetched; }, 100)
                     .then(function () {
                         expect(_converse.api.vcard.get).toHaveBeenCalled();
-                        return test_utils.waitUntil(function () {
-                            return chatbox.get('fullname') === mock.cur_names[0];
-                        }, 100);
+                        return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0])
                     }).then(function () {
                         var author_el = chatboxview.el.querySelector('.chat-msg-author');
                         expect( _.includes(author_el.textContent, 'Max Frankfurter')).toBeTruthy();
@@ -696,8 +697,11 @@
             var chat_content = chatboxview.el.querySelector('.chat-content');
             expect(chat_content.querySelector('.chat-msg .chat-msg-text').textContent).toEqual(msgtext);
             expect(chat_content.querySelector('.chat-msg-time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-            expect(chat_content.querySelector('span.chat-msg-author').textContent).toBe('Candice van der Knijff');
-            done();
+            return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === 'Candice van der Knijff')
+            .then(function () {
+                expect(chat_content.querySelector('span.chat-msg-author').textContent).toBe('Candice van der Knijff');
+                done();
+            });
         }));
 
         it("can be a carbon message that this user sent from a different client, as defined in XEP-0280",
@@ -899,56 +903,59 @@
                 expect(msg_obj.get('sender')).toEqual('them');
                 expect(msg_obj.get('delayed')).toEqual(true);
 
-                var chat_content = chatboxview.el.querySelector('.chat-content');
-                expect(chat_content.querySelector('.chat-msg .chat-msg-text').textContent).toEqual(message);
-                expect(chat_content.querySelector('.chat-msg-time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-                expect(chat_content.querySelector('span.chat-msg-author').textContent).toBe('Candice van der Knijff');
+                return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === 'Candice van der Knijff')
+                .then(function () {
+                    var chat_content = chatboxview.el.querySelector('.chat-content');
+                    expect(chat_content.querySelector('.chat-msg .chat-msg-text').textContent).toEqual(message);
+                    expect(chat_content.querySelector('.chat-msg-time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
+                    expect(chat_content.querySelector('span.chat-msg-author').textContent).toBe('Candice van der Knijff');
 
-                var $day = $chat_content.find('.date-separator');
-                expect($day.length).toEqual(1);
-                expect($day.attr('class')).toEqual('message date-separator');
-                expect($day.data('isodate')).toEqual(moment(one_day_ago.startOf('day')).format());
+                    var $day = $chat_content.find('.date-separator');
+                    expect($day.length).toEqual(1);
+                    expect($day.attr('class')).toEqual('message date-separator');
+                    expect($day.data('isodate')).toEqual(moment(one_day_ago.startOf('day')).format());
 
-                var $time = $chat_content.find('time.separator-text');
-                expect($time.text()).toEqual(moment(one_day_ago.startOf('day')).format("dddd MMM Do YYYY"));
+                    var $time = $chat_content.find('time.separator-text');
+                    expect($time.text()).toEqual(moment(one_day_ago.startOf('day')).format("dddd MMM Do YYYY"));
 
-                message = 'This is a current message';
-                msg = $msg({
-                    from: contact_jid,
-                    to: _converse.connection.jid,
-                    type: 'chat',
-                    id: new Date().getTime()
-                }).c('body').t(message).up()
-                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                _converse.chatboxes.onMessage(msg);
-                expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-                // Check that there is a <time> element, with the required
-                // props.
-                expect($chat_content[0].querySelectorAll('time').length).toEqual(2); // There are now two time elements
+                    message = 'This is a current message';
+                    msg = $msg({
+                        from: contact_jid,
+                        to: _converse.connection.jid,
+                        type: 'chat',
+                        id: new Date().getTime()
+                    }).c('body').t(message).up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                    _converse.chatboxes.onMessage(msg);
+                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                    // Check that there is a <time> element, with the required
+                    // props.
+                    expect($chat_content[0].querySelectorAll('time').length).toEqual(2); // There are now two time elements
 
-                var message_date = new Date();
-                $day = $chat_content.find('.date-separator:last');
-                expect($day.length).toEqual(1);
-                expect($day.attr('class')).toEqual('message date-separator');
-                expect($day.data('isodate')).toEqual(moment(message_date).startOf('day').format());
+                    var message_date = new Date();
+                    $day = $chat_content.find('.date-separator:last');
+                    expect($day.length).toEqual(1);
+                    expect($day.attr('class')).toEqual('message date-separator');
+                    expect($day.data('isodate')).toEqual(moment(message_date).startOf('day').format());
 
-                $time = $chat_content.find('time.separator-text:last');
-                expect($time.text()).toEqual(moment(message_date).startOf('day').format("dddd MMM Do YYYY"));
+                    $time = $chat_content.find('time.separator-text:last');
+                    expect($time.text()).toEqual(moment(message_date).startOf('day').format("dddd MMM Do YYYY"));
 
-                // Normal checks for the 2nd message
-                expect(chatbox.messages.length).toEqual(2);
-                msg_obj = chatbox.messages.models[1];
-                expect(msg_obj.get('message')).toEqual(message);
-                expect(msg_obj.get('fullname')).toEqual(contact_name);
-                expect(msg_obj.get('sender')).toEqual('them');
-                expect(msg_obj.get('delayed')).toEqual(false);
-                msg_txt = $chat_content.find('.chat-msg').last().find('.chat-msg-text').text();
-                expect(msg_txt).toEqual(message);
+                    // Normal checks for the 2nd message
+                    expect(chatbox.messages.length).toEqual(2);
+                    msg_obj = chatbox.messages.models[1];
+                    expect(msg_obj.get('message')).toEqual(message);
+                    expect(msg_obj.get('fullname')).toEqual(contact_name);
+                    expect(msg_obj.get('sender')).toEqual('them');
+                    expect(msg_obj.get('delayed')).toEqual(false);
+                    msg_txt = $chat_content.find('.chat-msg').last().find('.chat-msg-text').text();
+                    expect(msg_txt).toEqual(message);
 
-                expect(chat_content.querySelector('.chat-msg:last-child .chat-msg-text').textContent).toEqual(message);
-                expect(chat_content.querySelector('.chat-msg:last-child .chat-msg-time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-                expect(chat_content.querySelector('.chat-msg:last-child .chat-msg-author').textContent).toBe('Candice van der Knijff');
-                done();
+                    expect(chat_content.querySelector('.chat-msg:last-child .chat-msg-text').textContent).toEqual(message);
+                    expect(chat_content.querySelector('.chat-msg:last-child .chat-msg-time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
+                    expect(chat_content.querySelector('.chat-msg:last-child .chat-msg-author').textContent).toBe('Candice van der Knijff');
+                    done();
+                });
             });
         }));
 

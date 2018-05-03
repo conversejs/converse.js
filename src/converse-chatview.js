@@ -578,14 +578,14 @@
                     return this.scrollDown();
                 },
 
-                clearChatStateNotification (username, isodate) {
+                clearChatStateNotification (message, isodate) {
                     if (isodate) {
                         _.each(
-                            sizzle(`.chat-state-notification[data-csn="${username}"][data-isodate="${isodate}"]`, this.content),
+                            sizzle(`.chat-state-notification[data-csn="${message.get('from')}"][data-isodate="${isodate}"]`, this.content),
                             u.removeElement
                         );
                     } else {
-                        _.each(sizzle(`.chat-state-notification[data-csn="${username}"]`, this.content), u.removeElement);
+                        _.each(sizzle(`.chat-state-notification[data-csn="${message.get('from')}"]`, this.content), u.removeElement);
                     }
                 },
 
@@ -593,23 +593,24 @@
                     /* Support for XEP-0085, Chat State Notifications */
                     let text;
                     const from = message.get('from'),
-                          username = message.get('username');
-                    this.clearChatStateNotification(username);
+                          name = message.getDisplayName();
+
+                    this.clearChatStateNotification(message);
 
                     if (message.get('chat_state') === _converse.COMPOSING) {
                         if (message.get('sender') === 'me') {
                             text = __('Typing from another device');
                         } else {
-                            text = username +' '+__('is typing');
+                            text = name +' '+__('is typing');
                         }
                     } else if (message.get('chat_state') === _converse.PAUSED) {
                         if (message.get('sender') === 'me') {
                             text = __('Stopped typing on the other device');
                         } else {
-                            text = username +' '+__('has stopped typing');
+                            text = name +' '+__('has stopped typing');
                         }
                     } else if (message.get('chat_state') === _converse.GONE) {
-                        text = username +' '+__('has gone away');
+                        text = name +' '+__('has gone away');
                     } else {
                         return;
                     }
@@ -617,7 +618,6 @@
                     this.content.insertAdjacentHTML(
                         'beforeend',
                         tpl_csn({
-                            'username': username,
                             'message': text,
                             'from': from,
                             'isodate': isodate
@@ -625,7 +625,7 @@
                     this.scrollDown();
 
                     this.clear_status_timeout = window.setTimeout(
-                        this.clearChatStateNotification.bind(this, username, isodate),
+                        this.clearChatStateNotification.bind(this, message, isodate),
                         30000
                     );
                     return message;
@@ -713,7 +713,7 @@
                     const view = new _converse.MessageView({'model': message});
                     this.insertMessage(view);
                     this.insertDayIndicator(view.el);
-                    this.clearChatStateNotification(message.get('username'));
+                    this.clearChatStateNotification(message);
                     this.setScrollPosition(view.el);
 
                     if (u.isNewMessage(message)) {

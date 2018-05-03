@@ -307,7 +307,6 @@
                     return {
                         'from': `${this.get('jid')}/${this.get('nick')}`,
                         'fullname': this.get('nick'),
-                        'username': this.get('nick'),
                         'is_spoiler': is_spoiler,
                         'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
                         'sender': 'me',

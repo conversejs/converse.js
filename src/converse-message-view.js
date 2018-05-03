@@ -70,17 +70,7 @@
             _converse.MessageView = _converse.ViewWithAvatar.extend({
 
                 initialize () {
-                    this.chatbox = this.model.collection.chatbox;
-                    this.chatbox.on('change:fullname', (chatbox) => {
-                        if (chatbox.get('type') !== 'chatroom') {
-                            this.model.save({
-                                'fullname': chatbox.get('fullname'),
-                                'username': chatbox.get('fullname')
-                            })
-                        }
-                    });
-                    this.model.vcard.on('change:image', this.renderAvatar, this);
-                    this.model.on('change:fullname', this.render, this);
+                    this.model.vcard.on('change', this.render, this);
                     this.model.on('change:progress', this.renderFileUploadProgresBar, this);
                     this.model.on('change:type', this.render, this);
                     this.model.on('change:upload', this.render, this);
@@ -101,20 +91,14 @@
                         template = this.model.get('is_spoiler') ? tpl_spoiler_message : tpl_message;
                     }
 
-                    let username;
-                    if (this.chatbox.get('type') === 'chatroom') {
-                        username = this.model.get('nick');
-                    } else {
-                        username = this.model.get('fullname') || this.model.get('from');
-                    }
-
                     const moment_time = moment(this.model.get('time'));
                     const msg = u.stringToElement(template(
                         _.extend(this.model.toJSON(), {
                             'pretty_time': moment_time.format(_converse.time_format),
                             'time': moment_time.format(),
                             'extra_classes': this.getExtraMessageClasses(),
-                            'label_show': __('Show more')
+                            'label_show': __('Show more'),
+                            'username': this.model.getDisplayName()
                         })
                     ));
 
@@ -167,21 +151,12 @@
                 },
 
                 renderFileUploadProgresBar () {
-                    let image, image_type;
-                    if (this.model.get('sender') === 'me') {
-                        image_type = _converse.xmppstatus.get('image_type');
-                        image = _converse.xmppstatus.get('image');
-                    } else {
-                        image_type = this.chatbox.get('image_type');
-                        image = this.chatbox.get('image');
-                    }
                     const msg = u.stringToElement(tpl_file_progress(
                         _.extend(this.model.toJSON(), {
                             'filesize': filesize(this.model.get('file').size),
-                            'image': image,
-                            'image_type': image_type
                         })));
-                    return this.replaceElement(msg);
+                    this.replaceElement(msg);
+                    this.renderAvatar();
                 },
 
                 isMeCommand () {

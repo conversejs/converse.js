@@ -111,6 +111,14 @@
                     }
                 },
 
+                getDisplayName () {
+                    if (this.get('type') === 'groupchat') {
+                        return this.get('nick');
+                    } else {
+                        return this.vcard.get('fullname') || this.get('from');
+                    }
+                },
+
                 sendSlotRequestStanza () {
                     /* Send out an IQ stanza to request a file upload slot.
                      *
@@ -294,7 +302,7 @@
 
                     return {
                         'fullname': fullname,
-                        'username': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
+                        'from': _converse.bare_jid,
                         'sender': 'me',
                         'time': moment().format(),
                         'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
@@ -404,7 +412,6 @@
                     if (attrs.type === 'groupchat') {
                         attrs.from = message.getAttribute('from');
                         attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
-                        attrs.username = attrs.nick;
                         if (attrs.from === this.get('nick')) {
                             attrs.sender = 'me';
                         } else {
@@ -415,11 +422,9 @@
                         if (attrs.from === _converse.bare_jid) {
                             attrs.sender = 'me';
                             attrs.fullname = _converse.xmppstatus.get('fullname');
-                            attrs.username = attrs.fullname || attrs.from;
                         } else {
                             attrs.sender = 'them';
                             attrs.fullname = this.get('fullname');
-                            attrs.username = attrs.fullname || attrs.from;
                         }
                     }
                     _.each(sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, message), (xform) => {

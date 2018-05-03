@@ -627,7 +627,6 @@
         };
 
         this.initStatus = (reconnecting) => {
-
             // If there's no xmppstatus obj, then we were never connected to
             // begin with, so we set reconnecting to false.
             reconnecting = _.isUndefined(_converse.xmppstatus) ? false : reconnecting;
@@ -1791,6 +1790,8 @@
         };
 
         this.initConnection = function () {
+            /* Creates a new Strophe.Connection instance if we don't already have one.
+             */
             if (!this.connection) {
                 if (!this.bosh_service_url && ! this.websocket_url) {
                     throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
@@ -1927,7 +1928,6 @@
                 return _converse.connection.jid;
             },
             'login' (credentials) {
-                _converse.initConnection();
                 _converse.logIn(credentials);
             },
             'logout' () {

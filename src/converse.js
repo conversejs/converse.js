@@ -22,6 +22,7 @@ if (typeof define !== 'undefined') {
         "converse-notification",    // HTML5 Notifications
         "converse-otr",             // Off-the-record encryption for one-on-one messages
         "converse-ping",            // XEP-0199 XMPP Ping
+        "converse-roster",
         "converse-register",        // XEP-0077 In-band registration
         "converse-roomslist",       // Show currently open chat rooms
         "converse-vcard",           // XEP-0054 VCard-temp

@@ -93,6 +93,7 @@ require.config({
         "converse-profile":         "src/converse-profile",
         "converse-register":        "src/converse-register",
         "converse-roomslist":       "src/converse-roomslist",
+        "converse-roster":          "src/converse-roster",
         "converse-rosterview":      "src/converse-rosterview",
         "converse-singleton":       "src/converse-singleton",
         "converse-vcard":           "src/converse-vcard",

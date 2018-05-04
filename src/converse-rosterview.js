@@ -1,10 +1,8 @@
-// Converse.js (A browser based XMPP chat client)
+// Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
-/*global define */
 
 (function (root, factory) {
     define(["converse-core",
@@ -39,7 +37,7 @@
 
     converse.plugins.add('converse-rosterview', {
 
-        dependencies: ["converse-modal"],
+        dependencies: ["converse-roster", "converse-modal"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -82,6 +80,7 @@
             _converse.api.settings.update({
                 'allow_chat_pending_contacts': true,
                 'allow_contact_removal': true,
+                'roster_groups': true,
                 'show_toolbar': true,
                 'xhr_user_search_url': null
             });

@@ -63,6 +63,10 @@
 
     converse.plugins.add('converse-vcard', {
 
+        // FIXME: After refactoring, the dependency switches, from
+        // converse-roster to converse-vcard
+        dependencies: ["converse-roster"],
+
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the

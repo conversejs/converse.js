@@ -109,6 +109,16 @@
                             this.getRequestSlotURL();
                         }
                     }
+                    if (this.isOnlyChatStateNotification()) {
+                        window.setTimeout(this.destroy.bind(this), 20000);
+                    }
+                },
+
+                isOnlyChatStateNotification () {
+                    return this.get('chat_state') &&
+                            !this.get('oob_url') &&
+                            !this.get('file') &&
+                            !this.get('message');
                 },
 
                 getDisplayName () {

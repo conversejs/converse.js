@@ -14,7 +14,6 @@
             "tpl!chatbox",
             "tpl!chatbox_head",
             "tpl!chatbox_message_form",
-            "tpl!csn",
             "tpl!emojis",
             "tpl!error_message",
             "tpl!help_message",
@@ -37,7 +36,6 @@
             tpl_chatbox,
             tpl_chatbox_head,
             tpl_chatbox_message_form,
-            tpl_csn,
             tpl_emojis,
             tpl_error_message,
             tpl_help_message,
@@ -589,48 +587,6 @@
                     }
                 },
 
-                showChatStateNotification (message) {
-                    /* Support for XEP-0085, Chat State Notifications */
-                    let text;
-                    const from = message.get('from'),
-                          name = message.getDisplayName();
-
-                    this.clearChatStateNotification(message);
-
-                    if (message.get('chat_state') === _converse.COMPOSING) {
-                        if (message.get('sender') === 'me') {
-                            text = __('Typing from another device');
-                        } else {
-                            text = name +' '+__('is typing');
-                        }
-                    } else if (message.get('chat_state') === _converse.PAUSED) {
-                        if (message.get('sender') === 'me') {
-                            text = __('Stopped typing on the other device');
-                        } else {
-                            text = name +' '+__('has stopped typing');
-                        }
-                    } else if (message.get('chat_state') === _converse.GONE) {
-                        text = name +' '+__('has gone away');
-                    } else {
-                        return;
-                    }
-                    const isodate = moment().format();
-                    this.content.insertAdjacentHTML(
-                        'beforeend',
-                        tpl_csn({
-                            'message': text,
-                            'from': from,
-                            'isodate': isodate
-                        }));
-                    this.scrollDown();
-
-                    this.clear_status_timeout = window.setTimeout(
-                        this.clearChatStateNotification.bind(this, message, isodate),
-                        30000
-                    );
-                    return message;
-                },
-
                 shouldShowOnTextMessage () {
                     return !u.isVisible(this.el);
                 },
@@ -711,9 +667,9 @@
                      *  (Backbone.Model) message: The message object
                      */
                     const view = new _converse.MessageView({'model': message});
+                    this.clearChatStateNotification(message);
                     this.insertMessage(view);
                     this.insertDayIndicator(view.el);
-                    this.clearChatStateNotification(message);
                     this.setScrollPosition(view.el);
 
                     if (u.isNewMessage(message)) {
@@ -740,20 +696,8 @@
                      * Parameters:
                      *    (Object) message - The message Backbone object that was added.
                      */
-                    if (!_.isUndefined(this.clear_status_timeout)) {
-                        window.clearTimeout(this.clear_status_timeout);
-                        delete this.clear_status_timeout;
-                    }
-                    if (message.get('type') === 'error') {
-                        this.showMessage(message);
-                    } else {
-                        if (message.get('chat_state') && !message.get('delayed')) {
-                            this.showChatStateNotification(message);
-                        }
-                        if (message.get('file') || message.get('message')) {
-                            this.showMessage(message);
-                        }
-                    }
+                    this.showMessage(message);
+
                     _converse.emit('messageAdded', {
                         'message': message,
                         'chatbox': this.model

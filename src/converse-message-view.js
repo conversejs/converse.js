@@ -11,6 +11,7 @@
         "emojione",
         "filesize",
         "tpl!action",
+        "tpl!csn",
         "tpl!file_progress",
         "tpl!info",
         "tpl!message",
@@ -22,6 +23,7 @@
         emojione,
         filesize,
         tpl_action,
+        tpl_csn,
         tpl_file_progress,
         tpl_info,
         tpl_message,
@@ -74,15 +76,31 @@
                     this.model.on('change:progress', this.renderFileUploadProgresBar, this);
                     this.model.on('change:type', this.render, this);
                     this.model.on('change:upload', this.render, this);
+                    this.model.on('destroy', this.remove, this);
                     this.render();
                 },
 
                 render () {
-                    if (this.model.get('file') && !this.model.get('oob_url')) {
+                    if (this.model.isOnlyChatStateNotification()) {
+                        return this.renderChatStateNotification()
+                    } else if (this.model.get('file') && !this.model.get('oob_url')) {
                         return this.renderFileUploadProgresBar();
                     } else if (this.model.get('type') === 'error') {
                         return this.renderErrorMessage();
+                    } else {
+                        return this.renderChatMessage();
                     }
+                },
+
+                replaceElement (msg) {
+                    if (!_.isNil(this.el.parentElement)) {
+                        this.el.parentElement.replaceChild(msg, this.el);
+                    }
+                    this.setElement(msg);
+                    return this.el;
+                },
+
+                renderChatMessage () {
                     let template, text = this.model.get('message');
                     if (this.isMeCommand()) {
                         template = tpl_action;
@@ -104,13 +122,11 @@
 
                     var url = this.model.get('oob_url');
                     if (url) {
-                        const msg_media = msg.querySelector('.chat-msg-media');
-                        msg_media.innerHTML = _.flow(
+                        msg.querySelector('.chat-msg-media').innerHTML = _.flow(
                             _.partial(u.renderFileURL, _converse),
                             _.partial(u.renderMovieURL, _converse),
                             _.partial(u.renderAudioURL, _converse),
-                            _.partial(u.renderImageURL, _converse)
-                        )(url);
+                            _.partial(u.renderImageURL, _converse))(url);
                     }
 
                     const msg_content = msg.querySelector('.chat-msg-text');
@@ -126,17 +142,10 @@
                         this.model.collection.trigger('rendered');
                     });
                     this.replaceElement(msg);
+
                     if (this.model.get('type') !== 'headline') {
                         this.renderAvatar();
                     }
-                },
-
-                replaceElement (msg) {
-                    if (!_.isNil(this.el.parentElement)) {
-                        this.el.parentElement.replaceChild(msg, this.el);
-                    }
-                    this.setElement(msg);
-                    return this.el;
                 },
 
                 renderErrorMessage () {
@@ -148,6 +157,41 @@
                             'data': ''
                         })));
                     return this.replaceElement(msg);
+                },
+
+                renderChatStateNotification () {
+                    if (this.model.get('delayed')) {
+                        return this.model.destroy();
+                    }
+                    let text;
+                    const from = this.model.get('from'),
+                          name = this.model.getDisplayName();
+
+                    if (this.model.get('chat_state') === _converse.COMPOSING) {
+                        if (this.model.get('sender') === 'me') {
+                            text = __('Typing from another device');
+                        } else {
+                            text = name +' '+__('is typing');
+                        }
+                    } else if (this.model.get('chat_state') === _converse.PAUSED) {
+                        if (this.model.get('sender') === 'me') {
+                            text = __('Stopped typing on the other device');
+                        } else {
+                            text = name +' '+__('has stopped typing');
+                        }
+                    } else if (this.model.get('chat_state') === _converse.GONE) {
+                        text = name +' '+__('has gone away');
+                    } else {
+                        return;
+                    }
+                    const isodate = moment().format();
+                    this.replaceElement(
+                          u.stringToElement(
+                            tpl_csn({
+                                'message': text,
+                                'from': from,
+                                'isodate': isodate
+                            })));
                 },
 
                 renderFileUploadProgresBar () {

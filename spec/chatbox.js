@@ -718,25 +718,30 @@
                             }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         _converse.chatboxes.onMessage(msg);
                         expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-                        var chatboxview = _converse.chatboxviews.get(sender_jid);
-                        expect(chatboxview).toBeDefined();
-                        // Check that the notification appears inside the chatbox in the DOM
-                        var events = chatboxview.el.querySelectorAll('.chat-state-notification');
-                        expect(events.length).toBe(1);
-                        expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
+                        var view = _converse.chatboxviews.get(sender_jid);
+                        expect(view).toBeDefined();
 
-                        // Check that it doesn't appear twice
-                        msg = $msg({
-                                from: sender_jid,
-                                to: _converse.connection.jid,
-                                type: 'chat',
-                                id: (new Date()).getTime()
-                            }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        _converse.chatboxes.onMessage(msg);
-                        events = chatboxview.el.querySelectorAll('.chat-state-notification');
-                        expect(events.length).toBe(1);
-                        expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
-                        done();
+                        test_utils.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
+                        .then(function () {
+                            var view = _converse.chatboxviews.get(sender_jid);
+                            // Check that the notification appears inside the chatbox in the DOM
+                            var events = view.el.querySelectorAll('.chat-state-notification');
+                            expect(events.length).toBe(1);
+                            expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
+
+                            // Check that it doesn't appear twice
+                            msg = $msg({
+                                    from: sender_jid,
+                                    to: _converse.connection.jid,
+                                    type: 'chat',
+                                    id: (new Date()).getTime()
+                                }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                            _converse.chatboxes.onMessage(msg);
+                            events = view.el.querySelectorAll('.chat-state-notification');
+                            expect(events.length).toBe(1);
+                            expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
+                            done();
+                        })
                     }));
 
                     it("can be a composing carbon message that this user sent from a different client",
@@ -877,10 +882,14 @@
                                 }).c('body').c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                             _converse.chatboxes.onMessage(msg);
                             expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-                            var chatboxview = _converse.chatboxviews.get(sender_jid);
-                            var $events = $(chatboxview.el).find('.chat-info.chat-state-notification');
-                            expect($events.text()).toEqual(mock.cur_names[1] + ' has stopped typing');
-                            done();
+                            var view = _converse.chatboxviews.get(sender_jid);
+                            test_utils.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
+                            .then(function () {
+                                var view = _converse.chatboxviews.get(sender_jid);
+                                var event = view.el.querySelector('.chat-info.chat-state-notification');
+                                expect(event.textContent).toEqual(mock.cur_names[1] + ' has stopped typing');
+                                done();
+                            });
                         });
                     }));
 
@@ -1113,10 +1122,14 @@
                             }).c('body').c('gone', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         _converse.chatboxes.onMessage(msg);
                         expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-                        var chatboxview = _converse.chatboxviews.get(sender_jid);
-                        var $events = $(chatboxview.el).find('.chat-state-notification');
-                        expect($events.text()).toEqual(mock.cur_names[1] + ' has gone away');
-                        done();
+                        var view = _converse.chatboxviews.get(sender_jid);
+                        test_utils.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
+                        .then(function () {
+                            var view = _converse.chatboxviews.get(sender_jid);
+                            var event = view.el.querySelector('.chat-state-notification');
+                            expect(event.textContent).toEqual(mock.cur_names[1] + ' has gone away');
+                            done();
+                        });
                     }));
                 });
             });

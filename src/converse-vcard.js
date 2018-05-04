@@ -52,25 +52,16 @@
          */
         const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
         return new Promise((resolve, reject) => {
-            if (!_converse.use_vcards) {
-                if (resolve) { resolve({'jid': jid}); }
-            } else {
-                _converse.connection.vcard.get(
-                    _.partial(onVCardData, _converse, jid, _, resolve),
-                    to,
-                    _.partial(onVCardError, _converse, jid, _, resolve)
-                );
-            }
+            _converse.connection.vcard.get(
+                _.partial(onVCardData, _converse, jid, _, resolve),
+                to,
+                _.partial(onVCardError, _converse, jid, _, resolve)
+            );
         });
     }
 
 
     converse.plugins.add('converse-vcard', {
-
-        enabled (_converse) {
-            _converse.api.settings.update({'use_vcards': true});
-            return _converse.use_vcards;
-        },
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -106,7 +97,7 @@
                 model: _converse.ModelWithDefaultAvatar,
 
                 initialize () {
-                    this.on('add', (model) => _converse.api.vcard.update(model));
+                    this.on('add', (vcard) => _converse.api.vcard.update(vcard));
                 }
             });
 

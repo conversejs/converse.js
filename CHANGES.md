@@ -24,6 +24,7 @@
 
 ## Configuration changes 
 
+- Removed the `use_vcards` configuration setting, instead VCards are always used.
 - Removed the `xhr_custom_status` and `xhr_custom_status_url` configuration
   settings. If you relied on these settings, you can instead listen for the
   [statusMessageChanged](https://conversejs.org/docs/html/events.html#contactstatusmessagechanged)

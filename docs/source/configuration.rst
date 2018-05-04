@@ -1371,15 +1371,6 @@ use_otr_by_default
 If set to ``true``, Converse.js will automatically try to initiate an OTR (off-the-record)
 encrypted chat session every time you open a chatbox.
 
-use_vcards
-----------
-
-* Default:  ``true``
-
-Determines whether the XMPP server will be queried for roster contacts' VCards
-or not. VCards contain extra personal information such as your fullname and
-avatar image.
-
 visible_toolbar_buttons
 -----------------------
 

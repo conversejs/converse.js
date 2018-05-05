@@ -163,7 +163,6 @@ body.reset {
     }
 
     canvas {
-        background: $text-color;
         border-radius: $chatbox-border-radius;
     }
 
@@ -363,7 +362,7 @@ body.reset {
     }
 
     .avatar {
-        border-radius: 25%;
+        border-radius: 10%;
     }
 
     .activated {
@@ -459,7 +458,7 @@ body.reset {
         font-size: 3.75em;
         }
     }
-    #conversejs {
+    #conversejs:not(.converse-embedded)  {
         .chatbox  {
             .chat-body {
                 border-radius: $chatbox-border-radius;

@@ -169,6 +169,25 @@
                 },
             },
 
+            ChatBoxHeading: {
+
+                render () {
+                    const { _converse } = this.__super__,
+                        { __ } = _converse;
+                    const result = this.__super__.render.apply(this, arguments);
+                    const new_html = tpl_chatbox_minimize(
+                        {info_minimize: __('Minimize this chat box')}
+                    );
+                    const el = this.el.querySelector('.toggle-chatbox-button');
+                    if (el) {
+                        el.outerHTML = new_html;
+                    } else {
+                        const button = this.el.querySelector('.close-chatbox-button');
+                        button.insertAdjacentHTML('afterEnd', new_html);
+                    }
+                }
+            },
+
             ChatRoomView: {
                 events: {
                     'click .toggle-chatbox-button': 'minimize',
@@ -521,20 +540,6 @@
                 });
                 _converse.emit('minimizedChatsInitialized');
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-
-            _converse.on('chatBoxOpened', function renderMinimizeButton (view) {
-                // Inserts a "minimize" button in the chatview's header
-                const new_html = tpl_chatbox_minimize(
-                    {info_minimize: __('Minimize this chat box')}
-                );
-                const el = view.el.querySelector('.toggle-chatbox-button');
-                if (el) {
-                    el.outerHTML = new_html;
-                } else {
-                    const button = view.el.querySelector('.close-chatbox-button');
-                    button.insertAdjacentHTML('afterEnd', new_html);
-                }
-            });
 
             _converse.on('controlBoxOpened', function (chatbox) {
                 // Wrapped in anon method because at scan time, chatboxviews

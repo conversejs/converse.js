@@ -1,26 +1,21 @@
-// Converse.js (A browser based XMPP chat client)
+// Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
-/*global define */
 
-/* This is a Converse.js plugin which add support for multi-user chat rooms, as
- * specified in XEP-0045 Multi-user chat.
- */
 (function (root, factory) {
     define([
             "form-utils",
             "converse-core",
-            "converse-chatview",
+            "emojione",
             "converse-disco",
             "backbone.overview",
             "backbone.orderedlistview",
             "backbone.vdomview",
             "muc-utils"
     ], factory);
-}(this, function (u, converse) {
+}(this, function (u, converse, emojione) {
     "use strict";
 
     const MUC_ROLE_WEIGHTS = {
@@ -40,7 +35,6 @@
     Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
 
     converse.MUC_NICK_CHANGED_CODE = "303";
-
     converse.CHATROOMS_TYPE = 'chatroom';
 
     converse.ROOM_FEATURES = [
@@ -73,7 +67,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-controlbox", "converse-chatview"],
+        dependencies: ["converse-chatboxes", "converse-controlbox"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -190,8 +184,10 @@
                 initialize() {
                     this.constructor.__super__.initialize.apply(this, arguments);
                     this.occupants = new _converse.ChatRoomOccupants();
+                    this.occupants.browserStorage = new Backbone.BrowserStorage.session(
+                        b64_sha1(`converse.occupants-${_converse.bare_jid}${this.get('jid')}`)
+                    );
                     this.registerHandlers();
-
                     this.on('change:chat_state', this.sendChatState, this);
                 },
 
@@ -285,8 +281,8 @@
                      *  (String) exit_msg: Optional message to indicate your
                      *      reason for leaving.
                      */
-                    this.occupants.reset();
                     this.occupants.browserStorage._clear();
+                    this.occupants.reset();
                     if (_converse.connection.connected) {
                         this.sendUnavailablePresence(exit_msg);
                     }
@@ -304,6 +300,19 @@
                         presence.c("status", exit_msg);
                     }
                     _converse.connection.sendPresence(presence);
+                },
+
+                getOutgoingMessageAttributes (text, spoiler_hint) {
+                    const is_spoiler = this.get('composing_spoiler');
+                    return {
+                        'from': `${this.get('jid')}/${this.get('nick')}`,
+                        'fullname': this.get('nick'),
+                        'is_spoiler': is_spoiler,
+                        'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
+                        'sender': 'me',
+                        'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
+                        'type': 'groupchat'
+                    };
                 },
 
                 getRoomFeatures () {
@@ -339,18 +348,6 @@
                     return jid + (nick !== null ? `/${nick}` : "");
                 },
                 
-                sendChatRoomFile (text, to) {
-                    const msgid = _converse.connection.getUniqueId();
-                    const stanza = $msg({
-                        'from': _converse.connection.jid,
-                        'to': to,
-                        'type': 'groupchat',
-                        'id': msgid
-                    }).c("body").t(text).up()
-                      .c("x", {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(text).up();
-                      _converse.connection.send(stanza);
-                },
-
                 sendChatState () {
                     /* Sends a message with the status of the user in this chat session
                      * as taken from the 'chat_state' attribute of the chat box.
@@ -785,12 +782,13 @@
                 },
 
                 parsePresence (pres) {
-                    const id = Strophe.getResourceFromJid(pres.getAttribute("from"));
-                    const data = {
-                        nick: id,
-                        type: pres.getAttribute("type"),
-                        states: []
-                    };
+                    const from = pres.getAttribute("from"),
+                          data = {
+                            'from': from,
+                            'nick': Strophe.getResourceFromJid(from),
+                            'type': pres.getAttribute("type"),
+                            'states': []
+                          };
                     _.each(pres.childNodes, function (child) {
                         switch (child.nodeName) {
                             case "status":
@@ -815,6 +813,8 @@
                                                 }
                                         }
                                     });
+                                } else if (child.getAttribute("xmlns") === Strophe.NS.VCARDUPDATE) {
+                                    data.image_hash = _.get(child.querySelector('photo'), 'textContent');
                                 }
                         }
                     });
@@ -823,16 +823,9 @@
 
                 isDuplicate (message, original_stanza) {
                     const msgid = message.getAttribute('id'),
-                          jid = message.getAttribute('from'),
-                          resource = Strophe.getResourceFromJid(jid),
-                          sender = resource && Strophe.unescapeNode(resource) || '';
+                          jid = message.getAttribute('from');
                     if (msgid) {
-                        return this.messages.filter(
-                            // Some bots (like HAL in the prosody chatroom)
-                            // respond to commands with the same ID as the
-                            // original message. So we also check the sender.
-                            (msg) => msg.get('msgid') === msgid && msg.get('fullname') === sender
-                        ).length > 0;
+                        return this.messages.where({'msgid': msgid, 'from': jid}).length;
                     }
                     return false;
                 },
@@ -997,6 +990,18 @@
                     this.set(_.extend({
                         'id': _converse.connection.getUniqueId(),
                     }, attributes));
+
+                    this.on('change:image_hash', this.onAvatarChanged, this);
+                },
+
+                onAvatarChanged () {
+                    const vcard = _converse.vcards.findWhere({'jid': this.get('from')});
+                    if (!vcard) { return; }
+
+                    const hash = this.get('image_hash');
+                    if (hash && vcard.get('image_hash') !== hash) {
+                        _converse.api.vcard.update(vcard);
+                    }
                 }
             });
 
@@ -1114,21 +1119,6 @@
                 _converse.emit('roomsAutoJoined');
             }
 
-
-            function reconnectToChatRooms () {
-                /* Upon a reconnection event from converse, join again
-                 * all the open chat rooms.
-                 */
-                _converse.chatboxviews.each(function (view) {
-                    if (view.model.get('type') === converse.CHATROOMS_TYPE) {
-                        view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-                        view.model.registerHandlers();
-                        view.join();
-                        view.fetchMessages();
-                    }
-                });
-            }
-
             function disconnectChatRooms () {
                 /* When disconnecting, or reconnecting, mark all chat rooms as
                  * disconnected, so that they will be properly entered again
@@ -1151,7 +1141,6 @@
                 }
             });
             _converse.on('chatBoxesFetched', autoJoinRooms);
-            _converse.on('reconnected', reconnectToChatRooms);
             _converse.on('reconnecting', disconnectChatRooms);
             _converse.on('disconnecting', disconnectChatRooms);
             /************************ END Event Handlers ************************/

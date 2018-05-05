@@ -118,7 +118,7 @@ your browser.
 Websockets provide long-lived, bidirectional connections which do not rely on
 HTTP. Therefore BOSH, which operates over HTTP, doesn't apply to websockets.
 
-`Prosody <http://prosody.im>`_ (from version 0.10) supports websocket connections, as
+`Prosody <http://prosody.im>`_ (from version 0.10) and `Ejabberd <http://www.ejabberd.im>`_ support websocket connections, as
 does the node-xmpp-bosh connection manager.
 
 Refer to the :ref:`websocket-url` configuration setting for information on how to

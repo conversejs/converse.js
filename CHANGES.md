@@ -1,26 +1,36 @@
 # Changelog
 
-## Http-File-Upload
+## 4.0.0 (Unreleased)
 
 ## New Features
 
 - #161 XEP-0363: HTTP File Upload
+- Automatically grow/shrink input as text is entered/removed
+- MP4 and MP3 files when sent as XEP-0066 Out of Band Data, are now playable directly in chat
 - Support for rendering URLs sent according to XEP-0066 Out of Band Data.
-- mp4 and mp3 files when sent as XEP-0066 Out of Band Data, will now be playable directly in chat
+- Geo-URIs (e.g. from Conversations) are now replaced by links to openstreetmap (works in reverse also)
 
-## 4.0.0 (Unreleased)
+### Bugfixes
+
+- Spoiler messages didn't include the message author's name.
+- Documentation includes utf-8 charset to make minfied versions compatible across platforms. #1017
+- #1026 Typing in MUC shows "Typing from another device"
+
+### API changes
+- `_converse.api.vcard.get` now also accepts a `Backbone.Model` instance and
+  has an additional `force` parameter to force fetching the vcard even if it
+  has already been fetched.
+- New API method `_converse.api.vcard.update`.
 
 ## UI changes
 
+- #956 Conversation pane should show my own identity in pane header
 - The UI is now based on Bootstrap4 and Flexbox is used extensively.
-- #956 Conversation pane should show my own identity in pane header 
-
-## New Features
-
-- geo-URIs (e.g. from Conversations) are now replaced by links to openstreetmap (works in reverse also)
+- User Avatars are now shown in chat messages.
 
 ## Configuration changes 
 
+- Removed the `use_vcards` configuration setting, instead VCards are always used.
 - Removed the `xhr_custom_status` and `xhr_custom_status_url` configuration
   settings. If you relied on these settings, you can instead listen for the
   [statusMessageChanged](https://conversejs.org/docs/html/events.html#contactstatusmessagechanged)
@@ -28,19 +38,18 @@
 - Removed  `xhr_user_search` in favor of only accepting `xhr_user_search_url` as configuration option.
 - The data returned from the `xhr_user_search_url` must now include the user's
   `jid` instead of just an `id`.
-- New configuration setting [nickname](https://conversejs.org/docs/html/configurations.html#nickname)
+- New configuration settings [nickname](https://conversejs.org/docs/html/configurations.html#nickname)
+  and [auto_join_private_chats](https://conversejs.org/docs/html/configurations.html#auto-join-private-chats).
 
 ## Architectural changes
 
 - Extracted the views from `converse-muc.js` into `converse-muc-views.js` and
   where appropriate moved methods from the views into the models/collections.
   This makes MUC possible in headless mode.
+- Created a new core plugin `converse-roster.js` which contains the models for
+  roster-related data. Previously this code was in `converse-core.js`.
+- VCards are now stored separately from chats and roster contacts.
 
-### Bugfixes
-
-- Spoiler messages didn't include the message author's name.
-- Documentation includes utf-8 charset to make minfied versions compatible across platforms. #1017
-- #1026 Typing in MUC shows "Typing from another device"
 
 ## 3.3.4 (2018-03-05)
 
@@ -93,7 +102,7 @@
     - Maintain MUC session upon page reload
 
 ### API changes
-- New API method `_converse.disco.getIdentity` to check whether a JID has a given identity.
+- New API method `_converse.api.disco.getIdentity` to check whether a JID has a given identity.
 
 ### Configuration settings
 - `auto_reconnect` is now set to `true` by default.

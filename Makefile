@@ -124,7 +124,6 @@ clean:
 	rm dist/*.min.js
 	rm css/theme.min.css
 	rm css/converse.min.css
-	rm css/converse-muc-embedded.css
 	rm css/*.map
 
 .PHONY: dev
@@ -134,16 +133,16 @@ dev: stamp-bundler stamp-npm
 ## Builds
 
 .PHONY: css
-css: dev sass/*.scss css/converse.css css/converse.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css
+css: dev sass/*.scss css/converse.css css/converse.min.css css/theme.min.css css/inverse.css css/inverse.min.css css/fonts.css
 
 css/inverse.css:: dev sass sass
-	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/inverse/inverse.scss css/inverse.css
-
-css/converse-muc-embedded.css:: dev sass
-	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/_muc_embedded.scss css/converse-muc-embedded.css
+	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/inverse.scss css/inverse.css
 
 css/converse.css:: dev sass
-	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss css/converse.css
+	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/converse.scss css/converse.css
+
+css/fonts.css:: dev sass
+	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/font-awesome.scss $@
 
 css/%.min.css:: css/%.css
 	make dev
@@ -151,7 +150,7 @@ css/%.min.css:: css/%.css
 
 .PHONY: watch
 watch: dev
-	$(SASS) --watch -I $(BOURBON) -I $(BOOTSTRAP) sass/converse/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css sass/inverse/inverse.scss:css/inverse.css
+	$(SASS) --watch -I $(BOURBON) -I $(BOOTSTRAP) sass:css
 
 .PHONY: watchjs
 watchjs: dev
@@ -186,8 +185,6 @@ BUILDS = dist/converse.js \
 		 dist/converse.min.js \
          dist/converse-headless.js \
 		 dist/converse-headless.min.js \
-		 dist/converse-muc-embedded.js \
-		 dist/converse-muc-embedded.min.js \
 		 dist/converse-no-dependencies.min.js \
 		 dist/converse-no-dependencies.js
 
@@ -210,10 +207,6 @@ dist/converse-no-dependencies.js: transpile src stamp-npm
 	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
 dist/converse-no-dependencies.min.js: transpile src stamp-npm
 	$(RJS) -o src/build-no-dependencies.js out=dist/converse-no-dependencies.min.js
-dist/converse-muc-embedded.js: transpile src stamp-npm
-	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.js optimize=none 
-dist/converse-muc-embedded.min.js: transpile src stamp-npm
-	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.min.js
 
 .PHONY: dist
 dist:: build

@@ -9,7 +9,7 @@
 </head>
 
 <body class="reset">
-    <div id="conversejs" class="fullscreen">
+    <div id="conversejs" class="fullscreen converse-fullscreen">
         <div class="sidebar"></div>
         <div class="converse-chatboxes row no-gutters">
             <div id="controlbox" class="chatbox">
@@ -20,155 +20,286 @@
                 </div>
             </div>
 
-            <div class="chatbox chatroom" id="chatbox-4a77380f1cd9d392627b0e1469688f9ca44e9392">
+            <div class="chatbox chatroom" id="chatroom">
                 <div class="flyout box-flyout">
                     <div class="chat-head chat-head-chatroom row no-gutters">
-                        <div class="col">
-                            <div class="chat-title">Chatroom with a very long name</div>
-                            <p class="chatroom-topic">May the force be with you</p>
+                        <div class="col col-9">
+                            <div class="chat-title">Capulet's orchard</div>
+                            <p class="chatroom-description">Two households, both alike in dignity, In fair Verona, where we lay our scene.</p>
                         </div>
-                        <div class="col-sm-3 col-lg-2">
-                            <div class="chatbox-buttons row no-gutters">
-                                <a class="chatbox-btn fa fa-minus"></a>
-                                <a class="chatbox-btn fa fa-close"></a>
-                                <a class="chatbox-btn fa fa-wrench"></a>
-                            </div>
+                        <div class="chatbox-buttons row no-gutters">
+                            <a class="chatbox-btn fa fa-minus"></a>
+                            <a class="chatbox-btn fa fa-close"></a>
+                            <a class="chatbox-btn fa fa-wrench"></a>
                         </div>
                     </div>
 
                     <div class="chat-body chatroom-body row no-gutters">
-                            <div class="chat-area col-md-9 col-8">
-                                <div class="chat-content">
-                                    <div class="chat-message">
-                                        <span class="chat-msg-author chat-msg-room">18:50&nbsp;
-                                            <canvas height="24" width="24" class="avatar"></canvas>
-                                            <span class="chat-msg-room">luke:&nbsp;</span>
-                                        </span>
-                                        <span class="chat-msg-content">leia: hi :)</span>
-                                    </div>
-                                    <div class="chat-message">
-                                        <span class="chat-msg-author chat-msg-room">19:40&nbsp;
-                                            <canvas height="24" width="24" class="avatar"></canvas>
-                                            <span class="chat-msg-room">leia:&nbsp;</span>
-                                        </span>
-                                        <span class="chat-msg-content">I'll be gone for a while, will be back in about an hour</span>
-                                    </div>
-                                    <time class="message chat-info badge badge-info" datetime="2013-06-04T00:00:00.000Z">Tue Jun 04 2013</time>
-                                    <div class="chat-message">
-                                        <span class="chat-msg-author chat-msg-room">19:40&nbsp;
-                                            <canvas height="24" width="24" class="avatar"></canvas>
-                                            <span class="chat-msg-room">Obi-wan Kenobi, Jedi Master:&nbsp;</span>
-                                        </span>
-                                        <span class="chat-msg-content">I'll be gone for a while, will be back in about an hour</span>
-                                    </div>
+                        <div class="chat-area">
+                            <div class="chat-content">
+                                <div class="message date-separator">
+                                    <hr class="separator">
+                                    <time class="separator-text" datetime="2018-06-03T00:00:00.000Z"><span>Tue Jun 03 2018</span></time>
+                                </div>
 
-                                    <div class="message chat-info chat-event" data-isodate="2018-03-07T10:21:09+01:00" data-join="&quot;jcbrand&quot;">jcbrand has entered the room</div>
-                                    <div class="message chat-info chat-event" data-isodate="2018-03-07T10:21:09+01:00" data-join="&quot;jcbrand&quot;">Topic set by jcbrand</div>
-                                    <div class="message chat-info chat-topic" data-isodate="2018-03-07T10:21:09+01:00">Converse.js: The latest release is 3.3.4. Please be
-                                         patient if your questions aren't answered immediately. We're all in different timezones.</div>
+                                <div class="message chat-info chat-event" data-isodate="2018-04-36T18:07:36+02:00" data-join="&quot;Romeo Montague&quot;">
+                                    Romeo Montague has entered the room</div>
 
+                                <div class="message chat-msg chat-action" data-isodate="2018-04-36T18:07:38+02:00">
+                                    <span class="chat-msg-heading">
+                                        <span class="chat-msg-author">**Romeo Montague</span>
+                                    </span>
+                                    <span class="chat-msg-text">looks around</span>
+                                </div>
 
-                                    <div class="chat-message">
-                                        <span class="chat-msg-author chat-msg-me">19:42&nbsp;
-                                            <canvas height="24" width="24" class="avatar"></canvas>
-                                            <span class="chat-msg-me">me:&nbsp;</span>
+								<div class="message chat-msg">
+                                    <div class="avatar montague"></div>
+                                    <canvas data-avatar="/mockup/images/romeo.jpg" height="36" width="36" class="avatar"></canvas>
+                                    <div class="chat-msg-content">
+                                        <span class="chat-msg-heading">
+                                            <span class="chat-msg-author">Romeo Montague</span>
+                                            <span class="chat-msg-time">15:31</span>
                                         </span>
-                                        <span class="chat-msg-content">Supercalifragilisticexpialidociousstillnotlongenough</span>
+                                        <span class="chat-msg-text">He jests at scars that never felt a wound.</span>
                                     </div>
-                                    <div class="chat-message">
-                                        <span class="chat-msg-author chat-msg-room">19:43&nbsp;
-                                            <canvas height="24" width="24" class="avatar"></canvas>
-                                            <span class="chat-msg-roomme">Obi-wan Kenobi, Jedi Master:&nbsp;</span>
+								</div>
+
+                                <div class="message date-separator">
+                                    <hr class="separator">
+                                    <time class="separator-text" datetime="2018-06-04T00:00:00.000Z"><span>Tue Jun 04 2018</span></time>
+                                </div>
+
+                                <div class="message chat-info chat-event" data-isodate="2018-04-36T18:07:36+02:00" data-join="&quot;Juliet&quot;">
+                                    Juliet has entered the room</div>
+
+								<div class="message chat-msg">
+                                    <canvas data-avatar="/mockup/images/romeo.jpg" height="36" width="36" class="avatar"></canvas>
+                                    <div class="chat-msg-content">
+                                        <span class="chat-msg-heading">
+                                            <span class="chat-msg-author">Romeo Montague</span>
+                                            <span class="chat-msg-time">19:36</span>
                                         </span>
-                                        <span class="chat-msg-content">Another message to check that scrolling works.</span>
+                                        <span class="chat-msg-text">
+                                            But, soft! what light through yonder window breaks?
+                                        </span>
+                                    </div>
+								</div>
+								<div class="message chat-msg chat-msg-followup">
+                                    <canvas data-avatar="/mockup/images/romeo.jpg" height="36" width="36" class="avatar"></canvas>
+                                    <div class="chat-msg-content">
+                                        <span class="chat-msg-heading">
+                                            <span class="chat-msg-author">Romeo Montague</span>
+                                            <span class="chat-msg-time">19:36</span>
+                                        </span>
+                                        <span class="chat-msg-text">It is the east, and Juliet is the sun.</span>
+                                    </div>
+								</div>
+								<div class="message chat-msg chat-msg-followup">
+                                    <canvas data-avatar="/mockup/images/romeo.jpg" height="36" width="36" class="avatar"></canvas>
+                                    <div class="chat-msg-content">
+                                        <span class="chat-msg-heading">
+                                            <span class="chat-msg-author">Romeo Montague</span>
+                                            <span class="chat-msg-time">19:36</span>
+                                        </span>
+                                        <span class="chat-msg-text">Arise, fair sun, and kill the envious moon, Who is already sick and pale with grief</span>
+                                    </div>
+								</div>
+
+								<div class="message chat-msg">
+                                    <canvas height="36" width="36" class="avatar"></canvas>
+                                    <div class="chat-msg-content">
+                                        <span class="chat-msg-heading">
+                                            <span class="chat-msg-author">Juliet Capulet</span>
+                                            <span class="chat-msg-time">19:43</span>
+                                        </span>
+                                        <span class="chat-msg-text">
+                                            O Romeo, Romeo! wherefore art thou Romeo?
+                                            Deny thy father and refuse thy name;
+                                            Or, if thou wilt not, be but sworn my love,
+                                            And I'll no longer be a Capulet.
+                                        </span>
+                                        <div class="chat-msg-media"></div>
+                                    </div>
+								</div>
+
+                                <div class="message chat-msg">
+                                    <canvas data-avatar="/mockup/images/romeo.jpg" height="36" width="36" class="avatar"></canvas>
+                                    <div class="chat-msg-content">
+                                        <span class="chat-msg-heading">
+                                            <span class="chat-msg-author">Romeo Montague</span>
+                                            <span class="chat-msg-time">19:36</span>
+                                        </span>
+                                        <span class="chat-msg-text">Uploading file: <strong>juliet.jpg</strong>, 120kb</span>
+                                        <progress value="50" max="100"/>
                                     </div>
                                 </div>
-                                <form class="sendXMPPMessage">
-                                    <ul class="chat-toolbar no-text-select">
-                                        <li class="toggle-smiley fa fa-smile-o" title="Insert a smiley"></li>
-                                        <li class="toggle-occupants"><a class="fa fa-user-times" title="Hide the list of occupants"></a></li>
-                                        <li class="toggle-clear"><a class="fa fa-eraser" title="Clear all messages"></a></li>
-                                    </ul>
-                                    <textarea class="chat-textarea form-control" placeholder="Message"></textarea>
-                                </form>
+
+								<div class="message chat-msg">
+                                    <canvas height="36" width="36" class="avatar"></canvas>
+                                    <div class="chat-msg-content">
+                                        <span class="chat-msg-heading">
+                                            <span class="chat-msg-author">Juliet Capulet</span>
+                                            <span class="chat-msg-time">19:45</span>
+                                        </span>
+                                        <span class="chat-msg-text"></span>
+                                        <div class="chat-msg-media">
+                                            <a href="https://images.unsplash.com/photo-1496660067708-010ebdd7ce72?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=ea3514e6e00d8ce25c24d992b97929d9&dpr=1&auto=format&fit=crop&w=1000&q=80&cs=tinysrgb"
+                                               target="_blank" rel="noopener">
+                                                <img class="chat-image img-thumbnail" src="https://images.unsplash.com/photo-1496660067708-010ebdd7ce72?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=ea3514e6e00d8ce25c24d992b97929d9&dpr=1&auto=format&fit=crop&w=1000&q=80&cs=tinysrgb"> 
+                                            </a>
+                                        </div>
+                                    </div>
+								</div>
+
+                                <div class="message chat-msg" data-isodate="2018-04-36T18:07:36+02:00" data-msgid="some-long-id">
+                                    <canvas data-avatar="/mockup/images/romeo.jpg" height="36" width="36" class="avatar"></canvas>
+                                    <div class="chat-msg-content">
+                                        <span class="chat-msg-heading">
+                                            <span class="chat-msg-author">Romeo Montague</span>
+                                            <span class="chat-msg-time">19:36</span>
+                                        </span>
+                                        <div>
+                                            <span class="spoiler-hint">By a name</span>
+                                            <a class="badge badge-info spoiler-toggle" data-toggle-state="closed" href="#"><i class="fa fa-eye"></i>Show more</a>
+                                        </div>
+                                        <div class="chat-msg-text spoiler collapsed">
+                                            I know not how to tell thee who I am: My name, dear saint, is hateful to
+                                            myself, Because it is an enemy to thee. Had I it written, I would tear the word. 
+                                        </div>
+                                        <div class="chat-msg-media"></div>
+                                    </div>
+                                </div>
+
+                                <div class="message chat-info chat-event" data-isodate="2018-03-07T10:21:09+01:00" data-join="&quot;Mercutio&quot;">Mercutio has entered the room</div>
+                                <div class="message chat-info chat-event" data-isodate="2018-03-07T10:21:09+01:00" data-join="&quot;Mercutio&quot;">Topic set by Mercutio</div>
+                                <div class="message chat-info chat-topic" data-isodate="2018-03-07T10:21:09+01:00">Converse.js: The latest release is 3.3.4. Please be
+                                        patient if your questions aren't answered immediately. We're all in different timezones.</div>
+
+								<div class="message chat-msg">
+                                    <canvas height="36" width="36" class="avatar"></canvas>
+                                    <div class="chat-msg-content">
+                                        <span class="chat-msg-heading">
+                                            <span class="chat-msg-author">Mercutio</span>
+                                            <span class="chat-msg-time">19:49</span>
+                                        </span>
+                                        <span class="chat-msg-text">I mean, sir, in delay We waste our lights in vain, like lamps by day.</span>
+                                    </div>
+								</div>
+
+								<div class="message chat-msg chat-msg-followup">
+                                    <canvas height="36" width="36" class="avatar"></canvas>
+                                    <div class="chat-msg-content">
+                                        <span class="chat-msg-heading">
+                                            <span class="chat-msg-author">Mercutio</span>
+                                            <span class="chat-msg-time">19:49</span>
+                                        </span>
+                                        <span class="chat-msg-text">
+                                        Take our good meaning, for our judgment sits.
+                                        Five times in that ere once in our five wits.</span>
+                                    </div>
+								</div>
+
+								<div class="message chat-msg chat-msg-followup">
+                                    <canvas height="36" width="36" class="avatar"></canvas>
+                                    <div class="chat-msg-content">
+                                        <span class="chat-msg-heading">
+                                            <span class="chat-msg-author">Mercutio</span>
+                                            <span class="chat-msg-time">19:49</span>
+                                        </span>
+                                        <span class="chat-msg-text">
+                                        True, I talk of dreams, Which are the children of an idle brain, Begot of nothing but vain fantasy,
+                                        Which is as thin of substance as the air And more inconstant than the wind, who wooes
+                                        Even now the frozen bosom of the north, And, being anger'd, puffs away from thence,
+                                        Turning his face to the dew-dropping south.</span>
+                                    </div>
+								</div>
+
                             </div>
-
-                            <div class="occupants col-md-3 col-4">
-                                <p class="occupants-heading">Occupants:</p>
-                                <form class="room-invite">
-                                    <input class="form-control" placeholder="Invite..." type="text" autocomplete="off" spellcheck="false" dir="auto">
-                                    <pre aria-hidden="true" style="position: absolute; visibility: hidden; white-space: pre;"></pre>
-                                </form>
-
-                                <ul class="occupant-list">
-                                    <li class="moderator occupant" title="This user is a moderator. Click to mention luke in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>luke</li>
-                                    <li class="participant occupant" title="Click to mention leia in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>leia</li>
-                                    <li class="participant occupant" title="Click to mention Obi-wan Kenobi, Jedi Master in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>Obi-wan Kenobi, Jedi Master</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
-                                    <li class="participant occupant" title="Click to mention jabber the hut in your message.">
-                                        <div class="occupant-status occupant-online circle" title="Online"></div>jabber the hut</li>
+                            <div class="new-msgs-indicator">▼ You have unread messages ▼</div>
+                            <form class="sendXMPPMessage">
+                                <ul class="chat-toolbar no-text-select">
+                                    <li class="toggle-smiley fa fa-smile-o" title="Insert a smiley"></li>
+                                    <li class="toggle-occupants"><a class="fa fa-user-times" title="Hide the list of occupants"></a></li>
                                 </ul>
-                                <div class="chatroom-features">
-                                    <p class="occupants-heading">Features</p>
-                                    <ul class="features-list">
-                                        <li class="feature" title="Secured: This room requires a password before entry"><span class="fa fa-unlock"></span>&nbsp;Password required</li>
-                                        <li class="feature" title="Public: This room is publicly searchable"><span class="fa fa-eye"></span>&nbsp;Public</li>
-                                        <li class="feature" title="Open: Anyone can join this room"><span class="fa fa-globe"></span>&nbsp;Open</li>
-                                        <li class="feature" title="Persistent: This room persists even if it's unoccupied"><span class="fa fa-save"></span>&nbsp;Persistent</li>
-                                        <li class="feature" title="Non-anonymous: All other room occupants can see your XMPP username"><span class="fa fa-vcard"></span>&nbsp;Non-anonymous</li>
-                                        <li class="feature" title="Unmoderated: This room is not being moderated"><span class="fa fa-info-circle"></span>&nbsp;Unmoderated</li>
-                                    </ul>
-                                </div>
+                                <textarea class="chat-textarea form-control" placeholder="Message"></textarea>
+                            </form>
+                        </div>
+
+                        <div class="occupants col-md-3 col-4">
+                            <p class="occupants-heading">Occupants:</p>
+                            <form class="room-invite">
+                                <input class="form-control" placeholder="Invite..." type="text" autocomplete="off" spellcheck="false" dir="auto">
+                                <pre aria-hidden="true" style="position: absolute; visibility: hidden; white-space: pre;"></pre>
+                            </form>
+
+                            <ul class="occupant-list">
+                                <li class="moderator occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Juliet Capulet</li>
+                                <li class="moderator occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Romeo Montague</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Mercutio</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-away circle" title="Away"></div>Lady Montague</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Lord Montague</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Friar Laurence</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Tybalt</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Paris</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Lord Capulet</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Benvolio</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Lady Capulet</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Balthasar</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Escalus, Prince of Verona</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Peter</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Abram</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Sampson</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>The Nurse</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Gregory</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Friar John</li>
+                                <li class="participant occupant" title="Click to mention leia in your message.">
+                                    <div class="occupant-status occupant-online circle" title="Online"></div>Servant</li>
+                            </ul>
+                            <div class="chatroom-features">
+                                <p class="occupants-heading">Features</p>
+                                <ul class="features-list">
+                                    <li class="feature" title="Secured: This room requires a password before entry"><span class="fa fa-unlock"></span>&nbsp;Password required</li>
+                                    <li class="feature" title="Public: This room is publicly searchable"><span class="fa fa-eye"></span>&nbsp;Public</li>
+                                    <li class="feature" title="Open: Anyone can join this room"><span class="fa fa-globe"></span>&nbsp;Open</li>
+                                    <li class="feature" title="Persistent: This room persists even if it's unoccupied"><span class="fa fa-save"></span>&nbsp;Persistent</li>
+                                    <li class="feature" title="Non-anonymous: All other room occupants can see your XMPP username"><span class="fa fa-vcard"></span>&nbsp;Non-anonymous</li>
+                                    <li class="feature" title="Unmoderated: This room is not being moderated"><span class="fa fa-info-circle"></span>&nbsp;Unmoderated</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div id="converse-modals" class="modals"></div>
+    </div>
+    <div id="converse-modals" class="modals"></div>
     </div>
 
 <script type="text/javascript" src="../../node_modules/lodash/lodash.js"></script>
 <script type="text/javascript" src="../../node_modules/backbone/backbone.js"></script>
 <script type="text/javascript" src="../../node_modules/backbone.nativeview/backbone.nativeview.js"></script>
+<script type="text/javascript" src="../../node_modules/strophe.js/strophe.js"></script>
+<script type="text/javascript" src="../../src/utils/core.js"></script>
+<script type="text/javascript" src="utils.js"></script>
 <script type="text/javascript" src="sidebar.js"></script>
 <script type="text/javascript" src="user-panel.js"></script>
 <script type="text/javascript" src="modals.js"></script>
@@ -178,7 +309,7 @@
     document.addEventListener("DOMContentLoaded", function(event) { 
         new Modals();
         new Sidebar();
-        new UserPanel();    
+        new UserPanel();
     });
 </script>
 

@@ -58,6 +58,7 @@
                     this.items.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                         b64_sha1(`converse.disco-items-${this.get('jid')}`)
                     );
+                    this.items.fetch();
                 },
 
                 getIdentity (category, type) {
@@ -130,7 +131,7 @@
                 },
 
                 onDiscoItems (stanza) {
-                    _.each(stanza.querySelectorAll('query item'), (item) => {
+                    _.each(sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"] item`, stanza), (item) => {
                         if (item.getAttribute("node")) {
                             // XXX: ignore nodes for now.
                             // See: https://xmpp.org/extensions/xep-0030.html#items-nodes
@@ -288,7 +289,7 @@
                         if (_.isNil(entity_jid)) {
                             throw new TypeError('disco.supports: You need to provide an entity JID');
                         }
-                        return _converse.api.waitUntil('discoInitialized').then((entity) => {
+                        return _converse.api.waitUntil('discoInitialized').then(() => {
                             return new Promise((resolve, reject) => {
                                 _converse.api.disco.entities.get(entity_jid, true).then((entity) => {
                                     Promise.all(

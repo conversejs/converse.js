@@ -74,7 +74,6 @@
             _converse.HeadlinesBox = _converse.ChatBox.extend({
                 defaults: {
                     'type': 'headline',
-                    'show_avatar': false,
                     'bookmarked': false,
                     'chat_state': undefined,
                     'num_unread': 0,
@@ -93,8 +92,8 @@
                 },
 
                 initialize () {
-                    this.scrollDown = _.debounce(this._scrollDown, 250);
-                    this.markScrolled = _.debounce(this._markScrolled, 100);
+                    this.initDebounced();
+
                     this.disable_mam = true; // Don't do MAM queries for this box
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
@@ -136,8 +135,8 @@
                     const chatbox = _converse.chatboxes.create({
                         'id': from_jid,
                         'jid': from_jid,
-                        'fullname':  from_jid,
                         'type': 'headline',
+                        'from': from_jid
                     });
                     chatbox.createMessage(message, undefined, message);
                     _converse.emit('message', {'chatbox': chatbox, 'stanza': message});

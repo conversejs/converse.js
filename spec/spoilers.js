@@ -44,14 +44,18 @@
             _converse.chatboxes.onMessage(msg);
 
             var view = _converse.chatboxviews.get(sender_jid);
-            expect(_.includes(view.el.querySelector('.chat-msg-author').textContent, 'Max Frankfurter')).toBeTruthy();
 
-            var message_content = view.el.querySelector('.chat-msg-content');
-            expect(message_content.textContent).toBe(spoiler);
+            return test_utils.waitUntil(() => view.model.vcard.get('fullname') === 'Max Frankfurter')
+            .then(function () {
+                expect(view.el.querySelector('.chat-msg-author').textContent).toBe('Max Frankfurter');
 
-            var spoiler_hint_el = view.el.querySelector('.spoiler-hint');
-            expect(spoiler_hint_el.textContent).toBe(spoiler_hint);
-            done();
+                var message_content = view.el.querySelector('.chat-msg-text');
+                expect(message_content.textContent).toBe(spoiler);
+
+                var spoiler_hint_el = view.el.querySelector('.spoiler-hint');
+                expect(spoiler_hint_el.textContent).toBe(spoiler_hint);
+                done();
+            });
         }));
 
         it("can be received without a hint",
@@ -80,14 +84,17 @@
             _converse.chatboxes.onMessage(msg);
 
             var view = _converse.chatboxviews.get(sender_jid);
-            expect(_.includes(view.el.querySelector('.chat-msg-author').textContent, 'Max Frankfurter')).toBeTruthy();
+            return test_utils.waitUntil(() => view.model.vcard.get('fullname') === 'Max Frankfurter')
+            .then(function () {
+                expect(_.includes(view.el.querySelector('.chat-msg-author').textContent, 'Max Frankfurter')).toBeTruthy();
 
-            var message_content = view.el.querySelector('.chat-msg-content');
-            expect(message_content.textContent).toBe(spoiler);
+                var message_content = view.el.querySelector('.chat-msg-text');
+                expect(message_content.textContent).toBe(spoiler);
 
-            var spoiler_hint_el = view.el.querySelector('.spoiler-hint');
-            expect(spoiler_hint_el.textContent).toBe('');
-            done();
+                var spoiler_hint_el = view.el.querySelector('.spoiler-hint');
+                expect(spoiler_hint_el.textContent).toBe('');
+                done();
+            });
         }));
 
         it("can be sent without a hint",
@@ -148,17 +155,17 @@
                 expect(body_el.textContent).toBe('This is the spoiler');
 
                 /* Test the HTML spoiler message */
-                expect(view.el.querySelector('.chat-msg-author').textContent.split(':')[1].trim().split(' ')[1]).toBe('me');
+                expect(view.el.querySelector('.chat-msg-author').textContent).toBe('dummy@localhost');
 
-                var spoiler_msg_el = view.el.querySelector('.chat-msg-content.spoiler');
+                var spoiler_msg_el = view.el.querySelector('.chat-msg-text.spoiler');
                 expect(spoiler_msg_el.textContent).toBe('This is the spoiler');
                 expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeTruthy();
 
-                spoiler_toggle = view.el.querySelector('.toggle-spoiler');
-                expect(spoiler_toggle.textContent).toBe('Show hidden message');
+                spoiler_toggle = view.el.querySelector('.spoiler-toggle');
+                expect(spoiler_toggle.textContent).toBe('Show more');
                 spoiler_toggle.click();
                 expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeFalsy();
-                expect(spoiler_toggle.textContent).toBe('Hide hidden message');
+                expect(spoiler_toggle.textContent).toBe('Show less');
                 spoiler_toggle.click();
                 expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeTruthy();
                 done();
@@ -227,17 +234,17 @@
                 expect(body_el.textContent).toBe('This is the spoiler');
 
                 /* Test the HTML spoiler message */
-                expect(view.el.querySelector('.chat-msg-author').textContent.split(':')[1].trim().split(' ')[1]).toBe('me');
+                expect(view.el.querySelector('.chat-msg-author').textContent).toBe('dummy@localhost');
 
-                var spoiler_msg_el = view.el.querySelector('.chat-msg-content.spoiler');
+                var spoiler_msg_el = view.el.querySelector('.chat-msg-text.spoiler');
                 expect(spoiler_msg_el.textContent).toBe('This is the spoiler');
                 expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeTruthy();
 
-                spoiler_toggle = view.el.querySelector('.toggle-spoiler');
-                expect(spoiler_toggle.textContent).toBe('Show hidden message');
+                spoiler_toggle = view.el.querySelector('.spoiler-toggle');
+                expect(spoiler_toggle.textContent).toBe('Show more');
                 spoiler_toggle.click();
                 expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeFalsy();
-                expect(spoiler_toggle.textContent).toBe('Hide hidden message');
+                expect(spoiler_toggle.textContent).toBe('Show less');
                 spoiler_toggle.click();
                 expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeTruthy();
                 done();

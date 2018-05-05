@@ -13,27 +13,16 @@
 
     return describe("ChatRooms", function () {
         describe("The \"rooms\" API", function () {
-            var original_timeout;
-
-            beforeEach(function() {
-                original_timeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-                jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-            });
-
-            afterEach(function() {
-                jasmine.DEFAULT_TIMEOUT_INTERVAL = original_timeout;
-            });
 
             it("has a method 'close' which closes rooms by JID or all rooms when called with no arguments",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                    return test_utils.openAndEnterChatRoom(_converse, 'leisure', 'localhost', 'dummy');
-                }).then(function () {
-                    return test_utils.openAndEnterChatRoom(_converse, 'news', 'localhost', 'dummy');
-                }).then(function () {
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy')
+                .then(() => test_utils.openAndEnterChatRoom(_converse, 'leisure', 'localhost', 'dummy'))
+                .then(() => test_utils.openAndEnterChatRoom(_converse, 'news', 'localhost', 'dummy'))
+                .then(() => {
                     expect(u.isVisible(_converse.chatboxviews.get('lounge@localhost').el)).toBeTruthy();
                     expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
                     expect(u.isVisible(_converse.chatboxviews.get('news@localhost').el)).toBeTruthy();
@@ -53,19 +42,16 @@
                     expect(_converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
                     expect(_converse.chatboxviews.get('news@localhost')).toBeUndefined();
                     return test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                }).then(function () {
-                    return test_utils.openAndEnterChatRoom(_converse, 'leisure', 'localhost', 'dummy')
-                }).then(function () {
+                })
+                .then(() => test_utils.openAndEnterChatRoom(_converse, 'leisure', 'localhost', 'dummy'))
+                .then(() => {
                     expect(u.isVisible(_converse.chatboxviews.get('lounge@localhost').el)).toBeTruthy();
                     expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
                     _converse.api.rooms.close();
                     expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                     expect(_converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
-                    return done();
-                }).catch((err) => {
-                    _converse.log(err, Strophe.LogLevel.FATAL);
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("has a method 'get' which returns a wrapped chat room (if it exists)",
@@ -619,11 +605,11 @@
                     var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                     var chat_content = view.el.querySelector('.chat-content');
                     var $chat_content = $(chat_content);
-                    var time = chat_content.querySelector('time');
-                    expect(time).not.toBe(null);
-                    expect(time.getAttribute('class')).toEqual('message chat-info chat-date badge badge-info');
-                    expect(time.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
-                    expect(time.textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                    var indicator = chat_content.querySelector('.date-separator');
+                    expect(indicator).not.toBe(null);
+                    expect(indicator.getAttribute('class')).toEqual('message date-separator');
+                    expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+                    expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect(chat_content.querySelectorAll('div.chat-info').length).toBe(1);
                     expect(chat_content.querySelector('div.chat-info').textContent).toBe(
                         "dummy has entered the room"
@@ -654,11 +640,13 @@
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                    time = chat_content.querySelector('time[data-isodate="'+moment().startOf('day').format()+'"]');
-                    expect(time).not.toBe(null);
-                    expect(time.getAttribute('class')).toEqual('message chat-info chat-date badge badge-info');
-                    expect(time.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
-                    expect(time.textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                    indicator = chat_content.querySelector('.date-separator[data-isodate="'+moment().startOf('day').format()+'"]');
+                    expect(indicator).not.toBe(null);
+
+                    expect(indicator.getAttribute('class')).toEqual('message date-separator');
+                    expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+                    expect(indicator.querySelector('time').getAttribute('class')).toEqual('separator-text');
+                    expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect(chat_content.querySelector('div.chat-info:last-child').textContent).toBe(
                         "some1 has entered the room"
                     );
@@ -680,11 +668,13 @@
                             });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                    time = chat_content.querySelector('time[data-isodate="'+moment().startOf('day').format()+'"]');
-                    expect(time).not.toBe(null);
-                    expect(time.getAttribute('class')).toEqual('message chat-info chat-date badge badge-info');
-                    expect(time.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
-                    expect(time.textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                    indicator = chat_content.querySelector('.date-separator[data-isodate="'+moment().startOf('day').format()+'"]');
+
+                    expect(indicator).not.toBe(null);
+                    expect(indicator.getAttribute('class')).toEqual('message date-separator');
+                    expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+
+                    expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect($(chat_content).find('div.chat-info').length).toBe(4);
                     expect($(chat_content).find('div.chat-info:last').html()).toBe(
                         'some1 has left the room. '+
@@ -716,10 +706,10 @@
                     var $time = $chat_content.find('time');
                     expect($time.length).toEqual(4);
 
-                    $time = $chat_content.find('time:eq(3)');
-                    expect($time.attr('class')).toEqual('message chat-info chat-date badge badge-info');
-                    expect($time.data('isodate')).toEqual(moment().startOf('day').format());
-                    expect($time.text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                    var $indicator = $chat_content.find('.date-separator:eq(3)');
+                    expect($indicator.attr('class')).toEqual('message date-separator');
+                    expect($indicator.data('isodate')).toEqual(moment().startOf('day').format());
+                    expect($indicator.find('time').text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect($chat_content.find('div.chat-info').length).toBe(5);
                     expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has entered the room");
 
@@ -755,10 +745,11 @@
                     $time = $chat_content.find('time');
                     expect($time.length).toEqual(6);
 
-                    $time = $chat_content.find('time:eq(5)');
-                    expect($time.attr('class')).toEqual('message chat-info chat-date badge badge-info');
-                    expect($time.data('isodate')).toEqual(moment().startOf('day').format());
-                    expect($time.text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                    $indicator = $chat_content.find('.date-separator:eq(5)');
+                    expect($indicator.attr('class')).toEqual('message date-separator');
+                    expect($indicator.data('isodate')).toEqual(moment().startOf('day').format());
+
+                    expect($indicator.find('time').text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect($chat_content.find('div.chat-info').length).toBe(6);
                     expect($chat_content.find('div.chat-info:last').html()).toBe(
                         'newguy has left the room. '+
@@ -838,7 +829,7 @@
                             type: 'groupchat'
                         }).c('body').t(message).tree();
                     view.model.onMessage(msg);
-                    expect($(view.el).find('.chat-message').hasClass('mentioned')).toBeTruthy();
+                    expect($(view.el).find('.chat-msg').hasClass('mentioned')).toBeTruthy();
                     done();
                 });
             }));
@@ -869,18 +860,18 @@
                         }).c('body').t(message).tree();
                     view.model.onMessage(msg);
                     expect(_.includes($(view.el).find('.chat-msg-author').text(), '**Dyon van de Wege')).toBeTruthy();
-                    expect($(view.el).find('.chat-msg-content').text()).toBe(' is tired');
+                    expect($(view.el).find('.chat-msg-text').text()).toBe(' is tired');
 
                     message = '/me is as well';
                     msg = $msg({
-                        from: 'lounge@localhost/dummy',
+                        from: 'lounge@localhost/Max Mustermann',
                         id: (new Date()).getTime(),
                         to: 'dummy@localhost',
                         type: 'groupchat'
                     }).c('body').t(message).tree();
                     view.model.onMessage(msg);
                     expect(_.includes($(view.el).find('.chat-msg-author:last').text(), '**Max Mustermann')).toBeTruthy();
-                    expect($(view.el).find('.chat-msg-content:last').text()).toBe(' is as well');
+                    expect($(view.el).find('.chat-msg-text:last').text()).toBe(' is as well');
                     done();
                 });
             }));
@@ -1449,24 +1440,33 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                spyOn(_converse, 'emit');
-                var view = _converse.chatboxviews.get('lounge@localhost');
-                if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
-                var nick = mock.chatroom_names[0];
-                var text = 'This is a received message';
-                var message = $msg({
-                    from: 'lounge@localhost/'+nick,
-                    id: '1',
-                    to: 'dummy@localhost',
-                    type: 'groupchat'
-                }).c('body').t(text);
-                view.model.onMessage(message.nodeTree);
-                var $chat_content = $(view.el).find('.chat-content');
-                expect($chat_content.find('.chat-message').length).toBe(1);
-                expect($chat_content.find('.chat-msg-content').text()).toBe(text);
-                expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-                done();
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                    spyOn(_converse, 'emit');
+                    var view = _converse.chatboxviews.get('lounge@localhost');
+
+
+                    if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
+                    var nick = mock.chatroom_names[0];
+
+                    view.model.occupants.create({
+                        'nick': nick,
+                        'muc_jid': `${view.model.get('jid')}/${nick}`
+                    });
+
+                    var text = 'This is a received message';
+                    var message = $msg({
+                        from: 'lounge@localhost/'+nick,
+                        id: '1',
+                        to: 'dummy@localhost',
+                        type: 'groupchat'
+                    }).c('body').t(text);
+                    view.model.onMessage(message.nodeTree);
+                    var $chat_content = $(view.el).find('.chat-content');
+                    expect($chat_content.find('.chat-msg').length).toBe(1);
+                    expect($chat_content.find('.chat-msg-text').text()).toBe(text);
+                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                    done();
+                });
             }));
 
             it("shows sent groupchat messages",
@@ -1489,7 +1489,7 @@
 
                     expect(_converse.emit).toHaveBeenCalledWith('messageSend', text);
                     var $chat_content = $(view.el).find('.chat-content');
-                    expect($chat_content.find('.chat-message').length).toBe(1);
+                    expect($chat_content.find('.chat-msg').length).toBe(1);
 
                     // Let's check that if we receive the same message again, it's
                     // not shown.
@@ -1500,8 +1500,8 @@
                         id: view.model.messages.at(0).get('msgid')
                     }).c('body').t(text);
                     view.model.onMessage(message.nodeTree);
-                    expect($chat_content.find('.chat-message').length).toBe(1);
-                    expect($chat_content.find('.chat-msg-content').last().text()).toBe(text);
+                    expect($chat_content.find('.chat-msg').length).toBe(1);
+                    expect($chat_content.find('.chat-msg-text').last().text()).toBe(text);
                     // We don't emit an event if it's our own message
                     expect(_converse.emit.calls.count(), 1);
                     done();
@@ -1542,7 +1542,7 @@
 
                         // Now check that the message appears inside the chatbox in the DOM
                         var $chat_content = $(view.el).find('.chat-content');
-                        var msg_txt = $chat_content.find('.chat-message:last').find('.chat-msg-content').text();
+                        var msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg-text').text();
                         expect(msg_txt).toEqual(message);
                         expect(view.content.scrollTop).toBe(0);
                         done();
@@ -2021,7 +2021,7 @@
                     });
 
                     expect(view.onMessageSubmitted).toHaveBeenCalled();
-                    const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info:not(.chat-date)'), 0);
+                    const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                     expect(info_messages.length).toBe(17);
                     expect(info_messages.pop().textContent).toBe('/voice: Allow muted user to post messages');
                     expect(info_messages.pop().textContent).toBe('/topic: Set room subject (alias for /subject)');
@@ -2052,7 +2052,7 @@
                     var sent_stanza;
                     var view = _converse.chatboxviews.get('lounge@localhost');
                     spyOn(view, 'onMessageSubmitted').and.callThrough();
-                    spyOn(view, 'clearChatRoomMessages');
+                    spyOn(view, 'clearMessages');
                     spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
                         sent_stanza = stanza;
                     });
@@ -2095,7 +2095,7 @@
                             '<subject xmlns="jabber:client">This is yet another subject</subject>'+
                         '</message>');
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("/clear to clear messages",
@@ -2106,7 +2106,7 @@
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
                     var view = _converse.chatboxviews.get('lounge@localhost');
                     spyOn(view, 'onMessageSubmitted').and.callThrough();
-                    spyOn(view, 'clearChatRoomMessages');
+                    spyOn(view, 'clearMessages');
                     var textarea = view.el.querySelector('.chat-textarea')
                     textarea.value = '/clear';
                     view.keyPressed({
@@ -2116,9 +2116,9 @@
                     });
 
                     expect(view.onMessageSubmitted).toHaveBeenCalled();
-                    expect(view.clearChatRoomMessages).toHaveBeenCalled();
+                    expect(view.clearMessages).toHaveBeenCalled();
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("/owner to make a user an owner",
@@ -2171,7 +2171,7 @@
                             "</query>"+
                         "</iq>");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("/ban to ban a user",
@@ -2223,7 +2223,7 @@
                             "</query>"+
                         "</iq>");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("/kick to kick a user",
@@ -2298,10 +2298,10 @@
                             .c('status', {'code': '307'});
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(
-                        view.el.querySelectorAll('.chat-info')[3].textContent).toBe(
+                        view.el.querySelectorAll('.chat-info')[2].textContent).toBe(
                         "annoyingGuy has been kicked out");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
 
@@ -2442,7 +2442,7 @@
                     info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                     expect(info_msgs.pop().textContent).toBe("trustworthyguy is no longer a moderator");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("/mute and /voice to mute and unmute a user",
@@ -2582,7 +2582,7 @@
                     info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                     expect(info_msgs.pop().textContent).toBe("annoyingGuy has been given a voice again");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
         });
 
@@ -2621,7 +2621,7 @@
                     view.el.querySelector('input[type=submit]').click();
                     expect(view.join).toHaveBeenCalledWith('dummy', 'secret');
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will show an error message if the room is members-only and the user not included",
@@ -2644,7 +2644,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($(view.el).find('.chatroom-body p:last').text()).toBe('You are not on the member list of this room.');
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will show an error message if the user has been banned",
@@ -2667,7 +2667,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($(view.el).find('.chatroom-body p:last').text()).toBe('You have been banned from this room.');
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will render a nickname form if a nickname conflict happens and muc_nickname_from_jid=false",
@@ -2694,7 +2694,7 @@
                     $input.val('nicky');
                     view.el.querySelector('input[type=submit]').click();
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will automatically choose a new nickname if a nickname conflict happens and muc_nickname_from_jid=true",
@@ -2756,7 +2756,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(view.join).toHaveBeenCalledWith('dummy-4');
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will show an error message if the user is not allowed to have created the room",
@@ -2779,7 +2779,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($(view.el).find('.chatroom-body p:last').text()).toBe('You are not allowed to create new rooms.');
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will show an error message if the user's nickname doesn't conform to room policy",
@@ -2802,7 +2802,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($(view.el).find('.chatroom-body p:last').text()).toBe("Your nickname doesn't conform to this room's policies.");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will show an error message if the room doesn't yet exist",
@@ -2825,7 +2825,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($(view.el).find('.chatroom-body p:last').text()).toBe("This room does not (yet) exist.");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will show an error message if the room has reached its maximum number of occupants",
@@ -2848,7 +2848,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($(view.el).find('.chatroom-body p:last').text()).toBe("This room has reached its maximum number of occupants.");
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
         });
 
@@ -3196,27 +3196,25 @@
 
                     var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var message = 'fires: Your attention is required';
-                    var nick = mock.chatroom_names[0],
-                        msg = $msg({
+                    var nick = mock.chatroom_names[0];
+
+                    view.model.onMessage($msg({
                             from: room_jid+'/'+nick,
                             id: (new Date()).getTime(),
                             to: 'dummy@localhost',
                             type: 'groupchat'
-                        }).c('body').t(message).tree();
-
-                    view.model.onMessage(msg);
+                        }).c('body').t(message).tree());
 
                     expect(roomspanel.el.querySelectorAll('.available-room').length).toBe(1);
                     expect(roomspanel.el.querySelectorAll('.msgs-indicator').length).toBe(1);
                     expect(roomspanel.el.querySelector('.msgs-indicator').textContent).toBe('1');
 
-                    msg = $msg({
-                        from: room_jid+'/'+nick,
-                        id: (new Date()).getTime(),
-                        to: 'dummy@localhost',
-                        type: 'groupchat'
-                    }).c('body').t(message).tree();
-                    view.model.onMessage(msg);
+                    view.model.onMessage($msg({
+                        'from': room_jid+'/'+nick,
+                        'id': (new Date()).getTime(),
+                        'to': 'dummy@localhost',
+                        'type': 'groupchat'
+                    }).c('body').t(message).tree());
 
                     expect(roomspanel.el.querySelectorAll('.available-room').length).toBe(1);
                     expect(roomspanel.el.querySelectorAll('.msgs-indicator').length).toBe(1);
@@ -3381,8 +3379,8 @@
 
                             var messages = view.el.querySelectorAll('.message');
                             expect(messages.length).toBe(8);
-                            expect(view.el.querySelectorAll('.chat-message').length).toBe(1);
-                            expect(view.el.querySelector('.chat-message .chat-msg-content').textContent).toBe('hello world');
+                            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+                            expect(view.el.querySelector('.chat-msg .chat-msg-text').textContent).toBe('hello world');
 
                             // Test that the composing notifications get removed
                             // via timeout.

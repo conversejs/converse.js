@@ -343,6 +343,19 @@ auto_join_on_invite
 If true, the user will automatically join a chatroom on invite without any confirm.
 
 
+auto_join_private_chats
+-----------------------
+
+* Default:  ``[]``
+
+Allows you to provide a list of user JIDs for private (i.e. single) chats that
+should automatically be started upon login.
+
+For example::
+
+    `['tom@example.org', 'dick@example.org', 'harry@example.org']`
+
+
 auto_join_rooms
 ---------------
 
@@ -1357,15 +1370,6 @@ use_otr_by_default
 
 If set to ``true``, Converse.js will automatically try to initiate an OTR (off-the-record)
 encrypted chat session every time you open a chatbox.
-
-use_vcards
-----------
-
-* Default:  ``true``
-
-Determines whether the XMPP server will be queried for roster contacts' VCards
-or not. VCards contain extra personal information such as your fullname and
-avatar image.
 
 visible_toolbar_buttons
 -----------------------

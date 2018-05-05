@@ -1,18 +1,13 @@
-// Converse.js (A browser based XMPP chat client)
+// Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
 
-/* This is a Converse.js plugin which add support for multi-user chat rooms, as
- * specified in XEP-0045 Multi-user chat.
- */
 (function (root, factory) {
     define([
         "converse-core",
         "muc-utils",
-        "emojione",
         "tpl!add_chatroom_modal",
         "tpl!chatarea",
         "tpl!chatroom",
@@ -39,7 +34,6 @@
 }(this, function (
     converse,
     muc_utils,
-    emojione,
     tpl_add_chatroom_modal,
     tpl_chatarea,
     tpl_chatroom,
@@ -105,8 +99,8 @@
                     const { _converse } = this.__super__;
                     this.roomspanel = new _converse.RoomsPanel({
                         'model': new (_converse.RoomsPanelModel.extend({
-                            id: b64_sha1(`converse.roomspanel${_converse.bare_jid}`), // Required by sessionStorage
-                            browserStorage: new Backbone.BrowserStorage[_converse.storage](
+                            'id': b64_sha1(`converse.roomspanel${_converse.bare_jid}`), // Required by sessionStorage
+                            'browserStorage': new Backbone.BrowserStorage[_converse.storage](
                                 b64_sha1(`converse.roomspanel${_converse.bare_jid}`))
                         }))()
                     });
@@ -497,24 +491,23 @@
                 className: 'chatbox chatroom hidden',
                 is_chatroom: true,
                 events: {
-                    'change .input.fileupload': 'onFileSelection',
+                    'change input.fileupload': 'onFileSelection',
                     'click .close-chatbox-button': 'close',
                     'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant': 'onOccupantClicked',
                     'click .send-button': 'onFormSubmitted',
                     'click .toggle-call': 'toggleCall',
-                    'click .toggle-clear': 'clearChatRoomMessages',
                     'click .toggle-occupants': 'toggleOccupants',
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .upload-file': 'toggleFileUpload',
-                    'keypress .chat-textarea': 'keyPressed'
+                    'keypress .chat-textarea': 'keyPressed',
+                    'input .chat-textarea': 'inputChanged'
                 },
 
                 initialize () {
-                    this.scrollDown = _.debounce(this._scrollDown, 250);
-                    this.markScrolled = _.debounce(this._markScrolled, 100);
+                    this.initDebounced();
 
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.messages.on('rendered', this.scrollDown, this);
@@ -538,6 +531,12 @@
 
                     if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                         const handler = () => {
+                            if (!u.isPersistableModel(this.model)) {
+                                // Happens during tests, nothing to do if this
+                                // is a hanging chatbox (i.e. not in the
+                                // collection anymore).
+                                return;
+                            }
                             this.join();
                             this.fetchMessages();
                             _converse.emit('chatRoomOpened', this);
@@ -738,32 +737,6 @@
                     }
                 },
 
-                sendChatRoomMessage (text) {
-                    /* Constuct a message stanza to be sent to this chat room,
-                     * and send it to the server.
-                     *
-                     * Parameters:
-                     *  (String) text: The message text to be sent.
-                     */
-                    text = u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse)
-                    const msgid = _converse.connection.getUniqueId();
-                    const msg = $msg({
-                        to: this.model.get('jid'),
-                        from: _converse.connection.jid,
-                        type: 'groupchat',
-                        id: msgid
-                    }).c("body").t(text).up()
-                    .c("x", {xmlns: "jabber:x:event"}).c(_converse.COMPOSING);
-                    _converse.connection.send(msg);
-                    this.model.messages.create({
-                        'fullname': this.model.get('nick'),
-                        'sender': 'me',
-                        'time': moment().format(),
-                        'message': text,
-                        msgid
-                    });
-                },
-
                 modifyRole(room, nick, role, reason, onSuccess, onError) {
                     const item = $build("item", {nick, role});
                     const iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
@@ -787,30 +760,17 @@
                     return true;
                 },
 
-                clearChatRoomMessages (ev) {
-                    /* Remove all messages from the chat room UI.
-                     */
-                    if (!_.isUndefined(ev)) { ev.stopPropagation(); }
-                    const result = confirm(__("Are you sure you want to clear the messages from this room?"));
-                    if (result === true) {
-                        this.content.innerHTML = '';
-                    }
-                    return this;
-                },
-
                 onCommandError () {
                     this.showErrorMessage(__("Error: could not execute the command"), true);
                 },
 
-                onMessageSubmitted (text, spoiler_hint) {
-                    /* Gets called when the user presses enter to send off a
-                     * message in a chat room.
-                     *
-                     * Parameters:
-                     *    (String) text - The message text.
-                     */
+                parseMessageForCommands (text) {
+                    const _super_ = _converse.ChatBoxView.prototype;
+                    if (_super_.parseMessageForCommands.apply(this, arguments)) {
+                        return true;
+                    }
                     if (_converse.muc_disable_moderator_commands) {
-                        return this.sendChatRoomMessage(text);
+                        return false;
                     }
                     const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
                         args = match[2] && match[2].splitOnce(' ') || [],
@@ -829,9 +789,6 @@
                                     [{ 'jid': args[0],
                                        'reason': args[1]
                                     }]).then(null, this.onCommandError.bind(this));
-                            break;
-                        case 'clear':
-                            this.clearChatRoomMessages();
                             break;
                         case 'deop':
                             if (!this.validateRoleChangeCommand(command, args)) { break; }
@@ -922,9 +879,9 @@
                                     undefined, this.onCommandError.bind(this));
                             break;
                         default:
-                            this.sendChatRoomMessage(text);
-                        break;
+                            return false;
                     }
+                    return true;
                 },
 
                 registerHandlers () {
@@ -1534,7 +1491,7 @@
                  * Chat rooms can be listed, joined and new rooms can be created.
                  */
                 tagName: 'div',
-                className: 'controlbox-pane',
+                className: 'controlbox-section',
                 id: 'chatrooms',
                 events: {
                     'click a.chatbox-btn.fa-users': 'showAddRoomModal',
@@ -1628,8 +1585,6 @@
                     this.chatroomview.model.on('change:unmoderated', this.onFeatureChanged, this);
                     this.chatroomview.model.on('change:unsecured', this.onFeatureChanged, this);
 
-                    const id = b64_sha1(`converse.occupants${_converse.bare_jid}${this.chatroomview.model.get('jid')}`);
-                    this.model.browserStorage = new Backbone.BrowserStorage.session(id);
                     this.render();
                     this.model.fetch({
                         'add': true,
@@ -1860,6 +1815,21 @@
                 fetchAndSetMUCDomain(view);
                 view.model.on('change:connected', _.partial(fetchAndSetMUCDomain, view));
             });
+
+            function reconnectToChatRooms () {
+                /* Upon a reconnection event from converse, join again
+                 * all the open chat rooms.
+                 */
+                _converse.chatboxviews.each(function (view) {
+                    if (view.model.get('type') === converse.CHATROOMS_TYPE) {
+                        view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+                        view.model.registerHandlers();
+                        view.join();
+                        view.fetchMessages();
+                    }
+                });
+            }
+            _converse.on('reconnected', reconnectToChatRooms);
             /************************ END Event Handlers ************************/
         }
     });

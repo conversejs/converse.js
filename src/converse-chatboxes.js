@@ -22,6 +22,8 @@
 
     converse.plugins.add('converse-chatboxes', {
 
+        dependencies: ["converse-vcard"],
+
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -55,9 +57,17 @@
             const { _converse } = this,
                 { __ } = _converse;
 
+            // Configuration values for this plugin
+            // ====================================
+            // Refer to docs/source/configuration.rst for explanations of these
+            // configuration settings.
+            _converse.api.settings.update({
+                auto_join_private_chats: [],
+            });
             _converse.api.promises.add([
                 'chatBoxesFetched',
-                'chatBoxesInitialized'
+                'chatBoxesInitialized',
+                'privateChatsAutoJoined'
             ]);
 
             function openChat (jid) {
@@ -87,12 +97,35 @@
                 },
 
                 initialize () {
+                    this.vcard = _converse.vcards.findWhere({'jid': this.get('from')});
+                    if (_.isNil(this.vcard)) {
+                        this.vcard = _converse.vcards.create({'jid': this.get('from')});
+                    }
+
                     if (this.get('file')) {
                         this.on('change:put', this.uploadFile, this);
 
                         if (!_.includes([_converse.SUCCESS, _converse.FAILURE], this.get('upload'))) {
                             this.getRequestSlotURL();
                         }
+                    }
+                    if (this.isOnlyChatStateNotification()) {
+                        window.setTimeout(this.destroy.bind(this), 20000);
+                    }
+                },
+
+                isOnlyChatStateNotification () {
+                    return this.get('chat_state') &&
+                            !this.get('oob_url') &&
+                            !this.get('file') &&
+                            !this.get('message');
+                },
+
+                getDisplayName () {
+                    if (this.get('type') === 'groupchat') {
+                        return this.get('nick');
+                    } else {
+                        return this.vcard.get('fullname') || this.get('from');
                     }
                 },
 
@@ -148,25 +181,30 @@
                             if (xhr.status === 200 || xhr.status === 201) {
                                 this.save({
                                     'upload': _converse.SUCCESS,
+                                    'oob_url': this.get('get'),
                                     'message': this.get('get')
                                 });
                             } else {
-                                this.save({
-                                    'upload': _converse.FAILURE,
-                                    'message': __('Sorry, could not succesfully upload your file')
-                                });
+                                xhr.onerror();
                             }
                         }
                     };
+
                     xhr.upload.addEventListener("progress", (evt) => {
                         if (evt.lengthComputable) {
                             this.set('progress', evt.loaded / evt.total);
                         }
                     }, false);
+
                     xhr.onerror = () => {
+                        let  message = __('Sorry, could not succesfully upload your file.');
+                        if (xhr.responseText) {
+                            message += ' ' + __('Your server\'s response: "%1$s"', xhr.responseText)
+                        }
                         this.save({
+                            'type': 'error',
                             'upload': _converse.FAILURE,
-                            'message': __('Sorry, could not succesfully upload your file')
+                            'message': message
                         });
                     };
                     xhr.open('PUT', this.get('put'), true);
@@ -182,20 +220,22 @@
             });
 
 
-            _converse.ChatBox = Backbone.Model.extend({
+            _converse.ChatBox = _converse.ModelWithDefaultAvatar.extend({
                 defaults: {
                     'bookmarked': false,
                     'chat_state': undefined,
-                    'image': _converse.DEFAULT_IMAGE,
-                    'image_type': _converse.DEFAULT_IMAGE_TYPE,
                     'num_unread': 0,
-                    'show_avatar': true,
                     'type': 'chatbox',
                     'message_type': 'chat',
                     'url': ''
                 },
 
                 initialize () {
+                    this.vcard = _converse.vcards.findWhere({'jid': this.get('jid')});
+                    if (_.isNil(this.vcard)) {
+                        this.vcard = _converse.vcards.create({'jid': this.get('jid')});
+                    }
+
                     this.messages = new _converse.Messages();
                     this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
                         b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
@@ -271,7 +311,8 @@
                         is_spoiler = this.get('composing_spoiler');
 
                     return {
-                        'fullname': _.isEmpty(fullname) ? _converse.bare_jid : fullname,
+                        'fullname': fullname,
+                        'from': _converse.bare_jid,
                         'sender': 'me',
                         'time': moment().format(),
                         'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
@@ -358,50 +399,44 @@
                      *      that contains the message stanza, if it was
                      *      contained, otherwise it's the message stanza itself.
                      */
-                    const { _converse } = this.__super__,
-                          { __ } = _converse;
-
                     delay = delay || message.querySelector('delay');
-                    const type = message.getAttribute('type'),
-                        body = this.getMessageBody(message);
 
-                    const delayed = !_.isNull(delay),
-                        is_groupchat = type === 'groupchat',
-                        chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
-                            message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
-                            message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
-                            message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
-                            message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
+                    const { _converse } = this.__super__,
+                          { __ } = _converse,
+                          spoiler = message.querySelector(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`),
+                          chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
+                                message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
+                                message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
+                                message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
+                                message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
-                    let from;
-                    if (is_groupchat) {
-                        from = Strophe.unescapeNode(Strophe.getResourceFromJid(message.getAttribute('from')));
-                    } else {
-                        from = Strophe.getBareJidFromJid(message.getAttribute('from'));
-                    }
-                    const time = delayed ? delay.getAttribute('stamp') : moment().format();
-                    let sender, fullname;
-                    if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === _converse.bare_jid)) {
-                        sender = 'me';
-                        fullname = _converse.xmppstatus.get('fullname');
-                    } else {
-                        sender = 'them';
-                        fullname = this.get('fullname');
-                    }
-
-                    const spoiler = message.querySelector(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`);
                     const attrs = {
-                        'type': type,
-                        'from': from,
+                        'type': message.getAttribute('type'),
                         'chat_state': chat_state,
-                        'delayed': delayed,
-                        'fullname': fullname,
-                        'message': body || undefined,
+                        'delayed': !_.isNull(delay),
+                        'message': this.getMessageBody(message) || undefined,
                         'msgid': message.getAttribute('id'),
-                        'sender': sender,
-                        'time': time,
+                        'time': delay ? delay.getAttribute('stamp') : moment().format(),
                         'is_spoiler': !_.isNull(spoiler)
                     };
+                    if (attrs.type === 'groupchat') {
+                        attrs.from = message.getAttribute('from');
+                        attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
+                        if (attrs.from === this.get('nick')) {
+                            attrs.sender = 'me';
+                        } else {
+                            attrs.sender = 'them';
+                        }
+                    } else {
+                        attrs.from = Strophe.getBareJidFromJid(message.getAttribute('from'));
+                        if (attrs.from === _converse.bare_jid) {
+                            attrs.sender = 'me';
+                            attrs.fullname = _converse.xmppstatus.get('fullname');
+                        } else {
+                            attrs.sender = 'them';
+                            attrs.fullname = this.get('fullname');
+                        }
+                    }
                     _.each(sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, message), (xform) => {
                         attrs['oob_url'] = xform.querySelector('url').textContent;
                         attrs['oob_desc'] = xform.querySelector('url').textContent;
@@ -442,8 +477,8 @@
                     }
                 },
 
-                clearUnreadMsgCounter() {
-                    this.save({'num_unread': 0});
+                clearUnreadMsgCounter () {
+                    u.safeSave(this, {'num_unread': 0});
                 },
 
                 isScrolledUp () {
@@ -649,6 +684,7 @@
                 initialize () {
                     this.model.on("add", this.onChatBoxAdded, this);
                     this.model.on("destroy", this.removeChat, this);
+                    this.el.classList.add(`converse-${_converse.view_mode}`);
                     this.render();
                 },
 
@@ -699,8 +735,28 @@
                 return _converse.chatboxviews.get(chatbox.get('id'));
             };
 
+            function autoJoinChats () {
+                /* Automatically join private chats, based on the
+                 * "auto_join_private_chats" configuration setting.
+                 */
+                _.each(_converse.auto_join_private_chats, function (jid) {
+                    if (_converse.chatboxes.where({'jid': jid}).length) {
+                        return;
+                    }
+                    if (_.isString(jid)) {
+                        _converse.api.chats.open(jid);
+                    } else {
+                        _converse.log(
+                            'Invalid jid criteria specified for "auto_join_private_chats"',
+                            Strophe.LogLevel.ERROR);
+                    }
+                });
+                _converse.emit('privateChatsAutoJoined');
+            }
 
             /************************ BEGIN Event Handlers ************************/
+            _converse.on('chatBoxesFetched', autoJoinChats);
+
             _converse.on('addClientFeatures', () => {
                 _converse.connection.disco.addFeature(Strophe.NS.HTTPUPLOAD);
                 _converse.connection.disco.addFeature(Strophe.NS.OUTOFBAND);

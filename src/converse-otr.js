@@ -19,7 +19,7 @@
 }(this, function (converse, bootstrap, tpl_toolbar_otr, otr) {
     "use strict";
 
-    const { Strophe, utils, b64_sha1, _ } = converse.env;
+    const { Strophe, utils, _ } = converse.env;
 
     const HAS_CSPRNG = _.isUndefined(window.crypto) ? false : (
         _.isFunction(window.crypto.randomBytes) ||

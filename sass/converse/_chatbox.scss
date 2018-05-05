@@ -59,7 +59,7 @@
 }
 
 @include media-breakpoint-down(sm) {
-	#conversejs:not(.fullscreen) {
+	#conversejs:not(.converse-fullscreen):not(.converse-embedded) {
 		> .row {
 			flex-direction: column;
 

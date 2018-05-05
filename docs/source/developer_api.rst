@@ -1262,7 +1262,18 @@ The **vcard** grouping
 get
 ~~~
 
-Returns a Promise which results with the VCard data for a particular JID.
+Parameters:
+
+* ``model`` either a `Backbone.Model` instance, or a string JID.
+* ``force`` (optional), a boolean indicating whether the vcard should be
+  fetched even if it's been fetched before.
+
+Returns a Promise which results with the VCard data for a particular JID or for
+a `Backbone.Model` instance which represents an entity with a JID (such as a roster contact,
+chatbox or chatroom occupant).
+
+If a `Backbone.Model` instance is passed in, then it must have either a `jid`
+attribute or a `muc_jid` attribute.
 
 Example:
 
@@ -1279,5 +1290,34 @@ Example:
                 );
             });
 
+        }
+    });
+
+update
+~~~~~~
+
+Parameters:
+
+* ``model`` a `Backbone.Model` instance
+* ``force`` (optional), a boolean indicating whether the vcard should be
+  fetched again even if it's been fetched before.
+
+Fetches the VCard associated with a particular `Backbone.Model` instance
+(by using its `jid` or `muc_jid` attribute) and then updates the model with the
+returned VCard data.
+
+Returns a promise;
+
+Example:
+
+.. code-block:: javascript
+
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            _converse.api.waitUntil('rosterContactsFetched').then(() => {
+                const chatbox = _converse.chatboxes.getChatBox('someone@example.org');
+                _converse.api.vcard.update(chatbox);
+            });
         }
     });

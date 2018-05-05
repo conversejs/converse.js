@@ -8,21 +8,46 @@
 //
 /*global define, escape, window */
 (function (root, factory) {
-    define([
-        "sizzle",
-        "es6-promise",
-        "lodash.noconflict",
-        "strophe",
-        "tpl!audio",
-        "tpl!file",
-        "tpl!image",
-        "tpl!video"
-    ], factory);
+    if (typeof define === 'function' && define.amd) {
+        define([
+            "sizzle",
+            "es6-promise",
+            "lodash.noconflict",
+            "strophe",
+            "uri",
+            "tpl!audio",
+            "tpl!file",
+            "tpl!image",
+            "tpl!video"
+        ], factory);
+    } else {
+        // Used by the mockups
+        const Strophe = {
+            'Strophe': root.Strophe,
+            '$build': root.$build,
+            '$iq': root.$iq,
+            '$msg': root.$msg,
+            '$pres': root.$pres,
+            'SHA1': root.SHA1,
+            'MD5': root.MD5,
+            'b64_hmac_sha1': root.b64_hmac_sha1,
+            'b64_sha1': root.b64_sha1,
+            'str_hmac_sha1': root.str_hmac_sha1,
+            'str_sha1': root.str_sha1
+        };
+        root.converse_utils = factory(
+            root.sizzle,
+            root.Promise,
+            root._,
+            Strophe
+        );
+    }
 }(this, function (
         sizzle,
         Promise,
         _,
         Strophe,
+        URI,
         tpl_audio,
         tpl_file,
         tpl_image,
@@ -40,18 +65,6 @@
         'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
         'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
     }, console);
-
-    var unescapeHTML = function (htmlEscapedText) {
-        /* Helper method that replace HTML-escaped symbols with equivalent characters
-         * (e.g. transform occurrences of '&amp;' to '&')
-         *
-         * Parameters:
-         *  (String) htmlEscapedText: a String containing the HTML-escaped symbols.
-         */
-        var div = document.createElement('div');
-        div.innerHTML = htmlEscapedText;
-        return div.innerText;
-    };
 
     var isImage = function (url) {
         return new Promise((resolve, reject) => {
@@ -175,66 +188,80 @@
         return matches;
     }
 
-    u.addHyperlinks = function (text) {
-        const list = text.match(URL_REGEX) || [];
-        var links = [];
-        _.each(list, (match) => {
-            const prot = match.indexOf('http://') === 0 || match.indexOf('https://') === 0 ? '' : 'http://';
-            const url = prot + encodeURI(decodeURI(match)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-            const  a = '<a target="_blank" rel="noopener" href="' + url + '">'+ _.escape(match) + '</a>';
-            // We first insert a hash of the code that will be inserted, and
-            // then later replace that with the code itself. That way we avoid
-            // issues when some matches are substrings of others.
-            links.push(a);
-            text = text.replace(match, b64_sha1(a));
-        });
-        while (links.length) {
-            const a = links.pop();
-            text = text.replace(b64_sha1(a), a);
-        }
-        return text;
+    u.unescapeHTML = function (htmlEscapedText) {
+        /* Helper method that replace HTML-escaped symbols with equivalent characters
+         * (e.g. transform occurrences of '&amp;' to '&')
+         *
+         * Parameters:
+         *  (String) htmlEscapedText: a String containing the HTML-escaped symbols.
+         */
+        var div = document.createElement('div');
+        div.innerHTML = htmlEscapedText;
+        return div.innerText;
     };
 
-    u.renderImageURLs = function (obj) {
+    u.escapeHTML = function (string) {
+        return string
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    };
+
+    u.addHyperlinks = function (text) {
+        return URI.withinString(text, function (url) {
+            var uri = new URI(url);
+            uri.normalize();
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'http://' + url;
+            }
+            url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+            return `<a target="_blank" rel="noopener" href="${u.escapeHTML(url)}">${u.escapeHTML(uri.readable())}</a>`;
+        });
+    };
+
+    u.renderImageURLs = function (_converse, obj) {
         /* Returns a Promise which resolves once all images have been loaded.
          */
+        const { __ } = _converse;
         const list = obj.textContent.match(URL_REGEX) || [];
         return Promise.all(
             _.map(list, (url) =>
                 new Promise((resolve, reject) =>
                     isImage(url).then(function (img) {
-                        // XXX: need to create a new image, otherwise the event
-                        // listener doesn't fire
                         const i = new Image();
-                        i.className = 'chat-image';
                         i.src = img.src;
                         i.addEventListener('load', resolve);
                         // We also resolve for non-images, otherwise the
                         // Promise.all resolves prematurely.
                         i.addEventListener('error', resolve);
-                        var anchors = sizzle(`a[href="${url}"]`, obj);
-                        _.each(anchors, (a) => {
-                            a.replaceChild(i, a.firstChild);
+
+                        _.each(sizzle(`a[href="${url}"]`, obj), (a) => {
+                            a.outerHTML= tpl_image({
+                                'url': url,
+                                'label_download': __('Download')
+                            })
                         });
                     }).catch(resolve)
                 )
-            ))
+            )
+        )
     };
 
     u.renderFileURL = function (_converse, url) {
-        if (url.endsWith('mp3') || url.endsWith('mp4') ||
-            url.endsWith('jpg') || url.endsWith('jpeg') ||
-            url.endsWith('png') || url.endsWith('gif') ||
-            url.endsWith('svg')) {
+        const uri = new URI(url), { __ } = _converse,
+              filename = uri.filename();
+        if (!_.includes(["https", "http"], uri.protocol()) ||
+            filename.endsWith('mp3') || filename.endsWith('mp4') ||
+            filename.endsWith('jpg') || filename.endsWith('jpeg') ||
+            filename.endsWith('png') || filename.endsWith('gif') ||
+            filename.endsWith('svg')) {
 
             return url;
         }
-        const name = url.split('/').pop(),
-              { __ } = _converse;
-
         return tpl_file({
             'url': url,
-            'label_download': __('Download file: "%1$s', name)
+            'label_download': __('Download: "%1$s', filename)
         })
     };
 
@@ -245,7 +272,7 @@
 
             return tpl_image({
                 'url': url,
-                'label_download': __('Download image file')
+                'label_download': __('Download')
             })
         }
         return url;

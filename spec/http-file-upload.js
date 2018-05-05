@@ -337,6 +337,7 @@
                                             expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('1');
                                             message.save({
                                                 'upload': _converse.SUCCESS,
+                                                'oob_url': message.get('get'),
                                                 'message': message.get('get')
                                             });
                                         });
@@ -365,9 +366,10 @@
                                             }, 1000);
                                         }).then(function () {
                                             // Check that the image renders
-                                            expect(view.el.querySelector('.chat-message .chat-msg-content').innerHTML).toEqual(
-                                                '<a target="_blank" rel="noopener" href="http://localhost:8000/logo/conversejs-filled.svg">'+
-                                                    '<img class="chat-image" src="http://localhost:8000/logo/conversejs-filled.svg"></a>')
+                                            expect(view.el.querySelector('.chat-msg .chat-msg-media').innerHTML.trim()).toEqual(
+                                                '<a href="http://localhost:8000/logo/conversejs-filled.svg" target="_blank" rel="noopener">'+
+                                                    '<img class="chat-image img-thumbnail" src="http://localhost:8000/logo/conversejs-filled.svg">'+
+                                                '</a>');
                                             XMLHttpRequest.prototype.send = send_backup;
                                             done();
                                         });
@@ -442,6 +444,7 @@
                                                 expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('1');
                                                 message.save({
                                                     'upload': _converse.SUCCESS,
+                                                    'oob_url': message.get('get'),
                                                     'message': message.get('get')
                                                 });
                                             });
@@ -470,9 +473,9 @@
                                                 }, 1000);
                                             }).then(function () {
                                                 // Check that the image renders
-                                                expect(view.el.querySelector('.chat-message .chat-msg-content').innerHTML).toEqual(
-                                                    '<a target="_blank" rel="noopener" href="http://localhost:8000/logo/conversejs-filled.svg">'+
-                                                        '<img class="chat-image" src="http://localhost:8000/logo/conversejs-filled.svg"></a>')
+                                                expect(view.el.querySelector('.chat-msg .chat-msg-media').innerHTML.trim()).toEqual(
+                                                    '<a href="http://localhost:8000/logo/conversejs-filled.svg" target="_blank" rel="noopener">'+
+                                                        '<img class="chat-image img-thumbnail" src="http://localhost:8000/logo/conversejs-filled.svg"></a>')
                                                 XMLHttpRequest.prototype.send = send_backup;
                                                 done();
                                             });
@@ -680,7 +683,7 @@
                                         expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('0.5');
                                         message.set('progress', 1);
                                         expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('1');
-                                        expect(view.el.querySelector('.chat-content .chat-msg-content').textContent).toBe('Uploading file: my-juliet.jpg, 22.91 KB');
+                                        expect(view.el.querySelector('.chat-content .chat-msg-text').textContent).toBe('Uploading file: my-juliet.jpg, 22.91 KB');
                                         done();
                                     });
                                     var sent_stanza;

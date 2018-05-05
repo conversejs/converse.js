@@ -157,7 +157,7 @@
                     }
                     roster_item = _converse.roster.get(from_jid);
                     if (!_.isUndefined(roster_item)) {
-                        title = __("%1$s says", roster_item.get('fullname'));
+                        title = __("%1$s says", roster_item.getDisplayName());
                     } else {
                         if (_converse.allow_non_roster_messaging) {
                             title = __("%1$s says", from_jid);
@@ -196,7 +196,7 @@
                 if (message === null) {
                     return;
                 }
-                const n = new Notification(contact.fullname, {
+                const n = new Notification(contact.getDisplayName(), {
                         body: message,
                         lang: _converse.locale,
                         icon: _converse.notification_icon
@@ -205,7 +205,7 @@
             };
 
             _converse.showContactRequestNotification = function (contact) {
-                const n = new Notification(contact.fullname, {
+                const n = new Notification(contact.getDisplayName(), {
                         body: __('wants to be your contact'),
                         lang: _converse.locale,
                         icon: _converse.notification_icon

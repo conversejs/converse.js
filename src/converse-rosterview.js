@@ -368,9 +368,10 @@
 
                 initialize () {
                     this.model.on("change", this.render, this);
-                    this.model.on("remove", this.remove, this);
                     this.model.on("destroy", this.remove, this);
                     this.model.on("open", this.openChat, this);
+                    this.model.on("remove", this.remove, this);
+                    this.model.vcard.on('change:fullname', this.render, this);
                 },
 
                 render () {
@@ -412,19 +413,23 @@
                          *
                          *  So in both cases the user is a "pending" contact.
                          */
+                        const display_name = item.getDisplayName();
                         this.el.classList.add('pending-xmpp-contact');
                         this.el.innerHTML = tpl_pending_contact(
                             _.extend(item.toJSON(), {
-                                'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname') || item.get('jid')),
+                                'display_name': display_name,
+                                'desc_remove': __('Click to remove %1$s as a contact', display_name),
                                 'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                             })
                         );
                     } else if (requesting === true) {
+                        const display_name = item.getDisplayName();
                         this.el.classList.add('requesting-xmpp-contact');
                         this.el.innerHTML = tpl_requesting_contact(
                             _.extend(item.toJSON(), {
-                                'desc_accept': __("Click to accept the contact request from %1$s", item.get('fullname') || item.get('jid')),
-                                'desc_decline': __("Click to decline the contact request from %1$s", item.get('fullname') || item.get('jid')),
+                                'display_name': display_name,
+                                'desc_accept': __("Click to accept the contact request from %1$s", display_name),
+                                'desc_decline': __("Click to decline the contact request from %1$s", display_name),
                                 'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                             })
                         );
@@ -449,12 +454,14 @@
                     } else if (chat_status === 'dnd') {
                         status_icon = 'fa-minus-circle';
                     }
+                    const display_name = item.getDisplayName();
                     this.el.innerHTML = tpl_roster_item(
                         _.extend(item.toJSON(), {
+                            'display_name': display_name,
                             'desc_status': STATUSES[chat_status],
                             'status_icon': status_icon,
-                            'desc_chat': __('Click to chat with %1$s (JID: %2$s)', item.get('fullname') || item.get('jid'), item.get('jid')),
-                            'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname') || item.get('jid')),
+                            'desc_chat': __('Click to chat with %1$s (JID: %2$s)', display_name, item.get('jid')),
+                            'desc_remove': __('Click to remove %1$s as a contact', display_name),
                             'allow_contact_removal': _converse.allow_contact_removal,
                             'num_unread': item.get('num_unread') || 0
                         })
@@ -511,7 +518,7 @@
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     _converse.roster.sendContactAddIQ(
                         this.model.get('jid'),
-                        this.model.get('fullname'),
+                        this.model.getFullname(),
                         [],
                         () => { this.model.authorize().subscribe(); }
                     );
@@ -633,8 +640,7 @@
                         }
                     } else  {
                         matches = this.model.contacts.filter((contact) => {
-                            const value = contact.get('fullname') || contact.get('jid');
-                            return !_.includes(value.toLowerCase(), q.toLowerCase());
+                            return !_.includes(contact.getDisplayName().toLowerCase(), q.toLowerCase());
                         });
                     }
                     return matches;

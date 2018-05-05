@@ -651,15 +651,18 @@
                     function (done, _converse) {
 
                 _addContacts(_converse);
-                var name;
-                spyOn(window, 'confirm').and.returnValue(true);
-                for (var i=0; i<mock.pend_names.length; i++) {
-                    name = mock.pend_names[i];
-                    $(_converse.rosterview.el).find(".pending-contact-name:contains('"+name+"')")
-                        .parent().siblings('.remove-xmpp-contact')[0].click();
-                }
-                expect($(_converse.rosterview.el).find('#pending-xmpp-contacts').is(':visible')).toBeFalsy();
-                done();
+                return test_utils.waitUntil(() => _converse.roster.at(0).vcard.get('fullname'))
+                .then(function () {
+                    var name;
+                    spyOn(window, 'confirm').and.returnValue(true);
+                    for (var i=0; i<mock.pend_names.length; i++) {
+                        name = mock.pend_names[i];
+                        $(_converse.rosterview.el).find(".pending-contact-name:contains('"+name+"')")
+                            .parent().siblings('.remove-xmpp-contact')[0].click();
+                    }
+                    expect($(_converse.rosterview.el).find('#pending-xmpp-contacts').is(':visible')).toBeFalsy();
+                    done();
+                });
             }));
 
             it("can be added to the roster and they will be sorted alphabetically",

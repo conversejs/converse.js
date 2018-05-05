@@ -1,10 +1,8 @@
-// Converse.js (A browser based XMPP chat client)
+// Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
-/*global define */
 
 (function (root, factory) {
     define(["converse-core", "crypto", "strophe.vcard"], factory);
@@ -36,11 +34,9 @@
     }
 
     function onVCardError (_converse, jid, iq, errback) {
-        const contact = _converse.roster.get(jid);
-        if (contact) {
-            contact.save({'vcard_updated': moment().format() });
+        if (errback) {
+            errback({'stanza': iq, 'jid': jid});
         }
-        if (errback) { errback({'stanza': iq, 'jid': jid}); }
     }
 
     function getVCard (_converse, jid) {
@@ -63,34 +59,6 @@
 
     converse.plugins.add('converse-vcard', {
 
-        // FIXME: After refactoring, the dependency switches, from
-        // converse-roster to converse-vcard
-        dependencies: ["converse-roster"],
-
-        overrides: {
-            // Overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
-            // relevant objects or classes.
-            //
-            // New functions which don't exist yet can also be added.
-
-            RosterContacts: {
-                createRequestingContact (presence) {
-                    const { _converse } = this.__super__;
-                    const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
-
-                    _converse.api.vcard.get(bare_jid)
-                        .then(_.partial(_converse.createRequestingContactFromVCard, presence))
-                        .catch((vcard) => {
-                            _converse.log(
-                                `Error while retrieving vcard for ${vcard.jid}`,
-                                Strophe.LogLevel.WARN);
-                            _converse.createRequestingContactFromVCard(presence, vcard.stanza, vcard.jid);
-                        });
-                }
-            }
-        },
-
         initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
@@ -106,29 +74,6 @@
             });
 
 
-            _converse.createRequestingContactFromVCard = function (presence, vcard) {
-                const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
-                let fullname = vcard.fullname;
-                if (!fullname) {
-                    const nick_el = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence);
-                    fullname = nick_el.length ? nick_el[0].textContent : bare_jid;
-                }
-                const user_data = {
-                    'jid': bare_jid,
-                    'subscription': 'none',
-                    'ask': null,
-                    'requesting': true,
-                    'fullname': fullname,
-                    'image': vcard.image,
-                    'image_type': vcard.image_type,
-                    'image_hash': vcard.image_hash,
-                    'url': vcard.url,
-                    'vcard_updated': moment().format()
-                };
-                _converse.roster.create(user_data);
-                _converse.emit('contactRequest', user_data);
-            };
-
             /* Event handlers */
             _converse.initVCardCollection = function () {
                 _converse.vcards = new _converse.VCards();
@@ -140,10 +85,6 @@
 
             _converse.on('addClientFeatures', () => {
                 _converse.connection.disco.addFeature(Strophe.NS.VCARD);
-            });
-
-            _converse.on('initialized', () => {
-                _converse.roster.on("add", (contact) => _converse.api.vcard.update(contact));
             });
 
             _converse.on('statusInitialized', function fetchOwnVCard () {

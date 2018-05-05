@@ -245,7 +245,7 @@
                 expect(_converse.chatboxes.length).toEqual(1);
 
                 chatbox = test_utils.openChatBoxFor(_converse, contact_jid);
-                $el = $(_converse.rosterview.el).find('a.open-chat:contains("'+chatbox.get('fullname')+'")');
+                $el = $(_converse.rosterview.el).find('a.open-chat:contains("'+chatbox.getDisplayName()+'")');
                 jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
 
                 spyOn(_converse, 'emit');

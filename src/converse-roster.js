@@ -13,6 +13,8 @@
 
     converse.plugins.add('converse-roster', {
 
+        dependencies: ["converse-vcard"],
+
         overrides: {
             clearSession () {
                 this.__super__.clearSession.apply(this, arguments);
@@ -121,7 +123,6 @@
 
                     attributes.jid = bare_jid;
                     this.set(_.assignIn({
-                        'fullname': bare_jid,
                         'groups': [],
                         'id': bare_jid,
                         'jid': bare_jid,
@@ -129,9 +130,22 @@
                         'user_id': Strophe.getNodeFromJid(jid)
                     }, attributes));
 
+                    this.vcard = _converse.vcards.findWhere({'jid': bare_jid});
+                    if (_.isNil(this.vcard)) {
+                        this.vcard = _converse.vcards.create({'jid': bare_jid});
+                    }
+
                     this.on('change:chat_status', function (item) {
                         _converse.emit('contactStatusChanged', item.attributes);
                     });
+                },
+
+                getDisplayName () {
+                    return this.vcard.get('fullname') || this.get('jid');
+                },
+
+                getFullname () {
+                    return this.vcard.get('fullname');
                 },
 
                 subscribe (message) {
@@ -297,8 +311,8 @@
                     const status1 = contact1.get('chat_status') || 'offline';
                     const status2 = contact2.get('chat_status') || 'offline';
                     if (_converse.STATUS_WEIGHTS[status1] === _converse.STATUS_WEIGHTS[status2]) {
-                        const name1 = (contact1.get('fullname') || contact1.get('jid')).toLowerCase();
-                        const name2 = (contact2.get('fullname') || contact2.get('jid')).toLowerCase();
+                        const name1 = (contact1.getDisplayName()).toLowerCase();
+                        const name2 = (contact2.getDisplayName()).toLowerCase();
                         return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
                     } else  {
                         return _converse.STATUS_WEIGHTS[status1] < _converse.STATUS_WEIGHTS[status2] ? -1 : 1;
@@ -436,12 +450,11 @@
                     */
                     return new Promise((resolve, reject) => {
                         groups = groups || [];
-                        name = _.isEmpty(name)? jid: name;
                         this.sendContactAddIQ(jid, name, groups,
                             () => {
                                 const contact = this.create(_.assignIn({
                                     'ask': undefined,
-                                    'fullname': name,
+                                    'nickname': name,
                                     groups,
                                     jid,
                                     'requesting': false,
@@ -555,7 +568,7 @@
                         }
                         this.create({
                             'ask': ask,
-                            'fullname': item.getAttribute("name") || jid,
+                            'nickname': item.getAttribute("name"),
                             'groups': groups,
                             'jid': jid,
                             'subscription': subscription
@@ -585,7 +598,7 @@
                         'subscription': 'none',
                         'ask': null,
                         'requesting': true,
-                        'fullname': nickname
+                        'nickname': nickname
                     };
                     this.create(user_data);
                     _converse.emit('contactRequest', user_data);

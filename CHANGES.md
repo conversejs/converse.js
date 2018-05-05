@@ -10,6 +10,12 @@
 - Support for rendering URLs sent according to XEP-0066 Out of Band Data.
 - Geo-URIs (e.g. from Conversations) are now replaced by links to openstreetmap (works in reverse also)
 
+### Bugfixes
+
+- Spoiler messages didn't include the message author's name.
+- Documentation includes utf-8 charset to make minfied versions compatible across platforms. #1017
+- #1026 Typing in MUC shows "Typing from another device"
+
 ### API changes
 - `_converse.api.vcard.get` now also accepts a `Backbone.Model` instance and
   has an additional `force` parameter to force fetching the vcard even if it
@@ -40,12 +46,10 @@
 - Extracted the views from `converse-muc.js` into `converse-muc-views.js` and
   where appropriate moved methods from the views into the models/collections.
   This makes MUC possible in headless mode.
+- Created a new core plugin `converse-roster.js` which contains the models for
+  roster-related data. Previously this code was in `converse-core.js`.
+- VCards are now stored separately from chats and roster contacts.
 
-### Bugfixes
-
-- Spoiler messages didn't include the message author's name.
-- Documentation includes utf-8 charset to make minfied versions compatible across platforms. #1017
-- #1026 Typing in MUC shows "Typing from another device"
 
 ## 3.3.4 (2018-03-05)
 

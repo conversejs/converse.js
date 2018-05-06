@@ -1071,13 +1071,13 @@
                     let text;
                     if (u.isVisible(this.el)) {
                         if (show === 'offline') {
-                            text = fullname+' '+__('has gone offline');
+                            text = __('%1$s has gone offline', fullname);
                         } else if (show === 'away') {
-                            text = fullname+' '+__('has gone away');
+                            text = __('%1$s has gone away', fullname);
                         } else if ((show === 'dnd')) {
-                            text = fullname+' '+__('is busy');
+                            text = __('%1$s is busy', fullname);
                         } else if (show === 'online') {
-                            text = fullname+' '+__('is online');
+                            text = __('%1$s is online', fullname);
                         }
                         if (text) {
                             this.content.insertAdjacentHTML(

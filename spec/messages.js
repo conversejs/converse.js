@@ -1693,7 +1693,7 @@
                     var media = view.el.querySelector('.chat-msg .chat-msg-media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                         '<!-- src/templates/file.html -->'+
-                        '<a target="_blank" rel="noopener" href="http://localhost/funny.pdf">Download: "funny.pdf</a>');
+                        '<a target="_blank" rel="noopener" href="http://localhost/funny.pdf">Download "funny.pdf"</a>');
                     done();
                 });
             }));

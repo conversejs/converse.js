@@ -267,7 +267,7 @@
         }
         return tpl_file({
             'url': url,
-            'label_download': __('Download: "%1$s', filename)
+            'label_download': __('Download "%1$s"', filename)
         })
     };
 

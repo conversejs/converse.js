@@ -1053,11 +1053,11 @@
                     contact = contact? contact.get('fullname'): Strophe.getNodeFromJid(from);
                     if (!reason) {
                         result = confirm(
-                            __("%1$s has invited you to join a chat room: %2$s", contact, room_jid)
+                            __("%1$s has invited you to join a groupchat: %2$s", contact, room_jid)
                         );
                     } else {
                         result = confirm(
-                            __('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"',
+                            __('%1$s has invited you to join a groupchat: %2$s, and left the following reason: "%3$s"',
                                 contact, room_jid, reason)
                         );
                     }

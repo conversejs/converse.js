@@ -600,8 +600,7 @@
                         'requesting': true,
                         'nickname': nickname
                     };
-                    this.create(user_data);
-                    _converse.emit('contactRequest', user_data);
+                    _converse.emit('contactRequest', this.create(user_data));
                 },
 
                 handleIncomingSubscription (presence) {

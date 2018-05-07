@@ -282,6 +282,7 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                var IQ_stanzas = _converse.connection.IQ_stanzas;
                 var sent_IQ, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -326,11 +327,20 @@
                  * </iq>
                  */
                 test_utils.waitUntil(function () {
-                    return sent_IQ.toLocaleString() ===
-                        "<iq to='lounge@localhost' from='dummy@localhost/resource' "+
-                            "type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                                "<query xmlns='http://jabber.org/protocol/disco#info' node='x-roomuser-item'/></iq>"
+                    return _.filter(IQ_stanzas, function (iq) {
+                        return iq.nodeTree.querySelector('query[node="x-roomuser-item"]');
+                    }).length > 0;
                 }, 300).then(function () {
+                    const iq = _.filter(IQ_stanzas, function (iq) {
+                        return iq.nodeTree.querySelector(`query[node="x-roomuser-item"]`);
+                    }).pop();
+
+                    const id = iq.nodeTree.getAttribute('id');
+                    expect(iq.toLocaleString()).toBe(
+                        "<iq to='lounge@localhost' from='dummy@localhost/resource' "+
+                            "type='get' xmlns='jabber:client' id='"+id+"'>"+
+                                "<query xmlns='http://jabber.org/protocol/disco#info' node='x-roomuser-item'/></iq>");
+
                     /* <iq xmlns="jabber:client" type="error" to="jordie.langen@chat.example.org/converse.js-11659299" from="myroom@conference.chat.example.org">
                      *      <error type="cancel">
                      *          <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
@@ -339,7 +349,7 @@
                      */
                     var stanza = $iq({
                         'type': 'error',
-                        'id': IQ_id,
+                        'id': id,
                         'from': view.model.get('jid'),
                         'to': _converse.connection.jid
                     }).c('error', {'type': 'cancel'})
@@ -1248,6 +1258,7 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                var IQ_stanzas = _converse.connection.IQ_stanzas;
                 var sent_IQ, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -1284,11 +1295,19 @@
                  */
 
                 test_utils.waitUntil(function () {
-                    return sent_IQ.toLocaleString() ===
-                        "<iq to='lounge@localhost' from='dummy@localhost/resource' "+
-                            "type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                                "<query xmlns='http://jabber.org/protocol/disco#info' node='x-roomuser-item'/></iq>";
+                    return _.filter(IQ_stanzas, function (iq) {
+                        return iq.nodeTree.querySelector('query[node="x-roomuser-item"]');
+                    }).length > 0;
                 }, 300).then(function () {
+                    const iq = _.filter(IQ_stanzas, function (iq) {
+                        return iq.nodeTree.querySelector(`query[node="x-roomuser-item"]`);
+                    }).pop();
+                    const id = iq.nodeTree.getAttribute('id');
+                    expect(iq.toLocaleString()).toBe(
+                        "<iq to='lounge@localhost' from='dummy@localhost/resource' "+
+                            "type='get' xmlns='jabber:client' id='"+id+"'>"+
+                                "<query xmlns='http://jabber.org/protocol/disco#info' node='x-roomuser-item'/></iq>");
+
                     /* <iq from='coven@chat.shakespeare.lit'
                      *     id='getnick1'
                      *     to='hag66@shakespeare.lit/pda'

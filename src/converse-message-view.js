@@ -160,9 +160,6 @@
                 },
 
                 renderChatStateNotification () {
-                    if (this.model.get('delayed')) {
-                        return this.model.destroy();
-                    }
                     let text;
                     const from = this.model.get('from'),
                           name = this.model.getDisplayName();

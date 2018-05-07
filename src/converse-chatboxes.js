@@ -115,10 +115,7 @@
                 },
 
                 isOnlyChatStateNotification () {
-                    return this.get('chat_state') &&
-                            !this.get('oob_url') &&
-                            !this.get('file') &&
-                            !this.get('message');
+                    return u.isOnlyChatStateNotification(this);
                 },
 
                 getDisplayName () {
@@ -451,7 +448,12 @@
                     /* Create a Backbone.Message object inside this chat box
                      * based on the identified message stanza.
                      */
-                    return this.messages.create(this.getMessageAttributesFromStanza.apply(this, arguments));
+                    const attrs = this.getMessageAttributesFromStanza.apply(this, arguments)
+                    if (u.isOnlyChatStateNotification(attrs)) {
+                        return;
+                    } else {
+                        return this.messages.create(attrs);
+                    }
                 },
 
                 newMessageWillBeHidden () {

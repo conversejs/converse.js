@@ -13,6 +13,7 @@
             "sizzle",
             "es6-promise",
             "lodash.noconflict",
+            "backbone",
             "strophe",
             "uri",
             "tpl!audio",
@@ -46,6 +47,7 @@
         sizzle,
         Promise,
         _,
+        Backbone,
         Strophe,
         URI,
         tpl_audio,
@@ -486,6 +488,16 @@
         } else {
             return !message.get('delayed');
         }
+    };
+
+    u.isOnlyChatStateNotification = function (attrs) {
+        if (attrs instanceof Backbone.Model) {
+            attrs = attrs.attributes;
+        }
+        return attrs['chat_state'] &&
+            !attrs['oob_url'] &&
+            !attrs['file'] &&
+            !attrs['message'];
     };
 
     u.isOTRMessage = function (message) {

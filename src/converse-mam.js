@@ -384,7 +384,7 @@
             });
 
             _converse.on('addClientFeatures', () => {
-                _converse.connection.disco.addFeature(Strophe.NS.MAM);
+                _converse.api.disco.addFeature(Strophe.NS.MAM);
             });
 
             _converse.on('afterMessagesFetched', (chatboxview) => {

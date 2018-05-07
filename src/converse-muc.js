@@ -67,7 +67,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes", "converse-controlbox"],
+        dependencies: ["converse-chatboxes", "converse-disco", "converse-controlbox"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -319,7 +319,7 @@
                     /* Fetch the room disco info, parse it and then save it.
                      */
                     return new Promise((resolve, reject) => {
-                        _converse.connection.disco.info(
+                        _converse.api.disco.info(
                             this.get('jid'),
                             null,
                             _.flow(this.parseRoomFeatures.bind(this), resolve),
@@ -1134,10 +1134,10 @@
             /************************ BEGIN Event Handlers ************************/
             _converse.on('addClientFeatures', () => {
                 if (_converse.allow_muc) {
-                    _converse.connection.disco.addFeature(Strophe.NS.MUC);
+                    _converse.api.disco.addFeature(Strophe.NS.MUC);
                 }
                 if (_converse.allow_muc_invitations) {
-                    _converse.connection.disco.addFeature('jabber:x:conference'); // Invites
+                    _converse.api.disco.addFeature('jabber:x:conference'); // Invites
                 }
             });
             _converse.on('chatBoxesFetched', autoJoinRooms);

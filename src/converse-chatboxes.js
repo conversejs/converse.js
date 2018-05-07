@@ -765,8 +765,8 @@
             _converse.on('chatBoxesFetched', autoJoinChats);
 
             _converse.on('addClientFeatures', () => {
-                _converse.connection.disco.addFeature(Strophe.NS.HTTPUPLOAD);
-                _converse.connection.disco.addFeature(Strophe.NS.OUTOFBAND);
+                _converse.api.disco.addFeature(Strophe.NS.HTTPUPLOAD);
+                _converse.api.disco.addFeature(Strophe.NS.OUTOFBAND);
             });
 
             _converse.api.listen.on('pluginsInitialized', () => {

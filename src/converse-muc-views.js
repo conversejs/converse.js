@@ -295,7 +295,7 @@
                     parent_el.querySelector('a.room-info').classList.remove('selected');
                 } else {
                     parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
-                    _converse.connection.disco.info(
+                    _converse.api.disco.info(
                         ev.target.getAttribute('data-room-jid'),
                         null,
                         _.partial(insertRoomInfo, parent_el)

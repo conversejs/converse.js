@@ -1064,7 +1064,7 @@
 
             _converse.on('connected', () => {
                 // Advertise that we support XEP-0382 Message Spoilers
-                _converse.connection.disco.addFeature(Strophe.NS.SPOILER);
+                _converse.api.disco.addFeature(Strophe.NS.SPOILER);
             });
 
             /************************ BEGIN API ************************/

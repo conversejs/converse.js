@@ -54,7 +54,6 @@ require.config({
         "snabbdom-props":           "node_modules/snabbdom/dist/snabbdom-props",
         "snabbdom-style":           "node_modules/snabbdom/dist/snabbdom-style",
         "strophe":                  "node_modules/strophe.js/strophe",
-        "strophe.disco":            "node_modules/strophejs-plugin-disco/strophe.disco",
         "strophe.ping":             "node_modules/strophejs-plugin-ping/strophe.ping",
         "strophe.rsm":              "node_modules/strophejs-plugin-rsm/strophe.rsm",
         "strophe.vcard":            "node_modules/strophejs-plugin-vcard/strophe.vcard",

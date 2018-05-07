@@ -84,7 +84,7 @@
 
 
             _converse.on('addClientFeatures', () => {
-                _converse.connection.disco.addFeature(Strophe.NS.VCARD);
+                _converse.api.disco.addFeature(Strophe.NS.VCARD);
             });
 
             _converse.on('statusInitialized', function fetchOwnVCard () {

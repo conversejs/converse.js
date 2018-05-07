@@ -449,7 +449,11 @@
                      * based on the identified message stanza.
                      */
                     const attrs = this.getMessageAttributesFromStanza.apply(this, arguments)
-                    if (u.isOnlyChatStateNotification(attrs)) {
+                    if (u.isOnlyChatStateNotification(attrs) && attrs.delayed) {
+                        // No need showing old CSNs
+                        return;
+                    } else if (!attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
+                        // TODO: handle <subject> messages (currently being done by ChatRoom)
                         return;
                     } else {
                         return this.messages.create(attrs);

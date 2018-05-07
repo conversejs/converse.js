@@ -42,7 +42,6 @@
     });
     var strophePlugin = function () { return Strophe; };
     var emptyFunction = function () { };
-    define('strophe.disco', ['strophe'], strophePlugin);
     define('strophe.ping', ['strophe'], strophePlugin);
     define('strophe.rsm', ['strophe'], strophePlugin);
     define('strophe.vcard', ['strophe'], strophePlugin);

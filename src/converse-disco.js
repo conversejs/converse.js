@@ -204,12 +204,6 @@
             });
 
             function addClientFeatures () {
-                /* The strophe.disco.js plugin keeps a list of features which
-                 * it will advertise to any #info queries made to it.
-                 *
-                 * See: http://xmpp.org/extensions/xep-0030.html#info
-                 */
-
                 // See http://xmpp.org/registrar/disco-categories.html
                 _converse.api.disco.addIdentity('client', 'web', 'Converse.js');
 

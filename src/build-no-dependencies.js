@@ -9,7 +9,6 @@
         "backbone.overview",
         "moment",
         "strophe",
-        "strophe.disco",
         "strophe.rsm",
         "strophe.vcard",
         "strophe.ping",

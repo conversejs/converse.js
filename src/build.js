@@ -26,6 +26,7 @@
         "converse-profile":         "builds/converse-profile",
         "converse-register":        "builds/converse-register",
         "converse-roomslist":       "builds/converse-roomslist",
+        "converse-roster":          "builds/converse-roster",
         "converse-rosterview":      "builds/converse-rosterview",
         "converse-singleton":       "builds/converse-singleton",
         "converse-vcard":           "builds/converse-vcard",

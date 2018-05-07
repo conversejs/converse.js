@@ -153,7 +153,9 @@
                      */
                     if (this.disable_mam) { return; }
                     const { _converse } = this.__super__;
-                    _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
+                    const mam_jid = this.model.get('type') === CHATROOMS_TYPE ? this.model.get('jid') : _converse.bare_jid;
+
+                    _converse.api.disco.supports(Strophe.NS.MAM, mam_jid).then(
                         (results) => { // Success
                             if (results.length) {
                                 const most_recent_msg = utils.getMostRecentMessage(this.model);

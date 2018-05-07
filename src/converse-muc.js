@@ -305,6 +305,7 @@
                 getOutgoingMessageAttributes (text, spoiler_hint) {
                     const is_spoiler = this.get('composing_spoiler');
                     return {
+                        'nick': this.get('nick'),
                         'from': `${this.get('jid')}/${this.get('nick')}`,
                         'fullname': this.get('nick'),
                         'is_spoiler': is_spoiler,

@@ -152,39 +152,23 @@
                      * the last archived message in our local cache.
                      */
                     if (this.disable_mam) { return; }
-                    const { _converse } = this.__super__;
-                    const mam_jid = this.model.get('type') === CHATROOMS_TYPE ? this.model.get('jid') : _converse.bare_jid;
+                    const { _converse } = this.__super__,
+                          most_recent_msg = utils.getMostRecentMessage(this.model);
 
-                    _converse.api.disco.supports(Strophe.NS.MAM, mam_jid).then(
-                        (results) => { // Success
-                            if (results.length) {
-                                const most_recent_msg = utils.getMostRecentMessage(this.model);
-                                if (_.isNil(most_recent_msg)) {
-                                    this.fetchArchivedMessages();
-                                } else {
-                                    const archive_id = most_recent_msg.get('archive_id');
-                                    if (archive_id) {
-                                        this.fetchArchivedMessages({
-                                            'after': most_recent_msg.get('archive_id')
-                                        });
-                                    } else {
-                                        this.fetchArchivedMessages({
-                                            'start': most_recent_msg.get('time')
-                                        });
-                                    }
-                                }
-                            }
-                        },
-                        () => { // Error
-                            _converse.log(
-                                "Error or timeout while checking for MAM support",
-                                Strophe.LogLevel.ERROR
-                            );
+                    if (_.isNil(most_recent_msg)) {
+                        this.fetchArchivedMessages();
+                    } else {
+                        const archive_id = most_recent_msg.get('archive_id');
+                        if (archive_id) {
+                            this.fetchArchivedMessages({
+                                'after': most_recent_msg.get('archive_id')
+                            });
+                        } else {
+                            this.fetchArchivedMessages({
+                                'start': most_recent_msg.get('time')
+                            });
                         }
-                    ).catch((msg) => {
-                        this.clearSpinner();
-                        _converse.log(msg, Strophe.LogLevel.FATAL);
-                    });
+                    }
                 },
 
                 fetchArchivedMessagesIfNecessary () {
@@ -319,30 +303,44 @@
                      * Then, upon receiving them, call onMessage
                      * so that they are displayed inside it.
                      */
-                    const that = this;
-                    const { _converse } = this.__super__;
-                    this.addSpinner();
-                    _converse.api.archive.query(
-                        _.extend({
-                            'groupchat': true,
-                            'before': '', // Page backwards from the most recent message
-                            'with': this.model.get('jid'),
-                            'max': _converse.archived_messages_page_size
-                        }, options),
-                        function (messages) {
-                            that.clearSpinner();
-                            if (messages.length) {
-                                _.each(messages, that.model.onMessage.bind(that.model));
-                            }
+                    const { _converse } = this.__super__,
+                          mam_jid = this.model.get('type') === CHATROOMS_TYPE ? this.model.get('jid') : _converse.bare_jid;
+
+                    _converse.api.disco.supports(Strophe.NS.MAM, mam_jid).then(
+                        (results) => { // Success
+                            if (!results.length) { return; }
+                            this.addSpinner();
+                            _converse.api.archive.query(
+                                _.extend({
+                                    'groupchat': true,
+                                    'before': '', // Page backwards from the most recent message
+                                    'with': this.model.get('jid'),
+                                    'max': _converse.archived_messages_page_size
+                                }, options),
+                                (messages) => {
+                                    this.clearSpinner();
+                                    if (messages.length) {
+                                        _.each(messages, this.model.onMessage.bind(this.model));
+                                    }
+                                },
+                                () => {
+                                    this.clearSpinner();
+                                    _converse.log(
+                                        "Error while trying to fetch archived messages",
+                                        Strophe.LogLevel.WARN);
+                                }
+                            );
                         },
-                        function () {
-                            that.clearSpinner();
+                        () => { // Error
                             _converse.log(
-                                "Error while trying to fetch archived messages",
-                                Strophe.LogLevel.WARN);
+                                "Error or timeout while checking for MAM support",
+                                Strophe.LogLevel.ERROR
+                            );
                         }
-                    );
-                }
+                    ).catch((msg) => {
+                        this.clearSpinner();
+                        _converse.log(msg, Strophe.LogLevel.FATAL);
+                    });
             }
         },
 

@@ -8090,7 +8090,8 @@ body {
       cursor: pointer; }
     #conversejs #converse-roster .roster-filter-form .roster-filter {
       width: 100%;
-      margin: 0.2em; }
+      margin: 0.2em;
+      font-size: calc(16px - 2px); }
     #conversejs #converse-roster .roster-filter-form .state-type {
       font-size: calc(16px - 2px);
       height: 30px;
@@ -8604,7 +8605,8 @@ body {
     margin-top: 0.5em;
     height: 36px;
     vertical-align: middle;
-    width: 36px; }
+    width: 36px;
+    border: 1px solid lightgrey; }
   #conversejs .message.chat-msg .chat-msg-heading {
     margin-top: 0.5em;
     padding-right: 0.25rem;

@@ -39,6 +39,7 @@
         .roster-filter {
             width: 100%;
             margin: 0.2em;
+            font-size: calc(#{$font-size} - 2px);
         }
         .state-type {
             font-size: calc(#{$font-size} - 2px);

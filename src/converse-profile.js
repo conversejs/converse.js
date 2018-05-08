@@ -9,6 +9,7 @@
 (function (root, factory) {
     define(["converse-core",
             "bootstrap",
+            "tpl!alert",
             "tpl!chat_status_modal",
             "tpl!profile_modal",
             "tpl!profile_view",
@@ -19,6 +20,7 @@
 }(this, function (
             converse,
             bootstrap,
+            tpl_alert,
             tpl_chat_status_modal,
             tpl_profile_modal,
             tpl_profile_view,
@@ -32,7 +34,7 @@
 
     converse.plugins.add('converse-profile', {
 
-        dependencies: ["converse-modal"],
+        dependencies: ["converse-modal", "converse-vcard"],
 
         initialize () {
             /* The initialize function gets called as soon as the plugin is
@@ -43,13 +45,96 @@
 
 
             _converse.ProfileModal = _converse.BootstrapModal.extend({
+                events: {
+                    'click .change-avatar': "openFileSelection",
+                    'change input[type="file"': "updateFilePreview",
+                    'submit form': 'onFormSubmitted'
+                },
+
+                initialize () {
+                    _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                    this.model.on('change', this.render, this);
+                },
 
                 toHTML () {
                     return tpl_profile_modal(_.extend(this.model.toJSON(), {
                         'heading_profile': __('Your Profile'),
-                        'label_close': __('Close')
+                        'label_close': __('Close'),
+                        'label_email': __('Email'),
+                        'label_fullname': __('Full Name'),
+                        'label_nickname': __('Nickname'),
+                        'label_jid': __('XMPP Address (JID)'),
+                        'label_role': __('Role'),
+                        'label_save': __('Save'),
+                        'label_url': __('URL'),
+                        'alt_avatar': __('Your avatar image')
                     }));
                 },
+
+                openFileSelection (ev) {
+                    ev.preventDefault();
+                    this.el.querySelector('input[type="file"]').click();
+                },
+
+                updateFilePreview (ev) {
+                    const file = ev.target.files[0],
+                          reader = new FileReader();
+                    reader.onloadend = () => {
+                        this.el.querySelector('.avatar').setAttribute('src', reader.result);
+                    };
+                    reader.readAsDataURL(file);
+                },
+
+                setVCard (body, data) {
+                    _converse.api.vcard.set(data)
+                    .then(() => {
+                        _converse.api.vcard.update(this.model, true);
+
+                        const html = tpl_alert({
+                            'message': __('Profile data succesfully saved'),
+                            'type': 'alert-primary'
+                        });
+                        body.insertAdjacentHTML('afterBegin', html);
+                    }).catch((err) => {
+                        _converse.log(err, Strophe.LogLevel.FATAL);
+                        const html = tpl_alert({
+                            'message': __('An error happened while trying to save your profile data'),
+                            'type': 'alert-danger'
+                        });
+                        body.insertAdjacentHTML('afterBegin', html);
+                    });
+                },
+
+                onFormSubmitted (ev) {
+                    ev.preventDefault();
+                    const reader = new FileReader(),
+                          form_data = new FormData(ev.target),
+                          body = this.el.querySelector('.modal-body'),
+                          image_file = form_data.get('image');
+
+                    const data = {
+                        'fn': form_data.get('fn'),
+                        'role': form_data.get('role'),
+                        'email': form_data.get('email'),
+                        'url': form_data.get('url'),
+                    };
+                    if (!image_file.size) {
+                        _.extend(data, {
+                            'image': this.model.get('image'),
+                            'image_type': this.model.get('image_type')
+                        });
+                        this.setVCard(body, data);
+                    } else {
+                        reader.onloadend = () => {
+                            _.extend(data, {
+                                'image': btoa(reader.result),
+                                'image_type': image_file.type
+                            });
+                            this.setVCard(body, data);
+                        };
+                        reader.readAsBinaryString(image_file);
+                    }
+                }
             });
 
 

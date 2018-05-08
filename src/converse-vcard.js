@@ -5,66 +5,11 @@
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
-    define(["converse-core", "crypto"], factory);
-}(this, function (converse, CryptoJS) {
+    define(["converse-core", "crypto", "tpl!vcard"], factory);
+}(this, function (converse, CryptoJS, tpl_vcard) {
     "use strict";
-    const { Backbone, Promise, Strophe, SHA1, _, $iq, b64_sha1, moment, sizzle } = converse.env;
+    const { Backbone, Promise, Strophe, SHA1, _, $iq, $build, b64_sha1, moment, sizzle } = converse.env;
     const u = converse.env.utils;
-
-
-    function onVCardData (_converse, jid, iq, callback) {
-        const vcard = iq.querySelector('vCard');
-        let result = {};
-        if (!_.isNull(vcard)) {
-            result = {
-                'stanza': iq,
-                'fullname': _.get(vcard.querySelector('FN'), 'textContent'),
-                'image': _.get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
-                'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
-                'url': _.get(vcard.querySelector('URL'), 'textContent')
-            };
-        }
-        if (result.image) {
-            const word_array_from_b64 = CryptoJS.enc.Base64.parse(result['image']);
-            result['image_type'] = CryptoJS.SHA1(word_array_from_b64).toString()
-        }
-        if (callback) {
-            callback(result);
-        }
-    }
-
-    function onVCardError (_converse, jid, iq, errback) {
-        if (errback) {
-            errback({'stanza': iq, 'jid': jid});
-        }
-    }
-
-    function createStanza (type, jid, vcard_el) {
-        const iq = $iq(jid ? {'type': type, 'to': jid} : {'type': type});
-        iq.c("vCard", {'xmlns': Strophe.NS.VCARD});
-        if (vcard_el) {
-            iq.cnode(vcard_el);
-        }
-        return iq;
-    }
-
-    function getVCard (_converse, jid) {
-        /* Request the VCard of another user. Returns a promise.
-         *
-         * Parameters:
-         *    (String) jid - The Jabber ID of the user whose VCard
-         *      is being requested.
-         */
-        jid = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
-        return new Promise((resolve, reject) => {
-            _converse.connection.sendIQ(
-                createStanza("get", jid),
-                _.partial(onVCardData, _converse, jid, _, resolve),
-                _.partial(onVCardError, _converse, jid, _, resolve),
-                5000
-            );
-        });
-    }
 
 
     converse.plugins.add('converse-vcard', {
@@ -83,6 +28,75 @@
                 }
             });
 
+
+            function onVCardData (_converse, jid, iq, callback) {
+                const vcard = iq.querySelector('vCard');
+                let result = {};
+                if (!_.isNull(vcard)) {
+                    result = {
+                        'stanza': iq,
+                        'fullname': _.get(vcard.querySelector('FN'), 'textContent'),
+                        'nickname': _.get(vcard.querySelector('NICKNAME'), 'textContent'),
+                        'image': _.get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
+                        'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
+                        'url': _.get(vcard.querySelector('URL'), 'textContent'),
+                        'role': _.get(vcard.querySelector('ROLE'), 'textContent'),
+                        'email': _.get(vcard.querySelector('EMAIL USERID'), 'textContent')
+                    };
+                }
+                if (result.image) {
+                    const word_array_from_b64 = CryptoJS.enc.Base64.parse(result['image']);
+                    result['image_type'] = CryptoJS.SHA1(word_array_from_b64).toString()
+                }
+                if (callback) {
+                    callback(result);
+                }
+            }
+
+            function onVCardError (_converse, jid, iq, errback) {
+                if (errback) {
+                    errback({'stanza': iq, 'jid': jid});
+                }
+            }
+
+            function createStanza (type, jid, vcard_el) {
+                const iq = $iq(jid ? {'type': type, 'to': jid} : {'type': type});
+                if (!vcard_el) {
+                    iq.c("vCard", {'xmlns': Strophe.NS.VCARD});
+                } else {
+                    iq.cnode(vcard_el);
+                }
+                return iq;
+            }
+
+            function setVCard (data) {
+                return new Promise((resolve, reject) => {
+                    const vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
+                    _converse.connection.sendIQ(
+                        createStanza("set", data.jid, vcard_el),
+                        resolve,
+                        reject
+                    );
+                });
+            }
+
+            function getVCard (_converse, jid) {
+                /* Request the VCard of another user. Returns a promise.
+                *
+                * Parameters:
+                *    (String) jid - The Jabber ID of the user whose VCard
+                *      is being requested.
+                */
+                jid = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
+                return new Promise((resolve, reject) => {
+                    _converse.connection.sendIQ(
+                        createStanza("get", jid),
+                        _.partial(onVCardData, _converse, jid, _, resolve),
+                        _.partial(onVCardError, _converse, jid, _, resolve),
+                        5000
+                    );
+                });
+            }
 
             /* Event handlers */
             _converse.initVCardCollection = function () {
@@ -108,6 +122,8 @@
 
             _.extend(_converse.api, {
                 'vcard': {
+                    'set': setVCard,
+
                     'get' (model, force) {
                         if (_.isString(model)) {
                             return getVCard(_converse, model);
@@ -126,7 +142,7 @@
                         return new Promise((resolve, reject) => {
                             this.get(model, force).then((vcard) => {
                                 model.save(_.extend(
-                                    _.pick(vcard, ['fullname', 'url', 'image_type', 'image', 'image_hash']),
+                                    _.pick(vcard, ['fullname', 'nickname', 'email', 'url', 'role', 'image_type', 'image', 'image_hash']),
                                     {'vcard_updated': moment().format()}
                                 ));
                                 resolve();

@@ -1293,6 +1293,37 @@ Example:
         }
     });
 
+set
+~~~
+
+Parameters:
+
+* ``data`` a map of VCard keys and values
+
+Enables setting new values for a VCard.
+
+Example:
+
+.. code-block:: javascript
+
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            _converse.api.waitUntil('rosterContactsFetched').then(() => {
+                this._converse.api.vcard.set({
+                    'jid': 'someone@example.org',
+                    'fn': 'Someone Somewhere',
+                    'nickname': 'someone'
+                }).then(() => {
+                    // Succes
+                }).catch(() => {
+                    // Failure
+                }).
+            });
+
+        }
+    });
+
 update
 ~~~~~~
 

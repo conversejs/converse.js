@@ -40,6 +40,7 @@
             root.sizzle,
             root.Promise,
             root._,
+            root.Backbone,
             Strophe
         );
     }
@@ -56,7 +57,6 @@
         tpl_video
     ) {
     "use strict";
-    const b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
 
     const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;

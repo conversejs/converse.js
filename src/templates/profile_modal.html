@@ -44,7 +44,8 @@
                     </div>
                     <div class="form-group">
                         <label for="vcard-role" class="col-form-label">{{{o.label_role}}}:</label>
-                        <input id="vcard-role" type="text" class="form-control" name="role" value="{{{o.role}}}">
+                        <input id="vcard-role" type="text" class="form-control" name="role" value="{{{o.role}}}" aria-describedby="vcard-role-help">
+                        <small id="vcard-role-help" class="form-text text-muted">{{{o.label_role_help}}}</small>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -97,9 +97,15 @@
                 },
 
                 initialize () {
-                    this.vcard = _converse.vcards.findWhere({'jid': this.get('from')});
-                    if (_.isNil(this.vcard)) {
-                        this.vcard = _converse.vcards.create({'jid': this.get('from')});
+                    if (this.get('type') === 'groupchat' &&
+                        this.collection.chatbox.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
+
+                        this.vcard = _converse.xmppstatus.vcard;
+                    } else {
+                        this.vcard = _converse.vcards.findWhere({'jid': this.get('from')});
+                        if (_.isNil(this.vcard)) {
+                            this.vcard = _converse.vcards.create({'jid': this.get('from')});
+                        }
                     }
 
                     if (this.get('file')) {

@@ -67,6 +67,7 @@
                         'label_nickname': __('Nickname'),
                         'label_jid': __('XMPP Address (JID)'),
                         'label_role': __('Role'),
+                        'label_role_help': __('Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.'),
                         'label_save': __('Save'),
                         'label_url': __('URL'),
                         'alt_avatar': __('Your avatar image')

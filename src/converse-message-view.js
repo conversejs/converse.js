@@ -108,10 +108,14 @@
                     } else {
                         template = this.model.get('is_spoiler') ? tpl_spoiler_message : tpl_message;
                     }
+                    const moment_time = moment(this.model.get('time')),
+                          role = this.model.vcard.get('role'),
+                          roles = role ? role.split(',') : [];
 
-                    const moment_time = moment(this.model.get('time'));
                     const msg = u.stringToElement(template(
-                        _.extend(this.model.toJSON(), {
+                        _.extend(
+                            this.model.toJSON(), {
+                            'roles': roles,
                             'pretty_time': moment_time.format(_converse.time_format),
                             'time': moment_time.format(),
                             'extra_classes': this.getExtraMessageClasses(),

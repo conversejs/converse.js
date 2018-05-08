@@ -41775,12 +41775,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       'str_hmac_sha1': root.str_hmac_sha1,
       'str_sha1': root.str_sha1
     };
-    root.converse_utils = factory(root.sizzle, root.Promise, root._, Strophe);
+    root.converse_utils = factory(root.sizzle, root.Promise, root._, root.Backbone, Strophe);
   }
 })(this, function (sizzle, Promise, _, Backbone, Strophe, URI, tpl_audio, tpl_file, tpl_image, tpl_video) {
   "use strict";
 
-  var b64_sha1 = Strophe.SHA1.b64_sha1;
   Strophe = Strophe.Strophe;
   var URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
 
@@ -43345,8 +43344,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
   Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
   Strophe.addNamespace('SPOILER', 'urn:xmpp:spoiler:0');
-  Strophe.addNamespace('XFORM', 'jabber:x:data');
-  Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update'); // Use Mustache style syntax for variable interpolation
+  Strophe.addNamespace('VCARD', 'vcard-temp');
+  Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
+  Strophe.addNamespace('XFORM', 'jabber:x:data'); // Use Mustache style syntax for variable interpolation
 
   /* Configuration of Lodash templates (this config is distinct to the
    * config of requirejs-tpl in main.js). This one is for normal inline templates.
@@ -44184,15 +44184,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       defaults: function defaults() {
         return {
           "jid": _converse.bare_jid,
-          "nickname": _converse.nickname,
-          "status": _converse.default_state,
-          "vcard_updated": null,
-          'image': _converse.DEFAULT_IMAGE,
-          'image_type': _converse.DEFAULT_IMAGE_TYPE
+          "status": _converse.default_state
         };
       },
       initialize: function initialize() {
         var _this3 = this;
+
+        this.vcard = _converse.vcards.findWhere({
+          'jid': this.get('jid')
+        });
+
+        if (_.isNil(this.vcard)) {
+          this.vcard = _converse.vcards.create({
+            'jid': this.get('jid')
+          });
+        }
 
         this.on('change:status', function (item) {
           var status = _this3.get('status');
@@ -53426,14 +53432,18 @@ return __p
           };
         },
         initialize: function initialize() {
-          this.vcard = _converse.vcards.findWhere({
-            'jid': this.get('from')
-          });
-
-          if (_.isNil(this.vcard)) {
-            this.vcard = _converse.vcards.create({
+          if (this.get('type') === 'groupchat' && this.collection.chatbox.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
+            this.vcard = _converse.xmppstatus.vcard;
+          } else {
+            this.vcard = _converse.vcards.findWhere({
               'jid': this.get('from')
             });
+
+            if (_.isNil(this.vcard)) {
+              this.vcard = _converse.vcards.create({
+                'jid': this.get('from')
+              });
+            }
           }
 
           if (this.get('file')) {
@@ -54285,7 +54295,13 @@ __p += '\n    <canvas class="avatar" height="36" width="36"></canvas>\n    ';
  } ;
 __p += '\n    <div class="chat-msg-content">\n        <span class="chat-msg-heading">\n            <span class="chat-msg-author">' +
 __e(o.username) +
-'</span>\n            <span class="chat-msg-time">' +
+'\n                ';
+ _.each(o.roles, function (role) { ;
+__p += ' <span class="badge badge-secondary">' +
+__e(role) +
+'</span> ';
+ }); ;
+__p += '\n            </span>\n            <span class="chat-msg-time">' +
 __e(o.pretty_time) +
 '</span>\n        </span>\n        <span class="chat-msg-text"></span>\n        <div class="chat-msg-media"></div>\n    </div>\n</div>\n';
 return __p
@@ -54403,8 +54419,11 @@ return __p
             template = this.model.get('is_spoiler') ? tpl_spoiler_message : tpl_message;
           }
 
-          var moment_time = moment(this.model.get('time'));
+          var moment_time = moment(this.model.get('time')),
+              role = this.model.vcard.get('role'),
+              roles = role ? role.split(',') : [];
           var msg = u.stringToElement(template(_.extend(this.model.toJSON(), {
+            'roles': roles,
             'pretty_time': moment_time.format(_converse.time_format),
             'time': moment_time.format(),
             'extra_classes': this.getExtraMessageClasses(),
@@ -57524,6 +57543,17 @@ define("awesomplete", (function (global) {
 });
 //# sourceMappingURL=converse-rosterview.js.map;
 
+define('tpl!alert', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<div class="alert ' +
+__e(o.type) +
+'" role="alert">' +
+__e(o.message) +
+'</div>\n';
+return __p
+};});
+
+
 define('tpl!chat_status_modal', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -57577,19 +57607,51 @@ __p += '<div class="modal fade" id="user-profile-modal" tabindex="-1" role="dial
 __e(o.heading_profile) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
-'"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                <div class="row">\n                    <div class="col-auto">\n                        ';
+'"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <form class="converse-form">\n                <div class="modal-body">\n                    <div class="row">\n                        <div class="col-auto">\n                            <a class="change-avatar" href="#">\n                                ';
  if (o.image) { ;
-__p += '\n                        <a class="show-profile" href="#">\n                            <img alt="User Avatar" class="img-thumbnail avatar align-self-center" height="100px" width="100px" src="data:' +
+__p += '\n                                    <img alt="' +
+__e(o.alt_avatar) +
+'" class="img-thumbnail avatar align-self-center" height="100px" width="100px" src="data:' +
 __e(o.image_type) +
 ';base64,' +
 __e(o.image) +
-'"/>\n                        </a>\n                        ';
+'"/>\n                                ';
  } ;
-__p += '\n                    </div>\n                    <div class="col-auto">\n                        <div classs="row w-100">\n                            <label>Fullname:</label>\n                            <span class="username">' +
-__e(o.fullname) +
-'</span>\n                        </div>\n                        <div classs="row w-100">\n                            <label>XMPP Address:</label>\n                            <span class="username">' +
+__p += '\n                                ';
+ if (!o.image) { ;
+__p += '\n                                    <canvas class="avatar" height="100px" width="100px"/>\n                                ';
+ } ;
+__p += '\n                            </a>\n                            <input class="hidden" name="image" type="file">\n                        </div>\n                        <div class="col">\n                            <div class="form-group">\n                                <label class="col-form-label">' +
+__e(o.label_jid) +
+':</label>\n                                <div>' +
 __e(o.jid) +
-'</span>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n';
+'</div>\n                            </div>\n                        </div>\n                    </div>\n                    <div class="form-group">\n                        <label for="vcard-fullname" class="col-form-label">' +
+__e(o.label_fullname) +
+':</label>\n                        <input id="vcard-fullname" type="text" class="form-control" name="fn" value="' +
+__e(o.fullname) +
+'">\n                    </div>\n                    <div class="form-group">\n                        <label for="vcard-nickname" class="col-form-label">' +
+__e(o.label_nickname) +
+':</label>\n                        <input id="vcard-nickname" type="text" class="form-control" name="nickname" value="' +
+__e(o.nickname) +
+'">\n                    </div>\n                    <div class="form-group">\n                        <label for="vcard-url" class="col-form-label">' +
+__e(o.label_url) +
+':</label>\n                        <input id="vcard-url" type="url" class="form-control" name="url" value="' +
+__e(o.url) +
+'">\n                    </div>\n                    <div class="form-group">\n                        <label for="vcard-email" class="col-form-label">' +
+__e(o.label_email) +
+':</label>\n                        <input id="vcard-email" type="email" class="form-control" name="email" value="' +
+__e(o.email) +
+'">\n                    </div>\n                    <div class="form-group">\n                        <label for="vcard-role" class="col-form-label">' +
+__e(o.label_role) +
+':</label>\n                        <input id="vcard-role" type="text" class="form-control" name="role" value="' +
+__e(o.role) +
+'" aria-describedby="vcard-role-help">\n                        <small id="vcard-role-help" class="form-text text-muted">' +
+__e(o.label_role_help) +
+'</small>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="submit" class="save-form btn btn-primary">' +
+__e(o.label_save) +
+'</button>\n                    <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
+__e(o.label_close) +
+'</button>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n';
 return __p
 };});
 
@@ -57597,15 +57659,11 @@ return __p
 define('tpl!profile_view', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<div class="userinfo">\n<div class="profile d-flex">\n    ';
- if (o.image) { ;
-__p += '\n    <a class="show-profile" href="#">\n        <img alt="User Avatar" class="avatar align-self-center" height="40px" width="40px" src="data:' +
+__p += '<div class="userinfo">\n<div class="profile d-flex">\n    <a class="show-profile" href="#">\n        <img alt="User Avatar" class="avatar align-self-center" height="40px" width="40px" src="data:' +
 __e(o.image_type) +
 ';base64,' +
 __e(o.image) +
-'"/>\n    </a>\n    ';
- } ;
-__p += '\n    <span class="username w-100 align-self-center">' +
+'"/>\n    </a>\n    <span class="username w-100 align-self-center">' +
 __e(o.fullname) +
 '</span>\n    <!-- <a class="chatbox-btn fa fa-vcard align-self-center" title="' +
 __e(o.title_your_profile) +
@@ -60098,76 +60156,26 @@ CryptoJS.mode.CTR = (function () {
   return CryptoJS
 
 }));
-/* Plugin to implement the vCard extension.
- *  http://xmpp.org/extensions/xep-0054.html
- *
- *  Author: Nathan Zorn (nathan.zorn@gmail.com)
- *  AMD support by JC Brand
- */
-(function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define('strophe.vcard',[
-            "strophe"
-        ], function (Strophe) {
-            factory(
-                Strophe.Strophe,
-                Strophe.$build,
-                Strophe.$iq ,
-                Strophe.$msg,
-                Strophe.$pres
-            );
-            return Strophe;
-        });
-    } else {
-        // Browser globals
-        factory(
-            root.Strophe,
-            root.$build,
-            root.$iq ,
-            root.$msg,
-            root.$pres
-        );
-    }
-}(this, function (Strophe, $build, $iq, $msg, $pres) {
 
-    var buildIq = function(type, jid, vCardEl) {
-        var iq = $iq(jid ? {type: type, to: jid} : {type: type});
-        iq.c("vCard", {xmlns: Strophe.NS.VCARD});
-        if (vCardEl) {
-            iq.cnode(vCardEl);
-        }
-        return iq;
-    };
-
-    Strophe.addConnectionPlugin('vcard', {
-        _connection: null,
-        init: function(conn) {
-            this._connection = conn;
-            return Strophe.addNamespace('VCARD', 'vcard-temp');
-        },
-
-        /* Function
-         * Retrieve a vCard for a JID/Entity
-         * Parameters:
-         * (Function) handler_cb - The callback function used to handle the request.
-         * (String) jid - optional - The name of the entity to request the vCard
-         *     If no jid is given, this function retrieves the current user's vcard.
-         * */
-        get: function(handler_cb, jid, error_cb) {
-            var iq = buildIq("get", jid);
-            return this._connection.sendIQ(iq, handler_cb, error_cb);
-        },
-
-        /* Function
-         *  Set an entity's vCard.
-         */
-        set: function(handler_cb, vCardEl, jid, error_cb) {
-            var iq = buildIq("set", jid, vCardEl);
-            return this._connection.sendIQ(iq, handler_cb, error_cb);
-        }
-    });
-}));
+define('tpl!vcard', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<vCard xmlns="vcard-temp">\n    <FN>' +
+__e(o.fn) +
+'</FN>\n    <NICKNAME>' +
+__e(o.fn) +
+'</NICKNAME>\n    <URL>' +
+__e(o.url) +
+'</URL>\n    <ROLE>' +
+__e(o.role) +
+'</ROLE>\n    <EMAIL><INTERNET/><PREF/><USERID>' +
+__e(o.email) +
+'</USERID></EMAIL>\n    <PHOTO>\n      <TYPE>' +
+__e(o.image_type) +
+'</TYPE>\n      <BINVAL>' +
+__e(o.image) +
+'</BINVAL>\n    </PHOTO>\n</vCard>\n';
+return __p
+};});
 
 // Converse.js
 // http://conversejs.org
@@ -60175,8 +60183,8 @@ CryptoJS.mode.CTR = (function () {
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  define('converse-vcard',["converse-core", "crypto", "strophe.vcard"], factory);
-})(this, function (converse, CryptoJS) {
+  define('converse-vcard',["converse-core", "crypto", "tpl!vcard"], factory);
+})(this, function (converse, CryptoJS, tpl_vcard) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -60185,57 +60193,12 @@ CryptoJS.mode.CTR = (function () {
       Strophe = _converse$env.Strophe,
       SHA1 = _converse$env.SHA1,
       _ = _converse$env._,
+      $iq = _converse$env.$iq,
+      $build = _converse$env.$build,
       b64_sha1 = _converse$env.b64_sha1,
       moment = _converse$env.moment,
       sizzle = _converse$env.sizzle;
   var u = converse.env.utils;
-
-  function onVCardData(_converse, jid, iq, callback) {
-    var vcard = iq.querySelector('vCard');
-    var result = {};
-
-    if (!_.isNull(vcard)) {
-      result = {
-        'stanza': iq,
-        'fullname': _.get(vcard.querySelector('FN'), 'textContent'),
-        'image': _.get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
-        'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
-        'url': _.get(vcard.querySelector('URL'), 'textContent')
-      };
-    }
-
-    if (result.image) {
-      var word_array_from_b64 = CryptoJS.enc.Base64.parse(result['image']);
-      result['image_type'] = CryptoJS.SHA1(word_array_from_b64).toString();
-    }
-
-    if (callback) {
-      callback(result);
-    }
-  }
-
-  function onVCardError(_converse, jid, iq, errback) {
-    if (errback) {
-      errback({
-        'stanza': iq,
-        'jid': jid
-      });
-    }
-  }
-
-  function getVCard(_converse, jid) {
-    /* Request the VCard of another user. Returns a promise.
-     *
-     * Parameters:
-     *    (String) jid - The Jabber ID of the user whose VCard
-     *      is being requested.
-     */
-    var to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
-    return new Promise(function (resolve, reject) {
-      _converse.connection.vcard.get(_.partial(onVCardData, _converse, jid, _, resolve), to, _.partial(onVCardError, _converse, jid, _, resolve));
-    });
-  }
-
   converse.plugins.add('converse-vcard', {
     initialize: function initialize() {
       /* The initialize function gets called as soon as the plugin is
@@ -60250,7 +60213,84 @@ CryptoJS.mode.CTR = (function () {
           });
         }
       });
+
+      function onVCardData(_converse, jid, iq, callback) {
+        var vcard = iq.querySelector('vCard');
+        var result = {};
+
+        if (!_.isNull(vcard)) {
+          result = {
+            'stanza': iq,
+            'fullname': _.get(vcard.querySelector('FN'), 'textContent'),
+            'nickname': _.get(vcard.querySelector('NICKNAME'), 'textContent'),
+            'image': _.get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
+            'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
+            'url': _.get(vcard.querySelector('URL'), 'textContent'),
+            'role': _.get(vcard.querySelector('ROLE'), 'textContent'),
+            'email': _.get(vcard.querySelector('EMAIL USERID'), 'textContent')
+          };
+        }
+
+        if (result.image) {
+          var word_array_from_b64 = CryptoJS.enc.Base64.parse(result['image']);
+          result['image_type'] = CryptoJS.SHA1(word_array_from_b64).toString();
+        }
+
+        if (callback) {
+          callback(result);
+        }
+      }
+
+      function onVCardError(_converse, jid, iq, errback) {
+        if (errback) {
+          errback({
+            'stanza': iq,
+            'jid': jid
+          });
+        }
+      }
+
+      function createStanza(type, jid, vcard_el) {
+        var iq = $iq(jid ? {
+          'type': type,
+          'to': jid
+        } : {
+          'type': type
+        });
+
+        if (!vcard_el) {
+          iq.c("vCard", {
+            'xmlns': Strophe.NS.VCARD
+          });
+        } else {
+          iq.cnode(vcard_el);
+        }
+
+        return iq;
+      }
+
+      function setVCard(data) {
+        return new Promise(function (resolve, reject) {
+          var vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
+
+          _converse.connection.sendIQ(createStanza("set", data.jid, vcard_el), resolve, reject);
+        });
+      }
+
+      function getVCard(_converse, jid) {
+        /* Request the VCard of another user. Returns a promise.
+        *
+        * Parameters:
+        *    (String) jid - The Jabber ID of the user whose VCard
+        *      is being requested.
+        */
+        jid = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
+        return new Promise(function (resolve, reject) {
+          _converse.connection.sendIQ(createStanza("get", jid), _.partial(onVCardData, _converse, jid, _, resolve), _.partial(onVCardError, _converse, jid, _, resolve), 5000);
+        });
+      }
       /* Event handlers */
+
 
       _converse.initVCardCollection = function () {
         _converse.vcards = new _converse.VCards();
@@ -60265,16 +60305,9 @@ CryptoJS.mode.CTR = (function () {
         _converse.api.disco.addFeature(Strophe.NS.VCARD);
       });
 
-      _converse.on('statusInitialized', function fetchOwnVCard() {
-        _converse.api.disco.supports(Strophe.NS.VCARD, _converse.domain).then(function (result) {
-          if (result.length) {
-            _converse.api.vcard.update(_converse.xmppstatus);
-          }
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-      });
-
       _.extend(_converse.api, {
         'vcard': {
+          'set': setVCard,
           'get': function get(model, force) {
             if (_.isString(model)) {
               return getVCard(_converse, model);
@@ -60295,7 +60328,7 @@ CryptoJS.mode.CTR = (function () {
 
             return new Promise(function (resolve, reject) {
               _this.get(model, force).then(function (vcard) {
-                model.save(_.extend(_.pick(vcard, ['fullname', 'url', 'image_type', 'image', 'image_hash']), {
+                model.save(_.extend(_.pick(vcard, ['fullname', 'nickname', 'email', 'url', 'role', 'image_type', 'image', 'image_hash']), {
                   'vcard_updated': moment().format()
                 }));
                 resolve();
@@ -60317,8 +60350,8 @@ CryptoJS.mode.CTR = (function () {
 
 /*global define */
 (function (root, factory) {
-  define('converse-profile',["converse-core", "bootstrap", "tpl!chat_status_modal", "tpl!profile_modal", "tpl!profile_view", "tpl!status_option", "converse-vcard", "converse-modal"], factory);
-})(this, function (converse, bootstrap, tpl_chat_status_modal, tpl_profile_modal, tpl_profile_view, tpl_status_option) {
+  define('converse-profile',["converse-core", "bootstrap", "tpl!alert", "tpl!chat_status_modal", "tpl!profile_modal", "tpl!profile_view", "tpl!status_option", "converse-vcard", "converse-modal"], factory);
+})(this, function (converse, bootstrap, tpl_alert, tpl_chat_status_modal, tpl_profile_modal, tpl_profile_view, tpl_status_option) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -60330,7 +60363,7 @@ CryptoJS.mode.CTR = (function () {
       moment = _converse$env.moment;
   var u = converse.env.utils;
   converse.plugins.add('converse-profile', {
-    dependencies: ["converse-modal"],
+    dependencies: ["converse-modal", "converse-vcard"],
     initialize: function initialize() {
       /* The initialize function gets called as soon as the plugin is
        * loaded by converse.js's plugin machinery.
@@ -60338,11 +60371,102 @@ CryptoJS.mode.CTR = (function () {
       var _converse = this._converse,
           __ = _converse.__;
       _converse.ProfileModal = _converse.BootstrapModal.extend({
+        events: {
+          'click .change-avatar': "openFileSelection",
+          'change input[type="file"': "updateFilePreview",
+          'submit form': 'onFormSubmitted'
+        },
+        initialize: function initialize() {
+          _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+
+          this.model.on('change', this.render, this);
+        },
         toHTML: function toHTML() {
-          return tpl_profile_modal(_.extend(this.model.toJSON(), {
+          return tpl_profile_modal(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
             'heading_profile': __('Your Profile'),
-            'label_close': __('Close')
+            'label_close': __('Close'),
+            'label_email': __('Email'),
+            'label_fullname': __('Full Name'),
+            'label_nickname': __('Nickname'),
+            'label_jid': __('XMPP Address (JID)'),
+            'label_role': __('Role'),
+            'label_role_help': __('Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.'),
+            'label_save': __('Save'),
+            'label_url': __('URL'),
+            'alt_avatar': __('Your avatar image')
           }));
+        },
+        openFileSelection: function openFileSelection(ev) {
+          ev.preventDefault();
+          this.el.querySelector('input[type="file"]').click();
+        },
+        updateFilePreview: function updateFilePreview(ev) {
+          var _this = this;
+
+          var file = ev.target.files[0],
+              reader = new FileReader();
+
+          reader.onloadend = function () {
+            _this.el.querySelector('.avatar').setAttribute('src', reader.result);
+          };
+
+          reader.readAsDataURL(file);
+        },
+        setVCard: function setVCard(body, data) {
+          var _this2 = this;
+
+          _converse.api.vcard.set(data).then(function () {
+            _converse.api.vcard.update(_this2.model.vcard, true);
+
+            var html = tpl_alert({
+              'message': __('Profile data succesfully saved'),
+              'type': 'alert-primary'
+            });
+            body.insertAdjacentHTML('afterBegin', html);
+          }).catch(function (err) {
+            _converse.log(err, Strophe.LogLevel.FATAL);
+
+            var html = tpl_alert({
+              'message': __('An error happened while trying to save your profile data'),
+              'type': 'alert-danger'
+            });
+            body.insertAdjacentHTML('afterBegin', html);
+          });
+        },
+        onFormSubmitted: function onFormSubmitted(ev) {
+          var _this3 = this;
+
+          ev.preventDefault();
+          var reader = new FileReader(),
+              form_data = new FormData(ev.target),
+              body = this.el.querySelector('.modal-body'),
+              image_file = form_data.get('image');
+          var data = {
+            'fn': form_data.get('fn'),
+            'role': form_data.get('role'),
+            'email': form_data.get('email'),
+            'url': form_data.get('url')
+          };
+
+          if (!image_file.size) {
+            _.extend(data, {
+              'image': this.model.get('image'),
+              'image_type': this.model.get('image_type')
+            });
+
+            this.setVCard(body, data);
+          } else {
+            reader.onloadend = function () {
+              _.extend(data, {
+                'image': btoa(reader.result),
+                'image_type': image_file.type
+              });
+
+              _this3.setVCard(body, data);
+            };
+
+            reader.readAsBinaryString(image_file);
+          }
         }
       });
       _converse.ChatStatusModal = _converse.BootstrapModal.extend({
@@ -60351,7 +60475,7 @@ CryptoJS.mode.CTR = (function () {
           "click .clear-input": "clearStatusMessage"
         },
         toHTML: function toHTML() {
-          return tpl_chat_status_modal(_.extend(this.model.toJSON(), {
+          return tpl_chat_status_modal(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
             'label_away': __('Away'),
             'label_close': __('Close'),
             'label_busy': __('Busy'),
@@ -60366,10 +60490,10 @@ CryptoJS.mode.CTR = (function () {
           }));
         },
         afterRender: function afterRender() {
-          var _this = this;
+          var _this4 = this;
 
           this.el.addEventListener('shown.bs.modal', function () {
-            _this.el.querySelector('input[name="status_message"]').focus();
+            _this4.el.querySelector('input[name="status_message"]').focus();
           }, false);
         },
         clearStatusMessage: function clearStatusMessage(ev) {
@@ -60400,11 +60524,12 @@ CryptoJS.mode.CTR = (function () {
         },
         initialize: function initialize() {
           this.model.on("change", this.render, this);
+          this.model.vcard.on("change", this.render, this);
         },
         toHTML: function toHTML() {
           var chat_status = this.model.get('status') || 'offline';
-          return tpl_profile_view(_.extend(this.model.toJSON(), {
-            'fullname': this.model.get('fullname') || _converse.bare_jid,
+          return tpl_profile_view(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
+            'fullname': this.model.vcard.get('fullname') || _converse.bare_jid,
             'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
             'chat_status': chat_status,
             '_converse': _converse,
@@ -71359,7 +71484,7 @@ return __p
             pres.c("status").t(message).up();
           }
 
-          var nick = _converse.xmppstatus.get('nickname') || _converse.xmppstatus.get('fullname');
+          var nick = _converse.xmppstatus.vcard.get('nickname') || _converse.xmppstatus.vcard.get('fullname');
 
           if (nick) {
             pres.c('nick', {
@@ -71593,7 +71718,7 @@ return __p
         subscribeToSuggestedItems: function subscribeToSuggestedItems(msg) {
           _.each(msg.querySelectorAll('item'), function (item) {
             if (item.getAttribute('action') === 'add') {
-              _converse.roster.addAndSubscribe(item.getAttribute('jid'), _converse.xmppstatus.get('nickname') || _converse.xmppstatus.get('fullname'));
+              _converse.roster.addAndSubscribe(item.getAttribute('jid'), _converse.xmppstatus.vcard.get('nickname') || _converse.xmppstatus.vcard.get('fullname'));
             }
           });
 

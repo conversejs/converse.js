@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-04-30 16:16+0200\n"
-"PO-Revision-Date: 2018-04-24 09:34+0000\n"
+"PO-Revision-Date: 2018-05-09 14:34+0000\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -22,20 +22,20 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:9854 dist/converse-no-dependencies.js:9883
 msgid "Download"
-msgstr ""
+msgstr "تنزيل"
 
 #: dist/converse-no-dependencies.js:9873
 #, javascript-format
 msgid "Download: \"%1$s"
-msgstr ""
+msgstr "تنزيل : %1$s"
 
 #: dist/converse-no-dependencies.js:9896
 msgid "Download video file"
-msgstr ""
+msgstr "تنزيل ملف الفيديو"
 
 #: dist/converse-no-dependencies.js:9909
 msgid "Download audio file"
-msgstr ""
+msgstr "تنزيل ملف صوتي"
 
 #: dist/converse-no-dependencies.js:11206
 msgid "The connection has dropped, attempting to reconnect."

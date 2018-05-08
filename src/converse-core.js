@@ -836,15 +836,16 @@
             defaults () {
                 return {
                     "jid": _converse.bare_jid,
-                    "nickname": _converse.nickname,
                     "status":  _converse.default_state,
-                    "vcard_updated": null,
-                    'image': _converse.DEFAULT_IMAGE,
-                    'image_type': _converse.DEFAULT_IMAGE_TYPE
                 }
             },
 
             initialize () {
+                this.vcard = _converse.vcards.findWhere({'jid': this.get('jid')});
+                if (_.isNil(this.vcard)) {
+                    this.vcard = _converse.vcards.create({'jid': this.get('jid')});
+                }
+
                 this.on('change:status', (item) => {
                     const status = this.get('status');
                     this.sendPresence(status);

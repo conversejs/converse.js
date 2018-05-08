@@ -111,15 +111,6 @@
                 _converse.api.disco.addFeature(Strophe.NS.VCARD);
             });
 
-            _converse.on('statusInitialized', function fetchOwnVCard () {
-                _converse.api.disco.supports(Strophe.NS.VCARD, _converse.domain)
-                    .then((result) => {
-                        if (result.length) {
-                            _converse.api.vcard.update(_converse.xmppstatus);
-                        }})
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-            });
-
             _.extend(_converse.api, {
                 'vcard': {
                     'set': setVCard,

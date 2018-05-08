@@ -1137,7 +1137,7 @@
             var msg_object = chatbox.messages.models[0];
 
             var msg_author = view.el.querySelector('.chat-content .chat-msg:last-child .chat-msg-author');
-            expect(msg_author.textContent).toBe('dummy@localhost');
+            expect(msg_author.textContent).toBe('Max Mustermann');
 
             var msg_time = view.el.querySelector('.chat-content .chat-msg:last-child .chat-msg-time');
             var time = moment(msg_object.get('time')).format(_converse.time_format);

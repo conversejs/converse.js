@@ -57,7 +57,9 @@
                 },
 
                 toHTML () {
-                    return tpl_profile_modal(_.extend(this.model.toJSON(), {
+                    return tpl_profile_modal(_.extend(
+                        this.model.toJSON(),
+                        this.model.vcard.toJSON(), {
                         'heading_profile': __('Your Profile'),
                         'label_close': __('Close'),
                         'label_email': __('Email'),
@@ -88,7 +90,7 @@
                 setVCard (body, data) {
                     _converse.api.vcard.set(data)
                     .then(() => {
-                        _converse.api.vcard.update(this.model, true);
+                        _converse.api.vcard.update(this.model.vcard, true);
 
                         const html = tpl_alert({
                             'message': __('Profile data succesfully saved'),
@@ -145,19 +147,22 @@
                 },
 
                 toHTML () {
-                    return tpl_chat_status_modal(_.extend(this.model.toJSON(), {
-                        'label_away': __('Away'),
-                        'label_close': __('Close'),
-                        'label_busy': __('Busy'),
-                        'label_cancel': __('Cancel'),
-                        'label_custom_status': __('Custom status'),
-                        'label_offline': __('Offline'),
-                        'label_online': __('Online'),
-                        'label_save': __('Save'),
-                        'label_xa': __('Away for long'),
-                        'modal_title': __('Change chat status'),
-                        'placeholder_status_message': __('Personal status message')
-                    }));
+                    return tpl_chat_status_modal(
+                        _.extend(
+                            this.model.toJSON(),
+                            this.model.vcard.toJSON(), {
+                            'label_away': __('Away'),
+                            'label_close': __('Close'),
+                            'label_busy': __('Busy'),
+                            'label_cancel': __('Cancel'),
+                            'label_custom_status': __('Custom status'),
+                            'label_offline': __('Offline'),
+                            'label_online': __('Online'),
+                            'label_save': __('Save'),
+                            'label_xa': __('Away for long'),
+                            'modal_title': __('Change chat status'),
+                            'placeholder_status_message': __('Personal status message')
+                        }));
                 },
 
                 afterRender () {
@@ -196,12 +201,15 @@
 
                 initialize () {
                     this.model.on("change", this.render, this);
+                    this.model.vcard.on("change", this.render, this);
                 },
 
                 toHTML () {
                     const chat_status = this.model.get('status') || 'offline';
-                    return tpl_profile_view(_.extend(this.model.toJSON(), {
-                        'fullname': this.model.get('fullname') || _converse.bare_jid,
+                    return tpl_profile_view(_.extend(
+                        this.model.toJSON(),
+                        this.model.vcard.toJSON(), {
+                        'fullname': this.model.vcard.get('fullname') || _converse.bare_jid,
                         'status_message': this.model.get('status_message') ||
                                             __("I am %1$s", this.getPrettyStatus(chat_status)),
                         'chat_status': chat_status,

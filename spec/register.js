@@ -33,25 +33,23 @@
                   allow_registration: true },
                 function (done, _converse) {
 
-            test_utils.waitUntil(function () {
-                    return _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel');
-                }, 300)
+            test_utils.waitUntil(() => _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel'), 300)
             .then(function () {
-            var cbview = _converse.chatboxviews.get('controlbox');
-            test_utils.openControlBox();
-            var $panels = $(cbview.el.querySelector('.controlbox-panes'));
-            var $login = $panels.children().first();
-            var $registration = $panels.children().last();
+                var cbview = _converse.chatboxviews.get('controlbox');
+                test_utils.openControlBox();
+                var $panels = $(cbview.el.querySelector('.controlbox-panes'));
+                var $login = $panels.children().first();
+                var $registration = $panels.children().last();
 
-            var register_link = cbview.el.querySelector('a.register-account');
-            expect(register_link.textContent).toBe("Create an account");
-            register_link.click();
-            test_utils.waitUntil(function () {
-                return $registration.is(':visible');
-            }, 300).then(function () {
-                expect($login.is(':visible')).toBe(false);
-                done();
-            });
+                var register_link = cbview.el.querySelector('a.register-account');
+                expect(register_link.textContent).toBe("Create an account");
+                register_link.click();
+                test_utils.waitUntil(function () {
+                    return $registration.is(':visible');
+                }, 300).then(function () {
+                    expect($login.is(':visible')).toBe(false);
+                    done();
+                });
             });
         }));
 

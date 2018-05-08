@@ -94,14 +94,11 @@
             'animate': false,
             'use_emojione': false,
             'no_trimming': true,
-            'auto_login': true,
-            'jid': 'dummy@localhost',
             'view_mode': mock.view_mode,
-            'password': 'secret',
             'debug': false
         }, settings || {}));
-        _converse.ChatBoxViews.prototype.trimChat = function () {};
 
+        _converse.ChatBoxViews.prototype.trimChat = function () {};
         _converse.api.vcard.get = function (model, force) {
             return new Promise((resolve, reject) => {
                 let jid;
@@ -132,7 +129,12 @@
                 resolve(result);
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         };
-
+        if (_.get(settings, 'auto_login') !== false) {
+            _converse.api.user.login({
+                'jid': 'dummy@localhost',
+                'password': 'secret'
+            });
+        }
         window.converse_disable_effects = true;
         return _converse;
     }

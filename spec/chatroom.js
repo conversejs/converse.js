@@ -851,9 +851,7 @@
 
                 test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
                 .then(function () {
-                    return test_utils.waitUntil(function () {
-                        return _converse.xmppstatus.get('fullname');
-                    }, 300);
+                    return test_utils.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'))
                 }).then(function () {
                     test_utils.createContacts(_converse, 'current');
                     return test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');

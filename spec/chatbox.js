@@ -58,7 +58,7 @@
                 var view;
                 test_utils.createContacts(_converse, 'current');
                 test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
-                .then(() => test_utils.waitUntil(() => _converse.xmppstatus.get('fullname')), 300)
+                .then(() => test_utils.waitUntil(() => _converse.xmppstatus.vcard.get('fullname')), 300)
                 .then(function () {
                     test_utils.openControlBox();
                     expect(_converse.chatboxes.length).toEqual(1);
@@ -753,7 +753,7 @@
                         test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
                         .then(function () {
                             return test_utils.waitUntil(function () {
-                                return _converse.xmppstatus.get('fullname');
+                                return _converse.xmppstatus.vcard.get('fullname');
                             }, 300);
                         }).then(function () {
                             test_utils.createContacts(_converse, 'current');
@@ -783,7 +783,6 @@
                             // Check that the message was received and check the message parameters
                             expect(chatbox.messages.length).toEqual(1);
                             var msg_obj = chatbox.messages.models[0];
-                            expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
                             expect(msg_obj.get('sender')).toEqual('me');
                             expect(msg_obj.get('delayed')).toEqual(false);
                             var $chat_content = $(chatboxview.el).find('.chat-content');
@@ -902,7 +901,7 @@
                         test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
                         .then(function () {
                             return test_utils.waitUntil(function () {
-                                return _converse.xmppstatus.get('fullname');
+                                return _converse.xmppstatus.vcard.get('fullname');
                             }, 300);
                         }).then(function () {
                             test_utils.createContacts(_converse, 'current');
@@ -932,7 +931,6 @@
                             // Check that the message was received and check the message parameters
                             expect(chatbox.messages.length).toEqual(1);
                             var msg_obj = chatbox.messages.models[0];
-                            expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
                             expect(msg_obj.get('sender')).toEqual('me');
                             expect(msg_obj.get('delayed')).toEqual(false);
                             var $chat_content = $(chatboxview.el).find('.chat-content');

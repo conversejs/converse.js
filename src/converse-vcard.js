@@ -5,10 +5,10 @@
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
-    define(["converse-core", "crypto", "strophe.vcard"], factory);
+    define(["converse-core", "crypto"], factory);
 }(this, function (converse, CryptoJS) {
     "use strict";
-    const { Backbone, Promise, Strophe, SHA1, _, b64_sha1, moment, sizzle } = converse.env;
+    const { Backbone, Promise, Strophe, SHA1, _, $iq, b64_sha1, moment, sizzle } = converse.env;
     const u = converse.env.utils;
 
 
@@ -39,6 +39,15 @@
         }
     }
 
+    function createStanza (type, jid, vcard_el) {
+        const iq = $iq(jid ? {'type': type, 'to': jid} : {'type': type});
+        iq.c("vCard", {'xmlns': Strophe.NS.VCARD});
+        if (vcard_el) {
+            iq.cnode(vcard_el);
+        }
+        return iq;
+    }
+
     function getVCard (_converse, jid) {
         /* Request the VCard of another user. Returns a promise.
          *
@@ -46,12 +55,13 @@
          *    (String) jid - The Jabber ID of the user whose VCard
          *      is being requested.
          */
-        const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
+        jid = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
         return new Promise((resolve, reject) => {
-            _converse.connection.vcard.get(
+            _converse.connection.sendIQ(
+                createStanza("get", jid),
                 _.partial(onVCardData, _converse, jid, _, resolve),
-                to,
-                _.partial(onVCardError, _converse, jid, _, resolve)
+                _.partial(onVCardError, _converse, jid, _, resolve),
+                5000
             );
         });
     }

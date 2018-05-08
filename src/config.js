@@ -56,7 +56,6 @@ require.config({
         "strophe":                  "node_modules/strophe.js/strophe",
         "strophe.ping":             "node_modules/strophejs-plugin-ping/strophe.ping",
         "strophe.rsm":              "node_modules/strophejs-plugin-rsm/strophe.rsm",
-        "strophe.vcard":            "node_modules/strophejs-plugin-vcard/strophe.vcard",
         "text":                     "node_modules/text/text",
         "tovnode":                  "node_modules/snabbdom/dist/tovnode",
         "tpl":                      "node_modules/lodash-template-loader/loader",

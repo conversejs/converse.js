@@ -71,7 +71,6 @@
     "strophejs-plugin-ping": "0.0.1",
     "strophejs-plugin-register": "0.0.1",
     "strophejs-plugin-rsm": "0.0.1",
-    "strophejs-plugin-vcard": "0.0.1",
     "text": "requirejs/text#2.0.15",
     "uglify-es": "^3.0.24",
     "urijs": "^1.19.1",

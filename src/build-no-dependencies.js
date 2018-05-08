@@ -10,7 +10,6 @@
         "moment",
         "strophe",
         "strophe.rsm",
-        "strophe.vcard",
         "strophe.ping",
         "otr",
         "lodash",

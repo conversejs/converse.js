@@ -1006,13 +1006,9 @@
                     const role1 = occupant1.get('role') || 'none';
                     const role2 = occupant2.get('role') || 'none';
                     if (MUC_ROLE_WEIGHTS[role1] === MUC_ROLE_WEIGHTS[role2]) {
-                        try {
-                            const nick1 = occupant1.get('nick').toLowerCase();
-                            const nick2 = occupant2.get('nick').toLowerCase();
-                            return nick1 < nick2 ? -1 : (nick1 > nick2? 1 : 0);
-                        } catch (e) {
-                            debugger;
-                        }
+                        const nick1 = occupant1.get('nick').toLowerCase();
+                        const nick2 = occupant2.get('nick').toLowerCase();
+                        return nick1 < nick2 ? -1 : (nick1 > nick2? 1 : 0);
                     } else  {
                         return MUC_ROLE_WEIGHTS[role1] < MUC_ROLE_WEIGHTS[role2] ? -1 : 1;
                     }

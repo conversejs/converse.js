@@ -157,6 +157,7 @@
                             overflow-y: auto;
                             flex-basis: 0;
                             flex-grow: 1;
+                            border-bottom: 1px solid lightgrey;
                         }
                         &.features-list {
                             padding-top: 0;
@@ -185,15 +186,15 @@
 
                                 div.row.no-gutters {
                                     flex-wrap: nowrap;
+                                    min-height: 1.5em;
                                 }
-
                                 .badge {
-                                    margin-top: 0.125rem;
+                                    margin-bottom: 0.125rem;
                                 }
 
                                 .occupant-status {
                                     display: inline-block;
-                                    margin: 0.5em 0.5em 0.5em 0;
+                                    margin: 0 0.5em 0.125em 0;
                                     width: 0.5em;
                                     height: 0.5em;
 

@@ -16,9 +16,7 @@
             <div class="occupant-status occupant-{{{o.show}}} circle" title="{{{o.hint_show}}}"></div>
         </div>
         <div class="col">
-            <span class="occupant-nick">
-                {{{o.nick || o.jid}}}
-            </span>
+            <span class="occupant-nick">{{{o.nick || o.jid}}}</span>
             {[ if (o.affiliation === "owner") { ]}
                 <span class="badge badge-danger">{{{o.label_owner}}}</span>
             {[ } ]}

@@ -1716,7 +1716,7 @@
                     );
                     $occupants = $(view.el.querySelector('.occupant-list'));
                     expect($occupants.children().length).toBe(1);
-                    expect($occupants.children().first(0).text()).toBe("newnick");
+                    expect($occupants.children().find('.occupant-nick').first(0).text()).toBe("newnick");
                     done();
                 });
             }));

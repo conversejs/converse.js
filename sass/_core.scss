@@ -176,6 +176,12 @@ body.reset {
 
     .modal {
         background-color: rgba(0, 0, 0, 0.4);
+
+        .modal-body {
+            p {
+                padding: 0.25rem 0;
+            }
+        }
     }
 
     .selected {

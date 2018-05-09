@@ -90,22 +90,17 @@
 
                 setVCard (body, data) {
                     _converse.api.vcard.set(data)
-                    .then(() => {
-                        _converse.api.vcard.update(this.model.vcard, true);
-
-                        const html = tpl_alert({
-                            'message': __('Profile data succesfully saved'),
-                            'type': 'alert-primary'
-                        });
-                        body.insertAdjacentHTML('afterBegin', html);
-                    }).catch((err) => {
+                    .then(() => _converse.api.vcard.update(this.model.vcard, true))
+                    .catch((err) => {
                         _converse.log(err, Strophe.LogLevel.FATAL);
-                        const html = tpl_alert({
-                            'message': __('An error happened while trying to save your profile data'),
-                            'type': 'alert-danger'
-                        });
-                        body.insertAdjacentHTML('afterBegin', html);
+                        _converse.api.alert.show(
+                            Strophe.LogLevel.ERROR,
+                            __('Error'),
+                            [__("Sorry, an error happened while trying to save your profile data."),
+                            __("You can check your browser's developer console for any error output.")]
+                        )
                     });
+                    this.modal.hide();
                 },
 
                 onFormSubmitted (ev) {

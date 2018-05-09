@@ -6953,6 +6953,8 @@ body.reset {
     color: #818479; }
   #conversejs .modal {
     background-color: rgba(0, 0, 0, 0.4); }
+    #conversejs .modal .modal-body p {
+      padding: 0.25rem 0; }
   #conversejs .selected {
     color: #578EA9 !important; }
   #conversejs .circle {

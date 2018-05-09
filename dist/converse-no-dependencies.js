@@ -14677,14 +14677,35 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   };
 
   u.parseMemberListIQ = function parseMemberListIQ(iq) {
-    /* Given an IQ stanza with a member list, create an array of member
-        * objects.
-        */
+    /* Given an IQ stanza with a member list, create an array of member objects.
+    */
     return _.map(sizzle("query[xmlns=\"".concat(Strophe.NS.MUC_ADMIN, "\"] item"), iq), function (item) {
-      return {
-        'jid': item.getAttribute('jid'),
+      var data = {
         'affiliation': item.getAttribute('affiliation')
       };
+      var jid = item.getAttribute('jid');
+
+      if (u.isValidJID(jid)) {
+        data['jid'] = jid;
+      } else {
+        // XXX: Prosody sends nick for the jid attribute value
+        // Perhaps for anonymous room?
+        data['nick'] = jid;
+      }
+
+      var nick = item.getAttribute('nick');
+
+      if (nick) {
+        data['nick'] = nick;
+      }
+
+      var role = item.getAttribute('role');
+
+      if (role) {
+        data['role'] = nick;
+      }
+
+      return data;
     });
   };
 
@@ -14714,7 +14735,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     'moderator': 1,
     'participant': 2,
     'visitor': 3,
-    'none': 4
+    'none': 2
   };
   var _converse$env = converse.env,
       Strophe = _converse$env.Strophe,
@@ -14874,6 +14895,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
           this.occupants = new _converse.ChatRoomOccupants();
           this.occupants.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.occupants-".concat(_converse.bare_jid).concat(this.get('jid'))));
+          this.occupants.chatroom = this;
           this.registerHandlers();
           this.on('change:chat_state', this.sendChatState, this);
         },
@@ -15495,26 +15517,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
           return this;
         },
-        findOccupant: function findOccupant(data) {
-          /* Try to find an existing occupant based on the passed in
-           * data object.
-           *
-           * If we have a JID, we use that as lookup variable,
-           * otherwise we use the nick. We don't always have both,
-           * but should have at least one or the other.
-           */
-          var jid = Strophe.getBareJidFromJid(data.jid);
-
-          if (jid !== null) {
-            return this.occupants.where({
-              'jid': jid
-            }).pop();
-          } else {
-            return this.occupants.where({
-              'nick': data.nick
-            }).pop();
-          }
-        },
         updateOccupantsOnPresence: function updateOccupantsOnPresence(pres) {
           /* Given a presence stanza, update the occupant model
            * based on its contents.
@@ -15528,7 +15530,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             return true;
           }
 
-          var occupant = this.findOccupant(data);
+          var occupant = this.occupants.findOccupant(data);
 
           if (data.type === 'unavailable') {
             if (occupant) {
@@ -15568,7 +15570,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             'from': from,
             'nick': Strophe.getResourceFromJid(from),
             'type': pres.getAttribute("type"),
-            'states': []
+            'states': [],
+            'show': 'online'
           };
 
           _.each(pres.childNodes, function (child) {
@@ -15793,6 +15796,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }
       });
       _converse.ChatRoomOccupant = Backbone.Model.extend({
+        defaults: {
+          'show': 'offline'
+        },
         initialize: function initialize(attributes) {
           this.set(_.extend({
             'id': _converse.connection.getUniqueId()
@@ -15827,6 +15833,43 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             return nick1 < nick2 ? -1 : nick1 > nick2 ? 1 : 0;
           } else {
             return MUC_ROLE_WEIGHTS[role1] < MUC_ROLE_WEIGHTS[role2] ? -1 : 1;
+          }
+        },
+        fetchMembers: function fetchMembers() {
+          var _this10 = this;
+
+          this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin']).then(function (jids) {
+            _.each(jids, function (attrs) {
+              var occupant = _this10.findOccupant({
+                'jid': attrs.jid
+              });
+
+              if (occupant) {
+                occupant.save(attrs);
+              } else {
+                _this10.create(attrs);
+              }
+            });
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+        },
+        findOccupant: function findOccupant(data) {
+          /* Try to find an existing occupant based on the passed in
+           * data object.
+           *
+           * If we have a JID, we use that as lookup variable,
+           * otherwise we use the nick. We don't always have both,
+           * but should have at least one or the other.
+           */
+          var jid = Strophe.getBareJidFromJid(data.jid);
+
+          if (jid !== null) {
+            return this.where({
+              'jid': jid
+            }).pop();
+          } else {
+            return this.where({
+              'nick': data.nick
+            }).pop();
           }
         }
       });
@@ -23220,6 +23263,24 @@ __e(o.label_search) +
 return __p
 };});
 
+
+define('tpl!alert_modal', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<div class="modal" tabindex="-1" role="dialog">\n  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header ' +
+__e(o.type) +
+'">\n        <h5 class="modal-title">' +
+__e(o.title) +
+'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n      </div>\n      <div class="modal-body">';
+ _.each(o.messages, function (message) { ;
+__p += '\n          <p>' +
+__e(message) +
+'</p>\n      ';
+ }) ;
+__p += '\n    </div>\n    </div>\n  </div>\n</div>\n';
+return __p
+};});
+
 // Converse.js
 // http://conversejs.org
 //
@@ -23230,15 +23291,15 @@ return __p
     if (typeof define === 'function' && define.amd) {
         define('converse-modal',[
             "converse-core",
+            "tpl!alert_modal",
             "bootstrap",
-            "underscore",
-            "backbone",
             "backbone.vdomview"
         ], factory);
    }
-}(this, function (converse, bootstrap, _, Backbone) {
+}(this, function (converse, tpl_alert_modal, bootstrap) {
     "use strict";
 
+    const { Strophe, Backbone, _ } = converse.env;
 
     converse.plugins.add('converse-modal', {
 
@@ -23266,10 +23327,62 @@ return __p
                 },
 
                 show (ev) {
-                    ev.preventDefault();
-                    this.trigger_el = ev.target;
-                    this.trigger_el.classList.add('selected');
+                    if (ev) {
+                        ev.preventDefault();
+                        this.trigger_el = ev.target;
+                        this.trigger_el.classList.add('selected');
+                    }
                     this.modal.show();
+                }
+            });
+
+            _converse.Alert = _converse.BootstrapModal.extend({
+
+                initialize () {
+                    _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                    this.model.on('change', this.render, this);
+                },
+
+                toHTML () {
+                    return tpl_alert_modal(this.model.toJSON());
+                }
+            });
+
+
+            /************************ BEGIN API ************************/
+            // We extend the default converse.js API to add methods specific to MUC chat rooms.
+            let alert 
+
+            _.extend(_converse.api, {
+                'alert': {
+                    'show' (type, title, messages) {
+                        if (_.isString(messages)) {
+                            messages = [messages];
+                        }
+                        if (type === Strophe.LogLevel.ERROR) {
+                            type = 'alert-danger';
+                        } else if (type === Strophe.LogLevel.INFO) {
+                            type = 'alert-info';
+                        } else if (type === Strophe.LogLevel.WARN) {
+                            type = 'alert-warning';
+                        }
+
+                        if (_.isUndefined(alert)) {
+                            const model = new Backbone.Model({
+                                'title': title,
+                                'messages': messages,
+                                'type': type
+                            })
+                            alert = new _converse.Alert({'model': model});
+                        } else {
+                            alert.model.set({
+                                'title': title,
+                                'messages': messages,
+                                'type': type
+                            });
+                        }
+                        alert.show();
+                    }
                 }
             });
         }
@@ -24771,22 +24884,14 @@ return __p
           var _this2 = this;
 
           _converse.api.vcard.set(data).then(function () {
-            _converse.api.vcard.update(_this2.model.vcard, true);
-
-            var html = tpl_alert({
-              'message': __('Profile data succesfully saved'),
-              'type': 'alert-primary'
-            });
-            body.insertAdjacentHTML('afterBegin', html);
+            return _converse.api.vcard.update(_this2.model.vcard, true);
           }).catch(function (err) {
             _converse.log(err, Strophe.LogLevel.FATAL);
 
-            var html = tpl_alert({
-              'message': __('An error happened while trying to save your profile data'),
-              'type': 'alert-danger'
-            });
-            body.insertAdjacentHTML('afterBegin', html);
+            _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), [__("Sorry, an error happened while trying to save your profile data."), __("You can check your browser's developer console for any error output.")]);
           });
+
+          this.modal.hide();
         },
         onFormSubmitted: function onFormSubmitted(ev) {
           var _this3 = this;
@@ -27524,7 +27629,7 @@ __p += '\n';
  if (o.nonanonymous) { ;
 __p += '\n<li class="feature" title="' +
 __e( o.tt_nonanonymous ) +
-'"><span class="fa fa-idcard-dark"></span>' +
+'"><span class="fa fa-id-card"></span>' +
 __e( o.label_nonanonymous ) +
 '</li>\n';
  } ;
@@ -27703,9 +27808,7 @@ return __p
 define('tpl!occupant', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<li class="' +
-__e( o.role ) +
-' occupant" id="' +
+__p += '<li class="occupant" id="' +
 __e( o.id ) +
 '"\n    ';
  if (o.role === "moderator") { ;
@@ -27718,11 +27821,11 @@ __e( o.hint_occupant ) +
 '"\n    ';
  } ;
 __p += '\n    ';
- if (o.role === "occupant") { ;
+ if (o.role === "participant") { ;
 __p += '\n       title="' +
 __e( o.jid ) +
 ' ' +
-__e( o.desc_occupant ) +
+__e( o.desc_participant ) +
 ' ' +
 __e( o.hint_occupant ) +
 '"\n    ';
@@ -27738,20 +27841,50 @@ __e( o.hint_occupant ) +
 '"\n    ';
  } ;
 __p += '\n    ';
- if (!_.includes(["visitor", "occupant", "moderator"], o.role)) { ;
+ if (!_.includes(["visitor", "participant", "moderator"], o.role)) { ;
 __p += '\n       title="' +
 __e( o.jid ) +
 ' ' +
 __e( o.hint_occupant ) +
-'"\n       ';
+'"\n    ';
  } ;
-__p += '><div class="occupant-status occupant-' +
+__p += '>\n    <div class="row no-gutters">\n        <div class="col-auto">\n            <div class="occupant-status occupant-' +
 __e(o.show) +
 ' circle" title="' +
 __e(o.hint_show) +
-'"></div>' +
-__e(o.nick) +
-'</li>\n';
+'"></div>\n        </div>\n        <div class="col">\n            <span class="occupant-nick">' +
+__e(o.nick || o.jid) +
+'</span>\n            ';
+ if (o.affiliation === "owner") { ;
+__p += '\n                <span class="badge badge-danger">' +
+__e(o.label_owner) +
+'</span>\n            ';
+ } ;
+__p += '\n            ';
+ if (o.affiliation === "admin") { ;
+__p += '\n                <span class="badge badge-info">' +
+__e(o.label_admin) +
+'</span>\n            ';
+ } ;
+__p += '\n            ';
+ if (o.affiliation === "member") { ;
+__p += '\n                <span class="badge badge-info">' +
+__e(o.label_member) +
+'</span>\n            ';
+ } ;
+__p += '\n\n            ';
+ if (o.role === "moderator") { ;
+__p += '\n                <span class="badge badge-info">' +
+__e(o.label_moderator) +
+'</span>\n            ';
+ } ;
+__p += '\n            ';
+ if (o.role === "visitor") { ;
+__p += '\n                <span class="badge badge-secondary">' +
+__e(o.label_visitor) +
+'</span>\n            ';
+ } ;
+__p += '\n        </div>\n    </div>\n</li>\n';
 return __p
 };});
 
@@ -28423,8 +28556,7 @@ return __p
                                 // collection anymore).
                                 return;
                             }
-                            this.join();
-                            this.fetchMessages();
+                            this.populateAndJoin();
                             _converse.emit('chatRoomOpened', this);
                         }
                         this.model.getRoomFeatures().then(handler, handler);
@@ -28803,6 +28935,12 @@ return __p
                         // view(s).
                         this.showStatusMessages(pres);
                     }
+                },
+
+                populateAndJoin () {
+                    this.model.occupants.fetchMembers();
+                    this.join();
+                    this.fetchMessages();
                 },
 
                 join (nick, password) {
@@ -29422,7 +29560,7 @@ return __p
                 },
 
                 toHTML () {
-                    const show = this.model.get('show') || 'online';
+                    const show = this.model.get('show');
                     return tpl_occupant(
                         _.extend(
                             { 'jid': '',
@@ -29430,8 +29568,13 @@ return __p
                               'hint_show': _converse.PRETTY_CHAT_STATUS[show],
                               'hint_occupant': __('Click to mention %1$s in your message.', this.model.get('nick')),
                               'desc_moderator': __('This user is a moderator.'),
-                              'desc_occupant': __('This user can send messages in this room.'),
-                              'desc_visitor': __('This user can NOT send messages in this room.')
+                              'desc_participant': __('This user can send messages in this room.'),
+                              'desc_visitor': __('This user can NOT send messages in this room.'),
+                              'label_moderator': __('Moderator'),
+                              'label_visitor': __('Visitor'),
+                              'label_owner': __('Owner'),
+                              'label_member': __('Member'),
+                              'label_admin': __('Admin')
                             }, this.model.toJSON())
                     );
                 },
@@ -29710,8 +29853,7 @@ return __p
                     if (view.model.get('type') === converse.CHATROOMS_TYPE) {
                         view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         view.model.registerHandlers();
-                        view.join();
-                        view.fetchMessages();
+                        view.populateAndJoin();
                     }
                 });
             }

@@ -537,8 +537,7 @@
                                 // collection anymore).
                                 return;
                             }
-                            this.join();
-                            this.fetchMessages();
+                            this.populateAndJoin();
                             _converse.emit('chatRoomOpened', this);
                         }
                         this.model.getRoomFeatures().then(handler, handler);
@@ -917,6 +916,12 @@
                         // view(s).
                         this.showStatusMessages(pres);
                     }
+                },
+
+                populateAndJoin () {
+                    this.model.occupants.fetchMembers();
+                    this.join();
+                    this.fetchMessages();
                 },
 
                 join (nick, password) {
@@ -1536,7 +1541,7 @@
                 },
 
                 toHTML () {
-                    const show = this.model.get('show') || 'online';
+                    const show = this.model.get('show');
                     return tpl_occupant(
                         _.extend(
                             { 'jid': '',
@@ -1544,8 +1549,13 @@
                               'hint_show': _converse.PRETTY_CHAT_STATUS[show],
                               'hint_occupant': __('Click to mention %1$s in your message.', this.model.get('nick')),
                               'desc_moderator': __('This user is a moderator.'),
-                              'desc_occupant': __('This user can send messages in this room.'),
-                              'desc_visitor': __('This user can NOT send messages in this room.')
+                              'desc_participant': __('This user can send messages in this room.'),
+                              'desc_visitor': __('This user can NOT send messages in this room.'),
+                              'label_moderator': __('Moderator'),
+                              'label_visitor': __('Visitor'),
+                              'label_owner': __('Owner'),
+                              'label_member': __('Member'),
+                              'label_admin': __('Admin')
                             }, this.model.toJSON())
                     );
                 },
@@ -1824,8 +1834,7 @@
                     if (view.model.get('type') === converse.CHATROOMS_TYPE) {
                         view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         view.model.registerHandlers();
-                        view.join();
-                        view.fetchMessages();
+                        view.populateAndJoin();
                     }
                 });
             }

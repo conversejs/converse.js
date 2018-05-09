@@ -72,15 +72,32 @@
     };
 
     u.parseMemberListIQ = function parseMemberListIQ (iq) {
-        /* Given an IQ stanza with a member list, create an array of member
-            * objects.
-            */
+        /* Given an IQ stanza with a member list, create an array of member objects.
+        */
         return _.map(
             sizzle(`query[xmlns="${Strophe.NS.MUC_ADMIN}"] item`, iq),
-            (item) => ({
-                'jid': item.getAttribute('jid'),
-                'affiliation': item.getAttribute('affiliation'),
-            })
+            (item) => {
+                const data = {
+                    'affiliation': item.getAttribute('affiliation'),
+                }
+                const jid = item.getAttribute('jid');
+                if (u.isValidJID(jid)) {
+                    data['jid'] = jid;
+                } else {
+                    // XXX: Prosody sends nick for the jid attribute value
+                    // Perhaps for anonymous room?
+                    data['nick'] = jid;
+                }
+                const nick = item.getAttribute('nick');
+                if (nick) {
+                    data['nick'] = nick;
+                }
+                const role = item.getAttribute('role');
+                if (role) {
+                    data['role'] = nick;
+                }
+                return data;
+            }
         );
     };
 

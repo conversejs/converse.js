@@ -463,7 +463,7 @@
 
                     test_utils.waitUntil(function () {
                         return utils.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container'));
-                    }, 150).then(function () {
+                    }, 500).then(function () {
                         var picker = view.el.querySelector('.toggle-smiley .emoji-picker-container');
                         var items = picker.querySelectorAll('.emoji-picker li');
                         items[0].click()
@@ -472,25 +472,25 @@
                         setTimeout(function () { timeout = true; }, 100);
                         return test_utils.waitUntil(function () {
                             return timeout;
-                        }, 300);
+                        }, 500);
                     }).then(function () {
                         timeout = false;
                         toolbar.querySelector('li.toggle-smiley').click(); // Close the panel again
                         return test_utils.waitUntil(function () {
                             return !view.el.querySelector('.toggle-smiley .toolbar-menu').offsetHeight;
-                        }, 300);
+                        }, 500);
                     }).then(function () {
                         setTimeout(function () { timeout = true; }, 100);
                         return test_utils.waitUntil(function () {
                             return timeout;
-                        }, 300);
+                        }, 500);
                     }).then(function () {
                         toolbar.querySelector('li.toggle-smiley').click();
                         expect(view.toggleEmojiMenu).toHaveBeenCalled();
                         return test_utils.waitUntil(function () {
                             var $picker = $(view.el).find('.toggle-smiley .emoji-picker-container');
                             return u.isVisible($picker[0]);
-                        }, 300);
+                        }, 500);
                     }).then(function () {
                         var nodes = view.el.querySelectorAll('.toggle-smiley ul li');
                         nodes[nodes.length-1].click();

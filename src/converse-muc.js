@@ -1020,8 +1020,22 @@
                 },
 
                 fetchMembers () {
+                    const old_jids = _.uniq(_.concat(
+                        _.map(this.where({'affiliation': 'admin'}), (item) => item.get('jid')),
+                        _.map(this.where({'affiliation': 'member'}), (item) => item.get('jid')),
+                        _.map(this.where({'affiliation': 'owner'}), (item) => item.get('jid'))
+                    ));
+
                     this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin'])
                     .then((jids) => {
+                        _.each(_.difference(old_jids, jids), (removed_jid) => {
+                            // Remove absent occupants who've been removed from
+                            // the members lists.
+                            const occupant = this.findOccupant({'jid': removed_jid});
+                            if (occupant.get('show') === 'offline') {
+                                occupant.destroy();
+                            }
+                        });
                         _.each(jids, (attrs) => {
                             const occupant = this.findOccupant({'jid': attrs.jid});
                             if (occupant) {

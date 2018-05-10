@@ -435,6 +435,11 @@
     .chatbox-btn {
         font-size: $fullpage-chatbox-button-size;
     }
+    .chat-head {
+        .chatbox-buttons {
+            @include make-col(3);
+        }
+    }
 }
 
 @media screen and (max-width: 767px) {

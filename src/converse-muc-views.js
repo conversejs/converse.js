@@ -495,7 +495,7 @@
                     'click .close-chatbox-button': 'close',
                     'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
-                    'click .occupant': 'onOccupantClicked',
+                    'click .occupant-nick': 'onOccupantClicked',
                     'click .send-button': 'onFormSubmitted',
                     'click .toggle-call': 'toggleCall',
                     'click .toggle-occupants': 'toggleOccupants',
@@ -759,8 +759,12 @@
                     return true;
                 },
 
-                onCommandError () {
-                    this.showErrorMessage(__("Error: could not execute the command"), true);
+                onCommandError (err) {
+                    _converse.log(err, Strophe.LogLevel.FATAL);
+                    this.showErrorMessage(
+                        __("Sorry, an error happened while running the command. Check your browser's developer console for details."),
+                        true
+                    );
                 },
 
                 parseMessageForCommands (text) {
@@ -780,14 +784,20 @@
                             this.model.setAffiliation('admin',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
-                                    }]).then(null, this.onCommandError.bind(this));
+                                    }]).then(
+                                        () => this.model.occupants.fetchMembers(),
+                                        (err) => this.onCommandError(err)
+                                    );
                             break;
                         case 'ban':
                             if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.model.setAffiliation('outcast',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
-                                    }]).then(null, this.onCommandError.bind(this));
+                                    }]).then(
+                                        () => this.model.occupants.fetchMembers(),
+                                        (err) => this.onCommandError(err)
+                                    );
                             break;
                         case 'deop':
                             if (!this.validateRoleChangeCommand(command, args)) { break; }
@@ -832,7 +842,10 @@
                             this.model.setAffiliation('member',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
-                                    }]).then(null, this.onCommandError.bind(this));
+                                    }]).then(
+                                        () => this.model.occupants.fetchMembers(),
+                                        (err) => this.onCommandError(err)
+                                    );
                             break;
                         case 'nick':
                             _converse.connection.send($pres({
@@ -846,7 +859,10 @@
                             this.model.setAffiliation('owner',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
-                                    }]).then(null, this.onCommandError.bind(this));
+                                    }]).then(
+                                        () => this.model.occupants.fetchMembers(),
+                                        (err) => this.onCommandError(err)
+                                    );
                             break;
                         case 'op':
                             if (!this.validateRoleChangeCommand(command, args)) { break; }
@@ -859,7 +875,10 @@
                             this.model.setAffiliation('none',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
-                                    }]).then(null, this.onCommandError.bind(this));
+                                    }]).then(
+                                        () => this.model.occupants.fetchMembers(),
+                                        (err) => this.onCommandError(err)
+                                    );
                             break;
                         case 'topic':
                         case 'subject':

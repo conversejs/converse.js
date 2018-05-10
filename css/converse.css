@@ -7584,6 +7584,9 @@ body.reset {
 
 #conversejs.converse-fullscreen .chatbox-btn {
   font-size: 16px; }
+#conversejs.converse-fullscreen .chat-head .chatbox-buttons {
+  flex: 0 0 25%;
+  max-width: 25%; }
 
 @media screen and (max-width: 767px) {
   #conversejs:not(.converse-embedded) > .row {

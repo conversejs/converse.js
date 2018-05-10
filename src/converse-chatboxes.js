@@ -239,9 +239,8 @@
                         this.vcard = _converse.vcards.create({'jid': this.get('jid')});
                     }
                     _converse.api.waitUntil('rosterContactsFetched').then(() => {
-                        this.contact = _converse.roster.findWhere({'jid': this.get('jid')});
+                        this.addRelatedContact(_converse.roster.findWhere({'jid': this.get('jid')}));
                     });
-
                     this.messages = new _converse.Messages();
                     this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
                         b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
@@ -262,6 +261,13 @@
                         'time_opened': this.get('time_opened') || moment().valueOf(),
                         'user_id' : Strophe.getNodeFromJid(this.get('jid'))
                     });
+                },
+
+                addRelatedContact (contact) {
+                    if (!_.isUndefined(contact)) {
+                        this.contact = contact;
+                        this.trigger('contactAdded', contact);
+                    }
                 },
 
                 getDisplayName () {
@@ -774,8 +780,21 @@
                 _converse.emit('privateChatsAutoJoined');
             }
 
+
             /************************ BEGIN Event Handlers ************************/
             _converse.on('chatBoxesFetched', autoJoinChats);
+
+
+            _converse.api.waitUntil('rosterContactsFetched').then(() => {
+                _converse.roster.on('add', (contact) => {
+                    /* When a new contact is added, check if we already have a
+                     * chatbox open for it, and if so attach it to the chatbox.
+                     */
+                    const chatbox = _converse.chatboxes.findWhere({'jid': contact.get('jid')});
+                    chatbox.addRelatedContact(contact);
+                });
+            });
+
 
             _converse.on('addClientFeatures', () => {
                 _converse.api.disco.addFeature(Strophe.NS.HTTPUPLOAD);

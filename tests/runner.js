@@ -51,6 +51,7 @@ var specs = [
     "spec/controlbox",
     "spec/roster",
     "spec/chatbox",
+    "spec/user-details-modal",
     "spec/messages",
     "spec/chatroom",
     "spec/minchats",

@@ -7,13 +7,14 @@
             </div>
             <div class="modal-body">
                 {[ if (o.image) { ]}
-                    <img alt="{{{o.alt_profile_image}}}"
-                        class="img-thumbnail avatar align-self-center"
-                        height="100" width="100" src="data:{{{o.image_type}}};base64,{{{o.image}}}"/>
+                <img alt="{{{o.alt_profile_image}}}"
+                    class="img-thumbnail avatar align-self-center mb-3"
+                    height="100" width="100" src="data:{{{o.image_type}}};base64,{{{o.image}}}"/>
                 {[ } ]}
                 {[ if (o.fullname) { ]}
                 <p><label>{{{o.label_fullname}}}:</label>&nbsp;{{{o.fullname}}}</p>
                 {[ } ]}
+                <p><label>{{{o.label_jid}}}:</label>&nbsp;{{{o.jid}}}</p>
                 {[ if (o.nickname) { ]}
                 <p><label>{{{o.label_nickname}}}:</label>&nbsp;{{{o.nickname}}}</p>
                 {[ } ]}

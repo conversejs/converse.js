@@ -401,15 +401,15 @@
 
                 addAndSubscribe (jid, name, groups, message, attributes) {
                     /* Add a roster contact and then once we have confirmation from
-                    * the XMPP server we subscribe to that contact's presence updates.
-                    *  Parameters:
-                    *    (String) jid - The Jabber ID of the user being added and subscribed to.
-                    *    (String) name - The name of that user
-                    *    (Array of Strings) groups - Any roster groups the user might belong to
-                    *    (String) message - An optional message to explain the
-                    *      reason for the subscription request.
-                    *    (Object) attributes - Any additional attributes to be stored on the user's model.
-                    */
+                     * the XMPP server we subscribe to that contact's presence updates.
+                     *  Parameters:
+                     *    (String) jid - The Jabber ID of the user being added and subscribed to.
+                     *    (String) name - The name of that user
+                     *    (Array of Strings) groups - Any roster groups the user might belong to
+                     *    (String) message - An optional message to explain the
+                     *      reason for the subscription request.
+                     *    (Object) attributes - Any additional attributes to be stored on the user's model.
+                     */
                     const handler = (contact) => {
                         if (contact instanceof _converse.RosterContact) {
                             contact.subscribe(message);
@@ -420,14 +420,14 @@
 
                 sendContactAddIQ (jid, name, groups, callback, errback) {
                     /*  Send an IQ stanza to the XMPP server to add a new roster contact.
-                    *
-                    *  Parameters:
-                    *    (String) jid - The Jabber ID of the user being added
-                    *    (String) name - The name of that user
-                    *    (Array of Strings) groups - Any roster groups the user might belong to
-                    *    (Function) callback - A function to call once the IQ is returned
-                    *    (Function) errback - A function to call if an error occured
-                    */
+                     *
+                     *  Parameters:
+                     *    (String) jid - The Jabber ID of the user being added
+                     *    (String) name - The name of that user
+                     *    (Array of Strings) groups - Any roster groups the user might belong to
+                     *    (Function) callback - A function to call once the IQ is returned
+                     *    (Function) errback - A function to call if an error occured
+                     */
                     name = _.isEmpty(name)? jid: name;
                     const iq = $iq({type: 'set'})
                         .c('query', {xmlns: Strophe.NS.ROSTER})
@@ -438,16 +438,16 @@
 
                 addContactToRoster (jid, name, groups, attributes) {
                     /* Adds a RosterContact instance to _converse.roster and
-                    * registers the contact on the XMPP server.
-                    * Returns a promise which is resolved once the XMPP server has
-                    * responded.
-                    *
-                    *  Parameters:
-                    *    (String) jid - The Jabber ID of the user being added and subscribed to.
-                    *    (String) name - The name of that user
-                    *    (Array of Strings) groups - Any roster groups the user might belong to
-                    *    (Object) attributes - Any additional attributes to be stored on the user's model.
-                    */
+                     * registers the contact on the XMPP server.
+                     * Returns a promise which is resolved once the XMPP server has
+                     * responded.
+                     *
+                     *  Parameters:
+                     *    (String) jid - The Jabber ID of the user being added and subscribed to.
+                     *    (String) name - The name of that user
+                     *    (Array of Strings) groups - Any roster groups the user might belong to
+                     *    (Object) attributes - Any additional attributes to be stored on the user's model.
+                     */
                     return new Promise((resolve, reject) => {
                         groups = groups || [];
                         this.sendContactAddIQ(jid, name, groups,

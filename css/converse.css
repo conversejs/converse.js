@@ -7055,9 +7055,6 @@ body.reset {
     opacity: 0; }
   100% {
     opacity: 1; } }
-  #conversejs .fade {
-    opacity: 0;
-    transition: opacity 0.20s linear; }
   #conversejs .fade-in {
     opacity: 0;
     /* make things invisible upon start */
@@ -7273,7 +7270,7 @@ body.reset {
   border-radius: 25%;
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   margin: 0 0.2em;
   padding: 0 0 0 0.5em;
   text-decoration: none; }
@@ -7299,8 +7296,8 @@ body.reset {
     min-height: 1px;
     padding-right: 15px;
     padding-left: 15px;
-    flex: 0 0 25%;
-    max-width: 25%;
+    flex: 0 0 33.3333333333%;
+    max-width: 33.3333333333%;
     padding: 0; }
   #conversejs .chat-head .user-custom-message {
     color: white;
@@ -7584,6 +7581,9 @@ body.reset {
       height: 15px;
       top: 0;
       left: 0; }
+
+#conversejs.converse-fullscreen .chatbox-btn {
+  font-size: 16px; }
 
 @media screen and (max-width: 767px) {
   #conversejs:not(.converse-embedded) > .row {

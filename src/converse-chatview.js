@@ -240,22 +240,40 @@
                     'click button.remove-contact': 'removeContact'
                 },
 
+                initialize () {
+                    _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                    this.model.on('contactAdded', this.registerContactEventHandlers, this);
+                    this.registerContactEventHandlers();
+                },
+
                 toHTML () {
                     return tpl_user_details_modal(_.extend(
                         this.model.toJSON(),
                         this.model.vcard.toJSON(), {
+                        'allow_contact_removal': _converse.allow_contact_removal,
                         'alt_profile_image': __("The User's Profile Image"),
                         'display_name': this.model.getDisplayName(),
+                        'is_roster_contact': !_.isUndefined(this.model.contact),
                         'label_close': __('Close'),
                         'label_email': __('Email'),
                         'label_fullname': __('Full Name'),
+                        'label_jid': __('Jabber ID'),
                         'label_nickname': __('Nickname'),
-                        'label_role': __('Role'),
                         'label_remove': __('Remove as contact'),
-                        'label_url': __('URL'),
-                        'allow_contact_removal': _converse.allow_contact_removal,
-                        'is_roster_contact': !_.isUndefined(this.model.contact)
+                        'label_role': __('Role'),
+                        'label_url': __('URL')
                     }));
+                },
+
+                registerContactEventHandlers () {
+                    if (!_.isUndefined(this.model.contact)) {
+                        this.model.contact.on('change', this.render, this);
+                        this.model.contact.vcard.on('change', this.render, this);
+                        this.model.contact.on('destroy', () => {
+                            delete this.model.contact;
+                            this.render();
+                        });
+                    }
                 },
 
                 removeContact (ev) {
@@ -263,17 +281,19 @@
                     if (!_converse.allow_contact_removal) { return; }
                     const result = confirm(__("Are you sure you want to remove this contact?"));
                     if (result === true) {
+                        this.modal.hide();
                         this.model.contact.removeFromRoster(
                             (iq) => {
                                 this.model.contact.destroy();
-                                delete this.model.contact;
                             },
                             (err) => {
                                 _converse.log(err, Strophe.LogLevel.ERROR);
                                 _converse.api.alert.show(
                                     Strophe.LogLevel.ERROR,
                                     __('Error'),
-                                    [__('Sorry, there was an error while trying to remove %1$s as a contact.', name)]
+                                    [__('Sorry, there was an error while trying to remove %1$s as a contact.',
+                                        this.model.contact.getDisplayName())
+                                    ]
                                 )
                             }
                         );

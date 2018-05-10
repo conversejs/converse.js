@@ -48192,7 +48192,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
            */
           var affiliations = _.uniq(_.map(members, 'affiliation'));
 
-          _.each(affiliations, _.partial(this.setAffiliation.bind(this), _, members));
+          return Promise.all(_.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members)));
         },
         getJidsWithAffiliations: function getJidsWithAffiliations(affiliations) {
           var _this8 = this;
@@ -48231,8 +48231,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
            *  to update the list.
            */
           this.getJidsWithAffiliations(affiliations).then(function (old_members) {
-            _this9.setAffiliations(deltaFunc(members, old_members));
-          });
+            return _this9.setAffiliations(deltaFunc(members, old_members));
+          }).then(function () {
+            return _this9.occupants.fetchMembers();
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
         },
         checkForReservedNick: function checkForReservedNick(callback, errback) {
           /* Use service-discovery to ask the XMPP server whether
@@ -48556,6 +48558,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           if (hash && vcard.get('image_hash') !== hash) {
             _converse.api.vcard.update(vcard);
           }
+        },
+        getDisplayName: function getDisplayName() {
+          return this.get('nick') || this.get('jid');
         }
       });
       _converse.ChatRoomOccupants = Backbone.Collection.extend({
@@ -48565,8 +48570,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           var role2 = occupant2.get('role') || 'none';
 
           if (MUC_ROLE_WEIGHTS[role1] === MUC_ROLE_WEIGHTS[role2]) {
-            var nick1 = occupant1.get('nick').toLowerCase();
-            var nick2 = occupant2.get('nick').toLowerCase();
+            var nick1 = occupant1.getDisplayName().toLowerCase();
+            var nick2 = occupant2.getDisplayName().toLowerCase();
             return nick1 < nick2 ? -1 : nick1 > nick2 ? 1 : 0;
           } else {
             return MUC_ROLE_WEIGHTS[role1] < MUC_ROLE_WEIGHTS[role2] ? -1 : 1;
@@ -48575,7 +48580,33 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         fetchMembers: function fetchMembers() {
           var _this10 = this;
 
+          var old_jids = _.uniq(_.concat(_.map(this.where({
+            'affiliation': 'admin'
+          }), function (item) {
+            return item.get('jid');
+          }), _.map(this.where({
+            'affiliation': 'member'
+          }), function (item) {
+            return item.get('jid');
+          }), _.map(this.where({
+            'affiliation': 'owner'
+          }), function (item) {
+            return item.get('jid');
+          })));
+
           this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin']).then(function (jids) {
+            _.each(_.difference(old_jids, jids), function (removed_jid) {
+              // Remove absent occupants who've been removed from
+              // the members lists.
+              var occupant = _this10.findOccupant({
+                'jid': removed_jid
+              });
+
+              if (occupant.get('show') === 'offline') {
+                occupant.destroy();
+              }
+            });
+
             _.each(jids, function (attrs) {
               var occupant = _this10.findOccupant({
                 'jid': attrs.jid
@@ -49539,7 +49570,7 @@ return __p
   });
 });
 //# sourceMappingURL=converse-bookmarks.js.map;
-// Native Javascript for Bootstrap 4 v2.0.21 | © dnp_theme | MIT-License
+// Native Javascript for Bootstrap 4 v2.0.22 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD support:
@@ -49772,9 +49803,11 @@ return __p
           rect = link[getBoundingClientRect](),
           scroll = parent === DOC[body] ? getScroll() : { x: parent[offsetLeft] + parent[scrollLeft], y: parent[offsetTop] + parent[scrollTop] },
           linkDimensions = { w: rect[right] - rect[left], h: rect[bottom] - rect[top] },
+          isPopover = hasClass(element,'popover'),
+          topPosition, leftPosition, 
+          
           arrow = queryElement('.arrow',element),
-          arrowWidth = arrow[offsetWidth], isPopover = hasClass(element,'popover'),
-          topPosition, leftPosition, arrowTop, arrowLeft,
+          arrowTop, arrowLeft, arrowWidth, arrowHeight,
   
           halfTopExceed = rect[top] + linkDimensions.h/2 - elementDimensions.h/2 < 0,
           halfLeftExceed = rect[left] + linkDimensions.w/2 - elementDimensions.w/2 < 0,
@@ -49792,10 +49825,16 @@ return __p
       position = position === left && leftExceed ? right : position;
       position = position === right && rightExceed ? left : position;
       
+      // update tooltip/popover class
+      element.className[indexOf](position) === -1 && (element.className = element.className.replace(tipPositions,position));
+  
+      // we check the computed width & height and update here
+      arrowWidth = arrow[offsetWidth]; arrowHeight = arrow[offsetHeight];
+  
       // apply styling to tooltip or popover
       if ( position === left || position === right ) { // secondary|side positions
         if ( position === left ) { // LEFT
-          leftPosition = rect[left] + scroll.x - elementDimensions.w;
+          leftPosition = rect[left] + scroll.x - elementDimensions.w - ( isPopover ? arrowWidth : 0 );
         } else { // RIGHT
           leftPosition = rect[left] + scroll.x + linkDimensions.w;
         }
@@ -49803,48 +49842,42 @@ return __p
         // adjust top and arrow
         if (halfTopExceed) {
           topPosition = rect[top] + scroll.y;
-          arrowTop = linkDimensions.h/2;
+          arrowTop = linkDimensions.h/2 - arrowWidth;
         } else if (halfBottomExceed) {
           topPosition = rect[top] + scroll.y - elementDimensions.h + linkDimensions.h;
-          arrowTop = elementDimensions.h - linkDimensions.h/2;
+          arrowTop = elementDimensions.h - linkDimensions.h/2 - arrowWidth;
         } else {
           topPosition = rect[top] + scroll.y - elementDimensions.h/2 + linkDimensions.h/2;
-          arrowTop = elementDimensions.h/2;
+          arrowTop = elementDimensions.h/2 - (isPopover ? arrowHeight*0.9 : arrowHeight/2);
         }
       } else if ( position === top || position === bottom ) { // primary|vertical positions
         if ( position === top) { // TOP
-          topPosition =  rect[top] + scroll.y - elementDimensions.h;
+          topPosition =  rect[top] + scroll.y - elementDimensions.h - ( isPopover ? arrowHeight : 0 );
         } else { // BOTTOM
           topPosition = rect[top] + scroll.y + linkDimensions.h;
         }
         // adjust left | right and also the arrow
         if (halfLeftExceed) {
           leftPosition = 0;
-          arrowLeft = rect[left] + linkDimensions.w/2;
+          arrowLeft = rect[left] + linkDimensions.w/2 - arrowWidth;
         } else if (halfRightExceed) {
           leftPosition = windowWidth - elementDimensions.w*1.01;
-          arrowLeft = elementDimensions.w - ( windowWidth - rect[left] ) + linkDimensions.w/2;
+          arrowLeft = elementDimensions.w - ( windowWidth - rect[left] ) + linkDimensions.w/2 - arrowWidth/2;
         } else {
           leftPosition = rect[left] + scroll.x - elementDimensions.w/2 + linkDimensions.w/2;
-          arrowLeft = elementDimensions.w/2;
+          arrowLeft = elementDimensions.w/2 - arrowWidth/2;
         }
       }
   
-      // fixing some CSS bug with Bootstrap 4 alpha
-      topPosition = position === top && isPopover ? topPosition - arrowWidth : topPosition;
-      leftPosition = position === left && isPopover ? leftPosition - arrowWidth : leftPosition;
-  
-      // apply style to tooltip/popover and it's arrow
+      // apply style to tooltip/popover and its arrow
       element[style][top] = topPosition + 'px';
       element[style][left] = leftPosition + 'px';
   
       arrowTop && (arrow[style][top] = arrowTop + 'px');
       arrowLeft && (arrow[style][left] = arrowLeft + 'px');
-  
-      element.className[indexOf](position) === -1 && (element.className = element.className.replace(tipPositions,position));
     };
   
-  BSN.version = '2.0.21';
+  BSN.version = '2.0.22';
   
   /* Native Javascript for Bootstrap 4 | Alert
   -------------------------------------------*/
@@ -50240,7 +50273,7 @@ return __p
       collapsed = 'collapsed',
   
       // private methods
-      openAction = function(collapseElement) {
+      openAction = function(collapseElement,toggle) {
         bootstrapCustomEvent.call(collapseElement, showEvent, component);
         isAnimating = true;
         addClass(collapseElement,collapsing);
@@ -50250,6 +50283,7 @@ return __p
         emulateTransitionEnd(collapseElement, function() {
           isAnimating = false;
           collapseElement[setAttribute](ariaExpanded,'true');
+          toggle[setAttribute](ariaExpanded,'true');
           removeClass(collapseElement,collapsing);
           addClass(collapseElement, component);
           addClass(collapseElement,showClass);
@@ -50257,7 +50291,7 @@ return __p
           bootstrapCustomEvent.call(collapseElement, shownEvent, component);
         });
       },
-      closeAction = function(collapseElement) {
+      closeAction = function(collapseElement,toggle) {
         bootstrapCustomEvent.call(collapseElement, hideEvent, component);
         isAnimating = true;
         collapseElement[style][height] = collapseElement[scrollHeight] + 'px'; // set height first
@@ -50270,6 +50304,7 @@ return __p
         emulateTransitionEnd(collapseElement, function() {
           isAnimating = false;
           collapseElement[setAttribute](ariaExpanded,'false');
+          toggle[setAttribute](ariaExpanded,'false');
           removeClass(collapseElement,collapsing);
           addClass(collapseElement,component);
           collapseElement[style][height] = '';
@@ -50291,7 +50326,7 @@ return __p
       else { self.hide(); }
     };
     this.hide = function() {
-      closeAction(collapse);
+      closeAction(collapse,element);
       addClass(element,collapsed);
     };
     this.show = function() {
@@ -50301,14 +50336,14 @@ return __p
                    || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) ),
             correspondingCollapse = toggle && (toggle[getAttribute](dataTarget) || toggle.href);
         if ( activeCollapse && toggle && activeCollapse !== collapse ) {
-          closeAction(activeCollapse); 
+          closeAction(activeCollapse,toggle); 
           if ( correspondingCollapse.split('#')[1] !== collapse.id ) { addClass(toggle,collapsed); } 
           else { removeClass(toggle,collapsed); }
         }
       }
   
-      openAction(collapse);
-      removeClass(element,collapsed); 
+      openAction(collapse,element);
+      removeClass(element,collapsed);
     };
   
     // init
@@ -50597,7 +50632,7 @@ return __p
         modal[style].display = '';
         element && (setFocus(element));
         
-        setTimeout(function(){
+        (function(){
           if (!getElementsByClassName(DOC,component+' '+showClass)[0]) {
             resetAdjustments();
             resetScrollbar();
@@ -50609,7 +50644,7 @@ return __p
             dismissHandlerToggle();
             keydownHandlerToggle();
           }
-        }, 50);
+        }());
       },
       // handlers
       clickHandler = function(e) {
@@ -50682,9 +50717,9 @@ return __p
       removeClass(modal,showClass);
       modal[setAttribute](ariaHidden, true);
   
-      setTimeout(function(){
+      (function(){
         hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerHide) : triggerHide();
-      }, supportTransitions ? 150 : 0);
+      }());
     };
     this.setContent = function( content ) {
       queryElement('.'+component+'-content',modal)[innerHTML] = content;
@@ -51102,7 +51137,7 @@ return __p
         e[preventDefault]();
         next = e[target][getAttribute](dataToggle) === component || (href && href.charAt(0) === '#')
              ? e[target] : e[target][parentNode]; // allow for child elements like icons to use the handler
-        !tabs[isAnimating] && !hasClass(next[parentNode],active) && self.show();
+        !tabs[isAnimating] && !hasClass(next,active) && self.show();
       };
   
     // public method
@@ -52979,7 +53014,9 @@ __p += '\n                <p class="user-custom-message">' +
 __e( o.status ) +
 '</p>\n            </div>\n        </div>\n    </div>\n    <div class="chatbox-buttons row no-gutters">\n        <a class="chatbox-btn close-chatbox-button fa fa-close" title=' +
 __e(o.info_close) +
-'></a>\n        <!-- <a class="chatbox-btn fa fa-vcard" title="Contact profile" data-toggle="modal" data-target="#contactProfileModal"></a> -->\n    </div>\n</div>\n';
+'></a>\n        <a class="chatbox-btn show-user-details-modal fa fa-vcard" title="' +
+__e(o.info_details) +
+'"></a>\n    </div>\n</div>\n';
 return __p
 };});
 
@@ -53141,6 +53178,84 @@ return __p
 };});
 
 
+define('tpl!user_details_modal', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<div class="modal fade" id="user-profile-modal" tabindex="-1" role="dialog" aria-labelledby="user-profile-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="user-profile-modal-label">' +
+__e(o.display_name) +
+'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
+__e(o.label_close) +
+'"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                ';
+ if (o.image) { ;
+__p += '\n                <img alt="' +
+__e(o.alt_profile_image) +
+'"\n                    class="img-thumbnail avatar align-self-center mb-3"\n                    height="100" width="100" src="data:' +
+__e(o.image_type) +
+';base64,' +
+__e(o.image) +
+'"/>\n                ';
+ } ;
+__p += '\n                ';
+ if (o.fullname) { ;
+__p += '\n                <p><label>' +
+__e(o.label_fullname) +
+':</label>&nbsp;' +
+__e(o.fullname) +
+'</p>\n                ';
+ } ;
+__p += '\n                <p><label>' +
+__e(o.label_jid) +
+':</label>&nbsp;' +
+__e(o.jid) +
+'</p>\n                ';
+ if (o.nickname) { ;
+__p += '\n                <p><label>' +
+__e(o.label_nickname) +
+':</label>&nbsp;' +
+__e(o.nickname) +
+'</p>\n                ';
+ } ;
+__p += '\n                ';
+ if (o.url) { ;
+__p += '\n                <p><label>' +
+__e(o.label_url) +
+':</label>&nbsp;<a target="_blank" rel="noopener" href="' +
+__e(o.url) +
+'">' +
+__e(o.url) +
+'</a></p>\n                ';
+ } ;
+__p += '\n                ';
+ if (o.email) { ;
+__p += '\n                <p><label>' +
+__e(o.label_email) +
+':</label>&nbsp;<a href="mailto:' +
+__e(o.email) +
+'">' +
+__e(o.email) +
+'</a></p>\n                ';
+ } ;
+__p += '\n                ';
+ if (o.role) { ;
+__p += '\n                <p><label>' +
+__e(o.label_role) +
+':</label>&nbsp;' +
+__e(o.role) +
+'</p>\n                ';
+ } ;
+__p += '\n            </div>\n            <div class="modal-footer">\n                ';
+ if (o.allow_contact_removal && o.is_roster_contact) { ;
+__p += '\n                    <button type="button" class="btn btn-danger remove-contact" data-dismiss="modal"><i class="fa fa-trash"> </i>' +
+__e(o.label_remove) +
+'</button>\n                ';
+ } ;
+__p += '\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
+__e(o.label_close) +
+'</button>\n            </div>\n        </div>\n    </div>\n</div>\n';
+return __p
+};});
+
+
 define('tpl!toolbar_fileupload', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape;
 __p += '<li class="upload-file">\n    <a class="fa fa-paperclip" title="' +
@@ -53207,6 +53322,128 @@ __p += '\n';
 return __p
 };});
 
+
+define('tpl!alert_modal', ['lodash'], function(_) {return function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<div class="modal" tabindex="-1" role="dialog">\n  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header ' +
+__e(o.type) +
+'">\n        <h5 class="modal-title">' +
+__e(o.title) +
+'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n      </div>\n      <div class="modal-body">';
+ _.each(o.messages, function (message) { ;
+__p += '\n          <p>' +
+__e(message) +
+'</p>\n      ';
+ }) ;
+__p += '\n    </div>\n    </div>\n  </div>\n</div>\n';
+return __p
+};});
+
+// Converse.js
+// http://conversejs.org
+//
+// Copyright (c) 2018, the Converse.js developers
+// Licensed under the Mozilla Public License (MPLv2)
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define('converse-modal',["converse-core", "tpl!alert_modal", "bootstrap", "backbone.vdomview"], factory);
+  }
+})(this, function (converse, tpl_alert_modal, bootstrap) {
+  "use strict";
+
+  var _converse$env = converse.env,
+      Strophe = _converse$env.Strophe,
+      Backbone = _converse$env.Backbone,
+      _ = _converse$env._;
+  converse.plugins.add('converse-modal', {
+    initialize: function initialize() {
+      var _converse = this._converse;
+      _converse.BootstrapModal = Backbone.VDOMView.extend({
+        initialize: function initialize() {
+          var _this = this;
+
+          this.render().insertIntoDOM();
+          this.modal = new bootstrap.Modal(this.el, {
+            backdrop: 'static',
+            keyboard: true
+          });
+          this.el.addEventListener('hide.bs.modal', function (event) {
+            if (!_.isNil(_this.trigger_el)) {
+              _this.trigger_el.classList.remove('selected');
+            }
+          }, false);
+        },
+        insertIntoDOM: function insertIntoDOM() {
+          var container_el = _converse.chatboxviews.el.querySelector("#converse-modals");
+
+          container_el.insertAdjacentElement('beforeEnd', this.el);
+        },
+        show: function show(ev) {
+          if (ev) {
+            ev.preventDefault();
+            this.trigger_el = ev.target;
+            this.trigger_el.classList.add('selected');
+          }
+
+          this.modal.show();
+        }
+      });
+      _converse.Alert = _converse.BootstrapModal.extend({
+        initialize: function initialize() {
+          _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+
+          this.model.on('change', this.render, this);
+        },
+        toHTML: function toHTML() {
+          return tpl_alert_modal(this.model.toJSON());
+        }
+      });
+      /************************ BEGIN API ************************/
+      // We extend the default converse.js API to add methods specific to MUC chat rooms.
+
+      var alert;
+
+      _.extend(_converse.api, {
+        'alert': {
+          'show': function show(type, title, messages) {
+            if (_.isString(messages)) {
+              messages = [messages];
+            }
+
+            if (type === Strophe.LogLevel.ERROR) {
+              type = 'alert-danger';
+            } else if (type === Strophe.LogLevel.INFO) {
+              type = 'alert-info';
+            } else if (type === Strophe.LogLevel.WARN) {
+              type = 'alert-warning';
+            }
+
+            if (_.isUndefined(alert)) {
+              var model = new Backbone.Model({
+                'title': title,
+                'messages': messages,
+                'type': type
+              });
+              alert = new _converse.Alert({
+                'model': model
+              });
+            } else {
+              alert.model.set({
+                'title': title,
+                'messages': messages,
+                'type': type
+              });
+            }
+
+            alert.show();
+          }
+        }
+      });
+    }
+  });
+});
+//# sourceMappingURL=converse-modal.js.map;
 
 
 /**
@@ -53632,6 +53869,12 @@ return __p
             });
           }
 
+          _converse.api.waitUntil('rosterContactsFetched').then(function () {
+            _this4.addRelatedContact(_converse.roster.findWhere({
+              'jid': _this4.get('jid')
+            }));
+          });
+
           this.messages = new _converse.Messages();
           this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](b64_sha1("converse.messages".concat(this.get('jid')).concat(_converse.bare_jid)));
           this.messages.chatbox = this;
@@ -53648,6 +53891,15 @@ return __p
             'time_opened': this.get('time_opened') || moment().valueOf(),
             'user_id': Strophe.getNodeFromJid(this.get('jid'))
           });
+        },
+        addRelatedContact: function addRelatedContact(contact) {
+          if (!_.isUndefined(contact)) {
+            this.contact = contact;
+            this.trigger('contactAdded', contact);
+          }
+        },
+        getDisplayName: function getDisplayName() {
+          return this.vcard.get('fullname') || this.get('jid');
         },
         createMessageStanza: function createMessageStanza(message) {
           /* Given a _converse.Message Backbone.Model, return the XML
@@ -54184,6 +54436,19 @@ return __p
 
       _converse.on('chatBoxesFetched', autoJoinChats);
 
+      _converse.api.waitUntil('rosterContactsFetched').then(function () {
+        _converse.roster.on('add', function (contact) {
+          /* When a new contact is added, check if we already have a
+           * chatbox open for it, and if so attach it to the chatbox.
+           */
+          var chatbox = _converse.chatboxes.findWhere({
+            'jid': contact.get('jid')
+          });
+
+          chatbox.addRelatedContact(contact);
+        });
+      });
+
       _converse.on('addClientFeatures', function () {
         _converse.api.disco.addFeature(Strophe.NS.HTTPUPLOAD);
 
@@ -54582,8 +54847,8 @@ return __p
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  define('converse-chatview',["converse-core", "bootstrap", "emojione", "xss", "tpl!action", "tpl!chatbox", "tpl!chatbox_head", "tpl!chatbox_message_form", "tpl!emojis", "tpl!error_message", "tpl!help_message", "tpl!info", "tpl!new_day", "tpl!toolbar_fileupload", "tpl!spinner", "tpl!spoiler_button", "tpl!status_message", "tpl!toolbar", "converse-chatboxes", "converse-message-view"], factory);
-})(this, function (converse, bootstrap, emojione, xss, tpl_action, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_error_message, tpl_help_message, tpl_info, tpl_new_day, tpl_toolbar_fileupload, tpl_spinner, tpl_spoiler_button, tpl_status_message, tpl_toolbar) {
+  define('converse-chatview',["converse-core", "bootstrap", "emojione", "xss", "tpl!action", "tpl!chatbox", "tpl!chatbox_head", "tpl!chatbox_message_form", "tpl!emojis", "tpl!error_message", "tpl!help_message", "tpl!info", "tpl!new_day", "tpl!user_details_modal", "tpl!toolbar_fileupload", "tpl!spinner", "tpl!spoiler_button", "tpl!status_message", "tpl!toolbar", "converse-modal", "converse-chatboxes", "converse-message-view"], factory);
+})(this, function (converse, bootstrap, emojione, xss, tpl_action, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_error_message, tpl_help_message, tpl_info, tpl_new_day, tpl_user_details_modal, tpl_toolbar_fileupload, tpl_spinner, tpl_spoiler_button, tpl_status_message, tpl_toolbar) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -54612,7 +54877,7 @@ return __p
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-chatboxes", "converse-disco", "converse-message-view"],
+    dependencies: ["converse-chatboxes", "converse-disco", "converse-message-view", "converse-modal"],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -54765,6 +55030,70 @@ return __p
           });
         }
       });
+      _converse.UserDetailsModal = _converse.BootstrapModal.extend({
+        events: {
+          'click button.remove-contact': 'removeContact'
+        },
+        initialize: function initialize() {
+          _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+
+          this.model.on('contactAdded', this.registerContactEventHandlers, this);
+          this.registerContactEventHandlers();
+        },
+        toHTML: function toHTML() {
+          return tpl_user_details_modal(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
+            'allow_contact_removal': _converse.allow_contact_removal,
+            'alt_profile_image': __("The User's Profile Image"),
+            'display_name': this.model.getDisplayName(),
+            'is_roster_contact': !_.isUndefined(this.model.contact),
+            'label_close': __('Close'),
+            'label_email': __('Email'),
+            'label_fullname': __('Full Name'),
+            'label_jid': __('Jabber ID'),
+            'label_nickname': __('Nickname'),
+            'label_remove': __('Remove as contact'),
+            'label_role': __('Role'),
+            'label_url': __('URL')
+          }));
+        },
+        registerContactEventHandlers: function registerContactEventHandlers() {
+          var _this = this;
+
+          if (!_.isUndefined(this.model.contact)) {
+            this.model.contact.on('change', this.render, this);
+            this.model.contact.vcard.on('change', this.render, this);
+            this.model.contact.on('destroy', function () {
+              delete _this.model.contact;
+
+              _this.render();
+            });
+          }
+        },
+        removeContact: function removeContact(ev) {
+          var _this2 = this;
+
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          if (!_converse.allow_contact_removal) {
+            return;
+          }
+
+          var result = confirm(__("Are you sure you want to remove this contact?"));
+
+          if (result === true) {
+            this.modal.hide();
+            this.model.contact.removeFromRoster(function (iq) {
+              _this2.model.contact.destroy();
+            }, function (err) {
+              _converse.log(err, Strophe.LogLevel.ERROR);
+
+              _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), [__('Sorry, there was an error while trying to remove %1$s as a contact.', _this2.model.contact.getDisplayName())]);
+            });
+          }
+        }
+      });
       _converse.ChatBoxView = Backbone.NativeView.extend({
         length: 200,
         className: 'chatbox hidden',
@@ -54773,6 +55102,7 @@ return __p
         events: {
           'change input.fileupload': 'onFileSelection',
           'click .close-chatbox-button': 'close',
+          'click .show-user-details-modal': 'showUserDetailsModal',
           'click .new-msgs-indicator': 'viewUnreadMessages',
           'click .send-button': 'onFormSubmitted',
           'click .toggle-call': 'toggleCall',
@@ -54855,6 +55185,15 @@ return __p
           }));
           this.renderToolbar();
         },
+        showUserDetailsModal: function showUserDetailsModal(ev) {
+          if (_.isUndefined(this.user_details_modal)) {
+            this.user_details_modal = new _converse.UserDetailsModal({
+              model: this.model
+            });
+          }
+
+          this.user_details_modal.show(ev);
+        },
         toggleFileUpload: function toggleFileUpload(ev) {
           this.el.querySelector('input.fileupload').click();
         },
@@ -54862,18 +55201,18 @@ return __p
           this.model.sendFiles(evt.target.files);
         },
         addFileUploadButton: function addFileUploadButton(options) {
-          var _this = this;
+          var _this3 = this;
 
           _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then(function (result) {
             if (result.length) {
-              _this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', tpl_toolbar_fileupload({
+              _this3.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', tpl_toolbar_fileupload({
                 'tooltip_upload_file': __('Choose a file to send')
               }));
             }
           }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         },
         addSpoilerButton: function addSpoilerButton(options) {
-          var _this2 = this;
+          var _this4 = this;
 
           /* Asynchronously adds a button for writing spoiler
            * messages, based on whether the contact's client supports
@@ -54894,12 +55233,12 @@ return __p
             return _converse.api.disco.supports(Strophe.NS.SPOILER, "".concat(contact_jid, "/").concat(resource));
           })).then(function (results) {
             if (results.length) {
-              var html = tpl_spoiler_button(_this2.model.toJSON());
+              var html = tpl_spoiler_button(_this4.model.toJSON());
 
               if (_converse.visible_toolbar_buttons.emoji) {
-                _this2.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
+                _this4.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
               } else {
-                _this2.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
+                _this4.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
               }
             }
           }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
@@ -54910,6 +55249,11 @@ return __p
           });
           this.heading.render();
           this.heading.chatview = this;
+
+          if (!_.isUndefined(this.model.contact)) {
+            this.model.contact.on('destroy', this.heading.render, this);
+          }
+
           var flyout = this.el.querySelector('.flyout');
           flyout.insertBefore(this.heading.el, flyout.querySelector('.chat-body'));
           return this;
@@ -55085,10 +55429,10 @@ return __p
           }
         },
         showHelpMessages: function showHelpMessages(msgs, type, spinner) {
-          var _this3 = this;
+          var _this5 = this;
 
           _.each(msgs, function (msg) {
-            _this3.content.insertAdjacentHTML('beforeend', tpl_help_message({
+            _this5.content.insertAdjacentHTML('beforeend', tpl_help_message({
               'isodate': moment().format(),
               'type': type,
               'message': xss.filterXSS(msg, {
@@ -56484,128 +56828,6 @@ define("awesomplete", (function (global) {
     };
 }(this)));
 
-
-define('tpl!alert_modal', ['lodash'], function(_) {return function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<div class="modal" tabindex="-1" role="dialog">\n  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header ' +
-__e(o.type) +
-'">\n        <h5 class="modal-title">' +
-__e(o.title) +
-'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n      </div>\n      <div class="modal-body">';
- _.each(o.messages, function (message) { ;
-__p += '\n          <p>' +
-__e(message) +
-'</p>\n      ';
- }) ;
-__p += '\n    </div>\n    </div>\n  </div>\n</div>\n';
-return __p
-};});
-
-// Converse.js
-// http://conversejs.org
-//
-// Copyright (c) 2018, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
-(function (root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    define('converse-modal',["converse-core", "tpl!alert_modal", "bootstrap", "backbone.vdomview"], factory);
-  }
-})(this, function (converse, tpl_alert_modal, bootstrap) {
-  "use strict";
-
-  var _converse$env = converse.env,
-      Strophe = _converse$env.Strophe,
-      Backbone = _converse$env.Backbone,
-      _ = _converse$env._;
-  converse.plugins.add('converse-modal', {
-    initialize: function initialize() {
-      var _converse = this._converse;
-      _converse.BootstrapModal = Backbone.VDOMView.extend({
-        initialize: function initialize() {
-          var _this = this;
-
-          this.render().insertIntoDOM();
-          this.modal = new bootstrap.Modal(this.el, {
-            backdrop: 'static',
-            keyboard: true
-          });
-          this.el.addEventListener('hide.bs.modal', function (event) {
-            if (!_.isNil(_this.trigger_el)) {
-              _this.trigger_el.classList.remove('selected');
-            }
-          }, false);
-        },
-        insertIntoDOM: function insertIntoDOM() {
-          var container_el = _converse.chatboxviews.el.querySelector("#converse-modals");
-
-          container_el.insertAdjacentElement('beforeEnd', this.el);
-        },
-        show: function show(ev) {
-          if (ev) {
-            ev.preventDefault();
-            this.trigger_el = ev.target;
-            this.trigger_el.classList.add('selected');
-          }
-
-          this.modal.show();
-        }
-      });
-      _converse.Alert = _converse.BootstrapModal.extend({
-        initialize: function initialize() {
-          _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
-
-          this.model.on('change', this.render, this);
-        },
-        toHTML: function toHTML() {
-          return tpl_alert_modal(this.model.toJSON());
-        }
-      });
-      /************************ BEGIN API ************************/
-      // We extend the default converse.js API to add methods specific to MUC chat rooms.
-
-      var alert;
-
-      _.extend(_converse.api, {
-        'alert': {
-          'show': function show(type, title, messages) {
-            if (_.isString(messages)) {
-              messages = [messages];
-            }
-
-            if (type === Strophe.LogLevel.ERROR) {
-              type = 'alert-danger';
-            } else if (type === Strophe.LogLevel.INFO) {
-              type = 'alert-info';
-            } else if (type === Strophe.LogLevel.WARN) {
-              type = 'alert-warning';
-            }
-
-            if (_.isUndefined(alert)) {
-              var model = new Backbone.Model({
-                'title': title,
-                'messages': messages,
-                'type': type
-              });
-              alert = new _converse.Alert({
-                'model': model
-              });
-            } else {
-              alert.model.set({
-                'title': title,
-                'messages': messages,
-                'type': type
-              });
-            }
-
-            alert.show();
-          }
-        }
-      });
-    }
-  });
-});
-//# sourceMappingURL=converse-modal.js.map;
 // Converse.js
 // http://conversejs.org
 //
@@ -57766,10 +57988,10 @@ __e(o.label_role) +
 __e(o.role) +
 '" aria-describedby="vcard-role-help">\n                        <small id="vcard-role-help" class="form-text text-muted">' +
 __e(o.label_role_help) +
-'</small>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="submit" class="save-form btn btn-primary">' +
-__e(o.label_save) +
-'</button>\n                    <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
+'</small>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
 __e(o.label_close) +
+'</button>\n                    <button type="submit" class="save-form btn btn-primary">' +
+__e(o.label_save) +
 '</button>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n';
 return __p
 };});
@@ -64189,7 +64411,7 @@ return __p
           'click .close-chatbox-button': 'close',
           'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
           'click .new-msgs-indicator': 'viewUnreadMessages',
-          'click .occupant': 'onOccupantClicked',
+          'click .occupant-nick': 'onOccupantClicked',
           'click .send-button': 'onFormSubmitted',
           'click .toggle-call': 'toggleCall',
           'click .toggle-occupants': 'toggleOccupants',
@@ -64462,10 +64684,14 @@ return __p
 
           return true;
         },
-        onCommandError: function onCommandError() {
-          this.showErrorMessage(__("Error: could not execute the command"), true);
+        onCommandError: function onCommandError(err) {
+          _converse.log(err, Strophe.LogLevel.FATAL);
+
+          this.showErrorMessage(__("Sorry, an error happened while running the command. Check your browser's developer console for details."), true);
         },
         parseMessageForCommands: function parseMessageForCommands(text) {
+          var _this4 = this;
+
           var _super_ = _converse.ChatBoxView.prototype;
 
           if (_super_.parseMessageForCommands.apply(this, arguments)) {
@@ -64489,7 +64715,11 @@ return __p
               this.model.setAffiliation('admin', [{
                 'jid': args[0],
                 'reason': args[1]
-              }]).then(null, this.onCommandError.bind(this));
+              }]).then(function () {
+                return _this4.model.occupants.fetchMembers();
+              }, function (err) {
+                return _this4.onCommandError(err);
+              });
               break;
 
             case 'ban':
@@ -64500,7 +64730,11 @@ return __p
               this.model.setAffiliation('outcast', [{
                 'jid': args[0],
                 'reason': args[1]
-              }]).then(null, this.onCommandError.bind(this));
+              }]).then(function () {
+                return _this4.model.occupants.fetchMembers();
+              }, function (err) {
+                return _this4.onCommandError(err);
+              });
               break;
 
             case 'deop':
@@ -64539,7 +64773,11 @@ return __p
               this.model.setAffiliation('member', [{
                 'jid': args[0],
                 'reason': args[1]
-              }]).then(null, this.onCommandError.bind(this));
+              }]).then(function () {
+                return _this4.model.occupants.fetchMembers();
+              }, function (err) {
+                return _this4.onCommandError(err);
+              });
               break;
 
             case 'nick':
@@ -64559,7 +64797,11 @@ return __p
               this.model.setAffiliation('owner', [{
                 'jid': args[0],
                 'reason': args[1]
-              }]).then(null, this.onCommandError.bind(this));
+              }]).then(function () {
+                return _this4.model.occupants.fetchMembers();
+              }, function (err) {
+                return _this4.onCommandError(err);
+              });
               break;
 
             case 'op':
@@ -64578,7 +64820,11 @@ return __p
               this.model.setAffiliation('none', [{
                 'jid': args[0],
                 'reason': args[1]
-              }]).then(null, this.onCommandError.bind(this));
+              }]).then(function () {
+                return _this4.model.occupants.fetchMembers();
+              }, function (err) {
+                return _this4.onCommandError(err);
+              });
               break;
 
             case 'topic':
@@ -64662,7 +64908,7 @@ return __p
           return this;
         },
         renderConfigurationForm: function renderConfigurationForm(stanza) {
-          var _this4 = this;
+          var _this5 = this;
 
           /* Renders a form given an IQ stanza containing the current
            * room configuration.
@@ -64707,14 +64953,14 @@ return __p
           last_fieldset_el.querySelector('input[type=button]').addEventListener('click', function (ev) {
             ev.preventDefault();
 
-            _this4.closeForm();
+            _this5.closeForm();
           });
           form_el.addEventListener('submit', function (ev) {
             ev.preventDefault();
 
-            _this4.model.saveConfiguration(ev.target).then(_this4.model.getRoomFeatures.bind(_this4.model));
+            _this5.model.saveConfiguration(ev.target).then(_this5.model.getRoomFeatures.bind(_this5.model));
 
-            _this4.closeForm();
+            _this5.closeForm();
           }, false);
         },
         closeForm: function closeForm() {
@@ -64979,7 +65225,7 @@ return __p
           return notification;
         },
         showNotificationsforUser: function showNotificationsforUser(notification) {
-          var _this5 = this;
+          var _this6 = this;
 
           /* Given the notification object generated by
            * parseXUserElement, display any relevant messages and
@@ -65001,7 +65247,7 @@ return __p
           }
 
           _.each(notification.messages, function (message) {
-            _this5.content.insertAdjacentHTML('beforeend', tpl_info({
+            _this6.content.insertAdjacentHTML('beforeend', tpl_info({
               'data': '',
               'isodate': moment().format(),
               'extra_classes': 'chat-event',
@@ -71875,15 +72121,15 @@ return __p
         },
         addAndSubscribe: function addAndSubscribe(jid, name, groups, message, attributes) {
           /* Add a roster contact and then once we have confirmation from
-          * the XMPP server we subscribe to that contact's presence updates.
-          *  Parameters:
-          *    (String) jid - The Jabber ID of the user being added and subscribed to.
-          *    (String) name - The name of that user
-          *    (Array of Strings) groups - Any roster groups the user might belong to
-          *    (String) message - An optional message to explain the
-          *      reason for the subscription request.
-          *    (Object) attributes - Any additional attributes to be stored on the user's model.
-          */
+           * the XMPP server we subscribe to that contact's presence updates.
+           *  Parameters:
+           *    (String) jid - The Jabber ID of the user being added and subscribed to.
+           *    (String) name - The name of that user
+           *    (Array of Strings) groups - Any roster groups the user might belong to
+           *    (String) message - An optional message to explain the
+           *      reason for the subscription request.
+           *    (Object) attributes - Any additional attributes to be stored on the user's model.
+           */
           var handler = function handler(contact) {
             if (contact instanceof _converse.RosterContact) {
               contact.subscribe(message);
@@ -71894,14 +72140,14 @@ return __p
         },
         sendContactAddIQ: function sendContactAddIQ(jid, name, groups, callback, errback) {
           /*  Send an IQ stanza to the XMPP server to add a new roster contact.
-          *
-          *  Parameters:
-          *    (String) jid - The Jabber ID of the user being added
-          *    (String) name - The name of that user
-          *    (Array of Strings) groups - Any roster groups the user might belong to
-          *    (Function) callback - A function to call once the IQ is returned
-          *    (Function) errback - A function to call if an error occured
-          */
+           *
+           *  Parameters:
+           *    (String) jid - The Jabber ID of the user being added
+           *    (String) name - The name of that user
+           *    (Array of Strings) groups - Any roster groups the user might belong to
+           *    (Function) callback - A function to call once the IQ is returned
+           *    (Function) errback - A function to call if an error occured
+           */
           name = _.isEmpty(name) ? jid : name;
           var iq = $iq({
             type: 'set'
@@ -71922,16 +72168,16 @@ return __p
           var _this2 = this;
 
           /* Adds a RosterContact instance to _converse.roster and
-          * registers the contact on the XMPP server.
-          * Returns a promise which is resolved once the XMPP server has
-          * responded.
-          *
-          *  Parameters:
-          *    (String) jid - The Jabber ID of the user being added and subscribed to.
-          *    (String) name - The name of that user
-          *    (Array of Strings) groups - Any roster groups the user might belong to
-          *    (Object) attributes - Any additional attributes to be stored on the user's model.
-          */
+           * registers the contact on the XMPP server.
+           * Returns a promise which is resolved once the XMPP server has
+           * responded.
+           *
+           *  Parameters:
+           *    (String) jid - The Jabber ID of the user being added and subscribed to.
+           *    (String) name - The name of that user
+           *    (Array of Strings) groups - Any roster groups the user might belong to
+           *    (Object) attributes - Any additional attributes to be stored on the user's model.
+           */
           return new Promise(function (resolve, reject) {
             groups = groups || [];
 

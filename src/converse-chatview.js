@@ -19,11 +19,13 @@
             "tpl!help_message",
             "tpl!info",
             "tpl!new_day",
+            "tpl!user_details_modal",
             "tpl!toolbar_fileupload",
             "tpl!spinner",
             "tpl!spoiler_button",
             "tpl!status_message",
             "tpl!toolbar",
+            "converse-modal",
             "converse-chatboxes",
             "converse-message-view"
     ], factory);
@@ -41,6 +43,7 @@
             tpl_help_message,
             tpl_info,
             tpl_new_day,
+            tpl_user_details_modal,
             tpl_toolbar_fileupload,
             tpl_spinner,
             tpl_spoiler_button,
@@ -66,7 +69,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes", "converse-disco", "converse-message-view"],
+        dependencies: ["converse-chatboxes", "converse-disco", "converse-message-view", "converse-modal"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -200,8 +203,8 @@
                 }
             });
 
-            _converse.ChatBoxHeading = _converse.ViewWithAvatar.extend({
 
+            _converse.ChatBoxHeading = _converse.ViewWithAvatar.extend({
                 initialize () {
                     this.model.on('change:status', this.onStatusMessageChanged, this);
                     this.model.vcard.on('change', this.render, this);
@@ -231,6 +234,25 @@
             });
 
 
+            _converse.UserDetailsModal = _converse.BootstrapModal.extend({
+                toHTML () {
+                    return tpl_user_details_modal(_.extend(
+                        this.model.toJSON(),
+                        this.model.vcard.toJSON(), {
+                        'alt_profile_image': __("The User's Profile Image"),
+                        'display_name': this.model.getDisplayName(),
+                        'label_close': __('Close'),
+                        'label_email': __('Email'),
+                        'label_fullname': __('Full Name'),
+                        'label_nickname': __('Nickname'),
+                        'label_role': __('Role'),
+                        'label_save': __('Save'),
+                        'label_url': __('URL'),
+                    }));
+                }
+            });
+
+
             _converse.ChatBoxView = Backbone.NativeView.extend({
                 length: 200,
                 className: 'chatbox hidden',
@@ -239,6 +261,7 @@
                 events: {
                     'change input.fileupload': 'onFileSelection',
                     'click .close-chatbox-button': 'close',
+                    'click .show-user-details-modal': 'showUserDetailsModal',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .send-button': 'onFormSubmitted',
                     'click .toggle-call': 'toggleCall',
@@ -326,6 +349,13 @@
                             'unread_msgs': __('You have unread messages')
                         }));
                     this.renderToolbar();
+                },
+
+                showUserDetailsModal (ev) {
+                    if (_.isUndefined(this.user_details_modal)) {
+                        this.user_details_modal = new _converse.UserDetailsModal({model: this.model});
+                    }
+                    this.user_details_modal.show(ev);
                 },
 
                 toggleFileUpload (ev) {

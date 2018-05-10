@@ -261,6 +261,10 @@
                     });
                 },
 
+                getDisplayName () {
+                    return this.vcard.get('fullname') || this.get('jid');
+                },
+
                 createMessageStanza (message) {
                     /* Given a _converse.Message Backbone.Model, return the XML
                      * stanza that represents it.

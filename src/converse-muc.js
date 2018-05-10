@@ -1042,8 +1042,7 @@
                     } else {
                         return this.where({'nick': data.nick}).pop();
                     }
-                },
-
+                }
             });
 
 

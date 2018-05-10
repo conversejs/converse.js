@@ -235,6 +235,11 @@
 
 
             _converse.UserDetailsModal = _converse.BootstrapModal.extend({
+
+                events: { 
+                    'click button.remove-contact': 'removeContact'
+                },
+
                 toHTML () {
                     return tpl_user_details_modal(_.extend(
                         this.model.toJSON(),
@@ -246,10 +251,34 @@
                         'label_fullname': __('Full Name'),
                         'label_nickname': __('Nickname'),
                         'label_role': __('Role'),
-                        'label_save': __('Save'),
+                        'label_remove': __('Remove as contact'),
                         'label_url': __('URL'),
+                        'allow_contact_removal': _converse.allow_contact_removal,
+                        'is_roster_contact': !_.isUndefined(this.model.contact)
                     }));
-                }
+                },
+
+                removeContact (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    if (!_converse.allow_contact_removal) { return; }
+                    const result = confirm(__("Are you sure you want to remove this contact?"));
+                    if (result === true) {
+                        this.contact.removeFromRoster(
+                            (iq) => {
+                                this.contact.destroy();
+                                delete this.contact;
+                            },
+                            (err) => {
+                                _converse.log(err, Strophe.LogLevel.ERROR);
+                                _converse.api.alert.show(
+                                    Strophe.LogLevel.ERROR,
+                                    __('Error'),
+                                    [__('Sorry, there was an error while trying to remove %1$s as a contact.', name)]
+                                )
+                            }
+                        );
+                    }
+                },
             });
 
 
@@ -288,6 +317,7 @@
                     this.model.on('change:chat_status', this.onChatStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.render();
+
                     this.fetchMessages();
                     _converse.emit('chatBoxOpened', this);
                     _converse.emit('chatBoxInitialized', this);
@@ -408,6 +438,9 @@
                     this.heading.render();
                     this.heading.chatview = this;
 
+                    if (!_.isUndefined(this.model.contact)) {
+                        this.model.contact.on('destroy', this.heading.render, this);
+                    }
                     const flyout = this.el.querySelector('.flyout');
                     flyout.insertBefore(this.heading.el, flyout.querySelector('.chat-body'));
                     return this;

@@ -6990,8 +6990,11 @@ body.reset {
   #conversejs .list-container {
     text-align: left;
     margin: 0.3em 0; }
-  #conversejs .btn.btn-primary {
+  #conversejs .btn {
     color: #fff; }
+    #conversejs .btn .fa {
+      color: #fff;
+      padding-right: 0.5em; }
   #conversejs .no-text-select {
     -webkit-touch-callout: none;
     -webkit-user-select: none;

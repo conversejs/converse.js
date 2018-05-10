@@ -238,6 +238,9 @@
                     if (_.isNil(this.vcard)) {
                         this.vcard = _converse.vcards.create({'jid': this.get('jid')});
                     }
+                    _converse.api.waitUntil('rosterContactsFetched').then(() => {
+                        this.contact = _converse.roster.findWhere({'jid': this.get('jid')});
+                    });
 
                     this.messages = new _converse.Messages();
                     this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](

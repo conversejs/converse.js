@@ -28,7 +28,9 @@
                 {[ } ]}
             </div>
             <div class="modal-footer">
-                <button type="submit" class="save-form btn btn-primary">{{{o.label_save}}}</button>
+                {[ if (o.allow_contact_removal && o.is_roster_contact) { ]}
+                    <button type="button" class="btn btn-danger remove-contact" data-dismiss="modal"><i class="fa fa-trash"> </i>{{{o.label_remove}}}</button>
+                {[ } ]}
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">{{{o.label_close}}}</button>
             </div>
         </div>

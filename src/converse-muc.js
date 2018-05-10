@@ -661,7 +661,7 @@
                      *  (Function) onError: callback for an error response
                      */
                     const affiliations = _.uniq(_.map(members, 'affiliation'));
-                    _.each(affiliations, _.partial(this.setAffiliation.bind(this), _, members));
+                    return Promise.all(_.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members)));
                 },
 
                 getJidsWithAffiliations (affiliations) {
@@ -701,9 +701,10 @@
                      *  updated or once it's been established there's no need
                      *  to update the list.
                      */
-                    this.getJidsWithAffiliations(affiliations).then((old_members) => {
-                        this.setAffiliations(deltaFunc(members, old_members));
-                    });
+                    this.getJidsWithAffiliations(affiliations)
+                        .then((old_members) => this.setAffiliations(deltaFunc(members, old_members)))
+                        .then(() => this.occupants.fetchMembers())
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                 },
 
                 checkForReservedNick (callback, errback) {

@@ -7665,8 +7665,6 @@ body {
     font-size: 50%;
     height: auto;
     line-height: 22px; }
-  #conversejs.fullscreen .chat-head.chat-head-chatbox .close-chatbox-button {
-    display: none; }
 #conversejs.fullscreen .chatbox {
   width: 100%;
   height: 100%;

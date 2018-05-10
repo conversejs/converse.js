@@ -263,10 +263,10 @@
                     if (!_converse.allow_contact_removal) { return; }
                     const result = confirm(__("Are you sure you want to remove this contact?"));
                     if (result === true) {
-                        this.contact.removeFromRoster(
+                        this.model.contact.removeFromRoster(
                             (iq) => {
-                                this.contact.destroy();
-                                delete this.contact;
+                                this.model.contact.destroy();
+                                delete this.model.contact;
                             },
                             (err) => {
                                 _converse.log(err, Strophe.LogLevel.ERROR);

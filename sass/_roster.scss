@@ -77,12 +77,12 @@
                 clear: both;
                 color: $text-color;
                 display: block;
-                height: 24px;
                 overflow-y: hidden;
                 text-shadow: 0 1px 0 $text-shadow-color;
                 line-height: $font-size;
                 width: 100%;
-                margin-top: 0.5em;
+                height: 2em;
+                padding-top: 0.5em;
 
                 &.requesting-xmpp-contact {
                     a {
@@ -95,11 +95,13 @@
                         padding: 0 0.2em 0 0;
                     }
                 }
-                a:hover {
-                    color: $dark-link-color;
-                }
-                a.fa:hover {
-                    color: $gray-color;
+                a {
+                    &:hover {
+                        color: $dark-link-color;
+                    }
+                    .fa:hover {
+                        color: white;
+                    }
                 }
 
                 .open-chat {
@@ -159,19 +161,23 @@
                 span {
                     padding: 0;
                 }
-                a {
-                    &.decline-xmpp-request {
-                        margin-left: 5px;
+                .decline-xmpp-request {
+                    margin-left: 5px;
+                }
+                .remove-xmpp-contact {
+                    font-size: $font-size-tiny;
+                    margin: 0;
+                    padding: 0;
+                    width: 2em;
+                    display: none;
+                    &:before {
+                        font-size: $font-size;
                     }
-                    &.remove-xmpp-contact {
-                        font-size: $font-size-tiny;
-                        float: right;
-                        margin: 0;
-                        padding: 0;
-                        width: 2em;
-                        &:before {
-                            font-size: $font-size;
-                        }
+                }
+                &:hover {
+                    background-color: lighten($controlbox-head-color, 45%);
+                    .remove-xmpp-contact {
+                        display: inline-block;
                     }
                 }
             }

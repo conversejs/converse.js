@@ -239,4 +239,4 @@ html:
 
 .PHONY: apidoc
 apidoc:
-	$(JSDOC) -d docs/html/api src/converse-disco.js 
+	$(JSDOC) -d docs/html/api src/*.js

@@ -302,16 +302,6 @@
                          */
                         'identities': {
                             /**
-                             * Clears all previously registered identities.
-                             * @function
-                             *
-                             * @example
-                             * _converse.api.disco.own.identities.clear();
-                             */
-                            clear () {
-                                plugin._identities = []
-                            },
-                            /**
                              * Lets you add new identities for this client (i.e. instance of Converse.js)
                              * @function
                              *
@@ -335,6 +325,16 @@
                                 plugin._identities.push({category: category, type: type, name: name, lang: lang});
                             },
                             /**
+                             * Clears all previously registered identities.
+                             * @function
+                             *
+                             * @example
+                             * _converse.api.disco.own.identities.clear();
+                             */
+                            clear () {
+                                plugin._identities = []
+                            },
+                            /**
                              * Returns all of the identities registered for this client
                              * (i.e. instance of Converse.js).
                              * @function
@@ -346,17 +346,44 @@
                                 return plugin._identities;
                             }
                         },
-
+                        /**
+                         * The "features" grouping
+                         * @namespace
+                         */
                         'features': {
+                            /**
+                             * Lets you register new disco features for this client (i.e. instance of Converse.js)
+                             * @function
+                             *
+                             * @param {String} name - e.g. http://jabber.org/protocol/caps
+                             *
+                             * @example
+                             * _converse.api.disco.own.features.add("http://jabber.org/protocol/caps");
+                             */
                             add (name) {
                                 for (var i=0; i<plugin._features.length; i++) {
                                     if (plugin._features[i] == name) { return false; }
                                 }
                                 plugin._features.push(name);
                             },
+                            /**
+                             * Clears all previously registered features.
+                             * @function
+                             *
+                             * @example
+                             * _converse.api.disco.own.features.clear();
+                             */
                             clear () {
                                 plugin._features = []
                             },
+                            /**
+                             * Returns all of the features registered for this client
+                             * (i.e. instance of Converse.js).
+                             * @function
+                             *
+                             * @example
+                             * const features = _converse.api.disco.own.features.get();
+                             */
                             get () {
                                 return plugin._features;
                             }

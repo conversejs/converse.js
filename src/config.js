@@ -66,12 +66,18 @@ require.config({
         "xss":                      "node_modules/xss/dist/xss",
         "xss.noconflict":           "src/xss.noconflict",
 
+        // OMEMO/libsignal requirements
+        "Long":                     "3rdparty/long",
+        "protobuf":                 "3rdparty/protobuf",
+        "bytebuffer":               "3rdparty/bytebuffer",
+        "libsignal":                "3rdparty/libsignal-protocol-javascript/dist/libsignal-protocol",
+
         // Converse
         "converse":                 "src/converse",
 
         "converse-bookmarks":       "src/converse-bookmarks",
+        "converse-caps":            "src/converse-caps",
         "converse-chatboxes":       "src/converse-chatboxes",
-        "converse-caps":           "src/converse-caps",
         "converse-chatview":        "src/converse-chatview",
         "converse-controlbox":      "src/converse-controlbox",
         "converse-core":            "src/converse-core",
@@ -87,6 +93,7 @@ require.config({
         "converse-muc":             "src/converse-muc",
         "converse-muc-views":       "src/converse-muc-views",
         "converse-notification":    "src/converse-notification",
+        "converse-omemo":           "src/converse-omemo",
         "converse-otr":             "src/converse-otr",
         "converse-ping":            "src/converse-ping",
         "converse-profile":         "src/converse-profile",

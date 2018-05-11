@@ -4,13 +4,13 @@
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
-/*global libsignal */
 (function (root, factory) {
     define([
         "converse-core",
-        "tpl!toolbar_omemo"
+        "tpl!toolbar_omemo",
+        "libsignal"
     ], factory);
-}(this, function (converse, tpl_toolbar_omemo) {
+}(this, function (converse, tpl_toolbar_omemo, libsignal) {
 
     const { Backbone, Promise, Strophe, sizzle, $build, _, b64_sha1 } = converse.env;
 
@@ -24,10 +24,6 @@
     const UNTRUSTED = -1;
 
     converse.plugins.add('converse-omemo', {
-
-        enabled (_converse) {
-            return !_.isNil(window.libsignal);
-        },
 
         overrides: {
             ChatBoxView:  {

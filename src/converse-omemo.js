@@ -23,18 +23,44 @@
     const TRUSTED = 1;
     const UNTRUSTED = -1;
 
+    function contactHasOMEMOSupport (_converse, contact_jid) {
+        return new Promise((resolve, reject) => {
+            _converse.api.waitUntil('OMEMOInitialized', () => {
+                resolve(_converse.devicelists.get(contact_jid).devices.length > 0);
+            });
+        });
+    }
+
+    function serverHasOMEMOSupport (_converse) {
+        return new Promise((resolve, reject) => {
+            _converse.api.disco.getIdentity('pubsub', 'pep').then((identity) => resolve(!_.isNil(identity)))
+        });
+    }
+
     converse.plugins.add('converse-omemo', {
+
+        enabled (_converse) {
+            return !_.isNil(window.libsignal);
+        },
 
         overrides: {
             ChatBoxView:  {
 
                 addOMEMOToolbarButton (options) {
-                    const { _converse } = this.__super__,
-                          { __ } = _converse,
-                          data = this.model.toJSON();
-                    this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
-                        'beforeend',
-                        tpl_toolbar_omemo({'__': __}));
+                    const { _converse } = this.__super__;
+
+                    Promise.all([
+                        contactHasOMEMOSupport(_converse, this.model.get('jid')),
+                        serverHasOMEMOSupport(_converse)
+                    ]).then((client_support, server_support) => {
+                        debugger;
+
+                        if (client_support && server_support) {
+                            this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
+                                'beforeend',
+                                tpl_toolbar_omemo({'__': __}));
+                        }
+                    }, _.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                 },
 
                 renderToolbar (toolbar, options) {
@@ -51,10 +77,13 @@
              */
             const { _converse } = this;
 
+            _converse.api.promises.add(['OMEMOInitialized']);
+
+
             _converse.OMEMOSession = Backbone.Model.extend({
 
                 initialize () {
-                    this.keyhelper = libsignal.KeyHelper;
+                    this.keyhelper = window.libsignal.KeyHelper;
                 },
 
                 fetchSession () {
@@ -62,7 +91,7 @@
                         this.fetch({
                             'success': () => {
                                 if (!_converse.omemo_session.get('registration_id')) {
-                                    this.keyhelper.generateIdentityKeyPair().then(function (keypair) {
+                                    this.keyhelper.generateIdentityKeyPair().then((keypair) => {
                                         _converse.omemo_session.set({
                                             'registration_id': this.keyhelper.generateRegistrationId(),
                                             'pub_key': keypair.pubKey,
@@ -141,6 +170,7 @@
                  */
                 // TODO:
                 const devicelist = _converse.devicelists.get(_converse.bare_jid);
+                return Promise.resolve();
             }
 
             function updateDevicesFromStanza (stanza) {
@@ -178,7 +208,8 @@
                 publishBundle()
                     .then(() => fetchDeviceLists())
                     .then(() => _converse.devicelists.get(_converse.bare_jid).fetchDevices())
-                    .then(updateOwnDeviceList)
+                    .then(() => updateOwnDeviceList())
+                    .then(() => _converse.emit('OMEMOInitialized'))
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             }
 
@@ -188,7 +219,7 @@
                     b64_sha1(`converse.devicelists-${_converse.bare_jid}`)
                 );
 
-                _converse.omemo_session = new Backbone.Model();
+                _converse.omemo_session = new _converse.OMEMOSession();
                 _converse.omemo_session.browserStorage =  new Backbone.BrowserStorage.session(
                     b64_sha1(`converse.omemosession-${_converse.bare_jid}`)
                 );

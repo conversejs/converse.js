@@ -89,7 +89,7 @@
         'converse-muc',
         'converse-muc-views',
         'converse-notification',
-        'converse-otr',
+        'converse-omemo',
         'converse-ping',
         'converse-profile',
         'converse-register',

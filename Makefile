@@ -1,8 +1,7 @@
 # You can set these variables from the command line.
-UGLIFYJS		?= node_modules/.bin/uglifyjs
 BABEL			?= node_modules/.bin/babel
-BOURBON 		= ./node_modules/bourbon/app/assets/stylesheets/ 
 BOOTSTRAP		= ./node_modules/ 
+BOURBON 		= ./node_modules/bourbon/app/assets/stylesheets/ 
 BUILDDIR		= ./docs
 BUNDLE		  	?= ./.bundle/bin/bundle
 CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
@@ -11,14 +10,16 @@ ESLINT		  	?= ./node_modules/.bin/eslint
 HTTPSERVE	   	?= ./node_modules/.bin/http-server
 HTTPSERVE_PORT  ?= 8000
 INKSCAPE        ?= inkscape
+JSDOC			?=  ./node_modules/.bin/jsdoc
+OXIPNG          ?= oxipng
 PAPER		   	=
 PO2JSON		 	?= ./node_modules/.bin/po2json
 RJS			 	?= ./node_modules/.bin/r.js
 SASS			?= ./.bundle/bin/sass
-SPHINXBUILD	 	?= ./bin/sphinx-build
 SED				?= sed
+SPHINXBUILD	 	?= ./bin/sphinx-build
 SPHINXOPTS	  	=
-OXIPNG          ?= oxipng
+UGLIFYJS		?= node_modules/.bin/uglifyjs
 
 
 # In the case user wishes to use RVM 
@@ -235,3 +236,7 @@ html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+
+.PHONY: apidoc
+apidoc:
+	$(JSDOC) -d docs/html/api src/converse-disco.js 

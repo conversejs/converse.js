@@ -74,6 +74,7 @@
         'converse-bookmarks',
         'converse-chatboxes',
         'converse-chatview',
+        'converse-caps',
         'converse-controlbox',
         'converse-core',
         'converse-disco',

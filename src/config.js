@@ -71,6 +71,7 @@ require.config({
 
         "converse-bookmarks":       "src/converse-bookmarks",
         "converse-chatboxes":       "src/converse-chatboxes",
+        "converse-caps":           "src/converse-caps",
         "converse-chatview":        "src/converse-chatview",
         "converse-controlbox":      "src/converse-controlbox",
         "converse-core":            "src/converse-core",

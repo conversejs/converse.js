@@ -797,8 +797,8 @@
 
 
             _converse.on('addClientFeatures', () => {
-                _converse.api.disco.addFeature(Strophe.NS.HTTPUPLOAD);
-                _converse.api.disco.addFeature(Strophe.NS.OUTOFBAND);
+                _converse.api.disco.own.features.add(Strophe.NS.HTTPUPLOAD);
+                _converse.api.disco.own.features.add(Strophe.NS.OUTOFBAND);
             });
 
             _converse.api.listen.on('pluginsInitialized', () => {

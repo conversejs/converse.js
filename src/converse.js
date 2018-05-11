@@ -8,6 +8,7 @@ if (typeof define !== 'undefined') {
          * Any of the following components may be removed if they're not needed.
          */
         "converse-bookmarks",       // XEP-0048 Bookmarks
+        "converse-caps",
         "converse-chatview",        // Renders standalone chat boxes for single user chat
         "converse-controlbox",      // The control box
         "converse-dragresize",      // Allows chat boxes to be resized by dragging them

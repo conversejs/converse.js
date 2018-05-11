@@ -108,7 +108,7 @@
 
 
             _converse.on('addClientFeatures', () => {
-                _converse.api.disco.addFeature(Strophe.NS.VCARD);
+                _converse.api.disco.own.features.add(Strophe.NS.VCARD);
             });
 
             _.extend(_converse.api, {

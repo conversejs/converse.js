@@ -1,9 +1,8 @@
-// Converse.js (A browser based XMPP chat client)
+// Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
 
 /* This is a Converse.js plugin which add support for XEP-0030: Service Discovery */
 
@@ -205,14 +204,14 @@
 
             function addClientFeatures () {
                 // See http://xmpp.org/registrar/disco-categories.html
-                _converse.api.disco.addIdentity('client', 'web', 'Converse.js');
+                _converse.api.disco.own.identities.add('client', 'web', 'Converse.js');
 
-                _converse.api.disco.addFeature(Strophe.NS.BOSH);
-                _converse.api.disco.addFeature(Strophe.NS.CHATSTATES);
-                _converse.api.disco.addFeature(Strophe.NS.DISCO_INFO);
-                _converse.api.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
+                _converse.api.disco.own.features.add(Strophe.NS.BOSH);
+                _converse.api.disco.own.features.add(Strophe.NS.CHATSTATES);
+                _converse.api.disco.own.features.add(Strophe.NS.DISCO_INFO);
+                _converse.api.disco.own.features.add(Strophe.NS.ROSTERX); // Limited support
                 if (_converse.message_carbons) {
-                    _converse.api.disco.addFeature(Strophe.NS.CARBONS);
+                    _converse.api.disco.own.features.add(Strophe.NS.CARBONS);
                 }
                 _converse.emit('addClientFeatures');
                 return this;
@@ -287,7 +286,83 @@
 
             /* We extend the default converse.js API to add methods specific to service discovery */
             _.extend(_converse.api, {
+                /**
+                 * The service discovery API
+                 * @namespace
+                 */
                 'disco': {
+                    /**
+                     * The "own" grouping
+                     * @namespace
+                     */
+                    'own': {
+                        /**
+                         * The "identities" grouping
+                         * @namespace
+                         */
+                        'identities': {
+                            /**
+                             * Clears all previously registered identities.
+                             * @function
+                             *
+                             * @example
+                             * _converse.api.disco.own.identities.clear();
+                             */
+                            clear () {
+                                plugin._identities = []
+                            },
+                            /**
+                             * Lets you add new identities for this client (i.e. instance of Converse.js)
+                             * @function
+                             *
+                             * @param {String} category - server, client, gateway, directory, etc.
+                             * @param {String} type - phone, pc, web, etc.
+                             * @param {String} name - "Converse.js"
+                             * @param {String} lang - en, el, de, etc.
+                             *
+                             * @example
+                             * _converse.api.disco.own.identities.clear();
+                             */
+                            add (category, type, name, lang) {
+                                for (var i=0; i<plugin._identities.length; i++) {
+                                    if (plugin._identities[i].category == category &&
+                                        plugin._identities[i].type == type &&
+                                        plugin._identities[i].name == name &&
+                                        plugin._identities[i].lang == lang) {
+                                        return false;
+                                    }
+                                }
+                                plugin._identities.push({category: category, type: type, name: name, lang: lang});
+                            },
+                            /**
+                             * Returns all of the identities registered for this client
+                             * (i.e. instance of Converse.js).
+                             * @function
+                             *
+                             * @example
+                             * const identities = _converse.api.disco.own.identities.get();
+                             */
+                            get () {
+                                return plugin._identities;
+                            }
+                        },
+
+                        'features': {
+                            add (name) {
+                                for (var i=0; i<plugin._features.length; i++) {
+                                    if (plugin._features[i] == name) { return false; }
+                                }
+                                plugin._features.push(name);
+                            },
+                            clear () {
+                                plugin._features = []
+                            },
+                            get () {
+                                return plugin._features;
+                            }
+                        }
+                    },
+
                     'info' (jid, node, callback, errback, timeout) {
                         const attrs = {xmlns: Strophe.NS.DISCO_INFO};
                         if (node) {
@@ -361,25 +436,6 @@
                                 })
                             });
                         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                    },
-
-                    'addIdentity' (category, type, name, lang) {
-                        for (var i=0; i<plugin._identities.length; i++) {
-                            if (plugin._identities[i].category == category &&
-                                plugin._identities[i].type == type &&
-                                plugin._identities[i].name == name &&
-                                plugin._identities[i].lang == lang) {
-                                return false;
-                            }
-                        }
-                        plugin._identities.push({category: category, type: type, name: name, lang: lang});
-                    },
-
-                    'addFeature' (name) {
-                        for (var i=0; i<plugin._features.length; i++) {
-                            if (plugin._features[i] == name) { return false; }
-                        }
-                        plugin._features.push(name);
                     },
 
                     'getIdentity' (category, type, entity_jid) {

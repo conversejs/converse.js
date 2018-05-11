@@ -1,7 +1,7 @@
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
@@ -1176,10 +1176,10 @@
             /************************ BEGIN Event Handlers ************************/
             _converse.on('addClientFeatures', () => {
                 if (_converse.allow_muc) {
-                    _converse.api.disco.addFeature(Strophe.NS.MUC);
+                    _converse.api.disco.own.features.add(Strophe.NS.MUC);
                 }
                 if (_converse.allow_muc_invitations) {
-                    _converse.api.disco.addFeature('jabber:x:conference'); // Invites
+                    _converse.api.disco.own.features.add('jabber:x:conference'); // Invites
                 }
             });
             _converse.on('chatBoxesFetched', autoJoinRooms);

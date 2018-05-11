@@ -49664,65 +49664,69 @@ return __p
 //
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
 (function (root, factory) {
-    define('converse-caps',["converse-core"], factory);
-}(this, function (converse) {
+  define('converse-caps',["converse-core"], factory);
+})(this, function (converse) {
+  var _converse$env = converse.env,
+      Strophe = _converse$env.Strophe,
+      $build = _converse$env.$build,
+      _ = _converse$env._,
+      b64_sha1 = _converse$env.b64_sha1;
+  Strophe.addNamespace('CAPS', "http://jabber.org/protocol/caps");
 
-    const { Strophe, $build, _, b64_sha1 } = converse.env;
-
-    Strophe.addNamespace('CAPS', "http://jabber.org/protocol/caps");
-
-    function propertySort (array, property) {
-        return array.sort((a, b) => { return a[property] > b[property] ? -1 : 1 });
-    }
-
-    function generateVerificationString (_converse) {
-        const identities = _converse.api.disco.own.identities.get(),
-              features = _converse.api.disco.own.features.get();
-
-        if (identities.length > 1) {
-            propertySort(identities, "category");
-            propertySort(identities, "type");
-            propertySort(identities, "lang");
-        }
-
-        let S = _.reduce(
-            identities,
-            (result, id) => `${result}${id.category}/${id.type}/${_.get(id, 'lang', '')}/${id.name}<`,
-            "");
-
-        features.sort();
-        S = _.reduce(features, (result, feature) => `${result}${feature}<`, S);
-        return b64_sha1(S);
-    }
-
-    function createCapsNode (_converse) {
-        return $build("c", {
-            'xmlns': Strophe.NS.CAPS,
-            'hash': "sha-1",
-            'node': "https://conversejs.org",
-            'ver': generateVerificationString(_converse)
-        }).nodeTree;
-    }
-
-    converse.plugins.add('converse-caps', {
-
-        overrides: {
-            // Overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
-            // relevant objects or classes.
-            XMPPStatus: {
-                constructPresence () {
-                    const presence = this.__super__.constructPresence.apply(this, arguments);
-                    presence.root().cnode(createCapsNode(this.__super__._converse));
-                    return presence;
-                }
-            }
-        }
+  function propertySort(array, property) {
+    return array.sort(function (a, b) {
+      return a[property] > b[property] ? -1 : 1;
     });
-}));
+  }
 
+  function generateVerificationString(_converse) {
+    var identities = _converse.api.disco.own.identities.get(),
+        features = _converse.api.disco.own.features.get();
+
+    if (identities.length > 1) {
+      propertySort(identities, "category");
+      propertySort(identities, "type");
+      propertySort(identities, "lang");
+    }
+
+    var S = _.reduce(identities, function (result, id) {
+      return "".concat(result).concat(id.category, "/").concat(id.type, "/").concat(_.get(id, 'lang', ''), "/").concat(id.name, "<");
+    }, "");
+
+    features.sort();
+    S = _.reduce(features, function (result, feature) {
+      return "".concat(result).concat(feature, "<");
+    }, S);
+    return b64_sha1(S);
+  }
+
+  function createCapsNode(_converse) {
+    return $build("c", {
+      'xmlns': Strophe.NS.CAPS,
+      'hash': "sha-1",
+      'node': "https://conversejs.org",
+      'ver': generateVerificationString(_converse)
+    }).nodeTree;
+  }
+
+  converse.plugins.add('converse-caps', {
+    overrides: {
+      // Overrides mentioned here will be picked up by converse.js's
+      // plugin architecture they will replace existing methods on the
+      // relevant objects or classes.
+      XMPPStatus: {
+        constructPresence: function constructPresence() {
+          var presence = this.__super__.constructPresence.apply(this, arguments);
+
+          presence.root().cnode(createCapsNode(this.__super__._converse));
+          return presence;
+        }
+      }
+    }
+  });
+});
+//# sourceMappingURL=converse-caps.js.map;
 // Native Javascript for Bootstrap 4 v2.0.22 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
@@ -53800,7 +53804,7 @@ return __p
       _ = _converse$env._;
   var u = converse.env.utils;
   converse.plugins.add('converse-chatboxes', {
-    dependencies: ["converse-vcard"],
+    dependencies: ["converse-roster", "converse-vcard"],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the

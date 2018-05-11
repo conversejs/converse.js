@@ -22,7 +22,7 @@
 
     converse.plugins.add('converse-chatboxes', {
 
-        dependencies: ["converse-vcard"],
+        dependencies: ["converse-roster", "converse-vcard"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

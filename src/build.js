@@ -5,6 +5,7 @@
     paths: {
         "backbone.vdomview":        "builds/backbone.vdomview",
         "converse-bookmarks":       "builds/converse-bookmarks",
+        "converse-caps":            "builds/converse-caps",
         "converse-chatboxes":       "builds/converse-chatboxes",
         "converse-chatview":        "builds/converse-chatview",
         "converse-controlbox":      "builds/converse-controlbox",

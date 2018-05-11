@@ -12,6 +12,7 @@
 .idea
 .su?
 builds/*
+3rdparty/libsignal-protocol-javascript/
 
 analytics.js
 inverse-analytics.js

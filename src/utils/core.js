@@ -823,19 +823,21 @@
         return text.replace(_converse.geouri_regex, replacement);
     };
 
-    u.getSelectValues = function(select) {
-        var result = [];
-        var options = select && select.options;
-        var opt;
-
+    u.getSelectValues = function (select) {
+        const result = [];
+        const options = select && select.options;
         for (var i=0, iLen=options.length; i<iLen; i++) {
-            opt = options[i];
-
+            const opt = options[i];
             if (opt.selected) {
                 result.push(opt.value || opt.text);
             }
         }
         return result;
+    };
+
+    u.arrayBuffer2Base64 = function (ab) {
+        return new window.Uint8Array(ab)
+            .reduce((data, byte) => data + String.fromCharCode(byte), '')
     };
 
     return u;

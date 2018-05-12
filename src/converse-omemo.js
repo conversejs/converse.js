@@ -4,6 +4,8 @@
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
+/* global libsignal */
+
 (function (root, factory) {
     define([
         "converse-core",
@@ -12,11 +14,13 @@
 }(this, function (converse, tpl_toolbar_omemo) {
 
     const { Backbone, Promise, Strophe, sizzle, $iq, _, b64_sha1 } = converse.env;
+    const u = converse.env.utils;
 
     Strophe.addNamespace('OMEMO', "eu.siacs.conversations.axolotl");
     Strophe.addNamespace('OMEMO_DEVICELIST', Strophe.NS.OMEMO+".devicelist");
     Strophe.addNamespace('OMEMO_VERIFICATION', Strophe.NS.OMEMO+".verification");
     Strophe.addNamespace('OMEMO_WHITELISTED', Strophe.NS.OMEMO+".whitelisted");
+    Strophe.addNamespace('OMEMO_BUNDLES', Strophe.NS.OMEMO+".bundles");
 
     const UNDECIDED = 0;
     const TRUSTED = 1;
@@ -37,6 +41,7 @@
     }
 
     function contactHasOMEMOSupport (_converse, jid) {
+        /* Checks whether the contact advertises any OMEMO-compatible devices. */
         return new Promise((resolve, reject) => {
             getDevicesForContact(_converse, jid).then((devices) => {
                 resolve(devices.length > 0)
@@ -57,10 +62,13 @@
             return !_.isNil(window.libsignal);
         },
 
+        dependencies: ["converse-chatview"],
+
         overrides: {
+
             ChatBoxView:  {
                 events: {
-                    'click .toggle-omemo': 'toggleOMEMO',
+                    'click .toggle-omemo': 'toggleOMEMO'
                 },
 
                 toggleOMEMO (ev) {
@@ -68,7 +76,7 @@
                     ev.preventDefault();
                 },
 
-                addOMEMOToolbarButton (options) {
+                addOMEMOToolbarButton () {
                     const { _converse } = this.__super__,
                           { __ } = _converse;
                     Promise.all([
@@ -83,12 +91,6 @@
                                 tpl_toolbar_omemo({'__': __}));
                         }
                     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-                },
-
-                renderToolbar (toolbar, options) {
-                    const result = this.__super__.renderToolbar.apply(this, arguments);
-                    this.addOMEMOToolbarButton(options);
-                    return result;
                 }
             }
         },
@@ -101,31 +103,51 @@
 
             _converse.api.promises.add(['OMEMOInitialized']);
 
+            function generateBundle () {
+                return new Promise((resolve, reject) => {
+                    libsignal.KeyHelper.generateIdentityKeyPair().then((identity_keypair) => {
+                        const data = {
+                            'device_id': libsignal.KeyHelper.generateRegistrationId(),
+                            'pubkey': identity_keypair.pubKey,
+                            'privkey': identity_keypair.privKey,
+                            'prekeys': {}
+                        };
+                        const signed_prekey_id = '0';
+                        libsignal.KeyHelper.generateSignedPreKey(identity_keypair, signed_prekey_id)
+                            .then((signed_prekey) => {
+                                data['signed_prekey'] = signed_prekey;
+                                const key_promises = _.map(_.range(0, 100), (id) => libsignal.KeyHelper.generatePreKey(id));
+                                Promise.all(key_promises).then((keys) => {
+                                    data['prekeys'] = keys;
+                                    resolve(data)
+                                });
+                            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                    });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            }
 
-            _converse.OMEMOSession = Backbone.Model.extend({
-                initialize () {
-                    this.keyhelper = window.libsignal.KeyHelper;
-                },
+
+            _converse.OMEMOStore = Backbone.Model.extend({
 
                 fetchSession () {
-                    return new Promise((resolve, reject) => {
-                        this.fetch({
-                            'success': () => {
-                                if (!_converse.omemo_session.get('registration_id')) {
-                                    this.keyhelper.generateIdentityKeyPair().then((keypair) => {
-                                        _converse.omemo_session.set({
-                                            'registration_id': this.keyhelper.generateRegistrationId(),
-                                            'pub_key': keypair.pubKey,
-                                            'priv_key': keypair.privKey
-                                        });
+                    if (_.isUndefined(this._setup_promise)) {
+                        this._setup_promise = new Promise((resolve, reject) => {
+                            this.fetch({
+                                'success': () => {
+                                    if (!_converse.omemo_store.get('device_id')) {
+                                        generateBundle()
+                                            .then((data) => {
+                                                _converse.omemo_store.save(data);
+                                                resolve();
+                                            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                                    } else {
                                         resolve();
-                                    });
-                                } else {
-                                    resolve();
+                                    }
                                 }
-                            }
+                            });
                         });
-                    });
+                    }
+                    return this._setup_promise;
                 }
             });
 
@@ -199,11 +221,29 @@
 
 
             function publishBundle () {
-                // TODO: publish bundle information (public key and pre keys)
-                // Keep the used device id consistant. You have to republish
-                // this because you don't know if the server was restarted or might have
-                // otherwise lost the information.
-                return Promise.resolve();
+                const store = _converse.omemo_store,
+                      signed_prekey = store.get('signed_prekey');
+                return new Promise((resolve, reject) => {
+                    const stanza = $iq({
+                        'from': _converse.bare_jid,
+                        'type': 'set'
+                    }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                        .c('publish', {'node': `${Strophe.NS.OMEMO_BUNDLES}:${store.get('device_id')}`})
+                            .c('item')
+                                .c('bundle', {'xmlns': Strophe.NS.OMEMO})
+                                    .c('signedPreKeyPublic', {'signedPreKeyId': signed_prekey.keyId})
+                                        .t(u.arrayBuffer2Base64(signed_prekey.keyPair.pubKey)).up()
+                                    .c('signedPreKeySignature').up()
+                                    .c('identityKey').up()
+                                    .c('prekeys');
+                    _.forEach(
+                        store.get('prekeys'),
+                        (prekey) => {
+                            stanza.c('preKeyPublic', {'preKeyId': prekey.keyId})
+                                .t(u.arrayBuffer2Base64(prekey.keyPair.pubKey)).up();
+                        });
+                    _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
+                });
             }
 
             function fetchDeviceLists () {
@@ -215,13 +255,15 @@
                  * Also, deduplicate devices if necessary.
                  */
                 return new Promise((resolve, reject) => {
-                    let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
-                    if (_.isNil(own_devicelist)) {
-                        own_devicelist = _converse.devicelists.create({'jid': _converse.bare_jid});
-                    }
-                    own_devicelist.fetchDevices().then(resolve).catch(reject);
-                    // TODO: if our own device is not onthe list, add it.
-                    // TODO: deduplicate
+                    fetchDeviceLists().then(() => {
+                        let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
+                        if (_.isNil(own_devicelist)) {
+                            own_devicelist = _converse.devicelists.create({'jid': _converse.bare_jid});
+                        }
+                        own_devicelist.fetchDevices().then(resolve).catch(reject);
+                        // TODO: if our own device is not onthe list, add it.
+                        // TODO: deduplicate
+                    });
                 });
             }
 
@@ -252,13 +294,21 @@
                 }, null, 'message', 'headline', null, _converse.bare_jid);
             }
 
+            function restoreOMEMOSession () {
+                _converse.omemo_store = new _converse.OMEMOStore();
+                _converse.omemo_store.browserStorage =  new Backbone.BrowserStorage.session(
+                    b64_sha1(`converse.omemosession-${_converse.bare_jid}`)
+                );
+                return _converse.omemo_store.fetchSession()
+            }
+
             function initOMEMO () {
                 /* Publish our bundle and then fetch our own device list.
                  * If our device list does not contain this device's id, publish the
                  * device list with the id added. Also deduplicate device ids in the list.
                  */
-                publishBundle()
-                    .then(() => fetchDeviceLists())
+                restoreOMEMOSession()
+                    .then(() => publishBundle())
                     .then(() => updateOwnDeviceList())
                     .then(() => _converse.emit('OMEMOInitialized'))
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
@@ -270,15 +320,10 @@
                     b64_sha1(`converse.devicelists-${_converse.bare_jid}`)
                 );
 
-                _converse.omemo_session = new _converse.OMEMOSession();
-                _converse.omemo_session.browserStorage =  new Backbone.BrowserStorage.session(
-                    b64_sha1(`converse.omemosession-${_converse.bare_jid}`)
-                );
-                _converse.omemo_session.fetchSession()
-                    .then(initOMEMO)
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                initOMEMO();
             }
 
+            _converse.api.listen.on('renderToolbar', (view) => view.addOMEMOToolbarButton());
             _converse.api.listen.on('statusInitialized', onStatusInitialized);
             _converse.api.listen.on('connected', registerPEPPushHandler);
             _converse.api.listen.on('afterTearDown', () => _converse.devices.reset());

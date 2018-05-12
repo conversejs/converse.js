@@ -387,6 +387,7 @@
                     this.addSpoilerButton(options);
                     this.addFileUploadButton();
                     this.insertEmojiPicker();
+                    _converse.emit('renderToolbar', this);
                     return this;
                 },
 

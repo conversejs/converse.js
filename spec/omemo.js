@@ -15,7 +15,25 @@
                 });
             },
             'generateRegistrationId': function () {
-                return 1234;
+                return '31415';
+            },
+            'generatePreKey': function (keyid) {
+                return Promise.resolve({
+                    'keyId': keyid,
+                    'keyPair': {
+                        'pubKey': 1234,
+                        'privKey': 4321
+                    }
+                });
+            },
+            'generateSignedPreKey': function (identity_keypair, keyid) {
+                return Promise.resolve({
+                    'keyId': keyid,
+                    'keyPair': {
+                        'pubKey': 1234,
+                        'privKey': 4321
+                    }
+                });
             }
         }
     };
@@ -35,15 +53,14 @@
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
-            let devicelist_iq,
-                disco_info_iq;
+            let iq_stanza;
             test_utils.createContacts(_converse, 'current');
             const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
 
             test_utils.waitUntil(function () {
                 return _.filter(_converse.connection.IQ_stanzas, function (iq) {
                     const node = iq.nodeTree.querySelector('iq[to="dummy@localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
-                    if (node) { disco_info_iq = iq; }
+                    if (node) { iq_stanza = iq.nodeTree; }
                     return node;
                 }).length > 0;
             }, 1000).then(function () {
@@ -52,32 +69,57 @@
                     'type': 'result',
                     'from': 'dummy@localhost',
                     'to': 'dummy@localhost/resource',
-                    'id': disco_info_iq.nodeTree.getAttribute('id'),
+                    'id': iq_stanza.getAttribute('id'),
                 }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
                     .c('identity', {
                         'category': 'pubsub',
                         'type': 'pep'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                return test_utils.waitUntil(() => {
+                    return _.filter(_converse.connection.IQ_stanzas, function (iq) {
+                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:31415"]');
+                        if (node) { iq_stanza = iq.nodeTree; }
+                        return node;
+                    }).length;
+                });
+            }).then(function () {
+                expect(iq_stanza.getAttributeNames().sort().join()).toBe(["from", "type", "xmlns", "id"].sort().join());
+                expect(iq_stanza.querySelector('prekeys').childNodes.length).toBe(100);
+
+                const signed_prekeys = iq_stanza.querySelectorAll('signedPreKeyPublic');
+                expect(signed_prekeys.length).toBe(1);
+                const signed_prekey = signed_prekeys[0];
+                expect(signed_prekey.getAttribute('signedPreKeyId')).toBe('0')
+                expect(iq_stanza.querySelectorAll('signedPreKeySignature').length).toBe(1);
+                expect(iq_stanza.querySelectorAll('identityKey').length).toBe(1);
+
+                const stanza = $iq({
+                    'from': _converse.bare_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result'});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
                 return test_utils.waitUntil(() => {
                     return _.filter(
                         _converse.connection.IQ_stanzas,
                         (iq) => {
                             const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
-                            if (node) {
-                                devicelist_iq = iq;
-                            }
+                            if (node) { iq_stanza = iq.nodeTree;}
                             return node;
                         }).length;
                 });
             }).then(function () {
-                expect(devicelist_iq.toLocaleString()).toBe(
-                    "<iq type='get' from='dummy@localhost' to='dummy@localhost' xmlns='jabber:client' id='"+devicelist_iq.nodeTree.getAttribute('id')+"'>"+
-                        "<query xmlns='http://jabber.org/protocol/disco#items' "+
-                               "node='eu.siacs.conversations.axolotl.devicelist'/>"+
-                    "</iq>");
+                expect(iq_stanza.outerHTML).toBe(
+                    '<iq type="get" from="dummy@localhost" to="dummy@localhost" xmlns="jabber:client" id="'+iq_stanza.getAttribute("id")+'">'+
+                        '<query xmlns="http://jabber.org/protocol/disco#items" '+
+                               'node="eu.siacs.conversations.axolotl.devicelist"/>'+
+                    '</iq>');
+
                 const stanza = $iq({
                     'from': contact_jid,
-                    'id': devicelist_iq.nodeTree.getAttribute('id'),
+                    'id': iq_stanza.getAttribute('id'),
                     'to': _converse.bare_jid,
                     'type': 'result',
                 }).c('query', {
@@ -97,20 +139,18 @@
                         _converse.connection.IQ_stanzas,
                         (iq) => {
                             const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
-                            if (node) {
-                                devicelist_iq = iq;
-                            }
+                            if (node) { iq_stanza = iq.nodeTree; }
                             return node;
                         }).length;});
             }).then(function () {
-                expect(devicelist_iq.toLocaleString()).toBe(
-                    "<iq type='get' from='dummy@localhost' to='"+contact_jid+"' xmlns='jabber:client' id='"+devicelist_iq.nodeTree.getAttribute('id')+"'>"+
-                        "<query xmlns='http://jabber.org/protocol/disco#items' "+
-                               "node='eu.siacs.conversations.axolotl.devicelist'/>"+
-                    "</iq>");
+                expect(iq_stanza.outerHTML).toBe(
+                    '<iq type="get" from="dummy@localhost" to="'+contact_jid+'" xmlns="jabber:client" id="'+iq_stanza.getAttribute("id")+'">'+
+                        '<query xmlns="http://jabber.org/protocol/disco#items" '+
+                               'node="eu.siacs.conversations.axolotl.devicelist"/>'+
+                    '</iq>');
                 const stanza = $iq({
                     'from': contact_jid,
-                    'id': devicelist_iq.nodeTree.getAttribute('id'),
+                    'id': iq_stanza.getAttribute('id'),
                     'to': _converse.bare_jid,
                     'type': 'result',
                 }).c('query', {
@@ -139,7 +179,7 @@
                 toolbar.querySelector('.toggle-omemo').click();
                 expect(view.toggleOMEMO).toHaveBeenCalled();
                 done();
-            });
+            }).catch(_.partial(console.error, _));
         }));
     });
 

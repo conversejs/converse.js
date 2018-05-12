@@ -47,6 +47,7 @@ var specs = [
     "spec/ping",
     "spec/xmppstatus",
     "spec/mam",
+    "spec/omemo",
     "spec/controlbox",
     "spec/roster",
     "spec/chatbox",

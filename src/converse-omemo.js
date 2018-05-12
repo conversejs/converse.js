@@ -23,17 +23,27 @@
     const TRUSTED = 1;
     const UNTRUSTED = -1;
 
-    function contactHasOMEMOSupport (_converse, contact_jid) {
+    function getDevicesForContact (_converse, jid) {
         return new Promise((resolve, reject) => {
-            _converse.api.waitUntil('OMEMOInitialized', () => {
-                resolve(_converse.devicelists.get(contact_jid).devices.length > 0);
-            });
+            _converse.api.waitUntil('OMEMOInitialized').then(() => {
+                const devicelist = _converse.devicelists.get(jid);
+                resolve(devicelist ? devicelist.devices : []);
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+        });
+    }
+
+    function contactHasOMEMOSupport (_converse, jid) {
+        return new Promise((resolve, reject) => {
+            getDevicesForContact(_converse, jid).then((devices) => {
+                resolve(devices.length > 0)
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
         });
     }
 
     function serverHasOMEMOSupport (_converse) {
         return new Promise((resolve, reject) => {
-            _converse.api.disco.getIdentity('pubsub', 'pep').then((identity) => resolve(!_.isNil(identity)))
+            _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid)
+                .then((identity) => resolve(!_.isNil(identity)));
         });
     }
 
@@ -48,14 +58,14 @@
 
                 addOMEMOToolbarButton (options) {
                     const { _converse } = this.__super__;
-
                     Promise.all([
                         contactHasOMEMOSupport(_converse, this.model.get('jid')),
                         serverHasOMEMOSupport(_converse)
-                    ]).then((client_support, server_support) => {
-                        debugger;
+                    ]).then((support) => {
+                        const client_supports = support[0],
+                              server_supports = support[1];
 
-                        if (client_support && server_support) {
+                        if (client_supports && server_supports) {
                             this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
                                 'beforeend',
                                 tpl_toolbar_omemo({'__': __}));
@@ -124,12 +134,15 @@
 
                 initialize () {
                     this.devices = new _converse.Devices();
+                    this.devices.browserStorage = new Backbone.BrowserStorage.session(
+                        b64_sha1(`converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`)
+                    );
                 },
 
                 fetchDevices () {
                     return new Promise((resolve, reject) => {
                         this.devices.fetch({
-                            success (collection) {
+                            'success': (collection) => {
                                 if (collection.length === 0) {
                                     this.fetchDevicesFromServer().then(resolve).catch(reject);
                                 } else {
@@ -168,9 +181,15 @@
                 /* If our own device is not on the list, add it.
                  * Also, deduplicate devices if necessary.
                  */
-                // TODO:
-                const devicelist = _converse.devicelists.get(_converse.bare_jid);
-                return Promise.resolve();
+                return new Promise((resolve, reject) => {
+                    let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
+                    if (_.isNil(own_devicelist)) {
+                        own_devicelist = _converse.devicelists.create({'jid': _converse.bare_jid});
+                    }
+                    own_devicelist.fetchDevices().then(resolve).catch(reject);
+                    // TODO: if our own device is not onthe list, add it.
+                    // TODO: deduplicate
+                });
             }
 
             function updateDevicesFromStanza (stanza) {
@@ -207,7 +226,6 @@
                  */
                 publishBundle()
                     .then(() => fetchDeviceLists())
-                    .then(() => _converse.devicelists.get(_converse.bare_jid).fetchDevices())
                     .then(() => updateOwnDeviceList())
                     .then(() => _converse.emit('OMEMOInitialized'))
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));

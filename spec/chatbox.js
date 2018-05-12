@@ -431,7 +431,7 @@
                     expect(view).toBeDefined();
                     var $toolbar = $(view.el).find('ul.chat-toolbar');
                     expect($toolbar.length).toBe(1);
-                    expect($toolbar.children('li').length).toBe(2);
+                    expect($toolbar.children('li').length).toBe(1);
                     done();
                 }));
 
@@ -494,39 +494,6 @@
                         expect(view.insertEmoji).toHaveBeenCalled();
                         done();
                     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                }));
-
-                it("contains a button for starting an encrypted chat session",
-                    mock.initConverseWithPromises(
-                        null, ['rosterGroupsFetched'], {},
-                        function (done, _converse) {
-
-                    var timeout = true, $toolbar, view;
-                    test_utils.createContacts(_converse, 'current');
-                    test_utils.openControlBox();
-
-                    test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('.roster-group').length;
-                    }, 300).then(function () {
-                        // TODO: More tests can be added here...
-                        var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        test_utils.openChatBoxFor(_converse, contact_jid);
-                        view = _converse.chatboxviews.get(contact_jid);
-                        $toolbar = $(view.el).find('ul.chat-toolbar');
-                        expect($toolbar.find('.toggle-otr').length).toBe(1);
-                        // Register spies
-                        spyOn(view, 'toggleOTRMenu').and.callThrough();
-                        view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-
-                        timeout = false;
-                        $toolbar[0].querySelector('.toggle-otr').click();
-                        return test_utils.waitUntil(function () {
-                            return view.el.querySelector('.otr-menu').offsetHeight;
-                        }, 300)
-                    }).then(function () {
-                        expect(view.toggleOTRMenu).toHaveBeenCalled();
-                        done();
-                    });
                 }));
 
                 it("can contain a button for starting a call",

@@ -131,6 +131,8 @@
     _converse.OPENED = 'opened';
     _converse.PREBIND = "prebind";
 
+    _converse.IQ_TIMEOUT = 20000;
+
     _converse.CONNECTION_STATUS = {
         0: 'ERROR',
         1: 'CONNECTING',

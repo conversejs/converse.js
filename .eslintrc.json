@@ -9,10 +9,11 @@
     "plugins": ["lodash"],
     "extends": ["eslint:recommended", "plugin:lodash/canonical"],
     "globals": {
-        "window": true,
-        "sinon": true,
+        "Promise": true,
         "define": true,
-        "require": true
+        "require": true,
+        "sinon": true,
+        "window": true
     },
     "rules": {
         "lodash/prefer-lodash-method": [2, {

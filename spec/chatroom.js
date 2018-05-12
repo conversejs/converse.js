@@ -2886,6 +2886,7 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                var muc_iq;
                 var sent_IQs = [], IQ_ids = [];
                 var sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -3008,30 +3009,31 @@
                             'jid': 'crone1@shakespeare.lit',
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(owner_list_stanza));
-
-                test_utils.waitUntil(function () {
-                    return IQ_ids.length;
-                }, 300).then(function () {
+                test_utils.waitUntil(() => {
+                    return _.filter(
+                        _converse.connection.IQ_stanzas,
+                        (iq) => {
+                            if (iq.nodeTree.getAttribute('to') === 'coven@chat.shakespeare.lit' && iq.nodeTree.getAttribute('type') === 'set') {
+                                muc_iq = iq;
+                                return true;
+                            }
+                            return false;
+                        }).length;
+                }).then(function () {
                     // Check that the member list now gets updated
-                    var iq = "<iq to='coven@chat.shakespeare.lit' type='set' xmlns='jabber:client' id='"+IQ_ids.pop()+"'>"+
+                    expect(muc_iq.toLocaleString()).toBe("<iq to='coven@chat.shakespeare.lit' type='set' xmlns='jabber:client' id='"+muc_iq.nodeTree.getAttribute('id')+"'>"+
                             "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
                                 "<item affiliation='member' jid='"+invitee_jid+"'>"+
                                     "<reason>Please join this chat room</reason>"+
                                 "</item>"+
                             "</query>"+
-                        "</iq>";
-
-                    test_utils.waitUntil(function () {
-                        return _.includes(_.invokeMap(sent_IQs, Object.prototype.toLocaleString), iq);
-                    }, 300).then(function () {
-                        // Finally check that the user gets invited.
-                        expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
-                            "<message from='dummy@localhost/resource' to='"+invitee_jid+"' id='"+sent_id+"' xmlns='jabber:client'>"+
-                                "<x xmlns='jabber:x:conference' jid='coven@chat.shakespeare.lit' reason='Please join this chat room'/>"+
-                            "</message>"
-                        );
-                        done();
-                    });
+                        "</iq>");
+                    // Finally check that the user gets invited.
+                    expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
+                        "<message from='dummy@localhost/resource' to='"+invitee_jid+"' id='"+sent_id+"' xmlns='jabber:client'>"+
+                            "<x xmlns='jabber:x:conference' jid='coven@chat.shakespeare.lit' reason='Please join this chat room'/>"+
+                        "</message>");
+                    done();
                 });
             }));
         });

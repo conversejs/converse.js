@@ -7,12 +7,11 @@
 (function (root, factory) {
     define([
         "converse-core",
-        "tpl!toolbar_omemo",
-        "libsignal"
+        "tpl!toolbar_omemo"
     ], factory);
-}(this, function (converse, tpl_toolbar_omemo, libsignal) {
+}(this, function (converse, tpl_toolbar_omemo) {
 
-    const { Backbone, Promise, Strophe, sizzle, $build, _, b64_sha1 } = converse.env;
+    const { Backbone, Promise, Strophe, sizzle, $iq, _, b64_sha1 } = converse.env;
 
     Strophe.addNamespace('OMEMO', "eu.siacs.conversations.axolotl");
     Strophe.addNamespace('OMEMO_DEVICELIST', Strophe.NS.OMEMO+".devicelist");
@@ -23,11 +22,16 @@
     const TRUSTED = 1;
     const UNTRUSTED = -1;
 
+
     function getDevicesForContact (_converse, jid) {
         return new Promise((resolve, reject) => {
             _converse.api.waitUntil('OMEMOInitialized').then(() => {
-                const devicelist = _converse.devicelists.get(jid);
-                resolve(devicelist ? devicelist.devices : []);
+                let devicelist = _converse.devicelists.get(jid);
+                if (_.isNil(devicelist)) {
+                    devicelist = _converse.devicelists.create({'jid': jid});
+                }
+                devicelist.fetchDevices().then(() => resolve(devicelist.devices));
+
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
         });
     }
@@ -55,6 +59,14 @@
 
         overrides: {
             ChatBoxView:  {
+                events: {
+                    'click .toggle-omemo': 'toggleOMEMO',
+                },
+
+                toggleOMEMO (ev) {
+                    // TODO:
+                    ev.preventDefault();
+                },
 
                 addOMEMOToolbarButton (options) {
                     const { _converse } = this.__super__,
@@ -65,13 +77,12 @@
                     ]).then((support) => {
                         const client_supports = support[0],
                               server_supports = support[1];
-
                         if (client_supports && server_supports) {
                             this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
                                 'beforeend',
                                 tpl_toolbar_omemo({'__': __}));
                         }
-                    }, _.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                 },
 
                 renderToolbar (toolbar, options) {
@@ -92,7 +103,6 @@
 
 
             _converse.OMEMOSession = Backbone.Model.extend({
-
                 initialize () {
                     this.keyhelper = window.libsignal.KeyHelper;
                 },
@@ -159,10 +169,28 @@
                 },
 
                 fetchDevicesFromServer () {
-                    // TODO: send IQ stanza to get device list.
-                    return Promise.resolve([]);
+                    return new Promise((resolve, reject) => {
+                        const stanza = $iq({
+                            'type': 'get',
+                            'from': _converse.bare_jid,
+                            'to': this.get('jid')
+                        }).c('query', {
+                            'xmlns': Strophe.NS.DISCO_ITEMS,
+                            'node': Strophe.NS.OMEMO_DEVICELIST
+                        });
+                        _converse.connection.sendIQ(
+                            stanza,
+                            (iq) => {
+                                _.forEach(
+                                    iq.querySelectorAll('device'),
+                                    (dev) => this.devices.create({'id': dev.getAttribute('id')})
+                                );
+                                resolve();
+                            },
+                            reject,
+                            _converse.IQ_TIMEOUT);
+                    });
                 }
-
             });
 
             _converse.DeviceLists = Backbone.Collection.extend({

@@ -317,7 +317,7 @@
                 expect(box.get('box_id')).toBe(b64_sha1(jid));
                 expect(
                     _.keys(box),
-                    ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
+                    ['close', 'focus', 'get', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
                 );
                 chatboxview = _converse.chatboxviews.get(jid);
                 expect($(chatboxview.el).is(':visible')).toBeTruthy();

@@ -56,7 +56,7 @@
         .chatbox-buttons {
             flex-direction: row-reverse;
             @include make-col-ready();
-            @include make-col(4);
+            @include make-col(3);
             padding: 0;
         }
 

@@ -21,6 +21,7 @@ if (typeof define !== 'undefined') {
         "converse-muc-views",
         "converse-muc-views",       // Views related to MUC
         "converse-notification",    // HTML5 Notifications
+        "converse-omemo",
         "converse-ping",            // XEP-0199 XMPP Ping
         "converse-roster",
         "converse-register",        // XEP-0077 In-band registration

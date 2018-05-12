@@ -57,7 +57,8 @@
             ChatBoxView:  {
 
                 addOMEMOToolbarButton (options) {
-                    const { _converse } = this.__super__;
+                    const { _converse } = this.__super__,
+                          { __ } = _converse;
                     Promise.all([
                         contactHasOMEMOSupport(_converse, this.model.get('jid')),
                         serverHasOMEMOSupport(_converse)

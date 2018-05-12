@@ -58,7 +58,7 @@
                 var view;
                 test_utils.createContacts(_converse, 'current');
                 test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
-                .then(() => test_utils.waitUntil(() => _converse.xmppstatus.get('fullname')), 300)
+                .then(() => test_utils.waitUntil(() => _converse.xmppstatus.vcard.get('fullname')), 300)
                 .then(function () {
                     test_utils.openControlBox();
                     expect(_converse.chatboxes.length).toEqual(1);
@@ -463,7 +463,7 @@
 
                     test_utils.waitUntil(function () {
                         return utils.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container'));
-                    }, 150).then(function () {
+                    }, 500).then(function () {
                         var picker = view.el.querySelector('.toggle-smiley .emoji-picker-container');
                         var items = picker.querySelectorAll('.emoji-picker li');
                         items[0].click()
@@ -472,25 +472,25 @@
                         setTimeout(function () { timeout = true; }, 100);
                         return test_utils.waitUntil(function () {
                             return timeout;
-                        }, 300);
+                        }, 500);
                     }).then(function () {
                         timeout = false;
                         toolbar.querySelector('li.toggle-smiley').click(); // Close the panel again
                         return test_utils.waitUntil(function () {
                             return !view.el.querySelector('.toggle-smiley .toolbar-menu').offsetHeight;
-                        }, 300);
+                        }, 500);
                     }).then(function () {
                         setTimeout(function () { timeout = true; }, 100);
                         return test_utils.waitUntil(function () {
                             return timeout;
-                        }, 300);
+                        }, 500);
                     }).then(function () {
                         toolbar.querySelector('li.toggle-smiley').click();
                         expect(view.toggleEmojiMenu).toHaveBeenCalled();
                         return test_utils.waitUntil(function () {
                             var $picker = $(view.el).find('.toggle-smiley .emoji-picker-container');
                             return u.isVisible($picker[0]);
-                        }, 300);
+                        }, 500);
                     }).then(function () {
                         var nodes = view.el.querySelectorAll('.toggle-smiley ul li');
                         nodes[nodes.length-1].click();
@@ -753,7 +753,7 @@
                         test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
                         .then(function () {
                             return test_utils.waitUntil(function () {
-                                return _converse.xmppstatus.get('fullname');
+                                return _converse.xmppstatus.vcard.get('fullname');
                             }, 300);
                         }).then(function () {
                             test_utils.createContacts(_converse, 'current');
@@ -783,7 +783,6 @@
                             // Check that the message was received and check the message parameters
                             expect(chatbox.messages.length).toEqual(1);
                             var msg_obj = chatbox.messages.models[0];
-                            expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
                             expect(msg_obj.get('sender')).toEqual('me');
                             expect(msg_obj.get('delayed')).toEqual(false);
                             var $chat_content = $(chatboxview.el).find('.chat-content');
@@ -902,7 +901,7 @@
                         test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
                         .then(function () {
                             return test_utils.waitUntil(function () {
-                                return _converse.xmppstatus.get('fullname');
+                                return _converse.xmppstatus.vcard.get('fullname');
                             }, 300);
                         }).then(function () {
                             test_utils.createContacts(_converse, 'current');
@@ -932,7 +931,6 @@
                             // Check that the message was received and check the message parameters
                             expect(chatbox.messages.length).toEqual(1);
                             var msg_obj = chatbox.messages.models[0];
-                            expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
                             expect(msg_obj.get('sender')).toEqual('me');
                             expect(msg_obj.get('delayed')).toEqual(false);
                             var $chat_content = $(chatboxview.el).find('.chat-content');

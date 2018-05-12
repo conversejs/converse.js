@@ -161,7 +161,10 @@ contactRequest
 
 Someone has requested to subscribe to your presence (i.e. to be your contact).
 
-``_converse.api.listen.on('contactRequest', function (user_data) { ... });``
+The `Backbone.Model <http://backbonejs.org/#Model>`_ instance representing the
+roster contact is passed to the event listener.
+
+``_converse.api.listen.on('contactRequest', function (contact) { ... });``
 
 contactRemoved
 ~~~~~~~~~~~~~~

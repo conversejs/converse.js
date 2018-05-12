@@ -29,6 +29,7 @@
     @import "bootstrap/scss/card";
     @import "bootstrap/scss/breadcrumb";
     @import "bootstrap/scss/badge";
+    @import "bootstrap/scss/alert";
     @import "bootstrap/scss/media";
     @import "bootstrap/scss/list-group";
     @import "bootstrap/scss/close";
@@ -45,9 +46,9 @@
 @import "controlbox";
 @import "inverse/controlbox";
 @import "roster";
+@import "roomslist";
 @import "inverse/roster";
 @import "bookmarks";
-@import "inverse/bookmarks";
 @import "chatrooms";
 @import "inverse/chatrooms";
 @import "headline";

@@ -23,7 +23,7 @@
         border-radius: 25%;
         border: none;
         cursor: pointer;
-        font-size: $box-close-font-size;
+        font-size: $chatbox-button-size;
         margin: 0 0.2em;
         padding: 0 0 0 0.5em;
         text-decoration: none;
@@ -54,7 +54,7 @@
         .chatbox-buttons {
             flex-direction: row-reverse;
             @include make-col-ready();
-            @include make-col(3);
+            @include make-col(4);
             padding: 0;
         }
 
@@ -427,6 +427,17 @@
                 top: 0;
                 left: 0;
             }
+        }
+    }
+}
+
+#conversejs.converse-fullscreen  {
+    .chatbox-btn {
+        font-size: $fullpage-chatbox-button-size;
+    }
+    .chat-head {
+        .chatbox-buttons {
+            @include make-col(3);
         }
     }
 }

@@ -59,7 +59,7 @@
                 test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
                 .then(function () {
                     return test_utils.waitUntil(function () {
-                        return _converse.xmppstatus.get('fullname');
+                        return _converse.xmppstatus.vcard.get('fullname');
                     }, 300);
                 }).then(function () {
                     /* The process by which a user subscribes to a contact, including

@@ -57,7 +57,7 @@
 
             _converse.registerPongHandler = function () {
                 if (!_.isUndefined(_converse.connection.disco)) {
-                    _converse.connection.disco.addFeature(Strophe.NS.PING);
+                    _converse.api.disco.own.features.add(Strophe.NS.PING);
                 }
                 _converse.connection.ping.addPingHandler(_converse.pong);
             };

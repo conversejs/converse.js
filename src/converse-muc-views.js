@@ -295,7 +295,7 @@
                     parent_el.querySelector('a.room-info').classList.remove('selected');
                 } else {
                     parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
-                    _converse.connection.disco.info(
+                    _converse.api.disco.info(
                         ev.target.getAttribute('data-room-jid'),
                         null,
                         _.partial(insertRoomInfo, parent_el)
@@ -495,7 +495,7 @@
                     'click .close-chatbox-button': 'close',
                     'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
-                    'click .occupant': 'onOccupantClicked',
+                    'click .occupant-nick': 'onOccupantClicked',
                     'click .send-button': 'onFormSubmitted',
                     'click .toggle-call': 'toggleCall',
                     'click .toggle-occupants': 'toggleOccupants',
@@ -537,8 +537,7 @@
                                 // collection anymore).
                                 return;
                             }
-                            this.join();
-                            this.fetchMessages();
+                            this.populateAndJoin();
                             _converse.emit('chatRoomOpened', this);
                         }
                         this.model.getRoomFeatures().then(handler, handler);
@@ -760,8 +759,12 @@
                     return true;
                 },
 
-                onCommandError () {
-                    this.showErrorMessage(__("Error: could not execute the command"), true);
+                onCommandError (err) {
+                    _converse.log(err, Strophe.LogLevel.FATAL);
+                    this.showErrorMessage(
+                        __("Sorry, an error happened while running the command. Check your browser's developer console for details."),
+                        true
+                    );
                 },
 
                 parseMessageForCommands (text) {
@@ -781,14 +784,20 @@
                             this.model.setAffiliation('admin',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
-                                    }]).then(null, this.onCommandError.bind(this));
+                                    }]).then(
+                                        () => this.model.occupants.fetchMembers(),
+                                        (err) => this.onCommandError(err)
+                                    );
                             break;
                         case 'ban':
                             if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.model.setAffiliation('outcast',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
-                                    }]).then(null, this.onCommandError.bind(this));
+                                    }]).then(
+                                        () => this.model.occupants.fetchMembers(),
+                                        (err) => this.onCommandError(err)
+                                    );
                             break;
                         case 'deop':
                             if (!this.validateRoleChangeCommand(command, args)) { break; }
@@ -833,7 +842,10 @@
                             this.model.setAffiliation('member',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
-                                    }]).then(null, this.onCommandError.bind(this));
+                                    }]).then(
+                                        () => this.model.occupants.fetchMembers(),
+                                        (err) => this.onCommandError(err)
+                                    );
                             break;
                         case 'nick':
                             _converse.connection.send($pres({
@@ -847,7 +859,10 @@
                             this.model.setAffiliation('owner',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
-                                    }]).then(null, this.onCommandError.bind(this));
+                                    }]).then(
+                                        () => this.model.occupants.fetchMembers(),
+                                        (err) => this.onCommandError(err)
+                                    );
                             break;
                         case 'op':
                             if (!this.validateRoleChangeCommand(command, args)) { break; }
@@ -860,7 +875,10 @@
                             this.model.setAffiliation('none',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
-                                    }]).then(null, this.onCommandError.bind(this));
+                                    }]).then(
+                                        () => this.model.occupants.fetchMembers(),
+                                        (err) => this.onCommandError(err)
+                                    );
                             break;
                         case 'topic':
                         case 'subject':
@@ -917,6 +935,12 @@
                         // view(s).
                         this.showStatusMessages(pres);
                     }
+                },
+
+                populateAndJoin () {
+                    this.model.occupants.fetchMembers();
+                    this.join();
+                    this.fetchMessages();
                 },
 
                 join (nick, password) {
@@ -1536,7 +1560,7 @@
                 },
 
                 toHTML () {
-                    const show = this.model.get('show') || 'online';
+                    const show = this.model.get('show');
                     return tpl_occupant(
                         _.extend(
                             { 'jid': '',
@@ -1544,8 +1568,13 @@
                               'hint_show': _converse.PRETTY_CHAT_STATUS[show],
                               'hint_occupant': __('Click to mention %1$s in your message.', this.model.get('nick')),
                               'desc_moderator': __('This user is a moderator.'),
-                              'desc_occupant': __('This user can send messages in this room.'),
-                              'desc_visitor': __('This user can NOT send messages in this room.')
+                              'desc_participant': __('This user can send messages in this room.'),
+                              'desc_visitor': __('This user can NOT send messages in this room.'),
+                              'label_moderator': __('Moderator'),
+                              'label_visitor': __('Visitor'),
+                              'label_owner': __('Owner'),
+                              'label_member': __('Member'),
+                              'label_admin': __('Admin')
                             }, this.model.toJSON())
                     );
                 },
@@ -1824,8 +1853,7 @@
                     if (view.model.get('type') === converse.CHATROOMS_TYPE) {
                         view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         view.model.registerHandlers();
-                        view.join();
-                        view.fetchMessages();
+                        view.populateAndJoin();
                     }
                 });
             }

@@ -282,6 +282,7 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                var IQ_stanzas = _converse.connection.IQ_stanzas;
                 var sent_IQ, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -326,11 +327,20 @@
                  * </iq>
                  */
                 test_utils.waitUntil(function () {
-                    return sent_IQ.toLocaleString() ===
-                        "<iq to='lounge@localhost' from='dummy@localhost/resource' "+
-                            "type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                                "<query xmlns='http://jabber.org/protocol/disco#info' node='x-roomuser-item'/></iq>"
+                    return _.filter(IQ_stanzas, function (iq) {
+                        return iq.nodeTree.querySelector('query[node="x-roomuser-item"]');
+                    }).length > 0;
                 }, 300).then(function () {
+                    const iq = _.filter(IQ_stanzas, function (iq) {
+                        return iq.nodeTree.querySelector(`query[node="x-roomuser-item"]`);
+                    }).pop();
+
+                    const id = iq.nodeTree.getAttribute('id');
+                    expect(iq.toLocaleString()).toBe(
+                        "<iq to='lounge@localhost' from='dummy@localhost/resource' "+
+                            "type='get' xmlns='jabber:client' id='"+id+"'>"+
+                                "<query xmlns='http://jabber.org/protocol/disco#info' node='x-roomuser-item'/></iq>");
+
                     /* <iq xmlns="jabber:client" type="error" to="jordie.langen@chat.example.org/converse.js-11659299" from="myroom@conference.chat.example.org">
                      *      <error type="cancel">
                      *          <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
@@ -339,7 +349,7 @@
                      */
                     var stanza = $iq({
                         'type': 'error',
-                        'id': IQ_id,
+                        'id': id,
                         'from': view.model.get('jid'),
                         'to': _converse.connection.jid
                     }).c('error', {'type': 'cancel'})
@@ -841,9 +851,7 @@
 
                 test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
                 .then(function () {
-                    return test_utils.waitUntil(function () {
-                        return _converse.xmppstatus.get('fullname');
-                    }, 300);
+                    return test_utils.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'))
                 }).then(function () {
                     test_utils.createContacts(_converse, 'current');
                     return test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
@@ -1134,8 +1142,7 @@
                         expect(occupants.querySelectorAll('li').length).toBe(2+i);
                         model = view.occupantsview.model.where({'nick': name})[0];
                         var index = view.occupantsview.model.indexOf(model);
-                        expect(occupants.querySelectorAll('li')[index].textContent).toBe(mock.chatroom_names[i]);
-                        expect($(occupants.querySelectorAll('li')[index]).hasClass('moderator')).toBe(role === "moderator");
+                        expect(occupants.querySelectorAll('li .occupant-nick')[index].textContent.trim()).toBe(mock.chatroom_names[i]);
                     }
 
                     // Test users leaving the room
@@ -1158,7 +1165,7 @@
                         expect(occupants.querySelectorAll('li').length).toBe(i+1);
                     }
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("escapes occupant nicknames when rendering them, to avoid JS-injection attacks",
@@ -1185,9 +1192,9 @@
 
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     var view = _converse.chatboxviews.get('lounge@localhost');
-                    var occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
+                    var occupants = view.el.querySelector('.occupant-list').querySelectorAll('li .occupant-nick');
                     expect(occupants.length).toBe(2);
-                    expect($(occupants).first().text()).toBe("&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;");
+                    expect($(occupants).first().text().trim()).toBe("&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;");
                     done();
                 });
             }));
@@ -1200,6 +1207,13 @@
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
                     var view = _converse.chatboxviews.get('lounge@localhost');
                     var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+
+                    var occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
+                    expect(occupants.length).toBe(1);
+                    expect($(occupants).first().find('.occupant-nick').text().trim()).toBe("dummy");
+                    expect($(occupants).first().find('.badge').length).toBe(1);
+                    expect($(occupants).first().find('.badge').first().text()).toBe('Member');
+
                     var presence = $pres({
                             to:'dummy@localhost/pda',
                             from:'lounge@localhost/moderatorman'
@@ -1212,11 +1226,14 @@
                     .c('status').attrs({code:'110'}).nodeTree;
 
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    var occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
+                    occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
                     expect(occupants.length).toBe(2);
-                    expect($(occupants).first().text()).toBe("moderatorman");
-                    expect($(occupants).last().text()).toBe("dummy");
-                    expect($(occupants).first().attr('class').indexOf('moderator')).not.toBe(-1);
+                    expect($(occupants).first().find('.occupant-nick').text().trim()).toBe("moderatorman");
+                    expect($(occupants).last().find('.occupant-nick').text().trim()).toBe("dummy");
+                    expect($(occupants).first().find('.badge').length).toBe(2);
+                    expect($(occupants).first().find('.badge').first().text()).toBe('Admin');
+                    expect($(occupants).first().find('.badge').last().text()).toBe('Moderator');
+
                     expect($(occupants).first().attr('title')).toBe(
                         contact_jid + ' This user is a moderator. Click to mention moderatorman in your message.'
                     );
@@ -1234,13 +1251,14 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
                     occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
-                    expect($(occupants).last().text()).toBe("visitorwoman");
-                    expect($(occupants).last().attr('class').indexOf('visitor')).not.toBe(-1);
+                    expect($(occupants).last().find('.occupant-nick').text().trim()).toBe("visitorwoman");
+                    expect($(occupants).last().find('.badge').length).toBe(1);
+                    expect($(occupants).last().find('.badge').last().text()).toBe('Visitor');
                     expect($(occupants).last().attr('title')).toBe(
                         contact_jid + ' This user can NOT send messages in this room. Click to mention visitorwoman in your message.'
                     );
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("will use the user's reserved nickname, if it exists",
@@ -1248,6 +1266,7 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                var IQ_stanzas = _converse.connection.IQ_stanzas;
                 var sent_IQ, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -1284,11 +1303,19 @@
                  */
 
                 test_utils.waitUntil(function () {
-                    return sent_IQ.toLocaleString() ===
-                        "<iq to='lounge@localhost' from='dummy@localhost/resource' "+
-                            "type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                                "<query xmlns='http://jabber.org/protocol/disco#info' node='x-roomuser-item'/></iq>";
+                    return _.filter(IQ_stanzas, function (iq) {
+                        return iq.nodeTree.querySelector('query[node="x-roomuser-item"]');
+                    }).length > 0;
                 }, 300).then(function () {
+                    const iq = _.filter(IQ_stanzas, function (iq) {
+                        return iq.nodeTree.querySelector(`query[node="x-roomuser-item"]`);
+                    }).pop();
+                    const id = iq.nodeTree.getAttribute('id');
+                    expect(iq.toLocaleString()).toBe(
+                        "<iq to='lounge@localhost' from='dummy@localhost/resource' "+
+                            "type='get' xmlns='jabber:client' id='"+id+"'>"+
+                                "<query xmlns='http://jabber.org/protocol/disco#info' node='x-roomuser-item'/></iq>");
+
                     /* <iq from='coven@chat.shakespeare.lit'
                      *     id='getnick1'
                      *     to='hag66@shakespeare.lit/pda'
@@ -1639,7 +1666,7 @@
 
                     var $occupants = $(view.el.querySelector('.occupant-list'));
                     expect($occupants.children().length).toBe(1);
-                    expect($occupants.children().first(0).text()).toBe("oldnick");
+                    expect($occupants.children().first(0).find('.occupant-nick').text().trim()).toBe("oldnick");
 
                     expect($chat_content.find('div.chat-info').length).toBe(1);
                     expect($chat_content.find('div.chat-info:first').html()).toBe("oldnick has entered the room");
@@ -1689,7 +1716,7 @@
                     );
                     $occupants = $(view.el.querySelector('.occupant-list'));
                     expect($occupants.children().length).toBe(1);
-                    expect($occupants.children().first(0).text()).toBe("newnick");
+                    expect($occupants.children().find('.occupant-nick').first(0).text()).toBe("newnick");
                     done();
                 });
             }));

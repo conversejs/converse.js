@@ -437,6 +437,64 @@ The **disco** grouping
 This grouping collects API functions related to `service discovery
 <https://xmpp.org/extensions/xep-0030.html>`_.
 
+The **disco.own** grouping
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The **disco.own.features** grouping
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+add
+***
+
+Paramters:
+
+* (String) name
+
+get
+***
+
+Returns all of the identities registered for this client (i.e. instance of Converse.js).
+
+.. code-block:: javascript
+
+    const identities = _converse.api.disco.own.identities.get();
+
+
+The **disco.own.identities** grouping
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+add
+***
+
+Paramters:
+
+* (String) category
+* (String) type
+* (String) name
+* (String) lang
+
+Lets you add new identities for this client (i.e. instance of Converse.js).
+
+.. code-block:: javascript
+
+    _converse.api.disco.own.identities.add('client', 'web', 'Converse.js');
+
+
+get
+***
+
+Returns all of the identities registered for this client (i.e. instance of Converse.js).
+
+.. code-block:: javascript
+
+    const identities = _converse.api.disco.own.identities.get();
+
+clear
+*****
+
+Clears all previously set identities.
+
+
 getIdentity
 ~~~~~~~~~~~
 
@@ -1288,6 +1346,37 @@ Example:
                         // Do something with the vcard...
                     }
                 );
+            });
+
+        }
+    });
+
+set
+~~~
+
+Parameters:
+
+* ``data`` a map of VCard keys and values
+
+Enables setting new values for a VCard.
+
+Example:
+
+.. code-block:: javascript
+
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            _converse.api.waitUntil('rosterContactsFetched').then(() => {
+                this._converse.api.vcard.set({
+                    'jid': 'someone@example.org',
+                    'fn': 'Someone Somewhere',
+                    'nickname': 'someone'
+                }).then(() => {
+                    // Succes
+                }).catch(() => {
+                    // Failure
+                }).
             });
 
         }

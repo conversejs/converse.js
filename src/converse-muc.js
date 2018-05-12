@@ -1,7 +1,7 @@
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
@@ -22,7 +22,7 @@
         'moderator':    1,
         'participant':  2,
         'visitor':      3,
-        'none':         4,
+        'none':         2,
     };
 
     const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, _, moment } = converse.env;
@@ -67,7 +67,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes", "converse-controlbox"],
+        dependencies: ["converse-chatboxes", "converse-disco", "converse-controlbox"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -187,6 +187,8 @@
                     this.occupants.browserStorage = new Backbone.BrowserStorage.session(
                         b64_sha1(`converse.occupants-${_converse.bare_jid}${this.get('jid')}`)
                     );
+                    this.occupants.chatroom  = this;
+
                     this.registerHandlers();
                     this.on('change:chat_state', this.sendChatState, this);
                 },
@@ -305,6 +307,7 @@
                 getOutgoingMessageAttributes (text, spoiler_hint) {
                     const is_spoiler = this.get('composing_spoiler');
                     return {
+                        'nick': this.get('nick'),
                         'from': `${this.get('jid')}/${this.get('nick')}`,
                         'fullname': this.get('nick'),
                         'is_spoiler': is_spoiler,
@@ -319,7 +322,7 @@
                     /* Fetch the room disco info, parse it and then save it.
                      */
                     return new Promise((resolve, reject) => {
-                        _converse.connection.disco.info(
+                        _converse.api.disco.info(
                             this.get('jid'),
                             null,
                             _.flow(this.parseRoomFeatures.bind(this), resolve),
@@ -658,7 +661,7 @@
                      *  (Function) onError: callback for an error response
                      */
                     const affiliations = _.uniq(_.map(members, 'affiliation'));
-                    _.each(affiliations, _.partial(this.setAffiliation.bind(this), _, members));
+                    return Promise.all(_.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members)));
                 },
 
                 getJidsWithAffiliations (affiliations) {
@@ -698,9 +701,10 @@
                      *  updated or once it's been established there's no need
                      *  to update the list.
                      */
-                    this.getJidsWithAffiliations(affiliations).then((old_members) => {
-                        this.setAffiliations(deltaFunc(members, old_members));
-                    });
+                    this.getJidsWithAffiliations(affiliations)
+                        .then((old_members) => this.setAffiliations(deltaFunc(members, old_members)))
+                        .then(() => this.occupants.fetchMembers())
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                 },
 
                 checkForReservedNick (callback, errback) {
@@ -725,22 +729,6 @@
                     return this;
                 },
 
-                findOccupant (data) {
-                    /* Try to find an existing occupant based on the passed in
-                     * data object.
-                     *
-                     * If we have a JID, we use that as lookup variable,
-                     * otherwise we use the nick. We don't always have both,
-                     * but should have at least one or the other.
-                     */
-                    const jid = Strophe.getBareJidFromJid(data.jid);
-                    if (jid !== null) {
-                        return this.occupants.where({'jid': jid}).pop();
-                    } else {
-                        return this.occupants.where({'nick': data.nick}).pop();
-                    }
-                },
-
                 updateOccupantsOnPresence (pres) {
                     /* Given a presence stanza, update the occupant model
                      * based on its contents.
@@ -752,7 +740,7 @@
                     if (data.type === 'error') {
                         return true;
                     }
-                    const occupant = this.findOccupant(data);
+                    const occupant = this.occupants.findOccupant(data);
                     if (data.type === 'unavailable') {
                         if (occupant) {
                             // Even before destroying, we set the new data, so
@@ -787,7 +775,8 @@
                             'from': from,
                             'nick': Strophe.getResourceFromJid(from),
                             'type': pres.getAttribute("type"),
-                            'states': []
+                            'states': [],
+                            'show': 'online'
                           };
                     _.each(pres.childNodes, function (child) {
                         switch (child.nodeName) {
@@ -986,6 +975,11 @@
 
 
             _converse.ChatRoomOccupant = Backbone.Model.extend({
+
+                defaults: {
+                    'show': 'offline'
+                },
+
                 initialize (attributes) {
                     this.set(_.extend({
                         'id': _converse.connection.getUniqueId(),
@@ -1002,6 +996,10 @@
                     if (hash && vcard.get('image_hash') !== hash) {
                         _converse.api.vcard.update(vcard);
                     }
+                },
+
+                getDisplayName () {
+                    return this.get('nick') || this.get('jid');
                 }
             });
 
@@ -1013,13 +1011,57 @@
                     const role1 = occupant1.get('role') || 'none';
                     const role2 = occupant2.get('role') || 'none';
                     if (MUC_ROLE_WEIGHTS[role1] === MUC_ROLE_WEIGHTS[role2]) {
-                        const nick1 = occupant1.get('nick').toLowerCase();
-                        const nick2 = occupant2.get('nick').toLowerCase();
+                        const nick1 = occupant1.getDisplayName().toLowerCase();
+                        const nick2 = occupant2.getDisplayName().toLowerCase();
                         return nick1 < nick2 ? -1 : (nick1 > nick2? 1 : 0);
                     } else  {
                         return MUC_ROLE_WEIGHTS[role1] < MUC_ROLE_WEIGHTS[role2] ? -1 : 1;
                     }
                 },
+
+                fetchMembers () {
+                    const old_jids = _.uniq(_.concat(
+                        _.map(this.where({'affiliation': 'admin'}), (item) => item.get('jid')),
+                        _.map(this.where({'affiliation': 'member'}), (item) => item.get('jid')),
+                        _.map(this.where({'affiliation': 'owner'}), (item) => item.get('jid'))
+                    ));
+
+                    this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin'])
+                    .then((jids) => {
+                        _.each(_.difference(old_jids, jids), (removed_jid) => {
+                            // Remove absent occupants who've been removed from
+                            // the members lists.
+                            const occupant = this.findOccupant({'jid': removed_jid});
+                            if (occupant.get('show') === 'offline') {
+                                occupant.destroy();
+                            }
+                        });
+                        _.each(jids, (attrs) => {
+                            const occupant = this.findOccupant({'jid': attrs.jid});
+                            if (occupant) {
+                                occupant.save(attrs);
+                            } else {
+                                this.create(attrs);
+                            }
+                        });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                },
+
+                findOccupant (data) {
+                    /* Try to find an existing occupant based on the passed in
+                     * data object.
+                     *
+                     * If we have a JID, we use that as lookup variable,
+                     * otherwise we use the nick. We don't always have both,
+                     * but should have at least one or the other.
+                     */
+                    const jid = Strophe.getBareJidFromJid(data.jid);
+                    if (jid !== null) {
+                        return this.where({'jid': jid}).pop();
+                    } else {
+                        return this.where({'nick': data.nick}).pop();
+                    }
+                }
             });
 
 
@@ -1134,10 +1176,10 @@
             /************************ BEGIN Event Handlers ************************/
             _converse.on('addClientFeatures', () => {
                 if (_converse.allow_muc) {
-                    _converse.connection.disco.addFeature(Strophe.NS.MUC);
+                    _converse.api.disco.own.features.add(Strophe.NS.MUC);
                 }
                 if (_converse.allow_muc_invitations) {
-                    _converse.connection.disco.addFeature('jabber:x:conference'); // Invites
+                    _converse.api.disco.own.features.add('jabber:x:conference'); // Invites
                 }
             });
             _converse.on('chatBoxesFetched', autoJoinRooms);

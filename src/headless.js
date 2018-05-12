@@ -1,7 +1,5 @@
-/* Inverse.js components configuration
- *
- * This file is used to tell require.js which components (or plugins) to load
- * when it generates a build of inverse.js (in dist/inverse.js)
+/* * This file is used to tell require.js which components (or plugins) to load
+ * when it generates a build of converse-headless.js (in the dist/ directory)
  */
 if (typeof define !== 'undefined') {
     // The section below determines which plugins will be included in a build

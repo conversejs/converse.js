@@ -69,7 +69,7 @@
                     expect(chat_content.querySelector('.chat-msg-time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
                     return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0])
                     .then(function () {
-                        expect(chat_content.querySelector('span.chat-msg-author').textContent).toBe('Max Frankfurter');
+                        expect(chat_content.querySelector('span.chat-msg-author').textContent.trim()).toBe('Max Frankfurter');
                         done();
                     });
                 });
@@ -118,7 +118,7 @@
 
                     var author_el = chatboxview.el.querySelector('.chat-msg-author');
                     expect(chatbox.get('fullname') === sender_jid);
-                    expect( _.includes(author_el.textContent, 'max.frankfurter@localhost')).toBeTruthy();
+                    expect( _.includes(author_el.textContent.trim(), 'max.frankfurter@localhost')).toBeTruthy();
 
                     test_utils.waitUntil(function () { return vcard_fetched; }, 100)
                     .then(function () {
@@ -126,7 +126,7 @@
                         return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0])
                     }).then(function () {
                         var author_el = chatboxview.el.querySelector('.chat-msg-author');
-                        expect( _.includes(author_el.textContent, 'Max Frankfurter')).toBeTruthy();
+                        expect( _.includes(author_el.textContent.trim(), 'Max Frankfurter')).toBeTruthy();
                         done();
                     });
                 }));
@@ -183,7 +183,7 @@
                     var chat_content = chatboxview.el.querySelector('.chat-content');
                     expect(chat_content.querySelector('.chat-msg .chat-msg-text').textContent).toEqual(message);
                     expect(chat_content.querySelector('.chat-msg-time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-                    expect(chat_content.querySelector('span.chat-msg-author').textContent).toBe('max.frankfurter@localhost');
+                    expect(chat_content.querySelector('span.chat-msg-author').textContent.trim()).toBe('max.frankfurter@localhost');
                     done();
                 }));
             });
@@ -699,7 +699,7 @@
             expect(chat_content.querySelector('.chat-msg-time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
             return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === 'Candice van der Knijff')
             .then(function () {
-                expect(chat_content.querySelector('span.chat-msg-author').textContent).toBe('Candice van der Knijff');
+                expect(chat_content.querySelector('span.chat-msg-author').textContent.trim()).toBe('Candice van der Knijff');
                 done();
             });
         }));
@@ -908,7 +908,7 @@
                     var chat_content = chatboxview.el.querySelector('.chat-content');
                     expect(chat_content.querySelector('.chat-msg .chat-msg-text').textContent).toEqual(message);
                     expect(chat_content.querySelector('.chat-msg-time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-                    expect(chat_content.querySelector('span.chat-msg-author').textContent).toBe('Candice van der Knijff');
+                    expect(chat_content.querySelector('span.chat-msg-author').textContent.trim()).toBe('Candice van der Knijff');
 
                     var $day = $chat_content.find('.date-separator');
                     expect($day.length).toEqual(1);
@@ -953,7 +953,7 @@
 
                     expect(chat_content.querySelector('.chat-msg:last-child .chat-msg-text').textContent).toEqual(message);
                     expect(chat_content.querySelector('.chat-msg:last-child .chat-msg-time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-                    expect(chat_content.querySelector('.chat-msg:last-child .chat-msg-author').textContent).toBe('Candice van der Knijff');
+                    expect(chat_content.querySelector('.chat-msg:last-child .chat-msg-author').textContent.trim()).toBe('Candice van der Knijff');
                     done();
                 });
             });
@@ -1137,7 +1137,7 @@
             var msg_object = chatbox.messages.models[0];
 
             var msg_author = view.el.querySelector('.chat-content .chat-msg:last-child .chat-msg-author');
-            expect(msg_author.textContent).toBe('dummy@localhost');
+            expect(msg_author.textContent.trim()).toBe('Max Mustermann');
 
             var msg_time = view.el.querySelector('.chat-content .chat-msg:last-child .chat-msg-time');
             var time = moment(msg_object.get('time')).format(_converse.time_format);

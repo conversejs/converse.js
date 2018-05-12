@@ -63,23 +63,6 @@
                 return id;
             }
 
-            c.vcard = {
-                'get': function (callback, jid) {
-                    var fullname;
-                    if (!jid) {
-                        jid = 'dummy@localhost';
-                        fullname = 'Max Mustermann' ;
-                    } else {
-                        var name = jid.split('@')[0].replace(/\./g, ' ').split(' ');
-                        var last = name.length-1;
-                        name[0] =  name[0].charAt(0).toUpperCase()+name[0].slice(1);
-                        name[last] = name[last].charAt(0).toUpperCase()+name[last].slice(1);
-                        fullname = name.join(' ');
-                    }
-                    var vcard = $iq().c('vCard').c('FN').t(fullname);
-                    callback(vcard.tree());
-                }
-            };
             c._proto._connect = function () {
                 c.authenticated = true;
                 c.connected = true;
@@ -111,14 +94,47 @@
             'animate': false,
             'use_emojione': false,
             'no_trimming': true,
-            'auto_login': true,
-            'jid': 'dummy@localhost',
             'view_mode': mock.view_mode,
-            'password': 'secret',
             'debug': false
         }, settings || {}));
-        _converse.ChatBoxViews.prototype.trimChat = function () {};
 
+        _converse.ChatBoxViews.prototype.trimChat = function () {};
+        _converse.api.vcard.get = function (model, force) {
+            return new Promise((resolve, reject) => {
+                let jid;
+                if (_.isString(model)) {
+                    jid = model;
+                } else if (!model.get('vcard_updated') || force) {
+                    jid = model.get('jid') || model.get('muc_jid');
+                }
+                var fullname;
+                if (!jid || jid == 'dummy@localhost') {
+                    jid = 'dummy@localhost';
+                    fullname = 'Max Mustermann' ;
+                } else {
+                    var name = jid.split('@')[0].replace(/\./g, ' ').split(' ');
+                    var last = name.length-1;
+                    name[0] =  name[0].charAt(0).toUpperCase()+name[0].slice(1);
+                    name[last] = name[last].charAt(0).toUpperCase()+name[last].slice(1);
+                    fullname = name.join(' ');
+                }
+                var vcard = $iq().c('vCard').c('FN').t(fullname).nodeTree;
+                var result = {
+                    'stanza': vcard,
+                    'fullname': _.get(vcard.querySelector('FN'), 'textContent'),
+                    'image': _.get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
+                    'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
+                    'url': _.get(vcard.querySelector('URL'), 'textContent')
+                };
+                resolve(result);
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        };
+        if (_.get(settings, 'auto_login') !== false) {
+            _converse.api.user.login({
+                'jid': 'dummy@localhost',
+                'password': 'secret'
+            });
+        }
         window.converse_disable_effects = true;
         return _converse;
     }

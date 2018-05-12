@@ -152,37 +152,23 @@
                      * the last archived message in our local cache.
                      */
                     if (this.disable_mam) { return; }
-                    const { _converse } = this.__super__;
-                    _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
-                        (results) => { // Success
-                            if (results.length) {
-                                const most_recent_msg = utils.getMostRecentMessage(this.model);
-                                if (_.isNil(most_recent_msg)) {
-                                    this.fetchArchivedMessages();
-                                } else {
-                                    const archive_id = most_recent_msg.get('archive_id');
-                                    if (archive_id) {
-                                        this.fetchArchivedMessages({
-                                            'after': most_recent_msg.get('archive_id')
-                                        });
-                                    } else {
-                                        this.fetchArchivedMessages({
-                                            'start': most_recent_msg.get('time')
-                                        });
-                                    }
-                                }
-                            }
-                        },
-                        () => { // Error
-                            _converse.log(
-                                "Error or timeout while checking for MAM support",
-                                Strophe.LogLevel.ERROR
-                            );
+                    const { _converse } = this.__super__,
+                          most_recent_msg = utils.getMostRecentMessage(this.model);
+
+                    if (_.isNil(most_recent_msg)) {
+                        this.fetchArchivedMessages();
+                    } else {
+                        const archive_id = most_recent_msg.get('archive_id');
+                        if (archive_id) {
+                            this.fetchArchivedMessages({
+                                'after': most_recent_msg.get('archive_id')
+                            });
+                        } else {
+                            this.fetchArchivedMessages({
+                                'start': most_recent_msg.get('time')
+                            });
                         }
-                    ).catch((msg) => {
-                        this.clearSpinner();
-                        _converse.log(msg, Strophe.LogLevel.FATAL);
-                    });
+                    }
                 },
 
                 fetchArchivedMessagesIfNecessary () {
@@ -211,44 +197,53 @@
                 },
 
                 fetchArchivedMessages (options) {
-                    /* Fetch archived chat messages from the XMPP server.
-                     *
-                     * Then, upon receiving them, call onMessage on the chat
-                     * box, so that they are displayed inside it.
-                     */
                     const { _converse } = this.__super__;
-                    if (!_converse.disco_entities.get(_converse.bare_jid)
-                            .features.findWhere({'var': Strophe.NS.MAM})) {
+                    if (this.disable_mam) { return; }
 
-                        _converse.log(
-                            "Attempted to fetch archived messages but this "+
-                            "user's server doesn't support XEP-0313",
-                            Strophe.LogLevel.WARN);
-                        return;
+                    const is_groupchat = this.model.get('type') === CHATROOMS_TYPE;
+
+                    let mam_jid, message_handler;
+                    if (is_groupchat) {
+                        mam_jid = this.model.get('jid');
+                        message_handler = this.model.onMessage.bind(this.model);
+                    } else {
+                        mam_jid = _converse.bare_jid;
+                        message_handler = _converse.chatboxes.onMessage.bind(_converse.chatboxes)
                     }
-                    if (this.disable_mam) {
-                        return;
-                    }
-                    this.addSpinner();
-                    _converse.api.archive.query(
-                        _.extend({
-                            'before': '', // Page backwards from the most recent message
-                            'max': _converse.archived_messages_page_size,
-                            'with': this.model.get('jid'),
-                        }, options),
-                        (messages) => { // Success
-                            this.clearSpinner();
-                            if (messages.length) {
-                                _.each(messages, _converse.chatboxes.onMessage.bind(_converse.chatboxes));
-                            }
+
+                    _converse.api.disco.supports(Strophe.NS.MAM, mam_jid).then(
+                        (results) => { // Success
+                            if (!results.length) { return; }
+                            this.addSpinner();
+                            _converse.api.archive.query(
+                                _.extend({
+                                    'groupchat': is_groupchat,
+                                    'before': '', // Page backwards from the most recent message
+                                    'max': _converse.archived_messages_page_size,
+                                    'with': this.model.get('jid'),
+                                }, options),
+                                (messages) => { // Success
+                                    this.clearSpinner();
+                                    _.each(messages, message_handler);
+                                },
+                                () => { // Error
+                                    this.clearSpinner();
+                                    _converse.log(
+                                        "Error or timeout while trying to fetch "+
+                                        "archived messages", Strophe.LogLevel.ERROR);
+                                }
+                            );
                         },
                         () => { // Error
-                            this.clearSpinner();
                             _converse.log(
-                                "Error or timeout while trying to fetch "+
-                                "archived messages", Strophe.LogLevel.ERROR);
+                                "Error or timeout while checking for MAM support",
+                                Strophe.LogLevel.ERROR
+                            );
                         }
-                    );
+                    ).catch((msg) => {
+                        this.clearSpinner();
+                        _converse.log(msg, Strophe.LogLevel.FATAL);
+                    });
                 },
 
                 onScroll (ev) {
@@ -309,37 +304,6 @@
                     }
                     this.fetchArchivedMessages();
                     this.model.save({'mam_initialized': true});
-                },
-
-                fetchArchivedMessages (options) {
-                    /* Fetch archived chat messages for this Chat Room
-                     *
-                     * Then, upon receiving them, call onMessage
-                     * so that they are displayed inside it.
-                     */
-                    const that = this;
-                    const { _converse } = this.__super__;
-                    this.addSpinner();
-                    _converse.api.archive.query(
-                        _.extend({
-                            'groupchat': true,
-                            'before': '', // Page backwards from the most recent message
-                            'with': this.model.get('jid'),
-                            'max': _converse.archived_messages_page_size
-                        }, options),
-                        function (messages) {
-                            that.clearSpinner();
-                            if (messages.length) {
-                                _.each(messages, that.model.onMessage.bind(that.model));
-                            }
-                        },
-                        function () {
-                            that.clearSpinner();
-                            _converse.log(
-                                "Error while trying to fetch archived messages",
-                                Strophe.LogLevel.WARN);
-                        }
-                    );
                 }
             }
         },
@@ -420,7 +384,7 @@
             });
 
             _converse.on('addClientFeatures', () => {
-                _converse.connection.disco.addFeature(Strophe.NS.MAM);
+                _converse.api.disco.own.features.add(Strophe.NS.MAM);
             });
 
             _converse.on('afterMessagesFetched', (chatboxview) => {

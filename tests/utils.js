@@ -144,12 +144,16 @@
 
             utils.waitUntil(() => {
                 return _.filter(
-                    _converse.connection.IQ_stanzas, (node) => node.nodeTree.querySelector('query').getAttribute('node') === 'x-roomuser-item'
-                ).length
+                    _converse.connection.IQ_stanzas, (node) => {
+                        const query = node.nodeTree.querySelector('query');
+                        return query && query.getAttribute('node') === 'x-roomuser-item'
+                    }).length
             }).then(function () {
                 const last_stanza = _.filter(
-                    _converse.connection.IQ_stanzas, (node) => node.nodeTree.querySelector('query').getAttribute('node') === 'x-roomuser-item'
-                ).pop().nodeTree;
+                    _converse.connection.IQ_stanzas, (node) => {
+                        const query = node.nodeTree.querySelector('query');
+                        return query && query.getAttribute('node') === 'x-roomuser-item'
+                    }).pop().nodeTree;
 
                 // The XMPP server returns the reserved nick for this user.
                 const IQ_id = last_stanza.getAttribute('id');

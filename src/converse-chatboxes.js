@@ -22,7 +22,7 @@
 
     converse.plugins.add('converse-chatboxes', {
 
-        dependencies: ["converse-vcard"],
+        dependencies: ["converse-roster", "converse-vcard"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -97,9 +97,15 @@
                 },
 
                 initialize () {
-                    this.vcard = _converse.vcards.findWhere({'jid': this.get('from')});
-                    if (_.isNil(this.vcard)) {
-                        this.vcard = _converse.vcards.create({'jid': this.get('from')});
+                    if (this.get('type') === 'groupchat' &&
+                        this.collection.chatbox.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
+
+                        this.vcard = _converse.xmppstatus.vcard;
+                    } else {
+                        this.vcard = _converse.vcards.findWhere({'jid': this.get('from')});
+                        if (_.isNil(this.vcard)) {
+                            this.vcard = _converse.vcards.create({'jid': this.get('from')});
+                        }
                     }
 
                     if (this.get('file')) {
@@ -115,10 +121,7 @@
                 },
 
                 isOnlyChatStateNotification () {
-                    return this.get('chat_state') &&
-                            !this.get('oob_url') &&
-                            !this.get('file') &&
-                            !this.get('message');
+                    return u.isOnlyChatStateNotification(this);
                 },
 
                 getDisplayName () {
@@ -235,7 +238,9 @@
                     if (_.isNil(this.vcard)) {
                         this.vcard = _converse.vcards.create({'jid': this.get('jid')});
                     }
-
+                    _converse.api.waitUntil('rosterContactsFetched').then(() => {
+                        this.addRelatedContact(_converse.roster.findWhere({'jid': this.get('jid')}));
+                    });
                     this.messages = new _converse.Messages();
                     this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
                         b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
@@ -256,6 +261,17 @@
                         'time_opened': this.get('time_opened') || moment().valueOf(),
                         'user_id' : Strophe.getNodeFromJid(this.get('jid'))
                     });
+                },
+
+                addRelatedContact (contact) {
+                    if (!_.isUndefined(contact)) {
+                        this.contact = contact;
+                        this.trigger('contactAdded', contact);
+                    }
+                },
+
+                getDisplayName () {
+                    return this.vcard.get('fullname') || this.get('jid');
                 },
 
                 createMessageStanza (message) {
@@ -451,7 +467,17 @@
                     /* Create a Backbone.Message object inside this chat box
                      * based on the identified message stanza.
                      */
-                    return this.messages.create(this.getMessageAttributesFromStanza.apply(this, arguments));
+                    const attrs = this.getMessageAttributesFromStanza.apply(this, arguments)
+                    const is_csn = u.isOnlyChatStateNotification(attrs);
+                    if (is_csn && attrs.delayed) {
+                        // No need showing old CSNs
+                        return;
+                    } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
+                        // TODO: handle <subject> messages (currently being done by ChatRoom)
+                        return;
+                    } else {
+                        return this.messages.create(attrs);
+                    }
                 },
 
                 newMessageWillBeHidden () {
@@ -754,12 +780,27 @@
                 _converse.emit('privateChatsAutoJoined');
             }
 
+
             /************************ BEGIN Event Handlers ************************/
             _converse.on('chatBoxesFetched', autoJoinChats);
 
+
+            _converse.api.waitUntil('rosterContactsFetched').then(() => {
+                _converse.roster.on('add', (contact) => {
+                    /* When a new contact is added, check if we already have a
+                     * chatbox open for it, and if so attach it to the chatbox.
+                     */
+                    const chatbox = _converse.chatboxes.findWhere({'jid': contact.get('jid')});
+                    if (chatbox) {
+                        chatbox.addRelatedContact(contact);
+                    }
+                });
+            });
+
+
             _converse.on('addClientFeatures', () => {
-                _converse.connection.disco.addFeature(Strophe.NS.HTTPUPLOAD);
-                _converse.connection.disco.addFeature(Strophe.NS.OUTOFBAND);
+                _converse.api.disco.own.features.add(Strophe.NS.HTTPUPLOAD);
+                _converse.api.disco.own.features.add(Strophe.NS.OUTOFBAND);
             });
 
             _converse.api.listen.on('pluginsInitialized', () => {

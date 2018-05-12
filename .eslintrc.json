@@ -21,6 +21,7 @@
                 "map", "replace", "toLower", "split", "trim", "forEach", "toUpperCase", "includes"
             ]
         }],
+        "lodash/prefer-invoke-map": "off",
         "lodash/prefer-startswith": "off",
         "lodash/prefer-constant": "off",
         "lodash/prefer-noop": "off",

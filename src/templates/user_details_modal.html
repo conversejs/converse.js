@@ -1,0 +1,39 @@
+<div class="modal fade" id="user-profile-modal" tabindex="-1" role="dialog" aria-labelledby="user-profile-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="user-profile-modal-label">{{{o.display_name}}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{{o.label_close}}}"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                {[ if (o.image) { ]}
+                <img alt="{{{o.alt_profile_image}}}"
+                    class="img-thumbnail avatar align-self-center mb-3"
+                    height="100" width="100" src="data:{{{o.image_type}}};base64,{{{o.image}}}"/>
+                {[ } ]}
+                {[ if (o.fullname) { ]}
+                <p><label>{{{o.label_fullname}}}:</label>&nbsp;{{{o.fullname}}}</p>
+                {[ } ]}
+                <p><label>{{{o.label_jid}}}:</label>&nbsp;{{{o.jid}}}</p>
+                {[ if (o.nickname) { ]}
+                <p><label>{{{o.label_nickname}}}:</label>&nbsp;{{{o.nickname}}}</p>
+                {[ } ]}
+                {[ if (o.url) { ]}
+                <p><label>{{{o.label_url}}}:</label>&nbsp;<a target="_blank" rel="noopener" href="{{{o.url}}}">{{{o.url}}}</a></p>
+                {[ } ]}
+                {[ if (o.email) { ]}
+                <p><label>{{{o.label_email}}}:</label>&nbsp;<a href="mailto:{{{o.email}}}">{{{o.email}}}</a></p>
+                {[ } ]}
+                {[ if (o.role) { ]}
+                <p><label>{{{o.label_role}}}:</label>&nbsp;{{{o.role}}}</p>
+                {[ } ]}
+            </div>
+            <div class="modal-footer">
+                {[ if (o.allow_contact_removal && o.is_roster_contact) { ]}
+                    <button type="button" class="btn btn-danger remove-contact" data-dismiss="modal"><i class="fa fa-trash"> </i>{{{o.label_remove}}}</button>
+                {[ } ]}
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{{o.label_close}}}</button>
+            </div>
+        </div>
+    </div>
+</div>

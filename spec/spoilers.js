@@ -155,7 +155,7 @@
                 expect(body_el.textContent).toBe('This is the spoiler');
 
                 /* Test the HTML spoiler message */
-                expect(view.el.querySelector('.chat-msg-author').textContent).toBe('dummy@localhost');
+                expect(view.el.querySelector('.chat-msg-author').textContent).toBe('Max Mustermann');
 
                 var spoiler_msg_el = view.el.querySelector('.chat-msg-text.spoiler');
                 expect(spoiler_msg_el.textContent).toBe('This is the spoiler');
@@ -234,7 +234,7 @@
                 expect(body_el.textContent).toBe('This is the spoiler');
 
                 /* Test the HTML spoiler message */
-                expect(view.el.querySelector('.chat-msg-author').textContent).toBe('dummy@localhost');
+                expect(view.el.querySelector('.chat-msg-author').textContent).toBe('Max Mustermann');
 
                 var spoiler_msg_el = view.el.querySelector('.chat-msg-text.spoiler');
                 expect(spoiler_msg_el.textContent).toBe('This is the spoiler');

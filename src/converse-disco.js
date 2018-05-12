@@ -1,18 +1,17 @@
-// Converse.js (A browser based XMPP chat client)
+// Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
 
 /* This is a Converse.js plugin which add support for XEP-0030: Service Discovery */
 
 /*global Backbone, define, window */
 (function (root, factory) {
-    define(["converse-core", "sizzle", "strophe.disco"], factory);
+    define(["converse-core", "sizzle"], factory);
 }(this, function (converse, sizzle) {
 
-    const { Backbone, Promise, Strophe, b64_sha1, utils, _, f } = converse.env;
+    const { Backbone, Promise, Strophe, $iq, b64_sha1, utils, _, f } = converse.env;
 
     converse.plugins.add('converse-disco', {
 
@@ -127,7 +126,7 @@
                 },
 
                 queryInfo () {
-                    _converse.connection.disco.info(this.get('jid'), null, this.onInfo.bind(this));
+                    _converse.api.disco.info(this.get('jid'), null, this.onInfo.bind(this));
                 },
 
                 onDiscoItems (stanza) {
@@ -150,7 +149,7 @@
                         // server or a conference component.
                         return;
                     }
-                    _converse.connection.disco.items(this.get('jid'), null, this.onDiscoItems.bind(this));
+                    _converse.api.disco.items(this.get('jid'), null, this.onDiscoItems.bind(this));
                 },
 
                 onInfo (stanza) {
@@ -204,21 +203,15 @@
             });
 
             function addClientFeatures () {
-                /* The strophe.disco.js plugin keeps a list of features which
-                 * it will advertise to any #info queries made to it.
-                 *
-                 * See: http://xmpp.org/extensions/xep-0030.html#info
-                 */
-
                 // See http://xmpp.org/registrar/disco-categories.html
-                _converse.connection.disco.addIdentity('client', 'web', 'Converse.js');
+                _converse.api.disco.own.identities.add('client', 'web', 'Converse.js');
 
-                _converse.connection.disco.addFeature(Strophe.NS.BOSH);
-                _converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
-                _converse.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
-                _converse.connection.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
+                _converse.api.disco.own.features.add(Strophe.NS.BOSH);
+                _converse.api.disco.own.features.add(Strophe.NS.CHATSTATES);
+                _converse.api.disco.own.features.add(Strophe.NS.DISCO_INFO);
+                _converse.api.disco.own.features.add(Strophe.NS.ROSTERX); // Limited support
                 if (_converse.message_carbons) {
-                    _converse.connection.disco.addFeature(Strophe.NS.CARBONS);
+                    _converse.api.disco.own.features.add(Strophe.NS.CARBONS);
                 }
                 _converse.emit('addClientFeatures');
                 return this;
@@ -226,6 +219,8 @@
 
             function initializeDisco () {
                 addClientFeatures();
+                _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
+
                 _converse.disco_entities = new _converse.DiscoEntities();
                 _converse.disco_entities.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                     b64_sha1(`converse.disco-entities-${_converse.bare_jid}`)
@@ -240,6 +235,7 @@
                     _converse.emit('discoInitialized');
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }
+
             _converse.api.listen.on('reconnected', initializeDisco);
             _converse.api.listen.on('connected', initializeDisco);
 
@@ -254,9 +250,172 @@
                 }
             });
 
+            const plugin = this;
+            plugin._identities = [];
+            plugin._features = [];
+
+            function onDiscoInfoRequest (stanza) {
+                const node = stanza.getElementsByTagName('query')[0].getAttribute('node');
+                const attrs = {xmlns: Strophe.NS.DISCO_INFO};
+                if (node) { attrs.node = node; }
+
+                const iqresult = $iq({'type': 'result', 'id': stanza.getAttribute('id')});
+                const from = stanza.getAttribute('from');
+                if (from !== null) {
+                    iqresult.attrs({'to': from});
+                }
+                _.each(plugin._identities, (identity) => {
+                    const attrs = {
+                        'category': identity.category,
+                        'type': identity.type
+                    };
+                    if (identity.name) {
+                        attrs.name = identity.name;
+                    }
+                    if (identity.lang) {
+                        attrs['xml:lang'] = identity.lang;
+                    }
+                    iqresult.c('identity', attrs).up();
+                });
+                _.each(plugin._features, (feature) => {
+                    iqresult.c('feature', {'var': feature}).up();
+                });
+                _converse.connection.send(iqresult.tree());
+                return true;
+            }
+
             /* We extend the default converse.js API to add methods specific to service discovery */
             _.extend(_converse.api, {
+                /**
+                 * The service discovery API
+                 * @namespace
+                 */
                 'disco': {
+                    /**
+                     * The "own" grouping
+                     * @namespace
+                     */
+                    'own': {
+                        /**
+                         * The "identities" grouping
+                         * @namespace
+                         */
+                        'identities': {
+                            /**
+                             * Lets you add new identities for this client (i.e. instance of Converse.js)
+                             * @function
+                             *
+                             * @param {String} category - server, client, gateway, directory, etc.
+                             * @param {String} type - phone, pc, web, etc.
+                             * @param {String} name - "Converse.js"
+                             * @param {String} lang - en, el, de, etc.
+                             *
+                             * @example
+                             * _converse.api.disco.own.identities.clear();
+                             */
+                            add (category, type, name, lang) {
+                                for (var i=0; i<plugin._identities.length; i++) {
+                                    if (plugin._identities[i].category == category &&
+                                        plugin._identities[i].type == type &&
+                                        plugin._identities[i].name == name &&
+                                        plugin._identities[i].lang == lang) {
+                                        return false;
+                                    }
+                                }
+                                plugin._identities.push({category: category, type: type, name: name, lang: lang});
+                            },
+                            /**
+                             * Clears all previously registered identities.
+                             * @function
+                             *
+                             * @example
+                             * _converse.api.disco.own.identities.clear();
+                             */
+                            clear () {
+                                plugin._identities = []
+                            },
+                            /**
+                             * Returns all of the identities registered for this client
+                             * (i.e. instance of Converse.js).
+                             * @function
+                             *
+                             * @example
+                             * const identities = _converse.api.disco.own.identities.get();
+                             */
+                            get () {
+                                return plugin._identities;
+                            }
+                        },
+                        /**
+                         * The "features" grouping
+                         * @namespace
+                         */
+                        'features': {
+                            /**
+                             * Lets you register new disco features for this client (i.e. instance of Converse.js)
+                             * @function
+                             *
+                             * @param {String} name - e.g. http://jabber.org/protocol/caps
+                             *
+                             * @example
+                             * _converse.api.disco.own.features.add("http://jabber.org/protocol/caps");
+                             */
+                            add (name) {
+                                for (var i=0; i<plugin._features.length; i++) {
+                                    if (plugin._features[i] == name) { return false; }
+                                }
+                                plugin._features.push(name);
+                            },
+                            /**
+                             * Clears all previously registered features.
+                             * @function
+                             *
+                             * @example
+                             * _converse.api.disco.own.features.clear();
+                             */
+                            clear () {
+                                plugin._features = []
+                            },
+                            /**
+                             * Returns all of the features registered for this client
+                             * (i.e. instance of Converse.js).
+                             * @function
+                             *
+                             * @example
+                             * const features = _converse.api.disco.own.features.get();
+                             */
+                            get () {
+                                return plugin._features;
+                            }
+                        }
+                    },
+
+                    'info' (jid, node, callback, errback, timeout) {
+                        const attrs = {xmlns: Strophe.NS.DISCO_INFO};
+                        if (node) {
+                            attrs.node = node;
+                        }
+                        const info = $iq({
+                            'from': _converse.connection.jid,
+                            'to':jid,
+                            'type':'get'
+                        }).c('query', attrs);
+                        _converse.connection.sendIQ(info, callback, errback, timeout);
+                    },
+
+                    'items' (jid, node, callback, errback, timeout) {
+                        const attrs = {'xmlns': Strophe.NS.DISCO_ITEMS};
+                        if (node) {
+                            attrs.node = node;
+                        }
+                        const items = $iq({
+                            'from': _converse.connection.jid,
+                            'to':jid,
+                            'type':'get'
+                        }).c('query', attrs);
+                        _converse.connection.sendIQ(items, callback, errback, timeout);
+                    },
+
                     'entities': {
                         'get' (entity_jid, create=false) {
                             return _converse.api.waitUntil('discoInitialized').then(() => {
@@ -292,13 +451,14 @@
                         return _converse.api.waitUntil('discoInitialized').then(() => {
                             return new Promise((resolve, reject) => {
                                 _converse.api.disco.entities.get(entity_jid, true).then((entity) => {
-                                    Promise.all(
-                                        _.concat(
+                                    entity.waitUntilFeaturesDiscovered.then(() => {
+                                        const promises = _.concat(
                                             entity.items.map((item) => item.hasFeature(feature)),
                                             entity.hasFeature(feature)
-                                        )
-                                    ).then((result) => {
-                                        resolve(f.filter(f.isObject, result));
+                                        );
+                                        Promise.all(promises).then((result) => {
+                                            resolve(f.filter(f.isObject, result));
+                                        }).catch(reject);
                                     }).catch(reject);
                                 })
                             });

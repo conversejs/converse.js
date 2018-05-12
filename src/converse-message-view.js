@@ -81,15 +81,21 @@
                 },
 
                 render () {
+                    const is_followup = u.hasClass('chat-msg-followup', this.el);
+                    let msg;
                     if (this.model.isOnlyChatStateNotification()) {
-                        return this.renderChatStateNotification()
+                        this.renderChatStateNotification()
                     } else if (this.model.get('file') && !this.model.get('oob_url')) {
-                        return this.renderFileUploadProgresBar();
+                        this.renderFileUploadProgresBar();
                     } else if (this.model.get('type') === 'error') {
-                        return this.renderErrorMessage();
+                        this.renderErrorMessage();
                     } else {
-                        return this.renderChatMessage();
+                        this.renderChatMessage();
                     }
+                    if (is_followup) {
+                        u.addClass('chat-msg-followup', this.el);
+                    }
+                    return this.el;
                 },
 
                 replaceElement (msg) {
@@ -108,10 +114,14 @@
                     } else {
                         template = this.model.get('is_spoiler') ? tpl_spoiler_message : tpl_message;
                     }
+                    const moment_time = moment(this.model.get('time')),
+                          role = this.model.vcard.get('role'),
+                          roles = role ? role.split(',') : [];
 
-                    const moment_time = moment(this.model.get('time'));
                     const msg = u.stringToElement(template(
-                        _.extend(this.model.toJSON(), {
+                        _.extend(
+                            this.model.toJSON(), {
+                            'roles': roles,
                             'pretty_time': moment_time.format(_converse.time_format),
                             'time': moment_time.format(),
                             'extra_classes': this.getExtraMessageClasses(),
@@ -160,9 +170,6 @@
                 },
 
                 renderChatStateNotification () {
-                    if (this.model.get('delayed')) {
-                        return this.model.destroy();
-                    }
                     let text;
                     const from = this.model.get('from'),
                           name = this.model.getDisplayName();

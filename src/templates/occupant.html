@@ -1,13 +1,38 @@
-<li class="{{{ o.role }}} occupant" id="{{{ o.id }}}"
+<li class="occupant" id="{{{ o.id }}}"
     {[ if (o.role === "moderator") { ]}
        title="{{{ o.jid }}} {{{ o.desc_moderator }}} {{{ o.hint_occupant }}}"
     {[ } ]}
-    {[ if (o.role === "occupant") { ]}
-       title="{{{ o.jid }}} {{{ o.desc_occupant }}} {{{ o.hint_occupant }}}"
+    {[ if (o.role === "participant") { ]}
+       title="{{{ o.jid }}} {{{ o.desc_participant }}} {{{ o.hint_occupant }}}"
     {[ } ]}
     {[ if (o.role === "visitor") { ]}
        title="{{{ o.jid }}} {{{ o.desc_visitor }}} {{{ o.hint_occupant }}}"
     {[ } ]}
-    {[ if (!_.includes(["visitor", "occupant", "moderator"], o.role)) { ]}
+    {[ if (!_.includes(["visitor", "participant", "moderator"], o.role)) { ]}
        title="{{{ o.jid }}} {{{ o.hint_occupant }}}"
-       {[ } ]}><div class="occupant-status occupant-{{{o.show}}} circle" title="{{{o.hint_show}}}"></div>{{{o.nick}}}</li>
+    {[ } ]}>
+    <div class="row no-gutters">
+        <div class="col-auto">
+            <div class="occupant-status occupant-{{{o.show}}} circle" title="{{{o.hint_show}}}"></div>
+        </div>
+        <div class="col">
+            <span class="occupant-nick">{{{o.nick || o.jid}}}</span>
+            {[ if (o.affiliation === "owner") { ]}
+                <span class="badge badge-danger">{{{o.label_owner}}}</span>
+            {[ } ]}
+            {[ if (o.affiliation === "admin") { ]}
+                <span class="badge badge-info">{{{o.label_admin}}}</span>
+            {[ } ]}
+            {[ if (o.affiliation === "member") { ]}
+                <span class="badge badge-info">{{{o.label_member}}}</span>
+            {[ } ]}
+
+            {[ if (o.role === "moderator") { ]}
+                <span class="badge badge-info">{{{o.label_moderator}}}</span>
+            {[ } ]}
+            {[ if (o.role === "visitor") { ]}
+                <span class="badge badge-secondary">{{{o.label_visitor}}}</span>
+            {[ } ]}
+        </div>
+    </div>
+</li>

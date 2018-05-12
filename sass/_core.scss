@@ -176,6 +176,12 @@ body.reset {
 
     .modal {
         background-color: rgba(0, 0, 0, 0.4);
+
+        .modal-body {
+            p {
+                padding: 0.25rem 0;
+            }
+        }
     }
 
     .selected {
@@ -223,13 +229,12 @@ body.reset {
         -moz-osx-font-smoothing: grayscale;
     }
 
-    .list-container {
-        text-align: left;
-        margin: 0.3em 0;
-    }
-
-    .btn.btn-primary {
+    .btn {
         color: #fff;
+        .fa {
+            color: #fff;
+            padding-right: 0.5em;
+        }
     }
 
     .no-text-select {
@@ -275,11 +280,6 @@ body.reset {
     @-webkit-keyframes fadein {
         0% { opacity: 0 }
         100% { opacity: 1 }
-    }
-
-    .fade {
-        opacity: 0;
-        transition: opacity 0.20s linear;
     }
 
     .fade-in {
@@ -363,6 +363,7 @@ body.reset {
 
     .avatar {
         border-radius: 10%;
+        border: 1px solid lightgrey;
     }
 
     .activated {

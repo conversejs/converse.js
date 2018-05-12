@@ -9,6 +9,7 @@
 (function (root, factory) {
     define(["converse-core",
             "bootstrap",
+            "tpl!alert",
             "tpl!chat_status_modal",
             "tpl!profile_modal",
             "tpl!profile_view",
@@ -19,6 +20,7 @@
 }(this, function (
             converse,
             bootstrap,
+            tpl_alert,
             tpl_chat_status_modal,
             tpl_profile_modal,
             tpl_profile_view,
@@ -32,7 +34,7 @@
 
     converse.plugins.add('converse-profile', {
 
-        dependencies: ["converse-modal"],
+        dependencies: ["converse-modal", "converse-vcard"],
 
         initialize () {
             /* The initialize function gets called as soon as the plugin is
@@ -43,13 +45,94 @@
 
 
             _converse.ProfileModal = _converse.BootstrapModal.extend({
+                events: {
+                    'click .change-avatar': "openFileSelection",
+                    'change input[type="file"': "updateFilePreview",
+                    'submit form': 'onFormSubmitted'
+                },
+
+                initialize () {
+                    _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                    this.model.on('change', this.render, this);
+                },
 
                 toHTML () {
-                    return tpl_profile_modal(_.extend(this.model.toJSON(), {
+                    return tpl_profile_modal(_.extend(
+                        this.model.toJSON(),
+                        this.model.vcard.toJSON(), {
                         'heading_profile': __('Your Profile'),
-                        'label_close': __('Close')
+                        'label_close': __('Close'),
+                        'label_email': __('Email'),
+                        'label_fullname': __('Full Name'),
+                        'label_nickname': __('Nickname'),
+                        'label_jid': __('XMPP Address (JID)'),
+                        'label_role': __('Role'),
+                        'label_role_help': __('Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.'),
+                        'label_save': __('Save'),
+                        'label_url': __('URL'),
+                        'alt_avatar': __('Your avatar image')
                     }));
                 },
+
+                openFileSelection (ev) {
+                    ev.preventDefault();
+                    this.el.querySelector('input[type="file"]').click();
+                },
+
+                updateFilePreview (ev) {
+                    const file = ev.target.files[0],
+                          reader = new FileReader();
+                    reader.onloadend = () => {
+                        this.el.querySelector('.avatar').setAttribute('src', reader.result);
+                    };
+                    reader.readAsDataURL(file);
+                },
+
+                setVCard (body, data) {
+                    _converse.api.vcard.set(data)
+                    .then(() => _converse.api.vcard.update(this.model.vcard, true))
+                    .catch((err) => {
+                        _converse.log(err, Strophe.LogLevel.FATAL);
+                        _converse.api.alert.show(
+                            Strophe.LogLevel.ERROR,
+                            __('Error'),
+                            [__("Sorry, an error happened while trying to save your profile data."),
+                            __("You can check your browser's developer console for any error output.")]
+                        )
+                    });
+                    this.modal.hide();
+                },
+
+                onFormSubmitted (ev) {
+                    ev.preventDefault();
+                    const reader = new FileReader(),
+                          form_data = new FormData(ev.target),
+                          body = this.el.querySelector('.modal-body'),
+                          image_file = form_data.get('image');
+
+                    const data = {
+                        'fn': form_data.get('fn'),
+                        'role': form_data.get('role'),
+                        'email': form_data.get('email'),
+                        'url': form_data.get('url'),
+                    };
+                    if (!image_file.size) {
+                        _.extend(data, {
+                            'image': this.model.get('image'),
+                            'image_type': this.model.get('image_type')
+                        });
+                        this.setVCard(body, data);
+                    } else {
+                        reader.onloadend = () => {
+                            _.extend(data, {
+                                'image': btoa(reader.result),
+                                'image_type': image_file.type
+                            });
+                            this.setVCard(body, data);
+                        };
+                        reader.readAsBinaryString(image_file);
+                    }
+                }
             });
 
 
@@ -60,19 +143,22 @@
                 },
 
                 toHTML () {
-                    return tpl_chat_status_modal(_.extend(this.model.toJSON(), {
-                        'label_away': __('Away'),
-                        'label_close': __('Close'),
-                        'label_busy': __('Busy'),
-                        'label_cancel': __('Cancel'),
-                        'label_custom_status': __('Custom status'),
-                        'label_offline': __('Offline'),
-                        'label_online': __('Online'),
-                        'label_save': __('Save'),
-                        'label_xa': __('Away for long'),
-                        'modal_title': __('Change chat status'),
-                        'placeholder_status_message': __('Personal status message')
-                    }));
+                    return tpl_chat_status_modal(
+                        _.extend(
+                            this.model.toJSON(),
+                            this.model.vcard.toJSON(), {
+                            'label_away': __('Away'),
+                            'label_close': __('Close'),
+                            'label_busy': __('Busy'),
+                            'label_cancel': __('Cancel'),
+                            'label_custom_status': __('Custom status'),
+                            'label_offline': __('Offline'),
+                            'label_online': __('Online'),
+                            'label_save': __('Save'),
+                            'label_xa': __('Away for long'),
+                            'modal_title': __('Change chat status'),
+                            'placeholder_status_message': __('Personal status message')
+                        }));
                 },
 
                 afterRender () {
@@ -111,12 +197,15 @@
 
                 initialize () {
                     this.model.on("change", this.render, this);
+                    this.model.vcard.on("change", this.render, this);
                 },
 
                 toHTML () {
                     const chat_status = this.model.get('status') || 'offline';
-                    return tpl_profile_view(_.extend(this.model.toJSON(), {
-                        'fullname': this.model.get('fullname') || _converse.bare_jid,
+                    return tpl_profile_view(_.extend(
+                        this.model.toJSON(),
+                        this.model.vcard.toJSON(), {
+                        'fullname': this.model.vcard.get('fullname') || _converse.bare_jid,
                         'status_message': this.model.get('status_message') ||
                                             __("I am %1$s", this.getPrettyStatus(chat_status)),
                         'chat_status': chat_status,

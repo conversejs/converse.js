@@ -47,8 +47,9 @@
     Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
     Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
     Strophe.addNamespace('SPOILER', 'urn:xmpp:spoiler:0');
-    Strophe.addNamespace('XFORM', 'jabber:x:data');
+    Strophe.addNamespace('VCARD', 'vcard-temp');
     Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
+    Strophe.addNamespace('XFORM', 'jabber:x:data');
 
     // Use Mustache style syntax for variable interpolation
     /* Configuration of Lodash templates (this config is distinct to the
@@ -73,6 +74,7 @@
         'converse-bookmarks',
         'converse-chatboxes',
         'converse-chatview',
+        'converse-caps',
         'converse-controlbox',
         'converse-core',
         'converse-disco',
@@ -835,15 +837,16 @@
             defaults () {
                 return {
                     "jid": _converse.bare_jid,
-                    "nickname": _converse.nickname,
                     "status":  _converse.default_state,
-                    "vcard_updated": null,
-                    'image': _converse.DEFAULT_IMAGE,
-                    'image_type': _converse.DEFAULT_IMAGE_TYPE
                 }
             },
 
             initialize () {
+                this.vcard = _converse.vcards.findWhere({'jid': this.get('jid')});
+                if (_.isNil(this.vcard)) {
+                    this.vcard = _converse.vcards.create({'jid': this.get('jid')});
+                }
+
                 this.on('change:status', (item) => {
                     const status = this.get('status');
                     this.sendPresence(status);

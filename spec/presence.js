@@ -18,12 +18,36 @@
 
     describe("A sent presence stanza", function () {
 
+        it("includes a entity capabilities node",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
+                _converse.api.disco.own.identities.clear();
+                _converse.api.disco.own.features.clear();
+
+                _converse.api.disco.own.identities.add("client", "pc", "Exodus 0.9.1");
+                _converse.api.disco.own.features.add("http://jabber.org/protocol/caps");
+                _converse.api.disco.own.features.add("http://jabber.org/protocol/disco#info");
+                _converse.api.disco.own.features.add("http://jabber.org/protocol/disco#items");
+                _converse.api.disco.own.features.add("http://jabber.org/protocol/muc");
+
+                const presence = _converse.xmppstatus.constructPresence();
+                expect(presence.toLocaleString()).toBe(
+                    "<presence xmlns='jabber:client'>"+
+                        "<priority>0</priority>"+
+                        "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='QgayPKawpkPSDYmwT/WM94uAlu0='/>"+
+                    "</presence>")
+                done();
+        }));
+
         it("has a given priority", mock.initConverse(function (_converse) {
             var pres = _converse.xmppstatus.constructPresence('online', 'Hello world');
             expect(pres.toLocaleString()).toBe(
                 "<presence xmlns='jabber:client'>"+
                     "<status>Hello world</status>"+
                     "<priority>0</priority>"+
+                    "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='1J7kq1MEvnB6ea6vKcgCsSE37gw='/>"+
                 "</presence>"
             );
             _converse.priority = 2;
@@ -33,6 +57,7 @@
                     "<show>away</show>"+
                     "<status>Going jogging</status>"+
                     "<priority>2</priority>"+
+                    "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='1J7kq1MEvnB6ea6vKcgCsSE37gw='/>"+
                 "</presence>"
             );
 
@@ -43,6 +68,7 @@
                     "<show>dnd</show>"+
                     "<status>Doing taxes</status>"+
                     "<priority>0</priority>"+
+                    "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='1J7kq1MEvnB6ea6vKcgCsSE37gw='/>"+
                 "</presence>"
             );
         }));
@@ -68,7 +94,11 @@
                 modal.el.querySelector('[type="submit"]').click();
                 expect(view.model.sendPresence).toHaveBeenCalled();
                 expect(_converse.connection.send.calls.mostRecent().args[0].toLocaleString())
-                    .toBe("<presence xmlns='jabber:client'><status>My custom status</status><priority>0</priority></presence>")
+                    .toBe("<presence xmlns='jabber:client'>"+
+                          "<status>My custom status</status>"+
+                          "<priority>0</priority>"+
+                          "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='1J7kq1MEvnB6ea6vKcgCsSE37gw='/>"+
+                          "</presence>")
 
                 return test_utils.waitUntil(function () {
                     return modal.el.getAttribute('aria-hidden') === "true";
@@ -82,7 +112,9 @@
                 modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
                 modal.el.querySelector('[type="submit"]').click();
                 expect(_converse.connection.send.calls.mostRecent().args[0].toLocaleString())
-                    .toBe("<presence xmlns='jabber:client'><show>dnd</show><status>My custom status</status><priority>0</priority></presence>")
+                    .toBe("<presence xmlns='jabber:client'><show>dnd</show><status>My custom status</status><priority>0</priority>"+
+                          "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='1J7kq1MEvnB6ea6vKcgCsSE37gw='/>"+
+                          "</presence>")
                 done();
             });
         }));

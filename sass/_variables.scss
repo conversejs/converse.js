@@ -96,6 +96,8 @@ $message-font-size: 14px !default;
 $font-size-tiny: 10px !default;
 
 $controlbox-width: 250px !default;
+$controlbox-head-color: $light-blue !default;
+
 $chat-gutter: 0.5em !default;
 $minimized-chats-width: 130px !default;
 
@@ -116,4 +118,6 @@ $box-close-button-padding-top: 4px !default;
 $box-close-button-padding-bottom: 4px !default;
 $box-close-button-padding-left: 4px !default;
 $box-close-button-padding-right: 4px !default;
-$box-close-font-size: 16px !default;
+
+$chatbox-button-size: 14px !default;
+$fullpage-chatbox-button-size: 16px !default;

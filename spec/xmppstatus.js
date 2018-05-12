@@ -10,7 +10,7 @@
             _converse.api.user.status.message.set("I'm also happy!");
             expect(_converse.connection.send).toHaveBeenCalled();
             var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
-            expect($stanza.children().length).toBe(2);
+            expect($stanza.children().length).toBe(3);
             expect($stanza.children('status').length).toBe(1);
             expect($stanza.children('status').text()).toBe("I'm also happy!");
             expect($stanza.children('show').length).toBe(0);

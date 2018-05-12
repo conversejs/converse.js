@@ -13,6 +13,7 @@
             "sizzle",
             "es6-promise",
             "lodash.noconflict",
+            "backbone",
             "strophe",
             "uri",
             "tpl!audio",
@@ -39,6 +40,7 @@
             root.sizzle,
             root.Promise,
             root._,
+            root.Backbone,
             Strophe
         );
     }
@@ -46,6 +48,7 @@
         sizzle,
         Promise,
         _,
+        Backbone,
         Strophe,
         URI,
         tpl_audio,
@@ -54,7 +57,6 @@
         tpl_video
     ) {
     "use strict";
-    const b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
 
     const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
@@ -488,6 +490,16 @@
         }
     };
 
+    u.isOnlyChatStateNotification = function (attrs) {
+        if (attrs instanceof Backbone.Model) {
+            attrs = attrs.attributes;
+        }
+        return attrs['chat_state'] &&
+            !attrs['oob_url'] &&
+            !attrs['file'] &&
+            !attrs['message'];
+    };
+
     u.isOTRMessage = function (message) {
         var body = message.querySelector('body'),
             text = (!_.isNull(body) ? body.textContent: undefined);
@@ -802,5 +814,21 @@
         const replacement = 'geo:$1,$2';
         return text.replace(_converse.geouri_regex, replacement);
     };
+
+    u.getSelectValues = function(select) {
+        var result = [];
+        var options = select && select.options;
+        var opt;
+
+        for (var i=0, iLen=options.length; i<iLen; i++) {
+            opt = options[i];
+
+            if (opt.selected) {
+                result.push(opt.value || opt.text);
+            }
+        }
+        return result;
+    };
+
     return u;
 }));

@@ -157,6 +157,7 @@
                             overflow-y: auto;
                             flex-basis: 0;
                             flex-grow: 1;
+                            border-bottom: 1px solid lightgrey;
                         }
                         &.features-list {
                             padding-top: 0;
@@ -172,9 +173,8 @@
                             display: block;
                             font-size: $font-size-small;
                             overflow: hidden;
-                            padding: 0.2em 0.5em 0.2em 0;
+                            padding: 0.25em 0.25em 0.25em 0;
                             text-overflow: ellipsis;
-                            white-space: nowrap;
                             .fa {
                                 margin-right: 0.5em;
                             }
@@ -183,11 +183,21 @@
                             }
                             &.occupant {
                                 cursor: pointer;
+
+                                div.row.no-gutters {
+                                    flex-wrap: nowrap;
+                                    min-height: 1.5em;
+                                }
+                                .badge {
+                                    margin-bottom: 0.125rem;
+                                }
+
                                 .occupant-status {
                                     display: inline-block;
-                                    margin-right: 0.5em;
+                                    margin: 0 0.5em 0.125em 0;
                                     width: 0.5em;
                                     height: 0.5em;
+
                                     &.occupant-online,
                                     &.occupant-chat {
                                         background-color: #1A9707;
@@ -201,13 +211,10 @@
                                     &.occupant-xa {
                                         background-color: orange;
                                     }
+                                    &.occupant-offline {
+                                        background-color: darkgrey;
+                                    }
                                 }
-                            }
-                            &.moderator {
-                                color: $moderator-color;
-                            }
-                            &.visitor {
-                                color: $visitor-color;
                             }
                         }
                     }

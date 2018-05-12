@@ -19,11 +19,13 @@
             "tpl!help_message",
             "tpl!info",
             "tpl!new_day",
+            "tpl!user_details_modal",
             "tpl!toolbar_fileupload",
             "tpl!spinner",
             "tpl!spoiler_button",
             "tpl!status_message",
             "tpl!toolbar",
+            "converse-modal",
             "converse-chatboxes",
             "converse-message-view"
     ], factory);
@@ -41,6 +43,7 @@
             tpl_help_message,
             tpl_info,
             tpl_new_day,
+            tpl_user_details_modal,
             tpl_toolbar_fileupload,
             tpl_spinner,
             tpl_spoiler_button,
@@ -66,7 +69,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes", "converse-disco", "converse-message-view"],
+        dependencies: ["converse-chatboxes", "converse-disco", "converse-message-view", "converse-modal"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -200,8 +203,8 @@
                 }
             });
 
-            _converse.ChatBoxHeading = _converse.ViewWithAvatar.extend({
 
+            _converse.ChatBoxHeading = _converse.ViewWithAvatar.extend({
                 initialize () {
                     this.model.on('change:status', this.onStatusMessageChanged, this);
                     this.model.vcard.on('change', this.render, this);
@@ -231,6 +234,74 @@
             });
 
 
+            _converse.UserDetailsModal = _converse.BootstrapModal.extend({
+
+                events: { 
+                    'click button.remove-contact': 'removeContact'
+                },
+
+                initialize () {
+                    _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                    this.model.on('contactAdded', this.registerContactEventHandlers, this);
+                    this.registerContactEventHandlers();
+                },
+
+                toHTML () {
+                    return tpl_user_details_modal(_.extend(
+                        this.model.toJSON(),
+                        this.model.vcard.toJSON(), {
+                        'allow_contact_removal': _converse.allow_contact_removal,
+                        'alt_profile_image': __("The User's Profile Image"),
+                        'display_name': this.model.getDisplayName(),
+                        'is_roster_contact': !_.isUndefined(this.model.contact),
+                        'label_close': __('Close'),
+                        'label_email': __('Email'),
+                        'label_fullname': __('Full Name'),
+                        'label_jid': __('Jabber ID'),
+                        'label_nickname': __('Nickname'),
+                        'label_remove': __('Remove as contact'),
+                        'label_role': __('Role'),
+                        'label_url': __('URL')
+                    }));
+                },
+
+                registerContactEventHandlers () {
+                    if (!_.isUndefined(this.model.contact)) {
+                        this.model.contact.on('change', this.render, this);
+                        this.model.contact.vcard.on('change', this.render, this);
+                        this.model.contact.on('destroy', () => {
+                            delete this.model.contact;
+                            this.render();
+                        });
+                    }
+                },
+
+                removeContact (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    if (!_converse.allow_contact_removal) { return; }
+                    const result = confirm(__("Are you sure you want to remove this contact?"));
+                    if (result === true) {
+                        this.modal.hide();
+                        this.model.contact.removeFromRoster(
+                            (iq) => {
+                                this.model.contact.destroy();
+                            },
+                            (err) => {
+                                _converse.log(err, Strophe.LogLevel.ERROR);
+                                _converse.api.alert.show(
+                                    Strophe.LogLevel.ERROR,
+                                    __('Error'),
+                                    [__('Sorry, there was an error while trying to remove %1$s as a contact.',
+                                        this.model.contact.getDisplayName())
+                                    ]
+                                )
+                            }
+                        );
+                    }
+                },
+            });
+
+
             _converse.ChatBoxView = Backbone.NativeView.extend({
                 length: 200,
                 className: 'chatbox hidden',
@@ -239,6 +310,7 @@
                 events: {
                     'change input.fileupload': 'onFileSelection',
                     'click .close-chatbox-button': 'close',
+                    'click .show-user-details-modal': 'showUserDetailsModal',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .send-button': 'onFormSubmitted',
                     'click .toggle-call': 'toggleCall',
@@ -265,6 +337,7 @@
                     this.model.on('change:chat_status', this.onChatStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.render();
+
                     this.fetchMessages();
                     _converse.emit('chatBoxOpened', this);
                     _converse.emit('chatBoxInitialized', this);
@@ -328,6 +401,13 @@
                     this.renderToolbar();
                 },
 
+                showUserDetailsModal (ev) {
+                    if (_.isUndefined(this.user_details_modal)) {
+                        this.user_details_modal = new _converse.UserDetailsModal({model: this.model});
+                    }
+                    this.user_details_modal.show(ev);
+                },
+
                 toggleFileUpload (ev) {
                     this.el.querySelector('input.fileupload').click();
                 },
@@ -378,6 +458,9 @@
                     this.heading.render();
                     this.heading.chatview = this;
 
+                    if (!_.isUndefined(this.model.contact)) {
+                        this.model.contact.on('destroy', this.heading.render, this);
+                    }
                     const flyout = this.el.querySelector('.flyout');
                     flyout.insertBefore(this.heading.el, flyout.querySelector('.chat-body'));
                     return this;
@@ -1064,7 +1147,7 @@
 
             _converse.on('connected', () => {
                 // Advertise that we support XEP-0382 Message Spoilers
-                _converse.connection.disco.addFeature(Strophe.NS.SPOILER);
+                _converse.api.disco.own.features.add(Strophe.NS.SPOILER);
             });
 
             /************************ BEGIN API ************************/

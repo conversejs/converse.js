@@ -5,6 +5,10 @@
 ## New Features
 
 - #161 XEP-0363: HTTP File Upload
+- #194 Include entity capabilities in outgoing presence stanzas
+- #337 API call to update a VCard
+- #1094 Show room members who aren't currently online
+- It's now also possible to edit your VCard via the UI
 - Automatically grow/shrink input as text is entered/removed
 - MP4 and MP3 files when sent as XEP-0066 Out of Band Data, are now playable directly in chat
 - Support for rendering URLs sent according to XEP-0066 Out of Band Data.

@@ -81,15 +81,21 @@
                 },
 
                 render () {
+                    const is_followup = u.hasClass('chat-msg-followup', this.el);
+                    let msg;
                     if (this.model.isOnlyChatStateNotification()) {
-                        return this.renderChatStateNotification()
+                        this.renderChatStateNotification()
                     } else if (this.model.get('file') && !this.model.get('oob_url')) {
-                        return this.renderFileUploadProgresBar();
+                        this.renderFileUploadProgresBar();
                     } else if (this.model.get('type') === 'error') {
-                        return this.renderErrorMessage();
+                        this.renderErrorMessage();
                     } else {
-                        return this.renderChatMessage();
+                        this.renderChatMessage();
                     }
+                    if (is_followup) {
+                        u.addClass('chat-msg-followup', this.el);
+                    }
+                    return this.el;
                 },
 
                 replaceElement (msg) {

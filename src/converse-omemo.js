@@ -138,20 +138,24 @@
                     this.devices.browserStorage = new Backbone.BrowserStorage.session(
                         b64_sha1(`converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`)
                     );
+                    this.fetchDevices();
                 },
 
                 fetchDevices () {
-                    return new Promise((resolve, reject) => {
-                        this.devices.fetch({
-                            'success': (collection) => {
-                                if (collection.length === 0) {
-                                    this.fetchDevicesFromServer().then(resolve).catch(reject);
-                                } else {
-                                    resolve();
+                    if (_.isUndefined(this._devices_promise)) {
+                        this._devices_promise = new Promise((resolve, reject) => {
+                            this.devices.fetch({
+                                'success': (collection) => {
+                                    if (collection.length === 0) {
+                                        this.fetchDevicesFromServer().then(resolve).catch(reject);
+                                    } else {
+                                        resolve();
+                                    }
                                 }
-                            }
+                            });
                         });
-                    });
+                    }
+                    return this._devices_promise;
                 },
 
                 fetchDevicesFromServer () {

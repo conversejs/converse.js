@@ -58,8 +58,10 @@
         let value;
         if (field.getAttribute('type') === 'checkbox') {
             value = field.checked && 1 || 0;
-        } else if (field.tagName == "textarea") {
+        } else if (field.tagName == "TEXTAREA") {
             value = _.filter(field.value.split('\n'), _.trim);
+        } else if (field.tagName == "SELECT") {
+            value = u.getSelectValues(field);
         } else {
             value = field.value;
         }
@@ -96,7 +98,7 @@
                         return tpl_select_option({
                             'value': value,
                             'label': option.getAttribute('label'),
-                            'selected': _.startsWith(values, value),
+                            'selected': values.includes(value),
                             'required': !_.isNil(field.querySelector('required'))
                         })
                     }

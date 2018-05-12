@@ -814,5 +814,21 @@
         const replacement = 'geo:$1,$2';
         return text.replace(_converse.geouri_regex, replacement);
     };
+
+    u.getSelectValues = function(select) {
+        var result = [];
+        var options = select && select.options;
+        var opt;
+
+        for (var i=0, iLen=options.length; i<iLen; i++) {
+            opt = options[i];
+
+            if (opt.selected) {
+                result.push(opt.value || opt.text);
+            }
+        }
+        return result;
+    };
+
     return u;
 }));

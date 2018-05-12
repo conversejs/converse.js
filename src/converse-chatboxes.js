@@ -791,7 +791,9 @@
                      * chatbox open for it, and if so attach it to the chatbox.
                      */
                     const chatbox = _converse.chatboxes.findWhere({'jid': contact.get('jid')});
-                    chatbox.addRelatedContact(contact);
+                    if (chatbox) {
+                        chatbox.addRelatedContact(contact);
+                    }
                 });
             });
 

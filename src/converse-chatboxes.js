@@ -328,18 +328,16 @@
                 },
 
                 getOutgoingMessageAttributes (text, spoiler_hint) {
-                    const fullname = _converse.xmppstatus.get('fullname'),
-                        is_spoiler = this.get('composing_spoiler');
-
-                    return {
-                        'fullname': fullname,
+                    const is_spoiler = this.get('composing_spoiler');
+                    return _.extend(this.toJSON(), {
+                        'fullname': _converse.xmppstatus.get('fullname'),
                         'from': _converse.bare_jid,
                         'sender': 'me',
                         'time': moment().format(),
                         'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
                         'is_spoiler': is_spoiler,
                         'spoiler_hint': is_spoiler ? spoiler_hint : undefined
-                    };
+                    });
                 },
 
                 sendMessage (attrs) {

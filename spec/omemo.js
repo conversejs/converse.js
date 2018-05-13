@@ -146,11 +146,13 @@
             }).then(function () {
                 const view = _converse.chatboxviews.get(contact_jid);
                 const toolbar = view.el.querySelector('.chat-toolbar');
+                expect(view.model.get('omemo_active')).toBe(undefined);
                 expect(_.isNull(toolbar.querySelector('.toggle-omemo'))).toBe(false);
                 spyOn(view, 'toggleOMEMO').and.callThrough();
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 toolbar.querySelector('.toggle-omemo').click();
                 expect(view.toggleOMEMO).toHaveBeenCalled();
+                expect(view.model.get('omemo_active')).toBe(true);
                 done();
             }).catch(_.partial(console.error, _));
         }));

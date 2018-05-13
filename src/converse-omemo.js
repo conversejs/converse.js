@@ -65,8 +65,8 @@
                 },
 
                 toggleOMEMO (ev) {
-                    // TODO:
                     ev.preventDefault();
+                    this.model.save({'omemo_active': !this.model.get('omemo_active')});
                 }
             }
         },

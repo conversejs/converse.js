@@ -26,38 +26,13 @@
             const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
 
             test_utils.waitUntil(function () {
-                return _.filter(_converse.connection.IQ_stanzas, function (iq) {
-                    const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:31415"]');
-                    if (node) { iq_stanza = iq.nodeTree; }
-                    return node;
-                }).length;
-            }).then(function () {
-                expect(iq_stanza.getAttributeNames().sort().join()).toBe(["from", "type", "xmlns", "id"].sort().join());
-                expect(iq_stanza.querySelector('prekeys').childNodes.length).toBe(100);
-
-                const signed_prekeys = iq_stanza.querySelectorAll('signedPreKeyPublic');
-                expect(signed_prekeys.length).toBe(1);
-                const signed_prekey = signed_prekeys[0];
-                expect(signed_prekey.getAttribute('signedPreKeyId')).toBe('0')
-                expect(iq_stanza.querySelectorAll('signedPreKeySignature').length).toBe(1);
-                expect(iq_stanza.querySelectorAll('identityKey').length).toBe(1);
-
-                const stanza = $iq({
-                    'from': _converse.bare_jid,
-                    'id': iq_stanza.getAttribute('id'),
-                    'to': _converse.bare_jid,
-                    'type': 'result'});
-                _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                return test_utils.waitUntil(() => {
-                    return _.filter(
-                        _converse.connection.IQ_stanzas,
-                        (iq) => {
-                            const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
-                            if (node) { iq_stanza = iq.nodeTree;}
-                            return node;
-                        }).length;
-                });
+                return _.filter(
+                    _converse.connection.IQ_stanzas,
+                    (iq) => {
+                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                        if (node) { iq_stanza = iq.nodeTree;}
+                        return node;
+                    }).length;
             }).then(function () {
                 expect(iq_stanza.outerHTML).toBe(
                     '<iq type="get" from="dummy@localhost" to="dummy@localhost" xmlns="jabber:client" id="'+iq_stanza.getAttribute("id")+'">'+
@@ -97,16 +72,45 @@
                                 '<item>'+
                                     '<list xmlns="eu.siacs.conversations.axolotl"/>'+
                                     '<device id="482886413b977930064a5888b92134fe"/>'+
+                                    '<device id="123456789"/>'+
                                 '</item>'+
                             '</publish>'+
                     '</pubsub>'+
                     '</iq>');
+
                 const stanza = $iq({
                     'from': _converse.bare_jid,
                     'id': iq_stanza.getAttribute('id'),
                     'to': _converse.bare_jid,
                     'type': 'result'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                return test_utils.waitUntil(() => {
+                    return _.filter(_converse.connection.IQ_stanzas, function (iq) {
+                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]');
+                        if (node) { iq_stanza = iq.nodeTree; }
+                        return node;
+                    }).length;
+                });
+            }).then(function () {
+                expect(iq_stanza.getAttributeNames().sort().join()).toBe(["from", "type", "xmlns", "id"].sort().join());
+                expect(iq_stanza.querySelector('prekeys').childNodes.length).toBe(100);
+
+                const signed_prekeys = iq_stanza.querySelectorAll('signedPreKeyPublic');
+                expect(signed_prekeys.length).toBe(1);
+                const signed_prekey = signed_prekeys[0];
+                expect(signed_prekey.getAttribute('signedPreKeyId')).toBe('0')
+                expect(iq_stanza.querySelectorAll('signedPreKeySignature').length).toBe(1);
+                expect(iq_stanza.querySelectorAll('identityKey').length).toBe(1);
+
+                const stanza = $iq({
+                    'from': _converse.bare_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result'});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+
                 return test_utils.waitUntil(() => {
                     return _.filter(
                         _converse.connection.IQ_stanzas,

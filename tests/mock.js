@@ -15,7 +15,7 @@
                 });
             },
             'generateRegistrationId': function () {
-                return '31415';
+                return '123456789';
             },
             'generatePreKey': function (keyid) {
                 return Promise.resolve({

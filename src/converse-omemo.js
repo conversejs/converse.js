@@ -82,8 +82,18 @@
             function generateBundle () {
                 return new Promise((resolve, reject) => {
                     libsignal.KeyHelper.generateIdentityKeyPair().then((identity_keypair) => {
+                        const existing_ids = _converse.devicelists.get(_converse.bare_jid).devices.pluck('id');
+                        let device_id = libsignal.KeyHelper.generateRegistrationId();
+                        let i = 0;
+                        while (_.includes(existing_ids, device_id)) {
+                            device_id = libsignal.KeyHelper.generateRegistrationId();
+                            i++;
+                            if (i == 10) {
+                                throw new Error("Unable to generate a unique device ID");
+                            }
+                        }
                         const data = {
-                            'device_id': libsignal.KeyHelper.generateRegistrationId(),
+                            'device_id': device_id,
                             'pubkey': identity_keypair.pubKey,
                             'privkey': identity_keypair.privKey,
                             'prekeys': {}
@@ -190,11 +200,12 @@
                     });
                 },
 
-                addDeviceToList () {
+                addDeviceToList (device_id) {
                     /* Add this device to our list of devices stored on the
                      * server.
                      * https://xmpp.org/extensions/xep-0384.html#usecases-announcing
                      */
+                    this.devices.create({'id': device_id});
                     return new Promise((resolve, reject) => {
                         const stanza = $iq({
                             'from': _converse.bare_jid,
@@ -264,11 +275,14 @@
                  * Also, deduplicate devices if necessary.
                  */
                 return new Promise((resolve, reject) => {
-                    const devicelist = _converse.devicelists.get(_converse.bare_jid);
-                    if (!devicelist.devices.findWhere({'id': _converse.omemo_store.get('device_id')})) {
-                        return devicelist.addDeviceToList().then(resolve).catch(reject);
-                    }
-                    resolve();
+                    restoreOMEMOSession().then(() => {
+                        const devicelist = _converse.devicelists.get(_converse.bare_jid);
+                        const device_id = _converse.omemo_store.get('device_id');
+                        if (!devicelist.devices.findWhere({'id': device_id})) {
+                            return devicelist.addDeviceToList(device_id).then(resolve).catch(reject);
+                        }
+                        resolve();
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                 });
             }
 
@@ -303,11 +317,13 @@
             }
 
             function restoreOMEMOSession () {
-                _converse.omemo_store = new _converse.OMEMOStore();
-                _converse.omemo_store.browserStorage =  new Backbone.BrowserStorage.session(
-                    b64_sha1(`converse.omemosession-${_converse.bare_jid}`)
-                );
-                return _converse.omemo_store.fetchSession()
+                if (_.isUndefined(_converse.omemo_store))  {
+                    _converse.omemo_store = new _converse.OMEMOStore();
+                    _converse.omemo_store.browserStorage =  new Backbone.BrowserStorage.session(
+                        b64_sha1(`converse.omemosession-${_converse.bare_jid}`)
+                    );
+                }
+                return _converse.omemo_store.fetchSession();
             }
 
             function addOMEMOToolbarButton (view) {
@@ -326,10 +342,9 @@
                 _converse.devicelists.browserStorage = new Backbone.BrowserStorage.session(
                     b64_sha1(`converse.devicelists-${_converse.bare_jid}`)
                 );
-                restoreOMEMOSession()
-                    .then(() => publishBundle())
-                    .then(() => fetchOwnDevices())
+                fetchOwnDevices()
                     .then(() => updateOwnDeviceList())
+                    .then(() => publishBundle())
                     .then(() => _converse.emit('OMEMOInitialized'))
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             }

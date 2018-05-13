@@ -6,38 +6,6 @@
     var $iq = converse.env.$iq;
     var _ = converse.env._;
 
-    window.libsignal = {
-        'KeyHelper': {
-            'generateIdentityKeyPair': function () {
-                return Promise.resolve({
-                    'pubKey': 1234,
-                    'privKey': 4321
-                });
-            },
-            'generateRegistrationId': function () {
-                return '31415';
-            },
-            'generatePreKey': function (keyid) {
-                return Promise.resolve({
-                    'keyId': keyid,
-                    'keyPair': {
-                        'pubKey': 1234,
-                        'privKey': 4321
-                    }
-                });
-            },
-            'generateSignedPreKey': function (identity_keypair, keyid) {
-                return Promise.resolve({
-                    'keyId': keyid,
-                    'keyPair': {
-                        'pubKey': 1234,
-                        'privKey': 4321
-                    }
-                });
-            }
-        }
-    };
-
     describe("The OMEMO module", function() {
 
         it("will add processing hints to sent out encrypted <message> stanzas",
@@ -114,6 +82,31 @@
                 expect(devicelist.devices.at(0).get('id')).toBe('482886413b977930064a5888b92134fe');
 
                 test_utils.openChatBoxFor(_converse, contact_jid);
+                return test_utils.waitUntil(() => {
+                    return _.filter(_converse.connection.IQ_stanzas, function (iq) {
+                        const node = iq.nodeTree.querySelector('publish[xmlns="eu.siacs.conversations.axolotl.devicelist"]');
+                        if (node) { iq_stanza = iq.nodeTree; }
+                        return node;
+                    }).length;
+                });
+            }).then(function () {
+                expect(iq_stanza.outerHTML).toBe(
+                    '<iq from="dummy@localhost" type="set" xmlns="jabber:client" id="'+iq_stanza.getAttribute('id')+'">'+
+                        '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
+                            '<publish xmlns="eu.siacs.conversations.axolotl.devicelist">'+
+                                '<item>'+
+                                    '<list xmlns="eu.siacs.conversations.axolotl"/>'+
+                                    '<device id="482886413b977930064a5888b92134fe"/>'+
+                                '</item>'+
+                            '</publish>'+
+                    '</pubsub>'+
+                    '</iq>');
+                const stanza = $iq({
+                    'from': _converse.bare_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result'});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 return test_utils.waitUntil(() => {
                     return _.filter(
                         _converse.connection.IQ_stanzas,

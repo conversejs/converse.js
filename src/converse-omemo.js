@@ -188,6 +188,27 @@
                             reject,
                             _converse.IQ_TIMEOUT);
                     });
+                },
+
+                addDeviceToList () {
+                    /* Add this device to our list of devices stored on the
+                     * server.
+                     * https://xmpp.org/extensions/xep-0384.html#usecases-announcing
+                     */
+                    return new Promise((resolve, reject) => {
+                        const stanza = $iq({
+                            'from': _converse.bare_jid,
+                            'type': 'set'
+                        }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                            .c('publish', {'xmlns': Strophe.NS.OMEMO_DEVICELIST})
+                                .c('item')
+                                    .c('list', {'xmlns': Strophe.NS.OMEMO}).up()
+
+                        this.devices.each((device) => {
+                            stanza.c('device', {'id': device.get('id')}).up();
+                        });
+                        _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                 }
             });
 
@@ -226,10 +247,7 @@
                 return new Promise((resolve, reject) => _converse.devicelists.fetch({'success': resolve}));
             }
 
-            function updateOwnDeviceList () {
-                /* If our own device is not on the list, add it.
-                 * Also, deduplicate devices if necessary.
-                 */
+            function fetchOwnDevices () {
                 return new Promise((resolve, reject) => {
                     fetchDeviceLists().then(() => {
                         let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
@@ -237,9 +255,20 @@
                             own_devicelist = _converse.devicelists.create({'jid': _converse.bare_jid});
                         }
                         own_devicelist.fetchDevices().then(resolve).catch(reject);
-                        // TODO: if our own device is not onthe list, add it.
-                        // TODO: deduplicate
                     });
+                });
+            }
+
+            function updateOwnDeviceList () {
+                /* If our own device is not on the list, add it.
+                 * Also, deduplicate devices if necessary.
+                 */
+                return new Promise((resolve, reject) => {
+                    const devicelist = _converse.devicelists.get(_converse.bare_jid);
+                    if (!devicelist.devices.findWhere({'id': _converse.omemo_store.get('device_id')})) {
+                        return devicelist.addDeviceToList().then(resolve).catch(reject);
+                    }
+                    resolve();
                 });
             }
 
@@ -268,6 +297,7 @@
                 _converse.connection.addHandler((message) => {
                     if (message.querySelector('event[xmlns="'+Strophe.NS.PUBSUB+'#event"]')) {
                         updateDevicesFromStanza(message);
+                        updateOwnDeviceList();
                     }
                 }, null, 'message', 'headline', null, _converse.bare_jid);
             }
@@ -298,6 +328,7 @@
                 );
                 restoreOMEMOSession()
                     .then(() => publishBundle())
+                    .then(() => fetchOwnDevices())
                     .then(() => updateOwnDeviceList())
                     .then(() => _converse.emit('OMEMOInitialized'))
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));

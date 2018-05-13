@@ -5,8 +5,40 @@
     var Promise = converse.env.Promise;
     var Strophe = converse.env.Strophe;
     var $iq = converse.env.$iq;
-    var mock = {};
 
+    window.libsignal = {
+        'KeyHelper': {
+            'generateIdentityKeyPair': function () {
+                return Promise.resolve({
+                    'pubKey': 1234,
+                    'privKey': 4321
+                });
+            },
+            'generateRegistrationId': function () {
+                return '31415';
+            },
+            'generatePreKey': function (keyid) {
+                return Promise.resolve({
+                    'keyId': keyid,
+                    'keyPair': {
+                        'pubKey': 1234,
+                        'privKey': 4321
+                    }
+                });
+            },
+            'generateSignedPreKey': function (identity_keypair, keyid) {
+                return Promise.resolve({
+                    'keyId': keyid,
+                    'keyPair': {
+                        'pubKey': 1234,
+                        'privKey': 4321
+                    }
+                });
+            }
+        }
+    };
+
+    var mock = {};
     mock.view_mode = 'overlayed';
 
     // Names from http://www.fakenamegenerator.com/

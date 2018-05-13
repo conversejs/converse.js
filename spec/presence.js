@@ -47,7 +47,7 @@
                 "<presence xmlns='jabber:client'>"+
                     "<status>Hello world</status>"+
                     "<priority>0</priority>"+
-                    "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='1J7kq1MEvnB6ea6vKcgCsSE37gw='/>"+
+                    "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='3RLZIW6Gu1JDLZXCD6HFV9MiDQ4='/>"+
                 "</presence>"
             );
             _converse.priority = 2;
@@ -57,7 +57,7 @@
                     "<show>away</show>"+
                     "<status>Going jogging</status>"+
                     "<priority>2</priority>"+
-                    "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='1J7kq1MEvnB6ea6vKcgCsSE37gw='/>"+
+                    "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='3RLZIW6Gu1JDLZXCD6HFV9MiDQ4='/>"+
                 "</presence>"
             );
 
@@ -68,7 +68,7 @@
                     "<show>dnd</show>"+
                     "<status>Doing taxes</status>"+
                     "<priority>0</priority>"+
-                    "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='1J7kq1MEvnB6ea6vKcgCsSE37gw='/>"+
+                    "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='3RLZIW6Gu1JDLZXCD6HFV9MiDQ4='/>"+
                 "</presence>"
             );
         }));
@@ -97,7 +97,7 @@
                     .toBe("<presence xmlns='jabber:client'>"+
                           "<status>My custom status</status>"+
                           "<priority>0</priority>"+
-                          "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='1J7kq1MEvnB6ea6vKcgCsSE37gw='/>"+
+                          "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='3RLZIW6Gu1JDLZXCD6HFV9MiDQ4='/>"+
                           "</presence>")
 
                 return test_utils.waitUntil(function () {
@@ -113,7 +113,7 @@
                 modal.el.querySelector('[type="submit"]').click();
                 expect(_converse.connection.send.calls.mostRecent().args[0].toLocaleString())
                     .toBe("<presence xmlns='jabber:client'><show>dnd</show><status>My custom status</status><priority>0</priority>"+
-                          "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='1J7kq1MEvnB6ea6vKcgCsSE37gw='/>"+
+                          "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='3RLZIW6Gu1JDLZXCD6HFV9MiDQ4='/>"+
                           "</presence>")
                 done();
             });

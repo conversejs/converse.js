@@ -59,30 +59,10 @@
 
             test_utils.waitUntil(function () {
                 return _.filter(_converse.connection.IQ_stanzas, function (iq) {
-                    const node = iq.nodeTree.querySelector('iq[to="dummy@localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                    const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:31415"]');
                     if (node) { iq_stanza = iq.nodeTree; }
                     return node;
-                }).length > 0;
-            }, 1000).then(function () {
-                /* PEP support is prerequisite for OMEMO */
-                const stanza = $iq({
-                    'type': 'result',
-                    'from': 'dummy@localhost',
-                    'to': 'dummy@localhost/resource',
-                    'id': iq_stanza.getAttribute('id'),
-                }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
-                    .c('identity', {
-                        'category': 'pubsub',
-                        'type': 'pep'});
-                _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                return test_utils.waitUntil(() => {
-                    return _.filter(_converse.connection.IQ_stanzas, function (iq) {
-                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:31415"]');
-                        if (node) { iq_stanza = iq.nodeTree; }
-                        return node;
-                    }).length;
-                });
+                }).length;
             }).then(function () {
                 expect(iq_stanza.getAttributeNames().sort().join()).toBe(["from", "type", "xmlns", "id"].sort().join());
                 expect(iq_stanza.querySelector('prekeys').childNodes.length).toBe(100);

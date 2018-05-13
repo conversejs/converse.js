@@ -49,12 +49,6 @@
         });
     }
 
-    function serverHasOMEMOSupport (_converse) {
-        return new Promise((resolve, reject) => {
-            _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid)
-                .then((identity) => resolve(!_.isNil(identity)));
-        });
-    }
 
     converse.plugins.add('converse-omemo', {
 
@@ -65,7 +59,6 @@
         dependencies: ["converse-chatview"],
 
         overrides: {
-
             ChatBoxView:  {
                 events: {
                     'click .toggle-omemo': 'toggleOMEMO'
@@ -74,23 +67,6 @@
                 toggleOMEMO (ev) {
                     // TODO:
                     ev.preventDefault();
-                },
-
-                addOMEMOToolbarButton () {
-                    const { _converse } = this.__super__,
-                          { __ } = _converse;
-                    Promise.all([
-                        contactHasOMEMOSupport(_converse, this.model.get('jid')),
-                        serverHasOMEMOSupport(_converse)
-                    ]).then((support) => {
-                        const client_supports = support[0],
-                              server_supports = support[1];
-                        if (client_supports && server_supports) {
-                            this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
-                                'beforeend',
-                                tpl_toolbar_omemo({'__': __}));
-                        }
-                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                 }
             }
         },
@@ -268,6 +244,8 @@
             }
 
             function updateDevicesFromStanza (stanza) {
+                // TODO: check whether our own device_id is still on the list,
+                // otherwise we need to update it.
                 const device_ids = _.map(
                     sizzle(`items[node="${Strophe.NS.OMEMO_DEVICELIST}"] item[xmlns="${Strophe.NS.OMEMO}"] device`, stanza),
                     (device) => device.getAttribute('id'));
@@ -289,7 +267,7 @@
                 // Add a handler for devices pushed from other connected clients
                 _converse.connection.addHandler((message) => {
                     if (message.querySelector('event[xmlns="'+Strophe.NS.PUBSUB+'#event"]')) {
-                        _converse.bookmarks.updateDevicesFromStanza(message);
+                        updateDevicesFromStanza(message);
                     }
                 }, null, 'message', 'headline', null, _converse.bare_jid);
             }
@@ -302,11 +280,22 @@
                 return _converse.omemo_store.fetchSession()
             }
 
-            function initOMEMO () {
-                /* Publish our bundle and then fetch our own device list.
-                 * If our device list does not contain this device's id, publish the
-                 * device list with the id added. Also deduplicate device ids in the list.
-                 */
+            function addOMEMOToolbarButton (view) {
+                const { __ } = _converse;
+                contactHasOMEMOSupport(_converse, view.model.get('jid')).then((support) => {
+                    if (support) {
+                        view.el.querySelector('.chat-toolbar').insertAdjacentHTML(
+                            'beforeend',
+                            tpl_toolbar_omemo({'__': __}));
+                    }
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            }
+
+            function initOMEMO() {
+                _converse.devicelists = new _converse.DeviceLists();
+                _converse.devicelists.browserStorage = new Backbone.BrowserStorage.session(
+                    b64_sha1(`converse.devicelists-${_converse.bare_jid}`)
+                );
                 restoreOMEMOSession()
                     .then(() => publishBundle())
                     .then(() => updateOwnDeviceList())
@@ -314,19 +303,10 @@
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             }
 
-            function onStatusInitialized () {
-                _converse.devicelists = new _converse.DeviceLists();
-                _converse.devicelists.browserStorage = new Backbone.BrowserStorage.session(
-                    b64_sha1(`converse.devicelists-${_converse.bare_jid}`)
-                );
-
-                initOMEMO();
-            }
-
-            _converse.api.listen.on('renderToolbar', (view) => view.addOMEMOToolbarButton());
-            _converse.api.listen.on('statusInitialized', onStatusInitialized);
-            _converse.api.listen.on('connected', registerPEPPushHandler);
             _converse.api.listen.on('afterTearDown', () => _converse.devices.reset());
+            _converse.api.listen.on('connected', registerPEPPushHandler);
+            _converse.api.listen.on('renderToolbar', addOMEMOToolbarButton);
+            _converse.api.listen.on('statusInitialized', initOMEMO);
             _converse.api.listen.on('addClientFeatures',
                 () => _converse.api.disco.own.features.add(Strophe.NS.OMEMO_DEVICELIST+"notify"));
         }

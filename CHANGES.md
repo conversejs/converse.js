@@ -19,6 +19,7 @@
 - Spoiler messages didn't include the message author's name.
 - Documentation includes utf-8 charset to make minfied versions compatible across platforms. #1017
 - #1026 Typing in MUC shows "Typing from another device"
+- #1039 Multi-option data form elements not shown and saved correctly
 
 ### API changes
 - `_converse.api.vcard.get` now also accepts a `Backbone.Model` instance and

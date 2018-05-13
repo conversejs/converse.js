@@ -617,7 +617,7 @@
          *      (String) selector - the selector they should be matched
          *          against.
          */
-        return _.filter(el.children, _.partial(u.matchesSelector, _, selector));
+        return _.filter(el.childNodes, _.partial(u.matchesSelector, _, selector));
     };
 
     u.contains = function (attr, query) {

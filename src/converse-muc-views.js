@@ -995,10 +995,10 @@
                     const last_fieldset_el = document.createElement('fieldset');
                     last_fieldset_el.insertAdjacentHTML(
                         'beforeend',
-                        `<input type="submit" class="pure-button button-primary" value="${__('Save')}"/>`);
+                        `<input type="submit" class="btn btn-primary" value="${__('Save')}"/>`);
                     last_fieldset_el.insertAdjacentHTML(
                         'beforeend',
-                        `<input type="button" class="pure-button button-cancel" value="${__('Cancel')}"/>`);
+                        `<input type="button" class="btn btn-secondary" value="${__('Cancel')}"/>`);
                     form_el.insertAdjacentElement('beforeend', last_fieldset_el);
 
                     last_fieldset_el.querySelector('input[type=button]').addEventListener('click', (ev) => {

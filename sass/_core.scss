@@ -22,8 +22,9 @@ body.reset {
 }
 
 .icon-conversejs {
-    padding-right: 0.2em;
+    padding-right: 0.5em;
     font-family: 'Converse-js';
+    font-size: 80%;
     speak: none;
     font-style: normal;
     font-weight: normal;
@@ -39,6 +40,15 @@ body.reset {
     content: "\e600";
 }
 
+.converse-brand-heading {
+    font-family: $heading-font; 
+    font-size: 6em;
+    font-weight: normal;
+    .icon-conversejs {
+        font-size: 60%;
+    }
+}
+
 #conversejs {
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
@@ -48,6 +58,13 @@ body.reset {
     direction: ltr;
     display: block;
     z-index: 1031; // One more than bootstrap navbar
+
+    .brand-heading {
+        font-family: $heading-font; 
+        .icon-conversejs {
+            font-size: 80%;
+        }
+    }
 
     .converse-chatboxes {
         z-index: 1031; // One more than bootstrap navbar
@@ -230,6 +247,8 @@ body.reset {
     }
 
     .btn {
+        font-family: $heading-font; 
+        font-weight: normal;
         color: #fff;
         .fa {
             color: #fff;
@@ -455,9 +474,9 @@ body.reset {
 
 @media screen and (max-width: 575px) {
     body {
-      .brand-heading {
+      .converse-brand-heading {
         font-size: 3.75em;
-        }
+      }
     }
     #conversejs:not(.converse-embedded)  {
         .chatbox  {

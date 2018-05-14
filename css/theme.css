@@ -16,8 +16,8 @@ h4,
 h5,
 h6 {
   margin: 0 0 35px;
-  font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-weight: 700;
+  font-family: Futura,Trebuchet MS,Arial,sans-serif;
+  font-weight: normal;
   letter-spacing: 1px;
 }
 p {
@@ -131,11 +131,19 @@ a:focus {
 .outro {
   background: url('images/bgtr.svg') top right no-repeat, url('images/bgbl.svg') bottom left no-repeat, url('images/overlay.png'), linear-gradient(45deg, #384955, #655361, #85505f);
 }
+
+
 .brand-heading {
-  font-size: 2em;
-  text-align: center;
-  margin-top: 2.5em;
+    font-family: Futura,Trebuchet MS,Arial,sans-serif;
+    font-weight: normal;
+    font-size: 2em;
+    text-align: center;
+    margin-top: 2.5em;
 }
+.brand-heading .icon-conversejs {
+    font-size: 60%;
+}
+
 .brand-heading-embedded {
     margin-top: 1.5em;
 }
@@ -242,7 +250,7 @@ a:focus {
   }
 }
 .btn {
-  font-family: FontAwesome;
+  font-family: Futura,Trebuchet MS,Arial,sans-serif;
   font-weight: 400;
   -webkit-transition: all 0.3s ease-in-out;
   -moz-transition: all 0.3s ease-in-out;

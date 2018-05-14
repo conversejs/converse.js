@@ -97,17 +97,7 @@
                 },
 
                 initialize () {
-                    if (this.get('type') === 'groupchat' &&
-                        this.collection.chatbox.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
-
-                        this.vcard = _converse.xmppstatus.vcard;
-                    } else {
-                        this.vcard = _converse.vcards.findWhere({'jid': this.get('from')});
-                        if (_.isNil(this.vcard)) {
-                            this.vcard = _converse.vcards.create({'jid': this.get('from')});
-                        }
-                    }
-
+                    this.setVCard();
                     if (this.get('file')) {
                         this.on('change:put', this.uploadFile, this);
 
@@ -117,6 +107,23 @@
                     }
                     if (this.isOnlyChatStateNotification()) {
                         window.setTimeout(this.destroy.bind(this), 20000);
+                    }
+                },
+
+                setVCard () {
+                    if (this.get('type') === 'groupchat') {
+                        const chatbox = this.collection.chatbox,
+                              nick = Strophe.getResourceFromJid(this.get('from'));
+                        if (chatbox.get('nick') === nick) {
+                            this.vcard = _converse.xmppstatus.vcard;
+                        } else {
+                            const occupant = chatbox.occupants.findWhere({'nick': nick});
+                            const jid = (occupant && occupant.get('jid')) ? occupant.get('jid') : this.get('from');
+                            this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
+                        }
+                    } else {
+                        const jid = this.get('from');
+                        this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
                     }
                 },
 
@@ -744,8 +751,8 @@
 
                 closeAllChatBoxes () {
                     /* This method gets overridden in src/converse-controlbox.js if
-                    * the controlbox plugin is active.
-                    */
+                     * the controlbox plugin is active.
+                     */
                     this.each(function (view) { view.close(); });
                     return this;
                 },

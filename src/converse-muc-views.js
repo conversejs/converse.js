@@ -1215,7 +1215,7 @@
                      *  (XMLElement) stanza: The original stanza received.
                      */
                     const code = stat.getAttribute('code');
-                    if (code === '110') { return; }
+                    if (code === '110' || (code === '100' && !is_self)) { return; }
                     if (code in _converse.muc.info_messages) {
                         return _converse.muc.info_messages[code];
                     }

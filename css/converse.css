@@ -7005,7 +7005,7 @@ body.reset {
     color: #fff; }
     #conversejs .btn .fa {
       color: #fff;
-      padding-right: 0.5em; }
+      margin-right: 0.5em; }
   #conversejs .no-text-select {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -7299,6 +7299,8 @@ body.reset {
   #conversejs .chat-head.chat-head-chatbox {
     background-color: #3AA569; }
   #conversejs .chat-head .avatar {
+    height: 36px;
+    width: 36px;
     margin-right: 0.5em; }
   #conversejs .chat-head .chatbox-buttons {
     flex-direction: row-reverse;

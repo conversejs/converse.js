@@ -237,7 +237,8 @@
             _converse.UserDetailsModal = _converse.BootstrapModal.extend({
 
                 events: { 
-                    'click button.remove-contact': 'removeContact'
+                    'click button.remove-contact': 'removeContact',
+                    'click button.refresh-contact': 'refreshContact'
                 },
 
                 initialize () {
@@ -260,6 +261,7 @@
                         'label_jid': __('Jabber ID'),
                         'label_nickname': __('Nickname'),
                         'label_remove': __('Remove as contact'),
+                        'label_refresh': __('Refresh'),
                         'label_role': __('Role'),
                         'label_url': __('URL')
                     }));
@@ -274,6 +276,15 @@
                             this.render();
                         });
                     }
+                },
+
+                refreshContact (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    const refresh_icon = this.el.querySelector('.fa-refresh');
+                    u.addClass('fa-spin', refresh_icon);
+                    _converse.api.vcard.update(this.model.contact.vcard, true)
+                        .then(() => u.removeClass('fa-spin', refresh_icon))
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                 removeContact (ev) {

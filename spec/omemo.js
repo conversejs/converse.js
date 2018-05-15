@@ -170,6 +170,15 @@
                 const toggle = toolbar.querySelector('.toggle-omemo');
                 expect(u.hasClass('fa-unlock', toggle)).toBe(false);
                 expect(u.hasClass('fa-lock', toggle)).toBe(true);
+
+                const textarea = view.el.querySelector('.chat-textarea');
+                textarea.value = 'This message will be sent encrypted';
+                view.keyPressed({
+                    target: textarea,
+                    preventDefault: _.noop,
+                    keyCode: 13
+                });
+
                 done();
             }).catch(_.partial(console.error, _));
         }));

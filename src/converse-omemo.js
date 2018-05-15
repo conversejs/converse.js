@@ -13,7 +13,7 @@
     ], factory);
 }(this, function (converse, tpl_toolbar_omemo) {
 
-    const { Backbone, Promise, Strophe, sizzle, $iq, _, b64_sha1 } = converse.env;
+    const { Backbone, Promise, Strophe, sizzle, $iq, $msg, _, b64_sha1 } = converse.env;
     const u = converse.env.utils;
 
     Strophe.addNamespace('OMEMO', "eu.siacs.conversations.axolotl");
@@ -59,6 +59,42 @@
         dependencies: ["converse-chatview"],
 
         overrides: {
+
+            ChatBox: {
+
+                createOMEMOMessageStanza (message) {
+                    const { _converse } = this.__super__;
+                    const stanza = $msg({
+                            'from': _converse.connection.jid,
+                            'to': this.get('jid'),
+                            'type': this.get('message_type'),
+                            'id': message.get('msgid')
+                        }).c('body').t(message.get('message')).up()
+                          .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+
+                    if (message.get('is_spoiler')) {
+                        if (message.get('spoiler_hint')) {
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }, message.get('spoiler_hint')).up();
+                        } else {
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }).up();
+                        }
+                    }
+                    if (message.get('file')) {
+                        stanza.c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('message')).up();
+                    }
+                    return stanza;
+                },
+
+                createMessageStanza () {
+                    if (this.get('omemo_active')) {
+                        return this.createOMEMOMessageStanza.apply(this, arguments);
+
+                    } else {
+                        return this.__super__.createMessageStanza.apply(this, arguments);
+                    }
+                }
+            },
+
             ChatBoxView:  {
                 events: {
                     'click .toggle-omemo': 'toggleOMEMO'

@@ -7422,7 +7422,7 @@ body {
         width: 100%;
         height: 100vh; } }
   #conversejs .chatbox .chat-title {
-    font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
+    font-family: Futura, Helvetica, Trebuchet MS, Arial, sans-serif;
     color: white;
     display: block;
     line-height: 24px;
@@ -8341,7 +8341,8 @@ body {
   #conversejs .chat-head-chatroom .chatroom-description {
     color: #f6ccc1;
     font-size: 18px;
-    font-size: 80%;
+    font-size: 70%;
+    margin-top: 3px;
     overflow-y: hidden;
     overflow: hidden;
     text-overflow: ellipsis;

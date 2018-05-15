@@ -336,7 +336,8 @@
                         'time': moment().format(),
                         'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
                         'is_spoiler': is_spoiler,
-                        'spoiler_hint': is_spoiler ? spoiler_hint : undefined
+                        'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
+                        'type': this.get('message_type')
                     });
                 },
 
@@ -390,8 +391,7 @@
                                         this.getOutgoingMessageAttributes(), {
                                         'file': file,
                                         'progress': 0,
-                                        'slot_request_url': slot_request_url,
-                                        'type': this.get('message_type'),
+                                        'slot_request_url': slot_request_url
                                     })
                                 );
                             }

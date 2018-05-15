@@ -5,6 +5,7 @@
     var b64_sha1 = converse.env.b64_sha1;
     var $iq = converse.env.$iq;
     var _ = converse.env._;
+    var u = converse.env.utils;
 
     describe("The OMEMO module", function() {
 
@@ -151,12 +152,24 @@
                 const view = _converse.chatboxviews.get(contact_jid);
                 const toolbar = view.el.querySelector('.chat-toolbar');
                 expect(view.model.get('omemo_active')).toBe(undefined);
-                expect(_.isNull(toolbar.querySelector('.toggle-omemo'))).toBe(false);
+                const toggle = toolbar.querySelector('.toggle-omemo');
+                expect(_.isNull(toggle)).toBe(false);
+                expect(u.hasClass('fa-unlock', toggle)).toBe(true);
+                expect(u.hasClass('fa-lock', toggle)).toBe(false);
+
                 spyOn(view, 'toggleOMEMO').and.callThrough();
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 toolbar.querySelector('.toggle-omemo').click();
                 expect(view.toggleOMEMO).toHaveBeenCalled();
                 expect(view.model.get('omemo_active')).toBe(true);
+
+                return test_utils.waitUntil(() => u.hasClass('fa-lock', toolbar.querySelector('.toggle-omemo')));
+            }).then(function () {
+                const view = _converse.chatboxviews.get(contact_jid);
+                const toolbar = view.el.querySelector('.chat-toolbar');
+                const toggle = toolbar.querySelector('.toggle-omemo');
+                expect(u.hasClass('fa-unlock', toggle)).toBe(false);
+                expect(u.hasClass('fa-lock', toggle)).toBe(true);
                 done();
             }).catch(_.partial(console.error, _));
         }));

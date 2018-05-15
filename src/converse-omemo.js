@@ -64,9 +64,26 @@
                     'click .toggle-omemo': 'toggleOMEMO'
                 },
 
+                renderOMEMOToolbarButton () {
+                    const { _converse } = this.__super__,
+                          { __ } = _converse;
+                    contactHasOMEMOSupport(_converse, this.model.get('jid')).then((support) => {
+                        if (support) {
+                            const icon = this.el.querySelector('.toggle-omemo'),
+                                html = tpl_toolbar_omemo(_.extend(this.model.toJSON(), {'__': __}));
+                            if (icon) {
+                                icon.outerHTML = html;
+                            } else {
+                                this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', html);
+                            }
+                        }
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                },
+
                 toggleOMEMO (ev) {
                     ev.preventDefault();
                     this.model.save({'omemo_active': !this.model.get('omemo_active')});
+                    this.renderOMEMOToolbarButton();
                 }
             }
         },
@@ -326,17 +343,6 @@
                 return _converse.omemo_store.fetchSession();
             }
 
-            function addOMEMOToolbarButton (view) {
-                const { __ } = _converse;
-                contactHasOMEMOSupport(_converse, view.model.get('jid')).then((support) => {
-                    if (support) {
-                        view.el.querySelector('.chat-toolbar').insertAdjacentHTML(
-                            'beforeend',
-                            tpl_toolbar_omemo({'__': __}));
-                    }
-                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-            }
-
             function initOMEMO() {
                 _converse.devicelists = new _converse.DeviceLists();
                 _converse.devicelists.browserStorage = new Backbone.BrowserStorage.session(
@@ -351,7 +357,7 @@
 
             _converse.api.listen.on('afterTearDown', () => _converse.devices.reset());
             _converse.api.listen.on('connected', registerPEPPushHandler);
-            _converse.api.listen.on('renderToolbar', addOMEMOToolbarButton);
+            _converse.api.listen.on('renderToolbar', (view) => view.renderOMEMOToolbarButton());
             _converse.api.listen.on('statusInitialized', initOMEMO);
             _converse.api.listen.on('addClientFeatures',
                 () => _converse.api.disco.own.features.add(Strophe.NS.OMEMO_DEVICELIST+"notify"));

@@ -118,8 +118,8 @@
                     };
                     if (!image_file.size) {
                         _.extend(data, {
-                            'image': this.model.get('image'),
-                            'image_type': this.model.get('image_type')
+                            'image': this.model.vcard.get('image'),
+                            'image_type': this.model.vcard.get('image_type')
                         });
                         this.setVCard(body, data);
                     } else {

@@ -10229,7 +10229,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
      *      (String) selector - the selector they should be matched
      *          against.
      */
-    return _.filter(el.children, _.partial(u.matchesSelector, _, selector));
+    return _.filter(el.childNodes, _.partial(u.matchesSelector, _, selector));
   };
 
   u.contains = function (attr, query) {
@@ -10442,6 +10442,22 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   u.httpToGeoUri = function (text, _converse) {
     var replacement = 'geo:$1,$2';
     return text.replace(_converse.geouri_regex, replacement);
+  };
+
+  u.getSelectValues = function (select) {
+    var result = [];
+    var options = select && select.options;
+    var opt;
+
+    for (var i = 0, iLen = options.length; i < iLen; i++) {
+      opt = options[i];
+
+      if (opt.selected) {
+        result.push(opt.value || opt.text);
+      }
+    }
+
+    return result;
   };
 
   return u;
@@ -10730,9 +10746,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     };
 });
 
-//# sourceMappingURL=pluggable.js.map;
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
+//# sourceMappingURL=pluggable.js.map
+;
 // Converse.js
 // https://conversejs.org
 //
@@ -10793,7 +10808,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   _.extend(_converse, Backbone.Events); // Core plugins are whitelisted automatically
 
 
-  _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-profile', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Make converse pluggable
+  _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-caps', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-profile', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Make converse pluggable
 
   pluggable.enable(_converse, '_converse', 'pluggable'); // Module-level constants
 
@@ -10934,32 +10949,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   };
 
   _converse.router = new Backbone.Router();
-  _converse.ModelWithDefaultAvatar = Backbone.Model.extend({
-    defaults: {
-      'image': _converse.DEFAULT_IMAGE,
-      'image_type': _converse.DEFAULT_IMAGE_TYPE
-    },
-    set: function set(key, val, options) {
-      // Override Backbone.Model.prototype.set to make sure that the
-      // default `image` and `image_type` values are maintained.
-      var attrs;
-
-      if (_typeof(key) === 'object') {
-        attrs = key;
-        options = val;
-      } else {
-        (attrs = {})[key] = val;
-      }
-
-      if (_.has(attrs, 'image') && _.isUndefined(attrs['image'])) {
-        attrs['image'] = _converse.DEFAULT_IMAGE;
-        attrs['image_type'] = _converse.DEFAULT_IMAGE_TYPE;
-        return Backbone.Model.prototype.set.call(this, attrs, options);
-      } else {
-        return Backbone.Model.prototype.set.apply(this, arguments);
-      }
-    }
-  });
 
   _converse.initialize = function (settings, callback) {
     "use strict";
@@ -11605,7 +11594,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       }
     });
     this.connfeedback = new this.ConnectionFeedback();
-    this.XMPPStatus = this.ModelWithDefaultAvatar.extend({
+    this.XMPPStatus = Backbone.Model.extend({
       defaults: function defaults() {
         return {
           "jid": _converse.bare_jid,
@@ -12373,8 +12362,10 @@ return __p
 
     if (field.getAttribute('type') === 'checkbox') {
       value = field.checked && 1 || 0;
-    } else if (field.tagName == "textarea") {
+    } else if (field.tagName == "TEXTAREA") {
       value = _.filter(field.value.split('\n'), _.trim);
+    } else if (field.tagName == "SELECT") {
+      value = u.getSelectValues(field);
     } else {
       value = field.value;
     }
@@ -12405,7 +12396,7 @@ return __p
           return tpl_select_option({
             'value': value,
             'label': option.getAttribute('label'),
-            'selected': _.startsWith(values, value),
+            'selected': _.includes(values, value),
             'required': !_.isNil(field.querySelector('required'))
           });
         });
@@ -13047,12 +13038,11 @@ define("emojione", (function (global) {
     };
 }(this)));
 
-// Converse.js (A browser based XMPP chat client)
+// Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
 
 /* This is a Converse.js plugin which add support for XEP-0030: Service Discovery */
 
@@ -13257,19 +13247,19 @@ define("emojione", (function (global) {
 
       function addClientFeatures() {
         // See http://xmpp.org/registrar/disco-categories.html
-        _converse.api.disco.addIdentity('client', 'web', 'Converse.js');
+        _converse.api.disco.own.identities.add('client', 'web', 'Converse.js');
 
-        _converse.api.disco.addFeature(Strophe.NS.BOSH);
+        _converse.api.disco.own.features.add(Strophe.NS.BOSH);
 
-        _converse.api.disco.addFeature(Strophe.NS.CHATSTATES);
+        _converse.api.disco.own.features.add(Strophe.NS.CHATSTATES);
 
-        _converse.api.disco.addFeature(Strophe.NS.DISCO_INFO);
+        _converse.api.disco.own.features.add(Strophe.NS.DISCO_INFO);
 
-        _converse.api.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
+        _converse.api.disco.own.features.add(Strophe.NS.ROSTERX); // Limited support
 
 
         if (_converse.message_carbons) {
-          _converse.api.disco.addFeature(Strophe.NS.CARBONS);
+          _converse.api.disco.own.features.add(Strophe.NS.CARBONS);
         }
 
         _converse.emit('addClientFeatures');
@@ -13373,7 +13363,120 @@ define("emojione", (function (global) {
 
 
       _.extend(_converse.api, {
+        /**
+         * The service discovery API
+         * @namespace
+         */
         'disco': {
+          /**
+           * The "own" grouping
+           * @namespace
+           */
+          'own': {
+            /**
+             * The "identities" grouping
+             * @namespace
+             */
+            'identities': {
+              /**
+               * Lets you add new identities for this client (i.e. instance of Converse.js)
+               * @function
+               *
+               * @param {String} category - server, client, gateway, directory, etc.
+               * @param {String} type - phone, pc, web, etc.
+               * @param {String} name - "Converse.js"
+               * @param {String} lang - en, el, de, etc.
+               *
+               * @example
+               * _converse.api.disco.own.identities.clear();
+               */
+              add: function add(category, type, name, lang) {
+                for (var i = 0; i < plugin._identities.length; i++) {
+                  if (plugin._identities[i].category == category && plugin._identities[i].type == type && plugin._identities[i].name == name && plugin._identities[i].lang == lang) {
+                    return false;
+                  }
+                }
+
+                plugin._identities.push({
+                  category: category,
+                  type: type,
+                  name: name,
+                  lang: lang
+                });
+              },
+
+              /**
+               * Clears all previously registered identities.
+               * @function
+               *
+               * @example
+               * _converse.api.disco.own.identities.clear();
+               */
+              clear: function clear() {
+                plugin._identities = [];
+              },
+
+              /**
+               * Returns all of the identities registered for this client
+               * (i.e. instance of Converse.js).
+               * @function
+               *
+               * @example
+               * const identities = _converse.api.disco.own.identities.get();
+               */
+              get: function get() {
+                return plugin._identities;
+              }
+            },
+
+            /**
+             * The "features" grouping
+             * @namespace
+             */
+            'features': {
+              /**
+               * Lets you register new disco features for this client (i.e. instance of Converse.js)
+               * @function
+               *
+               * @param {String} name - e.g. http://jabber.org/protocol/caps
+               *
+               * @example
+               * _converse.api.disco.own.features.add("http://jabber.org/protocol/caps");
+               */
+              add: function add(name) {
+                for (var i = 0; i < plugin._features.length; i++) {
+                  if (plugin._features[i] == name) {
+                    return false;
+                  }
+                }
+
+                plugin._features.push(name);
+              },
+
+              /**
+               * Clears all previously registered features.
+               * @function
+               *
+               * @example
+               * _converse.api.disco.own.features.clear();
+               */
+              clear: function clear() {
+                plugin._features = [];
+              },
+
+              /**
+               * Returns all of the features registered for this client
+               * (i.e. instance of Converse.js).
+               * @function
+               *
+               * @example
+               * const features = _converse.api.disco.own.features.get();
+               */
+              get: function get() {
+                return plugin._features;
+              }
+            }
+          },
           'info': function info(jid, node, callback, errback, timeout) {
             var attrs = {
               xmlns: Strophe.NS.DISCO_INFO
@@ -13461,29 +13564,6 @@ define("emojione", (function (global) {
                 });
               });
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-          },
-          'addIdentity': function addIdentity(category, type, name, lang) {
-            for (var i = 0; i < plugin._identities.length; i++) {
-              if (plugin._identities[i].category == category && plugin._identities[i].type == type && plugin._identities[i].name == name && plugin._identities[i].lang == lang) {
-                return false;
-              }
-            }
-
-            plugin._identities.push({
-              category: category,
-              type: type,
-              name: name,
-              lang: lang
-            });
-          },
-          'addFeature': function addFeature(name) {
-            for (var i = 0; i < plugin._features.length; i++) {
-              if (plugin._features[i] == name) {
-                return false;
-              }
-            }
-
-            plugin._features.push(name);
           },
           'getIdentity': function getIdentity(category, type, entity_jid) {
             /* Returns a Promise which resolves with a map indicating
@@ -14724,7 +14804,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
   define('converse-muc',["form-utils", "converse-core", "emojione", "converse-disco", "backbone.overview", "backbone.orderedlistview", "backbone.vdomview", "muc-utils"], factory);
@@ -16017,11 +16097,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
       _converse.on('addClientFeatures', function () {
         if (_converse.allow_muc) {
-          _converse.api.disco.addFeature(Strophe.NS.MUC);
+          _converse.api.disco.own.features.add(Strophe.NS.MUC);
         }
 
         if (_converse.allow_muc_invitations) {
-          _converse.api.disco.addFeature('jabber:x:conference'); // Invites
+          _converse.api.disco.own.features.add('jabber:x:conference'); // Invites
 
         }
       });
@@ -16833,6 +16913,70 @@ return __p
   });
 });
 //# sourceMappingURL=converse-bookmarks.js.map;
+// Converse.js
+// http://conversejs.org
+//
+// Copyright (c) 2013-2018, the Converse.js developers
+// Licensed under the Mozilla Public License (MPLv2)
+
+(function (root, factory) {
+    define('converse-caps',["converse-core"], factory);
+}(this, function (converse) {
+
+    const { Strophe, $build, _, b64_sha1 } = converse.env;
+
+    Strophe.addNamespace('CAPS', "http://jabber.org/protocol/caps");
+
+    function propertySort (array, property) {
+        return array.sort((a, b) => { return a[property] > b[property] ? -1 : 1 });
+    }
+
+    function generateVerificationString (_converse) {
+        const identities = _converse.api.disco.own.identities.get(),
+              features = _converse.api.disco.own.features.get();
+
+        if (identities.length > 1) {
+            propertySort(identities, "category");
+            propertySort(identities, "type");
+            propertySort(identities, "lang");
+        }
+
+        let S = _.reduce(
+            identities,
+            (result, id) => `${result}${id.category}/${id.type}/${_.get(id, 'lang', '')}/${id.name}<`,
+            "");
+
+        features.sort();
+        S = _.reduce(features, (result, feature) => `${result}${feature}<`, S);
+        return b64_sha1(S);
+    }
+
+    function createCapsNode (_converse) {
+        return $build("c", {
+            'xmlns': Strophe.NS.CAPS,
+            'hash': "sha-1",
+            'node': "https://conversejs.org",
+            'ver': generateVerificationString(_converse)
+        }).nodeTree;
+    }
+
+    converse.plugins.add('converse-caps', {
+
+        overrides: {
+            // Overrides mentioned here will be picked up by converse.js's
+            // plugin architecture they will replace existing methods on the
+            // relevant objects or classes.
+            XMPPStatus: {
+                constructPresence () {
+                    const presence = this.__super__.constructPresence.apply(this, arguments);
+                    presence.root().cnode(createCapsNode(this.__super__._converse));
+                    return presence;
+                }
+            }
+        }
+    });
+}));
+
 // Native Javascript for Bootstrap 4 v2.0.22 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
@@ -20508,11 +20652,13 @@ __e(o.role) +
  } ;
 __p += '\n            </div>\n            <div class="modal-footer">\n                ';
  if (o.allow_contact_removal && o.is_roster_contact) { ;
-__p += '\n                    <button type="button" class="btn btn-danger remove-contact" data-dismiss="modal"><i class="fa fa-trash"> </i>' +
+__p += '\n                    <button type="button" class="btn btn-danger remove-contact"><i class="fa fa-trash"> </i>' +
 __e(o.label_remove) +
 '</button>\n                ';
  } ;
-__p += '\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
+__p += '\n                <button type="button" class="btn btn-info refresh-contact"><i class="fa fa-refresh"> </i>' +
+__e(o.label_refresh) +
+'</button>\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
 __e(o.label_close) +
 '</button>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
@@ -20571,7 +20717,7 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  if (o.use_emoji)  { ;
-__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="btn toggle-smiley fa fa-smile-o" title="' +
+__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="toggle-smiley fa fa-smile-o" title="' +
 __e(o.tooltip_insert_smiley) +
 '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a> \n    <div class="emoji-picker dropdown-menu toolbar-menu"></div>\n</li>\n';
  } ;
@@ -20914,7 +21060,7 @@ return __p
       _ = _converse$env._;
   var u = converse.env.utils;
   converse.plugins.add('converse-chatboxes', {
-    dependencies: ["converse-vcard"],
+    dependencies: ["converse-roster", "converse-vcard"],
     overrides: {
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
@@ -20979,19 +21125,7 @@ return __p
           };
         },
         initialize: function initialize() {
-          if (this.get('type') === 'groupchat' && this.collection.chatbox.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
-            this.vcard = _converse.xmppstatus.vcard;
-          } else {
-            this.vcard = _converse.vcards.findWhere({
-              'jid': this.get('from')
-            });
-
-            if (_.isNil(this.vcard)) {
-              this.vcard = _converse.vcards.create({
-                'jid': this.get('from')
-              });
-            }
-          }
+          this.setVCard();
 
           if (this.get('file')) {
             this.on('change:put', this.uploadFile, this);
@@ -21003,6 +21137,34 @@ return __p
 
           if (this.isOnlyChatStateNotification()) {
             window.setTimeout(this.destroy.bind(this), 20000);
+          }
+        },
+        setVCard: function setVCard() {
+          if (this.get('type') === 'groupchat') {
+            var chatbox = this.collection.chatbox,
+                nick = Strophe.getResourceFromJid(this.get('from'));
+
+            if (chatbox.get('nick') === nick) {
+              this.vcard = _converse.xmppstatus.vcard;
+            } else {
+              var occupant = chatbox.occupants.findWhere({
+                'nick': nick
+              });
+              var jid = occupant && occupant.get('jid') ? occupant.get('jid') : this.get('from');
+              this.vcard = _converse.vcards.findWhere({
+                'jid': jid
+              }) || _converse.vcards.create({
+                'jid': jid
+              });
+            }
+          } else {
+            var _jid = this.get('from');
+
+            this.vcard = _converse.vcards.findWhere({
+              'jid': _jid
+            }) || _converse.vcards.create({
+              'jid': _jid
+            });
           }
         },
         isOnlyChatStateNotification: function isOnlyChatStateNotification() {
@@ -21114,7 +21276,7 @@ return __p
         model: _converse.Message,
         comparator: 'time'
       });
-      _converse.ChatBox = _converse.ModelWithDefaultAvatar.extend({
+      _converse.ChatBox = Backbone.Model.extend({
         defaults: {
           'bookmarked': false,
           'chat_state': undefined,
@@ -21658,8 +21820,8 @@ return __p
         },
         closeAllChatBoxes: function closeAllChatBoxes() {
           /* This method gets overridden in src/converse-controlbox.js if
-          * the controlbox plugin is active.
-          */
+           * the controlbox plugin is active.
+           */
           this.each(function (view) {
             view.close();
           });
@@ -21712,14 +21874,16 @@ return __p
             'jid': contact.get('jid')
           });
 
-          chatbox.addRelatedContact(contact);
+          if (chatbox) {
+            chatbox.addRelatedContact(contact);
+          }
         });
       });
 
       _converse.on('addClientFeatures', function () {
-        _converse.api.disco.addFeature(Strophe.NS.HTTPUPLOAD);
+        _converse.api.disco.own.features.add(Strophe.NS.HTTPUPLOAD);
 
-        _converse.api.disco.addFeature(Strophe.NS.OUTOFBAND);
+        _converse.api.disco.own.features.add(Strophe.NS.OUTOFBAND);
       });
 
       _converse.api.listen.on('pluginsInitialized', function () {
@@ -21986,15 +22150,21 @@ return __p
                 },
 
                 render () {
+                    const is_followup = u.hasClass('chat-msg-followup', this.el);
+                    let msg;
                     if (this.model.isOnlyChatStateNotification()) {
-                        return this.renderChatStateNotification()
+                        this.renderChatStateNotification()
                     } else if (this.model.get('file') && !this.model.get('oob_url')) {
-                        return this.renderFileUploadProgresBar();
+                        this.renderFileUploadProgresBar();
                     } else if (this.model.get('type') === 'error') {
-                        return this.renderErrorMessage();
+                        this.renderErrorMessage();
                     } else {
-                        return this.renderChatMessage();
+                        this.renderChatMessage();
                     }
+                    if (is_followup) {
+                        u.addClass('chat-msg-followup', this.el);
+                    }
+                    return this.el;
                 },
 
                 replaceElement (msg) {
@@ -22331,7 +22501,8 @@ return __p
       });
       _converse.UserDetailsModal = _converse.BootstrapModal.extend({
         events: {
-          'click button.remove-contact': 'removeContact'
+          'click button.remove-contact': 'removeContact',
+          'click button.refresh-contact': 'refreshContact'
         },
         initialize: function initialize() {
           _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
@@ -22351,6 +22522,7 @@ return __p
             'label_jid': __('Jabber ID'),
             'label_nickname': __('Nickname'),
             'label_remove': __('Remove as contact'),
+            'label_refresh': __('Refresh'),
             'label_role': __('Role'),
             'label_url': __('URL')
           }));
@@ -22367,6 +22539,18 @@ return __p
               _this.render();
             });
           }
+        },
+        refreshContact: function refreshContact(ev) {
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          var refresh_icon = this.el.querySelector('.fa-refresh');
+          u.addClass('fa-spin', refresh_icon);
+
+          _converse.api.vcard.update(this.model.contact.vcard, true).then(function () {
+            return u.removeClass('fa-spin', refresh_icon);
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         },
         removeContact: function removeContact(ev) {
           var _this2 = this;
@@ -23230,7 +23414,7 @@ return __p
 
       _converse.on('connected', function () {
         // Advertise that we support XEP-0382 Message Spoilers
-        _converse.api.disco.addFeature(Strophe.NS.SPOILER);
+        _converse.api.disco.own.features.add(Strophe.NS.SPOILER);
       });
       /************************ BEGIN API ************************/
 
@@ -24867,6 +25051,8 @@ __e(o.image) +
 return __p
 };});
 
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 // Converse.js
 // http://conversejs.org
 //
@@ -24895,8 +25081,34 @@ return __p
        * loaded by converse.js's plugin machinery.
        */
       var _converse = this._converse;
+      _converse.VCard = Backbone.Model.extend({
+        defaults: {
+          'image': _converse.DEFAULT_IMAGE,
+          'image_type': _converse.DEFAULT_IMAGE_TYPE
+        },
+        set: function set(key, val, options) {
+          // Override Backbone.Model.prototype.set to make sure that the
+          // default `image` and `image_type` values are maintained.
+          var attrs;
+
+          if (_typeof(key) === 'object') {
+            attrs = key;
+            options = val;
+          } else {
+            (attrs = {})[key] = val;
+          }
+
+          if (_.has(attrs, 'image') && !attrs['image']) {
+            attrs['image'] = _converse.DEFAULT_IMAGE;
+            attrs['image_type'] = _converse.DEFAULT_IMAGE_TYPE;
+            return Backbone.Model.prototype.set.call(this, attrs, options);
+          } else {
+            return Backbone.Model.prototype.set.apply(this, arguments);
+          }
+        }
+      });
       _converse.VCards = Backbone.Collection.extend({
-        model: _converse.ModelWithDefaultAvatar,
+        model: _converse.VCard,
         initialize: function initialize() {
           this.on('add', function (vcard) {
             return _converse.api.vcard.update(vcard);
@@ -24992,7 +25204,7 @@ return __p
       _converse.api.listen.on('connectionInitialized', _converse.initVCardCollection);
 
       _converse.on('addClientFeatures', function () {
-        _converse.api.disco.addFeature(Strophe.NS.VCARD);
+        _converse.api.disco.own.features.add(Strophe.NS.VCARD);
       });
 
       _.extend(_converse.api, {
@@ -25132,8 +25344,8 @@ return __p
 
           if (!image_file.size) {
             _.extend(data, {
-              'image': this.model.get('image'),
-              'image_type': this.model.get('image_type')
+              'image': this.model.vcard.get('image'),
+              'image_type': this.model.vcard.get('image_type')
             });
 
             this.setVCard(body, data);
@@ -26294,7 +26506,7 @@ return __p
 
 define('tpl!inverse_brand_heading', ['lodash'], function(_) {return function(o) {
 var __t, __p = '';
-__p += '<div class="row">\n    <div class="container brand-heading-container">\n        <h1 class="brand-heading"><i class="icon-conversejs"></i>inVerse</h1>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client</p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> into your own language</p>\n    <div>\n</div>\n';
+__p += '<div class="row">\n    <div class="container brand-heading-container">\n        <h1 class="brand-heading"><i class="icon-conversejs"></i>Converse</h1>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client</p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> into your own language</p>\n    <div>\n</div>\n';
 return __p
 };});
 
@@ -27040,7 +27252,7 @@ return __p
       });
 
       _converse.on('addClientFeatures', function () {
-        _converse.api.disco.addFeature(Strophe.NS.MAM);
+        _converse.api.disco.own.features.add(Strophe.NS.MAM);
       });
 
       _converse.on('afterMessagesFetched', function (chatboxview) {
@@ -27989,7 +28201,7 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  if (o.use_emoji)  { ;
-__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="btn toggle-smiley fa fa-smile-o" title="' +
+__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="toggle-smiley fa fa-smile-o" title="' +
 __e(o.label_insert_smiley) +
 '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a> \n    <div class="emoji-picker dropdown-menu toolbar-menu"></div>\n</li>\n';
  } ;
@@ -29236,10 +29448,10 @@ return __p
                     const last_fieldset_el = document.createElement('fieldset');
                     last_fieldset_el.insertAdjacentHTML(
                         'beforeend',
-                        `<input type="submit" class="pure-button button-primary" value="${__('Save')}"/>`);
+                        `<input type="submit" class="btn btn-primary" value="${__('Save')}"/>`);
                     last_fieldset_el.insertAdjacentHTML(
                         'beforeend',
-                        `<input type="button" class="pure-button button-cancel" value="${__('Cancel')}"/>`);
+                        `<input type="button" class="btn btn-secondary" value="${__('Cancel')}"/>`);
                     form_el.insertAdjacentElement('beforeend', last_fieldset_el);
 
                     last_fieldset_el.querySelector('input[type=button]').addEventListener('click', (ev) => {
@@ -29456,7 +29668,7 @@ return __p
                      *  (XMLElement) stanza: The original stanza received.
                      */
                     const code = stat.getAttribute('code');
-                    if (code === '110') { return; }
+                    if (code === '110' || (code === '100' && !is_self)) { return; }
                     if (code in _converse.muc.info_messages) {
                         return _converse.muc.info_messages[code];
                     }
@@ -31062,7 +31274,7 @@ return __p
 
       _converse.registerPongHandler = function () {
         if (!_.isUndefined(_converse.connection.disco)) {
-          _converse.api.disco.addFeature(Strophe.NS.PING);
+          _converse.api.disco.own.features.add(Strophe.NS.PING);
         }
 
         _converse.connection.ping.addPingHandler(_converse.pong);
@@ -32714,7 +32926,7 @@ return __p
 define('tpl!rooms_list_item', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<div class="list-item room-item">\n<div class="available-chatroom d-flex flex-row ';
+__p += '<div class="list-item available-chatroom d-flex flex-row ';
  if (o.num_unread_general) { ;
 __p += ' unread-msgs ';
  } ;
@@ -32766,7 +32978,7 @@ __p += '\n<a class="room-info fa fa-info-circle align-self-center" data-room-jid
 __e(o.jid) +
 '"\n   title="' +
 __e(o.info_title) +
-'" href="#">&nbsp;</a>\n</div>\n<div>\n';
+'" href="#">&nbsp;</a>\n</div>\n';
 return __p
 };});
 
@@ -33066,6 +33278,7 @@ if (typeof define !== 'undefined') {
          * Any of the following components may be removed if they're not needed.
          */
         "converse-bookmarks",       // XEP-0048 Bookmarks
+        "converse-caps",
         "converse-chatview",        // Renders standalone chat boxes for single user chat
         "converse-controlbox",      // The control box
         "converse-dragresize",      // Allows chat boxes to be resized by dragging them

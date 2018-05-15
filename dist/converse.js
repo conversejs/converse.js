@@ -42357,7 +42357,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
      *      (String) selector - the selector they should be matched
      *          against.
      */
-    return _.filter(el.children, _.partial(u.matchesSelector, _, selector));
+    return _.filter(el.childNodes, _.partial(u.matchesSelector, _, selector));
   };
 
   u.contains = function (attr, query) {
@@ -42570,6 +42570,22 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   u.httpToGeoUri = function (text, _converse) {
     var replacement = 'geo:$1,$2';
     return text.replace(_converse.geouri_regex, replacement);
+  };
+
+  u.getSelectValues = function (select) {
+    var result = [];
+    var options = select && select.options;
+    var opt;
+
+    for (var i = 0, iLen = options.length; i < iLen; i++) {
+      opt = options[i];
+
+      if (opt.selected) {
+        result.push(opt.value || opt.text);
+      }
+    }
+
+    return result;
   };
 
   return u;
@@ -42858,7 +42874,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     };
 });
 
-//# sourceMappingURL=pluggable.js.map;
+//# sourceMappingURL=pluggable.js.map
+;
 // Backbone.NativeView.js 0.3.3
 // ---------------
 
@@ -43306,8 +43323,6 @@ Backbone.sync = function(method, model, options) {
 return Backbone.BrowserStorage;
 }));
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 // Converse.js
 // https://conversejs.org
 //
@@ -43509,32 +43524,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   };
 
   _converse.router = new Backbone.Router();
-  _converse.ModelWithDefaultAvatar = Backbone.Model.extend({
-    defaults: {
-      'image': _converse.DEFAULT_IMAGE,
-      'image_type': _converse.DEFAULT_IMAGE_TYPE
-    },
-    set: function set(key, val, options) {
-      // Override Backbone.Model.prototype.set to make sure that the
-      // default `image` and `image_type` values are maintained.
-      var attrs;
-
-      if (_typeof(key) === 'object') {
-        attrs = key;
-        options = val;
-      } else {
-        (attrs = {})[key] = val;
-      }
-
-      if (_.has(attrs, 'image') && _.isUndefined(attrs['image'])) {
-        attrs['image'] = _converse.DEFAULT_IMAGE;
-        attrs['image_type'] = _converse.DEFAULT_IMAGE_TYPE;
-        return Backbone.Model.prototype.set.call(this, attrs, options);
-      } else {
-        return Backbone.Model.prototype.set.apply(this, arguments);
-      }
-    }
-  });
 
   _converse.initialize = function (settings, callback) {
     "use strict";
@@ -44180,7 +44169,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       }
     });
     this.connfeedback = new this.ConnectionFeedback();
-    this.XMPPStatus = this.ModelWithDefaultAvatar.extend({
+    this.XMPPStatus = Backbone.Model.extend({
       defaults: function defaults() {
         return {
           "jid": _converse.bare_jid,
@@ -44948,8 +44937,10 @@ return __p
 
     if (field.getAttribute('type') === 'checkbox') {
       value = field.checked && 1 || 0;
-    } else if (field.tagName == "textarea") {
+    } else if (field.tagName == "TEXTAREA") {
       value = _.filter(field.value.split('\n'), _.trim);
+    } else if (field.tagName == "SELECT") {
+      value = u.getSelectValues(field);
     } else {
       value = field.value;
     }
@@ -44980,7 +44971,7 @@ return __p
           return tpl_select_option({
             'value': value,
             'label': option.getAttribute('label'),
-            'selected': _.startsWith(values, value),
+            'selected': _.includes(values, value),
             'required': !_.isNil(field.querySelector('required'))
           });
         });
@@ -53402,11 +53393,13 @@ __e(o.role) +
  } ;
 __p += '\n            </div>\n            <div class="modal-footer">\n                ';
  if (o.allow_contact_removal && o.is_roster_contact) { ;
-__p += '\n                    <button type="button" class="btn btn-danger remove-contact" data-dismiss="modal"><i class="fa fa-trash"> </i>' +
+__p += '\n                    <button type="button" class="btn btn-danger remove-contact"><i class="fa fa-trash"> </i>' +
 __e(o.label_remove) +
 '</button>\n                ';
  } ;
-__p += '\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
+__p += '\n                <button type="button" class="btn btn-info refresh-contact"><i class="fa fa-refresh"> </i>' +
+__e(o.label_refresh) +
+'</button>\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
 __e(o.label_close) +
 '</button>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
@@ -53465,7 +53458,7 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  if (o.use_emoji)  { ;
-__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="btn toggle-smiley fa fa-smile-o" title="' +
+__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="toggle-smiley fa fa-smile-o" title="' +
 __e(o.tooltip_insert_smiley) +
 '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a> \n    <div class="emoji-picker dropdown-menu toolbar-menu"></div>\n</li>\n';
  } ;
@@ -53869,19 +53862,7 @@ return __p
           };
         },
         initialize: function initialize() {
-          if (this.get('type') === 'groupchat' && this.collection.chatbox.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
-            this.vcard = _converse.xmppstatus.vcard;
-          } else {
-            this.vcard = _converse.vcards.findWhere({
-              'jid': this.get('from')
-            });
-
-            if (_.isNil(this.vcard)) {
-              this.vcard = _converse.vcards.create({
-                'jid': this.get('from')
-              });
-            }
-          }
+          this.setVCard();
 
           if (this.get('file')) {
             this.on('change:put', this.uploadFile, this);
@@ -53893,6 +53874,34 @@ return __p
 
           if (this.isOnlyChatStateNotification()) {
             window.setTimeout(this.destroy.bind(this), 20000);
+          }
+        },
+        setVCard: function setVCard() {
+          if (this.get('type') === 'groupchat') {
+            var chatbox = this.collection.chatbox,
+                nick = Strophe.getResourceFromJid(this.get('from'));
+
+            if (chatbox.get('nick') === nick) {
+              this.vcard = _converse.xmppstatus.vcard;
+            } else {
+              var occupant = chatbox.occupants.findWhere({
+                'nick': nick
+              });
+              var jid = occupant && occupant.get('jid') ? occupant.get('jid') : this.get('from');
+              this.vcard = _converse.vcards.findWhere({
+                'jid': jid
+              }) || _converse.vcards.create({
+                'jid': jid
+              });
+            }
+          } else {
+            var _jid = this.get('from');
+
+            this.vcard = _converse.vcards.findWhere({
+              'jid': _jid
+            }) || _converse.vcards.create({
+              'jid': _jid
+            });
           }
         },
         isOnlyChatStateNotification: function isOnlyChatStateNotification() {
@@ -54004,7 +54013,7 @@ return __p
         model: _converse.Message,
         comparator: 'time'
       });
-      _converse.ChatBox = _converse.ModelWithDefaultAvatar.extend({
+      _converse.ChatBox = Backbone.Model.extend({
         defaults: {
           'bookmarked': false,
           'chat_state': undefined,
@@ -54548,8 +54557,8 @@ return __p
         },
         closeAllChatBoxes: function closeAllChatBoxes() {
           /* This method gets overridden in src/converse-controlbox.js if
-          * the controlbox plugin is active.
-          */
+           * the controlbox plugin is active.
+           */
           this.each(function (view) {
             view.close();
           });
@@ -54602,7 +54611,9 @@ return __p
             'jid': contact.get('jid')
           });
 
-          chatbox.addRelatedContact(contact);
+          if (chatbox) {
+            chatbox.addRelatedContact(contact);
+          }
         });
       });
 
@@ -54853,15 +54864,24 @@ return __p
           this.render();
         },
         render: function render() {
+          var is_followup = u.hasClass('chat-msg-followup', this.el);
+          var msg;
+
           if (this.model.isOnlyChatStateNotification()) {
-            return this.renderChatStateNotification();
+            this.renderChatStateNotification();
           } else if (this.model.get('file') && !this.model.get('oob_url')) {
-            return this.renderFileUploadProgresBar();
+            this.renderFileUploadProgresBar();
           } else if (this.model.get('type') === 'error') {
-            return this.renderErrorMessage();
+            this.renderErrorMessage();
           } else {
-            return this.renderChatMessage();
+            this.renderChatMessage();
           }
+
+          if (is_followup) {
+            u.addClass('chat-msg-followup', this.el);
+          }
+
+          return this.el;
         },
         replaceElement: function replaceElement(msg) {
           if (!_.isNil(this.el.parentElement)) {
@@ -55189,7 +55209,8 @@ return __p
       });
       _converse.UserDetailsModal = _converse.BootstrapModal.extend({
         events: {
-          'click button.remove-contact': 'removeContact'
+          'click button.remove-contact': 'removeContact',
+          'click button.refresh-contact': 'refreshContact'
         },
         initialize: function initialize() {
           _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
@@ -55209,6 +55230,7 @@ return __p
             'label_jid': __('Jabber ID'),
             'label_nickname': __('Nickname'),
             'label_remove': __('Remove as contact'),
+            'label_refresh': __('Refresh'),
             'label_role': __('Role'),
             'label_url': __('URL')
           }));
@@ -55225,6 +55247,18 @@ return __p
               _this.render();
             });
           }
+        },
+        refreshContact: function refreshContact(ev) {
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          var refresh_icon = this.el.querySelector('.fa-refresh');
+          u.addClass('fa-spin', refresh_icon);
+
+          _converse.api.vcard.update(this.model.contact.vcard, true).then(function () {
+            return u.removeClass('fa-spin', refresh_icon);
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         },
         removeContact: function removeContact(ev) {
           var _this2 = this;
@@ -60675,6 +60709,8 @@ __e(o.image) +
 return __p
 };});
 
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 // Converse.js
 // http://conversejs.org
 //
@@ -60703,8 +60739,34 @@ return __p
        * loaded by converse.js's plugin machinery.
        */
       var _converse = this._converse;
+      _converse.VCard = Backbone.Model.extend({
+        defaults: {
+          'image': _converse.DEFAULT_IMAGE,
+          'image_type': _converse.DEFAULT_IMAGE_TYPE
+        },
+        set: function set(key, val, options) {
+          // Override Backbone.Model.prototype.set to make sure that the
+          // default `image` and `image_type` values are maintained.
+          var attrs;
+
+          if (_typeof(key) === 'object') {
+            attrs = key;
+            options = val;
+          } else {
+            (attrs = {})[key] = val;
+          }
+
+          if (_.has(attrs, 'image') && !attrs['image']) {
+            attrs['image'] = _converse.DEFAULT_IMAGE;
+            attrs['image_type'] = _converse.DEFAULT_IMAGE_TYPE;
+            return Backbone.Model.prototype.set.call(this, attrs, options);
+          } else {
+            return Backbone.Model.prototype.set.apply(this, arguments);
+          }
+        }
+      });
       _converse.VCards = Backbone.Collection.extend({
-        model: _converse.ModelWithDefaultAvatar,
+        model: _converse.VCard,
         initialize: function initialize() {
           this.on('add', function (vcard) {
             return _converse.api.vcard.update(vcard);
@@ -60940,8 +61002,8 @@ return __p
 
           if (!image_file.size) {
             _.extend(data, {
-              'image': this.model.get('image'),
-              'image_type': this.model.get('image_type')
+              'image': this.model.vcard.get('image'),
+              'image_type': this.model.vcard.get('image_type')
             });
 
             this.setVCard(body, data);
@@ -63878,7 +63940,7 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  if (o.use_emoji)  { ;
-__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="btn toggle-smiley fa fa-smile-o" title="' +
+__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="toggle-smiley fa fa-smile-o" title="' +
 __e(o.label_insert_smiley) +
 '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a> \n    <div class="emoji-picker dropdown-menu toolbar-menu"></div>\n</li>\n';
  } ;
@@ -65104,8 +65166,8 @@ return __p
 
 
           var last_fieldset_el = document.createElement('fieldset');
-          last_fieldset_el.insertAdjacentHTML('beforeend', "<input type=\"submit\" class=\"pure-button button-primary\" value=\"".concat(__('Save'), "\"/>"));
-          last_fieldset_el.insertAdjacentHTML('beforeend', "<input type=\"button\" class=\"pure-button button-cancel\" value=\"".concat(__('Cancel'), "\"/>"));
+          last_fieldset_el.insertAdjacentHTML('beforeend', "<input type=\"submit\" class=\"btn btn-primary\" value=\"".concat(__('Save'), "\"/>"));
+          last_fieldset_el.insertAdjacentHTML('beforeend', "<input type=\"button\" class=\"btn btn-secondary\" value=\"".concat(__('Cancel'), "\"/>"));
           form_el.insertAdjacentElement('beforeend', last_fieldset_el);
           last_fieldset_el.querySelector('input[type=button]').addEventListener('click', function (ev) {
             ev.preventDefault();
@@ -65302,7 +65364,7 @@ return __p
            */
           var code = stat.getAttribute('code');
 
-          if (code === '110') {
+          if (code === '110' || code === '100' && !is_self) {
             return;
           }
 

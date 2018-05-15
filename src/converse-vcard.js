@@ -20,8 +20,35 @@
              */
             const { _converse } = this;
 
+            _converse.VCard = Backbone.Model.extend({
+                defaults: {
+                    'image': _converse.DEFAULT_IMAGE,
+                    'image_type': _converse.DEFAULT_IMAGE_TYPE
+                },
+
+                set (key, val, options) {
+                    // Override Backbone.Model.prototype.set to make sure that the
+                    // default `image` and `image_type` values are maintained.
+                    let attrs;
+                    if (typeof key === 'object') {
+                        attrs = key;
+                        options = val;
+                    } else {
+                        (attrs = {})[key] = val;
+                    }
+                    if (_.has(attrs, 'image') && !attrs['image']) {
+                        attrs['image'] = _converse.DEFAULT_IMAGE;
+                        attrs['image_type'] = _converse.DEFAULT_IMAGE_TYPE;
+                        return Backbone.Model.prototype.set.call(this, attrs, options);
+                    } else {
+                        return Backbone.Model.prototype.set.apply(this, arguments);
+                    }
+                }
+            });
+
+
             _converse.VCards = Backbone.Collection.extend({
-                model: _converse.ModelWithDefaultAvatar,
+                model: _converse.VCard,
 
                 initialize () {
                     this.on('add', (vcard) => _converse.api.vcard.update(vcard));
@@ -72,11 +99,7 @@
             function setVCard (data) {
                 return new Promise((resolve, reject) => {
                     const vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
-                    _converse.connection.sendIQ(
-                        createStanza("set", data.jid, vcard_el),
-                        resolve,
-                        reject
-                    );
+                    _converse.connection.sendIQ(createStanza("set", data.jid, vcard_el), resolve, reject);
                 });
             }
 

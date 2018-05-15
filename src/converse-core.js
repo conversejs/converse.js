@@ -239,33 +239,6 @@
     _converse.router = new Backbone.Router();
 
 
-    _converse.ModelWithDefaultAvatar = Backbone.Model.extend({
-        defaults: {
-            'image': _converse.DEFAULT_IMAGE,
-            'image_type': _converse.DEFAULT_IMAGE_TYPE
-        },
-
-        set (key, val, options) {
-            // Override Backbone.Model.prototype.set to make sure that the
-            // default `image` and `image_type` values are maintained.
-            let attrs;
-            if (typeof key === 'object') {
-                attrs = key;
-                options = val;
-            } else {
-                (attrs = {})[key] = val;
-            }
-            if (_.has(attrs, 'image') && _.isUndefined(attrs['image'])) {
-                attrs['image'] = _converse.DEFAULT_IMAGE;
-                attrs['image_type'] = _converse.DEFAULT_IMAGE_TYPE;
-                return Backbone.Model.prototype.set.call(this, attrs, options);
-            } else {
-                return Backbone.Model.prototype.set.apply(this, arguments);
-            }
-        }
-    });
-
-
     _converse.initialize = function (settings, callback) {
         "use strict";
         settings = !_.isUndefined(settings) ? settings : {};
@@ -832,7 +805,7 @@
         this.connfeedback = new this.ConnectionFeedback();
 
 
-        this.XMPPStatus = this.ModelWithDefaultAvatar.extend({
+        this.XMPPStatus = Backbone.Model.extend({
 
             defaults () {
                 return {

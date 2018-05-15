@@ -4,7 +4,7 @@
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
-/* global libsignal */
+/* global libsignal, ArrayBuffer */
 
 (function (root, factory) {
     define([
@@ -13,7 +13,7 @@
     ], factory);
 }(this, function (converse, tpl_toolbar_omemo) {
 
-    const { Backbone, Promise, Strophe, sizzle, $iq, $msg, _, b64_sha1 } = converse.env;
+    const { Backbone, Promise, Strophe, moment, sizzle, $iq, $msg, _, b64_sha1 } = converse.env;
     const u = converse.env.utils;
 
     Strophe.addNamespace('OMEMO', "eu.siacs.conversations.axolotl");
@@ -61,38 +61,118 @@
         overrides: {
 
             ChatBox: {
+                fetchBundle (device_id) {
+                    const { _converse } = this.__super__;
+                    return new Promise((resolve, reject) => {
+                        const stanza = $iq({
+                            'type': 'get',
+                            'from': _converse.bare_jid,
+                            'to': this.get('jid')
+                        }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                            .c('items', {'xmlns': `${Strophe.NS.OMEMO_BUNDLES}:${device_id}`});
+                        _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
+                    });
+                },
+
+                fetchBundles () {
+                    return getDevicesForContact(this.get('jid')).then((devices) => {
+                        return Promise.all(_.map(devices, (device_id) => this.fetchBundle(device_id)));
+                    });
+                },
+
+
+                buildSession () {
+                    // TODO
+                    return Promise.resolve();
+                    // const { _converse } = this.__super__,
+                    //       device_id = _converse.omemo_store.get('device_id');
+
+                    // return new Promise((resolve, reject) => {
+                    //     getDevicesForContact(this.get('jid')).then((devices) => {
+                    //         const session_promises = _.map(devices, (recipient_id) => {
+                    //             const address = new libsignal.SignalProtocolAddress(recipient_id, device_id),
+                    //                 sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address);
+                    //             return sessionBuilder.processPreKey({
+                    //                 'registrationId': _converse.omemo_store.get('registration_id'),
+                    //                 'identityKey': _converse.omemo_store.get('identity_keypair'),
+                    //                 'signedPreKey': {
+                    //                     'keyId': '', // <Number>,
+                    //                     'publicKey': '', // <ArrayBuffer>,
+                    //                     'signature': '', // <ArrayBuffer>
+                    //                 },
+                    //                 'preKey': {
+                    //                     'keyId': '', // <Number>,
+                    //                     'publicKey': '', // <ArrayBuffer>
+                    //                 }
+                    //             });
+                    //         });
+                    //         resolve(session_promises);
+                    //     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                    // });
+                },
+
+                encryptMessage (message) {
+                    // TODO:
+                    return Promise.resolve();
+                    // const { _converse } = this.__super__;
+                    // const plaintext = message.get('message');
+                    // return new Promise((resolve, reject) => {
+                    //     var sessionCipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
+                    //     sessionCipher.encrypt(plaintext).then((ciphertext) => {});
+                    // });
+                },
 
                 createOMEMOMessageStanza (message) {
                     const { _converse } = this.__super__;
-                    const stanza = $msg({
-                            'from': _converse.connection.jid,
-                            'to': this.get('jid'),
-                            'type': this.get('message_type'),
-                            'id': message.get('msgid')
-                        }).c('body').t(message.get('message')).up()
-                          .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
-
-                    if (message.get('is_spoiler')) {
-                        if (message.get('spoiler_hint')) {
-                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }, message.get('spoiler_hint')).up();
-                        } else {
-                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }).up();
-                        }
-                    }
-                    if (message.get('file')) {
-                        stanza.c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('message')).up();
-                    }
-                    return stanza;
+                    const body = "I sent you an OMEMO encrypted message but your client doesn’t seem to support that. "+
+                                 "Find more information on https://conversations.im/omemo";
+                    return new Promise((resolve, reject) => {
+                        this.encryptMessage(message).then((payload) => {
+                            const stanza = $msg({
+                                    'from': _converse.connection.jid,
+                                    'to': this.get('jid'),
+                                    'type': this.get('message_type'),
+                                    'id': message.get('msgid')
+                                }).c('body').t(body).up()
+                                  .c('encrypted').t(payload).up()
+                                .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+                            // TODO: set storage hint urn:xmpp:hints
+                            resolve(stanza);
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                    });
                 },
 
-                createMessageStanza () {
+                createMessageStanza (message) {
                     if (this.get('omemo_active')) {
-                        return this.createOMEMOMessageStanza.apply(this, arguments);
-
+                        return this.buildSession().then(() => this.createOMEMOMessageStanza(message));
                     } else {
-                        return this.__super__.createMessageStanza.apply(this, arguments);
+                        return Promise.resolve(this.__super__.createMessageStanza.apply(this, arguments));
                     }
-                }
+                },
+
+                sendMessageStanza (message) {
+                    const { _converse } = this.__super__;
+
+                    // TODO: merge this back into converse-chatboxes
+                    this.createMessageStanza(message).then((stanza) => {
+                        _converse.connection.send(stanza);
+                        if (_converse.forward_messages) {
+                            // Forward the message, so that other connected resources are also aware of it.
+                            _converse.connection.send(
+                                $msg({
+                                    'to': _converse.bare_jid,
+                                    'type': this.get('message_type'),
+                                    'id': message.get('msgid')
+                                }).c('forwarded', {'xmlns': Strophe.NS.FORWARD})
+                                    .c('delay', {
+                                            'xmns': Strophe.NS.DELAY,
+                                            'stamp': moment().format()
+                                    }).up()
+                                .cnode(stanza.tree())
+                            );
+                        }
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                },
             },
 
             ChatBoxView:  {
@@ -132,23 +212,35 @@
 
             _converse.api.promises.add(['OMEMOInitialized']);
 
+
+            function generateDeviceID () {
+                /* Generates a device ID, making sure that it's unique */
+                const existing_ids = _converse.devicelists.get(_converse.bare_jid).devices.pluck('id');
+                let device_id = libsignal.KeyHelper.generateRegistrationId();
+                let i = 0;
+                while (_.includes(existing_ids, device_id)) {
+                    device_id = libsignal.KeyHelper.generateRegistrationId();
+                    i++;
+                    if (i == 10) {
+                        throw new Error("Unable to generate a unique device ID");
+                    }
+                }
+                return device_id;
+            }
+
+
             function generateBundle () {
+                /* The first thing that needs to happen if a client wants to
+                 * start using OMEMO is they need to generate an IdentityKey
+                 * and a Device ID. The IdentityKey is a Curve25519 [6]
+                 * public/private Key pair. The Device ID is a randomly
+                 * generated integer between 1 and 2^31 - 1. 
+                 */
                 return new Promise((resolve, reject) => {
                     libsignal.KeyHelper.generateIdentityKeyPair().then((identity_keypair) => {
-                        const existing_ids = _converse.devicelists.get(_converse.bare_jid).devices.pluck('id');
-                        let device_id = libsignal.KeyHelper.generateRegistrationId();
-                        let i = 0;
-                        while (_.includes(existing_ids, device_id)) {
-                            device_id = libsignal.KeyHelper.generateRegistrationId();
-                            i++;
-                            if (i == 10) {
-                                throw new Error("Unable to generate a unique device ID");
-                            }
-                        }
                         const data = {
-                            'device_id': device_id,
-                            'pubkey': identity_keypair.pubKey,
-                            'privkey': identity_keypair.privKey,
+                            'device_id': generateDeviceID(),
+                            'identity_keypair': identity_keypair,
                             'prekeys': {}
                         };
                         const signed_prekey_id = '0';
@@ -167,6 +259,110 @@
 
 
             _converse.OMEMOStore = Backbone.Model.extend({
+
+                Direction: {
+                    SENDING: 1,
+                    RECEIVING: 2,
+                },
+
+                getIdentityKeyPair () {
+                    return Promise.resolve(this.get('identity_keypair'));
+                },
+
+                getLocalRegistrationId () {
+                    return Promise.resolve(this.get('device_id'));
+                },
+
+                isTrustedIdentity (identifier, identity_key, direction) {
+                    if (_.isNil(identifier)) {
+                        throw new Error("Can't check identity key for invalid key");
+                    }
+                    if (!(identity_key instanceof ArrayBuffer)) {
+                        throw new Error("Expected identity_key to be an ArrayBuffer");
+                    }
+                    const trusted = this.get('identity_key'+identifier);
+                    if (trusted === undefined) {
+                        return Promise.resolve(true);
+                    }
+                    return Promise.resolve(u.arrayBuffer2String(identity_key) === u.arrayBuffer2String(trusted));
+                },
+
+                loadIdentityKey (identifier) {
+                    if (_.isNil(identifier)) {
+                        throw new Error("Can't load identity_key for invalid identifier");
+                    }
+                    return Promise.resolve(this.get('identity_key'+identifier));
+                },
+
+                saveIdentity (identifier, identity_key) {
+                    if (_.isNil(identifier)) {
+                        throw new Error("Can't save identity_key for invalid identifier");
+                    }
+                    const address = new libsignal.SignalProtocolAddress.fromString(identifier),
+                          existing = this.get('identity_key'+address.getName());
+                    this.save('identity_key'+address.getName(), identity_key)
+                    if (existing && u.arrayBuffer2String(identity_key) !== u.arrayBuffer2String(existing)) {
+                        return Promise.resolve(true);
+                    } else {
+                        return Promise.resolve(false);
+                    }
+                },
+
+                loadPreKey (keyId) {
+                    let res = this.get('25519KeypreKey'+keyId);
+                    if (_.isUndefined(res)) {
+                        res = {'pubKey': res.pubKey, 'privKey': res.privKey};
+                    }
+                    return Promise.resolve(res);
+                },
+
+                storePreKey (keyId, keyPair) {
+                    return Promise.resolve(this.save('25519KeypreKey'+keyId, keyPair));
+                },
+
+                removePreKey (keyId) {
+                    return Promise.resolve(this.unset('25519KeypreKey'+keyId));
+                },
+
+                loadSignedPreKey (keyId) {
+                    let res = this.get('25519KeysignedKey'+keyId);
+                    if (res !== undefined) {
+                        res = {'pubKey': res.pubKey, 'privKey': res.privKey};
+                    }
+                    return Promise.resolve(res);
+                },
+
+                storeSignedPreKey (keyId, keyPair) {
+                    return Promise.resolve(this.save('25519KeysignedKey'+keyId, keyPair));
+                },
+
+                removeSignedPreKey (keyId) {
+                    return Promise.resolve(this.unset('25519KeysignedKey'+keyId));
+                },
+
+                loadSession (identifier) {
+                    return Promise.resolve(this.get('session'+identifier));
+                },
+
+                storeSession (identifier, record) {
+                    return Promise.resolve(this.save('session'+identifier, record));
+                },
+
+                removeSession (identifier) {
+                    return Promise.resolve(this.unset('session'+identifier));
+                },
+
+                removeAllSessions (identifier) {
+                    const keys = _.filter(_.keys(this.attributes), (key) => {
+                        if (key.startsWith('session'+identifier)) {
+                            return key;
+                        }
+                    });
+                    const attrs = {};
+                    _.forEach(keys, (key) => {attrs[key] = undefined});
+                    this.save(attrs);
+                    return Promise.resolve();
+                },
 
                 fetchSession () {
                     if (_.isUndefined(this._setup_promise)) {
@@ -283,7 +479,9 @@
 
             function publishBundle () {
                 const store = _converse.omemo_store,
-                      signed_prekey = store.get('signed_prekey');
+                      signed_prekey = store.get('signed_prekey'),
+                      identity_key = u.arrayBuffer2Base64(store.get('identity_keypair').pubKey);
+
                 return new Promise((resolve, reject) => {
                     const stanza = $iq({
                         'from': _converse.bare_jid,
@@ -294,8 +492,8 @@
                                 .c('bundle', {'xmlns': Strophe.NS.OMEMO})
                                     .c('signedPreKeyPublic', {'signedPreKeyId': signed_prekey.keyId})
                                         .t(u.arrayBuffer2Base64(signed_prekey.keyPair.pubKey)).up()
-                                    .c('signedPreKeySignature').up()
-                                    .c('identityKey').up()
+                                    .c('signedPreKeySignature').up()  // TODO
+                                    .c('identityKey').t(identity_key).up()
                                     .c('prekeys');
                     _.forEach(
                         store.get('prekeys'),

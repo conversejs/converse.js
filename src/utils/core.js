@@ -6,7 +6,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define, escape, window */
+/*global define, escape, window, Uint8Array */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define([
@@ -835,9 +835,14 @@
         return result;
     };
 
+    u.arrayBuffer2String = function (ab) {
+        var enc = new TextDecoder("utf-8");
+        return enc.decode(new Uint8Array(ab));
+    };
+
     u.arrayBuffer2Base64 = function (ab) {
-        return new window.Uint8Array(ab)
-            .reduce((data, byte) => data + String.fromCharCode(byte), '')
+        return btoa(new Uint8Array(ab)
+            .reduce((data, byte) => data + String.fromCharCode(byte), ''));
     };
 
     return u;

@@ -1587,3 +1587,18 @@ This is the URL to which an XHR GET request will be made to fetch user data from
 The query string will be included in the request with ``q`` as its key.
 
 The data returned must be a JSON encoded list of user JIDs.
+
+.. note::
+    converse.js will construct the XHR get URL by simply appending
+    ``q=<query string entered>`` to the URL given by ``xhr_user_search_url``.
+    It is therefore important that the necessary question mark (``?``) preceding the
+    URL's query component or necessary delimiters (``&``) are included. See valid
+    examples below.
+
+Examples:
+
+.. code-block:: javascript
+
+    xhr_user_search_url: 'https://some.url/some_path?',
+
+    xhr_user_search_url: 'https://some.url/some_path?api_key=somekey&',

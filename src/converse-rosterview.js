@@ -191,7 +191,7 @@
                         }
                     };
                     name_input.addEventListener('input', _.debounce(() => {
-                        xhr.open("GET", `${_converse.xhr_user_search_url}?q=${name_input.value}`, true);
+                        xhr.open("GET", `${_converse.xhr_user_search_url}q=${name_input.value}`, true);
                         xhr.send()
                     } , 300));
                     this.el.addEventListener('awesomplete-selectcomplete', (ev) => {

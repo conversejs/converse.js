@@ -41,6 +41,8 @@
   [statusMessageChanged](https://conversejs.org/docs/html/events.html#contactstatusmessagechanged)
   event and make the XMLHttpRequest yourself.
 - Removed  `xhr_user_search` in favor of only accepting `xhr_user_search_url` as configuration option.
+- `xhr_user_search_url` has to include the `?` character now in favor of more
+flexibility. See example in the documentation.
 - The data returned from the `xhr_user_search_url` must now include the user's
   `jid` instead of just an `id`.
 - New configuration settings [nickname](https://conversejs.org/docs/html/configurations.html#nickname)

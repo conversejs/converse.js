@@ -7203,7 +7203,7 @@ body.reset {
 #conversejs form .form-group {
   margin-bottom: 2em; }
 #conversejs form .form-check-label {
-  margin-top: 0.3rem; }
+  margin-top: 0.1rem; }
 #conversejs form .form-control::-webkit-input-placeholder {
   /* Chrome/Opera/Safari */
   color: #A8ABA1; }
@@ -7240,7 +7240,7 @@ body.reset {
   margin: 1em 0; }
 #conversejs form.converse-form {
   background: white;
-  padding: 1em; }
+  padding: 1.5em; }
   #conversejs form.converse-form legend {
     color: #666;
     font-size: 125%;
@@ -7275,6 +7275,9 @@ body.reset {
       color: #A53214; }
 #conversejs form.converse-centered-form {
   text-align: center; }
+
+#conversejs.fullscreen form .form-check-label {
+  margin-top: 0.3rem; }
 
 #conversejs #user-profile-modal label {
   font-weight: bold; }

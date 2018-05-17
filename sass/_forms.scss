@@ -5,7 +5,7 @@
         }
 
         .form-check-label {
-            margin-top: $form-check-input-margin-y;
+            margin-top: 0.1rem;
         }
 
         .form-control {
@@ -61,7 +61,7 @@
 
         &.converse-form {
             background: white;
-            padding: 1em;
+            padding: 1.5em;
             legend {
                 color: $text-color;
                 font-size: 125%;
@@ -108,3 +108,12 @@
         }
     }
 }
+
+#conversejs.fullscreen {
+    form {
+        .form-check-label {
+            margin-top: $form-check-input-margin-y;
+        }
+    }
+}
+

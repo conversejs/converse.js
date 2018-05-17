@@ -9,17 +9,25 @@
         {[ } else { ]}
             {[ if (o.authentication == o.LOGIN || o.authentication == o.EXTERNAL) { ]}
                 <div class="form-group">
-                    <label for="jid">{{{o.__("XMPP Username:")}}}</label>
-                    <input class="form-control" autofocus required="required" type="text" name="jid" placeholder="{{{o.placeholder_username}}}">
+                    <label for="converse-login-jid">{{{o.__("XMPP Username:")}}}</label>
+                    <input id="converse-login-jid" class="form-control" autofocus required="required" type="text" name="jid" placeholder="{{{o.placeholder_username}}}">
                 </div>
                 {[ if (o.authentication !== o.EXTERNAL) { ]}
                 <div class="form-group">
-                    <label for="password">{{{o.__("Password:")}}}</label>
-                    <input class="form-control" required="required" type="password" name="password" placeholder="{{{o.__('password')}}}">
+                    <label for="converse-login-password">{{{o.__("Password:")}}}</label>
+                    <input id="converse-login-password" class="form-control" required="required" type="password" name="password" placeholder="{{{o.__('password')}}}">
                 </div>
                 {[ } ]}
+                <div class="form-group form-check">
+                    <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" checked="checked">
+                    <label for="converse-login-trusted" class="form-check-label">{{{o.__('This is a trusted device')}}}</label>
+                    <i class="fa fa-info-circle" data-toggle="popover"
+                       data-title=""
+                       data-content="{{{o.__('To improve performance, we cache your data in this browser. Uncheck this box if you want your data to be deleted when you log out. It\'s important that you explicitly log out, otherwise not all data might be deleted.')}}}"></i>
+                </div>
+
                 <fieldset class="buttons">
-                    <input class="btn btn-primary" type="submit" value="{{{o.__('Submit')}}}">
+                    <input class="btn btn-primary" type="submit" value="{{{o.__('Log in')}}}">
                 </fieldset>
             {[ } ]}
             {[ if (o.authentication == o.ANONYMOUS) { ]}

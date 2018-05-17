@@ -56,6 +56,7 @@ var specs = [
     "spec/chatroom",
     "spec/minchats",
     "spec/notification",
+    "spec/login",
     "spec/register",
     "spec/http-file-upload"
 ];

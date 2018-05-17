@@ -13,6 +13,8 @@
 - MP4 and MP3 files when sent as XEP-0066 Out of Band Data, are now playable directly in chat
 - Support for rendering URLs sent according to XEP-0066 Out of Band Data.
 - Geo-URIs (e.g. from Conversations) are now replaced by links to openstreetmap (works in reverse also)
+- Add a checkbox to indicate whether a trusted device is being used or not.
+  If the device is not trusted, then all user data is deleted from the cache upon logout.
 
 ### Bugfixes
 

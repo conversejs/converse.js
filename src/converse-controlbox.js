@@ -8,6 +8,7 @@
 
 (function (root, factory) {
     define(["converse-core",
+            "bootstrap",
             "lodash.fp",
             "tpl!converse_brand_heading",
             "tpl!controlbox",
@@ -19,6 +20,7 @@
     ], factory);
 }(this, function (
             converse,
+            bootstrap,
             fp,
             tpl_brand_heading,
             tpl_controlbox,
@@ -414,6 +416,14 @@
                 initialize (cfg) {
                     this.model.on('change', this.render, this);
                     this.listenTo(_converse.connfeedback, 'change', this.render);
+                    this.render();
+                    _.forEach(this.el.querySelectorAll('[data-title]'), (el) => {
+                        const popover = new bootstrap.Popover(el, {
+                            'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
+                            'dismissible': _converse.view_mode === 'mobile' && true || false,
+                            'container': _converse.chatboxviews.el
+                        })
+                    });
                 },
 
                 toHTML () {
@@ -465,18 +475,18 @@
                         this.connect(_converse.jid, null);
                         return;
                     }
-                    if (!this.validate()) {
-                        return;
-                    }
-                    let jid = ev.target.querySelector('input[name=jid]').value;
+                    if (!this.validate()) { return; }
+
+                    const form_data = new FormData(ev.target);
+                    _converse.storage = form_data.get('trusted') ? 'local' : 'session';
+
+                    let jid = form_data.get('jid');
                     if (_converse.locked_domain) {
                         jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
                     } else if (_converse.default_domain && !_.includes(jid, '@')) {
                         jid = jid + '@' + _converse.default_domain;
                     }
-                    this.connect(
-                        jid, _.get(ev.target.querySelector('input[name=password]'), 'value')
-                    );
+                    this.connect(jid, form_data.get('password'));
                 },
 
                 connect (jid, password) {

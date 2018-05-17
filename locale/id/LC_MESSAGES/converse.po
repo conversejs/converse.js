@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-04-30 16:16+0200\n"
-"PO-Revision-Date: 2018-03-30 04:37+0000\n"
-"Last-Translator: musthova <musthova18@gmail.com>\n"
+"PO-Revision-Date: 2018-05-17 09:17+0000\n"
+"Last-Translator: Bitelaserkhalif 555 <khalif.ops@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/conversejs/"
 "translations/id/>\n"
 "Language: id\n"
@@ -18,24 +18,24 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.20-dev\n"
+"X-Generator: Weblate 3.0-dev\n"
 
 #: dist/converse-no-dependencies.js:9854 dist/converse-no-dependencies.js:9883
 msgid "Download"
-msgstr ""
+msgstr "Unduh"
 
 #: dist/converse-no-dependencies.js:9873
 #, javascript-format
 msgid "Download: \"%1$s"
-msgstr ""
+msgstr "Unduh: \"%1$s"
 
 #: dist/converse-no-dependencies.js:9896
 msgid "Download video file"
-msgstr ""
+msgstr "Unduh file video"
 
 #: dist/converse-no-dependencies.js:9909
 msgid "Download audio file"
-msgstr ""
+msgstr "Unduh file audio"
 
 #: dist/converse-no-dependencies.js:11206
 msgid "The connection has dropped, attempting to reconnect."

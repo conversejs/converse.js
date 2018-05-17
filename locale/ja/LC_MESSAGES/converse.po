@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-04-30 16:16+0200\n"
-"PO-Revision-Date: 2018-04-30 08:38+0000\n"
+"PO-Revision-Date: 2018-05-02 04:43+0000\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
@@ -21,20 +21,20 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:9854 dist/converse-no-dependencies.js:9883
 msgid "Download"
-msgstr ""
+msgstr "ダウンロード"
 
 #: dist/converse-no-dependencies.js:9873
 #, javascript-format
 msgid "Download: \"%1$s"
-msgstr ""
+msgstr "ダウンロード: %1$s"
 
 #: dist/converse-no-dependencies.js:9896
 msgid "Download video file"
-msgstr ""
+msgstr "動画ファイルをダウンロード"
 
 #: dist/converse-no-dependencies.js:9909
 msgid "Download audio file"
-msgstr ""
+msgstr "音声ファイルをダウンロード"
 
 #: dist/converse-no-dependencies.js:11206
 msgid "The connection has dropped, attempting to reconnect."
@@ -74,36 +74,35 @@ msgstr "クリックしてこの相手先を隠す"
 
 #: dist/converse-no-dependencies.js:17811
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "ファイルアップロードの URL を確定できませんでした。"
 
 #: dist/converse-no-dependencies.js:17819
 msgid "Sorry, could not determine upload URL."
-msgstr ""
+msgstr "アップロードの URL を確定できませんでした。"
 
 #: dist/converse-no-dependencies.js:17851
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "ファイルのアップロードに失敗しました。"
 
 #: dist/converse-no-dependencies.js:17854
 #, javascript-format
 msgid "Your server's response: \"%1$s\""
-msgstr ""
+msgstr "サーバーの応答: %1$s"
 
 #: dist/converse-no-dependencies.js:18012
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "サーバーはファイルアップロードに対応していないようです。"
 
 #: dist/converse-no-dependencies.js:18022
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
-msgstr ""
+msgstr "ファイルのサイズ %1$s は、サーバーの制限値 %2$s を超えています。"
 
 #: dist/converse-no-dependencies.js:18681
-#, fuzzy
 msgid "Show more"
-msgstr "談話室一覧を見る"
+msgstr "もっと見る"
 
 #: dist/converse-no-dependencies.js:18976
 msgid "Close this chat box"
@@ -134,7 +133,7 @@ msgstr "その他のヒント"
 
 #: dist/converse-no-dependencies.js:19091
 msgid "Choose a file to send"
-msgstr ""
+msgstr "送信するファイルを選択"
 
 #: dist/converse-no-dependencies.js:19142
 msgid "Click to write as a normal (non-spoiler) message"
@@ -149,9 +148,8 @@ msgid "Clear all messages"
 msgstr "すべてのメッセージをクリア"
 
 #: dist/converse-no-dependencies.js:19149
-#, fuzzy
 msgid "Insert emojis"
-msgstr "スマイリーを挿入"
+msgstr "絵文字を挿入"
 
 #: dist/converse-no-dependencies.js:19150
 msgid "Start a call"
@@ -194,7 +192,6 @@ msgid "Show this menu"
 msgstr "このメニューを表示"
 
 #: dist/converse-no-dependencies.js:19614
-#, fuzzy
 msgid "Are you sure you want to clear the messages from this conversation?"
 msgstr "ほんとうにこのチャット欄のメッセージを消去しますか ?"
 
@@ -209,7 +206,6 @@ msgid "is busy"
 msgstr "は取り込み中です"
 
 #: dist/converse-no-dependencies.js:19710
-#, fuzzy
 msgid "is online"
 msgstr "在席"
 
@@ -811,24 +807,24 @@ msgid "Message"
 msgstr "メッセージ"
 
 #: dist/converse-no-dependencies.js:29053
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr "%1$s は司会者ではなくなりました。"
+msgstr "%1$s は司会者ではなくなりました"
 
 #: dist/converse-no-dependencies.js:29056
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been given a voice again"
-msgstr "%1$s は再び発言権を得ました。"
+msgstr "%1$s は再び発言権を得ました"
 
 #: dist/converse-no-dependencies.js:29059
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been muted"
-msgstr "%1$s は発言権を失いました。"
+msgstr "%1$s は発言権を失いました"
 
 #: dist/converse-no-dependencies.js:29062
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a moderator"
-msgstr "%1$s は司会者になりました。"
+msgstr "%1$s は司会者になりました"
 
 #: dist/converse-no-dependencies.js:29072
 msgid "Close and leave this room"

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-04-30 16:16+0200\n"
-"PO-Revision-Date: 2018-04-30 14:12+0000\n"
+"PO-Revision-Date: 2018-05-07 18:37+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:9854 dist/converse-no-dependencies.js:9883
 msgid "Download"
-msgstr ""
+msgstr "Télécharger"
 
 #: dist/converse-no-dependencies.js:9873
 #, javascript-format
@@ -35,11 +35,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:9896
 msgid "Download video file"
-msgstr ""
+msgstr "Télécharger le fichier vidéo"
 
 #: dist/converse-no-dependencies.js:9909
 msgid "Download audio file"
-msgstr ""
+msgstr "Télécharger le fichier audio"
 
 #: dist/converse-no-dependencies.js:11206
 msgid "The connection has dropped, attempting to reconnect."
@@ -85,24 +85,24 @@ msgstr "Cliquez pour cacher ces contacts"
 
 #: dist/converse-no-dependencies.js:17811
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "Désolé, impossible de déterminer l’URL pour envoyer le fichier."
 
 #: dist/converse-no-dependencies.js:17819
 msgid "Sorry, could not determine upload URL."
-msgstr ""
+msgstr "Désolé, impossible de déterminer l’URL d’envoi de fichier."
 
 #: dist/converse-no-dependencies.js:17851
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "Désolé, l’envoi de fichier a échoué."
 
 #: dist/converse-no-dependencies.js:17854
 #, javascript-format
 msgid "Your server's response: \"%1$s\""
-msgstr ""
+msgstr "La réponse de votre serveur : « %1$s »"
 
 #: dist/converse-no-dependencies.js:18012
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "Désolé, votre serveur semble ne pas proposer l’envoi de fichier."
 
 #: dist/converse-no-dependencies.js:18022
 #, javascript-format
@@ -110,11 +110,12 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
+"La taille de votre fichier, %1$s, dépasse le maximum autorisé par votre "
+"serveur, qui est %2$s."
 
 #: dist/converse-no-dependencies.js:18681
-#, fuzzy
 msgid "Show more"
-msgstr "Afficher les salons"
+msgstr "Afficher plus"
 
 #: dist/converse-no-dependencies.js:18976
 msgid "Close this chat box"
@@ -145,7 +146,7 @@ msgstr "Indice optionnel"
 
 #: dist/converse-no-dependencies.js:19091
 msgid "Choose a file to send"
-msgstr ""
+msgstr "Choisir un fichier à envoyer"
 
 #: dist/converse-no-dependencies.js:19142
 msgid "Click to write as a normal (non-spoiler) message"
@@ -160,9 +161,8 @@ msgid "Clear all messages"
 msgstr "Supprimer tous les messages"
 
 #: dist/converse-no-dependencies.js:19149
-#, fuzzy
 msgid "Insert emojis"
-msgstr "Insérer une émoticône"
+msgstr "Insérer un emoji"
 
 #: dist/converse-no-dependencies.js:19150
 msgid "Start a call"
@@ -205,9 +205,8 @@ msgid "Show this menu"
 msgstr "Afficher ce menu"
 
 #: dist/converse-no-dependencies.js:19614
-#, fuzzy
 msgid "Are you sure you want to clear the messages from this conversation?"
-msgstr "Voulez-vous vraiment supprimer les messages de cette conversation ?"
+msgstr "Voulez-vous vraiment effacer les messages de cette conversation ?"
 
 #: dist/converse-no-dependencies.js:19704
 #: dist/converse-no-dependencies.js:30472
@@ -220,9 +219,8 @@ msgid "is busy"
 msgstr "est occupé"
 
 #: dist/converse-no-dependencies.js:19710
-#, fuzzy
 msgid "is online"
-msgstr "en ligne"
+msgstr "est en ligne"
 
 #: dist/converse-no-dependencies.js:22577
 #, javascript-format
@@ -829,24 +827,24 @@ msgid "Message"
 msgstr "Message"
 
 #: dist/converse-no-dependencies.js:29053
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr "%1$s n’est plus un modérateur."
+msgstr "%1$s n’est plus un modérateur"
 
 #: dist/converse-no-dependencies.js:29056
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been given a voice again"
-msgstr "%1$s peut de nouveau parler."
+msgstr "%1$s peut de nouveau parler"
 
 #: dist/converse-no-dependencies.js:29059
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been muted"
-msgstr "%1$s ne peut plus parler."
+msgstr "%1$s ne peut plus parler"
 
 #: dist/converse-no-dependencies.js:29062
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a moderator"
-msgstr "%1$s est désormais un modérateur."
+msgstr "%1$s est désormais un modérateur"
 
 #: dist/converse-no-dependencies.js:29072
 msgid "Close and leave this room"

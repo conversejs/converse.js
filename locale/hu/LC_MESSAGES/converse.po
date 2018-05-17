@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-04-30 16:16+0200\n"
-"PO-Revision-Date: 2018-04-24 07:37+0000\n"
+"PO-Revision-Date: 2018-05-02 12:17+0000\n"
 "Last-Translator: Szilágyi Gyula <gyula.n7@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/hu/>\n"
@@ -24,20 +24,20 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:9854 dist/converse-no-dependencies.js:9883
 msgid "Download"
-msgstr ""
+msgstr "Letöltés"
 
 #: dist/converse-no-dependencies.js:9873
 #, javascript-format
 msgid "Download: \"%1$s"
-msgstr ""
+msgstr "Letöltés: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:9896
 msgid "Download video file"
-msgstr ""
+msgstr "Videó fájl letöltése"
 
 #: dist/converse-no-dependencies.js:9909
 msgid "Download audio file"
-msgstr ""
+msgstr "Hangfájl letöltése"
 
 #: dist/converse-no-dependencies.js:11206
 msgid "The connection has dropped, attempting to reconnect."
@@ -77,24 +77,24 @@ msgstr "Kattintson ide a névjegyek elrejtéséhez"
 
 #: dist/converse-no-dependencies.js:17811
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "Sajnáljuk, nem sikerült meghatározni a fájl feltöltési URL-jét."
 
 #: dist/converse-no-dependencies.js:17819
 msgid "Sorry, could not determine upload URL."
-msgstr ""
+msgstr "Sajnáljuk, nem sikerült meghatározni a feltöltési URL-t."
 
 #: dist/converse-no-dependencies.js:17851
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "Sajnáljuk, a fájlt nem sikerült feltölteni."
 
 #: dist/converse-no-dependencies.js:17854
 #, javascript-format
 msgid "Your server's response: \"%1$s\""
-msgstr ""
+msgstr "A kiszolgáló válasza: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:18012
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "Sajnálom, úgy tűnik, hogy a szerver nem támogatja a fájl feltöltést."
 
 #: dist/converse-no-dependencies.js:18022
 #, javascript-format
@@ -102,11 +102,11 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
+"A fájlod mérete: %1$s meghaladja a szervered által megengedettet, ami: %2$s."
 
 #: dist/converse-no-dependencies.js:18681
-#, fuzzy
 msgid "Show more"
-msgstr "Szobák listája"
+msgstr "Mutass többet"
 
 #: dist/converse-no-dependencies.js:18976
 msgid "Close this chat box"
@@ -137,7 +137,7 @@ msgstr "Választható tipp"
 
 #: dist/converse-no-dependencies.js:19091
 msgid "Choose a file to send"
-msgstr ""
+msgstr "Válasszon ki egy fájlt küldéshez"
 
 #: dist/converse-no-dependencies.js:19142
 msgid "Click to write as a normal (non-spoiler) message"
@@ -152,9 +152,8 @@ msgid "Clear all messages"
 msgstr "Üzenetek törlése"
 
 #: dist/converse-no-dependencies.js:19149
-#, fuzzy
 msgid "Insert emojis"
-msgstr "Hangulatjel beszúrása"
+msgstr "Emotikonok beszúrása"
 
 #: dist/converse-no-dependencies.js:19150
 msgid "Start a call"
@@ -197,9 +196,8 @@ msgid "Show this menu"
 msgstr "Mutasd a menüt"
 
 #: dist/converse-no-dependencies.js:19614
-#, fuzzy
 msgid "Are you sure you want to clear the messages from this conversation?"
-msgstr "Biztosan törölni szeretné az üzeneteit a csevegési mezőből?"
+msgstr "Biztosan törölni szeretné ebből a beszélgetésből származó üzeneteket?"
 
 #: dist/converse-no-dependencies.js:19704
 #: dist/converse-no-dependencies.js:30472
@@ -212,7 +210,6 @@ msgid "is busy"
 msgstr "elfoglalt"
 
 #: dist/converse-no-dependencies.js:19710
-#, fuzzy
 msgid "is online"
 msgstr "elérhető"
 
@@ -815,24 +812,24 @@ msgid "Message"
 msgstr "Üzenet"
 
 #: dist/converse-no-dependencies.js:29053
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr "%1$s többé már nem moderátor."
+msgstr "%1$s többé már nem moderátor"
 
 #: dist/converse-no-dependencies.js:29056
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been given a voice again"
-msgstr "%1$s újra hangot kapott."
+msgstr "%1$s újra hangot kapott"
 
 #: dist/converse-no-dependencies.js:29059
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been muted"
-msgstr "%1$s el lett némítva."
+msgstr "%1$s el lett némítva"
 
 #: dist/converse-no-dependencies.js:29062
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a moderator"
-msgstr "%1$s most már moderátor."
+msgstr "%1$s most már moderátor"
 
 #: dist/converse-no-dependencies.js:29072
 msgid "Close and leave this room"

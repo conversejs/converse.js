@@ -73,7 +73,7 @@
                 }
                 if (result.image) {
                     const word_array_from_b64 = CryptoJS.enc.Base64.parse(result['image']);
-                    result['image_type'] = CryptoJS.SHA1(word_array_from_b64).toString()
+                    result['image_hash'] = CryptoJS.SHA1(word_array_from_b64).toString()
                 }
                 if (callback) {
                     callback(result);

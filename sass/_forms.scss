@@ -1,0 +1,110 @@
+#conversejs {
+    form {
+        .form-group {
+            margin-bottom: 2em;
+        }
+
+        .form-check-label {
+            margin-top: $form-check-input-margin-y;
+        }
+
+        .form-control {
+            &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+                color: $subdued-color;
+            }
+            &::-moz-placeholder { /* Firefox 19+ */
+                color: $subdued-color;
+            }
+            &:-ms-input-placeholder { /* IE 10+ */
+                color: $subdued-color;
+            }
+            &:-moz-placeholder { /* Firefox 18- */
+                color: $subdued-color;
+            }
+            &::placeholder {
+                color: $subdued-color;
+            }
+        }
+
+        .clear-input {
+            position: absolute;
+            right: 0.2em;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        &#converse-register, 
+        &#converse-login {
+            legend {
+                width: 100%;
+                text-align: center;
+                margin: 0 auto 0.5em auto;
+            }
+            fieldset.buttons {
+                text-align: center;
+            }
+            .login-anon {
+                height: auto;
+                white-space: normal;
+            }
+            .save-submit {
+                color: $save-button-color;
+            }
+            .form-url {
+                display: block;
+                font-weight: normal;
+                margin: 1em 0;
+            }
+
+        }
+
+
+        &.converse-form {
+            background: white;
+            padding: 1em;
+            legend {
+                color: $text-color;
+                font-size: 125%;
+                margin-bottom: 1.5em;
+            }
+            select,
+            input[type=password],
+            input[type=number],
+            input[type=text] {
+                min-width: 50%;
+            }
+            input[type=text],
+            input[type=password],
+            input[type=number],
+            input[type=button],
+            input[type=submit] {
+                padding: 0.5em;
+            }
+            input[type=button],
+            input[type=submit] {
+                padding-left: 1em;
+                padding-right: 1em;
+                margin: 0.5em 0;
+                border: none;
+            }
+            input.error {
+                border: 1px solid $error-color;
+                color: $text-color;
+            }
+            .text-muted {
+                color: $subdued-color !important;
+                font-size: 85%;
+                padding-top: 0.5em;
+                a {
+                    color: lighten($link-color, 10%);
+                }
+                &.error {
+                    color: $error-color;
+                }
+            }
+        }
+        &.converse-centered-form {
+            text-align: center;
+        }
+    }
+}

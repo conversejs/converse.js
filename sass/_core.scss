@@ -89,23 +89,6 @@ body.reset {
     ::placeholder {
         color: $subdued-color;
     }
-    .form-control {
-        &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-            color: $subdued-color;
-        }
-        &::-moz-placeholder { /* Firefox 19+ */
-            color: $subdued-color;
-        }
-        &:-ms-input-placeholder { /* IE 10+ */
-            color: $subdued-color;
-        }
-        &:-moz-placeholder { /* Firefox 18- */
-            color: $subdued-color;
-        }
-        &::placeholder {
-            color: $subdued-color;
-        }
-    }
 
     ::selection {
         background-color: $highlight-color;
@@ -400,66 +383,6 @@ body.reset {
     .button-cancel {
         color: white;
         background-color: $text-color;
-    }
-
-    form {
-        .clear-input {
-            position: absolute;
-            right: 0.2em;
-            cursor: pointer;
-            font-size: 0.75rem;
-        }
-
-        &.converse-form {
-            background: white;
-            padding: 1em;
-            legend {
-                color: $text-color;
-                font-size: 125%;
-                margin-bottom: 1.5em;
-            }
-            input[type=checkbox] {
-                display: block;
-            }
-            select,
-            input[type=password],
-            input[type=number],
-            input[type=text] {
-                min-width: 50%;
-            }
-            input[type=text],
-            input[type=password],
-            input[type=number],
-            input[type=button],
-            input[type=submit] {
-                padding: 0.5em;
-            }
-            input[type=button],
-            input[type=submit] {
-                padding-left: 1em;
-                padding-right: 1em;
-                margin: 0.5em 0;
-                border: none;
-            }
-            input.error {
-                border: 1px solid $error-color;
-                color: $text-color;
-            }
-            .text-muted {
-                color: $subdued-color !important;
-                font-size: 85%;
-                padding-top: 0.5em;
-                a {
-                    color: lighten($link-color, 10%);
-                }
-                &.error {
-                    color: $error-color;
-                }
-            }
-        }
-        &.converse-centered-form {
-            text-align: center;
-        }
     }
 
     .chat-textarea-chatbox-selected {

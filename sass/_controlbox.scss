@@ -181,35 +181,6 @@
             }
         }
 
-        #converse-register, #converse-login {
-            legend {
-                width: 100%;
-                text-align: center;
-                margin: 0 auto 0.5em auto;
-            }
-            label {
-                margin-top: 2em;
-            }
-            fieldset.buttons {
-                text-align: center;
-            }
-            .login-anon {
-                height: auto;
-                white-space: normal;
-            }
-            .save-submit {
-                color: $save-button-color;
-            }
-            input {
-                width: 100%;
-            }
-            .form-url {
-                display: block;
-                font-weight: normal;
-                margin: 1em 0;
-            }
-
-        }
 
         .controlbox-pane {
             .userinfo {
@@ -229,7 +200,7 @@
         #chatrooms {
             padding: 0;
 
-            form.add-chatroom {
+            .add-chatroom {
                 input[type=button],
                 input[type=submit],
                 input[type=text] {

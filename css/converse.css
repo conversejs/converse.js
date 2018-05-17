@@ -6890,20 +6890,6 @@ body.reset {
     color: #A8ABA1; }
   #conversejs ::placeholder {
     color: #A8ABA1; }
-  #conversejs .form-control::-webkit-input-placeholder {
-    /* Chrome/Opera/Safari */
-    color: #A8ABA1; }
-  #conversejs .form-control::-moz-placeholder {
-    /* Firefox 19+ */
-    color: #A8ABA1; }
-  #conversejs .form-control:-ms-input-placeholder {
-    /* IE 10+ */
-    color: #A8ABA1; }
-  #conversejs .form-control:-moz-placeholder {
-    /* Firefox 18- */
-    color: #A8ABA1; }
-  #conversejs .form-control::placeholder {
-    color: #A8ABA1; }
   #conversejs ::selection {
     background-color: #DCF9F6; }
   #conversejs ::-moz-selection {
@@ -7175,50 +7161,6 @@ body.reset {
   #conversejs .button-cancel {
     color: white;
     background-color: #666; }
-  #conversejs form .clear-input {
-    position: absolute;
-    right: 0.2em;
-    cursor: pointer;
-    font-size: 0.75rem; }
-  #conversejs form.converse-form {
-    background: white;
-    padding: 1em; }
-    #conversejs form.converse-form legend {
-      color: #666;
-      font-size: 125%;
-      margin-bottom: 1.5em; }
-    #conversejs form.converse-form input[type=checkbox] {
-      display: block; }
-    #conversejs form.converse-form select,
-    #conversejs form.converse-form input[type=password],
-    #conversejs form.converse-form input[type=number],
-    #conversejs form.converse-form input[type=text] {
-      min-width: 50%; }
-    #conversejs form.converse-form input[type=text],
-    #conversejs form.converse-form input[type=password],
-    #conversejs form.converse-form input[type=number],
-    #conversejs form.converse-form input[type=button],
-    #conversejs form.converse-form input[type=submit] {
-      padding: 0.5em; }
-    #conversejs form.converse-form input[type=button],
-    #conversejs form.converse-form input[type=submit] {
-      padding-left: 1em;
-      padding-right: 1em;
-      margin: 0.5em 0;
-      border: none; }
-    #conversejs form.converse-form input.error {
-      border: 1px solid #A53214;
-      color: #666; }
-    #conversejs form.converse-form .text-muted {
-      color: #A8ABA1 !important;
-      font-size: 85%;
-      padding-top: 0.5em; }
-      #conversejs form.converse-form .text-muted a {
-        color: #79a5ba; }
-      #conversejs form.converse-form .text-muted.error {
-        color: #A53214; }
-  #conversejs form.converse-centered-form {
-    text-align: center; }
   #conversejs .chat-textarea-chatbox-selected {
     border: 1px solid #578308;
     margin: 0; }
@@ -7257,6 +7199,82 @@ body.reset {
     left: 0; } }
 #conversejs > .row {
   flex-direction: row-reverse; }
+
+#conversejs form .form-group {
+  margin-bottom: 2em; }
+#conversejs form .form-check-label {
+  margin-top: 0.3rem; }
+#conversejs form .form-control::-webkit-input-placeholder {
+  /* Chrome/Opera/Safari */
+  color: #A8ABA1; }
+#conversejs form .form-control::-moz-placeholder {
+  /* Firefox 19+ */
+  color: #A8ABA1; }
+#conversejs form .form-control:-ms-input-placeholder {
+  /* IE 10+ */
+  color: #A8ABA1; }
+#conversejs form .form-control:-moz-placeholder {
+  /* Firefox 18- */
+  color: #A8ABA1; }
+#conversejs form .form-control::placeholder {
+  color: #A8ABA1; }
+#conversejs form .clear-input {
+  position: absolute;
+  right: 0.2em;
+  cursor: pointer;
+  font-size: 0.75rem; }
+#conversejs form#converse-register legend, #conversejs form#converse-login legend {
+  width: 100%;
+  text-align: center;
+  margin: 0 auto 0.5em auto; }
+#conversejs form#converse-register fieldset.buttons, #conversejs form#converse-login fieldset.buttons {
+  text-align: center; }
+#conversejs form#converse-register .login-anon, #conversejs form#converse-login .login-anon {
+  height: auto;
+  white-space: normal; }
+#conversejs form#converse-register .save-submit, #conversejs form#converse-login .save-submit {
+  color: #3AA569; }
+#conversejs form#converse-register .form-url, #conversejs form#converse-login .form-url {
+  display: block;
+  font-weight: normal;
+  margin: 1em 0; }
+#conversejs form.converse-form {
+  background: white;
+  padding: 1em; }
+  #conversejs form.converse-form legend {
+    color: #666;
+    font-size: 125%;
+    margin-bottom: 1.5em; }
+  #conversejs form.converse-form select,
+  #conversejs form.converse-form input[type=password],
+  #conversejs form.converse-form input[type=number],
+  #conversejs form.converse-form input[type=text] {
+    min-width: 50%; }
+  #conversejs form.converse-form input[type=text],
+  #conversejs form.converse-form input[type=password],
+  #conversejs form.converse-form input[type=number],
+  #conversejs form.converse-form input[type=button],
+  #conversejs form.converse-form input[type=submit] {
+    padding: 0.5em; }
+  #conversejs form.converse-form input[type=button],
+  #conversejs form.converse-form input[type=submit] {
+    padding-left: 1em;
+    padding-right: 1em;
+    margin: 0.5em 0;
+    border: none; }
+  #conversejs form.converse-form input.error {
+    border: 1px solid #A53214;
+    color: #666; }
+  #conversejs form.converse-form .text-muted {
+    color: #A8ABA1 !important;
+    font-size: 85%;
+    padding-top: 0.5em; }
+    #conversejs form.converse-form .text-muted a {
+      color: #79a5ba; }
+    #conversejs form.converse-form .text-muted.error {
+      color: #A53214; }
+#conversejs form.converse-centered-form {
+  text-align: center; }
 
 #conversejs #user-profile-modal label {
   font-weight: bold; }
@@ -7788,25 +7806,6 @@ body.reset {
     color: #666; }
     #conversejs #controlbox .oauth-login .icon-social:before {
       font-size: 16px; }
-  #conversejs #controlbox #converse-register legend, #conversejs #controlbox #converse-login legend {
-    width: 100%;
-    text-align: center;
-    margin: 0 auto 0.5em auto; }
-  #conversejs #controlbox #converse-register label, #conversejs #controlbox #converse-login label {
-    margin-top: 2em; }
-  #conversejs #controlbox #converse-register fieldset.buttons, #conversejs #controlbox #converse-login fieldset.buttons {
-    text-align: center; }
-  #conversejs #controlbox #converse-register .login-anon, #conversejs #controlbox #converse-login .login-anon {
-    height: auto;
-    white-space: normal; }
-  #conversejs #controlbox #converse-register .save-submit, #conversejs #controlbox #converse-login .save-submit {
-    color: #3AA569; }
-  #conversejs #controlbox #converse-register input, #conversejs #controlbox #converse-login input {
-    width: 100%; }
-  #conversejs #controlbox #converse-register .form-url, #conversejs #controlbox #converse-login .form-url {
-    display: block;
-    font-weight: normal;
-    margin: 1em 0; }
   #conversejs #controlbox .controlbox-pane .userinfo {
     padding-bottom: 1em; }
     #conversejs #controlbox .controlbox-pane .userinfo .username {
@@ -7817,12 +7816,12 @@ body.reset {
       margin-bottom: 0.75em; }
   #conversejs #controlbox #chatrooms {
     padding: 0; }
-    #conversejs #controlbox #chatrooms form.add-chatroom {
+    #conversejs #controlbox #chatrooms .add-chatroom {
       margin: 0;
       padding: 0; }
-      #conversejs #controlbox #chatrooms form.add-chatroom input[type=button],
-      #conversejs #controlbox #chatrooms form.add-chatroom input[type=submit],
-      #conversejs #controlbox #chatrooms form.add-chatroom input[type=text] {
+      #conversejs #controlbox #chatrooms .add-chatroom input[type=button],
+      #conversejs #controlbox #chatrooms .add-chatroom input[type=submit],
+      #conversejs #controlbox #chatrooms .add-chatroom input[type=text] {
         width: 100%; }
   #conversejs #controlbox .controlbox-section {
     margin: 1em 0 0 0; }

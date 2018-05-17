@@ -35,25 +35,8 @@ body {
 }
 
 #conversejs.fullscreen {
-
     .converse-chatboxes {
         width: 100vw;
         right: 15px; // Hack due to padding added by bootstrap
-    }
-
-    form {
-        &.converse-form {
-            input[type=checkbox] {
-                margin-left: 1em;
-                display: inline;
-                margin-bottom: 2em;
-            }
-            input[type=button],
-            input[type=submit] {
-                padding-left: 1em;
-                padding-right: 1em;
-                margin-right: 1em;
-            }
-        }
     }
 }

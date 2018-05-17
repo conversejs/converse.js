@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-04-30 16:16+0200\n"
-"PO-Revision-Date: 2018-04-03 14:39+0000\n"
+"PO-Revision-Date: 2018-05-03 07:39+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.20-dev\n"
+"X-Generator: Weblate 3.0-dev\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -21,20 +21,20 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:9854 dist/converse-no-dependencies.js:9883
 msgid "Download"
-msgstr ""
+msgstr "Last ned"
 
 #: dist/converse-no-dependencies.js:9873
 #, javascript-format
 msgid "Download: \"%1$s"
-msgstr ""
+msgstr "Last ned: \"%1$s"
 
 #: dist/converse-no-dependencies.js:9896
 msgid "Download video file"
-msgstr ""
+msgstr "Last ned videofil"
 
 #: dist/converse-no-dependencies.js:9909
 msgid "Download audio file"
-msgstr ""
+msgstr "Last ned lydfil"
 
 #: dist/converse-no-dependencies.js:11206
 msgid "The connection has dropped, attempting to reconnect."
@@ -72,24 +72,25 @@ msgstr "Klikk for å skjule disse kontaktene"
 
 #: dist/converse-no-dependencies.js:17811
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "Beklager, kunne ikke fastsette filopplastingsnettadresse."
 
 #: dist/converse-no-dependencies.js:17819
 msgid "Sorry, could not determine upload URL."
-msgstr ""
+msgstr "Beklager, kunne ikke fastsette opplastingsnettadresse."
 
 #: dist/converse-no-dependencies.js:17851
+#, fuzzy
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "Beklager, kunne ikke laste opp filen din."
 
 #: dist/converse-no-dependencies.js:17854
 #, javascript-format
 msgid "Your server's response: \"%1$s\""
-msgstr ""
+msgstr "Svar fra tjeneren din: %1$s\""
 
 #: dist/converse-no-dependencies.js:18012
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "Beklager, det ser ikke ut til at filopplasting støttes av tjeneren din."
 
 #: dist/converse-no-dependencies.js:18022
 #, javascript-format
@@ -97,6 +98,8 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
+"Størrelsen på filen din, %1$s, overstiger maks tillatt størrelse for "
+"tjeneren din, som er %2$s."
 
 #: dist/converse-no-dependencies.js:18681
 #, fuzzy
@@ -133,7 +136,7 @@ msgstr "Valgfritt hint"
 
 #: dist/converse-no-dependencies.js:19091
 msgid "Choose a file to send"
-msgstr ""
+msgstr "Velg en fil å sende"
 
 #: dist/converse-no-dependencies.js:19142
 #, fuzzy

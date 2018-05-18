@@ -104,19 +104,6 @@
                 }
             },
 
-            clearSession () {
-                this.__super__.clearSession.apply(this, arguments);
-                const chatboxes = _.get(this, 'chatboxes', null);
-                if (!_.isNil(chatboxes)) {
-                    const controlbox = chatboxes.get('controlbox');
-                    if (controlbox &&
-                            controlbox.collection &&
-                            controlbox.collection.browserStorage) {
-                        controlbox.save({'connected': false});
-                    }
-                }
-            },
-
             ChatBoxes: {
                 chatBoxMayBeShown (chatbox) {
                     return this.__super__.chatBoxMayBeShown.apply(this, arguments) &&
@@ -586,6 +573,20 @@
                         }
                     } else {
                         this.showControlBox();
+                    }
+                }
+            });
+
+            _converse.on('clearSession', () => {
+                if (_converse.trusted) {
+                    const chatboxes = _.get(_converse, 'chatboxes', null);
+                    if (!_.isNil(chatboxes)) {
+                        const controlbox = chatboxes.get('controlbox');
+                        if (controlbox &&
+                                controlbox.collection &&
+                                controlbox.collection.browserStorage) {
+                            controlbox.save({'connected': false});
+                        }
                     }
                 }
             });

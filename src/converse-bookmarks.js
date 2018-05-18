@@ -51,15 +51,6 @@
             //
             // New functions which don't exist yet can also be added.
 
-            clearSession () {
-                if (!_.isUndefined(this.bookmarks)) {
-                    this.bookmarks.reset();
-                    this.bookmarks.browserStorage._clear();
-                    window.sessionStorage.removeItem(this.bookmarks.fetched_flag);
-                }
-                this.__super__.clearSession.apply(this, arguments);
-            },
-
             ChatRoomView: {
                 events: {
                     'click .toggle-bookmark': 'toggleBookmark'
@@ -574,6 +565,14 @@
                     {'object': _converse, 'event': 'chatBoxesFetched'},
                     {'object': _converse, 'event': 'roomsPanelRendered'}
                 ], initBookmarks);
+
+
+            _converse.on('clearSession', () => {
+                if (!_.isUndefined(_converse.bookmarks)) {
+                    _converse.bookmarks.browserStorage._clear();
+                    window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
+                }
+            });
 
             _converse.on('reconnected', initBookmarks);
 

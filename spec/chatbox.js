@@ -105,10 +105,6 @@
                         expect($(view.el).find('.chat-msg-text:last').text()).toBe(' wrote a 3rd person message');
                         expect($(view.el).find('.chat-msg-author:last').is(':visible')).toBeTruthy();
                         expect(u.hasClass('chat-msg-followup', message_el)).toBeFalsy();
-
-
-                        message = 'This a normal message';
-
                         done();
                     });
                 });

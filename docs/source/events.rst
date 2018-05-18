@@ -149,6 +149,11 @@ When a chatbox has been minimized or maximized. Relevant to converse-chatview.js
 
 ``_converse.api.listen.on('chatBoxToggled', function (chatbox) { ... });``
 
+clearSession
+~~~~~~~~~~~~
+
+Called when the user is logging out and provides the opportunity to remove session data.
+
 connected
 ~~~~~~~~~
 

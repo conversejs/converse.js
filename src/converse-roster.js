@@ -16,13 +16,6 @@
         dependencies: ["converse-vcard"],
 
         overrides: {
-            clearSession () {
-                this.__super__.clearSession.apply(this, arguments);
-                if (!_.isUndefined(this.roster)) {
-                    this.roster.browserStorage._clear();
-                }
-            },
-
             _tearDown () {
                 this.__super__._tearDown.apply(this, arguments);
                 if (this.roster) {
@@ -360,12 +353,12 @@
 
                 fetchRosterContacts () {
                     /* Fetches the roster contacts, first by trying the
-                    * sessionStorage cache, and if that's empty, then by querying
-                    * the XMPP server.
-                    *
-                    * Returns a promise which resolves once the contacts have been
-                    * fetched.
-                    */
+                     * sessionStorage cache, and if that's empty, then by querying
+                     * the XMPP server.
+                     *
+                     * Returns a promise which resolves once the contacts have been
+                     * fetched.
+                     */
                     return new Promise((resolve, reject) => {
                         this.fetch({
                             'add': true,
@@ -734,6 +727,12 @@
 
 
             /********** Event Handlers *************/
+
+            _converse.api.listen.on('clearSession', () => {
+                if (!_.isUndefined(this.roster)) {
+                    this.roster.browserStorage._clear();
+                }
+            });
 
             _converse.api.listen.on('statusInitialized', (reconnecting) => {
                 if (reconnecting) {

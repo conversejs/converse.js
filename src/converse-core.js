@@ -649,13 +649,13 @@
         };
 
         this.clearSession = function () {
-            if (!_.isUndefined(this.session) && this.session.browserStorage) {
-                this.session.browserStorage._clear();
-            }
             if (!_converse.trusted) {
                 window.localStorage.clear();
                 window.sessionStorage.clear();
+            } else if (!_.isUndefined(this.session) && this.session.browserStorage) {
+                this.session.browserStorage._clear();
             }
+            _converse.emit('clearSession');
         };
 
         this.logOut = function () {

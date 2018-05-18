@@ -14,7 +14,8 @@
 - Support for rendering URLs sent according to XEP-0066 Out of Band Data.
 - Geo-URIs (e.g. from Conversations) are now replaced by links to openstreetmap (works in reverse also)
 - Add a checkbox to indicate whether a trusted device is being used or not.
-  If the device is not trusted, then all user data is deleted from the cache upon logout.
+  If the device is not trusted, sessionStorage is used and all user data is deleted from the browser cache upon logout.
+  If the device is trusted, localStorage is used and user data is cached indefinitely.
 
 ### Bugfixes
 

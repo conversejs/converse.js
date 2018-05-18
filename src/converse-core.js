@@ -322,7 +322,6 @@
                 'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'
             ],
             message_carbons: true,
-            message_storage: 'session',
             nickname: undefined,
             password: undefined,
             prebind_url: null,
@@ -336,6 +335,7 @@
             storage: 'session',
             strict_plugin_dependencies: false,
             synchronize_availability: true,
+            trusted: true,
             view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
             websocket_url: undefined,
             whitelisted_plugins: []
@@ -651,6 +651,10 @@
         this.clearSession = function () {
             if (!_.isUndefined(this.session) && this.session.browserStorage) {
                 this.session.browserStorage._clear();
+            }
+            if (!_converse.trusted) {
+                window.localStorage.clear();
+                window.sessionStorage.clear();
             }
         };
 

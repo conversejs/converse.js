@@ -478,6 +478,7 @@
                     if (!this.validate()) { return; }
 
                     const form_data = new FormData(ev.target);
+                    _converse.trusted = form_data.get('trusted');
                     _converse.storage = form_data.get('trusted') ? 'local' : 'session';
 
                     let jid = form_data.get('jid');

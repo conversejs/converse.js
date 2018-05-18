@@ -927,28 +927,6 @@ Message carbons is the XEP (Jabber protocol extension) specifically drafted to
 solve this problem, while `forward_messages`_ uses
 `stanza forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
 
-message_storage
-----------------
-
-* Default:  ``session``
-
-Valid options: ``session``, ``local``.
-
-This option determines the type of `browser storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_
-(``localStorage`` or ``sessionStorage``) used by converse.js to cache messages (private and group).
-
-The main difference between the two is that `sessionStorage` only persists while
-the current tab or window containing a converse.js instance is open. As soon as
-it's closed, the data is cleared.
-
-Data in `localStorage` on the other hand is kept indefinitely, which can have
-privacy implications on public computers or when multiple people are using the
-same computer.
-
-See also the `storage`_ option, which applies to other cached data, such as
-which chats you have open, what features the XMPP server supports and what
-your online status is.
-
 muc_disable_moderator_commands
 ------------------------------
 
@@ -1269,17 +1247,20 @@ privacy perspective a better choice.
 
 The main difference between the two is that `sessionStorage` only persists while
 the current tab or window containing a converse.js instance is open. As soon as
-it's closed, the data is cleared.
+it's closed, the data is cleared (as long as there aren't any other tabs with
+the same domain open).
 
 Data in `localStorage` on the other hand is kept indefinitely.
 
-The data that is cached includes which chats you had open, what features the
-XMPP server supports and what your online status was.
+The data that is cached includes your sent and received messages, which chats you had
+open, what features the XMPP server supports and what your online status was.
 
-Since version 1.0.7, the store for messages is now configurable separately with
-the `message_storage`_ option, to allow you to cache messages for longer in the
-browser (with `localStorage`) while still using `sessionStorage` for other
-data.
+See also `trusted`_.
+
+.. note::
+    When the user checks the checkbox labeled "This is a trusted device", then
+    the storage setting will automatically be set to localStorage.
+
 
 .. note::
     Between versions 0.8.0 and 1.0.7, setting the value of this option to "local"
@@ -1293,6 +1274,7 @@ data.
     Since version 1.0.7, the "storage" option doesn't apply anymore to how roster
     contacts and their statuses are stored (they're now always stored in session
     storage), to address the above issue.
+
 
 
 sticky_controlbox
@@ -1351,6 +1333,21 @@ If set to ``true``, converse.js will synchronize with all other clients you are 
 If set to ``false``, this feature is disabled.
 
 If set to ``a resource name``, converse.js will synchronize only with a client that has that particular resource assigned to it.
+
+trusted
+-------
+
+* Default: ``true``
+
+This setting determines whether the default value of the "This is a trusted device" checkbox in the login form.
+
+When the current device is not trusted, then localStorage and sessionStorage
+will be cleared when the user logs out, thereby removing all cached data.
+
+Clearing the cache in this way makes Converse.js much slower when the user logs
+in again, because all data needs to be fetch anew.
+
+See also `storage`_.
 
 time_format
 -----------

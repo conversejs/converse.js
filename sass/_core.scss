@@ -50,13 +50,15 @@ body.reset {
 }
 
 #conversejs {
+    bottom: 0;
+    height: 100%;
+    position: fixed;
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
     color: $text-color;
     font-family: "Helvetica", "Arial", sans-serif;
     font-size: $font-size;
     direction: ltr;
-    display: block;
     z-index: 1031; // One more than bootstrap navbar
 
     .brand-heading {
@@ -64,6 +66,10 @@ body.reset {
         .icon-conversejs {
             font-size: 80%;
         }
+    }
+
+    .popover {
+        position: fixed;
     }
 
     .converse-chatboxes {

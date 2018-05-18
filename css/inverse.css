@@ -6858,18 +6858,22 @@ body.reset {
     font-size: 60%; }
 
 #conversejs {
+  bottom: 0;
+  height: 100%;
+  position: fixed;
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   color: #666;
   font-family: "Helvetica", "Arial", sans-serif;
   font-size: 16px;
   direction: ltr;
-  display: block;
   z-index: 1031; }
   #conversejs .brand-heading {
     font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif; }
     #conversejs .brand-heading .icon-conversejs {
       font-size: 80%; }
+  #conversejs .popover {
+    position: fixed; }
   #conversejs .converse-chatboxes {
     z-index: 1031;
     position: fixed;
@@ -7245,7 +7249,7 @@ body {
 #conversejs form .form-group {
   margin-bottom: 2em; }
 #conversejs form .form-check-label {
-  margin-top: 0.1rem; }
+  margin-top: 0.3rem; }
 #conversejs form .form-control::-webkit-input-placeholder {
   /* Chrome/Opera/Safari */
   color: #A8ABA1; }
@@ -7317,9 +7321,6 @@ body {
       color: #A53214; }
 #conversejs form.converse-centered-form {
   text-align: center; }
-
-#conversejs.fullscreen form .form-check-label {
-  margin-top: 0.3rem; }
 
 #conversejs #user-profile-modal label {
   font-weight: bold; }
@@ -7929,13 +7930,16 @@ body {
     overflow-y: auto;
     background-color: white; }
   #conversejs #controlbox .controlbox-pane {
-    padding: 1.2em;
     background-color: white;
     border: 0;
     font-size: 16px;
     left: 0;
     text-align: left;
-    overflow-x: hidden; }
+    overflow-x: hidden;
+    padding: 1em 0 1em 0; }
+    #conversejs #controlbox .controlbox-pane .controlbox-padded {
+      padding-left: 1em;
+      padding-right: 1em; }
     #conversejs #controlbox .controlbox-pane .add-converse-contact {
       margin: 0 0 0.75em 0; }
     #conversejs #controlbox .controlbox-pane .chatbox-btn {
@@ -8000,6 +8004,42 @@ body {
         display: none; }
       #conversejs:not(.converse-embedded) .converse-chatboxes.sidebar-open #controlbox .controlbox-pane {
         display: block; } }
+#conversejs:not(.converse-fullscreen) #controlbox {
+  order: -1;
+  min-width: 250px !important;
+  width: 250px; }
+  #conversejs:not(.converse-fullscreen) #controlbox .box-flyout {
+    min-width: 250px !important;
+    width: 250px; }
+  #conversejs:not(.converse-fullscreen) #controlbox:not(.logged-out) .controlbox-head {
+    height: 15px; }
+  #conversejs:not(.converse-fullscreen) #controlbox .controlbox-head {
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: nowrap;
+    justify-content: space-between; }
+    #conversejs:not(.converse-fullscreen) #controlbox .controlbox-head .brand-heading {
+      position: relative;
+      width: 100%;
+      min-height: 1px;
+      padding-right: 15px;
+      padding-left: 15px;
+      flex: 0 0 66.6666666667%;
+      max-width: 66.6666666667%;
+      color: #666;
+      font-size: 2em; }
+    #conversejs:not(.converse-fullscreen) #controlbox .controlbox-head .chatbox-btn {
+      color: #578EA9;
+      margin: 0; }
+  #conversejs:not(.converse-fullscreen) #controlbox #converse-register, #conversejs:not(.converse-fullscreen) #controlbox #converse-login {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding-bottom: 0; }
+  #conversejs:not(.converse-fullscreen) #controlbox #converse-register .button-cancel {
+    font-size: 90%; }
+  #conversejs:not(.converse-fullscreen) #controlbox .controlbox-panes {
+    border-radius: 4px; }
+
 #conversejs.fullscreen #controlbox {
   position: relative;
   width: 100%;
@@ -8149,7 +8189,8 @@ body {
         color: #666;
         display: block;
         width: 100%;
-        padding: 0 0 0.3rem 0; }
+        padding-top: 0;
+        padding-bottom: 0.3rem; }
         #conversejs #converse-roster .roster-contacts .roster-group .group-toggle:hover {
           color: #585B51; }
       #conversejs #converse-roster .roster-contacts .roster-group li {

@@ -5,7 +5,7 @@
         }
 
         .form-check-label {
-            margin-top: 0.1rem;
+            margin-top: $form-check-input-margin-y;
         }
 
         .form-control {
@@ -108,12 +108,3 @@
         }
     }
 }
-
-#conversejs.fullscreen {
-    form {
-        .form-check-label {
-            margin-top: $form-check-input-margin-y;
-        }
-    }
-}
-

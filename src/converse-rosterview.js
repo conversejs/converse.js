@@ -357,7 +357,7 @@
 
             _converse.RosterContactView = Backbone.NativeView.extend({
                 tagName: 'li',
-                className: 'd-flex hidden',
+                className: 'd-flex hidden controlbox-padded',
 
                 events: {
                     "click .accept-xmpp-request": "acceptRequest",

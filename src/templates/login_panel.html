@@ -1,4 +1,4 @@
-<div id="converse-login-panel" class="controlbox-pane fade-in row">
+<div id="converse-login-panel" class="controlbox-pane fade-in row no-gutters">
     <form id="converse-login" class="converse-form" method="post">
         <div class="conn-feedback fade-in {[ if (!o.conn_feedback_subject) { ]} hidden {[ } ]} {{{o.conn_feedback_class}}}">
             <p class="feedback-subject">{{{ o.conn_feedback_subject }}}</p>
@@ -22,8 +22,8 @@
                     <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" checked="checked">
                     <label for="converse-login-trusted" class="form-check-label">{{{o.__('This is a trusted device')}}}</label>
                     <i class="fa fa-info-circle" data-toggle="popover"
-                       data-title=""
-                       data-content="{{{o.__('To improve performance, we cache your data in this browser. Uncheck this box if you want your data to be deleted when you log out. It\'s important that you explicitly log out, otherwise not all data might be deleted.')}}}"></i>
+                       data-title="Trusted device?"
+                       data-content="{{{o.__('To improve performance, we cache your data in this browser. Uncheck this box if this is a public computer or if you want your data to be deleted when you log out. It\'s important that you explicitly log out, otherwise not all cached data might be deleted.')}}}"></i>
                 </div>
 
                 <fieldset class="buttons">

@@ -274,13 +274,18 @@
         }
 
         .controlbox-pane {
-            padding: $controlbox-pane-padding;
             background-color: white;
             border: 0;
             font-size: $font-size;
             left: 0;
             text-align: left;
             overflow-x: hidden;
+            padding: 1em 0 1em 0;
+
+            .controlbox-padded {
+               padding-left: 1em;
+               padding-right: 1em;
+            }
 
             .add-converse-contact {
                 margin: 0 0 0.75em 0;
@@ -384,6 +389,58 @@
                     }
                 }
             }
+        }
+    }
+}
+
+#conversejs:not(.converse-fullscreen) {
+    #controlbox {
+        order: -1;
+        min-width: $controlbox-width !important;
+        width: $controlbox-width;
+        .box-flyout {
+            min-width: $controlbox-width !important;
+            width: $controlbox-width;
+        }
+
+        &:not(.logged-out) {
+            .controlbox-head {
+                height: 15px;
+            }
+        }
+
+        .controlbox-head {
+            display: flex;
+            flex-direction: row-reverse;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+
+
+            .brand-heading {
+                @include make-col-ready();
+                @include make-col(8);
+                color: $text-color;
+                font-size: 2em;
+            }
+            .chatbox-btn {
+                color: $controlbox-head-color;
+                margin: 0;
+            }
+        }
+
+        #converse-register, #converse-login {
+            @include make-col(12);
+            padding-bottom: 0;
+        }
+
+        #converse-register {
+            .button-cancel {
+                font-size: 90%;
+            }
+        }
+
+        .controlbox-panes {
+            border-radius: $chatbox-border-radius;
         }
     }
 }

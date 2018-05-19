@@ -1009,7 +1009,7 @@
                         "(via credentials_url)."
                     );
                 } else {
-                    this.autoLogin(); // Probably ANONYMOUS login
+                    this.autoLogin(); // Could be ANONYMOUS or EXTERNAL
                 }
             } else if (reconnecting) {
                 this.autoLogin();
@@ -1022,7 +1022,7 @@
                 // so we set them on the converse object.
                 this.jid = credentials.jid;
             }
-            if (this.authentication === _converse.ANONYMOUS) {
+            if (this.authentication === _converse.ANONYMOUS || this.authentication === _converse.EXTERNAL) {
                 if (!this.jid) {
                     throw new Error("Config Error: when using anonymous login " +
                         "you need to provide the server's domain via the 'jid' option. " +

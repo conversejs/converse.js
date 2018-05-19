@@ -885,6 +885,11 @@
                     }
                     textarea.value = '';
                     textarea.focus();
+                    // Trigger input event, so that the textarea resizes
+                    const event = document.createEvent('Event');
+                    event.initEvent('input', true, true);
+                    textarea.dispatchEvent(event);
+
                     if (message !== '') {
                         this.onMessageSubmitted(message, spoiler_hint);
                         _converse.emit('messageSend', message);

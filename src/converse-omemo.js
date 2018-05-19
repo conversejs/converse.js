@@ -70,61 +70,80 @@
                             'to': this.get('jid')
                         }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                             .c('items', {'xmlns': `${Strophe.NS.OMEMO_BUNDLES}:${device_id}`});
-                        _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
+                        _converse.connection.sendIQ(
+                            stanza,
+                            (iq) => resolve((device_id, this.parseBundle(iq))),
+                            reject,
+                            _converse.IQ_TIMEOUT
+                        );
                     });
+                },
+
+                parseBundle (device_id, stanza) {
+                    const publish_el = sizzle(`publish[node="${Strophe.NS.OMEMO_BUNDLES}:${device_id}"]`, stanza).pop();
+                    const bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop();
+                    const prekeys = _.map(
+                        sizzle(`> prekeys > preKeyPublic`, bundle_el),
+                        (key) => { return (key.getAttribute('id'), key.textContent) });
+
+                    return {
+                        'device_id': device_id,
+                        'identity_key': bundle_el.querySelector('> identityKey').textContent,
+                        'prekeys': prekeys
+                    }
                 },
 
                 fetchBundles () {
-                    return getDevicesForContact(this.get('jid')).then((devices) => {
-                        return Promise.all(_.map(devices, (device_id) => this.fetchBundle(device_id)));
-                    });
+                    const { _converse } = this.__super__;
+                    return new Promise((resolve, reject) => {
+                        getDevicesForContact(this.get('jid'))
+                            .then((devices) => Promise.all(_.map(devices, (device_id) => this.fetchBundle(device_id))))
+                            .then((bundles) => {
+                                this.buildSessions()
+                                    .then(() => resolve(bundles))
+                                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                            });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                 },
 
+                buildSessions (bundles) {
+                    const { _converse } = this.__super__,
+                          device_id = _converse.omemo_store.get('device_id');
 
-                buildSession () {
-                    // TODO
-                    return Promise.resolve();
-                    // const { _converse } = this.__super__,
-                    //       device_id = _converse.omemo_store.get('device_id');
-
-                    // return new Promise((resolve, reject) => {
-                    //     getDevicesForContact(this.get('jid')).then((devices) => {
-                    //         const session_promises = _.map(devices, (recipient_id) => {
-                    //             const address = new libsignal.SignalProtocolAddress(recipient_id, device_id),
-                    //                 sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address);
-                    //             return sessionBuilder.processPreKey({
-                    //                 'registrationId': _converse.omemo_store.get('registration_id'),
-                    //                 'identityKey': _converse.omemo_store.get('identity_keypair'),
-                    //                 'signedPreKey': {
-                    //                     'keyId': '', // <Number>,
-                    //                     'publicKey': '', // <ArrayBuffer>,
-                    //                     'signature': '', // <ArrayBuffer>
-                    //                 },
-                    //                 'preKey': {
-                    //                     'keyId': '', // <Number>,
-                    //                     'publicKey': '', // <ArrayBuffer>
-                    //                 }
-                    //             });
-                    //         });
-                    //         resolve(session_promises);
-                    //     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-                    // });
+                    return Promise.all(_.map(bundles, (bundle) => {
+                        const recipient_id = bundles['device_id'];
+                        const address = new libsignal.SignalProtocolAddress(recipient_id, device_id);
+                        const sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address);
+                        return sessionBuilder.processPreKey({
+                            'registrationId': _converse.omemo_store.get('registration_id'),
+                            'identityKey': _converse.omemo_store.get('identity_keypair'),
+                            'signedPreKey': {
+                                'keyId': '', // <Number>,
+                                'publicKey': '', // <ArrayBuffer>,
+                                'signature': '', // <ArrayBuffer>
+                            },
+                            'preKey': {
+                                'keyId': '', // <Number>,
+                                'publicKey': '', // <ArrayBuffer>
+                            }
+                        });
+                    }));
                 },
 
                 encryptMessage (message) {
                     // TODO:
-                    return Promise.resolve();
                     // const { _converse } = this.__super__;
                     // const plaintext = message.get('message');
+                    // const address = new libsignal.SignalProtocolAddress(recipientId, deviceId);
                     // return new Promise((resolve, reject) => {
                     //     var sessionCipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
                     //     sessionCipher.encrypt(plaintext).then((ciphertext) => {});
                     // });
                 },
 
-                createOMEMOMessageStanza (message) {
+                createOMEMOMessageStanza (message, bundles) {
                     const { _converse } = this.__super__;
-                    const body = "I sent you an OMEMO encrypted message but your client doesn’t seem to support that. "+
+                    const body = "This is an OMEMO encrypted message which your client doesn’t seem to support. "+
                                  "Find more information on https://conversations.im/omemo";
                     return new Promise((resolve, reject) => {
                         this.encryptMessage(message).then((payload) => {
@@ -134,8 +153,13 @@
                                     'type': this.get('message_type'),
                                     'id': message.get('msgid')
                                 }).c('body').t(body).up()
-                                  .c('encrypted').t(payload).up()
-                                .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+                                  .c('encrypted').t(payload)
+                                  .c('header').t(payload).up()
+
+                            _.forEach(bundles, (bundle) => {
+                                const prekey = bundle.prekeys[Math.random(bundle.prekeys.length)].textContent;
+                                stanza('key', {'rid': bundle.identity_key}).t(prekey).up()
+                            });
                             // TODO: set storage hint urn:xmpp:hints
                             resolve(stanza);
                         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
@@ -144,7 +168,7 @@
 
                 createMessageStanza (message) {
                     if (this.get('omemo_active')) {
-                        return this.buildSession().then(() => this.createOMEMOMessageStanza(message));
+                        return this.fetchBundles().then((bundles) => this.createOMEMOMessageStanza(message, bundles));
                     } else {
                         return Promise.resolve(this.__super__.createMessageStanza.apply(this, arguments));
                     }

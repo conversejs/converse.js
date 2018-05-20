@@ -4,6 +4,7 @@
     var Strophe = converse.env.Strophe;
     var b64_sha1 = converse.env.b64_sha1;
     var $iq = converse.env.$iq;
+    var $msg = converse.env.$msg;
     var _ = converse.env._;
     var u = converse.env.utils;
 
@@ -15,6 +16,165 @@
                 function (done, _converse) {
             // TODO
             done();
+        }));
+
+        it("updates the user's device list based on PEP messages",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
+            let iq_stanza;
+            test_utils.createContacts(_converse, 'current');
+            const contact_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
+
+            test_utils.waitUntil(function () {
+                return _.filter(
+                    _converse.connection.IQ_stanzas,
+                    (iq) => {
+                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                        if (node) { iq_stanza = iq.nodeTree;}
+                        return node;
+                    }).length;
+            }).then(function () {
+                expect(iq_stanza.outerHTML).toBe(
+                    '<iq type="get" from="dummy@localhost" to="dummy@localhost" xmlns="jabber:client" id="'+iq_stanza.getAttribute("id")+'">'+
+                        '<query xmlns="http://jabber.org/protocol/disco#items" '+
+                               'node="eu.siacs.conversations.axolotl.devicelist"/>'+
+                    '</iq>');
+
+                const stanza = $iq({
+                    'from': contact_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result',
+                }).c('query', {
+                    'xmlns': 'http://jabber.org/protocol/disco#items',
+                    'node': 'eu.siacs.conversations.axolotl.devicelist'
+                }).c('device', {'id': '555'}).up()
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                expect(_converse.devicelists.length).toBe(1);
+                const devicelist = _converse.devicelists.get(_converse.bare_jid);
+                expect(devicelist.devices.length).toBe(1);
+                expect(devicelist.devices.at(0).get('id')).toBe('555');
+                return test_utils.waitUntil(() => _converse.devicelists);
+            }).then(function () {
+                // We simply emit, to avoid doing all the setup work
+                _converse.emit('OMEMOInitialized');
+
+                let stanza = $msg({
+                    'from': contact_jid,
+                    'to': _converse.bare_jid,
+                    'type': 'headline',
+                    'id': 'update_01',
+                }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
+                    .c('items', {'node': 'eu.siacs.conversations.axolotl.devicelist'})
+                        .c('item')
+                            .c('list', {'xmlns': 'eu.siacs.conversations.axolotl'})
+                                .c('device', {'id': '1234'})
+                                .c('device', {'id': '4223'})
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                expect(_converse.devicelists.length).toBe(2);
+                let devices = _converse.devicelists.get(contact_jid).devices;
+                expect(devices.length).toBe(2);
+                expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('1234,4223');
+                expect(devices.get('1234').get('active')).toBe(true);
+                expect(devices.get('4223').get('active')).toBe(true);
+
+                stanza = $msg({
+                    'from': contact_jid,
+                    'to': _converse.bare_jid,
+                    'type': 'headline',
+                    'id': 'update_02',
+                }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
+                    .c('items', {'node': 'eu.siacs.conversations.axolotl.devicelist'})
+                        .c('item')
+                            .c('list', {'xmlns': 'eu.siacs.conversations.axolotl'})
+                                .c('device', {'id': '4223'})
+                                .c('device', {'id': '4224'})
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                expect(_converse.devicelists.length).toBe(2);
+                expect(devices.length).toBe(3);
+                expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('1234,4223,4224');
+                expect(devices.get('1234').get('active')).toBe(false);
+                expect(devices.get('4223').get('active')).toBe(true);
+                expect(devices.get('4224').get('active')).toBe(true);
+
+                // Check that own devicelist gets updated
+                stanza = $msg({
+                    'from': _converse.bare_jid,
+                    'to': _converse.bare_jid,
+                    'type': 'headline',
+                    'id': 'update_03',
+                }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
+                    .c('items', {'node': 'eu.siacs.conversations.axolotl.devicelist'})
+                        .c('item')
+                            .c('list', {'xmlns': 'eu.siacs.conversations.axolotl'})
+                                .c('device', {'id': '555'})
+                                .c('device', {'id': '777'})
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                expect(_converse.devicelists.length).toBe(2);
+                devices = _converse.devicelists.get(_converse.bare_jid).devices;
+                expect(devices.length).toBe(3);
+                expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('123456789,555,777');
+                expect(devices.get('123456789').get('active')).toBe(true);
+                expect(devices.get('555').get('active')).toBe(true);
+                expect(devices.get('777').get('active')).toBe(true);
+
+                _converse.connection.IQ_stanzas = [];
+
+                // Check that own device gets re-added
+                stanza = $msg({
+                    'from': _converse.bare_jid,
+                    'to': _converse.bare_jid,
+                    'type': 'headline',
+                    'id': 'update_03',
+                }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
+                    .c('items', {'node': 'eu.siacs.conversations.axolotl.devicelist'})
+                        .c('item')
+                            .c('list', {'xmlns': 'eu.siacs.conversations.axolotl'})
+                                .c('device', {'id': '444'})
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                return test_utils.waitUntil(function () {
+                    return _.filter(
+                        _converse.connection.IQ_stanzas,
+                        (iq) => {
+                            const node = iq.nodeTree.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]');
+                            if (node) { iq_stanza = iq.nodeTree;}
+                            return node;
+                        }).length;
+                });
+            }).then(function () {
+                // Check that our own device is added again, but that removed
+                // devices are not added.
+                expect(iq_stanza.outerHTML).toBe(
+                    '<iq from="dummy@localhost" type="set" xmlns="jabber:client" id="'+iq_stanza.getAttribute('id')+'">'+
+                        '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
+                            '<publish node="eu.siacs.conversations.axolotl.devicelist">'+
+                                '<item>'+
+                                    '<list xmlns="eu.siacs.conversations.axolotl"/>'+
+                                    '<device id="123456789"/>'+
+                                    '<device id="444"/>'+
+                                '</item>'+
+                            '</publish>'+
+                        '</pubsub>'+
+                    '</iq>');
+                expect(_converse.devicelists.length).toBe(2);
+                const devices = _converse.devicelists.get(_converse.bare_jid).devices;
+                // The device id for this device (123456789) was also generated and added to the list,
+                // which is why we have 4 devices now.
+                expect(devices.length).toBe(4);
+                expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('123456789,444,555,777');
+                expect(devices.get('123456789').get('active')).toBe(true);
+                expect(devices.get('444').get('active')).toBe(true);
+                expect(devices.get('555').get('active')).toBe(false);
+                expect(devices.get('777').get('active')).toBe(false);
+                done();
+            });
         }));
 
         it("adds a toolbar button for starting an encrypted chat session",
@@ -60,7 +220,7 @@
                 test_utils.openChatBoxFor(_converse, contact_jid);
                 return test_utils.waitUntil(() => {
                     return _.filter(_converse.connection.IQ_stanzas, function (iq) {
-                        const node = iq.nodeTree.querySelector('publish[xmlns="eu.siacs.conversations.axolotl.devicelist"]');
+                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.devicelist"]');
                         if (node) { iq_stanza = iq.nodeTree; }
                         return node;
                     }).length;
@@ -69,7 +229,7 @@
                 expect(iq_stanza.outerHTML).toBe(
                     '<iq from="dummy@localhost" type="set" xmlns="jabber:client" id="'+iq_stanza.getAttribute('id')+'">'+
                         '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
-                            '<publish xmlns="eu.siacs.conversations.axolotl.devicelist">'+
+                            '<publish node="eu.siacs.conversations.axolotl.devicelist">'+
                                 '<item>'+
                                     '<list xmlns="eu.siacs.conversations.axolotl"/>'+
                                     '<device id="482886413b977930064a5888b92134fe"/>'+

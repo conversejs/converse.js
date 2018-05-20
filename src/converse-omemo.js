@@ -519,11 +519,11 @@
                             'from': _converse.bare_jid,
                             'type': 'set'
                         }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                            .c('publish', {'xmlns': Strophe.NS.OMEMO_DEVICELIST})
+                            .c('publish', {'node': Strophe.NS.OMEMO_DEVICELIST})
                                 .c('item')
                                     .c('list', {'xmlns': Strophe.NS.OMEMO}).up()
 
-                        this.devices.each((device) => {
+                        _.each(this.devices.where({'active': true}), (device) => {
                             stanza.c('device', {'id': device.get('id')}).up();
                         });
                         _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
@@ -584,48 +584,59 @@
                 /* If our own device is not on the list, add it.
                  * Also, deduplicate devices if necessary.
                  */
-                return new Promise((resolve, reject) => {
-                    restoreOMEMOSession().then(() => {
-                        const devicelist = _converse.devicelists.get(_converse.bare_jid);
-                        const device_id = _converse.omemo_store.get('device_id');
-                        if (!devicelist.devices.findWhere({'id': device_id})) {
-                            return devicelist.addDeviceToList(device_id).then(resolve).catch(reject);
-                        }
-                        resolve();
-                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-                });
+                const devicelist = _converse.devicelists.get(_converse.bare_jid),
+                      device_id = _converse.omemo_store.get('device_id'),
+                      own_device = devicelist.devices.findWhere({'id': device_id});
+
+                if (!own_device) {
+                    return devicelist.addDeviceToList(device_id);
+                } else if (!own_device.get('active')) {
+                    own_device.set('active', true, {'silent': true});
+                    return devicelist.addDeviceToList(device_id);
+                } else {
+                    return Promise.resolve();
+                }
             }
 
 
             function updateBundleFromStanza (stanza) {
-                const items_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}"]`, stanza),
-                      device_id = items_el.getAttribute('node').split(':')[1],
+                const items_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}"]`, stanza).pop();
+                if (!items_el) {
+                    return;
+                }
+                const device_id = items_el.getAttribute('node').split(':')[1],
                       from = stanza.getAttribute('from'),
                       bundle_el = sizzle(`item list[xmlns="${Strophe.NS.OMEMO}"] bundle`, items_el).pop(),
-                      bundle = parseBundle(bundle_el);
-
-                const device = _converse.devicelists.get(from).devices.get(device_id);
-                device.save({'bundle': bundle});
+                      device = _converse.devicelists.get(from).devices.get(device_id);
+                device.save({'bundle': parseBundle(bundle_el)});
             }
 
             function updateDevicesFromStanza (stanza) {
-                // TODO: check whether our own device_id is still on the list,
-                // otherwise we need to update it.
+                const items_el = sizzle(`items[node="${Strophe.NS.OMEMO_DEVICELIST}"]`, stanza).pop();
+                if (!items_el) {
+                    return;
+                }
                 const device_ids = _.map(
-                    sizzle(`items[node="${Strophe.NS.OMEMO_DEVICELIST}"] item list[xmlns="${Strophe.NS.OMEMO}"] device`, stanza),
-                    (device) => device.getAttribute('id'));
+                    sizzle(`item list[xmlns="${Strophe.NS.OMEMO}"] device`, items_el),
+                    (device) => device.getAttribute('id')
+                );
+                const jid = stanza.getAttribute('from'),
+                      devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({'jid': jid}),
+                      devices = devicelist.devices,
+                      removed_ids = _.difference(devices.pluck('id'), device_ids);
 
-                const removed_ids = _.difference(_converse.devices.pluck('id'), device_ids);
-                _.forEach(removed_ids, (removed_id) => _converse.devices.get(removed_id).set('active', false));
-
+                _.forEach(removed_ids, (removed_id) => devices.get(removed_id).set('active', false));
                 _.forEach(device_ids, (device_id) => {
-                    const dev = _converse.devices.get(device_id);
+                    const dev = devices.get(device_id);
                     if (dev) {
                         dev.save({'active': true});
                     } else {
-                        _converse.devices.create({'id': device_id})
+                        devices.create({'id': device_id})
                     }
                 });
+                // Make sure our own device is on the list (i.e. if it was
+                // removed, add it again.
+                updateOwnDeviceList();
             }
 
             function registerPEPPushHandler () {
@@ -634,9 +645,9 @@
                     if (message.querySelector('event[xmlns="'+Strophe.NS.PUBSUB+'#event"]')) {
                         updateDevicesFromStanza(message);
                         updateBundleFromStanza(message);
-                        updateOwnDeviceList();
                     }
-                }, null, 'message', 'headline', null, _converse.bare_jid);
+                    return true;
+                }, null, 'message', 'headline');
             }
 
             function restoreOMEMOSession () {
@@ -655,6 +666,7 @@
                     b64_sha1(`converse.devicelists-${_converse.bare_jid}`)
                 );
                 fetchOwnDevices()
+                    .then(() => restoreOMEMOSession())
                     .then(() => updateOwnDeviceList())
                     .then(() => publishBundle())
                     .then(() => _converse.emit('OMEMOInitialized'))

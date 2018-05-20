@@ -849,8 +849,11 @@
         const binary_string =  window.atob(b64),
               len = binary_string.length,
               bytes = new Uint8Array(len);
-        _.forEach(_.range(0, len), (i) => bytes.push(binary_string.charCodeAt(i))); // eslint-disable-line lodash/prefer-map
-        return bytes.buffer;
+
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i)
+        }
+        return bytes.buffer
     };
 
     return u;

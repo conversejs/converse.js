@@ -18,7 +18,7 @@
             done();
         }));
 
-        it("updates the user's device list based on PEP messages",
+        it("updates device lists based on PEP messages",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
@@ -131,7 +131,7 @@
                     'from': _converse.bare_jid,
                     'to': _converse.bare_jid,
                     'type': 'headline',
-                    'id': 'update_03',
+                    'id': 'update_04',
                 }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
                     .c('items', {'node': 'eu.siacs.conversations.axolotl.devicelist'})
                         .c('item')
@@ -173,6 +173,150 @@
                 expect(devices.get('444').get('active')).toBe(true);
                 expect(devices.get('555').get('active')).toBe(false);
                 expect(devices.get('777').get('active')).toBe(false);
+                done();
+            });
+        }));
+
+        it("updates device bundles based on PEP messages",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
+            let iq_stanza;
+            test_utils.createContacts(_converse, 'current');
+            const contact_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
+
+            test_utils.waitUntil(function () {
+                return _.filter(
+                    _converse.connection.IQ_stanzas,
+                    (iq) => {
+                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                        if (node) { iq_stanza = iq.nodeTree;}
+                        return node;
+                    }).length;
+            }).then(function () {
+                expect(iq_stanza.outerHTML).toBe(
+                    '<iq type="get" from="dummy@localhost" to="dummy@localhost" xmlns="jabber:client" id="'+iq_stanza.getAttribute("id")+'">'+
+                        '<query xmlns="http://jabber.org/protocol/disco#items" '+
+                               'node="eu.siacs.conversations.axolotl.devicelist"/>'+
+                    '</iq>');
+
+                const stanza = $iq({
+                    'from': contact_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result',
+                }).c('query', {
+                    'xmlns': 'http://jabber.org/protocol/disco#items',
+                    'node': 'eu.siacs.conversations.axolotl.devicelist'
+                }).c('device', {'id': '555'}).up()
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                expect(_converse.devicelists.length).toBe(1);
+                return test_utils.waitUntil(() => _converse.devicelists);
+            }).then(function () {
+                // We simply emit, to avoid doing all the setup work
+                expect(_converse.devicelists.length).toBe(1);
+                let devicelist = _converse.devicelists.get(_converse.bare_jid);
+                expect(devicelist.devices.length).toBe(2);
+                expect(devicelist.devices.at(0).get('id')).toBe('555');
+                expect(devicelist.devices.at(1).get('id')).toBe('123456789');
+                _converse.emit('OMEMOInitialized');
+
+                let stanza = $msg({
+                    'from': contact_jid,
+                    'to': _converse.bare_jid,
+                    'type': 'headline',
+                    'id': 'update_01',
+                }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
+                    .c('items', {'node': 'eu.siacs.conversations.axolotl.bundles:555'})
+                        .c('item')
+                            .c('bundle', {'xmlns': 'eu.siacs.conversations.axolotl'})
+                                .c('signedPreKeyPublic', {'signedPreKeyId': '4223'}).t('1111').up()
+                                .c('signedPreKeySignature').t('2222').up()
+                                .c('identityKey').t('3333').up()
+                                .c('prekeys')
+                                    .c('preKeyPublic', {'preKeyId': '1001'}).up()
+                                    .c('preKeyPublic', {'preKeyId': '1002'}).up()
+                                    .c('preKeyPublic', {'preKeyId': '1003'});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                expect(_converse.devicelists.length).toBe(2);
+                devicelist = _converse.devicelists.get(contact_jid);
+                expect(devicelist.devices.length).toBe(1);
+                let device = devicelist.devices.at(0);
+                expect(device.get('bundle').identity_key).toBe(3333);
+                expect(device.get('bundle').signed_prekey.public_key).toBe('1111');
+                expect(device.get('bundle').signed_prekey.id).toBe(4223);
+                expect(device.get('bundle').signed_prekey.signature).toBe('2222');
+                expect(device.get('bundle').prekeys.length).toBe(3);
+                expect(device.get('bundle').prekeys[0].id).toBe(1001);
+                expect(device.get('bundle').prekeys[1].id).toBe(1002);
+                expect(device.get('bundle').prekeys[2].id).toBe(1003);
+
+                stanza = $msg({
+                    'from': contact_jid,
+                    'to': _converse.bare_jid,
+                    'type': 'headline',
+                    'id': 'update_02',
+                }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
+                    .c('items', {'node': 'eu.siacs.conversations.axolotl.bundles:555'})
+                        .c('item')
+                            .c('bundle', {'xmlns': 'eu.siacs.conversations.axolotl'})
+                                .c('signedPreKeyPublic', {'signedPreKeyId': '4223'}).t('5555').up()
+                                .c('signedPreKeySignature').t('6666').up()
+                                .c('identityKey').t('7777').up()
+                                .c('prekeys')
+                                    .c('preKeyPublic', {'preKeyId': '2001'}).up()
+                                    .c('preKeyPublic', {'preKeyId': '2002'}).up()
+                                    .c('preKeyPublic', {'preKeyId': '2003'});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                expect(_converse.devicelists.length).toBe(2);
+                devicelist = _converse.devicelists.get(contact_jid);
+                expect(devicelist.devices.length).toBe(1);
+                device = devicelist.devices.at(0);
+                expect(device.get('bundle').identity_key).toBe(7777);
+                expect(device.get('bundle').signed_prekey.public_key).toBe('5555');
+                expect(device.get('bundle').signed_prekey.id).toBe(4223);
+                expect(device.get('bundle').signed_prekey.signature).toBe('6666');
+                expect(device.get('bundle').prekeys.length).toBe(3);
+                expect(device.get('bundle').prekeys[0].id).toBe(2001);
+                expect(device.get('bundle').prekeys[1].id).toBe(2002);
+                expect(device.get('bundle').prekeys[2].id).toBe(2003);
+
+                stanza = $msg({
+                    'from': _converse.bare_jid,
+                    'to': _converse.bare_jid,
+                    'type': 'headline',
+                    'id': 'update_03',
+                }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
+                    .c('items', {'node': 'eu.siacs.conversations.axolotl.bundles:123456789'})
+                        .c('item')
+                            .c('bundle', {'xmlns': 'eu.siacs.conversations.axolotl'})
+                                .c('signedPreKeyPublic', {'signedPreKeyId': '9999'}).t('8888').up()
+                                .c('signedPreKeySignature').t('3333').up()
+                                .c('identityKey').t('1111').up()
+                                .c('prekeys')
+                                    .c('preKeyPublic', {'preKeyId': '3001'}).up()
+                                    .c('preKeyPublic', {'preKeyId': '3002'}).up()
+                                    .c('preKeyPublic', {'preKeyId': '3003'});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                expect(_converse.devicelists.length).toBe(2);
+                devicelist = _converse.devicelists.get(_converse.bare_jid);
+                expect(devicelist.devices.length).toBe(2);
+                expect(devicelist.devices.at(0).get('id')).toBe('555');
+                expect(devicelist.devices.at(1).get('id')).toBe('123456789');
+                device = devicelist.devices.at(1);
+                expect(device.get('bundle').identity_key).toBe(1111);
+                expect(device.get('bundle').signed_prekey.public_key).toBe('8888');
+                expect(device.get('bundle').signed_prekey.id).toBe(9999);
+                expect(device.get('bundle').signed_prekey.signature).toBe('3333');
+                expect(device.get('bundle').prekeys.length).toBe(3);
+                expect(device.get('bundle').prekeys[0].id).toBe(3001);
+                expect(device.get('bundle').prekeys[1].id).toBe(3002);
+                expect(device.get('bundle').prekeys[2].id).toBe(3003);
                 done();
             });
         }));

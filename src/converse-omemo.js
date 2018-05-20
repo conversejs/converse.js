@@ -54,23 +54,23 @@
          * and return a map.
          */
         const signed_prekey_public_el = bundle_el.querySelector('signedPreKeyPublic'),
-                signed_prekey_signature_el = bundle_el.querySelector('signedPreKeySignature'),
-                identity_key_el = bundle_el.querySelector('identityKey');
+              signed_prekey_signature_el = bundle_el.querySelector('signedPreKeySignature'),
+              identity_key_el = bundle_el.querySelector('identityKey');
 
         const prekeys = _.map(
-            sizzle(`> prekeys > preKeyPublic`, bundle_el),
+            sizzle(`prekeys > preKeyPublic`, bundle_el),
             (el) => {
                 return {
-                    'id': parseInt(el.getAttribute('keyId'), 10),
-                    'key': u.base64ToArrayBuffer(el.textContent)
+                    'id': parseInt(el.getAttribute('preKeyId'), 10),
+                    'key': el.textContent
                 }
             });
         return {
-            'identity_key': bundle_el.querySelector('> identityKey').textContent,
+            'identity_key': parseInt(bundle_el.querySelector('identityKey').textContent, 10),
             'signed_prekey': {
                 'id': parseInt(signed_prekey_public_el.getAttribute('signedPreKeyId'), 10),
-                'public_key': u.base64ToArrayBuffer(signed_prekey_public_el.textContent),
-                'signature': u.base64ToArrayBuffer(signed_prekey_signature_el.textContent)
+                'public_key': signed_prekey_public_el.textContent,
+                'signature': signed_prekey_signature_el.textContent
             },
             'prekeys': prekeys
         }
@@ -89,49 +89,15 @@
 
             ChatBox: {
 
-                parseBundleFromIQ (device_id, stanza) {
-                    const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${device_id}"]`, stanza).pop();
-                    const bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop();
-                    return parseBundle(bundle_el);
-                },
-
-                fetchBundle (device_id) {
-                    const { _converse } = this.__super__,
-                          device = _converse.devicelists.get(this.get('jid')).devices.get(device_id);
-
-                    if (device.get('bundle')) {
-                        return Promise.resolve(device.get('bundle').toJSON());
-                    } else {
-                        return new Promise((resolve, reject) => {
-                            const stanza = $iq({
-                                'type': 'get',
-                                'from': _converse.bare_jid,
-                                'to': this.get('jid')
-                            }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                                .c('items', {'xmlns': `${Strophe.NS.OMEMO_BUNDLES}:${device_id}`});
-                            _converse.connection.sendIQ(
-                                stanza,
-                                (iq) => {
-                                    const bundle = this.parseBundleFromIQ(iq);
-                                    bundle.device_id = device_id;
-                                    resolve(bundle);
-                                },
-                                reject,
-                                _converse.IQ_TIMEOUT
-                            );
-                        });
-                    }
-                },
-
-                fetchBundlesAndBuildSessions () {
+                getBundlesAndBuildSessions () {
                     const { _converse } = this.__super__;
                     return new Promise((resolve, reject) => {
                         getDevicesForContact(this.get('jid'))
                             .then((devices) => {
-                                const bundle_promises = _.map(devices, (device_id) => this.fetchBundle(device_id));
-                                Promise.all(bundle_promises).then(() => {
+                                const promises = _.map(devices, (device) => device.getBundle());
+                                Promise.all(promises).then(() => {
                                     this.buildSessions(devices)
-                                        .then(() => resolve(bundles))
+                                        .then(() => resolve(devices))
                                         .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
 
                                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
@@ -145,7 +111,7 @@
 
                     return Promise.all(_.map(devices, (device) => {
                         const recipient_id = device['id'];
-                        const address = new libsignal.SignalProtocolAddress(recipient_id, device_id);
+                        const address = new libsignal.SignalProtocolAddress(parseInt(recipient_id, 10), device_id);
                         const sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address);
                         return sessionBuilder.processPreKey({
                             'registrationId': _converse.omemo_store.get('registration_id'),
@@ -201,7 +167,7 @@
 
                 createMessageStanza (message) {
                     if (this.get('omemo_active')) {
-                        return this.fetchBundlesAndBuildSessions()
+                        return this.getBundlesAndBuildSessions()
                             .then((bundles) => this.createOMEMOMessageStanza(message, bundles));
                     } else {
                         return Promise.resolve(this.__super__.createMessageStanza.apply(this, arguments));
@@ -449,6 +415,39 @@
                 defaults: {
                     'active': true,
                     'trusted': UNDECIDED
+                },
+
+                fetchBundleFromServer () {
+                    return new Promise((resolve, reject) => {
+                        const stanza = $iq({
+                            'type': 'get',
+                            'from': _converse.bare_jid,
+                            'to': this.get('jid')
+                        }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                            .c('items', {'xmlns': `${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}`});
+                        _converse.connection.sendIQ(
+                            stanza,
+                            (iq) => {
+                                const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"]`, stanza).pop();
+                                const bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop();
+                                this.save(parseBundle(bundle_el));
+                                resolve();
+                            },
+                            reject,
+                            _converse.IQ_TIMEOUT
+                        );
+                    });
+                },
+
+                getBundle () {
+                    /* Fetch and save the bundle information associated with
+                     * this device, if the information is not at hand already.
+                     */
+                    if (this.get('bundle')) {
+                        return Promise.resolve(this.get('bundle').toJSON());
+                    } else {
+                        return this.fetchBundleFromServer();
+                    }
                 }
             });
 
@@ -600,14 +599,15 @@
 
 
             function updateBundleFromStanza (stanza) {
-                const items_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}"]`, stanza).pop();
-                if (!items_el) {
+                const items_el = sizzle(`items`, stanza).pop();
+                if (!items_el || !items_el.getAttribute('node').startsWith(Strophe.NS.OMEMO_BUNDLES)) {
                     return;
                 }
                 const device_id = items_el.getAttribute('node').split(':')[1],
-                      from = stanza.getAttribute('from'),
-                      bundle_el = sizzle(`item list[xmlns="${Strophe.NS.OMEMO}"] bundle`, items_el).pop(),
-                      device = _converse.devicelists.get(from).devices.get(device_id);
+                      jid = stanza.getAttribute('from'),
+                      bundle_el = sizzle(`item > bundle`, items_el).pop(),
+                      devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({'jid': jid}),
+                      device = devicelist.devices.get(device_id) || devicelist.devices.create({'id': device_id});
                 device.save({'bundle': parseBundle(bundle_el)});
             }
 

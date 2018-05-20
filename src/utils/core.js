@@ -835,14 +835,22 @@
         return result;
     };
 
-    u.arrayBuffer2String = function (ab) {
+    u.arrayBufferToString = function (ab) {
         var enc = new TextDecoder("utf-8");
         return enc.decode(new Uint8Array(ab));
     };
 
-    u.arrayBuffer2Base64 = function (ab) {
+    u.arrayBufferToBase64 = function (ab) {
         return btoa(new Uint8Array(ab)
             .reduce((data, byte) => data + String.fromCharCode(byte), ''));
+    };
+
+    u.base64ToArrayBuffer = function (b64) {
+        const binary_string =  window.atob(b64),
+              len = binary_string.length,
+              bytes = new Uint8Array(len);
+        _.forEach(_.range(0, len), (i) => bytes.push(binary_string.charCodeAt(i))); // eslint-disable-line lodash/prefer-map
+        return bytes.buffer;
     };
 
     return u;

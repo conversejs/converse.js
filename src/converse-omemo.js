@@ -4,7 +4,7 @@
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
-/* global libsignal, ArrayBuffer */
+/* global libsignal, ArrayBuffer, parseInt */
 
 (function (root, factory) {
     define([
@@ -49,6 +49,33 @@
         });
     }
 
+    function parseBundle (bundle_el) {
+        /* Given an XML element representing a user's OMEMO bundle, parse it
+         * and return a map.
+         */
+        const signed_prekey_public_el = bundle_el.querySelector('signedPreKeyPublic'),
+                signed_prekey_signature_el = bundle_el.querySelector('signedPreKeySignature'),
+                identity_key_el = bundle_el.querySelector('identityKey');
+
+        const prekeys = _.map(
+            sizzle(`> prekeys > preKeyPublic`, bundle_el),
+            (el) => {
+                return {
+                    'id': parseInt(el.getAttribute('keyId'), 10),
+                    'key': u.base64ToArrayBuffer(el.textContent)
+                }
+            });
+        return {
+            'identity_key': bundle_el.querySelector('> identityKey').textContent,
+            'signed_prekey': {
+                'id': parseInt(signed_prekey_public_el.getAttribute('signedPreKeyId'), 10),
+                'public_key': u.base64ToArrayBuffer(signed_prekey_public_el.textContent),
+                'signature': u.base64ToArrayBuffer(signed_prekey_signature_el.textContent)
+            },
+            'prekeys': prekeys
+        }
+    }
+
 
     converse.plugins.add('converse-omemo', {
 
@@ -61,57 +88,63 @@
         overrides: {
 
             ChatBox: {
-                fetchBundle (device_id) {
-                    const { _converse } = this.__super__;
-                    return new Promise((resolve, reject) => {
-                        const stanza = $iq({
-                            'type': 'get',
-                            'from': _converse.bare_jid,
-                            'to': this.get('jid')
-                        }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                            .c('items', {'xmlns': `${Strophe.NS.OMEMO_BUNDLES}:${device_id}`});
-                        _converse.connection.sendIQ(
-                            stanza,
-                            (iq) => resolve((device_id, this.parseBundle(iq))),
-                            reject,
-                            _converse.IQ_TIMEOUT
-                        );
-                    });
+
+                parseBundleFromIQ (device_id, stanza) {
+                    const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${device_id}"]`, stanza).pop();
+                    const bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop();
+                    return parseBundle(bundle_el);
                 },
 
-                parseBundle (device_id, stanza) {
-                    const publish_el = sizzle(`publish[node="${Strophe.NS.OMEMO_BUNDLES}:${device_id}"]`, stanza).pop();
-                    const bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop();
-                    const prekeys = _.map(
-                        sizzle(`> prekeys > preKeyPublic`, bundle_el),
-                        (key) => { return (key.getAttribute('id'), key.textContent) });
+                fetchBundle (device_id) {
+                    const { _converse } = this.__super__,
+                          device = _converse.devicelists.get(this.get('jid')).devices.get(device_id);
 
-                    return {
-                        'device_id': device_id,
-                        'identity_key': bundle_el.querySelector('> identityKey').textContent,
-                        'prekeys': prekeys
+                    if (device.get('bundle')) {
+                        return Promise.resolve(device.get('bundle').toJSON());
+                    } else {
+                        return new Promise((resolve, reject) => {
+                            const stanza = $iq({
+                                'type': 'get',
+                                'from': _converse.bare_jid,
+                                'to': this.get('jid')
+                            }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                                .c('items', {'xmlns': `${Strophe.NS.OMEMO_BUNDLES}:${device_id}`});
+                            _converse.connection.sendIQ(
+                                stanza,
+                                (iq) => {
+                                    const bundle = this.parseBundleFromIQ(iq);
+                                    bundle.device_id = device_id;
+                                    resolve(bundle);
+                                },
+                                reject,
+                                _converse.IQ_TIMEOUT
+                            );
+                        });
                     }
                 },
 
-                fetchBundles () {
+                fetchBundlesAndBuildSessions () {
                     const { _converse } = this.__super__;
                     return new Promise((resolve, reject) => {
                         getDevicesForContact(this.get('jid'))
-                            .then((devices) => Promise.all(_.map(devices, (device_id) => this.fetchBundle(device_id))))
-                            .then((bundles) => {
-                                this.buildSessions()
-                                    .then(() => resolve(bundles))
-                                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-                            });
+                            .then((devices) => {
+                                const bundle_promises = _.map(devices, (device_id) => this.fetchBundle(device_id));
+                                Promise.all(bundle_promises).then(() => {
+                                    this.buildSessions(devices)
+                                        .then(() => resolve(bundles))
+                                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+
+                                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                 },
 
-                buildSessions (bundles) {
+                buildSessions (devices) {
                     const { _converse } = this.__super__,
                           device_id = _converse.omemo_store.get('device_id');
 
-                    return Promise.all(_.map(bundles, (bundle) => {
-                        const recipient_id = bundles['device_id'];
+                    return Promise.all(_.map(devices, (device) => {
+                        const recipient_id = device['id'];
                         const address = new libsignal.SignalProtocolAddress(recipient_id, device_id);
                         const sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address);
                         return sessionBuilder.processPreKey({
@@ -168,7 +201,8 @@
 
                 createMessageStanza (message) {
                     if (this.get('omemo_active')) {
-                        return this.fetchBundles().then((bundles) => this.createOMEMOMessageStanza(message, bundles));
+                        return this.fetchBundlesAndBuildSessions()
+                            .then((bundles) => this.createOMEMOMessageStanza(message, bundles));
                     } else {
                         return Promise.resolve(this.__super__.createMessageStanza.apply(this, arguments));
                     }
@@ -308,7 +342,7 @@
                     if (trusted === undefined) {
                         return Promise.resolve(true);
                     }
-                    return Promise.resolve(u.arrayBuffer2String(identity_key) === u.arrayBuffer2String(trusted));
+                    return Promise.resolve(u.arrayBufferToString(identity_key) === u.arrayBufferToString(trusted));
                 },
 
                 loadIdentityKey (identifier) {
@@ -325,7 +359,7 @@
                     const address = new libsignal.SignalProtocolAddress.fromString(identifier),
                           existing = this.get('identity_key'+address.getName());
                     this.save('identity_key'+address.getName(), identity_key)
-                    if (existing && u.arrayBuffer2String(identity_key) !== u.arrayBuffer2String(existing)) {
+                    if (existing && u.arrayBufferToString(identity_key) !== u.arrayBufferToString(existing)) {
                         return Promise.resolve(true);
                     } else {
                         return Promise.resolve(false);
@@ -396,6 +430,7 @@
                                     if (!_converse.omemo_store.get('device_id')) {
                                         generateBundle()
                                             .then((data) => {
+                                                // TODO: should storeSession be used here?
                                                 _converse.omemo_store.save(data);
                                                 resolve();
                                             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
@@ -504,7 +539,7 @@
             function publishBundle () {
                 const store = _converse.omemo_store,
                       signed_prekey = store.get('signed_prekey'),
-                      identity_key = u.arrayBuffer2Base64(store.get('identity_keypair').pubKey);
+                      identity_key = u.arrayBufferToBase64(store.get('identity_keypair').pubKey);
 
                 return new Promise((resolve, reject) => {
                     const stanza = $iq({
@@ -515,7 +550,7 @@
                             .c('item')
                                 .c('bundle', {'xmlns': Strophe.NS.OMEMO})
                                     .c('signedPreKeyPublic', {'signedPreKeyId': signed_prekey.keyId})
-                                        .t(u.arrayBuffer2Base64(signed_prekey.keyPair.pubKey)).up()
+                                        .t(u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)).up()
                                     .c('signedPreKeySignature').up()  // TODO
                                     .c('identityKey').t(identity_key).up()
                                     .c('prekeys');
@@ -523,7 +558,7 @@
                         store.get('prekeys'),
                         (prekey) => {
                             stanza.c('preKeyPublic', {'preKeyId': prekey.keyId})
-                                .t(u.arrayBuffer2Base64(prekey.keyPair.pubKey)).up();
+                                .t(u.arrayBufferToBase64(prekey.keyPair.pubKey)).up();
                         });
                     _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
                 });
@@ -561,11 +596,23 @@
                 });
             }
 
+
+            function updateBundleFromStanza (stanza) {
+                const items_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}"]`, stanza),
+                      device_id = items_el.getAttribute('node').split(':')[1],
+                      from = stanza.getAttribute('from'),
+                      bundle_el = sizzle(`item list[xmlns="${Strophe.NS.OMEMO}"] bundle`, items_el).pop(),
+                      bundle = parseBundle(bundle_el);
+
+                const device = _converse.devicelists.get(from).devices.get(device_id);
+                device.save({'bundle': bundle});
+            }
+
             function updateDevicesFromStanza (stanza) {
                 // TODO: check whether our own device_id is still on the list,
                 // otherwise we need to update it.
                 const device_ids = _.map(
-                    sizzle(`items[node="${Strophe.NS.OMEMO_DEVICELIST}"] item[xmlns="${Strophe.NS.OMEMO}"] device`, stanza),
+                    sizzle(`items[node="${Strophe.NS.OMEMO_DEVICELIST}"] item list[xmlns="${Strophe.NS.OMEMO}"] device`, stanza),
                     (device) => device.getAttribute('id'));
 
                 const removed_ids = _.difference(_converse.devices.pluck('id'), device_ids);
@@ -586,6 +633,7 @@
                 _converse.connection.addHandler((message) => {
                     if (message.querySelector('event[xmlns="'+Strophe.NS.PUBSUB+'#event"]')) {
                         updateDevicesFromStanza(message);
+                        updateBundleFromStanza(message);
                         updateOwnDeviceList();
                     }
                 }, null, 'message', 'headline', null, _converse.bare_jid);
@@ -594,7 +642,7 @@
             function restoreOMEMOSession () {
                 if (_.isUndefined(_converse.omemo_store))  {
                     _converse.omemo_store = new _converse.OMEMOStore();
-                    _converse.omemo_store.browserStorage =  new Backbone.BrowserStorage.session(
+                    _converse.omemo_store.browserStorage =  new Backbone.BrowserStorage[_converse.storage](
                         b64_sha1(`converse.omemosession-${_converse.bare_jid}`)
                     );
                 }
@@ -603,7 +651,7 @@
 
             function initOMEMO() {
                 _converse.devicelists = new _converse.DeviceLists();
-                _converse.devicelists.browserStorage = new Backbone.BrowserStorage.session(
+                _converse.devicelists.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                     b64_sha1(`converse.devicelists-${_converse.bare_jid}`)
                 );
                 fetchOwnDevices()

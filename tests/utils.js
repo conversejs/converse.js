@@ -131,7 +131,7 @@
             _converse.api.rooms.open(`${room}@${server}`);
             const view = _converse.chatboxviews.get((room+'@'+server).toLowerCase());
             // We pretend this is a new room, so no disco info is returned.
-            last_stanza = _.last(_converse.connection.IQ_stanzas).nodeTree;
+            let last_stanza = _.last(_converse.connection.IQ_stanzas).nodeTree;
             const IQ_id = last_stanza.getAttribute('id');
             const features_stanza = $iq({
                     'from': room+'@'+server,
@@ -146,15 +146,12 @@
                 return _.filter(
                     _converse.connection.IQ_stanzas, (node) => {
                         const query = node.nodeTree.querySelector('query');
-                        return query && query.getAttribute('node') === 'x-roomuser-item'
+                        if (query && query.getAttribute('node') === 'x-roomuser-item') {
+                            last_stanza = node.nodeTree;
+                            return true;
+                        }
                     }).length
             }).then(function () {
-                const last_stanza = _.filter(
-                    _converse.connection.IQ_stanzas, (node) => {
-                        const query = node.nodeTree.querySelector('query');
-                        return query && query.getAttribute('node') === 'x-roomuser-item'
-                    }).pop().nodeTree;
-
                 // The XMPP server returns the reserved nick for this user.
                 const IQ_id = last_stanza.getAttribute('id');
                 const stanza = $iq({
@@ -181,8 +178,9 @@
                     .c('status').attrs({code:'110'});
                 _converse.connection._dataRecv(utils.createRequest(presence));
                 resolve();
-            });
-        });
+
+            }).catch(_.partial(console.error, _));
+        }).catch(_.partial(console.error, _));
     };
 
     utils.clearBrowserStorage = function () {

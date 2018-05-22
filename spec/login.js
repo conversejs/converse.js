@@ -66,7 +66,6 @@
                 cbview.el.querySelector('input[name="password"]').value = 'secret';
 
                 spyOn(cbview.loginpanel, 'connect');
-                cbview.delegateEvents();
 
                 expect(_converse.storage).toBe('session');
                 cbview.el.querySelector('input[type="submit"]').click();

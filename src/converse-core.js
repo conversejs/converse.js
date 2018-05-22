@@ -252,6 +252,9 @@
             // This happens in tests. We therefore first clean up.
             Backbone.history.stop();
             _converse.chatboxviews.closeAllChatBoxes();
+            if (_converse.bookmarks) {
+                _converse.bookmarks.reset();
+            }
             delete _converse.controlboxtoggle;
             delete _converse.chatboxviews;
             _converse.connection.reset();

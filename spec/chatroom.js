@@ -1845,7 +1845,7 @@
                     expect(view.model.get('open')).toBe(false);
                     expect(view.model.get('membersonly')).toBe(true);
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
             it("indicates when a room is no longer anonymous",

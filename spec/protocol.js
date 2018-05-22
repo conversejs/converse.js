@@ -306,7 +306,7 @@
                     expect($contacts.hasClass('both')).toBeFalsy();
                     expect($contacts.hasClass('current-xmpp-contact')).toBeTruthy();
                     expect($contacts.text().trim()).toBe('Contact');
-                    expect(contact.get('chat_status')).toBe('offline');
+                    expect(contact.presence.get('show')).toBe('offline');
 
                     /*  <presence
                      *      from='contact@example.org/resource'
@@ -315,7 +315,7 @@
                     stanza = $pres({'to': _converse.bare_jid, 'from': 'contact@example.org/resource'});
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
                     // Now the contact should also be online.
-                    expect(contact.get('chat_status')).toBe('online');
+                    expect(contact.presence.get('show')).toBe('online');
 
                     /* Section 8.3.  Creating a Mutual Subscription
                      *

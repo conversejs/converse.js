@@ -124,7 +124,7 @@
             /* Event handlers */
             _converse.initVCardCollection = function () {
                 _converse.vcards = new _converse.VCards();
-                _converse.vcards.browserStorage = new Backbone.BrowserStorage.local(b64_sha1(`converse.vcards`));
+                _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.vcards`));
                 _converse.vcards.fetch();
             }
             _converse.api.listen.on('connectionInitialized', _converse.initVCardCollection);

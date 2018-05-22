@@ -25,10 +25,13 @@
 - #1039 Multi-option data form elements not shown and saved correctly
 
 ### API changes
+
 - `_converse.api.vcard.get` now also accepts a `Backbone.Model` instance and
   has an additional `force` parameter to force fetching the vcard even if it
   has already been fetched.
 - New API method `_converse.api.vcard.update`.
+- The `contactStatusChanged` event has been renamed to `contactPresenceChanged`
+  and a event `presenceChanged` is now also triggered on the contact.
 
 ## UI changes
 

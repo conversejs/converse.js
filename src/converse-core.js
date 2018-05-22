@@ -751,13 +751,6 @@
         };
 
 
-        this.unregisterPresenceHandler = function () {
-            if (!_.isUndefined(_converse.presence_ref)) {
-                _converse.connection.deleteHandler(_converse.presence_ref);
-                delete _converse.presence_ref;
-            }
-        };
-
         this.sendInitialPresence = function () {
             if (_converse.send_initial_presence) {
                 _converse.xmppstatus.sendPresence();
@@ -1094,7 +1087,6 @@
              * connection.
              */
             _converse.emit('beforeTearDown');
-            _converse.unregisterPresenceHandler();
             if (!_.isUndefined(_converse.session)) {
                 _converse.session.destroy();
             }

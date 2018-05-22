@@ -134,7 +134,7 @@
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                         spyOn(_converse, 'showChatStateNotification');
                         var jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).set('chat_status', 'busy'); // This will emit 'contactStatusChanged'
+                        _converse.roster.get(jid).presence.set('show', 'busy'); // This will emit 'contactStatusChanged'
                         expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                         expect(_converse.showChatStateNotification).toHaveBeenCalled();
                     }));

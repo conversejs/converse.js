@@ -230,7 +230,7 @@
             });
 
 
-            _converse.ChatBox = Backbone.Model.extend({
+            _converse.ChatBox = _converse.ModelWithVCardAndPresence.extend({
                 defaults: {
                     'bookmarked': false,
                     'chat_state': undefined,
@@ -241,10 +241,8 @@
                 },
 
                 initialize () {
-                    this.vcard = _converse.vcards.findWhere({'jid': this.get('jid')});
-                    if (_.isNil(this.vcard)) {
-                        this.vcard = _converse.vcards.create({'jid': this.get('jid')});
-                    }
+                    _converse.ModelWithVCardAndPresence.prototype.initialize.apply(this, arguments);
+
                     _converse.api.waitUntil('rosterContactsFetched').then(() => {
                         this.addRelatedContact(_converse.roster.findWhere({'jid': this.get('jid')}));
                     });

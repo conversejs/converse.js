@@ -2,6 +2,7 @@
     define(["jquery", "jasmine", "mock", "converse-core", "test-utils"], factory);
 } (this, function ($, jasmine, mock, converse, test_utils) {
     var _ = converse.env._;
+    var Strophe = converse.env.Strophe;
     var $pres = converse.env.$pres;
     var $msg = converse.env.$msg;
     var $iq = converse.env.$iq;
@@ -94,16 +95,12 @@
                 var $roster = $(_converse.rosterview.roster_el);
                 _converse.rosterview.filter_view.delegateEvents();
 
-                var promise = test_utils.waitUntil(function () {
-                    return $roster.find('li:visible').length === 15;
-                }, 600).then(function (contacts) {
+                var promise = test_utils.waitUntil(() => $roster.find('li:visible').length === 15, 600)
+                .then(function (contacts) {
                     expect($roster.find('ul.roster-group-contacts:visible').length).toBe(5);
                     $filter[0].value = "candice";
                     u.triggerEvent($filter[0], "keydown", "KeyboardEvent");
-
-                    return test_utils.waitUntil(function () {
-                        return $roster.find('li:visible').length === 1;
-                    }, 600);
+                    return test_utils.waitUntil(() => $roster.find('li:visible').length === 1, 600);
                 }).then(function (contacts) {
                     // Only one roster contact is now visible
                     expect($roster.find('li:visible').length).toBe(1);
@@ -149,7 +146,7 @@
                     expect($roster.find('ul.roster-group-contacts:visible').length).toBe(5);
                     _converse.roster_groups = false;
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
 
             it("will also filter out contacts added afterwards",
@@ -290,26 +287,21 @@
 
                 test_utils.createGroupedContacts(_converse);
                 var jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
-                _converse.roster.get(jid).set('chat_status', 'online');
+                _converse.roster.get(jid).presence.set('show', 'online');
                 jid = mock.cur_names[4].replace(/ /g,'.').toLowerCase() + '@localhost';
-                _converse.roster.get(jid).set('chat_status', 'dnd');
+                _converse.roster.get(jid).presence.set('show', 'dnd');
                 test_utils.openControlBox();
 
                 var button = _converse.rosterview.el.querySelector('span[data-type="state"]');
                 button.click();
 
                 var $roster = $(_converse.rosterview.roster_el);
-                test_utils.waitUntil(function () {
-                    return $roster.find('li:visible').length === 15;
-                }, 500).then(function () {
+                test_utils.waitUntil(() => $roster.find('li:visible').length === 15, 500).then(function () {
                     var filter = _converse.rosterview.el.querySelector('.state-type');
                     expect($roster.find('ul.roster-group-contacts:visible').length).toBe(5);
                     filter.value = "online";
                     u.triggerEvent(filter, 'change');
-
-                    return test_utils.waitUntil(function () {
-                        return $roster.find('li:visible').length === 1;
-                    }, 500)
+                    return test_utils.waitUntil(() => $roster.find('li:visible').length === 1, 500);
                 }).then(function () {
                     expect($roster.find('li:visible').eq(0).text().trim()).toBe('Rinse Sommer');
                     expect($roster.find('ul.roster-group-contacts:visible').length).toBe(1);
@@ -323,7 +315,7 @@
                 }).then(function () {
                     expect($roster.find('ul.roster-group-contacts:visible').length).toBe(1);
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
         });
 
@@ -851,16 +843,15 @@
                     function (done, _converse) {
 
                 _addContacts(_converse);
-                test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('.roster-group li').length;
-                }, 700).then(function () {
+                test_utils.waitUntil(() => $(_converse.rosterview.el).find('.roster-group li').length, 700)
+                .then(function () {
                     var jid, t;
                     spyOn(_converse, 'emit');
                     spyOn(_converse.rosterview, 'update').and.callThrough();
                     var $roster = $(_converse.rosterview.el);
                     for (var i=0; i<mock.cur_names.length; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).set('chat_status', 'online');
+                        _converse.roster.get(jid).presence.set('show', 'online');
                         expect(_converse.rosterview.update).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
                         t = _.reduce($roster.find('.roster-group').find('.current-xmpp-contact.online a.open-chat'), function (result, value) {
@@ -887,7 +878,7 @@
                     var $roster = $(_converse.rosterview.el);
                     for (var i=0; i<mock.cur_names.length; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).set('chat_status', 'dnd');
+                        _converse.roster.get(jid).presence.set('show', 'dnd');
                         expect(_converse.rosterview.update).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
                         t = _.reduce($roster.find('.roster-group .current-xmpp-contact.dnd a.open-chat'),
@@ -915,7 +906,7 @@
                     var $roster = $(_converse.rosterview.el);
                     for (var i=0; i<mock.cur_names.length; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).set('chat_status', 'away');
+                        _converse.roster.get(jid).presence.set('show', 'away');
                         expect(_converse.rosterview.update).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
                         t = _.reduce($roster.find('.roster-group .current-xmpp-contact.away a.open-chat'),
@@ -943,7 +934,7 @@
                     var $roster = $(_converse.rosterview.el);
                     for (var i=0; i<mock.cur_names.length; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).set('chat_status', 'xa');
+                        _converse.roster.get(jid).presence.set('show', 'xa');
                         expect(_converse.rosterview.update).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
                         t = _.reduce($roster.find('.roster-group .current-xmpp-contact.xa a.open-chat'),
@@ -972,7 +963,7 @@
                     var $roster = $(_converse.rosterview.el);
                     for (var i=0; i<mock.cur_names.length; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).set('chat_status', 'unavailable');
+                        _converse.roster.get(jid).presence.set('show', 'unavailable');
                         expect(_converse.rosterview.update).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
                         t = _.reduce($roster.find('.roster-group .current-xmpp-contact.unavailable a.open-chat'),
@@ -997,23 +988,23 @@
                     var i, jid;
                     for (i=0; i<3; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).set('chat_status', 'online');
+                        _converse.roster.get(jid).presence.set('show', 'online');
                     }
                     for (i=3; i<6; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).set('chat_status', 'dnd');
+                        _converse.roster.get(jid).presence.set('show', 'dnd');
                     }
                     for (i=6; i<9; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).set('chat_status', 'away');
+                        _converse.roster.get(jid).presence.set('show', 'away');
                     }
                     for (i=9; i<12; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).set('chat_status', 'xa');
+                        _converse.roster.get(jid).presence.set('show', 'xa');
                     }
                     for (i=12; i<15; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).set('chat_status', 'unavailable');
+                        _converse.roster.get(jid).presence.set('show', 'unavailable');
                     }
                     return test_utils.waitUntil(function () {
                         return $(_converse.rosterview.el).find('li.online').length

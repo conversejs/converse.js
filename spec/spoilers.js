@@ -94,7 +94,7 @@
                 var spoiler_hint_el = view.el.querySelector('.spoiler-hint');
                 expect(spoiler_hint_el.textContent).toBe('');
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }));
 
         it("can be sent without a hint",
@@ -169,7 +169,7 @@
                 spoiler_toggle.click();
                 expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeTruthy();
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }));
 
         it("can be sent with a hint",

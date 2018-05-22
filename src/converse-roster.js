@@ -18,9 +18,6 @@
         overrides: {
             _tearDown () {
                 this.__super__._tearDown.apply(this, arguments);
-                if (this.roster) {
-                    this.roster.off().reset(); // Removes roster contacts
-                }
             }
         },
 
@@ -55,10 +52,10 @@
                 * roster and the roster groups.
                 */
                 _converse.roster = new _converse.RosterContacts();
-                _converse.roster.browserStorage = new Backbone.BrowserStorage.session(
+                _converse.roster.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                     b64_sha1(`converse.contacts-${_converse.bare_jid}`));
                 _converse.rostergroups = new _converse.RosterGroups();
-                _converse.rostergroups.browserStorage = new Backbone.BrowserStorage.session(
+                _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                     b64_sha1(`converse.roster.groups${_converse.bare_jid}`));
                 _converse.emit('rosterInitialized');
             };
@@ -98,11 +95,115 @@
             };
 
 
-            _converse.RosterContact = Backbone.Model.extend({
+            _converse.Presence = Backbone.Model.extend({
+                defaults: {
+                    'show': 'offline',
+                    'resources': {}
+                },
 
+                getHighestPriorityResource () {
+                    /* Return the resource with the highest priority.
+                     *
+                     * If multiple resources have the same priority, take the
+                     * latest one.
+                     */
+                    const resources = this.get('resources');
+                    if (_.isObject(resources) && _.size(resources)) {
+                        const val = _.flow(
+                                _.values,
+                                _.partial(_.sortBy, _, ['priority', 'timestamp']),
+                                _.reverse
+                            )(resources)[0];
+                        if (!_.isUndefined(val)) {
+                            return val;
+                        }
+                    }
+                },
+
+                addResource (presence) {
+                    /* Adds a new resource and it's associated attributes as taken
+                     * from the passed in presence stanza.
+                     *
+                     * Also updates the presence if the resource has higher priority (and is newer).
+                     */
+                    const jid = presence.getAttribute('from'),
+                        show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
+                        resource = Strophe.getResourceFromJid(jid),
+                        delay = presence.querySelector(
+                            `delay[xmlns="${Strophe.NS.DELAY}"]`
+                        ),
+                        timestamp = _.isNull(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
+
+                    let priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0;
+                    priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
+
+                    const resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
+                    resources[resource] = {
+                        'name': resource,
+                        'priority': priority,
+                        'show': show,
+                        'timestamp': timestamp
+                    };
+                    const changed = {'resources': resources};
+                    const hpr = this.getHighestPriorityResource();
+                    if (priority == hpr.priority && timestamp == hpr.timestamp) {
+                        // Only set the "global" presence if this is the newest resource
+                        // with the highest priority
+                        changed.show = show;
+                    }
+                    this.save(changed);
+                    return resources;
+                },
+
+
+                removeResource (resource) {
+                    /* Remove the passed in resource from the resources map.
+                     *
+                     * Also redetermines the presence given that there's one less
+                     * resource.
+                     */
+                     let resources = this.get('resources');
+                     if (!_.isObject(resources)) {
+                         resources = {};
+                     } else {
+                         delete resources[resource];
+                     }
+                     this.save({
+                         'resources': resources,
+                         'show': _.propertyOf(
+                             this.getHighestPriorityResource())('show') || 'offline'
+                     });
+                },
+
+            });
+
+
+            _converse.Presences = Backbone.Collection.extend({
+                model: _converse.Presence,
+            });
+
+
+            _converse.ModelWithVCardAndPresence = Backbone.Model.extend({
+                initialize () {
+                    this.setVCard();
+                    this.setPresence();
+                },
+
+                setVCard () {
+                    const jid = this.get('jid');
+                    this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
+                },
+
+                setPresence () {
+                    const jid = this.get('jid');
+                    this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
+                }
+            });
+
+
+            _converse.RosterContact = _converse.ModelWithVCardAndPresence.extend({
                 defaults: {
                     'chat_state': undefined,
-                    'chat_status': 'offline',
                     'image': _converse.DEFAULT_IMAGE,
                     'image_type': _converse.DEFAULT_IMAGE_TYPE,
                     'num_unread': 0,
@@ -110,6 +211,8 @@
                 },
 
                 initialize (attributes) {
+                    _converse.ModelWithVCardAndPresence.prototype.initialize.apply(this, arguments);
+
                     const { jid } = attributes,
                         bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase(),
                         resource = Strophe.getResourceFromJid(jid);
@@ -119,18 +222,11 @@
                         'groups': [],
                         'id': bare_jid,
                         'jid': bare_jid,
-                        'resources': {},
                         'user_id': Strophe.getNodeFromJid(jid)
                     }, attributes));
 
-                    this.vcard = _converse.vcards.findWhere({'jid': bare_jid});
-                    if (_.isNil(this.vcard)) {
-                        this.vcard = _converse.vcards.create({'jid': bare_jid});
-                    }
-
-                    this.on('change:chat_status', function (item) {
-                        _converse.emit('contactStatusChanged', item.attributes);
-                    });
+                    this.presence.on('change:show', () => _converse.emit('contactPresenceChanged', this));
+                    this.presence.on('change:show', () => this.trigger('presenceChanged'));
                 },
 
                 getDisplayName () {
@@ -209,80 +305,6 @@
                     return this;
                 },
 
-                addResource (presence) {
-                    /* Adds a new resource and it's associated attributes as taken
-                    * from the passed in presence stanza.
-                    *
-                    * Also updates the contact's chat_status if the presence has
-                    * higher priority (and is newer).
-                    */
-                    const jid = presence.getAttribute('from'),
-                        chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
-                        resource = Strophe.getResourceFromJid(jid),
-                        delay = presence.querySelector(
-                            `delay[xmlns="${Strophe.NS.DELAY}"]`
-                        ),
-                        timestamp = _.isNull(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
-
-                    let priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0;
-                    priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
-
-                    const resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
-                    resources[resource] = {
-                        'name': resource,
-                        'priority': priority,
-                        'status': chat_status,
-                        'timestamp': timestamp
-                    };
-                    const changed = {'resources': resources};
-                    const hpr = this.getHighestPriorityResource();
-                    if (priority == hpr.priority && timestamp == hpr.timestamp) {
-                        // Only set the chat status if this is the newest resource
-                        // with the highest priority
-                        changed.chat_status = chat_status;
-                    }
-                    this.save(changed);
-                    return resources;
-                },
-
-                removeResource (resource) {
-                    /* Remove the passed in resource from the contact's resources map.
-                    *
-                    * Also recomputes the chat_status given that there's one less
-                    * resource.
-                    */
-                    let resources = this.get('resources');
-                    if (!_.isObject(resources)) {
-                        resources = {};
-                    } else {
-                        delete resources[resource];
-                    }
-                    this.save({
-                        'resources': resources,
-                        'chat_status': _.propertyOf(
-                            this.getHighestPriorityResource())('status') || 'offline'
-                    });
-                },
-
-                getHighestPriorityResource () {
-                    /* Return the resource with the highest priority.
-                    *
-                    * If multiple resources have the same priority, take the
-                    * newest one.
-                    */
-                    const resources = this.get('resources');
-                    if (_.isObject(resources) && _.size(resources)) {
-                        const val = _.flow(
-                                _.values,
-                                _.partial(_.sortBy, _, ['priority', 'timestamp']),
-                                _.reverse
-                            )(resources)[0];
-                        if (!_.isUndefined(val)) {
-                            return val;
-                        }
-                    }
-                },
-
                 removeFromRoster (callback, errback) {
                     /* Instruct the XMPP server to remove this contact from our roster
                     * Parameters:
@@ -301,8 +323,8 @@
                 model: _converse.RosterContact,
 
                 comparator (contact1, contact2) {
-                    const status1 = contact1.get('chat_status') || 'offline';
-                    const status2 = contact2.get('chat_status') || 'offline';
+                    const status1 = contact1.presence.get('show') || 'offline';
+                    const status2 = contact2.presence.get('show') || 'offline';
                     if (_converse.STATUS_WEIGHTS[status1] === _converse.STATUS_WEIGHTS[status2]) {
                         const name1 = (contact1.getDisplayName()).toLowerCase();
                         const name2 = (contact2.getDisplayName()).toLowerCase();
@@ -485,7 +507,7 @@
                     if (_converse.show_only_online_users) {
                         ignored = _.union(ignored, ['dnd', 'xa', 'away']);
                     }
-                    return _.sum(this.models.filter((model) => !_.includes(ignored, model.get('chat_status'))));
+                    return _.sum(this.models.filter((model) => !_.includes(ignored, model.presence.get('show'))));
                 },
 
                 onRosterPush (iq) {
@@ -633,7 +655,6 @@
                     const jid = presence.getAttribute('from'),
                         bare_jid = Strophe.getBareJidFromJid(jid),
                         resource = Strophe.getResourceFromJid(jid),
-                        chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
                         status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
                         contact = this.get(bare_jid);
 
@@ -645,7 +666,8 @@
                             // Another resource has changed its status and
                             // synchronize_availability option set to update,
                             // we'll update ours as well.
-                            _converse.xmppstatus.save({'status': chat_status});
+                            const show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online';
+                            _converse.xmppstatus.save({'status': show});
                             if (status_message) {
                                 _converse.xmppstatus.save({'status_message': status_message});
                             }
@@ -683,10 +705,10 @@
                     } else if (presence_type === 'subscribe') {
                         this.handleIncomingSubscription(presence);
                     } else if (presence_type === 'unavailable' && contact) {
-                        contact.removeResource(resource);
+                        contact.presence.removeResource(resource);
                     } else if (contact) {
                         // presence_type is undefined
-                        contact.addResource(presence);
+                        contact.presence.addResource(presence);
                     }
                 }
             });
@@ -725,13 +747,35 @@
                 }
             });
 
+            _converse.unregisterPresenceHandler = function () {
+                if (!_.isUndefined(_converse.presence_ref)) {
+                    _converse.connection.deleteHandler(_converse.presence_ref);
+                    delete _converse.presence_ref;
+                }
+            };
+
 
             /********** Event Handlers *************/
+
+            _converse.api.listen.on('beforeTearDown', _converse.unregisterPresenceHandler());
+
+            _converse.api.listen.on('afterTearDown', () => {
+                if (_converse.presence) {
+                    _converse.presences.off().reset(); // Remove presences
+                }
+            });
 
             _converse.api.listen.on('clearSession', () => {
                 if (!_.isUndefined(this.roster)) {
                     this.roster.browserStorage._clear();
                 }
+            });
+
+            _converse.api.listen.on('connectionInitialized', () => {
+                _converse.presences = new _converse.Presences();
+                _converse.presences.browserStorage = 
+                    new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
+                _converse.presences.fetch();
             });
 
             _converse.api.listen.on('statusInitialized', (reconnecting) => {

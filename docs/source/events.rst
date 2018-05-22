@@ -179,12 +179,13 @@ The user has removed a contact.
 ``_converse.api.listen.on('contactRemoved', function (data) { ... });``
 
 
-contactStatusChanged
-~~~~~~~~~~~~~~~~~~~~
+contactPresenceChanged
+~~~~~~~~~~~~~~~~~~~~~~
 
-When a chat buddy's chat status has changed.
+When a chat buddy's presence status has changed.
+The presence status is either `online`, `offline`, `dnd`, `away` or `xa`.
 
-``_converse.api.listen.on('contactStatusChanged', function (buddy) { ... });``
+``_converse.api.listen.on('contactPresenceChanged', function (presence) { ... });``
 
 contactStatusMessageChanged
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~

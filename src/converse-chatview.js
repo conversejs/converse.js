@@ -344,8 +344,8 @@
 
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.remove, this);
-                    // TODO check for changed fullname as well
-                    this.model.on('change:chat_status', this.onChatStatusChanged, this);
+
+                    this.model.presence.on('change:show', this.onPresenceChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.render();
 
@@ -446,14 +446,14 @@
                         return;
                     }
                     const contact_jid = this.model.get('jid');
-                    const resources = this.model.get('resources');
+                    const resources = this.model.presence.get('resources');
                     if (_.isEmpty(resources)) {
                         return;
                     }
                     Promise.all(_.map(_.keys(resources), (resource) =>
                         _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${resource}`)
                     )).then((results) => {
-                        if (results.length) {
+                        if (_.filter(results, 'length').length) {
                             const html = tpl_spoiler_button(this.model.toJSON());
                             if (_converse.visible_toolbar_buttons.emoji) {
                                 this.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
@@ -999,20 +999,19 @@
                     }
                 },
 
-                onChatStatusChanged (item) {
-                    const chat_status = item.get('chat_status');
-                    let fullname = item.get('fullname');
-                    let text;
+                onPresenceChanged (item) {
+                    const show = item.get('show'),
+                          fullname = this.model.getDisplayName();
 
-                    fullname = _.isEmpty(fullname)? item.get('jid'): fullname;
+                    let text;
                     if (u.isVisible(this.el)) {
-                        if (chat_status === 'offline') {
+                        if (show === 'offline') {
                             text = fullname+' '+__('has gone offline');
-                        } else if (chat_status === 'away') {
+                        } else if (show === 'away') {
                             text = fullname+' '+__('has gone away');
-                        } else if ((chat_status === 'dnd')) {
+                        } else if ((show === 'dnd')) {
                             text = fullname+' '+__('is busy');
-                        } else if (chat_status === 'online') {
+                        } else if (show === 'online') {
                             text = fullname+' '+__('is online');
                         }
                         if (text) {

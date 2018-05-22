@@ -44,7 +44,7 @@
                 stanza.c('item', {'jid': item}).up();
             });
             _converse.connection._dataRecv(utils.createRequest(stanza));
-        });
+        }).catch(_.partial(console.error, _));
     }
 
     utils.createRequest = function (iq) {

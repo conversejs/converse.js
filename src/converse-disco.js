@@ -448,8 +448,8 @@
                         if (_.isNil(entity_jid)) {
                             throw new TypeError('disco.supports: You need to provide an entity JID');
                         }
-                        return _converse.api.waitUntil('discoInitialized').then(() => {
-                            return new Promise((resolve, reject) => {
+                        return new Promise((resolve, reject) => {
+                            return _converse.api.waitUntil('discoInitialized').then(() => {
                                 _converse.api.disco.entities.get(entity_jid, true).then((entity) => {
                                     entity.waitUntilFeaturesDiscovered.then(() => {
                                         const promises = _.concat(
@@ -460,8 +460,8 @@
                                             resolve(f.filter(f.isObject, result));
                                         }).catch(reject);
                                     }).catch(reject);
-                                })
-                            });
+                                }).catch(reject);
+                            }).catch(reject);
                         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     },
 

@@ -654,6 +654,14 @@
         };
     };
 
+    u.rootContains = function (root, el) {
+        // The document element does not have the contains method in IE.
+        if (root === document && !root.contains) {
+            return document.head.contains(el) || document.body.contains(el);
+        }
+        return root.contains ? root.contains(el) : window.HTMLElement.prototype.contains.call(root, el);
+    };
+
     u.createFragmentFromText = function (markup) {
         /* Returns a DocumentFragment containing DOM nodes based on the
          * passed-in markup text.

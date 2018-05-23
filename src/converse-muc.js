@@ -741,19 +741,15 @@
                         return true;
                     }
                     const occupant = this.occupants.findOccupant(data);
-                    if (data.type === 'unavailable') {
-                        if (occupant) {
-                            // Even before destroying, we set the new data, so
-                            // that we can for example show the
-                            // disconnection message.
+                    if (data.type === 'unavailable' && occupant) {
+                        if (!_.includes(data.states, converse.MUC_NICK_CHANGED_CODE) &&
+                                !_.includes(['admin', 'owner', 'member'], occupant.get('affiliation'))) {
+                            // We only destroy the occupant if this is not a nickname change operation.
+                            // and if they're not on the member lists.
+                            // Before destroying we set the new data, so
+                            // that we can show the disconnection message.
                             occupant.set(data);
-                        }
-                        if (!_.includes(data.states, converse.MUC_NICK_CHANGED_CODE)) {
-                            // We only destroy the occupant if this is not a
-                            // nickname change operation.
-                            if (occupant) {
-                                occupant.destroy();
-                            }
+                            occupant.destroy();
                             return;
                         }
                     }

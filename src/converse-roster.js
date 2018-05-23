@@ -15,12 +15,6 @@
 
         dependencies: ["converse-vcard"],
 
-        overrides: {
-            _tearDown () {
-                this.__super__._tearDown.apply(this, arguments);
-            }
-        },
-
         initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
@@ -766,8 +760,8 @@
             });
 
             _converse.api.listen.on('clearSession', () => {
-                if (!_.isUndefined(this.roster)) {
-                    this.roster.browserStorage._clear();
+                if (_converse.presences) {
+                    _converse.presences.browserStorage._clear();
                 }
             });
 

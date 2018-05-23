@@ -945,7 +945,7 @@
                 _converse.log(
                     "Could not restore session for jid: "+
                     this.jid+" Error message: "+e.message, Strophe.LogLevel.WARN);
-                this.clearSession(); // If there's a roster, we want to clear it (see #555)
+                this.clearSession(); // We want to clear presences (see #555)
                 return false;
             }
         };

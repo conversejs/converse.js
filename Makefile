@@ -134,10 +134,7 @@ dev: stamp-bundler stamp-npm
 ## Builds
 
 .PHONY: css
-css: dev sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/inverse.css css/inverse.min.css css/fonts.css
-
-css/inverse.css:: dev sass sass
-	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/inverse.scss css/inverse.css
+css: dev sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/fonts.css
 
 css/converse.css:: dev sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/converse.scss css/converse.css

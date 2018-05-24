@@ -8,6 +8,7 @@
 - #194 Include entity capabilities in outgoing presence stanzas
 - #337 API call to update a VCard
 - #968 Use nickname from VCard when joining a room
+- #1091 There's now only one CSS file for all view modes.
 - #1094 Show room members who aren't currently online
 - It's now also possible to edit your VCard via the UI
 - Automatically grow/shrink input as text is entered/removed

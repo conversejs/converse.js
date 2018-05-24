@@ -376,7 +376,7 @@ For example::
 blacklisted_plugins
 -------------------
 
-* Default: ``[]`` (``['converse-minimize', 'converse-dragresize']`` for inVerse)
+* Default: ``[]``
 
 A list of plugin names that are blacklisted and will therefore not be
 initialized once ``converse.initialize`` is called, even if the same plugin is
@@ -698,7 +698,7 @@ If set to ``true``, then don't show offline users.
 hide_open_bookmarks
 -------------------
 
-* Default:  ``false`` (``true`` for inVerse).
+* Default:  ``false`` (``true`` when the ``view_mode`` is set to ``fullscreen``).
 
 This setting applies to the ``converse-bookmarks`` plugin and specfically the
 list of bookmarks shown in the ``Rooms`` tab of the control box.
@@ -1163,7 +1163,7 @@ Specifies whether chat state (online, dnd, away) HTML5 desktop notifications sho
 show_controlbox_by_default
 --------------------------
 
-* Default:  ``false`` (``true`` for inVerse)
+* Default:  ``false`` (``true`` when the ``view_mode`` is set to ``fullscreen``)
 
 The "controlbox" refers to the special chatbox containing your contacts roster,
 status widget, chatrooms and other controls.
@@ -1280,7 +1280,7 @@ See also `trusted`_.
 sticky_controlbox
 -----------------
 
-* Default: ``false`` (``true`` for inVerse).
+* Default: ``false`` (``true`` when the ``view_mode`` is set to ``fullscreen``).
 
 If set to ``true``, the control box (which includes the login, registration,
 contacts and rooms tabs) will not be closeable. It won't have a close button at
@@ -1468,6 +1468,9 @@ Since version 3.3.0, the ``inverse.js`` and ``converse-mobile.js`` builds no
 longer exist. Instead the standard ``converse.js`` build is used, together with
 the appropriate ``view_mode`` value.
 
+Since verseion 4.0.0, there is now also only one CSS file to be used for all
+the different view modes, ``converse.css``.
+
 The ``converse-muc-embedded.js`` build is still kept, because it's smaller than
 ``converse.js`` due to unused code being removed. It doesn't however contain
 any new code, so the full ``converse.js`` build could be used instead, as long
@@ -1475,19 +1478,6 @@ as ``view_mode`` is set to ``embedded``.
 
 Furthermore, it's no longer necessary to whitelist or blacklist any plugins
 when switching view modes.
-
-.. note::
-    Although the ``view_mode`` setting has removed the need for different
-    JavaScript builds, you'll still need to use different CSS files depending
-    on the view mode.
-
-    * For ``embedded`` you need to use ``./css/converse-muc-embedded.css``
-    * For ``fullscreen`` you need ``./css/inverse.css``
-    * For ``mobile`` you need to use both ``./css/converse.css`` and ``./css/mobile.css``
-    * For ``overlayed`` this is ``./css/converse.css``
-
-    Hopefully in a future release the CSS files will be combined and you'll
-    only need ``converse.css``
 
 
 .. _`whitelisted_plugins`:

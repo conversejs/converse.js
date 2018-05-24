@@ -428,6 +428,68 @@
     }
 }
 
+/* ******************* Overlay and embedded styles *************************** */
+
+#conversejs.converse-embedded,
+#conversejs.converse-overlayed {
+    .chat-head {
+        border-top-left-radius: $chatbox-border-radius;
+        border-top-right-radius: $chatbox-border-radius;
+        @media screen and (max-height: $mobile-landscape-height) {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+        @media screen and (max-width: $mobile-portrait-length) {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+    }
+    .chatbox {
+        min-width: $overlayed-chat-width!important;
+        width: $overlayed-chat-width;
+
+        .box-flyout {
+            min-width: $overlayed-chat-width!important;
+            width: $overlayed-chat-width;
+        }
+
+        .chat-body {
+            .chat-message {
+                line-height: $line-height-large;
+                .chat-msg-author {
+                    line-height: $line-height-large;
+                }
+                .chat-msg-content {
+                    line-height: $line-height-large;
+                    .emojione {
+                        margin-bottom: -5px;
+                    }
+                }
+            }
+        }
+    }
+    .chatbox {
+        form.sendXMPPMessage {
+            .chat-toolbar {
+                li {
+                    .toolbar-menu {
+                        min-width: 235px;
+
+                        ul {
+                            &.emoji-toolbar {
+                                width: 100%;
+                                .emoji-category {
+                                    float: left;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 #conversejs.converse-overlayed  {
     .flyout {
         bottom: $overlayed-chatbox-hover-height;
@@ -446,6 +508,20 @@
         height: $overlayed-emoji-picker-height;
     }
 }
+
+@include media-breakpoint-down(sm) {
+	#conversejs.converse-overlayed {
+		> .row {
+			flex-direction: column;
+
+            &.no-gutters {
+                margin: -1em;
+            }
+		}
+	}
+}
+
+/* ******************* Fullpage styles *************************** */
 
 #conversejs.converse-fullscreen  {
     .flyout {

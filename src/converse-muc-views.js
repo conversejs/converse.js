@@ -1106,13 +1106,9 @@
                 },
 
                 onNickNameNotFound (message) {
-                    const nick = _converse.xmppstatus.vcard.get('nickname');
+                    const nick = this.getDefaultNickName();
                     if (nick) {
                         this.join(nick);
-                    } else if (_converse.muc_nickname_from_jid) {
-                        // We try to enter the room with the node part of
-                        // the user's JID.
-                        this.join(this.getDefaultNickName());
                     } else {
                         this.renderNicknameForm(message);
                     }
@@ -1124,7 +1120,12 @@
                      * We put this in a separate method so that it can be
                      * overridden by plugins.
                      */
-                    return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+                    const nick = _converse.xmppstatus.vcard.get('nickname');
+                    if (nick) {
+                        return nick;
+                    } else if (_converse.muc_nickname_from_jid) {
+                        return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+                    }
                 },
 
                 onNicknameClash (presence) {

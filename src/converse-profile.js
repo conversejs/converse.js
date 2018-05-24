@@ -112,6 +112,7 @@
 
                     const data = {
                         'fn': form_data.get('fn'),
+                        'nickname': form_data.get('nickname'),
                         'role': form_data.get('role'),
                         'email': form_data.get('email'),
                         'url': form_data.get('url'),

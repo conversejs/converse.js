@@ -110,17 +110,35 @@
                     }
                 },
 
+                getVCardForChatroomOccupant () {
+                    const chatbox = this.collection.chatbox,
+                          nick = Strophe.getResourceFromJid(this.get('from'));
+
+                    if (chatbox.get('nick') === nick) {
+                        return _converse.xmppstatus.vcard;
+                    } else {
+                        let vcard;
+                        if (this.get('vcard_jid')) {
+                            vcard = _converse.vcards.findWhere({'jid': this.get('vcard_jid')});
+                        }
+                        if (!vcard) {
+                            let jid;
+                            const occupant = chatbox.occupants.findWhere({'nick': nick});
+                            if (occupant && occupant.get('jid')) {
+                                jid = occupant.get('jid');
+                                this.save({'vcard_jid': jid}, {'silent': true});
+                            } else {
+                                jid = this.get('from');
+                            }
+                            vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
+                        }
+                        return vcard;
+                    }
+                },
+
                 setVCard () {
                     if (this.get('type') === 'groupchat') {
-                        const chatbox = this.collection.chatbox,
-                              nick = Strophe.getResourceFromJid(this.get('from'));
-                        if (chatbox.get('nick') === nick) {
-                            this.vcard = _converse.xmppstatus.vcard;
-                        } else {
-                            const occupant = chatbox.occupants.findWhere({'nick': nick});
-                            const jid = (occupant && occupant.get('jid')) ? occupant.get('jid') : this.get('from');
-                            this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
-                        }
+                        this.vcard = this.getVCardForChatroomOccupant();
                     } else {
                         const jid = this.get('from');
                         this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});

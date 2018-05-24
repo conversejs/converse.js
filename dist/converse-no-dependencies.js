@@ -11759,7 +11759,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       } catch (e) {
         _converse.log("Could not restore session for jid: " + this.jid + " Error message: " + e.message, Strophe.LogLevel.WARN);
 
-        this.clearSession(); // If there's a roster, we want to clear it (see #555)
+        this.clearSession(); // We want to clear presences (see #555)
 
         return false;
       }
@@ -15622,21 +15622,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
           var occupant = this.occupants.findOccupant(data);
 
-          if (data.type === 'unavailable') {
-            if (occupant) {
-              // Even before destroying, we set the new data, so
-              // that we can for example show the
-              // disconnection message.
+          if (data.type === 'unavailable' && occupant) {
+            if (!_.includes(data.states, converse.MUC_NICK_CHANGED_CODE) && !occupant.isMember()) {
+              // We only destroy the occupant if this is not a nickname change operation.
+              // and if they're not on the member lists.
+              // Before destroying we set the new data, so
+              // that we can show the disconnection message.
               occupant.set(data);
-            }
-
-            if (!_.includes(data.states, converse.MUC_NICK_CHANGED_CODE)) {
-              // We only destroy the occupant if this is not a
-              // nickname change operation.
-              if (occupant) {
-                occupant.destroy();
-              }
-
+              occupant.destroy();
               return;
             }
           }
@@ -15656,12 +15649,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         },
         parsePresence: function parsePresence(pres) {
           var from = pres.getAttribute("from"),
+              type = pres.getAttribute("type"),
               data = {
             'from': from,
             'nick': Strophe.getResourceFromJid(from),
-            'type': pres.getAttribute("type"),
+            'type': type,
             'states': [],
-            'show': 'online'
+            'show': type !== 'unavailable' ? 'online' : 'offline'
           };
 
           _.each(pres.childNodes, function (child) {
@@ -15912,6 +15906,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         },
         getDisplayName: function getDisplayName() {
           return this.get('nick') || this.get('jid');
+        },
+        isMember: function isMember() {
+          return _.includes(['admin', 'owner', 'member'], this.get('affiliation'));
         }
       });
       _converse.ChatRoomOccupants = Backbone.Collection.extend({
@@ -21144,31 +21141,57 @@ return __p
             window.setTimeout(this.destroy.bind(this), 20000);
           }
         },
-        setVCard: function setVCard() {
-          if (this.get('type') === 'groupchat') {
-            var chatbox = this.collection.chatbox,
-                nick = Strophe.getResourceFromJid(this.get('from'));
+        getVCardForChatroomOccupant: function getVCardForChatroomOccupant() {
+          var chatbox = this.collection.chatbox,
+              nick = Strophe.getResourceFromJid(this.get('from'));
 
-            if (chatbox.get('nick') === nick) {
-              this.vcard = _converse.xmppstatus.vcard;
-            } else {
+          if (chatbox.get('nick') === nick) {
+            return _converse.xmppstatus.vcard;
+          } else {
+            var vcard;
+
+            if (this.get('vcard_jid')) {
+              vcard = _converse.vcards.findWhere({
+                'jid': this.get('vcard_jid')
+              });
+            }
+
+            if (!vcard) {
+              var jid;
               var occupant = chatbox.occupants.findWhere({
                 'nick': nick
               });
-              var jid = occupant && occupant.get('jid') ? occupant.get('jid') : this.get('from');
-              this.vcard = _converse.vcards.findWhere({
+
+              if (occupant && occupant.get('jid')) {
+                jid = occupant.get('jid');
+                this.save({
+                  'vcard_jid': jid
+                }, {
+                  'silent': true
+                });
+              } else {
+                jid = this.get('from');
+              }
+
+              vcard = _converse.vcards.findWhere({
                 'jid': jid
               }) || _converse.vcards.create({
                 'jid': jid
               });
             }
-          } else {
-            var _jid = this.get('from');
 
+            return vcard;
+          }
+        },
+        setVCard: function setVCard() {
+          if (this.get('type') === 'groupchat') {
+            this.vcard = this.getVCardForChatroomOccupant();
+          } else {
+            var jid = this.get('from');
             this.vcard = _converse.vcards.findWhere({
-              'jid': _jid
+              'jid': jid
             }) || _converse.vcards.create({
-              'jid': _jid
+              'jid': jid
             });
           }
         },
@@ -21899,7 +21922,7 @@ return __p
         delete _converse.chatboxes.browserStorage;
       });
 
-      _converse.api.listen.on('statusInitialized', function () {
+      _converse.api.listen.on('presencesInitialized', function () {
         return _converse.chatboxes.onConnected();
       });
       /************************ END Event Handlers ************************/
@@ -24969,10 +24992,10 @@ __e(o.label_role) +
 __e(o.role) +
 '" aria-describedby="vcard-role-help">\n                        <small id="vcard-role-help" class="form-text text-muted">' +
 __e(o.label_role_help) +
-'</small>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
-__e(o.label_close) +
-'</button>\n                    <button type="submit" class="save-form btn btn-primary">' +
+'</small>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="submit" class="save-form btn btn-primary">' +
 __e(o.label_save) +
+'</button>\n                    <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
+__e(o.label_close) +
 '</button>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n';
 return __p
 };});
@@ -25050,7 +25073,7 @@ var __t, __p = '', __e = _.escape;
 __p += '<vCard xmlns="vcard-temp">\n    <FN>' +
 __e(o.fn) +
 '</FN>\n    <NICKNAME>' +
-__e(o.fn) +
+__e(o.nickname) +
 '</NICKNAME>\n    <URL>' +
 __e(o.url) +
 '</URL>\n    <ROLE>' +
@@ -25351,6 +25374,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               image_file = form_data.get('image');
           var data = {
             'fn': form_data.get('fn'),
+            'nickname': form_data.get('nickname'),
             'role': form_data.get('role'),
             'email': form_data.get('email'),
             'url': form_data.get('url')
@@ -26584,7 +26608,7 @@ return __p
     // an error will be raised if the plugin is not found.
     //
     // NB: These plugins need to have already been loaded via require.js.
-    dependencies: ['converse-chatboxes', 'converse-muc', 'converse-controlbox', 'converse-rosterview'],
+    dependencies: ['converse-chatboxes', 'converse-muc', 'converse-muc-views', 'converse-controlbox', 'converse-rosterview'],
     enabled: function enabled(_converse) {
       return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
     },
@@ -28142,7 +28166,7 @@ return __p
 define('tpl!chatroom_head', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<div class="col col-8">\n    <div class="chat-title" title="' +
+__p += '<div class="chatbox-title">\n    <div class="chat-title" title="' +
 __e(o.jid) +
 '">\n        ';
  if (o.name && o.name !== o.Strophe.getNodeFromJid(o.jid)) { ;
@@ -28591,7 +28615,7 @@ return __p
 
                     if (!this.roomspanel.model.get('nick')) {
                         this.roomspanel.model.save({
-                            nick: _converse.xmppstatus.get('nickname') || Strophe.getNodeFromJid(_converse.bare_jid)
+                            nick: _converse.xmppstatus.vcard.get('nickname') || Strophe.getNodeFromJid(_converse.bare_jid)
                         });
                     }
                     _converse.emit('roomsPanelRendered');
@@ -29004,6 +29028,16 @@ return __p
 
                     this.model.occupants.on('add', this.showJoinNotification, this);
                     this.model.occupants.on('remove', this.showLeaveNotification, this);
+                    this.model.occupants.on('change:show', (occupant) => {
+                        if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
+                            return;
+                        }
+                        if (occupant.get('show') === 'offline') {
+                            this.showLeaveNotification(occupant);
+                        } else if (occupant.get('show') === 'online') {
+                            this.showJoinNotification(occupant);
+                        }
+                    });
 
                     this.createEmojiPicker();
                     this.createOccupantsView();
@@ -29577,10 +29611,9 @@ return __p
                 },
 
                 onNickNameNotFound (message) {
-                    if (_converse.muc_nickname_from_jid) {
-                        // We try to enter the room with the node part of
-                        // the user's JID.
-                        this.join(this.getDefaultNickName());
+                    const nick = this.getDefaultNickName();
+                    if (nick) {
+                        this.join(nick);
                     } else {
                         this.renderNicknameForm(message);
                     }
@@ -29592,7 +29625,12 @@ return __p
                      * We put this in a separate method so that it can be
                      * overridden by plugins.
                      */
-                    return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+                    const nick = _converse.xmppstatus.vcard.get('nickname');
+                    if (nick) {
+                        return nick;
+                    } else if (_converse.muc_nickname_from_jid) {
+                        return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+                    }
                 },
 
                 onNicknameClash (presence) {
@@ -29835,10 +29873,13 @@ return __p
                 },
 
                 showLeaveNotification (occupant) {
-                    const nick = occupant.get('nick');
-                    const stat = occupant.get('status');
-                    const last_el = this.content.lastElementChild;
+                    const nick = occupant.get('nick'),
+                          stat = occupant.get('status'),
+                          last_el = this.content.lastElementChild,
+                          last_msg_date = last_el.getAttribute('data-isodate');
+
                     if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
+                            moment(last_msg_date).isSame(new Date(), "day") &&
                             _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
 
                         let message;
@@ -31365,12 +31406,6 @@ return __p
 
         dependencies: ["converse-vcard"],
 
-        overrides: {
-            _tearDown () {
-                this.__super__._tearDown.apply(this, arguments);
-            }
-        },
-
         initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
@@ -31446,9 +31481,11 @@ return __p
 
 
             _converse.Presence = Backbone.Model.extend({
-                defaults: {
-                    'show': 'offline',
-                    'resources': {}
+                defaults () {
+                    return {
+                        'show': 'offline',
+                        'resources': {}
+                    }
                 },
 
                 getHighestPriorityResource () {
@@ -31477,12 +31514,10 @@ return __p
                      * Also updates the presence if the resource has higher priority (and is newer).
                      */
                     const jid = presence.getAttribute('from'),
-                        show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
-                        resource = Strophe.getResourceFromJid(jid),
-                        delay = presence.querySelector(
-                            `delay[xmlns="${Strophe.NS.DELAY}"]`
-                        ),
-                        timestamp = _.isNull(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
+                          show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
+                          resource = Strophe.getResourceFromJid(jid),
+                          delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, presence).pop(),
+                          timestamp = _.isNil(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
 
                     let priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0;
                     priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
@@ -31512,17 +31547,17 @@ return __p
                      * Also redetermines the presence given that there's one less
                      * resource.
                      */
-                     let resources = this.get('resources');
-                     if (!_.isObject(resources)) {
-                         resources = {};
-                     } else {
-                         delete resources[resource];
-                     }
-                     this.save({
-                         'resources': resources,
-                         'show': _.propertyOf(
-                             this.getHighestPriorityResource())('show') || 'offline'
-                     });
+                    let resources = this.get('resources');
+                    if (!_.isObject(resources)) {
+                        resources = {};
+                    } else {
+                        delete resources[resource];
+                    }
+                    this.save({
+                        'resources': resources,
+                        'show': _.propertyOf(
+                            this.getHighestPriorityResource())('show') || 'offline'
+                    });
                 },
 
             });
@@ -31998,54 +32033,64 @@ return __p
                     }
                 },
 
+                handleOwnPresence (presence) {
+                    const jid = presence.getAttribute('from'),
+                          resource = Strophe.getResourceFromJid(jid),
+                          presence_type = presence.getAttribute('type');
+
+                    if ((_converse.connection.jid !== jid) &&
+                            (presence_type !== 'unavailable') &&
+                            (_converse.synchronize_availability === true ||
+                            _converse.synchronize_availability === resource)) {
+                        // Another resource has changed its status and
+                        // synchronize_availability option set to update,
+                        // we'll update ours as well.
+                        const show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online';
+                        _converse.xmppstatus.save({'status': show});
+
+                        const status_message = _.propertyOf(presence.querySelector('status'))('textContent');
+                        if (status_message) {
+                            _converse.xmppstatus.save({'status_message': status_message});
+                        }
+                    }
+                    if (_converse.jid === jid && presence_type === 'unavailable') {
+                        // XXX: We've received an "unavailable" presence from our
+                        // own resource. Apparently this happens due to a
+                        // Prosody bug, whereby we send an IQ stanza to remove
+                        // a roster contact, and Prosody then sends
+                        // "unavailable" globally, instead of directed to the
+                        // particular user that's removed.
+                        //
+                        // Here is the bug report: https://prosody.im/issues/1121
+                        //
+                        // I'm not sure whether this might legitimately happen
+                        // in other cases.
+                        //
+                        // As a workaround for now we simply send our presence again,
+                        // otherwise we're treated as offline.
+                        _converse.xmppstatus.sendPresence();
+                    }
+                },
+
                 presenceHandler (presence) {
                     const presence_type = presence.getAttribute('type');
                     if (presence_type === 'error') { return true; }
 
                     const jid = presence.getAttribute('from'),
-                        bare_jid = Strophe.getBareJidFromJid(jid),
-                        resource = Strophe.getResourceFromJid(jid),
-                        status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
-                        contact = this.get(bare_jid);
-
+                          bare_jid = Strophe.getBareJidFromJid(jid);
                     if (this.isSelf(bare_jid)) {
-                        if ((_converse.connection.jid !== jid) &&
-                            (presence_type !== 'unavailable') &&
-                            (_converse.synchronize_availability === true ||
-                            _converse.synchronize_availability === resource)) {
-                            // Another resource has changed its status and
-                            // synchronize_availability option set to update,
-                            // we'll update ours as well.
-                            const show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online';
-                            _converse.xmppstatus.save({'status': show});
-                            if (status_message) {
-                                _converse.xmppstatus.save({'status_message': status_message});
-                            }
-                        }
-                        if (_converse.jid === jid && presence_type === 'unavailable') {
-                            // XXX: We've received an "unavailable" presence from our
-                            // own resource. Apparently this happens due to a
-                            // Prosody bug, whereby we send an IQ stanza to remove
-                            // a roster contact, and Prosody then sends
-                            // "unavailable" globally, instead of directed to the
-                            // particular user that's removed.
-                            //
-                            // Here is the bug report: https://prosody.im/issues/1121
-                            //
-                            // I'm not sure whether this might legitimately happen
-                            // in other cases.
-                            //
-                            // As a workaround for now we simply send our presence again,
-                            // otherwise we're treated as offline.
-                            _converse.xmppstatus.sendPresence();
-                        }
-                        return;
+                        return this.handleOwnPresence(presence);
                     } else if (sizzle(`query[xmlns="${Strophe.NS.MUC}"]`, presence).length) {
                         return; // Ignore MUC
                     }
+
+                    const status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
+                          contact = this.get(bare_jid);
+
                     if (contact && (status_message !== contact.get('status'))) {
                         contact.save({'status': status_message});
                     }
+
                     if (presence_type === 'subscribed' && contact) {
                         contact.ackSubscribe();
                     } else if (presence_type === 'unsubscribed' && contact) {
@@ -32055,6 +32100,7 @@ return __p
                     } else if (presence_type === 'subscribe') {
                         this.handleIncomingSubscription(presence);
                     } else if (presence_type === 'unavailable' && contact) {
+                        const resource = Strophe.getResourceFromJid(jid);
                         contact.presence.removeResource(resource);
                     } else if (contact) {
                         // presence_type is undefined
@@ -32110,25 +32156,28 @@ return __p
             _converse.api.listen.on('beforeTearDown', _converse.unregisterPresenceHandler());
 
             _converse.api.listen.on('afterTearDown', () => {
-                if (_converse.presence) {
+                if (_converse.presences) {
                     _converse.presences.off().reset(); // Remove presences
                 }
             });
 
             _converse.api.listen.on('clearSession', () => {
-                if (!_.isUndefined(this.roster)) {
-                    this.roster.browserStorage._clear();
+                if (_converse.presences) {
+                    _converse.presences.browserStorage._clear();
                 }
             });
 
-            _converse.api.listen.on('connectionInitialized', () => {
-                _converse.presences = new _converse.Presences();
-                _converse.presences.browserStorage = 
-                    new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
-                _converse.presences.fetch();
+            _converse.api.listen.on('statusInitialized', (reconnecting) => {
+                if (!reconnecting) {
+                    _converse.presences = new _converse.Presences();
+                    _converse.presences.browserStorage = 
+                        new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
+                    _converse.presences.fetch();
+                }
+                _converse.emit('presencesInitialized', reconnecting);
             });
 
-            _converse.api.listen.on('statusInitialized', (reconnecting) => {
+            _converse.api.listen.on('presencesInitialized', (reconnecting) => {
                 if (reconnecting) {
                     // No need to recreate the roster, otherwise we lose our
                     // cached data. However we still emit an event, to give

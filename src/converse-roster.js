@@ -754,7 +754,7 @@
             _converse.api.listen.on('beforeTearDown', _converse.unregisterPresenceHandler());
 
             _converse.api.listen.on('afterTearDown', () => {
-                if (_converse.presence) {
+                if (_converse.presences) {
                     _converse.presences.off().reset(); // Remove presences
                 }
             });
@@ -765,14 +765,17 @@
                 }
             });
 
-            _converse.api.listen.on('connectionInitialized', () => {
-                _converse.presences = new _converse.Presences();
-                _converse.presences.browserStorage = 
-                    new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
-                _converse.presences.fetch();
+            _converse.api.listen.on('statusInitialized', (reconnecting) => {
+                if (!reconnecting) {
+                    _converse.presences = new _converse.Presences();
+                    _converse.presences.browserStorage = 
+                        new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
+                    _converse.presences.fetch();
+                }
+                _converse.emit('presencesInitialized', reconnecting);
             });
 
-            _converse.api.listen.on('statusInitialized', (reconnecting) => {
+            _converse.api.listen.on('presencesInitialized', (reconnecting) => {
                 if (reconnecting) {
                     // No need to recreate the roster, otherwise we lose our
                     // cached data. However we still emit an event, to give

@@ -839,7 +839,7 @@
                 delete _converse.chatboxes.browserStorage;
             });
 
-            _converse.api.listen.on('statusInitialized', () => _converse.chatboxes.onConnected());
+            _converse.api.listen.on('presencesInitialized', () => _converse.chatboxes.onConnected());
             /************************ END Event Handlers ************************/
 
 

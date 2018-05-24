@@ -657,6 +657,7 @@
                     expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
                     expect(indicator.querySelector('time').getAttribute('class')).toEqual('separator-text');
                     expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(2);
                     expect(chat_content.querySelector('div.chat-info:last-child').textContent).toBe(
                         "some1 has entered the room"
                     );
@@ -672,9 +673,9 @@
                         .c('status', 'Disconnected: Replaced by new connection').up()
                         .c('x', {xmlns: Strophe.NS.MUC_USER})
                             .c('item', {
-                                'affiliation': 'none',
+                                'affiliation': 'owner',
                                 'jid': 'some1@localhost/_converse.js-290929789',
-                                'role': 'none'
+                                'role': 'moderator'
                             });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
@@ -685,7 +686,7 @@
                     expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
 
                     expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
-                    expect($(chat_content).find('div.chat-info').length).toBe(4);
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
                     expect($(chat_content).find('div.chat-info:last').html()).toBe(
                         'some1 has left the room. '+
                         '"Disconnected: Replaced by new connection"');
@@ -720,7 +721,7 @@
                     expect($indicator.attr('class')).toEqual('message date-separator');
                     expect($indicator.data('isodate')).toEqual(moment().startOf('day').format());
                     expect($indicator.find('time').text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
-                    expect($chat_content.find('div.chat-info').length).toBe(5);
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(4);
                     expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has entered the room");
 
                     jasmine.clock().tick(ONE_DAY_LATER);
@@ -760,7 +761,7 @@
                     expect($indicator.data('isodate')).toEqual(moment().startOf('day').format());
 
                     expect($indicator.find('time').text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
-                    expect($chat_content.find('div.chat-info').length).toBe(6);
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(5);
                     expect($chat_content.find('div.chat-info:last').html()).toBe(
                         'newguy has left the room. '+
                         '"Disconnected: Replaced by new connection"');
@@ -1113,7 +1114,7 @@
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
 
-            it("shows users currently present in the room",
+            it("shows all members even if they're not currently present in the room",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -1134,6 +1135,61 @@
                         }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
                         .c('item').attrs({
                             affiliation: mock.chatroom_roles[name].affiliation,
+                            jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
+                            role: role
+                        }).up()
+                        .c('status').attrs({code:'110'}).nodeTree;
+                        _converse.connection._dataRecv(test_utils.createRequest(presence));
+                        expect(occupants.querySelectorAll('li').length).toBe(2+i);
+                        model = view.occupantsview.model.where({'nick': name})[0];
+                        var index = view.occupantsview.model.indexOf(model);
+                        expect(occupants.querySelectorAll('li .occupant-nick')[index].textContent.trim()).toBe(mock.chatroom_names[i]);
+                    }
+
+                    // Test users leaving the room
+                    // http://xmpp.org/extensions/xep-0045.html#exit
+                    for (i=mock.chatroom_names.length-1; i>-1; i--) {
+                        name = mock.chatroom_names[i];
+                        role = mock.chatroom_roles[name].role;
+                        // See example 21 http://xmpp.org/extensions/xep-0045.html#enter-pres
+                        presence = $pres({
+                            to:'dummy@localhost/pda',
+                            from:'lounge@localhost/'+name,
+                            type: 'unavailable'
+                        }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                        .c('item').attrs({
+                            affiliation: mock.chatroom_roles[name].affiliation,
+                            jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
+                            role: 'none'
+                        }).nodeTree;
+                        _converse.connection._dataRecv(test_utils.createRequest(presence));
+                        expect(occupants.querySelectorAll('li').length).toBe(7);
+                    }
+                    done();
+                }).catch(_.partial(console.error, _));
+            }));
+
+            it("shows users currently present in the room",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function() {
+                    var name;
+                    var view = _converse.chatboxviews.get('lounge@localhost'),
+                        occupants = view.el.querySelector('.occupant-list');
+                    var presence, role, jid, model;
+                    for (var i=0; i<mock.chatroom_names.length; i++) {
+                        name = mock.chatroom_names[i];
+                        role = mock.chatroom_roles[name].role;
+                        // See example 21 http://xmpp.org/extensions/xep-0045.html#enter-pres
+                        jid =
+                        presence = $pres({
+                                to:'dummy@localhost/pda',
+                                from:'lounge@localhost/'+name
+                        }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                        .c('item').attrs({
+                            affiliation: 'none',
                             jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
                             role: role
                         }).up()
@@ -1710,7 +1766,11 @@
                         .c('status').attrs({code:'110'}).nodeTree;
 
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content.find('div.chat-info').length).toBe(2);
+                    // XXX: currently we still have an additional "has entered the room"
+                    // notification for the new nickname. Ideally we'd not have
+                    // that, but that's probably not possible without some
+                    // significant refactoring.
+                    expect($chat_content.find('div.chat-info').length).toBe(3);
                     expect($chat_content.find('div.chat-info').get(1).textContent).toBe(
                         __(_converse.muc.new_nickname_messages["303"], "newnick")
                     );

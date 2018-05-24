@@ -742,8 +742,7 @@
                     }
                     const occupant = this.occupants.findOccupant(data);
                     if (data.type === 'unavailable' && occupant) {
-                        if (!_.includes(data.states, converse.MUC_NICK_CHANGED_CODE) &&
-                                !_.includes(['admin', 'owner', 'member'], occupant.get('affiliation'))) {
+                        if (!_.includes(data.states, converse.MUC_NICK_CHANGED_CODE) && !occupant.isMember()) {
                             // We only destroy the occupant if this is not a nickname change operation.
                             // and if they're not on the member lists.
                             // Before destroying we set the new data, so
@@ -767,12 +766,13 @@
 
                 parsePresence (pres) {
                     const from = pres.getAttribute("from"),
+                          type = pres.getAttribute("type"),
                           data = {
                             'from': from,
                             'nick': Strophe.getResourceFromJid(from),
-                            'type': pres.getAttribute("type"),
+                            'type': type,
                             'states': [],
-                            'show': 'online'
+                            'show': type !== 'unavailable' ? 'online' : 'offline'
                           };
                     _.each(pres.childNodes, function (child) {
                         switch (child.nodeName) {
@@ -996,6 +996,10 @@
 
                 getDisplayName () {
                     return this.get('nick') || this.get('jid');
+                },
+
+                isMember () {
+                    return _.includes(['admin', 'owner', 'member'], this.get('affiliation'));
                 }
             });
 

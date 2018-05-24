@@ -523,6 +523,16 @@
 
                     this.model.occupants.on('add', this.showJoinNotification, this);
                     this.model.occupants.on('remove', this.showLeaveNotification, this);
+                    this.model.occupants.on('change:show', (occupant) => {
+                        if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
+                            return;
+                        }
+                        if (occupant.get('show') === 'offline') {
+                            this.showLeaveNotification(occupant);
+                        } else if (occupant.get('show') === 'online') {
+                            this.showJoinNotification(occupant);
+                        }
+                    });
 
                     this.createEmojiPicker();
                     this.createOccupantsView();
@@ -1354,10 +1364,13 @@
                 },
 
                 showLeaveNotification (occupant) {
-                    const nick = occupant.get('nick');
-                    const stat = occupant.get('status');
-                    const last_el = this.content.lastElementChild;
+                    const nick = occupant.get('nick'),
+                          stat = occupant.get('status'),
+                          last_el = this.content.lastElementChild,
+                          last_msg_date = last_el.getAttribute('data-isodate');
+
                     if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
+                            moment(last_msg_date).isSame(new Date(), "day") &&
                             _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
 
                         let message;

@@ -37,7 +37,7 @@
         // an error will be raised if the plugin is not found.
         //
         // NB: These plugins need to have already been loaded via require.js.
-        dependencies: ['converse-chatboxes', 'converse-muc', 'converse-controlbox', 'converse-rosterview'],
+        dependencies: ['converse-chatboxes', 'converse-muc', 'converse-muc-views', 'converse-controlbox', 'converse-rosterview'],
 
         enabled (_converse) {
             return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);

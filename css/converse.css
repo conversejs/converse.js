@@ -6883,7 +6883,7 @@ body.reset {
     z-index: 1031;
     position: fixed;
     bottom: 0;
-    height: 2.7rem;
+    height: 3em;
     right: 0; }
   #conversejs ::-webkit-input-placeholder {
     /* Chrome/Opera/Safari */

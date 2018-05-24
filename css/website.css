@@ -117,6 +117,11 @@ a:hover, a:focus {
 .outro {
   background: url("images/bgtr.svg") top right no-repeat, url("images/bgbl.svg") bottom left no-repeat, url("images/overlay.png"), linear-gradient(45deg, #384955, #655361, #85505f); }
 
+section h2 {
+  color: #E7A151; }
+section h3 {
+  color: #89B7CD; }
+
 .brand-heading {
   font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
   font-weight: normal;
@@ -181,7 +186,9 @@ a:hover, a:focus {
   -moz-animation-timing-function: linear; }
 
 .content-section {
-  padding-top: 100px; }
+  padding-top: 100px;
+  padding-top: 100px;
+  min-height: 100vh; }
 
 .donate-section {
   width: 100%;
@@ -194,7 +201,6 @@ a:hover, a:focus {
 
 @media (min-width: 767px) {
   .content-section {
-    padding-top: 150px;
     padding-bottom: 50px; }
 
   .donate-section {
@@ -304,6 +310,8 @@ ul.features {
   clear: both;
   font-size: 1.4em;
   padding: 2em 0 6em 0; }
+  .sponsors ul {
+    padding: 0; }
 
 .sponsors h2 {
   text-align: center; }

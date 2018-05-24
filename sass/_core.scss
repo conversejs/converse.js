@@ -61,6 +61,19 @@ body.reset {
     direction: ltr;
     z-index: 1031; // One more than bootstrap navbar
 
+    &.converse-overlayed {
+        > .row {
+            flex-direction: row-reverse;
+        }
+    }
+
+    &.converse-fullscreen {
+        .converse-chatboxes {
+            width: 100vw;
+            right: 15px; // Hack due to padding added by bootstrap
+        }
+    }
+
     .brand-heading {
         font-family: $heading-font; 
         .icon-conversejs {

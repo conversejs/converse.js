@@ -6868,6 +6868,11 @@ body.reset {
   font-size: 14px;
   direction: ltr;
   z-index: 1031; }
+  #conversejs.converse-overlayed > .row {
+    flex-direction: row-reverse; }
+  #conversejs.converse-fullscreen .converse-chatboxes {
+    width: 100vw;
+    right: 15px; }
   #conversejs .brand-heading {
     font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif; }
     #conversejs .brand-heading .icon-conversejs {
@@ -7201,9 +7206,6 @@ body.reset {
 @media screen and (max-height: 450px) {
   #conversejs {
     left: 0; } }
-#conversejs > .row {
-  flex-direction: row-reverse; }
-
 #conversejs form .form-group {
   margin-bottom: 2em; }
 #conversejs form .form-check-label {

@@ -6868,6 +6868,11 @@ body.reset {
   font-size: 14px;
   direction: ltr;
   z-index: 1031; }
+  #conversejs.converse-overlayed > .row {
+    flex-direction: row-reverse; }
+  #conversejs.converse-fullscreen .converse-chatboxes {
+    width: 100vw;
+    right: 15px; }
   #conversejs .brand-heading {
     font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif; }
     #conversejs .brand-heading .icon-conversejs {
@@ -7201,51 +7206,6 @@ body.reset {
 @media screen and (max-height: 450px) {
   #conversejs {
     left: 0; } }
-body {
-  font-family: "Lora", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #ffffff;
-  background-color: #578EA9; }
-  body .brand-heading {
-    font-size: 600%;
-    margin-left: -10%; }
-    body .brand-heading.fade-in {
-      opacity: 0;
-      /* make things invisible upon start */
-      -webkit-animation-name: fadein;
-      -moz-animation-name: fadein;
-      animation-name: fadein;
-      -webkit-animation-fill-mode: forwards;
-      -moz-animation-fill-mode: forwards;
-      animation-fill-mode: forwards;
-      -webkit-animation-duration: 0.75s;
-      -moz-animation-duration: 0.75s;
-      animation-duration: 0.75s;
-      -webkit-animation-timing-function: ease;
-      -moz-animation-timing-function: ease;
-      animation-timing-function: ease;
-      -webkit-animation-delay: 2s;
-      -moz-animation-delay: 2s;
-      animation-delay: 2s; }
-    body .brand-heading .icon-conversejs {
-      font-size: 88%; }
-  body div.content {
-    height: 100vh;
-    width: 100vw;
-    position: fixed;
-    background-color: #578EA9; }
-    body div.content .inner-content {
-      text-align: center;
-      padding: 7%;
-      padding-left: -webkit-calc(5% + 250px);
-      padding-left: calc(5% + 250px); }
-      body div.content .inner-content p.no-chats {
-        padding-right: 10%;
-        font-size: 120%; }
-
-#conversejs.fullscreen .converse-chatboxes {
-  width: 100vw;
-  right: 15px; }
-
 #conversejs form .form-group {
   margin-bottom: 2em; }
 #conversejs form .form-check-label {

@@ -15,6 +15,7 @@ OXIPNG          ?= oxipng
 PAPER		   	=
 PO2JSON		 	?= ./node_modules/.bin/po2json
 RJS			 	?= ./node_modules/.bin/r.js
+WEBPACK 		?= ./node_modules/.bin/npx
 SASS			?= ./.bundle/bin/sass
 SED				?= sed
 SPHINXBUILD	 	?= ./bin/sphinx-build
@@ -155,7 +156,7 @@ watch: dev
 
 .PHONY: watchjs
 watchjs: dev
-	$(BABEL) --source-maps --watch=./src --out-dir=./builds
+	./node_modules/.bin/npx  webpack --mode=development  --watch
 
 transpile: dev src
 	$(BABEL) --source-maps --out-dir=./builds ./src

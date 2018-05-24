@@ -9,7 +9,7 @@
         "converse-core",
         "emojione",
         "filesize",
-        "tpl!chatboxes",
+        "templates/chatboxes.html",
         "backbone.overview",
         "form-utils"
     ], factory);

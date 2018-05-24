@@ -12,13 +12,13 @@
 (function (root, factory) {
     define(["form-utils",
             "converse-core",
-            "tpl!form_username",
-            "tpl!register_link",
-            "tpl!register_panel",
-            "tpl!registration_form",
-            "tpl!registration_request",
-            "tpl!form_input",
-            "tpl!spinner",
+            "templates/form_username.html",
+            "templates/register_link.html",
+            "templates/register_panel.html",
+            "templates/registration_form.html",
+            "templates/registration_request.html",
+            "templates/form_input.html",
+            "templates/spinner.html",
             "converse-controlbox"
     ], factory);
 }(this, function (

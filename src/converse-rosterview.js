@@ -6,14 +6,14 @@
 
 (function (root, factory) {
     define(["converse-core",
-            "tpl!add_contact_modal",
-            "tpl!group_header",
-            "tpl!pending_contact",
-            "tpl!requesting_contact",
-            "tpl!roster",
-            "tpl!roster_filter",
-            "tpl!roster_item",
-            "tpl!search_contact",
+            "templates/add_contact_modal.html",
+            "templates/group_header.html",
+            "templates/pending_contact.html",
+            "templates/requesting_contact.html",
+            "templates/roster.html",
+            "templates/roster_filter.html",
+            "templates/roster_item.html",
+            "templates/search_contact.html",
             "awesomplete",
             "converse-chatboxes",
             "converse-modal"

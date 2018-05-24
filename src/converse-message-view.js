@@ -10,12 +10,12 @@
         "xss",
         "emojione",
         "filesize",
-        "tpl!action",
-        "tpl!csn",
-        "tpl!file_progress",
-        "tpl!info",
-        "tpl!message",
-        "tpl!spoiler_message"
+        "templates/action.html",
+        "templates/csn.html",
+        "templates/file_progress.html",
+        "templates/info.html",
+        "templates/message.html",
+        "templates/spoiler_message.html"
     ], factory);
 }(this, function (
         converse,

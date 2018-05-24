@@ -13,8 +13,8 @@
     define(["utils",
             "converse-core",
             "converse-muc",
-            "tpl!rooms_list",
-            "tpl!rooms_list_item"
+            "templates/rooms_list.html",
+            "templates/rooms_list_item.html"
         ], factory);
 }(this, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
     const { Backbone, Promise, Strophe, b64_sha1, sizzle, _ } = converse.env;

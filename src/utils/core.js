@@ -16,10 +16,10 @@
             "backbone",
             "strophe",
             "uri",
-            "tpl!audio",
-            "tpl!file",
-            "tpl!image",
-            "tpl!video"
+            "templates/audio.html",
+            "templates/file.html",
+            "templates/image.html",
+            "templates/video.html"
         ], factory);
     } else {
         // Used by the mockups

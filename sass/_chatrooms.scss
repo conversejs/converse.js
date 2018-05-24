@@ -107,9 +107,6 @@
                     .chat-content {
                         height: 100%;
                     }
-                    &.full {
-                        min-width: 100%;
-                    }
                 }
                 .occupants {
                     display: flex;
@@ -278,20 +275,6 @@
     }
 }
 
-@media screen and (max-width: 767px) {
-    #conversejs:not(.converse-embedded)  {
-        .chatbox {
-            .box-flyout {
-                .chatroom-body {
-                    .chat-area {
-                    }
-                }
-            }
-        }
-    }
-}
-
-
 /* ******************* Overlay  styles *************************** */
 
 #conversejs.converse-overlayed {
@@ -351,8 +334,6 @@
                 }
                 .chat-area {
                     border-top-left-radius: $chatbox-border-radius;
-                    min-width: $fullpage-chat-width;
-
                     .chat-content {
                         border-top-left-radius: $chatbox-border-radius;
                     }

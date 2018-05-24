@@ -7678,21 +7678,78 @@ body.reset {
       margin: -1em; } }
 /* ******************* Fullpage styles *************************** */
 #conversejs.converse-fullscreen .flyout {
-  bottom: 6px; }
-#conversejs.converse-fullscreen .box-flyout {
-  height: 100%;
-  min-height: 50%; }
+  border-radius: 0;
+  border-top: 0.8em solid #3AA569;
+  border: 1.2em solid #3AA569;
+  bottom: 0; }
 #conversejs.converse-fullscreen .chatbox-btn {
-  font-size: 16px; }
+  font-size: 16px;
+  margin: 0 0.3em; }
 #conversejs.converse-fullscreen .chat-head {
-  height: 62px; }
+  height: 62px;
+  font-size: 20px;
+  padding: 0; }
   #conversejs.converse-fullscreen .chat-head .chatbox-buttons {
     flex: 0 0 25%;
     max-width: 25%; }
+  #conversejs.converse-fullscreen .chat-head .user-custom-message {
+    font-size: 50%;
+    height: auto;
+    line-height: 16px; }
 #conversejs.converse-fullscreen .chat-textarea {
   max-height: 400px; }
 #conversejs.converse-fullscreen .emoji-picker {
   height: 150px; }
+#conversejs.converse-fullscreen .chatbox {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px; }
+  @media (min-width: 768px) {
+    #conversejs.converse-fullscreen .chatbox {
+      flex: 0 0 75%;
+      max-width: 75%; } }
+  @media (min-width: 1200px) {
+    #conversejs.converse-fullscreen .chatbox {
+      flex: 0 0 83.3333333333%;
+      max-width: 83.3333333333%; } }
+  #conversejs.converse-fullscreen .chatbox .box-flyout {
+    background-color: #3AA569;
+    box-shadow: none;
+    height: 100vh;
+    min-height: 50vh;
+    width: 100%; }
+  #conversejs.converse-fullscreen .chatbox .chat-body {
+    background-color: #3AA569;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px; }
+    #conversejs.converse-fullscreen .chatbox .chat-body .chat-message {
+      line-height: 16px;
+      font-size: 12px; }
+      #conversejs.converse-fullscreen .chatbox .chat-body .chat-message .chat-msg-author {
+        line-height: 16px; }
+      #conversejs.converse-fullscreen .chatbox .chat-body .chat-message .chat-msg-content {
+        line-height: 16px; }
+        #conversejs.converse-fullscreen .chatbox .chat-body .chat-message .chat-msg-content .emojione {
+          height: 16px;
+          margin-bottom: -4px; }
+  #conversejs.converse-fullscreen .chatbox .chat-content {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px; }
+  #conversejs.converse-fullscreen .chatbox .chat-title {
+    font-size: 20px;
+    line-height: 24px; }
+  #conversejs.converse-fullscreen .chatbox .sendXMPPMessage ul {
+    width: 100%; }
+  #conversejs.converse-fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category-picker {
+    margin-right: 5em; }
+  #conversejs.converse-fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category {
+    padding-left: 10px;
+    padding-right: 10px; }
 
 @media screen and (max-width: 767px) {
   #conversejs:not(.converse-embedded) > .row {
@@ -7708,6 +7765,9 @@ body.reset {
       bottom: 0;
       height: 100vh;
       box-shadow: none; } }
+@media screen and (max-width: 767px) {
+  #conversejs:not(.converse-embedded).converse-fullscreen .chatbox {
+    width: calc(100% - 50px); } }
 #conversejs .set-xmpp-status .fa-circle, #conversejs .xmpp-status .fa-circle, #conversejs .roster-contacts .fa-circle {
   color: #3AA569; }
 #conversejs .set-xmpp-status .fa-minus-circle, #conversejs .xmpp-status .fa-minus-circle, #conversejs .roster-contacts .fa-minus-circle {
@@ -8320,9 +8380,6 @@ body.reset {
         #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chat-area .chat-content,
         #conversejs .chatroom .box-flyout .chatroom-body .chat-area .chat-content {
           height: 100%; }
-        #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chat-area.full,
-        #conversejs .chatroom .box-flyout .chatroom-body .chat-area.full {
-          min-width: 100%; }
       #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants,
       #conversejs .chatroom .box-flyout .chatroom-body .occupants {
         display: flex;
@@ -8512,8 +8569,7 @@ body.reset {
       border-radius: 4px; }
     #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body .chat-area,
     #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body .chat-area {
-      border-top-left-radius: 4px;
-      min-width: auto; }
+      border-top-left-radius: 4px; }
       #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body .chat-area .chat-content,
       #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body .chat-area .chat-content {
         border-top-left-radius: 4px; }

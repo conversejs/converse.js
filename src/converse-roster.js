@@ -90,9 +90,11 @@
 
 
             _converse.Presence = Backbone.Model.extend({
-                defaults: {
-                    'show': 'offline',
-                    'resources': {}
+                defaults () {
+                    return {
+                        'show': 'offline',
+                        'resources': {}
+                    }
                 },
 
                 getHighestPriorityResource () {
@@ -121,12 +123,10 @@
                      * Also updates the presence if the resource has higher priority (and is newer).
                      */
                     const jid = presence.getAttribute('from'),
-                        show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
-                        resource = Strophe.getResourceFromJid(jid),
-                        delay = presence.querySelector(
-                            `delay[xmlns="${Strophe.NS.DELAY}"]`
-                        ),
-                        timestamp = _.isNull(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
+                          show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
+                          resource = Strophe.getResourceFromJid(jid),
+                          delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, presence).pop(),
+                          timestamp = _.isNil(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
 
                     let priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0;
                     priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
@@ -156,17 +156,17 @@
                      * Also redetermines the presence given that there's one less
                      * resource.
                      */
-                     let resources = this.get('resources');
-                     if (!_.isObject(resources)) {
-                         resources = {};
-                     } else {
-                         delete resources[resource];
-                     }
-                     this.save({
-                         'resources': resources,
-                         'show': _.propertyOf(
-                             this.getHighestPriorityResource())('show') || 'offline'
-                     });
+                    let resources = this.get('resources');
+                    if (!_.isObject(resources)) {
+                        resources = {};
+                    } else {
+                        delete resources[resource];
+                    }
+                    this.save({
+                        'resources': resources,
+                        'show': _.propertyOf(
+                            this.getHighestPriorityResource())('show') || 'offline'
+                    });
                 },
 
             });
@@ -642,54 +642,64 @@
                     }
                 },
 
+                handleOwnPresence (presence) {
+                    const jid = presence.getAttribute('from'),
+                          resource = Strophe.getResourceFromJid(jid),
+                          presence_type = presence.getAttribute('type');
+
+                    if ((_converse.connection.jid !== jid) &&
+                            (presence_type !== 'unavailable') &&
+                            (_converse.synchronize_availability === true ||
+                            _converse.synchronize_availability === resource)) {
+                        // Another resource has changed its status and
+                        // synchronize_availability option set to update,
+                        // we'll update ours as well.
+                        const show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online';
+                        _converse.xmppstatus.save({'status': show});
+
+                        const status_message = _.propertyOf(presence.querySelector('status'))('textContent');
+                        if (status_message) {
+                            _converse.xmppstatus.save({'status_message': status_message});
+                        }
+                    }
+                    if (_converse.jid === jid && presence_type === 'unavailable') {
+                        // XXX: We've received an "unavailable" presence from our
+                        // own resource. Apparently this happens due to a
+                        // Prosody bug, whereby we send an IQ stanza to remove
+                        // a roster contact, and Prosody then sends
+                        // "unavailable" globally, instead of directed to the
+                        // particular user that's removed.
+                        //
+                        // Here is the bug report: https://prosody.im/issues/1121
+                        //
+                        // I'm not sure whether this might legitimately happen
+                        // in other cases.
+                        //
+                        // As a workaround for now we simply send our presence again,
+                        // otherwise we're treated as offline.
+                        _converse.xmppstatus.sendPresence();
+                    }
+                },
+
                 presenceHandler (presence) {
                     const presence_type = presence.getAttribute('type');
                     if (presence_type === 'error') { return true; }
 
                     const jid = presence.getAttribute('from'),
-                        bare_jid = Strophe.getBareJidFromJid(jid),
-                        resource = Strophe.getResourceFromJid(jid),
-                        status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
-                        contact = this.get(bare_jid);
-
+                          bare_jid = Strophe.getBareJidFromJid(jid);
                     if (this.isSelf(bare_jid)) {
-                        if ((_converse.connection.jid !== jid) &&
-                            (presence_type !== 'unavailable') &&
-                            (_converse.synchronize_availability === true ||
-                            _converse.synchronize_availability === resource)) {
-                            // Another resource has changed its status and
-                            // synchronize_availability option set to update,
-                            // we'll update ours as well.
-                            const show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online';
-                            _converse.xmppstatus.save({'status': show});
-                            if (status_message) {
-                                _converse.xmppstatus.save({'status_message': status_message});
-                            }
-                        }
-                        if (_converse.jid === jid && presence_type === 'unavailable') {
-                            // XXX: We've received an "unavailable" presence from our
-                            // own resource. Apparently this happens due to a
-                            // Prosody bug, whereby we send an IQ stanza to remove
-                            // a roster contact, and Prosody then sends
-                            // "unavailable" globally, instead of directed to the
-                            // particular user that's removed.
-                            //
-                            // Here is the bug report: https://prosody.im/issues/1121
-                            //
-                            // I'm not sure whether this might legitimately happen
-                            // in other cases.
-                            //
-                            // As a workaround for now we simply send our presence again,
-                            // otherwise we're treated as offline.
-                            _converse.xmppstatus.sendPresence();
-                        }
-                        return;
+                        return this.handleOwnPresence(presence);
                     } else if (sizzle(`query[xmlns="${Strophe.NS.MUC}"]`, presence).length) {
                         return; // Ignore MUC
                     }
+
+                    const status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
+                          contact = this.get(bare_jid);
+
                     if (contact && (status_message !== contact.get('status'))) {
                         contact.save({'status': status_message});
                     }
+
                     if (presence_type === 'subscribed' && contact) {
                         contact.ackSubscribe();
                     } else if (presence_type === 'unsubscribed' && contact) {
@@ -699,6 +709,7 @@
                     } else if (presence_type === 'subscribe') {
                         this.handleIncomingSubscription(presence);
                     } else if (presence_type === 'unavailable' && contact) {
+                        const resource = Strophe.getResourceFromJid(jid);
                         contact.presence.removeResource(resource);
                     } else if (contact) {
                         // presence_type is undefined

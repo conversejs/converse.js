@@ -110,7 +110,7 @@
 
                     if (!this.roomspanel.model.get('nick')) {
                         this.roomspanel.model.save({
-                            nick: _converse.xmppstatus.get('nickname') || Strophe.getNodeFromJid(_converse.bare_jid)
+                            nick: _converse.xmppstatus.vcard.get('nickname') || Strophe.getNodeFromJid(_converse.bare_jid)
                         });
                     }
                     _converse.emit('roomsPanelRendered');
@@ -1106,7 +1106,10 @@
                 },
 
                 onNickNameNotFound (message) {
-                    if (_converse.muc_nickname_from_jid) {
+                    const nick = _converse.xmppstatus.vcard.get('nickname');
+                    if (nick) {
+                        this.join(nick);
+                    } else if (_converse.muc_nickname_from_jid) {
                         // We try to enter the room with the node part of
                         // the user's JID.
                         this.join(this.getDefaultNickName());

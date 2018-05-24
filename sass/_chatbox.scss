@@ -1,7 +1,6 @@
 #conversejs {
     .flyout {
         border-radius: $chatbox-border-radius;
-        bottom: $chatbox-hover-height;
         position: absolute;
 
         @media screen and (max-height: $mobile-landscape-height) {
@@ -38,7 +37,6 @@
         flex-wrap: nowrap;
         color: #ffffff;
         font-size: 100%;
-        height: $chat-head-height;
         margin: 0;
         padding: 0.5em;
         position: relative;
@@ -120,8 +118,6 @@
             justify-content: space-between;
             background-color: $chat-head-color;
             box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
-            height: $chat-height;
-            min-height: $chat-height/2;
             z-index: 1;
             overflow-y: scroll;
             width: 100%;
@@ -246,7 +242,6 @@
                 width: 100%;
                 border: none;
                 min-height: $chat-textarea-height;
-                max-height: $max-chat-textarea-height;
                 margin-bottom: -4px; // Not clear why this is necessar :(
                 &.spoiler {
                     height: 42px;
@@ -330,7 +325,6 @@
                         }
                         ul {
                             &.emoji-picker {
-                                height: $emoji-picker-height;
                                 overflow: scroll;
                                 padding: 0.5em;
                             }
@@ -434,14 +428,47 @@
     }
 }
 
+#conversejs.converse-overlayed  {
+    .flyout {
+        bottom: $overlayed-chatbox-hover-height;
+    }
+    .box-flyout {
+        height: $overlayed-chat-height;
+        min-height: $overlayed-chat-height/2;
+    }
+    .chat-head {
+        height: $overlayed-chat-head-height;
+    }
+    .chat-textarea {
+        max-height: $overlayed-max-chat-textarea-height;
+    }
+    .emoji-picker {
+        height: $overlayed-emoji-picker-height;
+    }
+}
+
 #conversejs.converse-fullscreen  {
+    .flyout {
+        bottom: $fullpage-chatbox-hover-height;
+    }
+    .box-flyout {
+        height: $fullpage-chat-height;
+        min-height: $fullpage-chat-height/2;
+    }
     .chatbox-btn {
         font-size: $fullpage-chatbox-button-size;
     }
     .chat-head {
+        height: $fullpage-chat-head-height;
         .chatbox-buttons {
             @include make-col(3);
         }
+    }
+    .chat-textarea {
+        max-height: $fullpage-max-chat-textarea-height;
+    }
+    .emoji-picker {
+        height: $fullpage-emoji-picker-height;
     }
 }
 

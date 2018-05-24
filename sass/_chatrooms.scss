@@ -101,7 +101,6 @@
                     display: flex;
                     flex-direction: column;
                     word-wrap: break-word; 
-                    min-width: $chat-width;
                     .new-msgs-indicator {
                         background-color: $chatroom-head-color;
                     }
@@ -292,6 +291,7 @@
     }
 }
 
+
 /* ******************* Overlay  styles *************************** */
 
 #conversejs.converse-overlayed {
@@ -317,6 +317,9 @@
                         }
                     }
                 }
+                .chat-area {
+                    min-width: $overlayed-chat-width;
+                }
             }
         }
     }
@@ -326,6 +329,7 @@
 
 #conversejs.converse-fullscreen,
 #conversejs.converse-mobile {
+
     .chatroom {
         .box-flyout {
             background-color: $chatroom-head-color;
@@ -347,7 +351,7 @@
                 }
                 .chat-area {
                     border-top-left-radius: $chatbox-border-radius;
-                    min-width: auto;
+                    min-width: $fullpage-chat-width;
 
                     .chat-content {
                         border-top-left-radius: $chatbox-border-radius;

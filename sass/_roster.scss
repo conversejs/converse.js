@@ -4,10 +4,8 @@
     position: relative;
     margin: 0;
     height: $roster-height;
-    height: calc(~"100% - #{$controlbox-dropdown-height*2} - 20px");
     padding: 0;
     overflow: hidden;
-
     // XXX: FIXME
     height: calc(100% - 70px);
 
@@ -43,7 +41,6 @@
         }
         .state-type {
             font-size: calc(#{$font-size} - 2px);
-            height: $controlbox-dropdown-height;
             width: 100%;
         }
     }
@@ -142,7 +139,6 @@
                     .avatar {
                         float: left;
                         display: inline-block;
-                        height: $roster-item-height;
                     }
                 }
                 &.current-xmpp-contact span {

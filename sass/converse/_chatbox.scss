@@ -13,12 +13,12 @@
         }
     }
     .chatbox {
-        min-width: $chat-width!important;
-        width: $chat-width;
+        min-width: $overlayed-chat-width!important;
+        width: $overlayed-chat-width;
 
         .box-flyout {
-            min-width: $chat-width!important;
-            width: $chat-width;
+            min-width: $overlayed-chat-width!important;
+            width: $overlayed-chat-width;
         }
 
         .chat-body {

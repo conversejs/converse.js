@@ -985,13 +985,18 @@
                 },
 
                 onAvatarChanged () {
-                    const vcard = _converse.vcards.findWhere({'jid': this.get('from')});
-                    if (!vcard) { return; }
-
                     const hash = this.get('image_hash');
-                    if (hash && vcard.get('image_hash') !== hash) {
-                        _converse.api.vcard.update(vcard);
+                    const vcards = [];
+                    if (this.get('jid')) {
+                        vcards.push(this.updateVCard(_converse.vcards.findWhere({'jid': this.get('jid')})));
                     }
+                    vcards.push(this.updateVCard(_converse.vcards.findWhere({'jid': this.get('from')})));
+
+                    _.forEach(_.filter(vcards, undefined), (vcard) => {
+                        if (hash && vcard.get('image_hash') !== hash) {
+                            _converse.api.vcard.update(vcard);
+                        }
+                    });
                 },
 
                 getDisplayName () {
@@ -1032,6 +1037,7 @@
                             // Remove absent occupants who've been removed from
                             // the members lists.
                             const occupant = this.findOccupant({'jid': removed_jid});
+                            if (!occupant) { return; }
                             if (occupant.get('show') === 'offline') {
                                 occupant.destroy();
                             }

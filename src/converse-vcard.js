@@ -142,7 +142,7 @@
                         if (_.isString(model)) {
                             return getVCard(_converse, model);
                         } else if (!model.get('vcard_updated') || force) {
-                            const jid = model.get('jid') || model.get('muc_jid');
+                            const jid = model.get('jid');
                             if (!jid) {
                                 throw new Error("No JID to get vcard for!");
                             }

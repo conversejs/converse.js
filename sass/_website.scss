@@ -143,6 +143,10 @@ section {
     h3 {
         color: #89B7CD;
     }
+    h4 {
+        color: #5CBC86;
+        font-size: 1.5em;
+    }
 }
 
 .brand-heading {
@@ -216,6 +220,18 @@ section {
     padding-top: 100px;
     padding-top: 100px;
     min-height: 100vh;
+
+    .privacy-policy {
+        padding-top: 2em;
+        h4 {
+            padding-top: 1.5em;
+        }
+        p {
+            font-size: 1.2em;
+            padding-bottom: 0;
+            margin-bottom: 1em;
+        }
+    }
 }
 .donate-section {
     width: 100%;

@@ -121,6 +121,9 @@ section h2 {
   color: #E7A151; }
 section h3 {
   color: #89B7CD; }
+section h4 {
+  color: #5CBC86;
+  font-size: 1.5em; }
 
 .brand-heading {
   font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
@@ -189,6 +192,14 @@ section h3 {
   padding-top: 100px;
   padding-top: 100px;
   min-height: 100vh; }
+  .content-section .privacy-policy {
+    padding-top: 2em; }
+    .content-section .privacy-policy h4 {
+      padding-top: 1.5em; }
+    .content-section .privacy-policy p {
+      font-size: 1.2em;
+      padding-bottom: 0;
+      margin-bottom: 1em; }
 
 .donate-section {
   width: 100%;

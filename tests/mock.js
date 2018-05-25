@@ -4,6 +4,7 @@
     var _ = converse.env._;
     var Promise = converse.env.Promise;
     var Strophe = converse.env.Strophe;
+    var moment = converse.env.moment;
     var $iq = converse.env.$iq;
     var mock = {};
 
@@ -99,6 +100,7 @@
         }, settings || {}));
 
         _converse.ChatBoxViews.prototype.trimChat = function () {};
+
         _converse.api.vcard.get = function (model, force) {
             return new Promise((resolve, reject) => {
                 let jid;
@@ -120,11 +122,13 @@
                 }
                 var vcard = $iq().c('vCard').c('FN').t(fullname).nodeTree;
                 var result = {
-                    'stanza': vcard,
+                    'vcard': vcard,
                     'fullname': _.get(vcard.querySelector('FN'), 'textContent'),
                     'image': _.get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
                     'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
-                    'url': _.get(vcard.querySelector('URL'), 'textContent')
+                    'url': _.get(vcard.querySelector('URL'), 'textContent'),
+                    'vcard_updated': moment().format(),
+                    'vcard_error': undefined
                 };
                 resolve(result);
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));

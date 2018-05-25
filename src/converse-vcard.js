@@ -1,7 +1,7 @@
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
@@ -68,7 +68,9 @@
                         'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
                         'url': _.get(vcard.querySelector('URL'), 'textContent'),
                         'role': _.get(vcard.querySelector('ROLE'), 'textContent'),
-                        'email': _.get(vcard.querySelector('EMAIL USERID'), 'textContent')
+                        'email': _.get(vcard.querySelector('EMAIL USERID'), 'textContent'),
+                        'vcard_updated': moment().format(),
+                        'vcard_error': undefined
                     };
                 }
                 if (result.image) {
@@ -82,7 +84,11 @@
 
             function onVCardError (_converse, jid, iq, errback) {
                 if (errback) {
-                    errback({'stanza': iq, 'jid': jid});
+                    errback({
+                        'stanza': iq,
+                        'jid': jid,
+                        'vcard_error': moment().format()
+                    });
                 }
             }
 
@@ -141,7 +147,10 @@
                     'get' (model, force) {
                         if (_.isString(model)) {
                             return getVCard(_converse, model);
-                        } else if (!model.get('vcard_updated') || force) {
+                        } else if (force ||
+                                !model.get('vcard_updated') ||
+                                !moment(model.get('vcard_error')).isSame(new Date(), "day")) {
+
                             const jid = model.get('jid');
                             if (!jid) {
                                 throw new Error("No JID to get vcard for!");
@@ -155,10 +164,8 @@
                     'update' (model, force) {
                         return new Promise((resolve, reject) => {
                             this.get(model, force).then((vcard) => {
-                                model.save(_.extend(
-                                    _.pick(vcard, ['fullname', 'nickname', 'email', 'url', 'role', 'image_type', 'image', 'image_hash']),
-                                    {'vcard_updated': moment().format()}
-                                ));
+                                delete vcard['stanza']
+                                model.save(vcard);
                                 resolve();
                             });
                         });

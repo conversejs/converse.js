@@ -48,6 +48,13 @@
                 _converse.roster = new _converse.RosterContacts();
                 _converse.roster.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                     b64_sha1(`converse.contacts-${_converse.bare_jid}`));
+
+                _converse.roster.data = new Backbone.Model();
+                const id = b64_sha1(`converse-roster-model-${_converse.bare_jid}`);
+                _converse.roster.data.id = id;
+                _converse.roster.data.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+                _converse.roster.data.fetch();
+
                 _converse.rostergroups = new _converse.RosterGroups();
                 _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                     b64_sha1(`converse.roster.groups${_converse.bare_jid}`));
@@ -330,18 +337,18 @@
 
                 onConnected () {
                     /* Called as soon as the connection has been established
-                    * (either after initial login, or after reconnection).
-                    *
-                    * Use the opportunity to register stanza handlers.
-                    */
+                     * (either after initial login, or after reconnection).
+                     *
+                     * Use the opportunity to register stanza handlers.
+                     */
                     this.registerRosterHandler();
                     this.registerRosterXHandler();
                 },
 
                 registerRosterHandler () {
                     /* Register a handler for roster IQ "set" stanzas, which update
-                    * roster contacts.
-                    */
+                     * roster contacts.
+                     */
                     _converse.connection.addHandler((iq) => {
                         _converse.roster.onRosterPush(iq);
                         return true;
@@ -350,8 +357,8 @@
 
                 registerRosterXHandler () {
                     /* Register a handler for RosterX message stanzas, which are
-                    * used to suggest roster contacts to a user.
-                    */
+                     * used to suggest roster contacts to a user.
+                     */
                     let t = 0;
                     _converse.connection.addHandler(
                         function (msg) {
@@ -560,8 +567,10 @@
                     /* An IQ stanza containing the roster has been received from
                      * the XMPP server.
                      */
-                    const items = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"] item`, iq);
-                    _.each(items, this.updateContact.bind(this));
+                    const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop(),
+                          items = sizzle(`item`, query);
+                    _.each(items, (item) => this.updateContact(item));
+                    this.data.save('version', query.getAttribute('ver'));
                     _converse.emit('roster', iq);
                 },
 

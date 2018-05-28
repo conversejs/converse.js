@@ -35,6 +35,43 @@
 
     describe("The Contacts Roster", function () {
 
+        it("supports roster versioning",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
+            var IQ_stanzas = _converse.connection.IQ_stanzas;
+            var stanza;
+
+            test_utils.waitUntil(() => {
+                const node = _.filter(IQ_stanzas, function (iq) {
+                    return iq.nodeTree.querySelector('iq query[xmlns="jabber:iq:roster"]');
+                }).pop();
+                if (node) {
+                    stanza = node.nodeTree;
+                    return true;
+                }
+            }).then(() => {
+                expect(_converse.roster.data.get('version')).toBeUndefined();
+                expect(stanza.outerHTML).toBe(
+                    `<iq type="get" id="${stanza.getAttribute('id')}" xmlns="jabber:client">`+
+                        `<query xmlns="jabber:iq:roster"/>`+
+                    `</iq>`);
+                const result = $iq({
+                    'to': _converse.connection.jid,
+                    'type': 'result',
+                    'id': stanza.getAttribute('id')
+                }).c('query', {
+                    'xmlns': 'jabber:iq:roster',
+                    'ver': 'ver7'
+                }).c('item', {'jid': 'nurse@example.com'}).up()
+                  .c('item', {'jid': 'romeo@example.com'})
+                _converse.connection._dataRecv(test_utils.createRequest(result));
+                expect(_converse.roster.data.get('version')).toBe('ver7');
+                done();
+            });
+        }));
+
         describe("The live filter", function () {
 
             it("will only appear when roster contacts flow over the visible area",

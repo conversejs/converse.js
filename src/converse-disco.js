@@ -37,24 +37,24 @@
                     this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
 
                     this.dataforms = new Backbone.Collection();
-                    this.dataforms.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    this.dataforms.browserStorage = new Backbone.BrowserStorage.session(
                         b64_sha1(`converse.dataforms-{this.get('jid')}`)
                     );
 
                     this.features = new Backbone.Collection();
-                    this.features.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    this.features.browserStorage = new Backbone.BrowserStorage.session(
                         b64_sha1(`converse.features-${this.get('jid')}`)
                     );
                     this.features.on('add', this.onFeatureAdded, this);
 
                     this.identities = new Backbone.Collection();
-                    this.identities.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    this.identities.browserStorage = new Backbone.BrowserStorage.session(
                         b64_sha1(`converse.identities-${this.get('jid')}`)
                     );
                     this.fetchFeatures();
 
                     this.items = new _converse.DiscoEntities();
-                    this.items.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    this.items.browserStorage = new Backbone.BrowserStorage.session(
                         b64_sha1(`converse.disco-items-${this.get('jid')}`)
                     );
                     this.items.fetch();

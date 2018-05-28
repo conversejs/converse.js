@@ -217,8 +217,30 @@
                 return this;
             }
 
+            function initStreamFeatures () {
+                _converse.stream_features = new Backbone.Collection();
+                _converse.stream_features.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    b64_sha1(`converse.stream-features-${_converse.bare_jid}`)
+                );
+                _converse.stream_features.fetch({
+                    success (collection) {
+                        if (collection.length === 0) {
+                            _.forEach(
+                                _converse.connection.features.childNodes,
+                                (feature) => {
+                                    _converse.stream_features.create({
+                                        'name': feature.nodeName,
+                                        'xmlns': feature.getAttribute('xmlns')
+                                    });
+                                });
+                        }
+                    }
+                });
+            }
+
             function initializeDisco () {
                 addClientFeatures();
+                initStreamFeatures();
                 _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
 
                 _converse.disco_entities = new _converse.DiscoEntities();
@@ -231,6 +253,7 @@
                         // If we don't have an entity for our own XMPP server,
                         // create one.
                         _converse.disco_entities.create({'jid': _converse.domain});
+                        initStreamFeatures();
                     }
                     _converse.emit('discoInitialized');
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
@@ -291,6 +314,15 @@
                  * @namespace
                  */
                 'disco': {
+                    'stream': {
+                        'getFeature': function (name, xmlns) {
+                            if (_.isNil(name) || _.isNil(xmlns)) {
+                                throw new Error("name and xmlns need to be provided when calling disco.stream.getFeature");
+                            }
+                            return _converse.stream_features.findWhere({'name': name, 'xmlns': xmlns});
+                        }
+                    },
+
                     /**
                      * The "own" grouping
                      * @namespace

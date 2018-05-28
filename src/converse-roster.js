@@ -342,10 +342,10 @@
                     /* Register a handler for roster IQ "set" stanzas, which update
                     * roster contacts.
                     */
-                    _converse.connection.addHandler(
-                        _converse.roster.onRosterPush.bind(_converse.roster),
-                        Strophe.NS.ROSTER, 'iq', "set"
-                    );
+                    _converse.connection.addHandler((iq) => {
+                        _converse.roster.onRosterPush(iq);
+                        return true;
+                    }, Strophe.NS.ROSTER, 'iq', "set");
                 },
 
                 registerRosterXHandler () {
@@ -506,30 +506,36 @@
 
                 onRosterPush (iq) {
                     /* Handle roster updates from the XMPP server.
-                    * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
-                    *
-                    * Parameters:
-                    *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
-                    */
+                     * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
+                     *
+                     * Parameters:
+                     *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
+                     */
                     const id = iq.getAttribute('id');
                     const from = iq.getAttribute('from');
-                    if (from && from !== "" && Strophe.getBareJidFromJid(from) !== _converse.bare_jid) {
-                        // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
-                        // XXX: Some naughty servers apparently send from a full
-                        // JID so we need to explicitly compare bare jids here.
-                        // https://github.com/jcbrand/converse.js/issues/493
-                        _converse.connection.send(
-                            $iq({type: 'error', id, from: _converse.connection.jid})
-                                .c('error', {'type': 'cancel'})
-                                .c('service-unavailable', {'xmlns': Strophe.NS.ROSTER })
-                        );
-                        return true;
+                    if (from && from !== _converse.connection.jid) {
+                        // https://tools.ietf.org/html/rfc6121#page-15
+                        // 
+                        // A receiving client MUST ignore the stanza unless it has no 'from'
+                        // attribute (i.e., implicitly from the bare JID of the user's
+                        // account) or it has a 'from' attribute whose value matches the
+                        // user's bare JID <user@domainpart>.
+                        return;
                     }
                     _converse.connection.send($iq({type: 'result', id, from: _converse.connection.jid}));
                     const items = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"] item`, iq);
-                    _.each(items, this.updateContact.bind(this));
+                    if (items.length > 1) {
+                        _converse.log(iq, Strophe.LogLevel.ERROR);
+                        throw new Error('Roster push query may not contain more than one "item" element.');
+                    }
+                    if (items.length === 0) {
+                        _converse.log(iq, Strophe.LogLevel.WARN);
+                        _converse.log('Received a roster push stanza without an "item" element.', Strophe.LogLevel.WARN);
+                        return;
+                    }
+                    this.updateContact(items.pop());
                     _converse.emit('rosterPush', iq);
-                    return true;
+                    return;
                 },
 
                 fetchFromServer () {
@@ -552,8 +558,8 @@
 
                 onReceivedFromServer (iq) {
                     /* An IQ stanza containing the roster has been received from
-                    * the XMPP server.
-                    */
+                     * the XMPP server.
+                     */
                     const items = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"] item`, iq);
                     _.each(items, this.updateContact.bind(this));
                     _converse.emit('roster', iq);
@@ -561,8 +567,8 @@
 
                 updateContact (item) {
                     /* Update or create RosterContact models based on items
-                    * received in the IQ from the server.
-                    */
+                     * received in the IQ from the server.
+                     */
                     const jid = item.getAttribute('jid');
                     if (this.isSelf(jid)) { return; }
 

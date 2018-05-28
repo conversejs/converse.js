@@ -219,12 +219,12 @@
 
             function initStreamFeatures () {
                 _converse.stream_features = new Backbone.Collection();
-                _converse.stream_features.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                _converse.stream_features.browserStorage = new Backbone.BrowserStorage.session(
                     b64_sha1(`converse.stream-features-${_converse.bare_jid}`)
                 );
                 _converse.stream_features.fetch({
                     success (collection) {
-                        if (collection.length === 0) {
+                        if (collection.length === 0 && _converse.connection.features) {
                             _.forEach(
                                 _converse.connection.features.childNodes,
                                 (feature) => {
@@ -240,11 +240,10 @@
 
             function initializeDisco () {
                 addClientFeatures();
-                initStreamFeatures();
                 _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
 
                 _converse.disco_entities = new _converse.DiscoEntities();
-                _converse.disco_entities.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                _converse.disco_entities.browserStorage = new Backbone.BrowserStorage.session(
                     b64_sha1(`converse.disco-entities-${_converse.bare_jid}`)
                 );
 
@@ -253,12 +252,12 @@
                         // If we don't have an entity for our own XMPP server,
                         // create one.
                         _converse.disco_entities.create({'jid': _converse.domain});
-                        initStreamFeatures();
                     }
                     _converse.emit('discoInitialized');
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }
 
+            _converse.api.listen.on('sessionInitialized', initStreamFeatures);
             _converse.api.listen.on('reconnected', initializeDisco);
             _converse.api.listen.on('connected', initializeDisco);
 

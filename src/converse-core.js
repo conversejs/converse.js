@@ -649,6 +649,7 @@
             _converse.session.id = id; // Appears to be necessary for backbone.browserStorage
             _converse.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
             _converse.session.fetch();
+            _converse.emit('sessionInitialized');
         };
 
         this.clearSession = function () {

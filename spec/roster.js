@@ -57,7 +57,7 @@
                     `<iq type="get" id="${stanza.getAttribute('id')}" xmlns="jabber:client">`+
                         `<query xmlns="jabber:iq:roster"/>`+
                     `</iq>`);
-                const result = $iq({
+                let result = $iq({
                     'to': _converse.connection.jid,
                     'type': 'result',
                     'id': stanza.getAttribute('id')
@@ -68,6 +68,31 @@
                   .c('item', {'jid': 'romeo@example.com'})
                 _converse.connection._dataRecv(test_utils.createRequest(result));
                 expect(_converse.roster.data.get('version')).toBe('ver7');
+                expect(_converse.roster.models.length).toBe(2);
+
+                _converse.roster.fetchFromServer();
+                stanza = _converse.connection.IQ_stanzas.pop().nodeTree;
+                expect(stanza.outerHTML).toBe(
+                    `<iq type="get" id="${stanza.getAttribute('id')}" xmlns="jabber:client">`+
+                        `<query xmlns="jabber:iq:roster" ver="ver7"/>`+
+                    `</iq>`);
+
+                result = $iq({
+                    'to': _converse.connection.jid,
+                    'type': 'result',
+                    'id': stanza.getAttribute('id')
+                });
+                _converse.connection._dataRecv(test_utils.createRequest(result));
+
+                const roster_push = $iq({
+                    'to': _converse.connection.jid,
+                    'type': 'set',
+                }).c('query', {'xmlns': 'jabber:iq:roster', 'ver': 'ver34'})
+                    .c('item', {'jid': 'romeo@example.com', 'subscription': 'remove'});
+                _converse.connection._dataRecv(test_utils.createRequest(roster_push));
+                expect(_converse.roster.data.get('version')).toBe('ver34');
+                expect(_converse.roster.models.length).toBe(1);
+                expect(_converse.roster.at(0).get('jid')).toBe('nurse@example.com');
                 done();
             });
         }));

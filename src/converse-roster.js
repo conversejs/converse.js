@@ -382,12 +382,14 @@
                      * Returns a promise which resolves once the contacts have been
                      * fetched.
                      */
+                    const that = this;
                     return new Promise((resolve, reject) => {
                         this.fetch({
                             'add': true,
                             'silent': true,
                             success (collection) {
-                                if (collection.length === 0) {
+                                if (collection.length === 0 || 
+                                        (that.rosterVersioningSupported() && !_converse.session.get('roster_fetched'))) {
                                     _converse.send_initial_presence = true;
                                     _converse.roster.fetchFromServer().then(resolve).catch(reject);
                                 } else {
@@ -530,7 +532,11 @@
                         return;
                     }
                     _converse.connection.send($iq({type: 'result', id, from: _converse.connection.jid}));
-                    const items = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"] item`, iq);
+
+                    const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
+                    this.data.save('version', query.getAttribute('ver'));
+
+                    const items = sizzle(`item`, query);
                     if (items.length > 1) {
                         _converse.log(iq, Strophe.LogLevel.ERROR);
                         throw new Error('Roster push query may not contain more than one "item" element.');
@@ -545,6 +551,10 @@
                     return;
                 },
 
+                rosterVersioningSupported () {
+                    return _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
+                },
+
                 fetchFromServer () {
                     /* Fetch the roster from the XMPP server */
                     return new Promise((resolve, reject) => {
@@ -552,7 +562,9 @@
                             'type': 'get',
                             'id': _converse.connection.getUniqueId('roster')
                         }).c('query', {xmlns: Strophe.NS.ROSTER});
-
+                        if (this.rosterVersioningSupported()) {
+                            iq.attrs({'ver': this.data.get('version')});
+                        }
                         const callback = _.flow(this.onReceivedFromServer.bind(this), resolve);
                         const errback = function (iq) {
                             const errmsg = "Error while trying to fetch roster from the server";
@@ -567,10 +579,13 @@
                     /* An IQ stanza containing the roster has been received from
                      * the XMPP server.
                      */
-                    const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop(),
-                          items = sizzle(`item`, query);
-                    _.each(items, (item) => this.updateContact(item));
-                    this.data.save('version', query.getAttribute('ver'));
+                    const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
+                    if (query) {
+                        const items = sizzle(`item`, query);
+                        _.each(items, (item) => this.updateContact(item));
+                        this.data.save('version', query.getAttribute('ver'));
+                        _converse.session.save('roster_fetched', true);
+                    }
                     _converse.emit('roster', iq);
                 },
 

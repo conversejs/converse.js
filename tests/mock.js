@@ -63,6 +63,18 @@
                 this.IQ_ids.push(id);
                 return id;
             }
+            c.features = Strophe.xmlHtmlNode(
+                '<stream:features xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client">'+
+                    '<ver xmlns="urn:xmpp:features:rosterver"/>'+
+                    '<csi xmlns="urn:xmpp:csi:0"/>'+
+                    '<c xmlns="http://jabber.org/protocol/caps" ver="UwBpfJpEt3IoLYfWma/o/p3FFRo=" hash="sha-1" node="http://prosody.im"/>'+
+                    '<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind">'+
+                        '<required/>'+
+                    '</bind>'+
+                    '<session xmlns="urn:ietf:params:xml:ns:xmpp-session">'+
+                        '<optional/>'+
+                    '</session>'+
+                '</stream:features>').firstChild;
 
             c._proto._connect = function () {
                 c.authenticated = true;

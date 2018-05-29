@@ -273,7 +273,7 @@
                         'name': 'Nicky'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 // Check that the IQ set was acknowledged.
-                expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
+                expect(Strophe.serialize(sent_stanza)).toBe( // Strophe adds the xmlns attr (although not in spec)
                     `<iq from="dummy@localhost/resource" id="${IQ_id}" type="result" xmlns="jabber:client"/>`
                 );
                 expect(_converse.roster.updateContact).toHaveBeenCalled();

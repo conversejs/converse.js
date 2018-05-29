@@ -32,7 +32,7 @@
                     delete _converse.jid;
                     _converse.keepalive = true;
                     _converse.authentication = "prebind";
-                    expect(_converse.logIn.bind(_converse)).toThrow(
+                    expect(_converse.api.user.login.bind(_converse)).toThrow(
                         new Error(
                             "restoreBOSHSession: tried to restore a \"keepalive\" session "+
                             "but we don't have the JID for the user!"));
@@ -47,7 +47,7 @@
                     delete _converse.jid;
                     _converse.keepalive = false;
                     _converse.authentication = "prebind";
-                    expect(_converse.logIn.bind(_converse)).toThrow(
+                    expect(_converse.api.user.login.bind(_converse)).toThrow(
                         new Error("attemptPreboundSession: If you use prebind and not keepalive, then you MUST supply JID, RID and SID values or a prebind_url."));
                     _converse.bosh_service_url = undefined;
                     _converse.jid = jid;

@@ -22,6 +22,7 @@ converse.plugins.add('converse-disco', {
 
         // Promises exposed by this plugin
         _converse.api.promises.add('discoInitialized');
+        _converse.api.promises.add('streamFeaturesAdded');
 
 
         /**
@@ -260,32 +261,33 @@ converse.plugins.add('converse-disco', {
         }
 
         function initStreamFeatures () {
-            _converse.stream_features = new Backbone.Collection();
-            _converse.stream_features.browserStorage = new BrowserStorage.session(
-                `converse.stream-features-${_converse.bare_jid}`
-            );
-            _converse.stream_features.fetch({
-                success (collection) {
-                    if (collection.length === 0 && _converse.connection.features) {
-                        _.forEach(
-                            _converse.connection.features.childNodes,
-                            (feature) => {
-                                _converse.stream_features.create({
-                                    'name': feature.nodeName,
-                                    'xmlns': feature.getAttribute('xmlns')
+            const bare_jid = Strophe.getBareJidFromJid(_converse.jid);
+            const id = `converse.stream-features-${bare_jid}`;
+            if (!_converse.stream_features || _converse.stream_features.browserStorage.id !== id) {
+                _converse.stream_features = new Backbone.Collection();
+                _converse.stream_features.browserStorage = new BrowserStorage.session(id);
+                _converse.stream_features.fetch({
+                    success (collection) {
+                        if (collection.length === 0 && _converse.connection.features) {
+                            Array.from(_converse.connection.features.childNodes)
+                                .forEach(feature => {
+                                    _converse.stream_features.create({
+                                        'name': feature.nodeName,
+                                        'xmlns': feature.getAttribute('xmlns')
+                                    });
                                 });
-                            });
+                        }
+                        /**
+                         * Triggered as soon as Converse has processed the stream features as advertised by
+                         * the server. If you want to check whether a stream feature is supported before
+                         * proceeding, then you'll first want to wait for this event.
+                         * @event _converse#streamFeaturesAdded
+                         * @example _converse.api.listen.on('streamFeaturesAdded', () => { ... });
+                         */
+                        _converse.api.trigger('streamFeaturesAdded');
                     }
-                }
-            });
-            /**
-             * Triggered as soon as Converse has processed the stream features as advertised by
-             * the server. If you want to check whether a stream feature is supported before
-             * proceeding, then you'll first want to wait for this event.
-             * @event _converse#streamFeaturesAdded
-             * @example _converse.api.listen.on('streamFeaturesAdded', () => { ... });
-             */
-            _converse.api.trigger('streamFeaturesAdded');
+                });
+            }
         }
 
         async function initializeDisco () {
@@ -313,7 +315,9 @@ converse.plugins.add('converse-disco', {
             _converse.api.trigger('discoInitialized');
         }
 
-        _converse.api.listen.on('setUserJID', initStreamFeatures);
+        _converse.api.listen.on('userSessionInitialized', initStreamFeatures);
+        _converse.api.listen.on('beforeResourceBinding', initStreamFeatures);
+
         _converse.api.listen.on('reconnected', initializeDisco);
         _converse.api.listen.on('connected', initializeDisco);
 
@@ -325,6 +329,10 @@ converse.plugins.add('converse-disco', {
                 });
                 _converse.disco_entities.reset();
                 _converse.disco_entities.browserStorage._clear();
+            }
+            if (_converse.stream_features) {
+                _converse.stream_features.reset();
+                _converse.stream_features.browserStorage._clear();
             }
         });
 
@@ -386,7 +394,8 @@ converse.plugins.add('converse-disco', {
                      * @param {String} xmlns The XML namespace
                      * @example _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver')
                      */
-                    'getFeature': function (name, xmlns) {
+                    'getFeature': async function (name, xmlns) {
+                        await _converse.api.waitUntil('streamFeaturesAdded');
                         if (_.isNil(name) || _.isNil(xmlns)) {
                             throw new Error("name and xmlns need to be provided when calling disco.stream.getFeature");
                         }

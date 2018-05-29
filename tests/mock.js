@@ -145,16 +145,22 @@
                     '<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind">'+
                         '<required/>'+
                     '</bind>'+
+                    `<sm xmlns='urn:xmpp:sm:3'/>`+
                     '<session xmlns="urn:ietf:params:xml:ns:xmpp-session">'+
                         '<optional/>'+
                     '</session>'+
                 '</stream:features>').firstChild;
 
             c._proto._connect = function () {
-                c.authenticated = true;
                 c.connected = true;
                 c.mock = true;
                 c.jid = 'dummy@localhost/resource';
+                c._changeConnectStatus(Strophe.Status.BINDREQUIRED);
+            };
+
+            c.bind = function () {
+                c.authenticated = true;
+                this.authenticated = true;
                 c._changeConnectStatus(Strophe.Status.CONNECTED);
             };
 
@@ -180,7 +186,7 @@
             _.forEach(spies.connection, method => spyOn(connection, method));
         }
 
-        const _converse = await converse.initialize(_.extend({
+        const _converse = await converse.initialize(Object.assign({
             'i18n': 'en',
             'auto_subscribe': false,
             'play_sounds': false,
@@ -232,10 +238,8 @@
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         };
         if (_.get(settings, 'auto_login') !== false) {
-            _converse.api.user.login({
-                'jid': 'dummy@localhost',
-                'password': 'secret'
-            });
+            _converse.api.user.login('dummy@localhost', 'secret');
+            await _converse.api.waitUntil('afterResourceBinding');
         }
         window.converse_disable_effects = true;
         return _converse;

@@ -44,6 +44,7 @@ var specs = [
     "spec/protocol",
     "spec/presence",
     "spec/eventemitter",
+    "spec/smacks",
     "spec/ping",
     "spec/push",
     "spec/xmppstatus",

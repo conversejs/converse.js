@@ -236,6 +236,7 @@
                         }
                     }
                 });
+                _converse.emit('streamFeaturesAdded');
             }
 
             function initializeDisco () {

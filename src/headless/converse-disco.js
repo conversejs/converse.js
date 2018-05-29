@@ -264,9 +264,9 @@ converse.plugins.add('converse-disco', {
                                 });
                             });
                     }
+                    _converse.emit('streamFeaturesAdded');
                 }
             });
-            _converse.emit('streamFeaturesAdded');
         }
 
         async function initializeDisco () {

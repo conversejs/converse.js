@@ -1288,6 +1288,15 @@ show_send_button
 
 If set to ``true``, a button will be visible which can be clicked to send a message.
 
+smacks_max_unacked_stanzas
+--------------------------
+
+* Default: ``5``
+
+This setting relates to `XEP-0198 <https://xmpp.org/extensions/xep-0198.html>`_
+and determines the number of stanzas to be sent before Converse will ask the
+server for acknowledgement of those stanzas.
+
 sounds_path
 -----------
 

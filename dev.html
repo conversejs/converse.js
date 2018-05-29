@@ -25,14 +25,15 @@
         //     'prosody@conference.prosody.im',
         //     'jdev@conference.jabber.org'
         // ],
-        // websocket_url: 'ws://chat.example.org:5280/xmpp-websocket',
+        // bosh_service_url: 'http://chat.example.org:5280/http-bind/',
+        websocket_url: 'wss://conversejs.org/xmpp-websocket',
+        bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
         view_mode: 'fullscreen',
         notify_all_room_messages: [
             'discuss@conference.conversejs.org'
         ],
+        enable_smacks: true,
         muc_respect_autojoin: false,
-        // bosh_service_url: 'http://chat.example.org:5280/http-bind/',
-        bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
         message_archiving: 'always',
         debug: true
     });

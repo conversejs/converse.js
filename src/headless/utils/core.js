@@ -21,6 +21,18 @@ import sizzle from "sizzle";
  */
 const u = {};
 
+u.isTagEqual = function (stanza, name) {
+    if (stanza.nodeTree) {
+        return u.isTagEqual(stanza.nodeTree, name);
+    } else if (!(stanza instanceof Element)) {
+        throw Error(
+            "isTagEqual called with value which isn't "+
+            "an element or Strophe.Builder instance");
+    } else {
+        return Strophe.isTagEqual(stanza, name);
+    }
+}
+
 u.toStanza = function (string) {
     return Strophe.xmlHtmlNode(string).firstElementChild;
 }

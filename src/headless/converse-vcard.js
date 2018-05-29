@@ -55,7 +55,7 @@ converse.plugins.add('converse-vcard', {
             model: _converse.VCard,
 
             initialize () {
-                this.on('add', (vcard) => _converse.api.vcard.update(vcard));
+                this.on('add', vcard => _converse.api.vcard.update(vcard));
             }
         });
 
@@ -125,19 +125,17 @@ converse.plugins.add('converse-vcard', {
             _converse.vcards.browserStorage = new BrowserStorage[_converse.config.get('storage')](id);
             _converse.vcards.fetch();
         }
-        _converse.api.listen.on('setUserJID', _converse.initVCardCollection);
+        _converse.api.listen.on('afterResourceBinding', _converse.initVCardCollection);
 
 
         _converse.api.listen.on('statusInitialized', () => {
             const vcards = _converse.vcards;
-            const jid = _converse.xmppstatus.get('jid');
+            const jid = _converse.session.get('bare_jid');
             _converse.xmppstatus.vcard = vcards.findWhere({'jid': jid}) || vcards.create({'jid': jid});
         });
 
 
-        _converse.api.listen.on('addClientFeatures', () => {
-            _converse.api.disco.own.features.add(Strophe.NS.VCARD);
-        });
+        _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.VCARD));
 
         /************************ BEGIN API ************************/
         Object.assign(_converse.api, {
@@ -191,7 +189,7 @@ converse.plugins.add('converse-vcard', {
                  *     );
                  * });
                  */
-                 'get' (model, force) {
+                 get (model, force) {
                     if (_.isString(model)) {
                         return getVCard(_converse, model);
                     } else if (force ||
@@ -224,7 +222,7 @@ converse.plugins.add('converse-vcard', {
                  *     _converse.api.vcard.update(chatbox);
                  * });
                  */
-                'update' (model, force) {
+                update (model, force) {
                     return this.get(model, force)
                         .then(vcard => {
                             delete vcard['stanza']

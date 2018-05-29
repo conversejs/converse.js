@@ -4,7 +4,7 @@ cache:
     directories:
         - node_modules
 addons:
-  chrome: unstable
+  chrome: stable
 node_js:
  - "10"
 install: make stamp-npm

@@ -635,6 +635,15 @@ The app servers are specified with the `push_app_servers`_ option.
     Registering a push app server against a MUC domain is not (yet) standardized
     and this feature should be considered experimental.
 
+enable_smacks
+-------------
+
+* Default: ``false``
+
+Determines whether `XEP-0198 Stream Management <https://xmpp.org/extensions/xep-0198.html>`_
+support is turned on or not.
+
+
 expose_rid_and_sid
 ------------------
 
@@ -1375,6 +1384,16 @@ want to embed a chat into the page.
 
 Alternatively you could use it with `view_mode`_ set to ``overlayed`` to create
 a single helpdesk-type chat.
+
+
+smacks_max_unacked_stanzas
+--------------------------
+
+* Default: ``5``
+
+This setting relates to `XEP-0198 <https://xmpp.org/extensions/xep-0198.html>`_
+and determines the number of stanzas to be sent before Converse will ask the
+server for acknowledgement of those stanzas.
 
 sounds_path
 -----------

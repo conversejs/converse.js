@@ -285,7 +285,7 @@ converse.plugins.add('converse-profile', {
                 ev.preventDefault();
                 const result = confirm(__("Are you sure you want to log out?"));
                 if (result === true) {
-                    _converse.logOut();
+                    _converse.api.user.logout();
                 }
             },
 

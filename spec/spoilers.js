@@ -117,7 +117,7 @@
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-            /* Test the XML stanza 
+            /* Test the XML stanza
              *
              * <message from="dummy@localhost/resource"
              *          to="max.frankfurter@localhost"
@@ -194,7 +194,7 @@
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-            /* Test the XML stanza 
+            /* Test the XML stanza
              *
              * <message from="dummy@localhost/resource"
              *          to="max.frankfurter@localhost"

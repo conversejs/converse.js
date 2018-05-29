@@ -438,8 +438,7 @@ converse.plugins.add('converse-controlbox', {
                  */
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 if (_converse.authentication === _converse.ANONYMOUS) {
-                    this.connect(_converse.jid, null);
-                    return;
+                    return this.connect(_converse.jid, null);
                 }
                 if (!this.validate()) { return; }
 
@@ -467,24 +466,16 @@ converse.plugins.add('converse-controlbox', {
                 } else if (_converse.default_domain && !_.includes(jid, '@')) {
                     jid = jid + '@' + _converse.default_domain;
                 }
-                this.connect(jid, form_data.get('password'));
+               this.connect(jid, form_data.get('password'));
             },
 
             connect (jid, password) {
-                if (jid) {
-                    const resource = Strophe.getResourceFromJid(jid);
-                    if (!resource) {
-                        jid = jid.toLowerCase() + _converse.generateResource();
-                    } else {
-                        jid = Strophe.getBareJidFromJid(jid).toLowerCase()+'/'+resource;
-                    }
-                }
                 if (_.includes(["converse/login", "converse/register"],
                         Backbone.history.getFragment())) {
                     _converse.router.navigate('', {'replace': true});
                 }
                 _converse.connection.reset();
-                _converse.connection.connect(jid, password, _converse.onConnectStatusChanged);
+                _converse.api.user.login(jid, password);
             }
         });
 

@@ -5,6 +5,8 @@
     const $iq = converse.env.$iq;
     const Strophe = converse.env.Strophe;
     const _ = converse.env._;
+    const sizzle = converse.env.sizzle;
+    const u = converse.env.utils;
 
     describe("XEP-0357 Push Notifications", function () {
 
@@ -56,31 +58,52 @@
                     }]
                 }, async function (done, _converse) {
 
-            const IQ_stanzas = _converse.connection.IQ_stanzas,
-                  room_jid = 'coven@chat.shakespeare.lit';
-            expect(_converse.session.get('push_enabled')).toBeFalsy();
-
-            test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'oldhag');
+            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const room_jid = 'coven@chat.shakespeare.lit';
             await test_utils.waitUntilDiscoConfirmed(
                 _converse, _converse.push_app_servers[0].jid,
                 [{'category': 'pubsub', 'type':'push'}],
                 ['urn:xmpp:push:0'], [], 'info');
             await test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid, [],
+                ['urn:xmpp:push:0']);
+
+            let iq = await test_utils.waitUntil(() => _.filter(
+                IQ_stanzas,
+                iq => sizzle(`iq[type="set"] enable[xmlns="${Strophe.NS.PUSH}"]`, iq).length
+            ).pop());
+
+            expect(Strophe.serialize(iq)).toBe(
+                `<iq id="${iq.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+                    `<enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>`+
+                `</iq>`
+            );
+            const result = u.toStanza(`<iq type="result" id="${iq.getAttribute('id')}" to="dummy@localhost" />`);
+            _converse.connection._dataRecv(test_utils.createRequest(result));
+
+            await test_utils.waitUntil(() => _converse.session.get('push_enabled'));
+            expect(_converse.session.get('push_enabled').length).toBe(1);
+            expect(_.includes(_converse.session.get('push_enabled'), 'dummy@localhost')).toBe(true);
+
+            test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'oldhag');
+            await test_utils.waitUntilDiscoConfirmed(
                 _converse, 'chat.shakespeare.lit',
                 [{'category': 'account', 'type':'registered'}],
                 ['urn:xmpp:push:0'], [], 'info');
-            const stanza = await test_utils.waitUntil(
-                () => _.filter(IQ_stanzas, (iq) => iq.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]')).pop()
-            );
-            expect(Strophe.serialize(stanza)).toEqual(
-                `<iq id="${stanza.getAttribute('id')}" to="chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
+            iq = await test_utils.waitUntil(() => _.filter(
+                IQ_stanzas,
+                iq => sizzle(`iq[type="set"][to="chat.shakespeare.lit"] enable[xmlns="${Strophe.NS.PUSH}"]`, iq).length
+            ).pop());
+
+            expect(Strophe.serialize(iq)).toEqual(
+                `<iq id="${iq.getAttribute('id')}" to="chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
                     '<enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>'+
                 '</iq>'
             );
             _converse.connection._dataRecv(test_utils.createRequest($iq({
                 'to': _converse.connection.jid,
                 'type': 'result',
-                'id': stanza.getAttribute('id')
+                'id': iq.getAttribute('id')
             })));
             await test_utils.waitUntil(() => _.includes(_converse.session.get('push_enabled'), 'chat.shakespeare.lit'));
             done();

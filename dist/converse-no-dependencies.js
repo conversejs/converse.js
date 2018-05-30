@@ -10760,7 +10760,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
   define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "lodash.fp", "polyfill", "i18n", "utils", "moment", "strophe", "pluggable", "backbone.noconflict", "backbone.nativeview", "backbone.browserStorage"], factory);
@@ -11427,6 +11427,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       _converse.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
 
       _converse.session.fetch();
+
+      _converse.emit('sessionInitialized');
     };
 
     this.clearSession = function () {
@@ -13086,15 +13088,15 @@ define("emojione", (function (global) {
         initialize: function initialize() {
           this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
           this.dataforms = new Backbone.Collection();
-          this.dataforms.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.dataforms-{this.get('jid')}"));
+          this.dataforms.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.dataforms-{this.get('jid')}"));
           this.features = new Backbone.Collection();
-          this.features.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.features-".concat(this.get('jid'))));
+          this.features.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.features-".concat(this.get('jid'))));
           this.features.on('add', this.onFeatureAdded, this);
           this.identities = new Backbone.Collection();
-          this.identities.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.identities-".concat(this.get('jid'))));
+          this.identities.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.identities-".concat(this.get('jid'))));
           this.fetchFeatures();
           this.items = new _converse.DiscoEntities();
-          this.items.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.disco-items-".concat(this.get('jid'))));
+          this.items.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.disco-items-".concat(this.get('jid'))));
           this.items.fetch();
         },
         getIdentity: function getIdentity(category, type) {
@@ -13275,13 +13277,33 @@ define("emojione", (function (global) {
         return this;
       }
 
+      function initStreamFeatures() {
+        _converse.stream_features = new Backbone.Collection();
+        _converse.stream_features.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.stream-features-".concat(_converse.bare_jid)));
+
+        _converse.stream_features.fetch({
+          success: function success(collection) {
+            if (collection.length === 0 && _converse.connection.features) {
+              _.forEach(_converse.connection.features.childNodes, function (feature) {
+                _converse.stream_features.create({
+                  'name': feature.nodeName,
+                  'xmlns': feature.getAttribute('xmlns')
+                });
+              });
+            }
+          }
+        });
+
+        _converse.emit('streamFeaturesAdded');
+      }
+
       function initializeDisco() {
         addClientFeatures();
 
         _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
 
         _converse.disco_entities = new _converse.DiscoEntities();
-        _converse.disco_entities.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.disco-entities-".concat(_converse.bare_jid)));
+        _converse.disco_entities.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.disco-entities-".concat(_converse.bare_jid)));
 
         _converse.disco_entities.fetchEntities().then(function (collection) {
           if (collection.length === 0 || !collection.get(_converse.domain)) {
@@ -13295,6 +13317,8 @@ define("emojione", (function (global) {
           _converse.emit('discoInitialized');
         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
       }
+
+      _converse.api.listen.on('sessionInitialized', initStreamFeatures);
 
       _converse.api.listen.on('reconnected', initializeDisco);
 
@@ -13376,6 +13400,19 @@ define("emojione", (function (global) {
          * @namespace
          */
         'disco': {
+          'stream': {
+            'getFeature': function getFeature(name, xmlns) {
+              if (_.isNil(name) || _.isNil(xmlns)) {
+                throw new Error("name and xmlns need to be provided when calling disco.stream.getFeature");
+              }
+
+              return _converse.stream_features.findWhere({
+                'name': name,
+                'xmlns': xmlns
+              });
+            }
+          },
+
           /**
            * The "own" grouping
            * @namespace
@@ -15890,19 +15927,24 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           this.on('change:image_hash', this.onAvatarChanged, this);
         },
         onAvatarChanged: function onAvatarChanged() {
-          var vcard = _converse.vcards.findWhere({
-            'jid': this.get('from')
-          });
-
-          if (!vcard) {
-            return;
-          }
-
           var hash = this.get('image_hash');
+          var vcards = [];
 
-          if (hash && vcard.get('image_hash') !== hash) {
-            _converse.api.vcard.update(vcard);
+          if (this.get('jid')) {
+            vcards.push(this.updateVCard(_converse.vcards.findWhere({
+              'jid': this.get('jid')
+            })));
           }
+
+          vcards.push(this.updateVCard(_converse.vcards.findWhere({
+            'jid': this.get('from')
+          })));
+
+          _.forEach(_.filter(vcards, undefined), function (vcard) {
+            if (hash && vcard.get('image_hash') !== hash) {
+              _converse.api.vcard.update(vcard);
+            }
+          });
         },
         getDisplayName: function getDisplayName() {
           return this.get('nick') || this.get('jid');
@@ -15949,6 +15991,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               var occupant = _this10.findOccupant({
                 'jid': removed_jid
               });
+
+              if (!occupant) {
+                return;
+              }
 
               if (occupant.get('show') === 'offline') {
                 occupant.destroy();
@@ -25093,7 +25139,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
   define('converse-vcard',["converse-core", "crypto", "tpl!vcard"], factory);
@@ -25166,7 +25212,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
             'url': _.get(vcard.querySelector('URL'), 'textContent'),
             'role': _.get(vcard.querySelector('ROLE'), 'textContent'),
-            'email': _.get(vcard.querySelector('EMAIL USERID'), 'textContent')
+            'email': _.get(vcard.querySelector('EMAIL USERID'), 'textContent'),
+            'vcard_updated': moment().format(),
+            'vcard_error': undefined
           };
         }
 
@@ -25184,7 +25232,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         if (errback) {
           errback({
             'stanza': iq,
-            'jid': jid
+            'jid': jid,
+            'vcard_error': moment().format()
           });
         }
       }
@@ -25250,8 +25299,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           'get': function get(model, force) {
             if (_.isString(model)) {
               return getVCard(_converse, model);
-            } else if (!model.get('vcard_updated') || force) {
-              var jid = model.get('jid') || model.get('muc_jid');
+            } else if (force || !model.get('vcard_updated') || !moment(model.get('vcard_error')).isSame(new Date(), "day")) {
+              var jid = model.get('jid');
 
               if (!jid) {
                 throw new Error("No JID to get vcard for!");
@@ -25267,9 +25316,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
             return new Promise(function (resolve, reject) {
               _this.get(model, force).then(function (vcard) {
-                model.save(_.extend(_.pick(vcard, ['fullname', 'nickname', 'email', 'url', 'role', 'image_type', 'image', 'image_hash']), {
-                  'vcard_updated': moment().format()
-                }));
+                delete vcard['stanza'];
+                model.save(vcard);
                 resolve();
               });
             });
@@ -31439,6 +31487,13 @@ return __p
                 _converse.roster = new _converse.RosterContacts();
                 _converse.roster.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                     b64_sha1(`converse.contacts-${_converse.bare_jid}`));
+
+                _converse.roster.data = new Backbone.Model();
+                const id = b64_sha1(`converse-roster-model-${_converse.bare_jid}`);
+                _converse.roster.data.id = id;
+                _converse.roster.data.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+                _converse.roster.data.fetch();
+
                 _converse.rostergroups = new _converse.RosterGroups();
                 _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                     b64_sha1(`converse.roster.groups${_converse.bare_jid}`));
@@ -31721,28 +31776,28 @@ return __p
 
                 onConnected () {
                     /* Called as soon as the connection has been established
-                    * (either after initial login, or after reconnection).
-                    *
-                    * Use the opportunity to register stanza handlers.
-                    */
+                     * (either after initial login, or after reconnection).
+                     *
+                     * Use the opportunity to register stanza handlers.
+                     */
                     this.registerRosterHandler();
                     this.registerRosterXHandler();
                 },
 
                 registerRosterHandler () {
                     /* Register a handler for roster IQ "set" stanzas, which update
-                    * roster contacts.
-                    */
-                    _converse.connection.addHandler(
-                        _converse.roster.onRosterPush.bind(_converse.roster),
-                        Strophe.NS.ROSTER, 'iq', "set"
-                    );
+                     * roster contacts.
+                     */
+                    _converse.connection.addHandler((iq) => {
+                        _converse.roster.onRosterPush(iq);
+                        return true;
+                    }, Strophe.NS.ROSTER, 'iq', "set");
                 },
 
                 registerRosterXHandler () {
                     /* Register a handler for RosterX message stanzas, which are
-                    * used to suggest roster contacts to a user.
-                    */
+                     * used to suggest roster contacts to a user.
+                     */
                     let t = 0;
                     _converse.connection.addHandler(
                         function (msg) {
@@ -31766,12 +31821,14 @@ return __p
                      * Returns a promise which resolves once the contacts have been
                      * fetched.
                      */
+                    const that = this;
                     return new Promise((resolve, reject) => {
                         this.fetch({
                             'add': true,
                             'silent': true,
                             success (collection) {
-                                if (collection.length === 0) {
+                                if (collection.length === 0 || 
+                                        (that.rosterVersioningSupported() && !_converse.session.get('roster_fetched'))) {
                                     _converse.send_initial_presence = true;
                                     _converse.roster.fetchFromServer().then(resolve).catch(reject);
                                 } else {
@@ -31897,30 +31954,44 @@ return __p
 
                 onRosterPush (iq) {
                     /* Handle roster updates from the XMPP server.
-                    * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
-                    *
-                    * Parameters:
-                    *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
-                    */
+                     * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
+                     *
+                     * Parameters:
+                     *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
+                     */
                     const id = iq.getAttribute('id');
                     const from = iq.getAttribute('from');
-                    if (from && from !== "" && Strophe.getBareJidFromJid(from) !== _converse.bare_jid) {
-                        // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
-                        // XXX: Some naughty servers apparently send from a full
-                        // JID so we need to explicitly compare bare jids here.
-                        // https://github.com/jcbrand/converse.js/issues/493
-                        _converse.connection.send(
-                            $iq({type: 'error', id, from: _converse.connection.jid})
-                                .c('error', {'type': 'cancel'})
-                                .c('service-unavailable', {'xmlns': Strophe.NS.ROSTER })
-                        );
-                        return true;
+                    if (from && from !== _converse.connection.jid) {
+                        // https://tools.ietf.org/html/rfc6121#page-15
+                        // 
+                        // A receiving client MUST ignore the stanza unless it has no 'from'
+                        // attribute (i.e., implicitly from the bare JID of the user's
+                        // account) or it has a 'from' attribute whose value matches the
+                        // user's bare JID <user@domainpart>.
+                        return;
                     }
                     _converse.connection.send($iq({type: 'result', id, from: _converse.connection.jid}));
-                    const items = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"] item`, iq);
-                    _.each(items, this.updateContact.bind(this));
+
+                    const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
+                    this.data.save('version', query.getAttribute('ver'));
+
+                    const items = sizzle(`item`, query);
+                    if (items.length > 1) {
+                        _converse.log(iq, Strophe.LogLevel.ERROR);
+                        throw new Error('Roster push query may not contain more than one "item" element.');
+                    }
+                    if (items.length === 0) {
+                        _converse.log(iq, Strophe.LogLevel.WARN);
+                        _converse.log('Received a roster push stanza without an "item" element.', Strophe.LogLevel.WARN);
+                        return;
+                    }
+                    this.updateContact(items.pop());
                     _converse.emit('rosterPush', iq);
-                    return true;
+                    return;
+                },
+
+                rosterVersioningSupported () {
+                    return _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
                 },
 
                 fetchFromServer () {
@@ -31930,7 +32001,9 @@ return __p
                             'type': 'get',
                             'id': _converse.connection.getUniqueId('roster')
                         }).c('query', {xmlns: Strophe.NS.ROSTER});
-
+                        if (this.rosterVersioningSupported()) {
+                            iq.attrs({'ver': this.data.get('version')});
+                        }
                         const callback = _.flow(this.onReceivedFromServer.bind(this), resolve);
                         const errback = function (iq) {
                             const errmsg = "Error while trying to fetch roster from the server";
@@ -31943,17 +32016,22 @@ return __p
 
                 onReceivedFromServer (iq) {
                     /* An IQ stanza containing the roster has been received from
-                    * the XMPP server.
-                    */
-                    const items = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"] item`, iq);
-                    _.each(items, this.updateContact.bind(this));
+                     * the XMPP server.
+                     */
+                    const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
+                    if (query) {
+                        const items = sizzle(`item`, query);
+                        _.each(items, (item) => this.updateContact(item));
+                        this.data.save('version', query.getAttribute('ver'));
+                        _converse.session.save('roster_fetched', true);
+                    }
                     _converse.emit('roster', iq);
                 },
 
                 updateContact (item) {
                     /* Update or create RosterContact models based on items
-                    * received in the IQ from the server.
-                    */
+                     * received in the IQ from the server.
+                     */
                     const jid = item.getAttribute('jid');
                     if (this.isSelf(jid)) { return; }
 

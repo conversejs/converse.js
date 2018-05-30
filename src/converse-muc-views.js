@@ -697,11 +697,15 @@
                 setOccupantsVisibility () {
                     const icon_el = this.el.querySelector('.toggle-occupants');
                     if (this.model.get('hidden_occupants')) {
-                        this.el.querySelector('.chat-area').classList.add('full');
+                        u.removeClass('fa-angle-double-right', icon_el);
+                        u.addClass('fa-angle-double-left', icon_el);
+                        u.addClass('full', this.el.querySelector('.chat-area'));
                         u.hideElement(this.el.querySelector('.occupants'));
                     } else {
-                        this.el.querySelector('.chat-area').classList.remove('full');
-                        this.el.querySelector('.occupants').classList.remove('hidden');
+                        u.addClass('fa-angle-double-right', icon_el);
+                        u.removeClass('fa-angle-double-left', icon_el);
+                        u.removeClass('full', this.el.querySelector('.chat-area'));
+                        u.removeClass('hidden', this.el.querySelector('.occupants'));
                     }
                     this.occupantsview.setOccupantsHeight();
                 },

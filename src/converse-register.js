@@ -62,16 +62,21 @@
 
             LoginPanel: {
 
-                render: function (cfg) {
+                insertRegisterLink () {
+                    const { _converse } = this.__super__;
+                    if (_.isUndefined(this.registerlinkview)) {
+                        this.registerlinkview = new _converse.RegisterLinkView({'model': this.model});
+                        this.registerlinkview.render();
+                        this.el.querySelector('.buttons').insertAdjacentElement('beforeend', this.registerlinkview.el);
+                    }
+                    this.registerlinkview.render();
+                },
+
+                render (cfg) {
                     const { _converse } = this.__super__;
                     this.__super__.render.apply(this, arguments);
-                    if (_converse.allow_registration) {
-                        if (_.isUndefined(this.registerlinkview)) {
-                            this.registerlinkview = new _converse.RegisterLinkView({'model': this.model});
-                            this.registerlinkview.render();
-                            this.el.querySelector('.buttons').insertAdjacentElement('beforeend', this.registerlinkview.el);
-                        }
-                        this.registerlinkview.render();
+                    if (_converse.allow_registration && !_converse.auto_login) {
+                        this.insertRegisterLink();
                     }
                     return this;
                 }

@@ -726,6 +726,7 @@
             if( document[hidden] !== undefined ) {
                 _.partial(_converse.saveWindowState, _, hidden)({type: document[hidden] ? "blur" : "focus"});
             }
+            _converse.emit('registeredGlobalEventHandlers');
         };
 
         this.enableCarbons = function () {

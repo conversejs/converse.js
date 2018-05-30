@@ -1539,8 +1539,8 @@
                 className: 'controlbox-section',
                 id: 'chatrooms',
                 events: {
-                    'click a.chatbox-btn.fa-users': 'showAddRoomModal',
-                    'click a.chatbox-btn.fa-list-ul': 'showListRoomsModal',
+                    'click a.chatbox-btn.show-add-muc-modal': 'showAddRoomModal',
+                    'click a.chatbox-btn.show-list-muc-modal': 'showListRoomsModal',
                     'click a.room-info': 'toggleRoomInfo'
                 },
 

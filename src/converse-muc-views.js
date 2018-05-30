@@ -499,6 +499,7 @@
                     'click .send-button': 'onFormSubmitted',
                     'click .toggle-call': 'toggleCall',
                     'click .toggle-occupants': 'toggleOccupants',
+                    'click .hide-occupants': 'hideOccupants',
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .upload-file': 'toggleFileUpload',
@@ -708,6 +709,19 @@
                         u.removeClass('hidden', this.el.querySelector('.occupants'));
                     }
                     this.occupantsview.setOccupantsHeight();
+                },
+
+                hideOccupants (ev, preserve_state) {
+                    /* Show or hide the right sidebar containing the chat
+                     * occupants (and the invite widget).
+                     */
+                    if (ev) {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                    }
+                    this.model.save({'hidden_occupants': true});
+                    this.setOccupantsVisibility();
+                    this.scrollDown();
                 },
 
                 toggleOccupants (ev, preserve_state) {

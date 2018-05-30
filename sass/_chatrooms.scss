@@ -120,9 +120,17 @@
                     border-bottom-right-radius: $chatbox-border-radius;
                     padding: 0.5em;
 
-                    .occupants-heading {
-                        font-family: $heading-font; 
-                        padding: 0.3em 0;
+                    .occupants-header {
+                        display: flex;
+                        flex-direction: column;
+                        .hide-occupants {
+                            align-self: flex-end;
+                            cursor: pointer;
+                        }
+                        .occupants-heading {
+                            font-family: $heading-font; 
+                            padding: 0.3em 0;
+                        }
                     }
 
                     .chatroom-features {

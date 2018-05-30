@@ -8494,10 +8494,18 @@ body.reset {
         border-left: 1px solid #666;
         border-bottom-right-radius: 4px;
         padding: 0.5em; }
-        #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .occupants-heading,
-        #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-heading {
-          font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif;
-          padding: 0.3em 0; }
+        #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .occupants-header,
+        #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-header {
+          display: flex;
+          flex-direction: column; }
+          #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .occupants-header .hide-occupants,
+          #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-header .hide-occupants {
+            align-self: flex-end;
+            cursor: pointer; }
+          #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .occupants-header .occupants-heading,
+          #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-header .occupants-heading {
+            font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif;
+            padding: 0.3em 0; }
         #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .chatroom-features,
         #conversejs .chatroom .box-flyout .chatroom-body .occupants .chatroom-features {
           width: 100%; }

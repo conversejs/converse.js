@@ -1,10 +1,8 @@
-// Converse.js (A browser based XMPP chat client)
+// Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, JC Brand <jc@opkode.com>
+// Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
-/*global Backbone, define, window, JSON */
 
 /* converse-singleton
  * ******************
@@ -39,10 +37,6 @@
         // NB: These plugins need to have already been loaded via require.js.
         dependencies: ['converse-chatboxes', 'converse-muc', 'converse-muc-views', 'converse-controlbox', 'converse-rosterview'],
 
-        enabled (_converse) {
-            return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
-        },
-
         overrides: {
             // overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -50,21 +44,32 @@
             //
             // new functions which don't exist yet can also be added.
             ChatBoxes: {
+
                 chatBoxMayBeShown (chatbox) {
-                    return !chatbox.get('hidden');
+                    if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
+                        return !chatbox.get('hidden');
+                    } else {
+                        return this.__super__.chatBoxMayBeShown.apply(this, arguments);
+                    }
                 },
 
                 createChatBox (jid, attrs) {
                     /* Make sure new chat boxes are hidden by default. */
-                    attrs = attrs || {};
-                    attrs.hidden = true;
+                    if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
+                        attrs = attrs || {};
+                        attrs.hidden = true;
+                    }
                     return this.__super__.createChatBox.call(this, jid, attrs);
                 }
             },
 
             ChatBoxView: {
                 shouldShowOnTextMessage () {
-                    return false;
+                    if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
+                        return false;
+                    } else { 
+                        return this.__super__.shouldShowOnTextMessage.apply(this, arguments);
+                    }
                 },
 
                 _show (focus) {
@@ -72,16 +77,20 @@
                      * time. So before opening a chat, we make sure all other
                      * chats are hidden.
                      */
-                    _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
-                    this.model.set('hidden', false);
+                    if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
+                        _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
+                        this.model.set('hidden', false);
+                    }
                     return this.__super__._show.apply(this, arguments);
                 }
             },
 
             ChatRoomView: {
                 show (focus) {
-                    _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
-                    this.model.set('hidden', false);
+                    if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
+                        _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
+                        this.model.set('hidden', false);
+                    }
                     return this.__super__.show.apply(this, arguments);
                 }
             }

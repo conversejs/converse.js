@@ -22,6 +22,12 @@
             const { _converse } = this,
                   { __ } = _converse;
 
+            _converse.api.settings.update({
+                'allow_contact_requests': true,
+                'auto_subscribe': false,
+                'synchronize_availability': true,
+            });
+
             _converse.api.promises.add([
                 'cachedRoster',
                 'roster',

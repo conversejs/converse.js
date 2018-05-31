@@ -101,10 +101,11 @@
                 { __ } = _converse;
 
             _converse.api.settings.update({
-                'use_emojione': false,
                 'emojione_image_path': emojione.imagePathPNG,
+                'show_send_button': false,
                 'show_toolbar': true,
                 'time_format': 'HH:mm',
+                'use_emojione': false,
                 'visible_toolbar_buttons': {
                     'call': false,
                     'clear': true,

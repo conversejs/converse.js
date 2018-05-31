@@ -293,14 +293,12 @@
         // Default configuration values
         // ----------------------------
         this.default_settings = {
-            allow_contact_requests: true,
             allow_non_roster_messaging: false,
             animate: true,
             authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
             auto_away: 0, // Seconds after which user status is set to 'away'
             auto_login: false, // Currently only used in connection with anonymous login
             auto_reconnect: true,
-            auto_subscribe: false,
             auto_xa: 0, // Seconds after which user status is set to 'xa'
             blacklisted_plugins: [],
             bosh_service_url: undefined,
@@ -310,12 +308,8 @@
             debug: false,
             default_state: 'online',
             expose_rid_and_sid: false,
-            filter_by_resource: false,
-            forward_messages: false,
             geouri_regex: /https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
             geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
-            hide_offline_users: false,
-            include_offline_state: false,
             jid: undefined,
             keepalive: true,
             locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
@@ -329,15 +323,11 @@
             password: undefined,
             prebind_url: null,
             priority: 0,
-            registration_domain: '',
             rid: undefined,
             root: window.document,
-            show_only_online_users: false,
-            show_send_button: false,
             sid: undefined,
             storage: 'session',
             strict_plugin_dependencies: false,
-            synchronize_availability: true,
             trusted: true,
             view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
             websocket_url: undefined,

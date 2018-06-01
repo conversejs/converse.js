@@ -333,13 +333,21 @@
 }
 
 @include media-breakpoint-down(sm) {
-    .chatroom {
-        .box-flyout {
-            .chatbox-title {
-                @include make-col(8);
-            }
-            .chatbox-buttons {
-                @include make-col(4);
+    #conversejs.converse-mobile,
+    #conversejs.converse-overlayed,
+    #conversejs.converse-embedded,
+    #conversejs.converse-fullscreen {
+        .chatroom {
+            .box-flyout {
+                .chatbox-navback {
+                    @include make-col(2);
+                }
+                .chatbox-title {
+                    @include make-col(7);
+                }
+                .chatbox-buttons {
+                    @include make-col(3);
+                }
             }
         }
     }

@@ -1,4 +1,7 @@
 #conversejs {
+    .chatbox-navback {
+        display: none;
+    }
     .flyout {
         border-radius: $chatbox-border-radius;
         position: absolute;
@@ -51,10 +54,13 @@
             margin-right: 0.5em;
         }
 
+        .chatbox-title {
+            .chatroom-description {
+                font-size: 80%;
+            }
+        }
         .chatbox-buttons {
             flex-direction: row-reverse;
-            @include make-col-ready();
-            @include make-col(4);
             padding: 0;
         }
 
@@ -443,7 +449,14 @@
             border-top-left-radius: 0;
             border-top-right-radius: 0;
         }
+        .chatbox-title {
+            @include make-col(8);
+        }
+        .chatbox-buttons {
+            @include make-col(4);
+        }
     }
+
     .chatbox {
         min-width: $overlayed-chat-width!important;
         width: $overlayed-chat-width;
@@ -536,15 +549,18 @@
     }
     .chat-head {
         height: $fullpage-chat-head-height;
-        .chatbox-buttons {
-            @include make-col(3);
-        }
         font-size: $font-size-huge;
         padding: 0;
         .user-custom-message {
             font-size: 50%;
             height: auto;
             line-height: $line-height;
+        }
+        .chatbox-title {
+            @include make-col(10);
+        }
+        .chatbox-buttons {
+            @include make-col(2);
         }
     }
     .chat-textarea {
@@ -623,22 +639,16 @@
     }
 }
 
-@media screen and (max-width: 767px) {
+@include media-breakpoint-down(sm) {
     #conversejs:not(.converse-embedded)  {
         > .row {
             flex-direction: row-reverse;
         }
-
         #converse-login-panel {
             .converse-form {
                 padding: 3em 2em 3em;
             }
         }
-
-        .sidebar {
-            display: block;
-        }
-
         .chatbox {
             width: calc(100% - 50px);
             .row {
@@ -651,12 +661,29 @@
             }
         }
     }
-}
 
-@media screen and (max-width: 767px) {
-    #conversejs:not(.converse-embedded).converse-fullscreen {
+    #conversejs.converse-mobile,
+    #conversejs.converse-overlayed,
+    #conversejs.converse-embedded,
+    #conversejs.converse-fullscreen {
         .chatbox {
-            width: calc(100% - 50px);
+            .box-flyout {
+                .chatbox-navback {
+                    display: flex;
+                    @include make-col(2);
+                    .fa-arrow-left {
+                        &:before {
+                            color: white;
+                        }
+                    }
+                }
+                .chatbox-title {
+                    @include make-col(7);
+                }
+                .chatbox-buttons {
+                    @include make-col(3);
+                }
+            }
         }
     }
 }

@@ -672,7 +672,7 @@ geouri_regex
 Regular expression used to extract geo coordinates from links to openstreetmap.
 
 geouri_replacement
-----------------
+------------------
 
 * Default:  ``'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2'``
 

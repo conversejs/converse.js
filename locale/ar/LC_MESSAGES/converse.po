@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-04-30 16:16+0200\n"
-"PO-Revision-Date: 2018-05-15 11:34+0000\n"
+"PO-Revision-Date: 2018-06-03 00:34+0000\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 3.0-dev\n"
+"X-Generator: Weblate 3.0\n"
 
 #: dist/converse-no-dependencies.js:9854 dist/converse-no-dependencies.js:9883
 msgid "Download"
@@ -81,7 +81,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:17851
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "للأسف لم نتمكّن مِن القيام برفع ملفك بنجاح."
 
 #: dist/converse-no-dependencies.js:17854
 #, javascript-format
@@ -90,7 +90,7 @@ msgstr "رد الخادم : \"%1$s\""
 
 #: dist/converse-no-dependencies.js:18012
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "للأسف يبدو أن خاصية رفع الملفات لا يدعمها خادومكم."
 
 #: dist/converse-no-dependencies.js:18022
 #, javascript-format
@@ -100,7 +100,6 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:18681
-#, fuzzy
 msgid "Show more"
 msgstr "عرض المزيد"
 
@@ -763,7 +762,7 @@ msgstr "ليست تحت الإشراف"
 
 #: dist/converse-no-dependencies.js:28771
 msgid "Query for Chatrooms"
-msgstr ""
+msgstr "الإستعلام عن قاعات الدردشة"
 
 #: dist/converse-no-dependencies.js:28772
 msgid "Server address"
@@ -806,9 +805,9 @@ msgid "Message"
 msgstr "رسالة"
 
 #: dist/converse-no-dependencies.js:29053
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr "لم يعُد %1$s مِن مُشْرِفي غرفة المحادثة."
+msgstr "لم يعُد %1$s مِن مُشْرِفي غرفة المحادثة"
 
 #: dist/converse-no-dependencies.js:29056
 #, fuzzy, javascript-format
@@ -1020,8 +1019,9 @@ msgid "Add a new room"
 msgstr "إضافة غرفة جديدة"
 
 #: dist/converse-no-dependencies.js:29953
+#, fuzzy
 msgid "Query for rooms"
-msgstr ""
+msgstr "البحث عن قاعات"
 
 #: dist/converse-no-dependencies.js:29992
 #, javascript-format

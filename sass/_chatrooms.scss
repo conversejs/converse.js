@@ -300,6 +300,9 @@
                     font-size: 80%;
                 }
             }
+            .chatbox-buttons {
+                @include make-col(4);
+            }
             .chatroom-body {
                 .occupants {
                     .chatroom-features {
@@ -316,7 +319,31 @@
     }
 }
 
-/* ******************* Fullpage styles *************************** */
+#conversejs.converse-fullscreen {
+    .chatroom {
+        .box-flyout {
+            .chatbox-title {
+                @include make-col(9);
+            }
+            .chatbox-buttons {
+                @include make-col(3);
+            }
+        }
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    .chatroom {
+        .box-flyout {
+            .chatbox-title {
+                @include make-col(8);
+            }
+            .chatbox-buttons {
+                @include make-col(4);
+            }
+        }
+    }
+}
 
 #conversejs.converse-fullscreen,
 #conversejs.converse-mobile {
@@ -329,7 +356,6 @@
             width: 100%;
 
             .chatbox-title {
-                @include make-col(9);
                 .chatroom-description {
                     font-size: 70%;
                 }

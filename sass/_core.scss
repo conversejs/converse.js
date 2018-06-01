@@ -67,11 +67,15 @@ body.reset {
         }
     }
 
-    &.converse-fullscreen {
+    &.converse-fullscreen,
+    &.converse-mobile {
         .converse-chatboxes {
             width: 100vw;
             right: 15px; // Hack due to padding added by bootstrap
         }
+    }
+    &.converse-overlayed {
+        height: 3em;
     }
 
     .brand-heading {
@@ -89,7 +93,6 @@ body.reset {
         z-index: 1031; // One more than bootstrap navbar
         position: fixed;
         bottom: 0;
-        height: 3em;
         right: 0;
     }
 

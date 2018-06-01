@@ -722,9 +722,6 @@
                                 _converse.root.appendChild(el);
                             }
                         }
-                        if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
-                            el.classList.add('fullscreen');
-                        }
                         el.innerHTML = '';
                         this.setElement(el, false);
                     } else {

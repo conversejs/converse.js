@@ -150,6 +150,7 @@
                     return tpl_emojis(
                         _.extend(
                             this.model.toJSON(), {
+                                '_': _,
                                 'transform': _converse.use_emojione ? emojione.shortnameToImage : emojione.shortnameToUnicode,
                                 'emojis_by_category': u.getEmojisByCategory(_converse, emojione),
                                 'toned_emojis': u.getTonedEmojis(_converse),
@@ -657,7 +658,7 @@
                             tpl_help_message({
                                 'isodate': moment().format(),
                                 'type': type,
-                                'message': xss.filterXSS(msg, {'whiteList': {'strong': []}})
+                                'message': filterXSS(msg, {'whiteList': {'strong': []}})
                             })
                         );
                     });

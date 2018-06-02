@@ -1580,7 +1580,10 @@
                     const show = this.model.get('show');
                     return tpl_occupant(
                         _.extend(
-                            { 'jid': '',
+                            { '_': _, // XXX Normally this should already be included,
+                                      // but with the current webpack build,
+                                      // we only get a subset of the _ methods.
+                              'jid': '',
                               'show': show,
                               'hint_show': _converse.PRETTY_CHAT_STATUS[show],
                               'hint_occupant': __('Click to mention %1$s in your message.', this.model.get('nick')),

@@ -13,7 +13,28 @@ const config = {
     },
     devtool: 'source-map',
     module: {
-        rules: [{
+        rules: [
+        {
+            test: path.resolve(__dirname, "node_modules/backbone.overview/dist/backbone.orderedlistview"),
+            use: 'imports-loader?backbone.nativeview'
+        },
+        {
+            test: path.resolve(__dirname, "node_modules/backbone.overview/dist/backbone.overview"),
+            use: 'imports-loader?backbone.nativeview'
+        },
+        {
+            test: path.resolve(__dirname, "node_modules/backbone.vdomview/dist/backbone.vdomview"),
+            use: 'imports-loader?backbone.nativeview'
+        },
+        {
+            test: path.resolve(__dirname, "node_modules/awesomplete-avoid-xss/awesomplete"),
+            use: "exports-loader?Awesomplete"
+        },
+        {
+            test: path.resolve(__dirname, "node_modules/xss/dist/xss"),
+            use: "exports-loader?filterXSS,filterCSS"
+        },
+        {
             test: /\.html$/,
             exclude: /node_modules/,
             use: [{

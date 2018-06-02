@@ -9,17 +9,13 @@
     <meta name="author" content="JC Brand" />
     <meta name="keywords" content="xmpp chat webchat converse.js" />
     <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="css/inverse.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="css/fullpage.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
     <script src="node_modules/requirejs/require.js"></script>
     <script src="src/config.js"></script>
 </head>
 
 <body class="reset">
-    <div class="content">
-        <div class="inner-content">
-            <h1 class="brand-heading"><i class="icon-conversejs"></i> Converse</h1>
-        </div>
-    </div>
 
 <script>
     require(['converse'], function (converse) {
@@ -31,6 +27,7 @@
             //     'prosody@conference.prosody.im',
             //     'jdev@conference.jabber.org'
             // ],
+            // websocket_url: 'ws://chat.example.org:5280/xmpp-websocket',
             view_mode: 'fullscreen',
             archived_messages_page_size: '500',
             allow_public_bookmarks: true,

@@ -617,7 +617,7 @@
          *      (String) selector - the selector they should be matched
          *          against.
          */
-        return _.filter(el.children, _.partial(u.matchesSelector, _, selector));
+        return _.filter(el.childNodes, _.partial(u.matchesSelector, _, selector));
     };
 
     u.contains = function (attr, query) {
@@ -652,6 +652,14 @@
         return function (item) {
             return !(u.contains(attr, query)(item));
         };
+    };
+
+    u.rootContains = function (root, el) {
+        // The document element does not have the contains method in IE.
+        if (root === document && !root.contains) {
+            return document.head.contains(el) || document.body.contains(el);
+        }
+        return root.contains ? root.contains(el) : window.HTMLElement.prototype.contains.call(root, el);
     };
 
     u.createFragmentFromText = function (markup) {

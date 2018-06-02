@@ -4,10 +4,8 @@
     position: relative;
     margin: 0;
     height: $roster-height;
-    height: calc(~"100% - #{$controlbox-dropdown-height*2} - 20px");
     padding: 0;
     overflow: hidden;
-
     // XXX: FIXME
     height: calc(100% - 70px);
 
@@ -43,7 +41,6 @@
         }
         .state-type {
             font-size: calc(#{$font-size} - 2px);
-            height: $controlbox-dropdown-height;
             width: 100%;
         }
     }
@@ -66,10 +63,12 @@
                 &:hover {
                     color: $dark-gray-color;
                 }
+                font-family: $heading-font; 
                 color: $text-color;
                 display: block;
                 width: 100%;
-                padding: 0 0 0.3rem 0;
+                padding-top: 0;
+                padding-bottom: 0.3rem;
             }
 
             li {
@@ -140,7 +139,6 @@
                     .avatar {
                         float: left;
                         display: inline-block;
-                        height: $roster-item-height;
                     }
                 }
                 &.current-xmpp-contact span {

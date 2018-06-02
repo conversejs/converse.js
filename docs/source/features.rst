@@ -19,7 +19,7 @@ and a private chat with a URL fragment such as
 Off-the-record encryption
 =========================
 
-Converse.js supports `Off-the-record (OTR) <https://otr.cypherpunks.ca/>`_
+Converse supports `Off-the-record (OTR) <https://otr.cypherpunks.ca/>`_
 encrypted messaging.
 
 The OTR protocol not only **encrypts your messages**, it provides ways to
@@ -38,17 +38,17 @@ secure crypto.
 For harsh but fairly valid criticism of JavaScript cryptography, read:
 `JavaScript Cryptography Considered Harmful <http://www.matasano.com/articles/javascript-cryptography/>`_.
 
-To get an idea on how this applies to OTR support in Converse.js, please read
+To get an idea on how this applies to OTR support in Converse, please read
 `my thoughts on it <https://opkode.com/media/blog/2013/11/11/conversejs-otr-support>`_.
 
 For now, suffice to say that although its useful to have OTR support in
-Converse.js in order to avoid most eavesdroppers, if you need serious
+Converse in order to avoid most eavesdroppers, if you need serious
 communications privacy, then you're much better off using native software.
 
 Notifications
 =============
 
-From version 0.8.1 Converse.js can play a sound notification when you receive a
+From version 0.8.1 Converse can play a sound notification when you receive a
 message.
 
 For more info, refer to the :ref:`play-sounds` configuration setting.
@@ -61,13 +61,10 @@ For more info, refer to the :ref:`show-desktop-notifications` configuration sett
 Multilingual Support
 ====================
 
-Converse.js is translated into multiple languages. The default build,
-``converse.min.js``, includes all languages.
-
-Languages increase the size of the Converse.js significantly.
-
-If you only need one, or a subset of the available languages, it's better to
-make a custom build which includes only those languages that you need.
+Converse is translated into multiple languages. Translations are supplied in
+JSON format and are loaded on demand. Converse will expect to find the
+translations in the ``/locales`` path of your site. This can be changed via the
+:ref:`locales-url` configuration setting.
 
 Moderating chatrooms
 ====================
@@ -103,7 +100,7 @@ Here are the different commands that may be used to moderate a chatroom:
 Passwordless login with client certificates
 ===========================================
 
-Converse.js supports the SASL-EXTERNAL authentication mechanism, which can be
+Converse supports the SASL-EXTERNAL authentication mechanism, which can be
 used together with x509 client certificates to enable passwordless login or
 even 2-factor authentication.
 

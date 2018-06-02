@@ -136,7 +136,12 @@
                 display: block;
 
                 .chat-msg-author {
-                    font-weight: bold;
+                    font-family: $heading-font; 
+                    font-size: 115%;
+                    .badge {
+                        font-size: 80%;
+                        font-family: $normal_font;
+                    }
                 }
                 .chat-msg-time {
                     padding-left: 0.25em;

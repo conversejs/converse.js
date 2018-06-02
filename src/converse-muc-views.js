@@ -110,7 +110,7 @@
 
                     if (!this.roomspanel.model.get('nick')) {
                         this.roomspanel.model.save({
-                            nick: _converse.xmppstatus.get('nickname') || Strophe.getNodeFromJid(_converse.bare_jid)
+                            nick: _converse.xmppstatus.vcard.get('nickname') || Strophe.getNodeFromJid(_converse.bare_jid)
                         });
                     }
                     _converse.emit('roomsPanelRendered');
@@ -492,8 +492,10 @@
                 is_chatroom: true,
                 events: {
                     'change input.fileupload': 'onFileSelection',
+                    'click .chatbox-navback': 'showControlBox',
                     'click .close-chatbox-button': 'close',
                     'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
+                    'click .hide-occupants': 'hideOccupants',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant-nick': 'onOccupantClicked',
                     'click .send-button': 'onFormSubmitted',
@@ -523,6 +525,16 @@
 
                     this.model.occupants.on('add', this.showJoinNotification, this);
                     this.model.occupants.on('remove', this.showLeaveNotification, this);
+                    this.model.occupants.on('change:show', (occupant) => {
+                        if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
+                            return;
+                        }
+                        if (occupant.get('show') === 'offline') {
+                            this.showLeaveNotification(occupant);
+                        } else if (occupant.get('show') === 'online') {
+                            this.showJoinNotification(occupant);
+                        }
+                    });
 
                     this.createEmojiPicker();
                     this.createOccupantsView();
@@ -687,13 +699,30 @@
                 setOccupantsVisibility () {
                     const icon_el = this.el.querySelector('.toggle-occupants');
                     if (this.model.get('hidden_occupants')) {
-                        this.el.querySelector('.chat-area').classList.add('full');
+                        u.removeClass('fa-angle-double-right', icon_el);
+                        u.addClass('fa-angle-double-left', icon_el);
+                        u.addClass('full', this.el.querySelector('.chat-area'));
                         u.hideElement(this.el.querySelector('.occupants'));
                     } else {
-                        this.el.querySelector('.chat-area').classList.remove('full');
-                        this.el.querySelector('.occupants').classList.remove('hidden');
+                        u.addClass('fa-angle-double-right', icon_el);
+                        u.removeClass('fa-angle-double-left', icon_el);
+                        u.removeClass('full', this.el.querySelector('.chat-area'));
+                        u.removeClass('hidden', this.el.querySelector('.occupants'));
                     }
                     this.occupantsview.setOccupantsHeight();
+                },
+
+                hideOccupants (ev, preserve_state) {
+                    /* Show or hide the right sidebar containing the chat
+                     * occupants (and the invite widget).
+                     */
+                    if (ev) {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                    }
+                    this.model.save({'hidden_occupants': true});
+                    this.setOccupantsVisibility();
+                    this.scrollDown();
                 },
 
                 toggleOccupants (ev, preserve_state) {
@@ -995,10 +1024,10 @@
                     const last_fieldset_el = document.createElement('fieldset');
                     last_fieldset_el.insertAdjacentHTML(
                         'beforeend',
-                        `<input type="submit" class="pure-button button-primary" value="${__('Save')}"/>`);
+                        `<input type="submit" class="btn btn-primary" value="${__('Save')}"/>`);
                     last_fieldset_el.insertAdjacentHTML(
                         'beforeend',
-                        `<input type="button" class="pure-button button-cancel" value="${__('Cancel')}"/>`);
+                        `<input type="button" class="btn btn-secondary" value="${__('Cancel')}"/>`);
                     form_el.insertAdjacentElement('beforeend', last_fieldset_el);
 
                     last_fieldset_el.querySelector('input[type=button]').addEventListener('click', (ev) => {
@@ -1096,10 +1125,9 @@
                 },
 
                 onNickNameNotFound (message) {
-                    if (_converse.muc_nickname_from_jid) {
-                        // We try to enter the room with the node part of
-                        // the user's JID.
-                        this.join(this.getDefaultNickName());
+                    const nick = this.getDefaultNickName();
+                    if (nick) {
+                        this.join(nick);
                     } else {
                         this.renderNicknameForm(message);
                     }
@@ -1111,7 +1139,12 @@
                      * We put this in a separate method so that it can be
                      * overridden by plugins.
                      */
-                    return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+                    const nick = _converse.xmppstatus.vcard.get('nickname');
+                    if (nick) {
+                        return nick;
+                    } else if (_converse.muc_nickname_from_jid) {
+                        return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+                    }
                 },
 
                 onNicknameClash (presence) {
@@ -1215,7 +1248,7 @@
                      *  (XMLElement) stanza: The original stanza received.
                      */
                     const code = stat.getAttribute('code');
-                    if (code === '110') { return; }
+                    if (code === '110' || (code === '100' && !is_self)) { return; }
                     if (code in _converse.muc.info_messages) {
                         return _converse.muc.info_messages[code];
                     }
@@ -1354,10 +1387,13 @@
                 },
 
                 showLeaveNotification (occupant) {
-                    const nick = occupant.get('nick');
-                    const stat = occupant.get('status');
-                    const last_el = this.content.lastElementChild;
+                    const nick = occupant.get('nick'),
+                          stat = occupant.get('status'),
+                          last_el = this.content.lastElementChild,
+                          last_msg_date = last_el.getAttribute('data-isodate');
+
                     if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
+                            moment(last_msg_date).isSame(new Date(), "day") &&
                             _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
 
                         let message;
@@ -1518,8 +1554,8 @@
                 className: 'controlbox-section',
                 id: 'chatrooms',
                 events: {
-                    'click a.chatbox-btn.fa-users': 'showAddRoomModal',
-                    'click a.chatbox-btn.fa-list-ul': 'showListRoomsModal',
+                    'click a.chatbox-btn.show-add-muc-modal': 'showAddRoomModal',
+                    'click a.chatbox-btn.show-list-muc-modal': 'showListRoomsModal',
                     'click a.room-info': 'toggleRoomInfo'
                 },
 

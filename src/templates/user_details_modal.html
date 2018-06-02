@@ -30,8 +30,9 @@
             </div>
             <div class="modal-footer">
                 {[ if (o.allow_contact_removal && o.is_roster_contact) { ]}
-                    <button type="button" class="btn btn-danger remove-contact" data-dismiss="modal"><i class="fa fa-trash"> </i>{{{o.label_remove}}}</button>
+                    <button type="button" class="btn btn-danger remove-contact"><i class="fa fa-trash"> </i>{{{o.label_remove}}}</button>
                 {[ } ]}
+                <button type="button" class="btn btn-info refresh-contact"><i class="fa fa-refresh"> </i>{{{o.label_refresh}}}</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">{{{o.label_close}}}</button>
             </div>
         </div>

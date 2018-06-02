@@ -68,7 +68,7 @@
     "sizzle": "^2.3.3",
     "snabbdom": "0.7.1",
     "snyk": "^1.21.2",
-    "strophe.js": "1.2.14",
+    "strophe.js": "1.2.15",
     "strophejs-plugin-ping": "0.0.1",
     "strophejs-plugin-register": "0.0.1",
     "strophejs-plugin-rsm": "0.0.1",

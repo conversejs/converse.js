@@ -376,7 +376,7 @@ For example::
 blacklisted_plugins
 -------------------
 
-* Default: ``[]`` (``['converse-minimize', 'converse-dragresize']`` for inVerse)
+* Default: ``[]``
 
 A list of plugin names that are blacklisted and will therefore not be
 initialized once ``converse.initialize`` is called, even if the same plugin is
@@ -672,7 +672,7 @@ geouri_regex
 Regular expression used to extract geo coordinates from links to openstreetmap.
 
 geouri_replacement
-----------------
+------------------
 
 * Default:  ``'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2'``
 
@@ -698,7 +698,7 @@ If set to ``true``, then don't show offline users.
 hide_open_bookmarks
 -------------------
 
-* Default:  ``false`` (``true`` for inVerse).
+* Default:  ``false`` (``true`` when the ``view_mode`` is set to ``fullscreen``).
 
 This setting applies to the ``converse-bookmarks`` plugin and specfically the
 list of bookmarks shown in the ``Rooms`` tab of the control box.
@@ -710,48 +710,6 @@ current user hasn't joined), are shown.
 Makes sense to set this to ``true`` when also using the non-core
 ``converse-roomslist`` plugin, which shows a list of currently open (i.e.
 "joined") rooms.
-
-include_offline_state
----------------------
-
-* Default: `false`
-
-Originally, converse.js included an `offline` state which the user could
-choose (along with `online`, `busy` and `away`).
-
-Eventually it was however decided to remove this state, since the `offline`
-state doesn't propagate across tabs like the others do.
-
-What's meant by "propagate across tabs", is that when you set the state to
-`offline` in one tab, and you have instances of converse.js open in other tabs
-in your browser, then those instances will not have their states changed to
-`offline` as well. For the other statees the change is however propagated.
-
-The reason for this is that according to the XMPP spec, there is no `offline`
-state. The only defined states are:
-
-* away -- The entity or resource is temporarily away.
-* chat -- The entity or resource is actively interested in chattiIng.
-* dnd -- The entity or resource is busy (dnd = "Do Not Disturb").
-* xa -- The entity or resource is away for an extended period (xa = "eXtended Away").
-
-Read the `relevant section in the XMPP spec <https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show>`_
-for more info.
-
-What used to happen in converse.js when the `offline` state was chosen, is
-that a presence stanza with a `type` of `unavailable` was sent out.
-
-This is actually exactly what happens when you log out of converse.js as well,
-with the notable exception that in the `offline` state, the connection is not
-terminated. So you can at any time change your state to something else and
-start chatting again.
-
-This might be useful to people, however the fact that the `offline` state
-doesn't propagate across tabs means that the user experience is inconsistent,
-confusing and appears "broken".
-
-If you are however aware of this issue and still want to allow the `offline`
-state, then you can set this option to `true` to enable it.
 
 .. _`i18n`:
 
@@ -926,28 +884,6 @@ in two different ways.
 Message carbons is the XEP (Jabber protocol extension) specifically drafted to
 solve this problem, while `forward_messages`_ uses
 `stanza forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
-
-message_storage
-----------------
-
-* Default:  ``session``
-
-Valid options: ``session``, ``local``.
-
-This option determines the type of `browser storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_
-(``localStorage`` or ``sessionStorage``) used by converse.js to cache messages (private and group).
-
-The main difference between the two is that `sessionStorage` only persists while
-the current tab or window containing a converse.js instance is open. As soon as
-it's closed, the data is cleared.
-
-Data in `localStorage` on the other hand is kept indefinitely, which can have
-privacy implications on public computers or when multiple people are using the
-same computer.
-
-See also the `storage`_ option, which applies to other cached data, such as
-which chats you have open, what features the XMPP server supports and what
-your online status is.
 
 muc_disable_moderator_commands
 ------------------------------
@@ -1185,7 +1121,7 @@ Specifies whether chat state (online, dnd, away) HTML5 desktop notifications sho
 show_controlbox_by_default
 --------------------------
 
-* Default:  ``false`` (``true`` for inVerse)
+* Default:  ``false`` (``true`` when the ``view_mode`` is set to ``fullscreen``)
 
 The "controlbox" refers to the special chatbox containing your contacts roster,
 status widget, chatrooms and other controls.
@@ -1269,17 +1205,20 @@ privacy perspective a better choice.
 
 The main difference between the two is that `sessionStorage` only persists while
 the current tab or window containing a converse.js instance is open. As soon as
-it's closed, the data is cleared.
+it's closed, the data is cleared (as long as there aren't any other tabs with
+the same domain open).
 
 Data in `localStorage` on the other hand is kept indefinitely.
 
-The data that is cached includes which chats you had open, what features the
-XMPP server supports and what your online status was.
+The data that is cached includes your sent and received messages, which chats you had
+open, what features the XMPP server supports and what your online status was.
 
-Since version 1.0.7, the store for messages is now configurable separately with
-the `message_storage`_ option, to allow you to cache messages for longer in the
-browser (with `localStorage`) while still using `sessionStorage` for other
-data.
+See also `trusted`_.
+
+.. note::
+    When the user checks the checkbox labeled "This is a trusted device", then
+    the storage setting will automatically be set to localStorage.
+
 
 .. note::
     Between versions 0.8.0 and 1.0.7, setting the value of this option to "local"
@@ -1295,10 +1234,11 @@ data.
     storage), to address the above issue.
 
 
+
 sticky_controlbox
 -----------------
 
-* Default: ``false`` (``true`` for inVerse).
+* Default: ``false`` (``true`` when the ``view_mode`` is set to ``fullscreen``).
 
 If set to ``true``, the control box (which includes the login, registration,
 contacts and rooms tabs) will not be closeable. It won't have a close button at
@@ -1351,6 +1291,21 @@ If set to ``true``, converse.js will synchronize with all other clients you are 
 If set to ``false``, this feature is disabled.
 
 If set to ``a resource name``, converse.js will synchronize only with a client that has that particular resource assigned to it.
+
+trusted
+-------
+
+* Default: ``true``
+
+This setting determines whether the default value of the "This is a trusted device" checkbox in the login form.
+
+When the current device is not trusted, then localStorage and sessionStorage
+will be cleared when the user logs out, thereby removing all cached data.
+
+Clearing the cache in this way makes Converse.js much slower when the user logs
+in again, because all data needs to be fetch anew.
+
+See also `storage`_.
 
 time_format
 -----------
@@ -1471,6 +1426,9 @@ Since version 3.3.0, the ``inverse.js`` and ``converse-mobile.js`` builds no
 longer exist. Instead the standard ``converse.js`` build is used, together with
 the appropriate ``view_mode`` value.
 
+Since verseion 4.0.0, there is now also only one CSS file to be used for all
+the different view modes, ``converse.css``.
+
 The ``converse-muc-embedded.js`` build is still kept, because it's smaller than
 ``converse.js`` due to unused code being removed. It doesn't however contain
 any new code, so the full ``converse.js`` build could be used instead, as long
@@ -1478,19 +1436,6 @@ as ``view_mode`` is set to ``embedded``.
 
 Furthermore, it's no longer necessary to whitelist or blacklist any plugins
 when switching view modes.
-
-.. note::
-    Although the ``view_mode`` setting has removed the need for different
-    JavaScript builds, you'll still need to use different CSS files depending
-    on the view mode.
-
-    * For ``embedded`` you need to use ``./css/converse-muc-embedded.css``
-    * For ``fullscreen`` you need ``./css/inverse.css``
-    * For ``mobile`` you need to use both ``./css/converse.css`` and ``./css/mobile.css``
-    * For ``overlayed`` this is ``./css/converse.css``
-
-    Hopefully in a future release the CSS files will be combined and you'll
-    only need ``converse.css``
 
 
 .. _`whitelisted_plugins`:
@@ -1587,3 +1532,18 @@ This is the URL to which an XHR GET request will be made to fetch user data from
 The query string will be included in the request with ``q`` as its key.
 
 The data returned must be a JSON encoded list of user JIDs.
+
+.. note::
+    converse.js will construct the XHR get URL by simply appending
+    ``q=<query string entered>`` to the URL given by ``xhr_user_search_url``.
+    It is therefore important that the necessary question mark (``?``) preceding the
+    URL's query component or necessary delimiters (``&``) are included. See valid
+    examples below.
+
+Examples:
+
+.. code-block:: javascript
+
+    xhr_user_search_url: 'https://some.url/some_path?',
+
+    xhr_user_search_url: 'https://some.url/some_path?api_key=somekey&',

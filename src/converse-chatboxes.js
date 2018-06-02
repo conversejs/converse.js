@@ -62,7 +62,9 @@
             // Refer to docs/source/configuration.rst for explanations of these
             // configuration settings.
             _converse.api.settings.update({
-                auto_join_private_chats: [],
+                'filter_by_resource': false,
+                'auto_join_private_chats': [],
+                'forward_messages': false,
             });
             _converse.api.promises.add([
                 'chatBoxesFetched',
@@ -97,17 +99,7 @@
                 },
 
                 initialize () {
-                    if (this.get('type') === 'groupchat' &&
-                        this.collection.chatbox.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
-
-                        this.vcard = _converse.xmppstatus.vcard;
-                    } else {
-                        this.vcard = _converse.vcards.findWhere({'jid': this.get('from')});
-                        if (_.isNil(this.vcard)) {
-                            this.vcard = _converse.vcards.create({'jid': this.get('from')});
-                        }
-                    }
-
+                    this.setVCard();
                     if (this.get('file')) {
                         this.on('change:put', this.uploadFile, this);
 
@@ -117,6 +109,41 @@
                     }
                     if (this.isOnlyChatStateNotification()) {
                         window.setTimeout(this.destroy.bind(this), 20000);
+                    }
+                },
+
+                getVCardForChatroomOccupant () {
+                    const chatbox = this.collection.chatbox,
+                          nick = Strophe.getResourceFromJid(this.get('from'));
+
+                    if (chatbox.get('nick') === nick) {
+                        return _converse.xmppstatus.vcard;
+                    } else {
+                        let vcard;
+                        if (this.get('vcard_jid')) {
+                            vcard = _converse.vcards.findWhere({'jid': this.get('vcard_jid')});
+                        }
+                        if (!vcard) {
+                            let jid;
+                            const occupant = chatbox.occupants.findWhere({'nick': nick});
+                            if (occupant && occupant.get('jid')) {
+                                jid = occupant.get('jid');
+                                this.save({'vcard_jid': jid}, {'silent': true});
+                            } else {
+                                jid = this.get('from');
+                            }
+                            vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
+                        }
+                        return vcard;
+                    }
+                },
+
+                setVCard () {
+                    if (this.get('type') === 'groupchat') {
+                        this.vcard = this.getVCardForChatroomOccupant();
+                    } else {
+                        const jid = this.get('from');
+                        this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
                     }
                 },
 
@@ -223,7 +250,7 @@
             });
 
 
-            _converse.ChatBox = _converse.ModelWithDefaultAvatar.extend({
+            _converse.ChatBox = _converse.ModelWithVCardAndPresence.extend({
                 defaults: {
                     'bookmarked': false,
                     'chat_state': undefined,
@@ -234,15 +261,13 @@
                 },
 
                 initialize () {
-                    this.vcard = _converse.vcards.findWhere({'jid': this.get('jid')});
-                    if (_.isNil(this.vcard)) {
-                        this.vcard = _converse.vcards.create({'jid': this.get('jid')});
-                    }
+                    _converse.ModelWithVCardAndPresence.prototype.initialize.apply(this, arguments);
+
                     _converse.api.waitUntil('rosterContactsFetched').then(() => {
                         this.addRelatedContact(_converse.roster.findWhere({'jid': this.get('jid')}));
                     });
                     this.messages = new _converse.Messages();
-                    this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
+                    this.messages.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                         b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
                     this.messages.chatbox = this;
 
@@ -697,9 +722,6 @@
                                 _converse.root.appendChild(el);
                             }
                         }
-                        if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
-                            el.classList.add('fullscreen');
-                        }
                         el.innerHTML = '';
                         this.setElement(el, false);
                     } else {
@@ -744,8 +766,8 @@
 
                 closeAllChatBoxes () {
                     /* This method gets overridden in src/converse-controlbox.js if
-                    * the controlbox plugin is active.
-                    */
+                     * the controlbox plugin is active.
+                     */
                     this.each(function (view) { view.close(); });
                     return this;
                 },
@@ -816,7 +838,7 @@
                 delete _converse.chatboxes.browserStorage;
             });
 
-            _converse.api.listen.on('statusInitialized', () => _converse.chatboxes.onConnected());
+            _converse.api.listen.on('presencesInitialized', () => _converse.chatboxes.onConnected());
             /************************ END Event Handlers ************************/
 
 

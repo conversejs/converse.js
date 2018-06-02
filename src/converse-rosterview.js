@@ -80,7 +80,9 @@
             _converse.api.settings.update({
                 'allow_chat_pending_contacts': true,
                 'allow_contact_removal': true,
+                'hide_offline_users': false,
                 'roster_groups': true,
+                'show_only_online_users': false,
                 'show_toolbar': true,
                 'xhr_user_search_url': null
             });
@@ -191,7 +193,7 @@
                         }
                     };
                     name_input.addEventListener('input', _.debounce(() => {
-                        xhr.open("GET", `${_converse.xhr_user_search_url}?q=${name_input.value}`, true);
+                        xhr.open("GET", `${_converse.xhr_user_search_url}q=${name_input.value}`, true);
                         xhr.send()
                     } , 300));
                     this.el.addEventListener('awesomplete-selectcomplete', (ev) => {
@@ -357,7 +359,7 @@
 
             _converse.RosterContactView = Backbone.NativeView.extend({
                 tagName: 'li',
-                className: 'd-flex hidden',
+                className: 'd-flex hidden controlbox-padded',
 
                 events: {
                     "click .accept-xmpp-request": "acceptRequest",
@@ -371,6 +373,8 @@
                     this.model.on("destroy", this.remove, this);
                     this.model.on("open", this.openChat, this);
                     this.model.on("remove", this.remove, this);
+                    
+                    this.model.presence.on("change:show", this.render, this);
                     this.model.vcard.on('change:fullname', this.render, this);
                 },
 
@@ -382,7 +386,7 @@
                     }
                     const item = this.model,
                         ask = item.get('ask'),
-                        chat_status = item.get('chat_status'),
+                        show = item.presence.get('show'),
                         requesting  = item.get('requesting'),
                         subscription = item.get('subscription');
 
@@ -398,8 +402,8 @@
                                 that.el.classList.remove(cls);
                             }
                         });
-                    this.el.classList.add(chat_status);
-                    this.el.setAttribute('data-status', chat_status);
+                    this.el.classList.add(show);
+                    this.el.setAttribute('data-status', show);
 
                     if ((ask === 'subscribe') || (subscription === 'from')) {
                         /* ask === 'subscribe'
@@ -444,21 +448,21 @@
 
                 renderRosterItem (item) {
                     let status_icon = 'fa-times-circle';
-                    const chat_status = item.get('chat_status') || 'offline';
-                    if (chat_status === 'online') {
+                    const show = item.presence.get('show') || 'offline';
+                    if (show === 'online') {
                         status_icon = 'fa-circle';
-                    } else if (chat_status === 'away') {
+                    } else if (show === 'away') {
                         status_icon = 'fa-dot-circle-o';
-                    } else if (chat_status === 'xa') {
+                    } else if (show === 'xa') {
                         status_icon = 'fa-circle-o';
-                    } else if (chat_status === 'dnd') {
+                    } else if (show === 'dnd') {
                         status_icon = 'fa-minus-circle';
                     }
                     const display_name = item.getDisplayName();
                     this.el.innerHTML = tpl_roster_item(
                         _.extend(item.toJSON(), {
                             'display_name': display_name,
-                            'desc_status': STATUSES[chat_status],
+                            'desc_status': STATUSES[show],
                             'status_icon': status_icon,
                             'desc_chat': __('Click to chat with %1$s (JID: %2$s)', display_name, item.get('jid')),
                             'desc_remove': __('Click to remove %1$s as a contact', display_name),
@@ -476,7 +480,7 @@
                      * It doesn't check for the more specific case of whether
                      * the group it's in is collapsed.
                      */
-                    const chatStatus = this.model.get('chat_status');
+                    const chatStatus = this.model.presence.get('show');
                     if ((_converse.show_only_online_users && chatStatus !== 'online') ||
                         (_converse.hide_offline_users && chatStatus === 'offline')) {
                         // If pending or requesting, show
@@ -544,7 +548,7 @@
                 ItemView: _converse.RosterContactView,
                 listItems: 'model.contacts',
                 listSelector: '.roster-group-contacts',
-                sortEvent: 'change:chat_status',
+                sortEvent: 'presenceChanged',
 
                 initialize () {
                     Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
@@ -629,13 +633,13 @@
                             // show requesting contacts, even though they don't
                             // have the state in question.
                             matches = this.model.contacts.filter(
-                                (contact) => u.contains.not('chat_status', q)(contact) && !contact.get('requesting')
+                                (contact) => !_.includes(contact.presence.get('show'), q) && !contact.get('requesting')
                             );
                         } else if (q === 'unread_messages') {
                             matches = this.model.contacts.filter({'num_unread': 0});
                         } else {
                             matches = this.model.contacts.filter(
-                                u.contains.not('chat_status', q)
+                                (contact) => !_.includes(contact.presence.get('show'), q)
                             );
                         }
                     } else  {
@@ -745,6 +749,10 @@
                     _converse.roster.on('change', this.onContactChange, this);
                     _converse.roster.on("destroy", this.update, this);
                     _converse.roster.on("remove", this.update, this);
+                    _converse.presences.on('change:show', () => {
+                        this.update();
+                        this.updateFilter();
+                    });
 
                     this.model.on("reset", this.reset, this);
 
@@ -848,12 +856,14 @@
                 },
 
                 onContactAdded (contact) {
-                    this.addRosterContact(contact).update();
+                    this.addRosterContact(contact)
+                    this.update();
                     this.updateFilter();
                 },
 
                 onContactChange (contact) {
-                    this.updateChatBox(contact).update();
+                    this.updateChatBox(contact)
+                    this.update();
                     if (_.has(contact.changed, 'subscription')) {
                         if (contact.changed.subscription === 'from') {
                             this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
@@ -875,9 +885,6 @@
                         changes = {};
                     if (!chatbox) {
                         return this;
-                    }
-                    if (_.has(contact.changed, 'chat_status')) {
-                        changes.chat_status = contact.get('chat_status');
                     }
                     if (_.has(contact.changed, 'status')) {
                         changes.status = contact.get('status');

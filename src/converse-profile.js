@@ -112,14 +112,15 @@
 
                     const data = {
                         'fn': form_data.get('fn'),
+                        'nickname': form_data.get('nickname'),
                         'role': form_data.get('role'),
                         'email': form_data.get('email'),
                         'url': form_data.get('url'),
                     };
                     if (!image_file.size) {
                         _.extend(data, {
-                            'image': this.model.get('image'),
-                            'image_type': this.model.get('image_type')
+                            'image': this.model.vcard.get('image'),
+                            'image_type': this.model.vcard.get('image_type')
                         });
                         this.setVCard(body, data);
                     } else {

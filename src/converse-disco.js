@@ -37,24 +37,24 @@
                     this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
 
                     this.dataforms = new Backbone.Collection();
-                    this.dataforms.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    this.dataforms.browserStorage = new Backbone.BrowserStorage.session(
                         b64_sha1(`converse.dataforms-{this.get('jid')}`)
                     );
 
                     this.features = new Backbone.Collection();
-                    this.features.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    this.features.browserStorage = new Backbone.BrowserStorage.session(
                         b64_sha1(`converse.features-${this.get('jid')}`)
                     );
                     this.features.on('add', this.onFeatureAdded, this);
 
                     this.identities = new Backbone.Collection();
-                    this.identities.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    this.identities.browserStorage = new Backbone.BrowserStorage.session(
                         b64_sha1(`converse.identities-${this.get('jid')}`)
                     );
                     this.fetchFeatures();
 
                     this.items = new _converse.DiscoEntities();
-                    this.items.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    this.items.browserStorage = new Backbone.BrowserStorage.session(
                         b64_sha1(`converse.disco-items-${this.get('jid')}`)
                     );
                     this.items.fetch();
@@ -217,12 +217,34 @@
                 return this;
             }
 
+            function initStreamFeatures () {
+                _converse.stream_features = new Backbone.Collection();
+                _converse.stream_features.browserStorage = new Backbone.BrowserStorage.session(
+                    b64_sha1(`converse.stream-features-${_converse.bare_jid}`)
+                );
+                _converse.stream_features.fetch({
+                    success (collection) {
+                        if (collection.length === 0 && _converse.connection.features) {
+                            _.forEach(
+                                _converse.connection.features.childNodes,
+                                (feature) => {
+                                    _converse.stream_features.create({
+                                        'name': feature.nodeName,
+                                        'xmlns': feature.getAttribute('xmlns')
+                                    });
+                                });
+                        }
+                    }
+                });
+                _converse.emit('streamFeaturesAdded');
+            }
+
             function initializeDisco () {
                 addClientFeatures();
                 _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
 
                 _converse.disco_entities = new _converse.DiscoEntities();
-                _converse.disco_entities.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                _converse.disco_entities.browserStorage = new Backbone.BrowserStorage.session(
                     b64_sha1(`converse.disco-entities-${_converse.bare_jid}`)
                 );
 
@@ -236,6 +258,7 @@
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }
 
+            _converse.api.listen.on('sessionInitialized', initStreamFeatures);
             _converse.api.listen.on('reconnected', initializeDisco);
             _converse.api.listen.on('connected', initializeDisco);
 
@@ -291,6 +314,15 @@
                  * @namespace
                  */
                 'disco': {
+                    'stream': {
+                        'getFeature': function (name, xmlns) {
+                            if (_.isNil(name) || _.isNil(xmlns)) {
+                                throw new Error("name and xmlns need to be provided when calling disco.stream.getFeature");
+                            }
+                            return _converse.stream_features.findWhere({'name': name, 'xmlns': xmlns});
+                        }
+                    },
+
                     /**
                      * The "own" grouping
                      * @namespace
@@ -448,8 +480,8 @@
                         if (_.isNil(entity_jid)) {
                             throw new TypeError('disco.supports: You need to provide an entity JID');
                         }
-                        return _converse.api.waitUntil('discoInitialized').then(() => {
-                            return new Promise((resolve, reject) => {
+                        return new Promise((resolve, reject) => {
+                            return _converse.api.waitUntil('discoInitialized').then(() => {
                                 _converse.api.disco.entities.get(entity_jid, true).then((entity) => {
                                     entity.waitUntilFeaturesDiscovered.then(() => {
                                         const promises = _.concat(
@@ -460,8 +492,8 @@
                                             resolve(f.filter(f.isObject, result));
                                         }).catch(reject);
                                     }).catch(reject);
-                                })
-                            });
+                                }).catch(reject);
+                            }).catch(reject);
                         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     },
 

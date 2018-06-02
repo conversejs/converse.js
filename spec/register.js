@@ -14,15 +14,12 @@
                   allow_registration: false },
                 function (done, _converse) {
 
-            test_utils.waitUntil(function () {
-                    return _converse.chatboxviews.get('controlbox');
-                }, 300)
+            test_utils.waitUntil(() => _converse.chatboxviews.get('controlbox'))
             .then(function () {
-
-            test_utils.openControlBox();
-            var cbview = _converse.chatboxviews.get('controlbox');
-            expect($(cbview.el.querySelector('a.register-account')).length).toBe(0);
-            done();
+                test_utils.openControlBox();
+                var cbview = _converse.chatboxviews.get('controlbox');
+                expect($(cbview.el.querySelector('a.register-account')).length).toBe(0);
+                done();
             });
         }));
 

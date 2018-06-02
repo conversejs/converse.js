@@ -2,13 +2,12 @@
  * Converse.js (Web-based XMPP instant messaging client)
  * http://conversejs.org
  *
- * Copyright (c) 2012-2016, JC Brand <jc@opkode.com>
+ * Copyright (c) 2013-2018, JC Brand <jc@opkode.com>
  * Licensed under the Mozilla Public License
  */
 @import "font-awesome";
 @import "bourbon";
 @import "variables";
-@import "converse/variables";
 
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
@@ -40,19 +39,16 @@
     @import "bootstrap/scss/utilities";
 }
 @import "core";
-@import "converse/core";
+@import "forms";
 @import "profile";
 @import "chatbox";
-@import "converse/chatbox";
 @import "controlbox";
-@import "converse/controlbox";
 @import "roomslist";
 @import "roster";
 @import "chatrooms";
-@import "converse/chatrooms";
 @import "headline";
 @import "messages";
-@import "converse/minimized_chats";
+@import "minimized_chats";
 @import "bookmarks";
 @import "awesomplete";
 @import "embedded";

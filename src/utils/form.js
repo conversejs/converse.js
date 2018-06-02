@@ -98,7 +98,7 @@
                         return tpl_select_option({
                             'value': value,
                             'label': option.getAttribute('label'),
-                            'selected': values.includes(value),
+                            'selected': _.includes(values, value),
                             'required': !_.isNil(field.querySelector('required'))
                         })
                     }

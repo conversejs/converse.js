@@ -101,10 +101,11 @@
                 { __ } = _converse;
 
             _converse.api.settings.update({
-                'use_emojione': false,
                 'emojione_image_path': emojione.imagePathPNG,
+                'show_send_button': false,
                 'show_toolbar': true,
                 'time_format': 'HH:mm',
+                'use_emojione': false,
                 'visible_toolbar_buttons': {
                     'call': false,
                     'clear': true,
@@ -237,7 +238,8 @@
             _converse.UserDetailsModal = _converse.BootstrapModal.extend({
 
                 events: { 
-                    'click button.remove-contact': 'removeContact'
+                    'click button.remove-contact': 'removeContact',
+                    'click button.refresh-contact': 'refreshContact'
                 },
 
                 initialize () {
@@ -260,6 +262,7 @@
                         'label_jid': __('Jabber ID'),
                         'label_nickname': __('Nickname'),
                         'label_remove': __('Remove as contact'),
+                        'label_refresh': __('Refresh'),
                         'label_role': __('Role'),
                         'label_url': __('URL')
                     }));
@@ -274,6 +277,15 @@
                             this.render();
                         });
                     }
+                },
+
+                refreshContact (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    const refresh_icon = this.el.querySelector('.fa-refresh');
+                    u.addClass('fa-spin', refresh_icon);
+                    _converse.api.vcard.update(this.model.contact.vcard, true)
+                        .then(() => u.removeClass('fa-spin', refresh_icon))
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                 removeContact (ev) {
@@ -309,16 +321,17 @@
 
                 events: {
                     'change input.fileupload': 'onFileSelection',
+                    'click .chatbox-navback': 'showControlBox',
                     'click .close-chatbox-button': 'close',
-                    'click .show-user-details-modal': 'showUserDetailsModal',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .send-button': 'onFormSubmitted',
+                    'click .show-user-details-modal': 'showUserDetailsModal',
+                    'click .spoiler-toggle': 'toggleSpoilerMessage',
                     'click .toggle-call': 'toggleCall',
                     'click .toggle-clear': 'clearMessages',
                     'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-smiley': 'toggleEmojiMenu',
-                    'click .spoiler-toggle': 'toggleSpoilerMessage',
                     'click .upload-file': 'toggleFileUpload',
                     'keypress .chat-textarea': 'keyPressed',
                     'input .chat-textarea': 'inputChanged'
@@ -333,8 +346,8 @@
 
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.remove, this);
-                    // TODO check for changed fullname as well
-                    this.model.on('change:chat_status', this.onChatStatusChanged, this);
+
+                    this.model.presence.on('change:show', this.onPresenceChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.render();
 
@@ -401,6 +414,13 @@
                     this.renderToolbar();
                 },
 
+                showControlBox () {
+                    // Used in mobile view, to navigate back to the controlbox
+                    const view = _converse.chatboxviews.get('controlbox');
+                    view.show();
+                    this.hide();
+                },
+
                 showUserDetailsModal (ev) {
                     if (_.isUndefined(this.user_details_modal)) {
                         this.user_details_modal = new _converse.UserDetailsModal({model: this.model});
@@ -435,14 +455,14 @@
                         return;
                     }
                     const contact_jid = this.model.get('jid');
-                    const resources = this.model.get('resources');
+                    const resources = this.model.presence.get('resources');
                     if (_.isEmpty(resources)) {
                         return;
                     }
                     Promise.all(_.map(_.keys(resources), (resource) =>
                         _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${resource}`)
                     )).then((results) => {
-                        if (results.length) {
+                        if (_.filter(results, 'length').length) {
                             const html = tpl_spoiler_button(this.model.toJSON());
                             if (_converse.visible_toolbar_buttons.emoji) {
                                 this.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
@@ -874,6 +894,11 @@
                     }
                     textarea.value = '';
                     textarea.focus();
+                    // Trigger input event, so that the textarea resizes
+                    const event = document.createEvent('Event');
+                    event.initEvent('input', true, true);
+                    textarea.dispatchEvent(event);
+
                     if (message !== '') {
                         this.onMessageSubmitted(message, spoiler_hint);
                         _converse.emit('messageSend', message);
@@ -983,20 +1008,19 @@
                     }
                 },
 
-                onChatStatusChanged (item) {
-                    const chat_status = item.get('chat_status');
-                    let fullname = item.get('fullname');
-                    let text;
+                onPresenceChanged (item) {
+                    const show = item.get('show'),
+                          fullname = this.model.getDisplayName();
 
-                    fullname = _.isEmpty(fullname)? item.get('jid'): fullname;
+                    let text;
                     if (u.isVisible(this.el)) {
-                        if (chat_status === 'offline') {
+                        if (show === 'offline') {
                             text = fullname+' '+__('has gone offline');
-                        } else if (chat_status === 'away') {
+                        } else if (show === 'away') {
                             text = fullname+' '+__('has gone away');
-                        } else if ((chat_status === 'dnd')) {
+                        } else if ((show === 'dnd')) {
                             text = fullname+' '+__('is busy');
-                        } else if (chat_status === 'online') {
+                        } else if (show === 'online') {
                             text = fullname+' '+__('is online');
                         }
                         if (text) {

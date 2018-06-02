@@ -9,22 +9,27 @@
     <link type="text/css" rel="stylesheet" media="screen" href="css/mockup.css" />
 </head>
 
-<body style="background-color: #578EA9">
+<body class="reset">
     <div class="converse-bg container">
         <h1 class="brand-heading">Converse</h1>
     </div>
-
     <div id="conversejs" class="converse-overlayed">
         <div class="converse-chatboxes row no-gutters">
-            <div id="controlbox" class="chatbox">
+            <div id="controlbox" class="chatbox logged-out">
                 <div class="flyout box-flyout">
                     <div class="chat-head controlbox-head">
-                        <div class="brand-heading"><i class="icon-conversejs"></i><span class="brand-name">converse</span></div>
                         <a class="chatbox-btn close-chatbox-button fa fa-close"></a>
+                        <span class="brand-heading-container">
+                            <div class="brand-heading">
+                                <a href="https://conversejs.org" target="_blank" rel="noopener">
+                                    <i class="icon-conversejs"></i><span class="brand-name">converse</span>
+                                </a>
+                            </div>
+                        </span>
                     </div>
                     <div class="controlbox-panes">
-                        <div id="login-dialog" class="controlbox-pane row">
-                            <form id="converse-login" class="pure-form converse-form">
+                        <div id="converse-login-panel" class="controlbox-pane fade-in row no-gutters">
+                            <form id="converse-login" class="converse-form">
                                 <div class="form-group">
                                     <label for="jid">XMPP Username:</label>
                                     <input type="text" name="jid" class="form-control" placeholder="user@server" autocomplete="off">
@@ -33,9 +38,14 @@
                                     <label for="password">Password:</label>
                                     <input type="password" name="password" class="form-control" placeholder="password" autocomplete="off">
                                 </div>
-                                <p></p>
-                                <p><input class="btn btn-primary" type="submit" value="Log In"></p>
-                                <p>Click <a href="#" data-toggle="modal" data-target="#registerModal">here</a> to register.</p>
+                                <div class="form-group form-check">
+                                    <input id="converse-login-trusted" class="form-check-input" type="checkbox" name="trusted" checked="">
+                                    <label class="form-check-label" for="converse-login-trusted">This is a trusted device</label>
+                                </div>
+                                <fieldset class="buttons">
+                                    <input class="btn btn-primary" type="submit" value="Log in">
+                                    <p>Click <a href="#" data-toggle="modal" data-target="#registerModal">here</a> to register.</p>
+                                </fieldset>
                             </form>
                         </div>
                     </div>

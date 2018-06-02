@@ -32610,6 +32610,8 @@ if (!root.atob) {
         define('strophe-sha1', [],function () {
             return factory();
         });
+    } else if (typeof exports === 'object') {
+        module.exports = factory();
     } else {
         // Browser globals
         root.SHA1 = factory();
@@ -32804,6 +32806,8 @@ return {
         define('strophe-md5',[], function () {
             return factory();
         });
+    } else if (typeof exports === 'object') {
+        module.exports = factory();
     } else {
         // Browser globals
         root.MD5 = factory();
@@ -33006,6 +33010,8 @@ return {
         define('strophe-utils',[], function () {
             return factory();
         });
+    } else if (typeof exports === 'object') {
+        module.exports = factory();
     } else {
         // Browser globals
         root.stropheUtils = factory();
@@ -33094,6 +33100,12 @@ return {
         ], function () {
             return factory.apply(this, arguments);
         });
+    }  else if (typeof exports === 'object') {
+        module.exports = factory(
+            require('./sha1'),
+            require('./md5'),
+            require('./utils')
+        );
     } else {
         // Browser globals
         var o = factory(root.SHA1, root.MD5, root.stropheUtils);
@@ -33168,7 +33180,7 @@ function $pres(attrs) { return new Strophe.Builder("presence", attrs); }
  */
 Strophe = {
     /** Constant: VERSION */
-    VERSION: "1.2.14",
+    VERSION: "1.2.15",
 
     /** Constants: XMPP Namespace Constants
      *  Common namespace constants from the XMPP RFCs and XEPs.
@@ -33304,6 +33316,14 @@ Strophe = {
         ATTACHED: 8,
         REDIRECT: 9,
         CONNTIMEOUT: 10
+    },
+
+    ErrorCondition: {
+        BAD_FORMAT: "bad-format",
+        CONFLICT: "conflict",
+        MISSING_JID_NODE: "x-strophe-bad-non-anon-jid",
+        NO_AUTH_MECH: "no-auth-mech",
+        UNKNOWN_REASON: "unknown",
     },
 
     /** Constants: Log Level Constants
@@ -33882,7 +33902,7 @@ Strophe = {
      *
      *  This function is called whenever the Strophe library calls any
      *  of the logging functions.  The default implementation of this
-     *  function does nothing.  If client code wishes to handle the logging
+     *  function logs only fatal errors.  If client code wishes to handle the logging
      *  messages, it should override this with
      *  > Strophe.log = function (level, msg) {
      *  >   (user code here)
@@ -33906,11 +33926,13 @@ Strophe = {
      *      be one of the values in Strophe.LogLevel.
      *    (String) msg - The log message.
      */
-    /* jshint ignore:start */
     log: function (level, msg) {
-        return;
+        if (level === this.LogLevel.FATAL &&
+            typeof window.console === 'object' &&
+            typeof window.console.error === 'function') {
+            window.console.error(msg);
+        }
     },
-    /* jshint ignore:end */
 
     /** Function: debug
      *  Log a message at the Strophe.LogLevel.DEBUG level.
@@ -34576,10 +34598,11 @@ Strophe.TimedHandler.prototype = {
  *  If nothing is specified, then the following mechanisms (and their
  *  priorities) are registered:
  *
- *      OAUTHBEARER - 60
- *      SCRAM-SHA1 - 50
- *      DIGEST-MD5 - 40
- *      PLAIN - 30
+ *      SCRAM-SHA1 - 70
+ *      DIGEST-MD5 - 60
+ *      PLAIN - 50
+ *      OAUTH-BEARER - 40
+ *      OAUTH-2 - 30
  *      ANONYMOUS - 20
  *      EXTERNAL - 10
  *
@@ -35460,6 +35483,7 @@ Strophe.Connection.prototype = {
             Strophe.SASLExternal,
             Strophe.SASLMD5,
             Strophe.SASLOAuthBearer,
+            Strophe.SASLXOAuth2,
             Strophe.SASLPlain,
             Strophe.SASLSHA1
         ];
@@ -35526,8 +35550,9 @@ Strophe.Connection.prototype = {
      *    (Integer) status - the new connection status, one of the values
      *      in Strophe.Status
      *    (String) condition - the error condition or null
+     *    (XMLElement) elem - The triggering stanza.
      */
-    _changeConnectStatus: function (status, condition) {
+    _changeConnectStatus: function (status, condition, elem) {
         // notify all plugins listening for status changes
         for (var k in Strophe._connectionPlugins) {
             if (Strophe._connectionPlugins.hasOwnProperty(k)) {
@@ -35546,7 +35571,7 @@ Strophe.Connection.prototype = {
         // notify the user's callback
         if (this.connect_callback) {
             try {
-                this.connect_callback(status, condition);
+                this.connect_callback(status, condition, elem);
             } catch (e) {
                 Strophe._handleError(e);
                 Strophe.error(
@@ -35662,7 +35687,10 @@ Strophe.Connection.prototype = {
                 }
                 this._changeConnectStatus(Strophe.Status.CONNFAIL, cond);
             } else {
-                this._changeConnectStatus(Strophe.Status.CONNFAIL, "unknown");
+                this._changeConnectStatus(
+                    Strophe.Status.CONNFAIL,
+                    Strophe.ErrorCondition.UNKOWN_REASON
+                );
             }
             this._doDisconnect(cond);
             return;
@@ -35702,6 +35730,26 @@ Strophe.Connection.prototype = {
      */
     mechanisms: {},
 
+    /** PrivateFunction: _no_auth_received
+     *
+     * Called on stream start/restart when no stream:features
+     * has been received or when no viable authentication mechanism is offered.
+     *
+     * Sends a blank poll request.
+     */
+    _no_auth_received: function (_callback) {
+        var error_msg =  "Server did not offer a supported authentication mechanism";
+        Strophe.error(error_msg);
+        this._changeConnectStatus(
+            Strophe.Status.CONNFAIL,
+            Strophe.ErrorCondition.NO_AUTH_MECH
+        );
+        if (_callback) {
+            _callback.call(this);
+        }
+        this._doDisconnect();
+    },
+
     /** PrivateFunction: _connect_cb
      *  _Private_ handler for initial connection request.
      *
@@ -35715,7 +35763,7 @@ Strophe.Connection.prototype = {
      *  Parameters:
      *    (Strophe.Request) req - The current request.
      *    (Function) _callback - low level (xmpp) connect callback function.
-     *      Useful for plugins with their own xmpp connect callback (when their)
+     *      Useful for plugins with their own xmpp connect callback (when they
      *      want to do something special).
      */
     _connect_cb: function (req, _callback, raw) {
@@ -35727,8 +35775,11 @@ Strophe.Connection.prototype = {
             bodyWrap = this._proto._reqToData(req);
         } catch (e) {
             if (e !== "badformat") { throw e; }
-            this._changeConnectStatus(Strophe.Status.CONNFAIL, 'bad-format');
-            this._doDisconnect('bad-format');
+            this._changeConnectStatus(
+                Strophe.Status.CONNFAIL,
+                Strophe.ErrorCondition.BAD_FORMAT
+            );
+            this._doDisconnect(Strophe.ErrorCondition.BAD_FORMAT);
         }
         if (!bodyWrap) { return; }
 
@@ -35761,7 +35812,7 @@ Strophe.Connection.prototype = {
                             bodyWrap.getElementsByTagName("features").length > 0;
         }
         if (!hasFeatures) {
-            this._proto._no_auth_received(_callback);
+            this._no_auth_received(_callback);
             return;
         }
 
@@ -35777,7 +35828,7 @@ Strophe.Connection.prototype = {
             if (bodyWrap.getElementsByTagName("auth").length === 0) {
                 // There are no matching SASL mechanisms and also no legacy
                 // auth available.
-                this._proto._no_auth_received(_callback);
+                this._no_auth_received(_callback);
                 return;
             }
         }
@@ -35873,9 +35924,9 @@ Strophe.Connection.prototype = {
             // client connections
             this._changeConnectStatus(
                 Strophe.Status.CONNFAIL,
-                'x-strophe-bad-non-anon-jid'
+                Strophe.ErrorCondition.MISSING_JID_NODE
             );
-            this.disconnect('x-strophe-bad-non-anon-jid');
+            this.disconnect(Strophe.ErrorCondition.MISSING_JID_NODE);
         } else {
             // Fall back to legacy authentication
             this._changeConnectStatus(Strophe.Status.AUTHENTICATING, null);
@@ -36093,9 +36144,9 @@ Strophe.Connection.prototype = {
             Strophe.info("SASL binding failed.");
             var conflict = elem.getElementsByTagName("conflict"), condition;
             if (conflict.length > 0) {
-                condition = 'conflict';
+                condition = Strophe.ErrorCondition.CONFLICT;
             }
-            this._changeConnectStatus(Strophe.Status.AUTHFAIL, condition);
+            this._changeConnectStatus(Strophe.Status.AUTHFAIL, condition, elem);
             return false;
         }
 
@@ -36122,7 +36173,7 @@ Strophe.Connection.prototype = {
             }
         } else {
             Strophe.info("SASL binding failed.");
-            this._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
+            this._changeConnectStatus(Strophe.Status.AUTHFAIL, null, elem);
             return false;
         }
     },
@@ -36145,7 +36196,7 @@ Strophe.Connection.prototype = {
             this._changeConnectStatus(Strophe.Status.CONNECTED, null);
         } else if (elem.getAttribute("type") === "error") {
             Strophe.info("Session creation failed.");
-            this._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
+            this._changeConnectStatus(Strophe.Status.AUTHFAIL, null, elem);
             return false;
         }
         return false;
@@ -36174,7 +36225,7 @@ Strophe.Connection.prototype = {
 
         if(this._sasl_mechanism)
           this._sasl_mechanism.onFailure();
-        this._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
+        this._changeConnectStatus(Strophe.Status.AUTHFAIL, null, elem);
         return false;
     },
     /* jshint unused:true */
@@ -36196,7 +36247,7 @@ Strophe.Connection.prototype = {
             this.authenticated = true;
             this._changeConnectStatus(Strophe.Status.CONNECTED, null);
         } else if (elem.getAttribute("type") === "error") {
-            this._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
+            this._changeConnectStatus(Strophe.Status.AUTHFAIL, null, elem);
             this.disconnect('authentication failed');
         }
         return false;
@@ -36453,6 +36504,7 @@ Strophe.SASLMechanism.prototype = {
    *  Strophe.SASLSHA1 - SASL SCRAM-SHA1 authentication
    *  Strophe.SASLOAuthBearer - SASL OAuth Bearer authentication
    *  Strophe.SASLExternal - SASL EXTERNAL authentication
+   *  Strophe.SASLXOAuth2 - SASL X-OAuth2 authentication
    */
 
 // Building SASL callbacks
@@ -36472,7 +36524,7 @@ Strophe.SASLAnonymous.prototype.test = function(connection) {
  *  SASL PLAIN authentication.
  */
 Strophe.SASLPlain = function() {};
-Strophe.SASLPlain.prototype = new Strophe.SASLMechanism("PLAIN", true, 30);
+Strophe.SASLPlain.prototype = new Strophe.SASLMechanism("PLAIN", true, 50);
 
 Strophe.SASLPlain.prototype.test = function(connection) {
     return connection.authcid !== null;
@@ -36492,7 +36544,7 @@ Strophe.SASLPlain.prototype.onChallenge = function(connection) {
  *  SASL SCRAM SHA 1 authentication.
  */
 Strophe.SASLSHA1 = function() {};
-Strophe.SASLSHA1.prototype = new Strophe.SASLMechanism("SCRAM-SHA-1", true, 50);
+Strophe.SASLSHA1.prototype = new Strophe.SASLMechanism("SCRAM-SHA-1", true, 70);
 
 Strophe.SASLSHA1.prototype.test = function(connection) {
     return connection.authcid !== null;
@@ -36576,7 +36628,7 @@ Strophe.SASLSHA1.prototype.onChallenge = function(connection, challenge, test_cn
  *  SASL DIGEST MD5 authentication.
  */
 Strophe.SASLMD5 = function() {};
-Strophe.SASLMD5.prototype = new Strophe.SASLMechanism("DIGEST-MD5", false, 40);
+Strophe.SASLMD5.prototype = new Strophe.SASLMechanism("DIGEST-MD5", false, 60);
 
 Strophe.SASLMD5.prototype.test = function(connection) {
     return connection.authcid !== null;
@@ -36659,7 +36711,7 @@ Strophe.SASLMD5.prototype.onChallenge = function(connection, challenge, test_cno
  *  SASL OAuth Bearer authentication.
  */
 Strophe.SASLOAuthBearer = function() {};
-Strophe.SASLOAuthBearer.prototype = new Strophe.SASLMechanism("OAUTHBEARER", true, 60);
+Strophe.SASLOAuthBearer.prototype = new Strophe.SASLMechanism("OAUTHBEARER", true, 40);
 
 Strophe.SASLOAuthBearer.prototype.test = function(connection) {
     return connection.pass !== null;
@@ -36703,6 +36755,29 @@ Strophe.SASLExternal.prototype.onChallenge = function(connection) {
     return connection.authcid === connection.authzid ? '' : connection.authzid;
 };
 
+
+/** PrivateConstructor: SASLXOAuth2
+ *  SASL X-OAuth2 authentication.
+ */
+Strophe.SASLXOAuth2 = function () { };
+Strophe.SASLXOAuth2.prototype = new Strophe.SASLMechanism("X-OAUTH2", true, 30);
+
+Strophe.SASLXOAuth2.prototype.test = function (connection) {
+    return connection.pass !== null;
+};
+
+Strophe.SASLXOAuth2.prototype.onChallenge = function (connection) {
+    var auth_str = '\u0000';
+    if (connection.authcid !== null) {
+        auth_str = auth_str + connection.authzid;
+    }
+    auth_str = auth_str + "\u0000";
+    auth_str = auth_str + connection.pass;
+
+    return utils.utf16to8(auth_str);
+};
+
+
 return {
     'Strophe':         Strophe,
     '$build':          $build,
@@ -36736,6 +36811,10 @@ return {
                 core.$build
             );
         });
+    } else if (typeof exports === 'object') {
+        var core = require('./core');
+
+        module.exports = factory(core.Strophe, core.$build);
     } else {
         // Browser globals
         return factory(Strophe, $build);
@@ -36813,11 +36892,17 @@ Strophe.Request.prototype = {
                 throw "parsererror";
             }
         } else if (this.xhr.responseText) {
-            Strophe.error("invalid response received");
-            Strophe.error("responseText: " + this.xhr.responseText);
-            throw "badformat";
+            // In React Native, we may get responseText but no responseXML.  We can try to parse it manually.
+            Strophe.debug("Got responseText but no responseXML; attempting to parse it with DOMParser...");
+            node = new DOMParser().parseFromString(this.xhr.responseText, 'application/xml').documentElement;
+            if (!node) {
+                throw new Error('Parsing produced null node');
+            } else if (node.querySelector('parsererror')) {
+                Strophe.error("invalid response received: " + node.querySelector('parsererror').textContent);
+                Strophe.error("responseText: " + this.xhr.responseText);
+                throw "badformat";
+            }
         }
-
         return node;
     },
 
@@ -36882,6 +36967,8 @@ Strophe.Bosh = function(connection) {
     this.window = 5;
     this.errors = 0;
     this.inactivity = null;
+
+    this.lastResponseHeaders = null;
 
     this._requests = [];
 };
@@ -37190,26 +37277,6 @@ Strophe.Bosh.prototype = {
         }
     },
 
-    /** PrivateFunction: _no_auth_received
-     *
-     * Called on stream start/restart when no stream:features
-     * has been received and sends a blank poll request.
-     */
-    _no_auth_received: function (_callback) {
-        if (_callback) {
-            _callback = _callback.bind(this._conn);
-        } else {
-            _callback = this._conn._connect_cb.bind(this._conn);
-        }
-        var body = this._buildBody();
-        this._requests.push(
-                new Strophe.Request(body.tree(),
-                    this._onRequestStateChange.bind(
-                        this, _callback.bind(this._conn)),
-                    body.tree().getAttribute("rid")));
-        this._throttledRequestHandler();
-    },
-
     /** PrivateFunction: _onDisconnectTimeout
      *  _Private_ timeout handler for handling non-graceful disconnection.
      *
@@ -37350,6 +37417,7 @@ Strophe.Bosh.prototype = {
             return;
         }
         var reqStatus = this._getRequestStatus(req);
+        this.lastResponseHeaders = req.xhr.getAllResponseHeaders();
         if (this.disconnecting && reqStatus >= 400) {
             this._hitError(reqStatus);
             this._callProtocolErrorHandlers(req);
@@ -37674,6 +37742,10 @@ return Strophe;
                 core.$build
             );
         });
+    } else if (typeof exports === 'object') {
+        var core = require('./core');
+
+        module.exports = factory(core.Strophe, core.$build);
     } else {
         // Browser globals
         return factory(Strophe, $build);
@@ -37948,7 +38020,7 @@ Strophe.Websocket.prototype = {
                 this._conn.send(pres);
             }
             var close = $build("close", { "xmlns": Strophe.NS.FRAMING });
-            this._conn.xmlOutput(close);
+            this._conn.xmlOutput(close.tree());
             var closeString = Strophe.serialize(close);
             this._conn.rawOutput(closeString);
             try {
@@ -37986,6 +38058,7 @@ Strophe.Websocket.prototype = {
      */
     _closeSocket: function () {
         if (this.socket) { try {
+            this.socket.onerror = null;
             this.socket.close();
         } catch (e) {} }
         this.socket = null;
@@ -38024,24 +38097,6 @@ Strophe.Websocket.prototype = {
         } else {
             Strophe.info("Websocket closed");
         }
-    },
-
-    /** PrivateFunction: _no_auth_received
-     *
-     * Called on stream start/restart when no stream:features
-     * has been received.
-     */
-    _no_auth_received: function (_callback) {
-        Strophe.error("Server did not send any auth methods");
-        this._conn._changeConnectStatus(
-            Strophe.Status.CONNFAIL,
-            "Server did not send any auth methods"
-        );
-        if (_callback) {
-            _callback = _callback.bind(this._conn);
-            _callback();
-        }
-        this._conn._doDisconnect();
     },
 
     /** PrivateFunction: _onDisconnectTimeout
@@ -38219,6 +38274,11 @@ return Strophe;
         ], function (wrapper) {
             return wrapper;
         });
+    } else if (typeof exports === 'object') {
+        var core = require('./core');
+        require('./bosh');
+        require('./websocket');
+        module.exports = core;
     }
 })(this);
 
@@ -42357,7 +42417,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
      *      (String) selector - the selector they should be matched
      *          against.
      */
-    return _.filter(el.children, _.partial(u.matchesSelector, _, selector));
+    return _.filter(el.childNodes, _.partial(u.matchesSelector, _, selector));
   };
 
   u.contains = function (attr, query) {
@@ -42394,6 +42454,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     return function (item) {
       return !u.contains(attr, query)(item);
     };
+  };
+
+  u.rootContains = function (root, el) {
+    // The document element does not have the contains method in IE.
+    if (root === document && !root.contains) {
+      return document.head.contains(el) || document.body.contains(el);
+    }
+
+    return root.contains ? root.contains(el) : window.HTMLElement.prototype.contains.call(root, el);
   };
 
   u.createFragmentFromText = function (markup) {
@@ -42570,6 +42639,22 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   u.httpToGeoUri = function (text, _converse) {
     var replacement = 'geo:$1,$2';
     return text.replace(_converse.geouri_regex, replacement);
+  };
+
+  u.getSelectValues = function (select) {
+    var result = [];
+    var options = select && select.options;
+    var opt;
+
+    for (var i = 0, iLen = options.length; i < iLen; i++) {
+      opt = options[i];
+
+      if (opt.selected) {
+        result.push(opt.value || opt.text);
+      }
+    }
+
+    return result;
   };
 
   return u;
@@ -42858,7 +42943,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     };
 });
 
-//# sourceMappingURL=pluggable.js.map;
+//# sourceMappingURL=pluggable.js.map
+;
 // Backbone.NativeView.js 0.3.3
 // ---------------
 
@@ -43306,12 +43392,10 @@ Backbone.sync = function(method, model, options) {
 return Backbone.BrowserStorage;
 }));
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
   define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "lodash.fp", "polyfill", "i18n", "utils", "moment", "strophe", "pluggable", "backbone.noconflict", "backbone.nativeview", "backbone.browserStorage"], factory);
@@ -43509,32 +43593,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   };
 
   _converse.router = new Backbone.Router();
-  _converse.ModelWithDefaultAvatar = Backbone.Model.extend({
-    defaults: {
-      'image': _converse.DEFAULT_IMAGE,
-      'image_type': _converse.DEFAULT_IMAGE_TYPE
-    },
-    set: function set(key, val, options) {
-      // Override Backbone.Model.prototype.set to make sure that the
-      // default `image` and `image_type` values are maintained.
-      var attrs;
-
-      if (_typeof(key) === 'object') {
-        attrs = key;
-        options = val;
-      } else {
-        (attrs = {})[key] = val;
-      }
-
-      if (_.has(attrs, 'image') && _.isUndefined(attrs['image'])) {
-        attrs['image'] = _converse.DEFAULT_IMAGE;
-        attrs['image_type'] = _converse.DEFAULT_IMAGE_TYPE;
-        return Backbone.Model.prototype.set.call(this, attrs, options);
-      } else {
-        return Backbone.Model.prototype.set.apply(this, arguments);
-      }
-    }
-  });
 
   _converse.initialize = function (settings, callback) {
     "use strict";
@@ -43553,6 +43611,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       Backbone.history.stop();
 
       _converse.chatboxviews.closeAllChatBoxes();
+
+      if (_converse.bookmarks) {
+        _converse.bookmarks.reset();
+      }
 
       delete _converse.controlboxtoggle;
       delete _converse.chatboxviews;
@@ -43630,7 +43692,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
       locales: ['af', 'ar', 'bg', 'ca', 'de', 'es', 'eu', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
       message_carbons: true,
-      message_storage: 'session',
       nickname: undefined,
       password: undefined,
       prebind_url: null,
@@ -43644,6 +43705,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       storage: 'session',
       strict_plugin_dependencies: false,
       synchronize_availability: true,
+      trusted: true,
       view_mode: 'overlayed',
       // Choices are 'overlayed', 'fullscreen', 'mobile'
       websocket_url: undefined,
@@ -44000,12 +44062,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       _converse.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
 
       _converse.session.fetch();
+
+      _converse.emit('sessionInitialized');
     };
 
     this.clearSession = function () {
-      if (!_.isUndefined(this.session) && this.session.browserStorage) {
+      if (!_converse.trusted) {
+        window.localStorage.clear();
+        window.sessionStorage.clear();
+      } else if (!_.isUndefined(this.session) && this.session.browserStorage) {
         this.session.browserStorage._clear();
       }
+
+      _converse.emit('clearSession');
     };
 
     this.logOut = function () {
@@ -44117,14 +44186,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       this.connection.send(carbons_iq);
     };
 
-    this.unregisterPresenceHandler = function () {
-      if (!_.isUndefined(_converse.presence_ref)) {
-        _converse.connection.deleteHandler(_converse.presence_ref);
-
-        delete _converse.presence_ref;
-      }
-    };
-
     this.sendInitialPresence = function () {
       if (_converse.send_initial_presence) {
         _converse.xmppstatus.sendPresence();
@@ -44180,7 +44241,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       }
     });
     this.connfeedback = new this.ConnectionFeedback();
-    this.XMPPStatus = this.ModelWithDefaultAvatar.extend({
+    this.XMPPStatus = Backbone.Model.extend({
       defaults: function defaults() {
         return {
           "jid": _converse.bare_jid,
@@ -44335,7 +44396,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       } catch (e) {
         _converse.log("Could not restore session for jid: " + this.jid + " Error message: " + e.message, Strophe.LogLevel.WARN);
 
-        this.clearSession(); // If there's a roster, we want to clear it (see #555)
+        this.clearSession(); // We want to clear presences (see #555)
 
         return false;
       }
@@ -44384,7 +44445,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         } else if (!this.jid) {
           throw new Error("attemptNonPreboundSession: If you use auto_login, " + "you also need to give either a jid value (and if " + "applicable a password) or you need to pass in a URL " + "from where the username and password can be fetched " + "(via credentials_url).");
         } else {
-          this.autoLogin(); // Probably ANONYMOUS login
+          this.autoLogin(); // Could be ANONYMOUS or EXTERNAL
         }
       } else if (reconnecting) {
         this.autoLogin();
@@ -44398,7 +44459,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         this.jid = credentials.jid;
       }
 
-      if (this.authentication === _converse.ANONYMOUS) {
+      if (this.authentication === _converse.ANONYMOUS || this.authentication === _converse.EXTERNAL) {
         if (!this.jid) {
           throw new Error("Config Error: when using anonymous login " + "you need to provide the server's domain via the 'jid' option. " + "Either when calling converse.initialize, or when calling " + "_converse.api.user.login.");
         }
@@ -44476,8 +44537,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
        * connection.
        */
       _converse.emit('beforeTearDown');
-
-      _converse.unregisterPresenceHandler();
 
       if (!_.isUndefined(_converse.session)) {
         _converse.session.destroy();
@@ -44948,8 +45007,10 @@ return __p
 
     if (field.getAttribute('type') === 'checkbox') {
       value = field.checked && 1 || 0;
-    } else if (field.tagName == "textarea") {
+    } else if (field.tagName == "TEXTAREA") {
       value = _.filter(field.value.split('\n'), _.trim);
+    } else if (field.tagName == "SELECT") {
+      value = u.getSelectValues(field);
     } else {
       value = field.value;
     }
@@ -44980,7 +45041,7 @@ return __p
           return tpl_select_option({
             'value': value,
             'label': option.getAttribute('label'),
-            'selected': _.startsWith(values, value),
+            'selected': _.includes(values, value),
             'required': !_.isNil(field.querySelector('required'))
           });
         });
@@ -45662,15 +45723,15 @@ define("emojione", (function (global) {
         initialize: function initialize() {
           this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
           this.dataforms = new Backbone.Collection();
-          this.dataforms.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.dataforms-{this.get('jid')}"));
+          this.dataforms.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.dataforms-{this.get('jid')}"));
           this.features = new Backbone.Collection();
-          this.features.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.features-".concat(this.get('jid'))));
+          this.features.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.features-".concat(this.get('jid'))));
           this.features.on('add', this.onFeatureAdded, this);
           this.identities = new Backbone.Collection();
-          this.identities.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.identities-".concat(this.get('jid'))));
+          this.identities.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.identities-".concat(this.get('jid'))));
           this.fetchFeatures();
           this.items = new _converse.DiscoEntities();
-          this.items.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.disco-items-".concat(this.get('jid'))));
+          this.items.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.disco-items-".concat(this.get('jid'))));
           this.items.fetch();
         },
         getIdentity: function getIdentity(category, type) {
@@ -45851,13 +45912,33 @@ define("emojione", (function (global) {
         return this;
       }
 
+      function initStreamFeatures() {
+        _converse.stream_features = new Backbone.Collection();
+        _converse.stream_features.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.stream-features-".concat(_converse.bare_jid)));
+
+        _converse.stream_features.fetch({
+          success: function success(collection) {
+            if (collection.length === 0 && _converse.connection.features) {
+              _.forEach(_converse.connection.features.childNodes, function (feature) {
+                _converse.stream_features.create({
+                  'name': feature.nodeName,
+                  'xmlns': feature.getAttribute('xmlns')
+                });
+              });
+            }
+          }
+        });
+
+        _converse.emit('streamFeaturesAdded');
+      }
+
       function initializeDisco() {
         addClientFeatures();
 
         _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
 
         _converse.disco_entities = new _converse.DiscoEntities();
-        _converse.disco_entities.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.disco-entities-".concat(_converse.bare_jid)));
+        _converse.disco_entities.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.disco-entities-".concat(_converse.bare_jid)));
 
         _converse.disco_entities.fetchEntities().then(function (collection) {
           if (collection.length === 0 || !collection.get(_converse.domain)) {
@@ -45871,6 +45952,8 @@ define("emojione", (function (global) {
           _converse.emit('discoInitialized');
         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
       }
+
+      _converse.api.listen.on('sessionInitialized', initStreamFeatures);
 
       _converse.api.listen.on('reconnected', initializeDisco);
 
@@ -45952,6 +46035,19 @@ define("emojione", (function (global) {
          * @namespace
          */
         'disco': {
+          'stream': {
+            'getFeature': function getFeature(name, xmlns) {
+              if (_.isNil(name) || _.isNil(xmlns)) {
+                throw new Error("name and xmlns need to be provided when calling disco.stream.getFeature");
+              }
+
+              return _converse.stream_features.findWhere({
+                'name': name,
+                'xmlns': xmlns
+              });
+            }
+          },
+
           /**
            * The "own" grouping
            * @namespace
@@ -46133,8 +46229,8 @@ define("emojione", (function (global) {
               throw new TypeError('disco.supports: You need to provide an entity JID');
             }
 
-            return _converse.api.waitUntil('discoInitialized').then(function () {
-              return new Promise(function (resolve, reject) {
+            return new Promise(function (resolve, reject) {
+              return _converse.api.waitUntil('discoInitialized').then(function () {
                 _converse.api.disco.entities.get(entity_jid, true).then(function (entity) {
                   entity.waitUntilFeaturesDiscovered.then(function () {
                     var promises = _.concat(entity.items.map(function (item) {
@@ -46145,8 +46241,8 @@ define("emojione", (function (global) {
                       resolve(f.filter(f.isObject, result));
                     }).catch(reject);
                   }).catch(reject);
-                });
-              });
+                }).catch(reject);
+              }).catch(reject);
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
           },
           'getIdentity': function getIdentity(category, type, entity_jid) {
@@ -48360,21 +48456,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
           var occupant = this.occupants.findOccupant(data);
 
-          if (data.type === 'unavailable') {
-            if (occupant) {
-              // Even before destroying, we set the new data, so
-              // that we can for example show the
-              // disconnection message.
+          if (data.type === 'unavailable' && occupant) {
+            if (!_.includes(data.states, converse.MUC_NICK_CHANGED_CODE) && !occupant.isMember()) {
+              // We only destroy the occupant if this is not a nickname change operation.
+              // and if they're not on the member lists.
+              // Before destroying we set the new data, so
+              // that we can show the disconnection message.
               occupant.set(data);
-            }
-
-            if (!_.includes(data.states, converse.MUC_NICK_CHANGED_CODE)) {
-              // We only destroy the occupant if this is not a
-              // nickname change operation.
-              if (occupant) {
-                occupant.destroy();
-              }
-
+              occupant.destroy();
               return;
             }
           }
@@ -48394,12 +48483,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         },
         parsePresence: function parsePresence(pres) {
           var from = pres.getAttribute("from"),
+              type = pres.getAttribute("type"),
               data = {
             'from': from,
             'nick': Strophe.getResourceFromJid(from),
-            'type': pres.getAttribute("type"),
+            'type': type,
             'states': [],
-            'show': 'online'
+            'show': type !== 'unavailable' ? 'online' : 'offline'
           };
 
           _.each(pres.childNodes, function (child) {
@@ -48634,22 +48724,30 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           this.on('change:image_hash', this.onAvatarChanged, this);
         },
         onAvatarChanged: function onAvatarChanged() {
-          var vcard = _converse.vcards.findWhere({
-            'jid': this.get('from')
-          });
-
-          if (!vcard) {
-            return;
-          }
-
           var hash = this.get('image_hash');
+          var vcards = [];
 
-          if (hash && vcard.get('image_hash') !== hash) {
-            _converse.api.vcard.update(vcard);
+          if (this.get('jid')) {
+            vcards.push(this.updateVCard(_converse.vcards.findWhere({
+              'jid': this.get('jid')
+            })));
           }
+
+          vcards.push(this.updateVCard(_converse.vcards.findWhere({
+            'jid': this.get('from')
+          })));
+
+          _.forEach(_.filter(vcards, undefined), function (vcard) {
+            if (hash && vcard.get('image_hash') !== hash) {
+              _converse.api.vcard.update(vcard);
+            }
+          });
         },
         getDisplayName: function getDisplayName() {
           return this.get('nick') || this.get('jid');
+        },
+        isMember: function isMember() {
+          return _.includes(['admin', 'owner', 'member'], this.get('affiliation'));
         }
       });
       _converse.ChatRoomOccupants = Backbone.Collection.extend({
@@ -48690,6 +48788,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               var occupant = _this10.findOccupant({
                 'jid': removed_jid
               });
+
+              if (!occupant) {
+                return;
+              }
 
               if (occupant.get('show') === 'offline') {
                 occupant.destroy();
@@ -49003,7 +49105,7 @@ return __p
 define('tpl!bookmark', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<div class="list-item room-item available-chatroom d-flex flex-row ';
+__p += '<div class="list-item controlbox-padded room-item available-chatroom d-flex flex-row ';
  if (o.hidden) { ;
 __p += ' hidden ';
  } ;
@@ -49037,7 +49139,7 @@ return __p
 define('tpl!bookmarks_list', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<a href="#" class="rooms-toggle bookmarks-toggle" title="' +
+__p += '<a href="#" class="rooms-toggle bookmarks-toggle controlbox-padded" title="' +
 __e(o.desc_bookmarks) +
 '">\n    <span class="fa ';
  if (o.toggle_state === o._converse.OPENED) { ;
@@ -49097,17 +49199,6 @@ return __p
       // relevant objects or classes.
       //
       // New functions which don't exist yet can also be added.
-      clearSession: function clearSession() {
-        this.__super__.clearSession.apply(this, arguments);
-
-        if (!_.isUndefined(this.bookmarks)) {
-          this.bookmarks.reset();
-
-          this.bookmarks.browserStorage._clear();
-
-          window.sessionStorage.removeItem(this.bookmarks.fetched_flag);
-        }
-      },
       ChatRoomView: {
         events: {
           'click .toggle-bookmark': 'toggleBookmark'
@@ -49534,7 +49625,7 @@ return __p
         insertIntoControlBox: function insertIntoControlBox() {
           var controlboxview = _converse.chatboxviews.get('controlbox');
 
-          if (!_.isUndefined(controlboxview) && !_converse.root.contains(this.el)) {
+          if (!_.isUndefined(controlboxview) && !u.rootContains(_converse.root, this.el)) {
             var el = controlboxview.el.querySelector('.bookmarks-list');
 
             if (!_.isNull(el)) {
@@ -49643,6 +49734,14 @@ return __p
         'object': _converse,
         'event': 'roomsPanelRendered'
       }], initBookmarks);
+
+      _converse.on('clearSession', function () {
+        if (!_.isUndefined(_converse.bookmarks)) {
+          _converse.bookmarks.browserStorage._clear();
+
+          window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
+        }
+      });
 
       _converse.on('reconnected', initBookmarks);
 
@@ -53402,11 +53501,13 @@ __e(o.role) +
  } ;
 __p += '\n            </div>\n            <div class="modal-footer">\n                ';
  if (o.allow_contact_removal && o.is_roster_contact) { ;
-__p += '\n                    <button type="button" class="btn btn-danger remove-contact" data-dismiss="modal"><i class="fa fa-trash"> </i>' +
+__p += '\n                    <button type="button" class="btn btn-danger remove-contact"><i class="fa fa-trash"> </i>' +
 __e(o.label_remove) +
 '</button>\n                ';
  } ;
-__p += '\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
+__p += '\n                <button type="button" class="btn btn-info refresh-contact"><i class="fa fa-refresh"> </i>' +
+__e(o.label_refresh) +
+'</button>\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
 __e(o.label_close) +
 '</button>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
@@ -53465,7 +53566,7 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  if (o.use_emoji)  { ;
-__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="btn toggle-smiley fa fa-smile-o" title="' +
+__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="toggle-smiley fa fa-smile-o" title="' +
 __e(o.tooltip_insert_smiley) +
 '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a> \n    <div class="emoji-picker dropdown-menu toolbar-menu"></div>\n</li>\n';
  } ;
@@ -53869,19 +53970,7 @@ return __p
           };
         },
         initialize: function initialize() {
-          if (this.get('type') === 'groupchat' && this.collection.chatbox.get('nick') === Strophe.getResourceFromJid(this.get('from'))) {
-            this.vcard = _converse.xmppstatus.vcard;
-          } else {
-            this.vcard = _converse.vcards.findWhere({
-              'jid': this.get('from')
-            });
-
-            if (_.isNil(this.vcard)) {
-              this.vcard = _converse.vcards.create({
-                'jid': this.get('from')
-              });
-            }
-          }
+          this.setVCard();
 
           if (this.get('file')) {
             this.on('change:put', this.uploadFile, this);
@@ -53893,6 +53982,60 @@ return __p
 
           if (this.isOnlyChatStateNotification()) {
             window.setTimeout(this.destroy.bind(this), 20000);
+          }
+        },
+        getVCardForChatroomOccupant: function getVCardForChatroomOccupant() {
+          var chatbox = this.collection.chatbox,
+              nick = Strophe.getResourceFromJid(this.get('from'));
+
+          if (chatbox.get('nick') === nick) {
+            return _converse.xmppstatus.vcard;
+          } else {
+            var vcard;
+
+            if (this.get('vcard_jid')) {
+              vcard = _converse.vcards.findWhere({
+                'jid': this.get('vcard_jid')
+              });
+            }
+
+            if (!vcard) {
+              var jid;
+              var occupant = chatbox.occupants.findWhere({
+                'nick': nick
+              });
+
+              if (occupant && occupant.get('jid')) {
+                jid = occupant.get('jid');
+                this.save({
+                  'vcard_jid': jid
+                }, {
+                  'silent': true
+                });
+              } else {
+                jid = this.get('from');
+              }
+
+              vcard = _converse.vcards.findWhere({
+                'jid': jid
+              }) || _converse.vcards.create({
+                'jid': jid
+              });
+            }
+
+            return vcard;
+          }
+        },
+        setVCard: function setVCard() {
+          if (this.get('type') === 'groupchat') {
+            this.vcard = this.getVCardForChatroomOccupant();
+          } else {
+            var jid = this.get('from');
+            this.vcard = _converse.vcards.findWhere({
+              'jid': jid
+            }) || _converse.vcards.create({
+              'jid': jid
+            });
           }
         },
         isOnlyChatStateNotification: function isOnlyChatStateNotification() {
@@ -54004,7 +54147,7 @@ return __p
         model: _converse.Message,
         comparator: 'time'
       });
-      _converse.ChatBox = _converse.ModelWithDefaultAvatar.extend({
+      _converse.ChatBox = _converse.ModelWithVCardAndPresence.extend({
         defaults: {
           'bookmarked': false,
           'chat_state': undefined,
@@ -54016,15 +54159,7 @@ return __p
         initialize: function initialize() {
           var _this4 = this;
 
-          this.vcard = _converse.vcards.findWhere({
-            'jid': this.get('jid')
-          });
-
-          if (_.isNil(this.vcard)) {
-            this.vcard = _converse.vcards.create({
-              'jid': this.get('jid')
-            });
-          }
+          _converse.ModelWithVCardAndPresence.prototype.initialize.apply(this, arguments);
 
           _converse.api.waitUntil('rosterContactsFetched').then(function () {
             _this4.addRelatedContact(_converse.roster.findWhere({
@@ -54033,7 +54168,7 @@ return __p
           });
 
           this.messages = new _converse.Messages();
-          this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](b64_sha1("converse.messages".concat(this.get('jid')).concat(_converse.bare_jid)));
+          this.messages.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.messages".concat(this.get('jid')).concat(_converse.bare_jid)));
           this.messages.chatbox = this;
           this.messages.on('change:upload', function (message) {
             if (message.get('upload') === _converse.SUCCESS) {
@@ -54548,8 +54683,8 @@ return __p
         },
         closeAllChatBoxes: function closeAllChatBoxes() {
           /* This method gets overridden in src/converse-controlbox.js if
-          * the controlbox plugin is active.
-          */
+           * the controlbox plugin is active.
+           */
           this.each(function (view) {
             view.close();
           });
@@ -54602,7 +54737,9 @@ return __p
             'jid': contact.get('jid')
           });
 
-          chatbox.addRelatedContact(contact);
+          if (chatbox) {
+            chatbox.addRelatedContact(contact);
+          }
         });
       });
 
@@ -54628,7 +54765,7 @@ return __p
         delete _converse.chatboxes.browserStorage;
       });
 
-      _converse.api.listen.on('statusInitialized', function () {
+      _converse.api.listen.on('presencesInitialized', function () {
         return _converse.chatboxes.onConnected();
       });
       /************************ END Event Handlers ************************/
@@ -54853,15 +54990,24 @@ return __p
           this.render();
         },
         render: function render() {
+          var is_followup = u.hasClass('chat-msg-followup', this.el);
+          var msg;
+
           if (this.model.isOnlyChatStateNotification()) {
-            return this.renderChatStateNotification();
+            this.renderChatStateNotification();
           } else if (this.model.get('file') && !this.model.get('oob_url')) {
-            return this.renderFileUploadProgresBar();
+            this.renderFileUploadProgresBar();
           } else if (this.model.get('type') === 'error') {
-            return this.renderErrorMessage();
+            this.renderErrorMessage();
           } else {
-            return this.renderChatMessage();
+            this.renderChatMessage();
           }
+
+          if (is_followup) {
+            u.addClass('chat-msg-followup', this.el);
+          }
+
+          return this.el;
         },
         replaceElement: function replaceElement(msg) {
           if (!_.isNil(this.el.parentElement)) {
@@ -55189,7 +55335,8 @@ return __p
       });
       _converse.UserDetailsModal = _converse.BootstrapModal.extend({
         events: {
-          'click button.remove-contact': 'removeContact'
+          'click button.remove-contact': 'removeContact',
+          'click button.refresh-contact': 'refreshContact'
         },
         initialize: function initialize() {
           _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
@@ -55209,6 +55356,7 @@ return __p
             'label_jid': __('Jabber ID'),
             'label_nickname': __('Nickname'),
             'label_remove': __('Remove as contact'),
+            'label_refresh': __('Refresh'),
             'label_role': __('Role'),
             'label_url': __('URL')
           }));
@@ -55225,6 +55373,18 @@ return __p
               _this.render();
             });
           }
+        },
+        refreshContact: function refreshContact(ev) {
+          if (ev && ev.preventDefault) {
+            ev.preventDefault();
+          }
+
+          var refresh_icon = this.el.querySelector('.fa-refresh');
+          u.addClass('fa-spin', refresh_icon);
+
+          _converse.api.vcard.update(this.model.contact.vcard, true).then(function () {
+            return u.removeClass('fa-spin', refresh_icon);
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         },
         removeContact: function removeContact(ev) {
           var _this2 = this;
@@ -55278,9 +55438,8 @@ return __p
           this.model.messages.on('add', this.onMessageAdded, this);
           this.model.messages.on('rendered', this.scrollDown, this);
           this.model.on('show', this.show, this);
-          this.model.on('destroy', this.remove, this); // TODO check for changed fullname as well
-
-          this.model.on('change:chat_status', this.onChatStatusChanged, this);
+          this.model.on('destroy', this.remove, this);
+          this.model.presence.on('change:show', this.onPresenceChanged, this);
           this.model.on('showHelpMessages', this.showHelpMessages, this);
           this.render();
           this.fetchMessages();
@@ -55380,7 +55539,7 @@ return __p
           }
 
           var contact_jid = this.model.get('jid');
-          var resources = this.model.get('resources');
+          var resources = this.model.presence.get('resources');
 
           if (_.isEmpty(resources)) {
             return;
@@ -55389,7 +55548,7 @@ return __p
           Promise.all(_.map(_.keys(resources), function (resource) {
             return _converse.api.disco.supports(Strophe.NS.SPOILER, "".concat(contact_jid, "/").concat(resource));
           })).then(function (results) {
-            if (results.length) {
+            if (_.filter(results, 'length').length) {
               var html = tpl_spoiler_button(_this4.model.toJSON());
 
               if (_converse.visible_toolbar_buttons.emoji) {
@@ -55804,7 +55963,11 @@ return __p
           }
 
           textarea.value = '';
-          textarea.focus();
+          textarea.focus(); // Trigger input event, so that the textarea resizes
+
+          var event = document.createEvent('Event');
+          event.initEvent('input', true, true);
+          textarea.dispatchEvent(event);
 
           if (message !== '') {
             this.onMessageSubmitted(message, spoiler_hint);
@@ -55917,20 +56080,19 @@ return __p
             toggle_el.setAttribute("data-toggle-state", "closed");
           }
         },
-        onChatStatusChanged: function onChatStatusChanged(item) {
-          var chat_status = item.get('chat_status');
-          var fullname = item.get('fullname');
+        onPresenceChanged: function onPresenceChanged(item) {
+          var show = item.get('show'),
+              fullname = this.model.getDisplayName();
           var text;
-          fullname = _.isEmpty(fullname) ? item.get('jid') : fullname;
 
           if (u.isVisible(this.el)) {
-            if (chat_status === 'offline') {
+            if (show === 'offline') {
               text = fullname + ' ' + __('has gone offline');
-            } else if (chat_status === 'away') {
+            } else if (show === 'away') {
               text = fullname + ' ' + __('has gone away');
-            } else if (chat_status === 'dnd') {
+            } else if (show === 'dnd') {
               text = fullname + ' ' + __('is busy');
-            } else if (chat_status === 'online') {
+            } else if (show === 'online') {
               text = fullname + ' ' + __('is online');
             }
 
@@ -56151,7 +56313,7 @@ return __p
 define('tpl!login_panel', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<div id="converse-login-panel" class="controlbox-pane fade-in row">\n    <form id="converse-login" class="converse-form" method="post">\n        <div class="conn-feedback fade-in ';
+__p += '<div id="converse-login-panel" class="controlbox-pane fade-in row no-gutters">\n    <form id="converse-login" class="converse-form" method="post">\n        <div class="conn-feedback fade-in ';
  if (!o.conn_feedback_subject) { ;
 __p += ' hidden ';
  } ;
@@ -56171,20 +56333,28 @@ __p += '\n            <span class="spinner fa fa-spinner centered"/>\n        ';
  } else { ;
 __p += '\n            ';
  if (o.authentication == o.LOGIN || o.authentication == o.EXTERNAL) { ;
-__p += '\n                <div class="form-group">\n                    <label for="jid">' +
+__p += '\n                <div class="form-group">\n                    <label for="converse-login-jid">' +
 __e(o.__("XMPP Username:")) +
-'</label>\n                    <input class="form-control" autofocus required="required" type="text" name="jid" placeholder="' +
+'</label>\n                    <input id="converse-login-jid" class="form-control" autofocus required="required" type="text" name="jid" placeholder="' +
 __e(o.placeholder_username) +
 '">\n                </div>\n                ';
  if (o.authentication !== o.EXTERNAL) { ;
-__p += '\n                <div class="form-group">\n                    <label for="password">' +
+__p += '\n                <div class="form-group">\n                    <label for="converse-login-password">' +
 __e(o.__("Password:")) +
-'</label>\n                    <input class="form-control" required="required" type="password" name="password" placeholder="' +
+'</label>\n                    <input id="converse-login-password" class="form-control" required="required" type="password" name="password" placeholder="' +
 __e(o.__('password')) +
 '">\n                </div>\n                ';
  } ;
-__p += '\n                <fieldset class="buttons">\n                    <input class="btn btn-primary" type="submit" value="' +
-__e(o.__('Submit')) +
+__p += '\n                <div class="form-group form-check">\n                    <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" ';
+ if (o._converse.trusted) { ;
+__p += ' checked="checked" ';
+ } ;
+__p += '>\n                    <label for="converse-login-trusted" class="form-check-label">' +
+__e(o.__('This is a trusted device')) +
+'</label>\n                    <i class="fa fa-info-circle" data-toggle="popover"\n                       data-title="Trusted device?"\n                       data-content="' +
+__e(o.__('To improve performance, we cache your data in this browser. Uncheck this box if this is a public computer or if you want your data to be deleted when you log out. It\'s important that you explicitly log out, otherwise not all cached data might be deleted.')) +
+'"></i>\n                </div>\n\n                <fieldset class="buttons">\n                    <input class="btn btn-primary" type="submit" value="' +
+__e(o.__('Log in')) +
 '">\n                </fieldset>\n            ';
  } ;
 __p += '\n            ';
@@ -56249,7 +56419,7 @@ return __p
 define('tpl!group_header', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<a href="#" class="group-toggle" title="' +
+__p += '<a href="#" class="group-toggle controlbox-padded" title="' +
 __e(o.desc_group_toggle) +
 '">\n    <span class="fa ';
  if (o.toggle_state === o._converse.OPENED) { ;
@@ -56320,7 +56490,7 @@ return __p
 
 define('tpl!roster', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<div class="d-flex">\n    <span class="w-100 controlbox-heading">' +
+__p += '<div class="d-flex controlbox-padded">\n    <span class="w-100 controlbox-heading">' +
 __e(o.heading_contacts) +
 '</span>\n    <a class="chatbox-btn add-contact fa fa-user-plus" title="' +
 __e(o.title_add_contact) +
@@ -56332,7 +56502,7 @@ return __p
 define('tpl!roster_filter', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<form class="roster-filter-form input-button-group ';
+__p += '<form class="controlbox-padded roster-filter-form input-button-group ';
  if (!o.visible) { ;
 __p += ' hidden ';
  } ;
@@ -57170,7 +57340,7 @@ define("awesomplete", (function (global) {
           };
 
           name_input.addEventListener('input', _.debounce(function () {
-            xhr.open("GET", "".concat(_converse.xhr_user_search_url, "?q=").concat(name_input.value), true);
+            xhr.open("GET", "".concat(_converse.xhr_user_search_url, "q=").concat(name_input.value), true);
             xhr.send();
           }, 300));
           this.el.addEventListener('awesomplete-selectcomplete', function (ev) {
@@ -57338,7 +57508,7 @@ define("awesomplete", (function (global) {
       });
       _converse.RosterContactView = Backbone.NativeView.extend({
         tagName: 'li',
-        className: 'd-flex hidden',
+        className: 'd-flex hidden controlbox-padded',
         events: {
           "click .accept-xmpp-request": "acceptRequest",
           "click .decline-xmpp-request": "declineRequest",
@@ -57350,6 +57520,7 @@ define("awesomplete", (function (global) {
           this.model.on("destroy", this.remove, this);
           this.model.on("open", this.openChat, this);
           this.model.on("remove", this.remove, this);
+          this.model.presence.on("change:show", this.render, this);
           this.model.vcard.on('change:fullname', this.render, this);
         },
         render: function render() {
@@ -57362,7 +57533,7 @@ define("awesomplete", (function (global) {
 
           var item = this.model,
               ask = item.get('ask'),
-              chat_status = item.get('chat_status'),
+              show = item.presence.get('show'),
               requesting = item.get('requesting'),
               subscription = item.get('subscription');
           var classes_to_remove = ['current-xmpp-contact', 'pending-xmpp-contact', 'requesting-xmpp-contact'].concat(_.keys(STATUSES));
@@ -57373,8 +57544,8 @@ define("awesomplete", (function (global) {
             }
           });
 
-          this.el.classList.add(chat_status);
-          this.el.setAttribute('data-status', chat_status);
+          this.el.classList.add(show);
+          this.el.setAttribute('data-status', show);
 
           if (ask === 'subscribe' || subscription === 'from') {
             /* ask === 'subscribe'
@@ -57416,22 +57587,22 @@ define("awesomplete", (function (global) {
         },
         renderRosterItem: function renderRosterItem(item) {
           var status_icon = 'fa-times-circle';
-          var chat_status = item.get('chat_status') || 'offline';
+          var show = item.presence.get('show') || 'offline';
 
-          if (chat_status === 'online') {
+          if (show === 'online') {
             status_icon = 'fa-circle';
-          } else if (chat_status === 'away') {
+          } else if (show === 'away') {
             status_icon = 'fa-dot-circle-o';
-          } else if (chat_status === 'xa') {
+          } else if (show === 'xa') {
             status_icon = 'fa-circle-o';
-          } else if (chat_status === 'dnd') {
+          } else if (show === 'dnd') {
             status_icon = 'fa-minus-circle';
           }
 
           var display_name = item.getDisplayName();
           this.el.innerHTML = tpl_roster_item(_.extend(item.toJSON(), {
             'display_name': display_name,
-            'desc_status': STATUSES[chat_status],
+            'desc_status': STATUSES[show],
             'status_icon': status_icon,
             'desc_chat': __('Click to chat with %1$s (JID: %2$s)', display_name, item.get('jid')),
             'desc_remove': __('Click to remove %1$s as a contact', display_name),
@@ -57447,7 +57618,7 @@ define("awesomplete", (function (global) {
            * It doesn't check for the more specific case of whether
            * the group it's in is collapsed.
            */
-          var chatStatus = this.model.get('chat_status');
+          var chatStatus = this.model.presence.get('show');
 
           if (_converse.show_only_online_users && chatStatus !== 'online' || _converse.hide_offline_users && chatStatus === 'offline') {
             // If pending or requesting, show
@@ -57528,7 +57699,7 @@ define("awesomplete", (function (global) {
         ItemView: _converse.RosterContactView,
         listItems: 'model.contacts',
         listSelector: '.roster-group-contacts',
-        sortEvent: 'change:chat_status',
+        sortEvent: 'presenceChanged',
         initialize: function initialize() {
           Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
           this.model.contacts.on("change:subscription", this.onContactSubscriptionChange, this);
@@ -57618,14 +57789,16 @@ define("awesomplete", (function (global) {
               // show requesting contacts, even though they don't
               // have the state in question.
               matches = this.model.contacts.filter(function (contact) {
-                return u.contains.not('chat_status', q)(contact) && !contact.get('requesting');
+                return !_.includes(contact.presence.get('show'), q) && !contact.get('requesting');
               });
             } else if (q === 'unread_messages') {
               matches = this.model.contacts.filter({
                 'num_unread': 0
               });
             } else {
-              matches = this.model.contacts.filter(u.contains.not('chat_status', q));
+              matches = this.model.contacts.filter(function (contact) {
+                return !_.includes(contact.presence.get('show'), q);
+              });
             }
           } else {
             matches = this.model.contacts.filter(function (contact) {
@@ -57746,6 +57919,12 @@ define("awesomplete", (function (global) {
 
           _converse.roster.on("remove", this.update, this);
 
+          _converse.presences.on('change:show', function () {
+            _this5.update();
+
+            _this5.updateFilter();
+          });
+
           this.model.on("reset", this.reset, this); // This event gets triggered once *all* contacts (i.e. not
           // just this group's) have been fetched from browser
           // storage or the XMPP server and once they've been
@@ -57857,11 +58036,13 @@ define("awesomplete", (function (global) {
           return this;
         },
         onContactAdded: function onContactAdded(contact) {
-          this.addRosterContact(contact).update();
+          this.addRosterContact(contact);
+          this.update();
           this.updateFilter();
         },
         onContactChange: function onContactChange(contact) {
-          this.updateChatBox(contact).update();
+          this.updateChatBox(contact);
+          this.update();
 
           if (_.has(contact.changed, 'subscription')) {
             if (contact.changed.subscription === 'from') {
@@ -57887,10 +58068,6 @@ define("awesomplete", (function (global) {
 
           if (!chatbox) {
             return this;
-          }
-
-          if (_.has(contact.changed, 'chat_status')) {
-            changes.chat_status = contact.get('chat_status');
           }
 
           if (_.has(contact.changed, 'status')) {
@@ -58145,10 +58322,10 @@ __e(o.label_role) +
 __e(o.role) +
 '" aria-describedby="vcard-role-help">\n                        <small id="vcard-role-help" class="form-text text-muted">' +
 __e(o.label_role_help) +
-'</small>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
-__e(o.label_close) +
-'</button>\n                    <button type="submit" class="save-form btn btn-primary">' +
+'</small>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="submit" class="save-form btn btn-primary">' +
 __e(o.label_save) +
+'</button>\n                    <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
+__e(o.label_close) +
 '</button>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n';
 return __p
 };});
@@ -58157,7 +58334,7 @@ return __p
 define('tpl!profile_view', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<div class="userinfo">\n<div class="profile d-flex">\n    <a class="show-profile" href="#">\n        <img alt="User Avatar" class="avatar align-self-center" height="40px" width="40px" src="data:' +
+__p += '<div class="userinfo controlbox-padded">\n<div class="profile d-flex">\n    <a class="show-profile" href="#">\n        <img alt="User Avatar" class="avatar align-self-center" height="40px" width="40px" src="data:' +
 __e(o.image_type) +
 ';base64,' +
 __e(o.image) +
@@ -60660,7 +60837,7 @@ var __t, __p = '', __e = _.escape;
 __p += '<vCard xmlns="vcard-temp">\n    <FN>' +
 __e(o.fn) +
 '</FN>\n    <NICKNAME>' +
-__e(o.fn) +
+__e(o.nickname) +
 '</NICKNAME>\n    <URL>' +
 __e(o.url) +
 '</URL>\n    <ROLE>' +
@@ -60675,10 +60852,12 @@ __e(o.image) +
 return __p
 };});
 
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
   define('converse-vcard',["converse-core", "crypto", "tpl!vcard"], factory);
@@ -60703,8 +60882,34 @@ return __p
        * loaded by converse.js's plugin machinery.
        */
       var _converse = this._converse;
+      _converse.VCard = Backbone.Model.extend({
+        defaults: {
+          'image': _converse.DEFAULT_IMAGE,
+          'image_type': _converse.DEFAULT_IMAGE_TYPE
+        },
+        set: function set(key, val, options) {
+          // Override Backbone.Model.prototype.set to make sure that the
+          // default `image` and `image_type` values are maintained.
+          var attrs;
+
+          if (_typeof(key) === 'object') {
+            attrs = key;
+            options = val;
+          } else {
+            (attrs = {})[key] = val;
+          }
+
+          if (_.has(attrs, 'image') && !attrs['image']) {
+            attrs['image'] = _converse.DEFAULT_IMAGE;
+            attrs['image_type'] = _converse.DEFAULT_IMAGE_TYPE;
+            return Backbone.Model.prototype.set.call(this, attrs, options);
+          } else {
+            return Backbone.Model.prototype.set.apply(this, arguments);
+          }
+        }
+      });
       _converse.VCards = Backbone.Collection.extend({
-        model: _converse.ModelWithDefaultAvatar,
+        model: _converse.VCard,
         initialize: function initialize() {
           this.on('add', function (vcard) {
             return _converse.api.vcard.update(vcard);
@@ -60725,13 +60930,15 @@ return __p
             'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
             'url': _.get(vcard.querySelector('URL'), 'textContent'),
             'role': _.get(vcard.querySelector('ROLE'), 'textContent'),
-            'email': _.get(vcard.querySelector('EMAIL USERID'), 'textContent')
+            'email': _.get(vcard.querySelector('EMAIL USERID'), 'textContent'),
+            'vcard_updated': moment().format(),
+            'vcard_error': undefined
           };
         }
 
         if (result.image) {
           var word_array_from_b64 = CryptoJS.enc.Base64.parse(result['image']);
-          result['image_type'] = CryptoJS.SHA1(word_array_from_b64).toString();
+          result['image_hash'] = CryptoJS.SHA1(word_array_from_b64).toString();
         }
 
         if (callback) {
@@ -60743,7 +60950,8 @@ return __p
         if (errback) {
           errback({
             'stanza': iq,
-            'jid': jid
+            'jid': jid,
+            'vcard_error': moment().format()
           });
         }
       }
@@ -60792,7 +61000,7 @@ return __p
 
       _converse.initVCardCollection = function () {
         _converse.vcards = new _converse.VCards();
-        _converse.vcards.browserStorage = new Backbone.BrowserStorage.local(b64_sha1("converse.vcards"));
+        _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.vcards"));
 
         _converse.vcards.fetch();
       };
@@ -60809,8 +61017,8 @@ return __p
           'get': function get(model, force) {
             if (_.isString(model)) {
               return getVCard(_converse, model);
-            } else if (!model.get('vcard_updated') || force) {
-              var jid = model.get('jid') || model.get('muc_jid');
+            } else if (force || !model.get('vcard_updated') || !moment(model.get('vcard_error')).isSame(new Date(), "day")) {
+              var jid = model.get('jid');
 
               if (!jid) {
                 throw new Error("No JID to get vcard for!");
@@ -60826,9 +61034,8 @@ return __p
 
             return new Promise(function (resolve, reject) {
               _this.get(model, force).then(function (vcard) {
-                model.save(_.extend(_.pick(vcard, ['fullname', 'nickname', 'email', 'url', 'role', 'image_type', 'image', 'image_hash']), {
-                  'vcard_updated': moment().format()
-                }));
+                delete vcard['stanza'];
+                model.save(vcard);
                 resolve();
               });
             });
@@ -60933,6 +61140,7 @@ return __p
               image_file = form_data.get('image');
           var data = {
             'fn': form_data.get('fn'),
+            'nickname': form_data.get('nickname'),
             'role': form_data.get('role'),
             'email': form_data.get('email'),
             'url': form_data.get('url')
@@ -60940,8 +61148,8 @@ return __p
 
           if (!image_file.size) {
             _.extend(data, {
-              'image': this.model.get('image'),
-              'image_type': this.model.get('image_type')
+              'image': this.model.vcard.get('image'),
+              'image_type': this.model.vcard.get('image_type')
             });
 
             this.setVCard(body, data);
@@ -61084,8 +61292,8 @@ return __p
 
 /*global define */
 (function (root, factory) {
-  define('converse-controlbox',["converse-core", "lodash.fp", "tpl!converse_brand_heading", "tpl!controlbox", "tpl!controlbox_toggle", "tpl!login_panel", "converse-chatview", "converse-rosterview", "converse-profile"], factory);
-})(this, function (converse, fp, tpl_brand_heading, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel) {
+  define('converse-controlbox',["converse-core", "bootstrap", "lodash.fp", "tpl!converse_brand_heading", "tpl!controlbox", "tpl!controlbox_toggle", "tpl!login_panel", "converse-chatview", "converse-rosterview", "converse-profile"], factory);
+})(this, function (converse, bootstrap, fp, tpl_brand_heading, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel) {
   "use strict";
 
   var CHATBOX_TYPE = 'chatbox';
@@ -61159,21 +61367,6 @@ return __p
             groupview.remove();
           });
           this.rosterview.removeAll().remove();
-        }
-      },
-      clearSession: function clearSession() {
-        this.__super__.clearSession.apply(this, arguments);
-
-        var chatboxes = _.get(this, 'chatboxes', null);
-
-        if (!_.isNil(chatboxes)) {
-          var controlbox = chatboxes.get('controlbox');
-
-          if (controlbox && controlbox.collection && controlbox.collection.browserStorage) {
-            controlbox.save({
-              'connected': false
-            });
-          }
         }
       },
       ChatBoxes: {
@@ -61478,6 +61671,15 @@ return __p
         initialize: function initialize(cfg) {
           this.model.on('change', this.render, this);
           this.listenTo(_converse.connfeedback, 'change', this.render);
+          this.render();
+
+          _.forEach(this.el.querySelectorAll('[data-title]'), function (el) {
+            var popover = new bootstrap.Popover(el, {
+              'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
+              'dismissible': _converse.view_mode === 'mobile' && true || false,
+              'container': _converse.chatboxviews.el
+            });
+          });
         },
         toHTML: function toHTML() {
           var connection_status = _converse.connfeedback.get('connection_status');
@@ -61533,7 +61735,10 @@ return __p
             return;
           }
 
-          var jid = ev.target.querySelector('input[name=jid]').value;
+          var form_data = new FormData(ev.target);
+          _converse.trusted = form_data.get('trusted');
+          _converse.storage = form_data.get('trusted') ? 'local' : 'session';
+          var jid = form_data.get('jid');
 
           if (_converse.locked_domain) {
             jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
@@ -61541,7 +61746,7 @@ return __p
             jid = jid + '@' + _converse.default_domain;
           }
 
-          this.connect(jid, _.get(ev.target.querySelector('input[name=password]'), 'value'));
+          this.connect(jid, form_data.get('password'));
         },
         connect: function connect(jid, password) {
           if (jid) {
@@ -61640,6 +61845,23 @@ return __p
           }
         }
       });
+
+      _converse.on('clearSession', function () {
+        if (_converse.trusted) {
+          var chatboxes = _.get(_converse, 'chatboxes', null);
+
+          if (!_.isNil(chatboxes)) {
+            var controlbox = chatboxes.get('controlbox');
+
+            if (controlbox && controlbox.collection && controlbox.collection.browserStorage) {
+              controlbox.save({
+                'connected': false
+              });
+            }
+          }
+        }
+      });
+
       Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxesInitialized')]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
       _converse.on('chatBoxesFetched', function () {
@@ -62102,7 +62324,7 @@ return __p
 
 define('tpl!inverse_brand_heading', ['lodash'], function(_) {return function(o) {
 var __t, __p = '';
-__p += '<div class="row">\n    <div class="container brand-heading-container">\n        <h1 class="brand-heading"><i class="icon-conversejs"></i>Converse</h1>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client</p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> into your own language</p>\n    <div>\n</div>\n';
+__p += '<div class="row">\n    <div class="container brand-heading-container">\n        <h1 class="brand-heading"><i class="icon-conversejs"></i>Converse</h1>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client brought to you by <a target="_blank" rel="nofollow" href="https://opkode.com">Opkode</a> </p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> it into your own language</p>\n    <div>\n</div>\n';
 return __p
 };});
 
@@ -62152,7 +62374,7 @@ return __p
     // an error will be raised if the plugin is not found.
     //
     // NB: These plugins need to have already been loaded via require.js.
-    dependencies: ['converse-chatboxes', 'converse-muc', 'converse-controlbox', 'converse-rosterview'],
+    dependencies: ['converse-chatboxes', 'converse-muc', 'converse-muc-views', 'converse-controlbox', 'converse-rosterview'],
     enabled: function enabled(_converse) {
       return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
     },
@@ -63791,7 +64013,7 @@ return __p
 define('tpl!chatroom_head', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<div class="col col-9">\n    <div class="chat-title" title="' +
+__p += '<div class="chatbox-title">\n    <div class="chat-title" title="' +
 __e(o.jid) +
 '">\n        ';
  if (o.name && o.name !== o.Strophe.getNodeFromJid(o.jid)) { ;
@@ -63878,7 +64100,7 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 
  if (o.use_emoji)  { ;
-__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="btn toggle-smiley fa fa-smile-o" title="' +
+__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="toggle-smiley fa fa-smile-o" title="' +
 __e(o.label_insert_smiley) +
 '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a> \n    <div class="emoji-picker dropdown-menu toolbar-menu"></div>\n</li>\n';
  } ;
@@ -64109,7 +64331,7 @@ return __p
 
 define('tpl!room_panel', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- <div id="chatrooms"> -->\n<div class="d-flex">\n    <span class="w-100 controlbox-heading">' +
+__p += '<!-- <div id="chatrooms"> -->\n<div class="d-flex controlbox-padded">\n    <span class="w-100 controlbox-heading">' +
 __e(o.heading_chatrooms) +
 '</span>\n    <a class="chatbox-btn trigger-list-chatrooms-modal fa fa-list-ul" title="' +
 __e(o.title_list_rooms) +
@@ -64196,7 +64418,7 @@ return __p
 
           if (!this.roomspanel.model.get('nick')) {
             this.roomspanel.model.save({
-              nick: _converse.xmppstatus.get('nickname') || Strophe.getNodeFromJid(_converse.bare_jid)
+              nick: _converse.xmppstatus.vcard.get('nickname') || Strophe.getNodeFromJid(_converse.bare_jid)
             });
           }
 
@@ -64594,6 +64816,17 @@ return __p
           this.model.on('show', this.show, this);
           this.model.occupants.on('add', this.showJoinNotification, this);
           this.model.occupants.on('remove', this.showLeaveNotification, this);
+          this.model.occupants.on('change:show', function (occupant) {
+            if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
+              return;
+            }
+
+            if (occupant.get('show') === 'offline') {
+              _this3.showLeaveNotification(occupant);
+            } else if (occupant.get('show') === 'online') {
+              _this3.showJoinNotification(occupant);
+            }
+          });
           this.createEmojiPicker();
           this.createOccupantsView();
           this.render().insertIntoDOM();
@@ -65104,8 +65337,8 @@ return __p
 
 
           var last_fieldset_el = document.createElement('fieldset');
-          last_fieldset_el.insertAdjacentHTML('beforeend', "<input type=\"submit\" class=\"pure-button button-primary\" value=\"".concat(__('Save'), "\"/>"));
-          last_fieldset_el.insertAdjacentHTML('beforeend', "<input type=\"button\" class=\"pure-button button-cancel\" value=\"".concat(__('Cancel'), "\"/>"));
+          last_fieldset_el.insertAdjacentHTML('beforeend', "<input type=\"submit\" class=\"btn btn-primary\" value=\"".concat(__('Save'), "\"/>"));
+          last_fieldset_el.insertAdjacentHTML('beforeend', "<input type=\"button\" class=\"btn btn-secondary\" value=\"".concat(__('Cancel'), "\"/>"));
           form_el.insertAdjacentElement('beforeend', last_fieldset_el);
           last_fieldset_el.querySelector('input[type=button]').addEventListener('click', function (ev) {
             ev.preventDefault();
@@ -65191,10 +65424,10 @@ return __p
           }
         },
         onNickNameNotFound: function onNickNameNotFound(message) {
-          if (_converse.muc_nickname_from_jid) {
-            // We try to enter the room with the node part of
-            // the user's JID.
-            this.join(this.getDefaultNickName());
+          var nick = this.getDefaultNickName();
+
+          if (nick) {
+            this.join(nick);
           } else {
             this.renderNicknameForm(message);
           }
@@ -65205,7 +65438,13 @@ return __p
            * We put this in a separate method so that it can be
            * overridden by plugins.
            */
-          return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+          var nick = _converse.xmppstatus.vcard.get('nickname');
+
+          if (nick) {
+            return nick;
+          } else if (_converse.muc_nickname_from_jid) {
+            return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+          }
         },
         onNicknameClash: function onNicknameClash(presence) {
           /* When the nickname is already taken, we either render a
@@ -65302,7 +65541,7 @@ return __p
            */
           var code = stat.getAttribute('code');
 
-          if (code === '110') {
+          if (code === '110' || code === '100' && !is_self) {
             return;
           }
 
@@ -65464,11 +65703,12 @@ return __p
           this.scrollDown();
         },
         showLeaveNotification: function showLeaveNotification(occupant) {
-          var nick = occupant.get('nick');
-          var stat = occupant.get('status');
-          var last_el = this.content.lastElementChild;
+          var nick = occupant.get('nick'),
+              stat = occupant.get('status'),
+              last_el = this.content.lastElementChild,
+              last_msg_date = last_el.getAttribute('data-isodate');
 
-          if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).join === "\"".concat(nick, "\"")) {
+          if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && moment(last_msg_date).isSame(new Date(), "day") && _.get(last_el, 'dataset', {}).join === "\"".concat(nick, "\"")) {
             var message;
 
             if (_.isNil(stat)) {
@@ -66207,7 +66447,7 @@ return __p
       };
 
       _converse.handleChatStateNotification = function (contact) {
-        /* Event handler for on('contactStatusChanged').
+        /* Event handler for on('contactPresenceChanged').
          * Will show an HTML5 notification to indicate that the chat
          * status has changed.
          */
@@ -66258,7 +66498,7 @@ return __p
         // handlers.
         _converse.on('contactRequest', _converse.handleContactRequestNotification);
 
-        _converse.on('contactStatusChanged', _converse.handleChatStateNotification);
+        _converse.on('contactPresenceChanged', _converse.handleChatStateNotification);
 
         _converse.on('message', _converse.handleMessageNotification);
 
@@ -71889,22 +72129,6 @@ return __p
   var u = converse.env.utils;
   converse.plugins.add('converse-roster', {
     dependencies: ["converse-vcard"],
-    overrides: {
-      clearSession: function clearSession() {
-        this.__super__.clearSession.apply(this, arguments);
-
-        if (!_.isUndefined(this.roster)) {
-          this.roster.browserStorage._clear();
-        }
-      },
-      _tearDown: function _tearDown() {
-        this.__super__._tearDown.apply(this, arguments);
-
-        if (this.roster) {
-          this.roster.off().reset(); // Removes roster contacts
-        }
-      }
-    },
     initialize: function initialize() {
       /* The initialize function gets called as soon as the plugin is
        * loaded by converse.js's plugin machinery.
@@ -71929,9 +72153,16 @@ return __p
         * roster and the roster groups.
         */
         _converse.roster = new _converse.RosterContacts();
-        _converse.roster.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.contacts-".concat(_converse.bare_jid)));
+        _converse.roster.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.contacts-".concat(_converse.bare_jid)));
+        _converse.roster.data = new Backbone.Model();
+        var id = b64_sha1("converse-roster-model-".concat(_converse.bare_jid));
+        _converse.roster.data.id = id;
+        _converse.roster.data.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+
+        _converse.roster.data.fetch();
+
         _converse.rostergroups = new _converse.RosterGroups();
-        _converse.rostergroups.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.roster.groups".concat(_converse.bare_jid)));
+        _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.roster.groups".concat(_converse.bare_jid)));
 
         _converse.emit('rosterInitialized');
       };
@@ -71976,16 +72207,121 @@ return __p
         }
       };
 
-      _converse.RosterContact = Backbone.Model.extend({
+      _converse.Presence = Backbone.Model.extend({
+        defaults: function defaults() {
+          return {
+            'show': 'offline',
+            'resources': {}
+          };
+        },
+        getHighestPriorityResource: function getHighestPriorityResource() {
+          /* Return the resource with the highest priority.
+           *
+           * If multiple resources have the same priority, take the
+           * latest one.
+           */
+          var resources = this.get('resources');
+
+          if (_.isObject(resources) && _.size(resources)) {
+            var val = _.flow(_.values, _.partial(_.sortBy, _, ['priority', 'timestamp']), _.reverse)(resources)[0];
+
+            if (!_.isUndefined(val)) {
+              return val;
+            }
+          }
+        },
+        addResource: function addResource(presence) {
+          /* Adds a new resource and it's associated attributes as taken
+           * from the passed in presence stanza.
+           *
+           * Also updates the presence if the resource has higher priority (and is newer).
+           */
+          var jid = presence.getAttribute('from'),
+              show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
+              resource = Strophe.getResourceFromJid(jid),
+              delay = sizzle("delay[xmlns=\"".concat(Strophe.NS.DELAY, "\"]"), presence).pop(),
+              timestamp = _.isNil(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
+          var priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0;
+          priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
+          var resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
+          resources[resource] = {
+            'name': resource,
+            'priority': priority,
+            'show': show,
+            'timestamp': timestamp
+          };
+          var changed = {
+            'resources': resources
+          };
+          var hpr = this.getHighestPriorityResource();
+
+          if (priority == hpr.priority && timestamp == hpr.timestamp) {
+            // Only set the "global" presence if this is the newest resource
+            // with the highest priority
+            changed.show = show;
+          }
+
+          this.save(changed);
+          return resources;
+        },
+        removeResource: function removeResource(resource) {
+          /* Remove the passed in resource from the resources map.
+           *
+           * Also redetermines the presence given that there's one less
+           * resource.
+           */
+          var resources = this.get('resources');
+
+          if (!_.isObject(resources)) {
+            resources = {};
+          } else {
+            delete resources[resource];
+          }
+
+          this.save({
+            'resources': resources,
+            'show': _.propertyOf(this.getHighestPriorityResource())('show') || 'offline'
+          });
+        }
+      });
+      _converse.Presences = Backbone.Collection.extend({
+        model: _converse.Presence
+      });
+      _converse.ModelWithVCardAndPresence = Backbone.Model.extend({
+        initialize: function initialize() {
+          this.setVCard();
+          this.setPresence();
+        },
+        setVCard: function setVCard() {
+          var jid = this.get('jid');
+          this.vcard = _converse.vcards.findWhere({
+            'jid': jid
+          }) || _converse.vcards.create({
+            'jid': jid
+          });
+        },
+        setPresence: function setPresence() {
+          var jid = this.get('jid');
+          this.presence = _converse.presences.findWhere({
+            'jid': jid
+          }) || _converse.presences.create({
+            'jid': jid
+          });
+        }
+      });
+      _converse.RosterContact = _converse.ModelWithVCardAndPresence.extend({
         defaults: {
           'chat_state': undefined,
-          'chat_status': 'offline',
           'image': _converse.DEFAULT_IMAGE,
           'image_type': _converse.DEFAULT_IMAGE_TYPE,
           'num_unread': 0,
           'status': ''
         },
         initialize: function initialize(attributes) {
+          var _this = this;
+
+          _converse.ModelWithVCardAndPresence.prototype.initialize.apply(this, arguments);
+
           var jid = attributes.jid,
               bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase(),
               resource = Strophe.getResourceFromJid(jid);
@@ -71994,21 +72330,13 @@ return __p
             'groups': [],
             'id': bare_jid,
             'jid': bare_jid,
-            'resources': {},
             'user_id': Strophe.getNodeFromJid(jid)
           }, attributes));
-          this.vcard = _converse.vcards.findWhere({
-            'jid': bare_jid
+          this.presence.on('change:show', function () {
+            return _converse.emit('contactPresenceChanged', _this);
           });
-
-          if (_.isNil(this.vcard)) {
-            this.vcard = _converse.vcards.create({
-              'jid': bare_jid
-            });
-          }
-
-          this.on('change:chat_status', function (item) {
-            _converse.emit('contactStatusChanged', item.attributes);
+          this.presence.on('change:show', function () {
+            return _this.trigger('presenceChanged');
           });
         },
         getDisplayName: function getDisplayName() {
@@ -72102,76 +72430,6 @@ return __p
 
           return this;
         },
-        addResource: function addResource(presence) {
-          /* Adds a new resource and it's associated attributes as taken
-          * from the passed in presence stanza.
-          *
-          * Also updates the contact's chat_status if the presence has
-          * higher priority (and is newer).
-          */
-          var jid = presence.getAttribute('from'),
-              chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
-              resource = Strophe.getResourceFromJid(jid),
-              delay = presence.querySelector("delay[xmlns=\"".concat(Strophe.NS.DELAY, "\"]")),
-              timestamp = _.isNull(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
-          var priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0;
-          priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
-          var resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
-          resources[resource] = {
-            'name': resource,
-            'priority': priority,
-            'status': chat_status,
-            'timestamp': timestamp
-          };
-          var changed = {
-            'resources': resources
-          };
-          var hpr = this.getHighestPriorityResource();
-
-          if (priority == hpr.priority && timestamp == hpr.timestamp) {
-            // Only set the chat status if this is the newest resource
-            // with the highest priority
-            changed.chat_status = chat_status;
-          }
-
-          this.save(changed);
-          return resources;
-        },
-        removeResource: function removeResource(resource) {
-          /* Remove the passed in resource from the contact's resources map.
-          *
-          * Also recomputes the chat_status given that there's one less
-          * resource.
-          */
-          var resources = this.get('resources');
-
-          if (!_.isObject(resources)) {
-            resources = {};
-          } else {
-            delete resources[resource];
-          }
-
-          this.save({
-            'resources': resources,
-            'chat_status': _.propertyOf(this.getHighestPriorityResource())('status') || 'offline'
-          });
-        },
-        getHighestPriorityResource: function getHighestPriorityResource() {
-          /* Return the resource with the highest priority.
-          *
-          * If multiple resources have the same priority, take the
-          * newest one.
-          */
-          var resources = this.get('resources');
-
-          if (_.isObject(resources) && _.size(resources)) {
-            var val = _.flow(_.values, _.partial(_.sortBy, _, ['priority', 'timestamp']), _.reverse)(resources)[0];
-
-            if (!_.isUndefined(val)) {
-              return val;
-            }
-          }
-        },
         removeFromRoster: function removeFromRoster(callback, errback) {
           /* Instruct the XMPP server to remove this contact from our roster
           * Parameters:
@@ -72194,8 +72452,8 @@ return __p
       _converse.RosterContacts = Backbone.Collection.extend({
         model: _converse.RosterContact,
         comparator: function comparator(contact1, contact2) {
-          var status1 = contact1.get('chat_status') || 'offline';
-          var status2 = contact2.get('chat_status') || 'offline';
+          var status1 = contact1.presence.get('show') || 'offline';
+          var status2 = contact2.presence.get('show') || 'offline';
 
           if (_converse.STATUS_WEIGHTS[status1] === _converse.STATUS_WEIGHTS[status2]) {
             var name1 = contact1.getDisplayName().toLowerCase();
@@ -72207,23 +72465,27 @@ return __p
         },
         onConnected: function onConnected() {
           /* Called as soon as the connection has been established
-          * (either after initial login, or after reconnection).
-          *
-          * Use the opportunity to register stanza handlers.
-          */
+           * (either after initial login, or after reconnection).
+           *
+           * Use the opportunity to register stanza handlers.
+           */
           this.registerRosterHandler();
           this.registerRosterXHandler();
         },
         registerRosterHandler: function registerRosterHandler() {
           /* Register a handler for roster IQ "set" stanzas, which update
-          * roster contacts.
-          */
-          _converse.connection.addHandler(_converse.roster.onRosterPush.bind(_converse.roster), Strophe.NS.ROSTER, 'iq', "set");
+           * roster contacts.
+           */
+          _converse.connection.addHandler(function (iq) {
+            _converse.roster.onRosterPush(iq);
+
+            return true;
+          }, Strophe.NS.ROSTER, 'iq', "set");
         },
         registerRosterXHandler: function registerRosterXHandler() {
           /* Register a handler for RosterX message stanzas, which are
-          * used to suggest roster contacts to a user.
-          */
+           * used to suggest roster contacts to a user.
+           */
           var t = 0;
 
           _converse.connection.addHandler(function (msg) {
@@ -72237,21 +72499,22 @@ return __p
           }, Strophe.NS.ROSTERX, 'message', null);
         },
         fetchRosterContacts: function fetchRosterContacts() {
-          var _this = this;
+          var _this2 = this;
 
           /* Fetches the roster contacts, first by trying the
-          * sessionStorage cache, and if that's empty, then by querying
-          * the XMPP server.
-          *
-          * Returns a promise which resolves once the contacts have been
-          * fetched.
-          */
+           * sessionStorage cache, and if that's empty, then by querying
+           * the XMPP server.
+           *
+           * Returns a promise which resolves once the contacts have been
+           * fetched.
+           */
+          var that = this;
           return new Promise(function (resolve, reject) {
-            _this.fetch({
+            _this2.fetch({
               'add': true,
               'silent': true,
               success: function success(collection) {
-                if (collection.length === 0) {
+                if (collection.length === 0 || that.rosterVersioningSupported() && !_converse.session.get('roster_fetched')) {
                   _converse.send_initial_presence = true;
 
                   _converse.roster.fetchFromServer().then(resolve).catch(reject);
@@ -72322,7 +72585,7 @@ return __p
           _converse.connection.sendIQ(iq, callback, errback);
         },
         addContactToRoster: function addContactToRoster(jid, name, groups, attributes) {
-          var _this2 = this;
+          var _this3 = this;
 
           /* Adds a RosterContact instance to _converse.roster and
            * registers the contact on the XMPP server.
@@ -72338,8 +72601,8 @@ return __p
           return new Promise(function (resolve, reject) {
             groups = groups || [];
 
-            _this2.sendContactAddIQ(jid, name, groups, function () {
-              var contact = _this2.create(_.assignIn({
+            _this3.sendContactAddIQ(jid, name, groups, function () {
+              var contact = _this3.create(_.assignIn({
                 'ask': undefined,
                 'nickname': name,
                 groups: groups,
@@ -72388,35 +72651,27 @@ return __p
           }
 
           return _.sum(this.models.filter(function (model) {
-            return !_.includes(ignored, model.get('chat_status'));
+            return !_.includes(ignored, model.presence.get('show'));
           }));
         },
         onRosterPush: function onRosterPush(iq) {
           /* Handle roster updates from the XMPP server.
-          * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
-          *
-          * Parameters:
-          *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
-          */
+           * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
+           *
+           * Parameters:
+           *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
+           */
           var id = iq.getAttribute('id');
           var from = iq.getAttribute('from');
 
-          if (from && from !== "" && Strophe.getBareJidFromJid(from) !== _converse.bare_jid) {
-            // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
-            // XXX: Some naughty servers apparently send from a full
-            // JID so we need to explicitly compare bare jids here.
-            // https://github.com/jcbrand/converse.js/issues/493
-            _converse.connection.send($iq({
-              type: 'error',
-              id: id,
-              from: _converse.connection.jid
-            }).c('error', {
-              'type': 'cancel'
-            }).c('service-unavailable', {
-              'xmlns': Strophe.NS.ROSTER
-            }));
-
-            return true;
+          if (from && from !== _converse.connection.jid) {
+            // https://tools.ietf.org/html/rfc6121#page-15
+            // 
+            // A receiving client MUST ignore the stanza unless it has no 'from'
+            // attribute (i.e., implicitly from the bare JID of the user's
+            // account) or it has a 'from' attribute whose value matches the
+            // user's bare JID <user@domainpart>.
+            return;
           }
 
           _converse.connection.send($iq({
@@ -72425,16 +72680,35 @@ return __p
             from: _converse.connection.jid
           }));
 
-          var items = sizzle("query[xmlns=\"".concat(Strophe.NS.ROSTER, "\"] item"), iq);
+          var query = sizzle("query[xmlns=\"".concat(Strophe.NS.ROSTER, "\"]"), iq).pop();
+          this.data.save('version', query.getAttribute('ver'));
+          var items = sizzle("item", query);
 
-          _.each(items, this.updateContact.bind(this));
+          if (items.length > 1) {
+            _converse.log(iq, Strophe.LogLevel.ERROR);
+
+            throw new Error('Roster push query may not contain more than one "item" element.');
+          }
+
+          if (items.length === 0) {
+            _converse.log(iq, Strophe.LogLevel.WARN);
+
+            _converse.log('Received a roster push stanza without an "item" element.', Strophe.LogLevel.WARN);
+
+            return;
+          }
+
+          this.updateContact(items.pop());
 
           _converse.emit('rosterPush', iq);
 
-          return true;
+          return;
+        },
+        rosterVersioningSupported: function rosterVersioningSupported() {
+          return _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
         },
         fetchFromServer: function fetchFromServer() {
-          var _this3 = this;
+          var _this4 = this;
 
           /* Fetch the roster from the XMPP server */
           return new Promise(function (resolve, reject) {
@@ -72445,7 +72719,13 @@ return __p
               xmlns: Strophe.NS.ROSTER
             });
 
-            var callback = _.flow(_this3.onReceivedFromServer.bind(_this3), resolve);
+            if (_this4.rosterVersioningSupported()) {
+              iq.attrs({
+                'ver': _this4.data.get('version')
+              });
+            }
+
+            var callback = _.flow(_this4.onReceivedFromServer.bind(_this4), resolve);
 
             var errback = function errback(iq) {
               var errmsg = "Error while trying to fetch roster from the server";
@@ -72459,19 +72739,31 @@ return __p
           });
         },
         onReceivedFromServer: function onReceivedFromServer(iq) {
-          /* An IQ stanza containing the roster has been received from
-          * the XMPP server.
-          */
-          var items = sizzle("query[xmlns=\"".concat(Strophe.NS.ROSTER, "\"] item"), iq);
+          var _this5 = this;
 
-          _.each(items, this.updateContact.bind(this));
+          /* An IQ stanza containing the roster has been received from
+           * the XMPP server.
+           */
+          var query = sizzle("query[xmlns=\"".concat(Strophe.NS.ROSTER, "\"]"), iq).pop();
+
+          if (query) {
+            var items = sizzle("item", query);
+
+            _.each(items, function (item) {
+              return _this5.updateContact(item);
+            });
+
+            this.data.save('version', query.getAttribute('ver'));
+
+            _converse.session.save('roster_fetched', true);
+          }
 
           _converse.emit('roster', iq);
         },
         updateContact: function updateContact(item) {
           /* Update or create RosterContact models based on items
-          * received in the IQ from the server.
-          */
+           * received in the IQ from the server.
+           */
           var jid = item.getAttribute('jid');
 
           if (this.isSelf(jid)) {
@@ -72555,6 +72847,48 @@ return __p
             }
           }
         },
+        handleOwnPresence: function handleOwnPresence(presence) {
+          var jid = presence.getAttribute('from'),
+              resource = Strophe.getResourceFromJid(jid),
+              presence_type = presence.getAttribute('type');
+
+          if (_converse.connection.jid !== jid && presence_type !== 'unavailable' && (_converse.synchronize_availability === true || _converse.synchronize_availability === resource)) {
+            // Another resource has changed its status and
+            // synchronize_availability option set to update,
+            // we'll update ours as well.
+            var show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online';
+
+            _converse.xmppstatus.save({
+              'status': show
+            });
+
+            var status_message = _.propertyOf(presence.querySelector('status'))('textContent');
+
+            if (status_message) {
+              _converse.xmppstatus.save({
+                'status_message': status_message
+              });
+            }
+          }
+
+          if (_converse.jid === jid && presence_type === 'unavailable') {
+            // XXX: We've received an "unavailable" presence from our
+            // own resource. Apparently this happens due to a
+            // Prosody bug, whereby we send an IQ stanza to remove
+            // a roster contact, and Prosody then sends
+            // "unavailable" globally, instead of directed to the
+            // particular user that's removed.
+            //
+            // Here is the bug report: https://prosody.im/issues/1121
+            //
+            // I'm not sure whether this might legitimately happen
+            // in other cases.
+            //
+            // As a workaround for now we simply send our presence again,
+            // otherwise we're treated as offline.
+            _converse.xmppstatus.sendPresence();
+          }
+        },
         presenceHandler: function presenceHandler(presence) {
           var presence_type = presence.getAttribute('type');
 
@@ -72563,50 +72897,16 @@ return __p
           }
 
           var jid = presence.getAttribute('from'),
-              bare_jid = Strophe.getBareJidFromJid(jid),
-              resource = Strophe.getResourceFromJid(jid),
-              chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
-              status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
-              contact = this.get(bare_jid);
+              bare_jid = Strophe.getBareJidFromJid(jid);
 
           if (this.isSelf(bare_jid)) {
-            if (_converse.connection.jid !== jid && presence_type !== 'unavailable' && (_converse.synchronize_availability === true || _converse.synchronize_availability === resource)) {
-              // Another resource has changed its status and
-              // synchronize_availability option set to update,
-              // we'll update ours as well.
-              _converse.xmppstatus.save({
-                'status': chat_status
-              });
-
-              if (status_message) {
-                _converse.xmppstatus.save({
-                  'status_message': status_message
-                });
-              }
-            }
-
-            if (_converse.jid === jid && presence_type === 'unavailable') {
-              // XXX: We've received an "unavailable" presence from our
-              // own resource. Apparently this happens due to a
-              // Prosody bug, whereby we send an IQ stanza to remove
-              // a roster contact, and Prosody then sends
-              // "unavailable" globally, instead of directed to the
-              // particular user that's removed.
-              //
-              // Here is the bug report: https://prosody.im/issues/1121
-              //
-              // I'm not sure whether this might legitimately happen
-              // in other cases.
-              //
-              // As a workaround for now we simply send our presence again,
-              // otherwise we're treated as offline.
-              _converse.xmppstatus.sendPresence();
-            }
-
-            return;
+            return this.handleOwnPresence(presence);
           } else if (sizzle("query[xmlns=\"".concat(Strophe.NS.MUC, "\"]"), presence).length) {
             return; // Ignore MUC
           }
+
+          var status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
+              contact = this.get(bare_jid);
 
           if (contact && status_message !== contact.get('status')) {
             contact.save({
@@ -72623,10 +72923,11 @@ return __p
           } else if (presence_type === 'subscribe') {
             this.handleIncomingSubscription(presence);
           } else if (presence_type === 'unavailable' && contact) {
-            contact.removeResource(resource);
+            var resource = Strophe.getResourceFromJid(jid);
+            contact.presence.removeResource(resource);
           } else if (contact) {
             // presence_type is undefined
-            contact.addResource(presence);
+            contact.presence.addResource(presence);
           }
         }
       });
@@ -72643,7 +72944,7 @@ return __p
       _converse.RosterGroups = Backbone.Collection.extend({
         model: _converse.RosterGroup,
         fetchRosterGroups: function fetchRosterGroups() {
-          var _this4 = this;
+          var _this6 = this;
 
           /* Fetches all the roster groups from sessionStorage.
           *
@@ -72651,7 +72952,7 @@ return __p
           * returned.
           */
           return new Promise(function (resolve, reject) {
-            _this4.fetch({
+            _this6.fetch({
               silent: true,
               // We need to first have all groups before
               // we can start positioning them, so we set
@@ -72661,9 +72962,44 @@ return __p
           });
         }
       });
+
+      _converse.unregisterPresenceHandler = function () {
+        if (!_.isUndefined(_converse.presence_ref)) {
+          _converse.connection.deleteHandler(_converse.presence_ref);
+
+          delete _converse.presence_ref;
+        }
+      };
       /********** Event Handlers *************/
 
+
+      _converse.api.listen.on('beforeTearDown', _converse.unregisterPresenceHandler());
+
+      _converse.api.listen.on('afterTearDown', function () {
+        if (_converse.presences) {
+          _converse.presences.off().reset(); // Remove presences
+
+        }
+      });
+
+      _converse.api.listen.on('clearSession', function () {
+        if (_converse.presences) {
+          _converse.presences.browserStorage._clear();
+        }
+      });
+
       _converse.api.listen.on('statusInitialized', function (reconnecting) {
+        if (!reconnecting) {
+          _converse.presences = new _converse.Presences();
+          _converse.presences.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.presences-".concat(_converse.bare_jid)));
+
+          _converse.presences.fetch();
+        }
+
+        _converse.emit('presencesInitialized', reconnecting);
+      });
+
+      _converse.api.listen.on('presencesInitialized', function (reconnecting) {
         if (reconnecting) {
           // No need to recreate the roster, otherwise we lose our
           // cached data. However we still emit an event, to give
@@ -73520,7 +73856,7 @@ return __p
 define('tpl!rooms_list', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<a href="#" class="rooms-toggle open-rooms-toggle" title="' +
+__p += '<a href="#" class="rooms-toggle open-rooms-toggle controlbox-padded" title="' +
 __e(o.desc_rooms) +
 '">\n    <span class="fa ';
  if (o.toggle_state === o._converse.OPENED) { ;
@@ -73538,7 +73874,7 @@ return __p
 define('tpl!rooms_list_item', ['lodash'], function(_) {return function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<div class="list-item available-chatroom d-flex flex-row ';
+__p += '<div class="list-item controlbox-padded available-chatroom d-flex flex-row ';
  if (o.num_unread_general) { ;
 __p += ' unread-msgs ';
  } ;
@@ -73774,7 +74110,7 @@ return __p
         insertIntoControlBox: function insertIntoControlBox() {
           var controlboxview = _converse.chatboxviews.get('controlbox');
 
-          if (!_.isUndefined(controlboxview) && !_converse.root.contains(this.el)) {
+          if (!_.isUndefined(controlboxview) && !u.rootContains(_converse.root, this.el)) {
             var el = controlboxview.el.querySelector('.open-rooms-list');
 
             if (!_.isNull(el)) {

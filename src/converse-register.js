@@ -62,16 +62,21 @@
 
             LoginPanel: {
 
-                render: function (cfg) {
+                insertRegisterLink () {
+                    const { _converse } = this.__super__;
+                    if (_.isUndefined(this.registerlinkview)) {
+                        this.registerlinkview = new _converse.RegisterLinkView({'model': this.model});
+                        this.registerlinkview.render();
+                        this.el.querySelector('.buttons').insertAdjacentElement('beforeend', this.registerlinkview.el);
+                    }
+                    this.registerlinkview.render();
+                },
+
+                render (cfg) {
                     const { _converse } = this.__super__;
                     this.__super__.render.apply(this, arguments);
-                    if (_converse.allow_registration) {
-                        if (_.isUndefined(this.registerlinkview)) {
-                            this.registerlinkview = new _converse.RegisterLinkView({'model': this.model});
-                            this.registerlinkview.render();
-                            this.el.querySelector('.buttons').insertAdjacentElement('beforeend', this.registerlinkview.el);
-                        }
-                        this.registerlinkview.render();
+                    if (_converse.allow_registration && !_converse.auto_login) {
+                        this.insertRegisterLink();
                     }
                     return this;
                 }
@@ -139,9 +144,10 @@
             _converse.CONNECTION_STATUS[Strophe.Status.NOTACCEPTABLE] = 'NOTACCEPTABLE';
 
             _converse.api.settings.update({
-                allow_registration: true,
-                domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
-                providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
+                'allow_registration': true,
+                'domain_placeholder': __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
+                'providers_link': 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
+                'registration_domain': ''
             });
 
 

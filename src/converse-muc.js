@@ -741,19 +741,14 @@
                         return true;
                     }
                     const occupant = this.occupants.findOccupant(data);
-                    if (data.type === 'unavailable') {
-                        if (occupant) {
-                            // Even before destroying, we set the new data, so
-                            // that we can for example show the
-                            // disconnection message.
+                    if (data.type === 'unavailable' && occupant) {
+                        if (!_.includes(data.states, converse.MUC_NICK_CHANGED_CODE) && !occupant.isMember()) {
+                            // We only destroy the occupant if this is not a nickname change operation.
+                            // and if they're not on the member lists.
+                            // Before destroying we set the new data, so
+                            // that we can show the disconnection message.
                             occupant.set(data);
-                        }
-                        if (!_.includes(data.states, converse.MUC_NICK_CHANGED_CODE)) {
-                            // We only destroy the occupant if this is not a
-                            // nickname change operation.
-                            if (occupant) {
-                                occupant.destroy();
-                            }
+                            occupant.destroy();
                             return;
                         }
                     }
@@ -771,12 +766,13 @@
 
                 parsePresence (pres) {
                     const from = pres.getAttribute("from"),
+                          type = pres.getAttribute("type"),
                           data = {
                             'from': from,
                             'nick': Strophe.getResourceFromJid(from),
-                            'type': pres.getAttribute("type"),
+                            'type': type,
                             'states': [],
-                            'show': 'online'
+                            'show': type !== 'unavailable' ? 'online' : 'offline'
                           };
                     _.each(pres.childNodes, function (child) {
                         switch (child.nodeName) {
@@ -989,17 +985,26 @@
                 },
 
                 onAvatarChanged () {
-                    const vcard = _converse.vcards.findWhere({'jid': this.get('from')});
-                    if (!vcard) { return; }
-
                     const hash = this.get('image_hash');
-                    if (hash && vcard.get('image_hash') !== hash) {
-                        _converse.api.vcard.update(vcard);
+                    const vcards = [];
+                    if (this.get('jid')) {
+                        vcards.push(this.updateVCard(_converse.vcards.findWhere({'jid': this.get('jid')})));
                     }
+                    vcards.push(this.updateVCard(_converse.vcards.findWhere({'jid': this.get('from')})));
+
+                    _.forEach(_.filter(vcards, undefined), (vcard) => {
+                        if (hash && vcard.get('image_hash') !== hash) {
+                            _converse.api.vcard.update(vcard);
+                        }
+                    });
                 },
 
                 getDisplayName () {
                     return this.get('nick') || this.get('jid');
+                },
+
+                isMember () {
+                    return _.includes(['admin', 'owner', 'member'], this.get('affiliation'));
                 }
             });
 
@@ -1032,6 +1037,7 @@
                             // Remove absent occupants who've been removed from
                             // the members lists.
                             const occupant = this.findOccupant({'jid': removed_jid});
+                            if (!occupant) { return; }
                             if (occupant.get('show') === 'offline') {
                                 occupant.destroy();
                             }

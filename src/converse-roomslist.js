@@ -181,8 +181,7 @@
 
                 insertIntoControlBox () {
                     const controlboxview = _converse.chatboxviews.get('controlbox');
-                    if (!_.isUndefined(controlboxview) &&
-                            !_converse.root.contains(this.el)) {
+                    if (!_.isUndefined(controlboxview) && !u.rootContains(_converse.root, this.el)) {
                         const el = controlboxview.el.querySelector('.open-rooms-list');
                         if (!_.isNull(el)) {
                             el.parentNode.replaceChild(this.el, el);

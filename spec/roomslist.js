@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["jasmine", "mock", "converse-core", "converse-roomslist", "test-utils"], factory);
-} (this, function (jasmine, mock, converse, roomslist, test_utils) {
+    define(["jasmine", "mock", "test-utils"], factory);
+} (this, function (jasmine, mock, test_utils) {
     var _ = converse.env._;
     var $msg = converse.env.$msg;
     var Promise = converse.env.Promise;

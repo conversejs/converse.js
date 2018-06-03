@@ -2,12 +2,10 @@
     define([
         "jquery",
         "jasmine",
-        "utils",
-        "converse-core",
         "mock",
         "test-utils"
         ], factory);
-} (this, function ($, jasmine, utils, converse, mock, test_utils) {
+} (this, function ($, jasmine, mock, test_utils) {
     "use strict";
     var _ = converse.env._;
     var $iq = converse.env.$iq;
@@ -630,7 +628,7 @@
             */
             sinon.spy(_converse, 'log');
             sinon.spy(_converse.chatboxes, 'getChatBox');
-            sinon.spy(utils, 'isHeadlineMessage');
+            sinon.spy(u, 'isHeadlineMessage');
             var msg = $msg({
                     from: 'localhost',
                     to: _converse.bare_jid,
@@ -642,13 +640,13 @@
                 "onMessage: Ignoring incoming headline message sent with type 'chat' from JID: localhost",
                 Strophe.LogLevel.INFO
             )).toBeTruthy();
-            expect(utils.isHeadlineMessage.called).toBeTruthy();
-            expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
+            expect(u.isHeadlineMessage.called).toBeTruthy();
+            expect(u.isHeadlineMessage.returned(true)).toBeTruthy();
             expect(_converse.chatboxes.getChatBox.called).toBeFalsy();
             // Remove sinon spies
             _converse.log.restore();
             _converse.chatboxes.getChatBox.restore();
-            utils.isHeadlineMessage.restore();
+            u.isHeadlineMessage.restore();
             done();
         }));
 

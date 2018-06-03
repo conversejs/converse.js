@@ -2,12 +2,10 @@
     define([
         "jquery",
         "jasmine",
-        "utils",
-        "converse-core",
         "mock",
         "test-utils"
         ], factory);
-} (this, function ($, jasmine, utils, converse, mock, test_utils) {
+} (this, function ($, jasmine, mock, test_utils) {
     "use strict";
     var _ = converse.env._;
     var $iq = converse.env.$iq;
@@ -458,7 +456,7 @@
                     var timeout = false;
 
                     test_utils.waitUntil(function () {
-                        return utils.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container'));
+                        return u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container'));
                     }, 500).then(function () {
                         var picker = view.el.querySelector('.toggle-smiley .emoji-picker-container');
                         var items = picker.querySelectorAll('.emoji-picker li');

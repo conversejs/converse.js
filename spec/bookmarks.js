@@ -4,12 +4,10 @@
     define([
         "jasmine",
         "jquery",
-        "converse-core",
-        "utils",
         "mock",
         "test-utils"
         ], factory);
-} (this, function (jasmine, $, converse, utils, mock, test_utils) {
+} (this, function (jasmine, $, mock, test_utils) {
     "use strict";
     var $iq = converse.env.$iq,
         $msg = converse.env.$msg,

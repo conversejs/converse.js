@@ -8252,6 +8252,13 @@ body.reset {
     #conversejs .list-container .items-list .open-headline:hover,
     #conversejs .list-container .items-list .open-chatroom:hover {
       background-color: #eff4f7; }
+      #conversejs .list-container .items-list .available-chatroom:hover a.add-bookmark,
+      #conversejs .list-container .items-list .available-chatroom:hover a.room-info,
+      #conversejs .list-container .items-list .open-headline:hover a.add-bookmark,
+      #conversejs .list-container .items-list .open-headline:hover a.room-info,
+      #conversejs .list-container .items-list .open-chatroom:hover a.add-bookmark,
+      #conversejs .list-container .items-list .open-chatroom:hover a.room-info {
+        display: block !important; }
     #conversejs .list-container .items-list .available-chatroom.unread-msgs .msgs-indicator,
     #conversejs .list-container .items-list .open-headline.unread-msgs .msgs-indicator,
     #conversejs .list-container .items-list .open-chatroom.unread-msgs .msgs-indicator {
@@ -8269,10 +8276,18 @@ body.reset {
     #conversejs .list-container .items-list .open-headline a:hover,
     #conversejs .list-container .items-list .open-chatroom a:hover {
       color: #206485; }
-    #conversejs .list-container .items-list .available-chatroom a.room-info:before,
-    #conversejs .list-container .items-list .open-headline a.room-info:before,
-    #conversejs .list-container .items-list .open-chatroom a.room-info:before {
-      font-size: 15px; }
+    #conversejs .list-container .items-list .available-chatroom a.add-bookmark, #conversejs .list-container .items-list .available-chatroom a.room-info,
+    #conversejs .list-container .items-list .open-headline a.add-bookmark,
+    #conversejs .list-container .items-list .open-headline a.room-info,
+    #conversejs .list-container .items-list .open-chatroom a.add-bookmark,
+    #conversejs .list-container .items-list .open-chatroom a.room-info {
+      display: none; }
+      #conversejs .list-container .items-list .available-chatroom a.add-bookmark:before, #conversejs .list-container .items-list .available-chatroom a.room-info:before,
+      #conversejs .list-container .items-list .open-headline a.add-bookmark:before,
+      #conversejs .list-container .items-list .open-headline a.room-info:before,
+      #conversejs .list-container .items-list .open-chatroom a.add-bookmark:before,
+      #conversejs .list-container .items-list .open-chatroom a.room-info:before {
+        font-size: 15px; }
     #conversejs .list-container .items-list .available-chatroom a.open-room,
     #conversejs .list-container .items-list .open-headline a.open-room,
     #conversejs .list-container .items-list .open-chatroom a.open-room {

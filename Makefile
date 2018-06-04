@@ -74,7 +74,7 @@ serve_bg: dev
 GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.3.4 -c
 
 .PHONY: pot
-pot: dist/converse-no-dependencies.js
+pot: dist/converse-no-dependencies-es2015.js
 	$(GETTEXT) 2>&1 > /dev/null; exit $$?;
 
 .PHONY: po
@@ -184,12 +184,28 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 	$(OXIPNG) $@
 
 BUILDS = dist/converse.js \
-		 dist/converse.min.js
+		 dist/converse.min.js \
+         dist/converse-headless.js \
+		 dist/converse-headless.min.js \
+		 dist/converse-no-dependencies.min.js \
+		 dist/converse-no-dependencies.js \
+		 dist/converse-no-dependencies-es5.js
 
-dist/converse.js: transpile src stamp-npm
+dist/converse.js: src webpack.config.js stamp-npm
+	./node_modules/.bin/npx  webpack --mode=development
+dist/converse.min.js: src webpack.config.js stamp-npm
 	./node_modules/.bin/npx  webpack --mode=production
-dist/converse.min.js: transpile src stamp-npm
-	./node_modules/.bin/npx  webpack --mode=production
+dist/converse-headless.js: src webpack.config.js stamp-npm
+	./node_modules/.bin/npx  webpack --mode=development --type=headless
+dist/converse-headless.min.js: src webpack.config.js stamp-npm
+	./node_modules/.bin/npx  webpack --mode=production --type=headless
+dist/converse-no-dependencies.js: src webpack.config.js stamp-npm
+	./node_modules/.bin/npx  webpack --mode=development --type=nodeps
+dist/converse-no-dependencies.min.js: src webpack.config.js stamp-npm
+	./node_modules/.bin/npx  webpack --mode=production --type=nodeps 
+dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm
+	./node_modules/.bin/npx  webpack --mode=development --type=nodeps --lang=es2015
+
 
 .PHONY: dist
 dist:: build

@@ -1,5 +1,6 @@
 /*global path, __dirname, module */
 'use strict'
+const minimist = require('minimist');
 const path = require('path');
 
 const config = {
@@ -151,5 +152,78 @@ const config = {
         }
     }
 }
+
+function getCLIArgument (name) {
+    return value;
+}
+
+function extend (o1, o2) {
+	for (let i in o2) {
+		if (o2.hasOwnProperty(i)) {
+			o1[i] = o2[i];
+		}
+	}
+};
+
+function parameterize () {
+    const type = minimist(process.argv.slice(2)).type;
+    const mode = minimist(process.argv.slice(2)).mode;
+    const lang = minimist(process.argv.slice(2)).lang;
+
+	if (type === 'headless') {
+		console.log("Making a headless build");
+		extend(config, {
+			entry: path.resolve(__dirname, 'src/headless.js'),
+			output: {
+				path: path.resolve(__dirname, 'dist'),
+				filename: 'converse-headless.js'
+			},
+		});
+	}
+
+	if (type === 'nodeps') {
+		console.log("Making a build without 3rd party dependencies");
+		extend(config, {
+			entry: path.resolve(__dirname, 'src/converse.js'),
+			externals: [{
+				"awesomplete": "awesomplete",
+				"backbone.browserStorage": "backbone.browserStorage",
+				"backbone.overview": "backbone.overview",
+				"es6-promise": "es6-promise",
+				"lodash": "lodash",
+				"lodash.converter": "lodash.converter",
+				"lodash.noconflict": "lodash.noconflict",
+				"moment": "moment",
+				"strophe": "strophe",
+				"strophe.ping": "strophe.ping",
+				"strophe.rsm": "strophe.rsm",
+				"window": "window"
+			}],
+			output: {
+				path: path.resolve(__dirname, 'dist'),
+				filename: 'converse-no-dependencies.js'
+			},
+		});
+	}
+
+	if (mode === 'production') {
+		console.log("Making a production build");
+        let fn = config.output.filename;
+        config.output.filename = `${fn.replace(/\.js$/, '')}.min.js`;
+	}
+
+	if (lang === 'es2015') {
+		console.log("Making an es2015 build");
+        config.module.rules.forEach((rule) => {
+            if (rule.use.loader === 'babel-loader') {
+                rule.use.options.presets = [
+                    ["@babel/preset-es2015"]
+                ]
+            }
+        });
+	}
+}
+
+parameterize();
 
 module.exports = config;

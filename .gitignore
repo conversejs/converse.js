@@ -12,6 +12,8 @@
 .idea
 .su?
 builds/*
+*.map
+dist/converse-no-dependencies-es2015.js
 
 analytics.js
 inverse-analytics.js

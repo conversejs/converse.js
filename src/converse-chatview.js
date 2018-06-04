@@ -100,10 +100,11 @@
                 { __ } = _converse;
 
             _converse.api.settings.update({
-                'use_emojione': false,
                 'emojione_image_path': emojione.imagePathPNG,
+                'show_send_button': false,
                 'show_toolbar': true,
                 'time_format': 'HH:mm',
+                'use_emojione': false,
                 'visible_toolbar_buttons': {
                     'call': false,
                     'clear': true,
@@ -320,16 +321,17 @@
 
                 events: {
                     'change input.fileupload': 'onFileSelection',
+                    'click .chatbox-navback': 'showControlBox',
                     'click .close-chatbox-button': 'close',
-                    'click .show-user-details-modal': 'showUserDetailsModal',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .send-button': 'onFormSubmitted',
+                    'click .show-user-details-modal': 'showUserDetailsModal',
+                    'click .spoiler-toggle': 'toggleSpoilerMessage',
                     'click .toggle-call': 'toggleCall',
                     'click .toggle-clear': 'clearMessages',
                     'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-smiley': 'toggleEmojiMenu',
-                    'click .spoiler-toggle': 'toggleSpoilerMessage',
                     'click .upload-file': 'toggleFileUpload',
                     'keypress .chat-textarea': 'keyPressed',
                     'input .chat-textarea': 'inputChanged'
@@ -410,6 +412,13 @@
                             'unread_msgs': __('You have unread messages')
                         }));
                     this.renderToolbar();
+                },
+
+                showControlBox () {
+                    // Used in mobile view, to navigate back to the controlbox
+                    const view = _converse.chatboxviews.get('controlbox');
+                    view.show();
+                    this.hide();
                 },
 
                 showUserDetailsModal (ev) {

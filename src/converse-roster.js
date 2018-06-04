@@ -22,6 +22,12 @@
             const { _converse } = this,
                   { __ } = _converse;
 
+            _converse.api.settings.update({
+                'allow_contact_requests': true,
+                'auto_subscribe': false,
+                'synchronize_availability': true,
+            });
+
             _converse.api.promises.add([
                 'cachedRoster',
                 'roster',
@@ -48,6 +54,13 @@
                 _converse.roster = new _converse.RosterContacts();
                 _converse.roster.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                     b64_sha1(`converse.contacts-${_converse.bare_jid}`));
+
+                _converse.roster.data = new Backbone.Model();
+                const id = b64_sha1(`converse-roster-model-${_converse.bare_jid}`);
+                _converse.roster.data.id = id;
+                _converse.roster.data.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+                _converse.roster.data.fetch();
+
                 _converse.rostergroups = new _converse.RosterGroups();
                 _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                     b64_sha1(`converse.roster.groups${_converse.bare_jid}`));
@@ -330,28 +343,28 @@
 
                 onConnected () {
                     /* Called as soon as the connection has been established
-                    * (either after initial login, or after reconnection).
-                    *
-                    * Use the opportunity to register stanza handlers.
-                    */
+                     * (either after initial login, or after reconnection).
+                     *
+                     * Use the opportunity to register stanza handlers.
+                     */
                     this.registerRosterHandler();
                     this.registerRosterXHandler();
                 },
 
                 registerRosterHandler () {
                     /* Register a handler for roster IQ "set" stanzas, which update
-                    * roster contacts.
-                    */
-                    _converse.connection.addHandler(
-                        _converse.roster.onRosterPush.bind(_converse.roster),
-                        Strophe.NS.ROSTER, 'iq', "set"
-                    );
+                     * roster contacts.
+                     */
+                    _converse.connection.addHandler((iq) => {
+                        _converse.roster.onRosterPush(iq);
+                        return true;
+                    }, Strophe.NS.ROSTER, 'iq', "set");
                 },
 
                 registerRosterXHandler () {
                     /* Register a handler for RosterX message stanzas, which are
-                    * used to suggest roster contacts to a user.
-                    */
+                     * used to suggest roster contacts to a user.
+                     */
                     let t = 0;
                     _converse.connection.addHandler(
                         function (msg) {
@@ -375,12 +388,14 @@
                      * Returns a promise which resolves once the contacts have been
                      * fetched.
                      */
+                    const that = this;
                     return new Promise((resolve, reject) => {
                         this.fetch({
                             'add': true,
                             'silent': true,
                             success (collection) {
-                                if (collection.length === 0) {
+                                if (collection.length === 0 || 
+                                        (that.rosterVersioningSupported() && !_converse.session.get('roster_fetched'))) {
                                     _converse.send_initial_presence = true;
                                     _converse.roster.fetchFromServer().then(resolve).catch(reject);
                                 } else {
@@ -506,30 +521,44 @@
 
                 onRosterPush (iq) {
                     /* Handle roster updates from the XMPP server.
-                    * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
-                    *
-                    * Parameters:
-                    *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
-                    */
+                     * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
+                     *
+                     * Parameters:
+                     *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
+                     */
                     const id = iq.getAttribute('id');
                     const from = iq.getAttribute('from');
-                    if (from && from !== "" && Strophe.getBareJidFromJid(from) !== _converse.bare_jid) {
-                        // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
-                        // XXX: Some naughty servers apparently send from a full
-                        // JID so we need to explicitly compare bare jids here.
-                        // https://github.com/jcbrand/converse.js/issues/493
-                        _converse.connection.send(
-                            $iq({type: 'error', id, from: _converse.connection.jid})
-                                .c('error', {'type': 'cancel'})
-                                .c('service-unavailable', {'xmlns': Strophe.NS.ROSTER })
-                        );
-                        return true;
+                    if (from && from !== _converse.connection.jid) {
+                        // https://tools.ietf.org/html/rfc6121#page-15
+                        // 
+                        // A receiving client MUST ignore the stanza unless it has no 'from'
+                        // attribute (i.e., implicitly from the bare JID of the user's
+                        // account) or it has a 'from' attribute whose value matches the
+                        // user's bare JID <user@domainpart>.
+                        return;
                     }
                     _converse.connection.send($iq({type: 'result', id, from: _converse.connection.jid}));
-                    const items = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"] item`, iq);
-                    _.each(items, this.updateContact.bind(this));
+
+                    const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
+                    this.data.save('version', query.getAttribute('ver'));
+
+                    const items = sizzle(`item`, query);
+                    if (items.length > 1) {
+                        _converse.log(iq, Strophe.LogLevel.ERROR);
+                        throw new Error('Roster push query may not contain more than one "item" element.');
+                    }
+                    if (items.length === 0) {
+                        _converse.log(iq, Strophe.LogLevel.WARN);
+                        _converse.log('Received a roster push stanza without an "item" element.', Strophe.LogLevel.WARN);
+                        return;
+                    }
+                    this.updateContact(items.pop());
                     _converse.emit('rosterPush', iq);
-                    return true;
+                    return;
+                },
+
+                rosterVersioningSupported () {
+                    return _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
                 },
 
                 fetchFromServer () {
@@ -539,7 +568,9 @@
                             'type': 'get',
                             'id': _converse.connection.getUniqueId('roster')
                         }).c('query', {xmlns: Strophe.NS.ROSTER});
-
+                        if (this.rosterVersioningSupported()) {
+                            iq.attrs({'ver': this.data.get('version')});
+                        }
                         const callback = _.flow(this.onReceivedFromServer.bind(this), resolve);
                         const errback = function (iq) {
                             const errmsg = "Error while trying to fetch roster from the server";
@@ -552,17 +583,22 @@
 
                 onReceivedFromServer (iq) {
                     /* An IQ stanza containing the roster has been received from
-                    * the XMPP server.
-                    */
-                    const items = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"] item`, iq);
-                    _.each(items, this.updateContact.bind(this));
+                     * the XMPP server.
+                     */
+                    const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
+                    if (query) {
+                        const items = sizzle(`item`, query);
+                        _.each(items, (item) => this.updateContact(item));
+                        this.data.save('version', query.getAttribute('ver'));
+                        _converse.session.save('roster_fetched', true);
+                    }
                     _converse.emit('roster', iq);
                 },
 
                 updateContact (item) {
                     /* Update or create RosterContact models based on items
-                    * received in the IQ from the server.
-                    */
+                     * received in the IQ from the server.
+                     */
                     const jid = item.getAttribute('jid');
                     if (this.isSelf(jid)) { return; }
 

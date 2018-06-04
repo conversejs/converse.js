@@ -62,7 +62,9 @@
             // Refer to docs/source/configuration.rst for explanations of these
             // configuration settings.
             _converse.api.settings.update({
-                auto_join_private_chats: [],
+                'filter_by_resource': false,
+                'auto_join_private_chats': [],
+                'forward_messages': false,
             });
             _converse.api.promises.add([
                 'chatBoxesFetched',
@@ -719,9 +721,6 @@
                                 // Perhaps inside a web component?
                                 _converse.root.appendChild(el);
                             }
-                        }
-                        if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
-                            el.classList.add('fullscreen');
                         }
                         el.innerHTML = '';
                         this.setElement(el, false);

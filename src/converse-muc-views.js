@@ -492,8 +492,10 @@
                 is_chatroom: true,
                 events: {
                     'change input.fileupload': 'onFileSelection',
+                    'click .chatbox-navback': 'showControlBox',
                     'click .close-chatbox-button': 'close',
                     'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
+                    'click .hide-occupants': 'hideOccupants',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant-nick': 'onOccupantClicked',
                     'click .send-button': 'onFormSubmitted',
@@ -697,13 +699,30 @@
                 setOccupantsVisibility () {
                     const icon_el = this.el.querySelector('.toggle-occupants');
                     if (this.model.get('hidden_occupants')) {
-                        this.el.querySelector('.chat-area').classList.add('full');
+                        u.removeClass('fa-angle-double-right', icon_el);
+                        u.addClass('fa-angle-double-left', icon_el);
+                        u.addClass('full', this.el.querySelector('.chat-area'));
                         u.hideElement(this.el.querySelector('.occupants'));
                     } else {
-                        this.el.querySelector('.chat-area').classList.remove('full');
-                        this.el.querySelector('.occupants').classList.remove('hidden');
+                        u.addClass('fa-angle-double-right', icon_el);
+                        u.removeClass('fa-angle-double-left', icon_el);
+                        u.removeClass('full', this.el.querySelector('.chat-area'));
+                        u.removeClass('hidden', this.el.querySelector('.occupants'));
                     }
                     this.occupantsview.setOccupantsHeight();
+                },
+
+                hideOccupants (ev, preserve_state) {
+                    /* Show or hide the right sidebar containing the chat
+                     * occupants (and the invite widget).
+                     */
+                    if (ev) {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                    }
+                    this.model.save({'hidden_occupants': true});
+                    this.setOccupantsVisibility();
+                    this.scrollDown();
                 },
 
                 toggleOccupants (ev, preserve_state) {
@@ -1535,8 +1554,8 @@
                 className: 'controlbox-section',
                 id: 'chatrooms',
                 events: {
-                    'click a.chatbox-btn.fa-users': 'showAddRoomModal',
-                    'click a.chatbox-btn.fa-list-ul': 'showListRoomsModal',
+                    'click a.chatbox-btn.show-add-muc-modal': 'showAddRoomModal',
+                    'click a.chatbox-btn.show-list-muc-modal': 'showListRoomsModal',
                     'click a.room-info': 'toggleRoomInfo'
                 },
 

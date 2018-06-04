@@ -80,7 +80,9 @@
             _converse.api.settings.update({
                 'allow_chat_pending_contacts': true,
                 'allow_contact_removal': true,
+                'hide_offline_users': false,
                 'roster_groups': true,
+                'show_only_online_users': false,
                 'show_toolbar': true,
                 'xhr_user_search_url': null
             });

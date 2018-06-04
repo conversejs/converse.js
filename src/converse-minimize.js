@@ -52,16 +52,6 @@
             //
             // New functions which don't exist yet can also be added.
 
-            registerGlobalEventHandlers () {
-                const { _converse } = this.__super__;
-                window.addEventListener("resize", _.debounce(function (ev) {
-                    if (_converse.connection.connected) {
-                        _converse.chatboxviews.trimChats();
-                    }
-                }, 200));
-                return this.__super__.registerGlobalEventHandlers.apply(this, arguments);
-            },
-
             ChatBox: {
                 initialize () {
                     this.__super__.initialize.apply(this, arguments);
@@ -540,6 +530,15 @@
                 });
                 _converse.emit('minimizedChatsInitialized');
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
+
+            _converse.on('registeredGlobalEventHandlers', function () {
+                window.addEventListener("resize", _.debounce(function (ev) {
+                    if (_converse.connection.connected) {
+                        _converse.chatboxviews.trimChats();
+                    }
+                }, 200));
+            });
 
             _converse.on('controlBoxOpened', function (chatbox) {
                 // Wrapped in anon method because at scan time, chatboxviews

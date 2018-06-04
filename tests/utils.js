@@ -107,7 +107,7 @@
         return new Promise(function (resolve, reject) {
             utils.openControlBox(_converse);
             var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
-            roomspanel.el.querySelector('.trigger-add-chatrooms-modal').click();
+            roomspanel.el.querySelector('.show-add-muc-modal').click();
             utils.closeControlBox(_converse);
             const modal = roomspanel.add_room_modal;
             utils.waitUntil(function () {

@@ -357,7 +357,6 @@
 
             .chatbox { 
                 .box-flyout {
-                    top: -100vh;
                     margin-left: 15px; // Counteracts Bootstrap margins, but
                                        // not clear why needed...
                     left: 0;
@@ -393,7 +392,7 @@
     }
 }
 
-#conversejs:not(.converse-fullscreen) {
+#conversejs.converse-overlayed {
     #controlbox {
         order: -1;
         min-width: $controlbox-width !important;
@@ -445,7 +444,8 @@
     }
 }
 
-#conversejs.converse-fullscreen {
+#conversejs.converse-fullscreen,
+#conversejs.converse-mobile {
     #controlbox {
         @include make-col-ready();
         @include media-breakpoint-up(md) {

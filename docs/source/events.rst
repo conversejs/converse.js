@@ -7,7 +7,7 @@
 Events and promises
 ===================
 
-Converse.js and its plugins emit various events which you can listen to via the
+Converse and its plugins emit various events which you can listen to via the
 :ref:`listen-grouping`.
 
 Some of these events are also available as `ES2015 Promises <http://es6-features.org/#PromiseUsage>`_,
@@ -294,24 +294,6 @@ Also available as an `ES2015 Promise <http://es6-features.org/#PromiseUsage>`_:
         // Your code here...
     });
 
-reconnecting
-~~~~~~~~~~~~
-
-Fired once converse.js has determined that it will attempt to reconnect (and
-each subsequent time, if it attempts repeatedly).
-
-reconnected
-~~~~~~~~~~~
-
-After the connection has dropped and converse.js has reconnected.
-Any Strophe stanza handlers (as registered via `converse.listen.stanza`) will
-have to be registered anew.
-
-.. code-block:: javascript
-
-    _converse.api.listen.on('reconnected', function () { ... });
-
-
 privateChatsAutoJoined
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -329,6 +311,33 @@ Also available as an `ES2015 Promise <http://es6-features.org/#PromiseUsage>`_.
     _converse.api.waitUntil('privateChatsAutoJoined').then(function () {
         // Your code here...
     });
+
+
+reconnecting
+~~~~~~~~~~~~
+
+Fired once converse.js has determined that it will attempt to reconnect (and
+each subsequent time, if it attempts repeatedly).
+
+reconnected
+~~~~~~~~~~~
+
+After the connection has dropped and converse.js has reconnected.
+Any Strophe stanza handlers (as registered via `converse.listen.stanza`) will
+have to be registered anew.
+
+.. code-block:: javascript
+
+    _converse.api.listen.on('reconnected', function () { ... });
+
+registeredGlobalEventHandlers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Called once Converse has registered its global event handlers (for events such
+as window resize or unload).
+
+Plugins can listen to this event as cue to register their own global event
+handlers.
 
 roomsAutoJoined
 ---------------
@@ -466,6 +475,14 @@ Similar to `rosterInitialized`, but instead pertaining to reconnection. This
 event indicates that the Backbone collections representing the roster and its
 groups are now again available after converse.js has reconnected.
 
+serviceDiscovered
+~~~~~~~~~~~~~~~~~
+
+When converse.js has learned of a service provided by the XMPP server. See XEP-0030.
+
+``_converse.api.listen.on('serviceDiscovered', function (service) { ... });``
+
+
 .. _`statusInitialized`:
 
 statusInitialized
@@ -497,12 +514,12 @@ When own custom status message has changed.
 
 ``_converse.api.listen.on('statusMessageChanged', function (message) { ... });``
 
-serviceDiscovered
-~~~~~~~~~~~~~~~~~
+streamFeaturesAdded
+~~~~~~~~~~~~~~~~~~~
 
-When converse.js has learned of a service provided by the XMPP server. See XEP-0030.
-
-``_converse.api.listen.on('serviceDiscovered', function (service) { ... });``
+Emitted as soon as Converse has processed the stream features as advertised by
+the server. If you want to check whether a stream feature is supported before
+proceeding, then you'll first want to wait for this event.
 
 windowStateChanged
 ~~~~~~~~~~~~~~~~~~

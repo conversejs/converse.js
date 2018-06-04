@@ -672,7 +672,7 @@ geouri_regex
 Regular expression used to extract geo coordinates from links to openstreetmap.
 
 geouri_replacement
-----------------
+------------------
 
 * Default:  ``'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2'``
 
@@ -710,48 +710,6 @@ current user hasn't joined), are shown.
 Makes sense to set this to ``true`` when also using the non-core
 ``converse-roomslist`` plugin, which shows a list of currently open (i.e.
 "joined") rooms.
-
-include_offline_state
----------------------
-
-* Default: `false`
-
-Originally, converse.js included an `offline` state which the user could
-choose (along with `online`, `busy` and `away`).
-
-Eventually it was however decided to remove this state, since the `offline`
-state doesn't propagate across tabs like the others do.
-
-What's meant by "propagate across tabs", is that when you set the state to
-`offline` in one tab, and you have instances of converse.js open in other tabs
-in your browser, then those instances will not have their states changed to
-`offline` as well. For the other statees the change is however propagated.
-
-The reason for this is that according to the XMPP spec, there is no `offline`
-state. The only defined states are:
-
-* away -- The entity or resource is temporarily away.
-* chat -- The entity or resource is actively interested in chattiIng.
-* dnd -- The entity or resource is busy (dnd = "Do Not Disturb").
-* xa -- The entity or resource is away for an extended period (xa = "eXtended Away").
-
-Read the `relevant section in the XMPP spec <https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show>`_
-for more info.
-
-What used to happen in converse.js when the `offline` state was chosen, is
-that a presence stanza with a `type` of `unavailable` was sent out.
-
-This is actually exactly what happens when you log out of converse.js as well,
-with the notable exception that in the `offline` state, the connection is not
-terminated. So you can at any time change your state to something else and
-start chatting again.
-
-This might be useful to people, however the fact that the `offline` state
-doesn't propagate across tabs means that the user experience is inconsistent,
-confusing and appears "broken".
-
-If you are however aware of this issue and still want to allow the `offline`
-state, then you can set this option to `true` to enable it.
 
 .. _`i18n`:
 

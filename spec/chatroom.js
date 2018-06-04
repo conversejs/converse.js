@@ -3170,7 +3170,7 @@
 
                 test_utils.openControlBox();
                 var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
-                roomspanel.el.querySelector('.trigger-add-chatrooms-modal').click();
+                roomspanel.el.querySelector('.show-add-muc-modal').click();
                 test_utils.closeControlBox(_converse);
                 const modal = roomspanel.add_room_modal;
                 test_utils.waitUntil(function () {
@@ -3205,7 +3205,7 @@
 
                 test_utils.openControlBox();
                 var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
-                roomspanel.el.querySelector('.trigger-list-chatrooms-modal').click();
+                roomspanel.el.querySelector('.show-list-muc-modal').click();
                 test_utils.closeControlBox(_converse);
                 const modal = roomspanel.list_rooms_modal;
                 test_utils.waitUntil(function () {

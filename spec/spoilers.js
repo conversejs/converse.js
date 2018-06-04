@@ -1,7 +1,6 @@
 (function (root, factory) {
     define(["jasmine", "mock", "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
-
     var _ = converse.env._;
     var Strophe = converse.env.Strophe;
     var $msg = converse.env.$msg;

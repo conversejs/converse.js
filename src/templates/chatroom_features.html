@@ -1,44 +1,44 @@
 {[ if (o.has_features) { ]}
-<p class="occupants-heading">{{{o.label_features}}}</p>
+<p class="occupants-heading">{{{o.__('Features')}}}</p>
 {[ } ]}
 <ul class="features-list">
 {[ if (o.passwordprotected) { ]}
-<li class="feature" title="{{{ o.tt_passwordprotected }}}"><span class="fa fa-lock"></span>{{{ o.label_passwordprotected }}}</li>
+<li class="feature" title="{{{ o.__('This room requires a password before entry') }}}"><span class="fa fa-lock"></span>{{{ o.__('Password protected') }}}</li>
 {[ } ]}
 {[ if (o.unsecured) { ]}
-<li class="feature" title="{{{ o.tt_unsecured }}}"><span class="fa fa-unlock"></span>{{{ o.label_unsecured }}}</li>
+<li class="feature" title="{{{ o.__('This room does not require a password upon entry') }}}"><span class="fa fa-unlock"></span>{{{ o.__('No password') }}}</li>
 {[ } ]}
 {[ if (o.hidden) { ]}
-<li class="feature" title="{{{ o.tt_hidden }}}"><span class="fa fa-eye-slash"></span>{{{ o.label_hidden }}}</li>
+<li class="feature" title="{{{ o.__('This room is not publicly searchable') }}}"><span class="fa fa-eye-slash"></span>{{{ o.__('Hidden') }}}</li>
 {[ } ]}
 {[ if (o.public_room) { ]}
-<li class="feature" title="{{{ o.tt_public }}}"><span class="fa fa-eye"></span>{{{ o.label_public }}}</li>
+<li class="feature" title="{{{ o.__('This room is publicly searchable') }}}"><span class="fa fa-eye"></span>{{{ o.__('Public') }}}</li>
 {[ } ]}
 {[ if (o.membersonly) { ]}
-<li class="feature" title="{{{ o.tt_membersonly }}}"><span class="fa fa-address-book"></span>{{{ o.label_membersonly }}}</li>
+<li class="feature" title="{{{ o.__('this room is restricted to members only') }}}"><span class="fa fa-address-book"></span>{{{ o.__('Members only') }}}</li>
 {[ } ]}
 {[ if (o.open) { ]}
-<li class="feature" title="{{{ o.tt_open }}}"><span class="fa fa-globe"></span>{{{ o.label_open }}}</li>
+<li class="feature" title="{{{ o.__('Anyone can join this room') }}}"><span class="fa fa-globe"></span>{{{ o.__('Open') }}}</li>
 {[ } ]}
 {[ if (o.persistent) { ]}
-<li class="feature" title="{{{ o.tt_persistent }}}"><span class="fa fa-save"></span>{{{ o.label_persistent }}}</li>
+<li class="feature" title="{{{ o.__('This room persists even if it\'s unoccupied') }}}"><span class="fa fa-save"></span>{{{ o.__('Persistent') }}}</li>
 {[ } ]}
 {[ if (o.temporary) { ]}
-<li class="feature" title="{{{ o.tt_temporary }}}"><span class="fa fa-snowflake-o"></span>{{{ o.label_temporary }}}</li>
+<li class="feature" title="{{{ o.__('This room will disappear once the last person leaves') }}}"><span class="fa fa-snowflake-o"></span>{{{ o.__('Temporary') }}}</li>
 {[ } ]}
 {[ if (o.nonanonymous) { ]}
-<li class="feature" title="{{{ o.tt_nonanonymous }}}"><span class="fa fa-id-card"></span>{{{ o.label_nonanonymous }}}</li>
+<li class="feature" title="{{{ o.__('All other room occupants can see your XMPP username') }}}"><span class="fa fa-id-card"></span>{{{ o.__('Not anonymous') }}}</li>
 {[ } ]}
 {[ if (o.semianonymous) { ]}
-<li class="feature" title="{{{ o.tt_semianonymous }}}"><span class="fa fa-user-secret"></span>{{{ o.label_semianonymous }}}</li>
+<li class="feature" title="{{{ o.__('Only moderators can see your XMPP username') }}}"><span class="fa fa-user-secret"></span>{{{ o.__('Semi-anonymous') }}}</li>
 {[ } ]}
 {[ if (o.moderated) { ]}
-<li class="feature" title="{{{ o.tt_moderated }}}"><span class="fa fa-gavel"></span>{{{ o.label_moderated }}}</li>
+<li class="feature" title="{{{ o.__('This room is being moderated') }}}"><span class="fa fa-gavel"></span>{{{ o.__('Moderated') }}}</li>
 {[ } ]}
 {[ if (o.unmoderated) { ]}
-<li class="feature" title="{{{ o.tt_unmoderated }}}"><span class="fa fa-info-circle"></span>{{{ o.label_unmoderated }}}</li>
+<li class="feature" title="{{{ o.__('This room is not being moderated') }}}"><span class="fa fa-info-circle"></span>{{{ o.__('Not moderated') }}}</li>
 {[ } ]}
 {[ if (o.mam_enabled) { ]}
-<li class="feature" title="{{{ o.tt_mam_enabled }}}"><span class="fa fa-database"></span>{{{ o.label_mam_enabled }}}</li>
+<li class="feature" title="{{{ o.__('Messages are archived on the server') }}}"><span class="fa fa-database"></span>{{{ o.__('Message archiving') }}}</li>
 {[ } ]}
 </ul>

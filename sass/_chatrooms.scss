@@ -7,6 +7,31 @@
         }
     }
 
+    #room-details-modal {
+        .features-list {
+            margin-left: 1em;
+        }
+    }
+
+    .chatroom-features {
+        width: 100%;
+        .features-list {
+            padding-top: 0;
+            .feature {
+                width: 100%;
+                margin-right: 0.5em;
+                padding-right: 0;
+                font-size: 1em;
+                cursor: help;
+                .fa {
+                    margin-right: 0.5em;
+                    color: $text-color;
+                }
+            }
+        }
+    }
+
+
     .chat-head-chatroom {
         background-color: $chatroom-head-color;
 
@@ -133,16 +158,6 @@
                         }
                     }
 
-                    .chatroom-features {
-                        width: 100%;
-                        .feature {
-                            float: left;
-                            margin-right: 0.5em;
-                            padding-right: 0;
-                            font-size: 1em;
-                            cursor: help;
-                        }
-                    }
                     .awesomplete {
                         ul {
                             padding: 0;
@@ -163,15 +178,6 @@
                             flex-basis: 0;
                             flex-grow: 1;
                             border-bottom: 1px solid lightgrey;
-                        }
-                        &.features-list {
-                            padding-top: 0;
-                            .feature {
-                                width: 100%;
-                                .fa {
-                                    color: $text-color;
-                                }
-                            }
                         }
                         li {
                             cursor: default;

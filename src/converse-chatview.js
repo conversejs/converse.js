@@ -422,6 +422,7 @@
                 },
 
                 showUserDetailsModal (ev) {
+                    ev.preventDefault();
                     if (_.isUndefined(this.user_details_modal)) {
                         this.user_details_modal = new _converse.UserDetailsModal({model: this.model});
                     }

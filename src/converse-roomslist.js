@@ -45,6 +45,7 @@
 
 
             _converse.OpenRooms = Backbone.Collection.extend({
+
                 comparator (room) {
                     if (room.get('bookmarked')) {
                         const bookmark = _.head(_converse.bookmarksview.model.where({'jid': room.get('jid')}));
@@ -97,6 +98,10 @@
             });
 
             _converse.RoomsListElementView = Backbone.VDOMView.extend({
+                events: {
+                    'click a.room-info': 'showRoomDetailsModal'
+                },
+
                 initialize () {
                     this.model.on('destroy', this.remove, this);
                     this.model.on('remove', this.remove, this);
@@ -104,15 +109,6 @@
                     this.model.on('change:name', this.render, this);
                     this.model.on('change:num_unread', this.render, this);
                     this.model.on('change:num_unread_general', this.render, this);
-                },
-
-                getRoomsListElementName () {
-                    if (this.model.get('bookmarked') && _converse.bookmarksview) {
-                        const bookmark = _.head(_converse.bookmarksview.model.where({'jid': this.model.get('jid')}));
-                        return bookmark.get('name');
-                    } else {
-                        return this.model.get('name');
-                    }
                 },
 
                 toHTML () {
@@ -130,8 +126,27 @@
                             'name': this.getRoomsListElementName(),
                             'open_title': __('Click to open this room')
                         }));
+                },
+
+                showRoomDetailsModal (ev) {
+                    const room = _converse.chatboxes.get(this.model.get('jid'));
+                    ev.preventDefault();
+                    if (_.isUndefined(room.room_details_modal)) {
+                        room.room_details_modal = new _converse.RoomDetailsModal({'model': room});
+                    }
+                    room.room_details_modal.show(ev);
+                },
+
+                getRoomsListElementName () {
+                    if (this.model.get('bookmarked') && _converse.bookmarksview) {
+                        const bookmark = _.head(_converse.bookmarksview.model.where({'jid': this.model.get('jid')}));
+                        return bookmark.get('name');
+                    } else {
+                        return this.model.get('name');
+                    }
                 }
             });
+
 
             _converse.RoomsListView = Backbone.OrderedListView.extend({
                 tagName: 'div',

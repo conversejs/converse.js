@@ -246,6 +246,10 @@
                     this.handlers[type][name] = callback;
                 },
 
+                getDisplayName () {
+                    return this.get('name') || this.get('jid');
+                },
+
                 join (nick, password) {
                     /* Join the chat room.
                      *
@@ -430,7 +434,7 @@
                      *  <feature var='urn:xmpp:mam:0'/>
                      */
                     const features = {
-                        'features_fetched': true,
+                        'features_fetched': moment().format(),
                         'name': iq.querySelector('identity').getAttribute('name')
                     }
                     _.each(iq.querySelectorAll('feature'), function (field) {

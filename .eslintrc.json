@@ -9,6 +9,7 @@
     "plugins": ["lodash"],
     "extends": ["eslint:recommended", "plugin:lodash/canonical"],
     "globals": {
+        "converse": true,
         "window": true,
         "sinon": true,
         "define": true,

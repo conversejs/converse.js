@@ -67,8 +67,8 @@
         }
         return u.stringToNode(
             tpl_field({
-                name: field.getAttribute('name'),
-                value: value
+                'name': field.getAttribute('name'),
+                'value': value
             })
         );
     };

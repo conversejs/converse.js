@@ -365,7 +365,7 @@
                         'open_title': __('Click to open this room'),
                         'info_title': __('Show more information on this room')
                     });
-                    return div.firstChild;
+                    return div.firstElementChild;
                 },
 
                 removeSpinner () {

@@ -1087,6 +1087,7 @@
                 expect(view.model.sendMessage).toHaveBeenCalled();
                 var msg = $(view.el).find('.chat-content .chat-msg').last().find('.chat-msg-text');
                 expect(msg.html().trim()).toEqual(
+                    '<!-- src/templates/image.html -->\n'+
                     '<a href="'+base_url+'/logo/conversejs-filled.svg" target="_blank" rel="noopener"><img class="chat-image img-thumbnail"'+
                     ' src="' + message + '"></a>');
                 message += "?param1=val1&param2=val2";
@@ -1098,6 +1099,7 @@
                 expect(view.model.sendMessage).toHaveBeenCalled();
                 var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
                 expect(msg.html().trim()).toEqual(
+                    '<!-- src/templates/image.html -->\n'+
                     '<a href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2" target="_blank" rel="noopener"><img'+
                     ' class="chat-image img-thumbnail" src="'+message.replace(/&/g, '&amp;')+'"></a>')
 
@@ -1340,6 +1342,7 @@
                     expect(msg.outerHTML).toEqual('<span class="chat-msg-text">Have you heard this funny audio?</span>');
                     var media = view.el.querySelector('.chat-msg .chat-msg-media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                        '<!-- src/templates/audio.html -->'+
                         '<audio controls=""><source src="http://localhost/audio.mp3" type="audio/mpeg"></audio>'+
                         '<a target="_blank" rel="noopener" href="http://localhost/audio.mp3">Download audio file</a>');
 
@@ -1357,6 +1360,7 @@
                     expect(msg.innerHTML).toEqual('');
                     media = view.el.querySelector('.chat-msg:last-child .chat-msg-media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                        '<!-- src/templates/audio.html -->'+
                         '<audio controls=""><source src="http://localhost/audio.mp3" type="audio/mpeg"></audio>'+
                         '<a target="_blank" rel="noopener" href="http://localhost/audio.mp3">Download audio file</a>');
                     done();
@@ -1390,6 +1394,7 @@
                     expect(msg.outerHTML).toEqual('<span class="chat-msg-text">Have you seen this funny video?</span>');
                     var media = view.el.querySelector('.chat-msg .chat-msg-media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                        '<!-- src/templates/video.html -->'+
                         '<video controls=""><source src="http://localhost/video.mp4" type="video/mp4"></video>'+
                         '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file</a>');
 
@@ -1407,6 +1412,7 @@
                     expect(msg.innerHTML).toEqual('');
                     media = view.el.querySelector('.chat-msg:last-child .chat-msg-media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                        '<!-- src/templates/video.html -->'+
                         '<video controls=""><source src="http://localhost/video.mp4" type="video/mp4"></video>'+
                         '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file</a>');
                     done();
@@ -1440,6 +1446,7 @@
                     expect(msg.outerHTML).toEqual('<span class="chat-msg-text">Have you downloaded this funny file?</span>');
                     var media = view.el.querySelector('.chat-msg .chat-msg-media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                        '<!-- src/templates/file.html -->'+
                         '<a target="_blank" rel="noopener" href="http://localhost/funny.pdf">Download: "funny.pdf</a>');
                     done();
                 });
@@ -1474,6 +1481,7 @@
                     expect(msg.outerHTML).toEqual('<span class="chat-msg-text">Have you seen this funny image?</span>');
                     var media = view.el.querySelector('.chat-msg .chat-msg-media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                        '<!-- src/templates/image.html -->'+
                         '<a href="http://localhost:8000/logo/conversejs-filled.svg" target="_blank" rel="noopener">'+
                             '<img class="chat-image img-thumbnail" src="http://localhost:8000/logo/conversejs-filled.svg">'+
                         '</a>');

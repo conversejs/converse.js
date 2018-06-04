@@ -565,7 +565,7 @@
          */
         var div = document.createElement('div');
         div.innerHTML = s;
-        return div.firstChild;
+        return div.firstElementChild;
     };
 
     u.getOuterWidth = function (el, include_margin=false) {

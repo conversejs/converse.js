@@ -658,7 +658,7 @@
                             tpl_help_message({
                                 'isodate': moment().format(),
                                 'type': type,
-                                'message': filterXSS(msg, {'whiteList': {'strong': []}})
+                                'message': xss.filterXSS(msg, {'whiteList': {'strong': []}})
                             })
                         );
                     });

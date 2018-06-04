@@ -184,31 +184,12 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 	$(OXIPNG) $@
 
 BUILDS = dist/converse.js \
-		 dist/converse.min.js \
-         dist/converse-headless.js \
-		 dist/converse-headless.min.js \
-		 dist/converse-no-dependencies.min.js \
-		 dist/converse-no-dependencies.js
-
-# dist/converse-esnext.js \
-# dist/converse-esnext.min.js \
+		 dist/converse.min.js
 
 dist/converse.js: transpile src stamp-npm
-	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
+	./node_modules/.bin/npx  webpack --mode=production
 dist/converse.min.js: transpile src stamp-npm
-	$(RJS) -o src/build.js include=converse out=dist/converse.min.js
-dist/converse-headless.js: transpile src stamp-npm
-	$(RJS) -o src/build.js paths.converse=src/headless include=converse out=dist/converse-headless.js optimize=none 
-dist/converse-headless.min.js: transpile src stamp-npm
-	$(RJS) -o src/build.js paths.converse=src/headless include=converse out=dist/converse-headless.min.js
-dist/converse-esnext.js: src stamp-npm
-	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.js optimize=none 
-dist/converse-esnext.min.js: src stamp-npm
-	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.min.js
-dist/converse-no-dependencies.js: transpile src stamp-npm
-	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
-dist/converse-no-dependencies.min.js: transpile src stamp-npm
-	$(RJS) -o src/build-no-dependencies.js out=dist/converse-no-dependencies.min.js
+	./node_modules/.bin/npx  webpack --mode=production
 
 .PHONY: dist
 dist:: build

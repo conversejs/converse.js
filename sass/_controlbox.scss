@@ -368,10 +368,11 @@
             }
 
             #controlbox {
-                order: 0;
+                width: 100vw !important;
                 .box-flyout {
                     width: 100vw !important;
                     height: 100vh !important;
+                    margin-left: 30px;
                 }
                 .sidebar {
                     display: block;

@@ -8044,10 +8044,11 @@ body.reset {
         width: 100vw !important;
         height: 100vh !important; }
       #conversejs:not(.converse-embedded) .converse-chatboxes #controlbox {
-        order: 0; }
+        width: 100vw !important; }
         #conversejs:not(.converse-embedded) .converse-chatboxes #controlbox .box-flyout {
           width: 100vw !important;
-          height: 100vh !important; }
+          height: 100vh !important;
+          margin-left: 30px; }
         #conversejs:not(.converse-embedded) .converse-chatboxes #controlbox .sidebar {
           display: block; }
       #conversejs:not(.converse-embedded) .converse-chatboxes.sidebar-open .chatbox:not(#controlbox) {
@@ -8731,24 +8732,17 @@ body.reset {
   max-width: 25%; }
 
 @media (max-width: 767.98px) {
-  #conversejs.converse-mobile .chatroom .box-flyout .chatbox-navback,
-  #conversejs.converse-overlayed .chatroom .box-flyout .chatbox-navback,
-  #conversejs.converse-embedded .chatroom .box-flyout .chatbox-navback,
-  #conversejs.converse-fullscreen .chatroom .box-flyout .chatbox-navback {
-    flex: 0 0 16.6666666667%;
-    max-width: 16.6666666667%; }
-  #conversejs.converse-mobile .chatroom .box-flyout .chatbox-title,
-  #conversejs.converse-overlayed .chatroom .box-flyout .chatbox-title,
-  #conversejs.converse-embedded .chatroom .box-flyout .chatbox-title,
-  #conversejs.converse-fullscreen .chatroom .box-flyout .chatbox-title {
-    flex: 0 0 58.3333333333%;
-    max-width: 58.3333333333%; }
-  #conversejs.converse-mobile .chatroom .box-flyout .chatbox-buttons,
-  #conversejs.converse-overlayed .chatroom .box-flyout .chatbox-buttons,
-  #conversejs.converse-embedded .chatroom .box-flyout .chatbox-buttons,
-  #conversejs.converse-fullscreen .chatroom .box-flyout .chatbox-buttons {
-    flex: 0 0 25%;
-    max-width: 25%; } }
+  #conversejs:not(.converse-embedded) .chatroom {
+    width: 100vw !important; }
+    #conversejs:not(.converse-embedded) .chatroom .box-flyout .chatbox-navback {
+      flex: 0 0 16.6666666667%;
+      max-width: 16.6666666667%; }
+    #conversejs:not(.converse-embedded) .chatroom .box-flyout .chatbox-title {
+      flex: 0 0 58.3333333333%;
+      max-width: 58.3333333333%; }
+    #conversejs:not(.converse-embedded) .chatroom .box-flyout .chatbox-buttons {
+      flex: 0 0 25%;
+      max-width: 25%; } }
 #conversejs.converse-fullscreen .chatroom .box-flyout,
 #conversejs.converse-mobile .chatroom .box-flyout {
   background-color: #E77051;

@@ -339,11 +339,10 @@
 }
 
 @include media-breakpoint-down(sm) {
-    #conversejs.converse-mobile,
-    #conversejs.converse-overlayed,
-    #conversejs.converse-embedded,
-    #conversejs.converse-fullscreen {
+
+    #conversejs:not(.converse-embedded) {
         .chatroom {
+            width: 100vw !important;
             .box-flyout {
                 .chatbox-navback {
                     @include make-col(2);

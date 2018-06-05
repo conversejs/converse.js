@@ -567,8 +567,8 @@
                         b64_sha1(`converse.chatboxes-${_converse.bare_jid}`));
                     this.registerMessageHandler();
                     this.fetch({
-                        add: true,
-                        success: this.onChatBoxesFetched.bind(this)
+                        'add': true,
+                        'success': this.onChatBoxesFetched.bind(this)
                     });
                 },
 

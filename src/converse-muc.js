@@ -1172,7 +1172,7 @@
             }
 
             function disconnectChatRooms () {
-                /* When disconnecting, or reconnecting, mark all chat rooms as
+                /* When disconnecting, mark all chat rooms as
                  * disconnected, so that they will be properly entered again
                  * when fetched from session storage.
                  */
@@ -1193,7 +1193,6 @@
                 }
             });
             _converse.on('chatBoxesFetched', autoJoinRooms);
-            _converse.on('reconnecting', disconnectChatRooms);
             _converse.on('disconnecting', disconnectChatRooms);
             /************************ END Event Handlers ************************/
 

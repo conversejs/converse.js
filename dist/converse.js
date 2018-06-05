@@ -62062,13 +62062,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         return this.__super__.disconnect.apply(this, arguments);
       },
-      logOut: function logOut() {
-        const _converse = this.__super__._converse;
-
-        _converse.chatboxviews.closeAllChatBoxes();
-
-        return this.__super__.logOut.apply(this, arguments);
-      },
       initStatus: function initStatus(reconnecting) {
         const _converse = this.__super__._converse;
 
@@ -62631,11 +62624,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         onConnected() {
-          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.chatboxes-${_converse.bare_jid}`));
+          this.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.chatboxes-${_converse.bare_jid}`));
           this.registerMessageHandler();
           this.fetch({
-            add: true,
-            success: this.onChatBoxesFetched.bind(this)
+            'add': true,
+            'success': this.onChatBoxesFetched.bind(this)
           });
         },
 
@@ -62930,11 +62923,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         _converse.emit('chatBoxesInitialized');
       });
 
-      _converse.api.listen.on('beforeTearDown', () => {
-        _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
-
-
-        delete _converse.chatboxes.browserStorage;
+      _converse.api.listen.on('logout', () => {
+        _converse.chatboxviews.closeAllChatBoxes();
       });
 
       _converse.api.listen.on('presencesInitialized', () => _converse.chatboxes.onConnected());
@@ -72212,14 +72202,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const vcards = [];
 
           if (this.get('jid')) {
-            vcards.push(this.updateVCard(_converse.vcards.findWhere({
+            vcards.push(_converse.vcards.findWhere({
               'jid': this.get('jid')
-            })));
+            }));
           }
 
-          vcards.push(this.updateVCard(_converse.vcards.findWhere({
+          vcards.push(_converse.vcards.findWhere({
             'jid': this.get('from')
-          })));
+          }));
 
           _.forEach(_.filter(vcards, undefined), vcard => {
             if (hash && vcard.get('image_hash') !== hash) {
@@ -72413,7 +72403,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
 
       function disconnectChatRooms() {
-        /* When disconnecting, or reconnecting, mark all chat rooms as
+        /* When disconnecting, mark all chat rooms as
          * disconnected, so that they will be properly entered again
          * when fetched from session storage.
          */
@@ -72438,8 +72428,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
 
       _converse.on('chatBoxesFetched', autoJoinRooms);
-
-      _converse.on('reconnecting', disconnectChatRooms);
 
       _converse.on('disconnecting', disconnectChatRooms);
       /************************ END Event Handlers ************************/

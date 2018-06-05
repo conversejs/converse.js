@@ -417,9 +417,14 @@
 
                 getMessageBody (message) {
                     const type = message.getAttribute('type');
-                    return (type === 'error') ?
-                        _.propertyOf(message.querySelector('error text'))('textContent') :
-                            _.propertyOf(message.querySelector('body'))('textContent');
+                    if (type === 'error') {
+                        const error = message.querySelector('error');
+                        return _.propertyOf(error.querySelector('text'))('textContent') ||
+                            __('Sorry, an error occured:') + ' ' + error.innerHTML;
+                    } else {
+                        return _.propertyOf(message.querySelector('body'))('textContent');
+                    }
+
                 },
 
                 getMessageAttributesFromStanza (message, delay, original_stanza) {

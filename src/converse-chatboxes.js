@@ -827,11 +827,6 @@
                 _converse.emit('chatBoxesInitialized');
             });
 
-            _converse.api.listen.on('beforeTearDown', () => {
-                _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
-                delete _converse.chatboxes.browserStorage;
-            });
-
             _converse.api.listen.on('logout', () => {
                 _converse.chatboxviews.closeAllChatBoxes();
             });

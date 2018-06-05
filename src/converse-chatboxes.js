@@ -35,12 +35,6 @@
                 return this.__super__.disconnect.apply(this, arguments);
             },
 
-            logOut: function () {
-                const { _converse } = this.__super__;
-                _converse.chatboxviews.closeAllChatBoxes();
-                return this.__super__.logOut.apply(this, arguments);
-            },
-
             initStatus: function (reconnecting) {
                 const { _converse } = this.__super__;
                 if (!reconnecting) {
@@ -569,7 +563,7 @@
                 },
 
                 onConnected () {
-                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    this.browserStorage = new Backbone.BrowserStorage.session(
                         b64_sha1(`converse.chatboxes-${_converse.bare_jid}`));
                     this.registerMessageHandler();
                     this.fetch({
@@ -836,6 +830,10 @@
             _converse.api.listen.on('beforeTearDown', () => {
                 _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
                 delete _converse.chatboxes.browserStorage;
+            });
+
+            _converse.api.listen.on('logout', () => {
+                _converse.chatboxviews.closeAllChatBoxes();
             });
 
             _converse.api.listen.on('presencesInitialized', () => _converse.chatboxes.onConnected());

@@ -992,9 +992,9 @@
                     const hash = this.get('image_hash');
                     const vcards = [];
                     if (this.get('jid')) {
-                        vcards.push(this.updateVCard(_converse.vcards.findWhere({'jid': this.get('jid')})));
+                        vcards.push(_converse.vcards.findWhere({'jid': this.get('jid')}));
                     }
-                    vcards.push(this.updateVCard(_converse.vcards.findWhere({'jid': this.get('from')})));
+                    vcards.push(_converse.vcards.findWhere({'jid': this.get('from')}));
 
                     _.forEach(_.filter(vcards, undefined), (vcard) => {
                         if (hash && vcard.get('image_hash') !== hash) {

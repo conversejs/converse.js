@@ -142,26 +142,31 @@
 
                 toHTML () {
                     const label_nickname = _converse.xhr_user_search_url ? __('Contact name') : __('Optional nickname');
-                    return tpl_add_contact_modal(_.extend(this.model.toJSON(), {
+                    return  tpl_add_contact_modal(_.extend(this.model.toJSON(), {
                         '_converse': _converse,
                         'heading_new_contact': __('Add a Contact'),
                         'label_xmpp_address': __('XMPP Address'),
                         'label_nickname': label_nickname,
                         'contact_placeholder': __('name@example.org'),
                         'label_add': __('Add'),
+                        'error_message': __('Please enter a valid XMPP address')
                     }));
                 },
 
                 afterRender () {
                     if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
-                        this.initXHRAutoComplete();
+                        this.initXHRAutoComplete(this.el);
                     } else {
-                        this.initJIDAutoComplete();
+                        this.initJIDAutoComplete(this.el);
                     }
+                    const jid_input = this.el.querySelector('input[name="jid"]');
+                    this.el.addEventListener('shown.bs.modal', () => {
+                        jid_input.focus();
+                    }, false);
                 },
 
-                initJIDAutoComplete () {
-                    const jid_input = this.el.querySelector('input[name="jid"]');
+                initJIDAutoComplete (root) {
+                    const jid_input = root.querySelector('input[name="jid"]');
                     const list = _.uniq(_converse.roster.map((item) => Strophe.getDomainFromJid(item.get('jid'))));
                     new Awesomplete(jid_input, {
                         'list': list,
@@ -170,12 +175,9 @@
                         },
                         'filter': Awesomplete.FILTER_STARTSWITH
                     });
-                    this.el.addEventListener('shown.bs.modal', () => {
-                        jid_input.focus();
-                    }, false);
                 },
 
-                initXHRAutoComplete () {
+                initXHRAutoComplete (root) {
                     const name_input = this.el.querySelector('input[name="name"]');
                     const jid_input = this.el.querySelector('input[name="jid"]');
                     const awesomplete = new Awesomplete(name_input, {
@@ -200,9 +202,6 @@
                         jid_input.value = ev.text.value;
                         name_input.value = ev.text.label;
                     });
-                    this.el.addEventListener('shown.bs.modal', () => {
-                        name_input.focus();
-                    }, false);
                 },
 
                 addContactFromForm (ev) {
@@ -210,14 +209,14 @@
                     const data = new FormData(ev.target),
                           jid = data.get('jid'),
                           name = data.get('name');
-                    ev.target.reset();
-
                     if (!jid || _.compact(jid.split('@')).length < 2) {
-                        this.model.set({
-                            'error_message': __('Please enter a valid XMPP address'),
-                            'jid': jid
-                        })
+                        // XXX: we have to do this manually, instead of via
+                        // toHTML because Awesomplete messes things up and
+                        // confuses Snabbdom
+                        u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
+                        u.addClass('d-block', this.el.querySelector('.invalid-feedback'));
                     } else {
+                        ev.target.reset();
                         _converse.roster.addAndSubscribe(jid, name);
                         this.model.clear();
                         this.modal.hide();

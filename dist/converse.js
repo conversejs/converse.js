@@ -2170,10 +2170,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /***/ }),
 
-/***/ "./node_modules/backbone.overview/dist/backbone.orderedlistview.js":
-/*!*************************************************************************!*\
-  !*** ./node_modules/backbone.overview/dist/backbone.orderedlistview.js ***!
-  \*************************************************************************/
+/***/ "./node_modules/backbone.overview/backbone.orderedlistview.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/backbone.overview/backbone.orderedlistview.js ***!
+  \********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2188,101 +2188,99 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
  * Licensed under the Mozilla Public License (MPL) 
  */
 (function (root, factory) {
-  if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! underscore */ "./src/underscore-shim.js"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/dist/backbone.overview.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! underscore */ "./src/underscore-shim.js"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/backbone.overview.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else {}
-})(this, function (_, Backbone) {
-  "use strict";
+   } else {}
+}(this, function (_, Backbone) {
+    "use strict";
 
-  Backbone.OrderedListView = Backbone.Overview.extend({
-    /* An OrderedListView is a special type of Overview which adds some
-     * methods and conventions for rendering an ordered list of elements.
-     */
-    // The `listItems` attribute denotes the path (from this View) to the
-    // list of items.
-    listItems: 'model',
-    // The `sortEvent` attribute specifies the event which should cause the
-    // ordered list to be sorted.
-    sortEvent: 'change',
-    // The `listSelector` is the selector used to query for the DOM list
-    // element which contains the ordered items.
-    listSelector: '.ordered-items',
-    // The `itemView` is constructor which should be called to create a
-    // View for a new item.
-    ItemView: undefined,
-    // The `subviewIndex` is the attribute of the list element model which
-    // acts as the index of the subview in the overview.
-    // An overview is a "Collection" of views, and they can be retrieved
-    // via an index. By default this is the 'id' attribute, but it could be
-    // set to something else.
-    subviewIndex: 'id',
-    initialize: function initialize() {
-      this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
-      this.items = _.get(this, this.listItems);
-      this.items.on('add', this.sortAndPositionAllItems, this);
-      this.items.on('remove', this.removeView, this);
+    Backbone.OrderedListView = Backbone.Overview.extend({
+        /* An OrderedListView is a special type of Overview which adds some
+         * methods and conventions for rendering an ordered list of elements.
+         */
 
-      if (!_.isNil(this.sortEvent)) {
-        this.items.on(this.sortEvent, this.sortEventually, this);
-      }
-    },
-    createItemView: function createItemView(item) {
-      var item_view = this.get(item.get(this.subviewIndex));
+        // The `listItems` attribute denotes the path (from this View) to the
+        // list of items.
+        listItems: 'model',
+        // The `sortEvent` attribute specifies the event which should cause the
+        // ordered list to be sorted.
+        sortEvent: 'change',
+        // The `listSelector` is the selector used to query for the DOM list
+        // element which contains the ordered items.
+        listSelector: '.ordered-items',
+        // The `itemView` is constructor which should be called to create a
+        // View for a new item.
+        ItemView: undefined,
+        // The `subviewIndex` is the attribute of the list element model which
+        // acts as the index of the subview in the overview.
+        // An overview is a "Collection" of views, and they can be retrieved
+        // via an index. By default this is the 'id' attribute, but it could be
+        // set to something else.
+        subviewIndex: 'id',
 
-      if (!item_view) {
-        item_view = new this.ItemView({
-          model: item
-        });
-        this.add(item.get(this.subviewIndex), item_view);
-      } else {
-        item_view.model = item;
-        item_view.initialize();
-      }
+        initialize () {
+            this.sortEventually = _.debounce(
+                this.sortAndPositionAllItems.bind(this), 500);
 
-      item_view.render();
-      return item_view;
-    },
-    removeView: function removeView(item) {
-      this.remove(item.get(this.subviewIndex));
-    },
-    sortAndPositionAllItems: function sortAndPositionAllItems() {
-      var _this = this;
+            this.items = _.get(this, this.listItems);
+            this.items.on('add', this.sortAndPositionAllItems, this);
+            this.items.on('remove', this.removeView, this);
+            if (!_.isNil(this.sortEvent)) {
+                this.items.on(this.sortEvent, this.sortEventually, this);
+            }
+        },
 
-      if (!this.items.length) {
-        return;
-      }
+        createItemView (item) {
+            let item_view = this.get(item.get(this.subviewIndex));
+            if (!item_view) {
+                item_view = new this.ItemView({model: item});
+                this.add(item.get(this.subviewIndex), item_view);
+            } else {
+                item_view.model = item;
+                item_view.initialize();
+            }
+            item_view.render();
+            return item_view;
+        },
 
-      this.items.sort();
-      var list_el = this.el.querySelector(this.listSelector);
-      var div = document.createElement('div');
-      list_el.parentNode.replaceChild(div, list_el);
-      this.items.each(function (item) {
-        var view = _this.get(item.get(_this.subviewIndex));
+        removeView (item) {
+            this.remove(item.get(this.subviewIndex));
+        },
 
-        if (_.isUndefined(view)) {
-          view = _this.createItemView(item);
+        sortAndPositionAllItems () {
+            if (!this.items.length) {
+                return;
+            }
+            this.items.sort();
+
+            const list_el = this.el.querySelector(this.listSelector);
+            const div = document.createElement('div');
+            list_el.parentNode.replaceChild(div, list_el);
+            this.items.each((item) => {
+                let view = this.get(item.get(this.subviewIndex));
+                if (_.isUndefined(view)) {
+                    view = this.createItemView(item)
+                }
+                list_el.insertAdjacentElement('beforeend', view.el);
+            });
+            div.parentNode.replaceChild(list_el, div);
         }
+    });
 
-        list_el.insertAdjacentElement('beforeend', view.el);
-      });
-      div.parentNode.replaceChild(list_el, div);
-    }
-  });
-  return Backbone.OrderedListView;
-});
+    return Backbone.OrderedListView;
+}));
 
-//# sourceMappingURL=backbone.orderedlistview.js.map
 
 
 /***/ }),
 
-/***/ "./node_modules/backbone.overview/dist/backbone.overview.js":
-/*!******************************************************************!*\
-  !*** ./node_modules/backbone.overview/dist/backbone.overview.js ***!
-  \******************************************************************/
+/***/ "./node_modules/backbone.overview/backbone.overview.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/backbone.overview/backbone.overview.js ***!
+  \*************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2297,168 +2295,171 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
  * Licensed under the Mozilla Public License (MPL) 
  */
 (function (root, factory) {
-  if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! underscore */ "./src/underscore-shim.js"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! underscore */ "./src/underscore-shim.js"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else {}
-})(this, function (_, Backbone) {
-  "use strict";
+   } else {}
+}(this, function (_, Backbone) {
+    "use strict";
 
-  var View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
+    const View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
 
-  var Overview = Backbone.Overview = function (options) {
-    /* An Overview is a View that contains and keeps track of sub-views.
-     * Kind of like what a Collection is to a Model.
-     */
-    var that = this;
-    this.views = {};
-    this.keys = _.partial(_.keys, this.views);
-    this.getAll = _.partial(_.identity, this.views);
+    const Overview = Backbone.Overview = function (options) {
+        /* An Overview is a View that contains and keeps track of sub-views.
+         * Kind of like what a Collection is to a Model.
+         */
+        var that = this;
+        this.views = {};
+        this.keys = _.partial(_.keys, this.views);
+        this.getAll = _.partial(_.identity, this.views);
 
-    this.get = function (id) {
-      return that.views[id];
+        this.get = function (id) {
+            return that.views[id];
+        };
+
+        this.xget = function (id) {
+            /* Exclusive get. Returns all instances except the given id. */
+            return _.filter(that.views, function (view, vid) {
+                return vid !== id;
+            });
+        };
+
+        this.add = function (id, view) {
+            that.views[id] = view;
+            return view;
+        };
+
+        this.remove = function (id) {
+            if (typeof id === "undefined") {
+                new View().remove.apply(that);
+            }
+            var view = that.views[id];
+            if (view) {
+                delete that.views[id];
+                view.remove();
+                return view;
+            }
+        };
+
+        this.removeAll = function () {
+            _.each(_.keys(that.views), that.remove);
+            return that;
+        };
+        View.apply(this, Array.prototype.slice.apply(arguments));
     };
 
-    this.xget = function (id) {
-      /* Exclusive get. Returns all instances except the given id. */
-      return _.filter(that.views, function (view, vid) {
-        return vid !== id;
-      });
-    };
+    var methods = [
+        'all', 'any', 'chain', 'collect', 'contains', 'detect',
+        'difference', 'drop', 'each', 'every', 'filter', 'find',
+        'first', 'foldl', 'foldr', 'forEach', 'head', 'include',
+        'indexOf', 'initial', 'inject', 'invoke', 'isEmpty',
+        'last', 'lastIndexOf', 'map', 'max', 'min', 'reduce',
+        'reduceRight', 'reject', 'rest', 'sample', 'select',
+        'shuffle', 'size', 'some', 'sortBy', 'tail', 'take',
+        'toArray', 'without',
+    ];
+    // Mix in each Underscore method as a proxy to `Overview#view`.
+    _.each(methods, function(method) {
+        Overview.prototype[method] = function() {
+            var args = Array.prototype.slice.call(arguments);
+            args.unshift(this.views);
+            return _[method].apply(_, args);
+        };
+    });
+    _.extend(Overview.prototype, View.prototype);
+    Overview.extend = View.extend;
 
-    this.add = function (id, view) {
-      that.views[id] = view;
-      return view;
-    };
 
-    this.remove = function (id) {
-      if (typeof id === "undefined") {
-        new View().remove.apply(that);
-      }
+    Backbone.OrderedListView = Backbone.Overview.extend({
 
-      var view = that.views[id];
+        // The `listItems` attribute denotes the path (from this View) to the
+        // list of items.
+        listItems: 'model',
+        // The `sortEvent` attribute specifies the event which should cause the
+        // ordered list to be sorted.
+        sortEvent: 'change',
+        // The `listSelector` is the selector used to query for the DOM list
+        // element which contains the ordered items.
+        listSelector: '.ordered-items',
+        // The `itemView` is constructor which should be called to create a
+        // View for a new item.
+        ItemView: undefined,
 
-      if (view) {
-        delete that.views[id];
-        view.remove();
-        return view;
-      }
-    };
+        initialize () {
+            this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
+            this.items = _.get(this, this.listItems);
+            this.items.on('add', this.createItemView, this);
+            this.items.on('add', this.sortEventually, this);
+            this.items.on(this.sortEvent, this.sortEventually, this);
+        },
 
-    this.removeAll = function () {
-      _.each(_.keys(that.views), that.remove);
+        createItemView (item) {
+            let item_view = this.get(item.get('id'));
+            if (!item_view) {
+                item_view = new this.ItemView({model: item});
+                this.add(item.get('id'), item_view);
+            } else {
+                item_view.model = item;
+                item_view.initialize();
+            }
+            item_view.render();
+            return item_view;
+        },
 
-      return that;
-    };
 
-    View.apply(this, Array.prototype.slice.apply(arguments));
-  };
+        sortAndPositionAllItems () {
+            this.items.sort();
+            this.items.each((item) => {
+                if (_.isUndefined(this.get(item.get('id')))) {
+                    this.createItemView(item)
+                }
+                this.positionItem(item, this.el.querySelector(this.listSelector));
+            });
+        },
 
-  var methods = ['all', 'any', 'chain', 'collect', 'contains', 'detect', 'difference', 'drop', 'each', 'every', 'filter', 'find', 'first', 'foldl', 'foldr', 'forEach', 'head', 'include', 'indexOf', 'initial', 'inject', 'invoke', 'isEmpty', 'last', 'lastIndexOf', 'map', 'max', 'min', 'reduce', 'reduceRight', 'reject', 'rest', 'sample', 'select', 'shuffle', 'size', 'some', 'sortBy', 'tail', 'take', 'toArray', 'without']; // Mix in each Underscore method as a proxy to `Overview#view`.
+        positionItem (item, list_el) {
+            /* Place the View's DOM element in the correct alphabetical
+             * position in the list.
+             *
+             * IMPORTANT: there's an important implicit assumption being
+             * made here. And that is that initially this method gets called
+             * for each item in the right positional order.
+             *
+             * In other words, it gets called for the 0th, then the
+             * 1st, then the 2nd, 3rd and so on.
+             *
+             * That's why we call it in the "success" handler after
+             * fetching the items, so that we know we have ALL of
+             * them and that they're sorted.
+             */
+            const view = this.get(item.get('id')),
+                index = this.items.indexOf(item);
 
-  _.each(methods, function (method) {
-    Overview.prototype[method] = function () {
-      var args = Array.prototype.slice.call(arguments);
-      args.unshift(this.views);
-      return _[method].apply(_, args);
-    };
-  });
-
-  _.extend(Overview.prototype, View.prototype);
-
-  Overview.extend = View.extend;
-  Backbone.OrderedListView = Backbone.Overview.extend({
-    // The `listItems` attribute denotes the path (from this View) to the
-    // list of items.
-    listItems: 'model',
-    // The `sortEvent` attribute specifies the event which should cause the
-    // ordered list to be sorted.
-    sortEvent: 'change',
-    // The `listSelector` is the selector used to query for the DOM list
-    // element which contains the ordered items.
-    listSelector: '.ordered-items',
-    // The `itemView` is constructor which should be called to create a
-    // View for a new item.
-    ItemView: undefined,
-    initialize: function initialize() {
-      this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
-      this.items = _.get(this, this.listItems);
-      this.items.on('add', this.createItemView, this);
-      this.items.on('add', this.sortEventually, this);
-      this.items.on(this.sortEvent, this.sortEventually, this);
-    },
-    createItemView: function createItemView(item) {
-      var item_view = this.get(item.get('id'));
-
-      if (!item_view) {
-        item_view = new this.ItemView({
-          model: item
-        });
-        this.add(item.get('id'), item_view);
-      } else {
-        item_view.model = item;
-        item_view.initialize();
-      }
-
-      item_view.render();
-      return item_view;
-    },
-    sortAndPositionAllItems: function sortAndPositionAllItems() {
-      var _this = this;
-
-      this.items.sort();
-      this.items.each(function (item) {
-        if (_.isUndefined(_this.get(item.get('id')))) {
-          _this.createItemView(item);
+            if (index === 0) {
+                list_el.insertAdjacentElement('afterbegin', view.el);
+            } else if (index === (this.items.length-1)) {
+                list_el.insertAdjacentElement('beforeend', view.el);
+            } else {
+                const neighbour_el = list_el.querySelector('li:nth-child('+index+')');
+                neighbour_el.insertAdjacentElement('afterend', view.el);
+            }
+            return view;
         }
+    });
 
-        _this.positionItem(item, _this.el.querySelector(_this.listSelector));
-      });
-    },
-    positionItem: function positionItem(item, list_el) {
-      /* Place the View's DOM element in the correct alphabetical
-       * position in the list.
-       *
-       * IMPORTANT: there's an important implicit assumption being
-       * made here. And that is that initially this method gets called
-       * for each item in the right positional order.
-       *
-       * In other words, it gets called for the 0th, then the
-       * 1st, then the 2nd, 3rd and so on.
-       *
-       * That's why we call it in the "success" handler after
-       * fetching the items, so that we know we have ALL of
-       * them and that they're sorted.
-       */
-      var view = this.get(item.get('id')),
-          index = this.items.indexOf(item);
+    return Backbone.Overview;
+}));
 
-      if (index === 0) {
-        list_el.insertAdjacentElement('afterbegin', view.el);
-      } else if (index === this.items.length - 1) {
-        list_el.insertAdjacentElement('beforeend', view.el);
-      } else {
-        var neighbour_el = list_el.querySelector('li:nth-child(' + index + ')');
-        neighbour_el.insertAdjacentElement('afterend', view.el);
-      }
-
-      return view;
-    }
-  });
-  return Backbone.Overview;
-});
-
-//# sourceMappingURL=backbone.overview.js.map
 
 
 /***/ }),
 
-/***/ "./node_modules/backbone.vdomview/dist/backbone.vdomview.js":
-/*!******************************************************************!*\
-  !*** ./node_modules/backbone.vdomview/dist/backbone.vdomview.js ***!
-  \******************************************************************/
+/***/ "./node_modules/backbone.vdomview/backbone.vdomview.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/backbone.vdomview/backbone.vdomview.js ***!
+  \*************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2466,90 +2467,123 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 var backbone = (backbone || {});
 backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_modules/backbone.nativeview/backbone.nativeview.js");
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 /*!
  * Backbone.VDOMView
  *
  * MIT Licensed. Copyright (c) 2017, JC Brand <jc@opkode.com>
  */
 (function (root, factory) {
-  if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! snabbdom */ "./node_modules/snabbdom/dist/snabbdom.js"), __webpack_require__(/*! snabbdom-attributes */ "./node_modules/snabbdom/dist/snabbdom-attributes.js"), __webpack_require__(/*! snabbdom-class */ "./node_modules/snabbdom/dist/snabbdom-class.js"), __webpack_require__(/*! snabbdom-dataset */ "./node_modules/snabbdom/dist/snabbdom-dataset.js"), __webpack_require__(/*! snabbdom-props */ "./node_modules/snabbdom/dist/snabbdom-props.js"), __webpack_require__(/*! snabbdom-style */ "./node_modules/snabbdom/dist/snabbdom-style.js"), __webpack_require__(/*! tovnode */ "./node_modules/snabbdom/dist/tovnode.js"), __webpack_require__(/*! underscore */ "./src/underscore-shim.js"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+            __webpack_require__(/*! snabbdom */ "./node_modules/snabbdom/dist/snabbdom.js"),
+            __webpack_require__(/*! snabbdom-attributes */ "./node_modules/snabbdom/dist/snabbdom-attributes.js"),
+            __webpack_require__(/*! snabbdom-class */ "./node_modules/snabbdom/dist/snabbdom-class.js"),
+            __webpack_require__(/*! snabbdom-dataset */ "./node_modules/snabbdom/dist/snabbdom-dataset.js"),
+            __webpack_require__(/*! snabbdom-props */ "./node_modules/snabbdom/dist/snabbdom-props.js"),
+            __webpack_require__(/*! snabbdom-style */ "./node_modules/snabbdom/dist/snabbdom-style.js"),
+            __webpack_require__(/*! tovnode */ "./node_modules/snabbdom/dist/tovnode.js"),
+            __webpack_require__(/*! underscore */ "./src/underscore-shim.js"),
+            __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js")
+        ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else {}
-})(this, function (snabbdom, snabbdom_attributes, snabbdom_class, snabbdom_dataset, snabbdom_props, snabbdom_style, tovnode, _, Backbone) {
-  "use strict";
+    } else {}
+}(this, function (
+        snabbdom,
+        snabbdom_attributes,
+        snabbdom_class,
+        snabbdom_dataset,
+        snabbdom_props,
+        snabbdom_style,
+        tovnode,
+        _,
+        Backbone) {
+    "use strict";
 
-  var domParser = new DOMParser();
-  var patch = snabbdom.init([snabbdom_attributes.default, snabbdom_class.default, snabbdom_dataset.default, snabbdom_props.default, snabbdom_style.default]);
-  var View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
+    let domParser = new DOMParser();
+    const patch = snabbdom.init([
+        snabbdom_attributes.default,
+        snabbdom_class.default,
+        snabbdom_dataset.default,
+        snabbdom_props.default,
+        snabbdom_style.default
+    ]);
 
-  function parseHTMLToDOM(html_str) {
-    /* Parses a string with HTML and returns a DOM element.
-     *
-     * Forked from vdom_parser:
-     *      https://github.com/bitinn/vdom-parser
-     */
-    if (typeof html_str !== 'string') {
-      throw new Error('Invalid parameter type in parseHTMLToDOM');
+    const View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
+
+    function parseHTMLToDOM (html_str) {
+        /* Parses a string with HTML and returns a DOM element.
+         *
+         * Forked from vdom_parser:
+         *      https://github.com/bitinn/vdom-parser
+         */
+        if (typeof html_str !== 'string') {
+            throw new Error('Invalid parameter type in parseHTMLToDOM');
+        }
+        if ( !('DOMParser' in window) ) {
+            throw new Error(
+                'DOMParser is not available, '+
+                'so parsing string to DOM node is not possible.');
+        }
+        if (!html_str) {
+            return document.createTextNode('');
+        }
+        domParser = domParser || new DOMParser();
+        const doc = domParser.parseFromString(html_str, 'text/html');
+
+        // most tags default to body
+        if (doc.body.firstChild) {
+            return doc.getElementsByTagName('body')[0].firstChild;
+
+        // some tags, like script and style, default to head
+        } else if (doc.head.firstChild && (doc.head.firstChild.tagName !== 'TITLE' || doc.title)) {
+            return doc.head.firstChild;
+
+        // special case for html comment, cdata, doctype
+        } else if (doc.firstChild && doc.firstChild.tagName !== 'HTML') {
+            return doc.firstChild;
+
+        // other element, such as whitespace, or html/body/head tag, fallback to empty text node
+        } else {
+            return document.createTextNode('');
+        }
     }
 
-    if (!('DOMParser' in window)) {
-      throw new Error('DOMParser is not available, ' + 'so parsing string to DOM node is not possible.');
-    }
+    Backbone.VDOMView = View.extend({
 
-    if (!html_str) {
-      return document.createTextNode('');
-    }
+        updateEventListeners (old_vnode, new_vnode) {
+            this.setElement(new_vnode.elm);
+        },
 
-    domParser = domParser || new DOMParser();
-    var doc = domParser.parseFromString(html_str, 'text/html'); // most tags default to body
+        render () {
+            if (_.isFunction(this.beforeRender)) {
+                this.beforeRender();
+            }
+            let new_vnode;
+            if (!_.isNil(this.toHTML)) {
+                new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
+            } else {
+                new_vnode = tovnode.toVNode(this.toDOM());
+            }
 
-    if (doc.body.firstChild) {
-      return doc.getElementsByTagName('body')[0].firstChild; // some tags, like script and style, default to head
-    } else if (doc.head.firstChild && (doc.head.firstChild.tagName !== 'TITLE' || doc.title)) {
-      return doc.head.firstChild; // special case for html comment, cdata, doctype
-    } else if (doc.firstChild && doc.firstChild.tagName !== 'HTML') {
-      return doc.firstChild; // other element, such as whitespace, or html/body/head tag, fallback to empty text node
-    } else {
-      return document.createTextNode('');
-    }
-  }
+            new_vnode.data.hook = _.extend({
+               create: this.updateEventListeners.bind(this),
+               update: this.updateEventListeners.bind(this)
+            });
+            const el = this.vnode ? this.vnode.elm : this.el;
+            if (el.outerHTML !== new_vnode.elm.outerHTML) {
+                this.vnode = patch(this.vnode || this.el, new_vnode);
+            }
+            if (_.isFunction(this.afterRender)) {
+                this.afterRender();
+            }
+            return this;
+        }
+    });
+    return Backbone.VDOMView;
+}));
 
-  Backbone.VDOMView = View.extend({
-    updateEventListeners: function updateEventListeners(old_vnode, new_vnode) {
-      this.setElement(new_vnode.elm);
-    },
-    render: function render() {
-      if (_.isFunction(this.beforeRender)) {
-        this.beforeRender();
-      }
-
-      var new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
-      new_vnode.data.hook = _.extend({
-        create: this.updateEventListeners.bind(this),
-        update: this.updateEventListeners.bind(this)
-      });
-      var el = this.vnode ? this.vnode.elm : this.el;
-
-      if (el.outerHTML !== new_vnode.elm.outerHTML) {
-        this.vnode = patch(this.vnode || this.el, new_vnode);
-      }
-
-      if (_.isFunction(this.afterRender)) {
-        this.afterRender();
-      }
-
-      return this;
-    }
-  });
-  return Backbone.VDOMView;
-});
-
-//# sourceMappingURL=backbone.vdomview.js.map
 
 
 /***/ }),
@@ -62031,7 +62065,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! templates/chatboxes.html */ "./src/templates/chatboxes.html"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/dist/backbone.overview.js"), __webpack_require__(/*! utils/form */ "./src/utils/form.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! templates/chatboxes.html */ "./src/templates/chatboxes.html"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/backbone.overview.js"), __webpack_require__(/*! utils/form */ "./src/utils/form.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -69054,7 +69088,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/alert_modal.html */ "./src/templates/alert_modal.html"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/dist/backbone.vdomview.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/alert_modal.html */ "./src/templates/alert_modal.html"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/backbone.vdomview.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -71123,7 +71157,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! utils/form */ "./src/utils/form.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/dist/backbone.overview.js"), __webpack_require__(/*! backbone.orderedlistview */ "./node_modules/backbone.overview/dist/backbone.orderedlistview.js"), __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/dist/backbone.vdomview.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! utils/form */ "./src/utils/form.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/backbone.overview.js"), __webpack_require__(/*! backbone.orderedlistview */ "./node_modules/backbone.overview/backbone.orderedlistview.js"), __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/backbone.vdomview.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -75611,20 +75645,26 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'label_xmpp_address': __('XMPP Address'),
             'label_nickname': label_nickname,
             'contact_placeholder': __('name@example.org'),
-            'label_add': __('Add')
+            'label_add': __('Add'),
+            'error_message': __('Please enter a valid XMPP address')
           }));
         },
 
         afterRender() {
           if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
-            this.initXHRAutoComplete();
+            this.initXHRAutoComplete(this.el);
           } else {
-            this.initJIDAutoComplete();
+            this.initJIDAutoComplete(this.el);
           }
+
+          const jid_input = this.el.querySelector('input[name="jid"]');
+          this.el.addEventListener('shown.bs.modal', () => {
+            jid_input.focus();
+          }, false);
         },
 
-        initJIDAutoComplete() {
-          const jid_input = this.el.querySelector('input[name="jid"]');
+        initJIDAutoComplete(root) {
+          const jid_input = root.querySelector('input[name="jid"]');
 
           const list = _.uniq(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))));
 
@@ -75635,12 +75675,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             },
             'filter': Awesomplete.FILTER_STARTSWITH
           });
-          this.el.addEventListener('shown.bs.modal', () => {
-            jid_input.focus();
-          }, false);
         },
 
-        initXHRAutoComplete() {
+        initXHRAutoComplete(root) {
           const name_input = this.el.querySelector('input[name="name"]');
           const jid_input = this.el.querySelector('input[name="jid"]');
           const awesomplete = new Awesomplete(name_input, {
@@ -75670,9 +75707,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             jid_input.value = ev.text.value;
             name_input.value = ev.text.label;
           });
-          this.el.addEventListener('shown.bs.modal', () => {
-            name_input.focus();
-          }, false);
         },
 
         addContactFromForm(ev) {
@@ -75680,14 +75714,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const data = new FormData(ev.target),
                 jid = data.get('jid'),
                 name = data.get('name');
-          ev.target.reset();
 
           if (!jid || _.compact(jid.split('@')).length < 2) {
-            this.model.set({
-              'error_message': __('Please enter a valid XMPP address'),
-              'jid': jid
-            });
+            // XXX: we have to do this manually, instead of via
+            // toHTML because Awesomplete messes things up and
+            // confuses Snabbdom
+            u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
+            u.addClass('d-block', this.el.querySelector('.invalid-feedback'));
           } else {
+            ev.target.reset();
+
             _converse.roster.addAndSubscribe(jid, name);
 
             this.model.clear();
@@ -77317,27 +77353,15 @@ __p += '">\n                        <label class="clearfix" for="jid">' +
 __e(o.label_xmpp_address) +
 ':</label>\n                        <input type="text" name="jid" required="required" value="' +
 __e(o.jid) +
-'"\n                               class="form-control ';
- if (o.error_message) { ;
-__p += ' is-invalid ';
- } ;
-__p += '"\n                               placeholder="' +
+'"\n                               class="form-control"\n                               placeholder="' +
 __e(o.contact_placeholder) +
-'"/>\n                        ';
- if (o.error_message) { ;
-__p += '\n                            <div class="invalid-feedback">' +
+'"/>\n                        <div class="invalid-feedback">' +
 __e(o.error_message) +
-'</div>\n                        ';
- } ;
-__p += '\n                    </div>\n                    <div class="form-group">\n                        <label class="clearfix" for="name">' +
+'</div>\n                    </div>\n                    <div class="form-group">\n                        <label class="clearfix" for="name">' +
 __e(o.label_nickname) +
 ':</label>\n                        <input type="text" name="name" value="' +
 __e(o.nickname) +
-'"\n                               class="form-control ';
- if (o.error_message) { ;
-__p += ' is-invalid ';
- } ;
-__p += '"\n                               placeholder="' +
+'"\n                               class="form-control"\n                               placeholder="' +
 __e(o.nickname_placeholder) +
 '"/>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="submit" class="btn btn-primary">' +
 __e(o.label_add) +

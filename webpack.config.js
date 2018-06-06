@@ -16,15 +16,15 @@ const config = {
     module: {
         rules: [
         {
-            test: path.resolve(__dirname, "node_modules/backbone.overview/dist/backbone.orderedlistview"),
+            test: path.resolve(__dirname, "node_modules/backbone.overview/backbone.orderedlistview"),
             use: 'imports-loader?backbone.nativeview'
         },
         {
-            test: path.resolve(__dirname, "node_modules/backbone.overview/dist/backbone.overview"),
+            test: path.resolve(__dirname, "node_modules/backbone.overview/backbone.overview"),
             use: 'imports-loader?backbone.nativeview'
         },
         {
-            test: path.resolve(__dirname, "node_modules/backbone.vdomview/dist/backbone.vdomview"),
+            test: path.resolve(__dirname, "node_modules/backbone.vdomview/backbone.vdomview"),
             use: 'imports-loader?backbone.nativeview'
         },
         {
@@ -83,9 +83,9 @@ const config = {
             "backbone":                 path.resolve(__dirname, "node_modules/backbone/backbone"),
             "backbone.browserStorage":  path.resolve(__dirname, "node_modules/backbone.browserStorage/backbone.browserStorage"),
             "backbone.nativeview":      path.resolve(__dirname, "node_modules/backbone.nativeview/backbone.nativeview"),
-            "backbone.orderedlistview": path.resolve(__dirname, "node_modules/backbone.overview/dist/backbone.orderedlistview"),
-            "backbone.overview":        path.resolve(__dirname, "node_modules/backbone.overview/dist/backbone.overview"),
-            "backbone.vdomview":        path.resolve(__dirname, "node_modules/backbone.vdomview/dist/backbone.vdomview"),
+            "backbone.orderedlistview": path.resolve(__dirname, "node_modules/backbone.overview/backbone.orderedlistview"),
+            "backbone.overview":        path.resolve(__dirname, "node_modules/backbone.overview/backbone.overview"),
+            "backbone.vdomview":        path.resolve(__dirname, "node_modules/backbone.vdomview/backbone.vdomview"),
             "bootstrap":                path.resolve(__dirname, "node_modules/bootstrap.native/dist/bootstrap-native-v4"),
             "crypto":                   path.resolve(__dirname, "node_modules/otr/build/dep/crypto"),
             "emojione":                 path.resolve(__dirname, "node_modules/emojione/lib/js/emojione"),

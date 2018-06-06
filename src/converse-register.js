@@ -10,7 +10,7 @@
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-    define(["form-utils",
+    define(["utils/form",
             "converse-core",
             "templates/form_username.html",
             "templates/register_link.html",

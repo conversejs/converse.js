@@ -10,13 +10,12 @@
  * rooms in the "Rooms Panel" of the ControlBox.
  */
 (function (root, factory) {
-    define(["utils",
-            "converse-core",
+    define(["converse-core",
             "converse-muc",
             "templates/rooms_list.html",
             "templates/rooms_list_item.html"
         ], factory);
-}(this, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
+}(this, function (converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
     const { Backbone, Promise, Strophe, b64_sha1, sizzle, _ } = converse.env;
     const u = converse.env.utils;
 
@@ -247,13 +246,13 @@
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     const icon_el = ev.target.querySelector('.fa');
                     if (icon_el.classList.contains("fa-caret-down")) {
-                        utils.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
+                        u.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
                             this.list_model.save({'toggle-state': _converse.CLOSED});
                             icon_el.classList.remove("fa-caret-down");
                             icon_el.classList.add("fa-caret-right");
                         });
                     } else {
-                        utils.slideOut(this.el.querySelector('.open-rooms-list')).then(() => {
+                        u.slideOut(this.el.querySelector('.open-rooms-list')).then(() => {
                             this.list_model.save({'toggle-state': _converse.OPENED});
                             icon_el.classList.remove("fa-caret-right");
                             icon_el.classList.add("fa-caret-down");

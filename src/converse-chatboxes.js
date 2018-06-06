@@ -11,7 +11,7 @@
         "filesize",
         "templates/chatboxes.html",
         "backbone.overview",
-        "form-utils"
+        "utils/form"
     ], factory);
 }(this, function (converse, emojione, filesize, tpl_chatboxes) {
     "use strict";

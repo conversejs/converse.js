@@ -6,14 +6,14 @@
 
 (function (root, factory) {
     define([
-            "form-utils",
+            "utils/form",
             "converse-core",
             "emojione",
             "converse-disco",
             "backbone.overview",
             "backbone.orderedlistview",
             "backbone.vdomview",
-            "muc-utils"
+            "utils/muc"
     ], factory);
 }(this, function (u, converse, emojione) {
     "use strict";

@@ -7,7 +7,7 @@
 (function (root, factory) {
     define([
         "converse-core",
-        "muc-utils",
+        "utils/muc",
         "templates/add_chatroom_modal.html",
         "templates/chatarea.html",
         "templates/chatroom.html",

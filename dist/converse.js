@@ -62031,7 +62031,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! templates/chatboxes.html */ "./src/templates/chatboxes.html"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/dist/backbone.overview.js"), __webpack_require__(/*! form-utils */ "./src/utils/form.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! templates/chatboxes.html */ "./src/templates/chatboxes.html"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/dist/backbone.overview.js"), __webpack_require__(/*! utils/form */ "./src/utils/form.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -64917,7 +64917,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! es6-promise */ "./node_modules/es6-promise/dist/es6-promise.auto.js"), __webpack_require__(/*! lodash.noconflict */ "./src/lodash.noconflict.js"), __webpack_require__(/*! lodash.fp */ "./src/lodash.fp.js"), __webpack_require__(/*! polyfill */ "./src/polyfill.js"), __webpack_require__(/*! i18n */ "./src/i18n.js"), __webpack_require__(/*! utils */ "./src/utils/core.js"), __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"), __webpack_require__(/*! strophe */ "./node_modules/strophe.js/strophe.js"), __webpack_require__(/*! pluggable */ "./node_modules/pluggable.js/dist/pluggable.js"), __webpack_require__(/*! backbone.noconflict */ "./src/backbone.noconflict.js"), __webpack_require__(/*! backbone.nativeview */ "./node_modules/backbone.nativeview/backbone.nativeview.js"), __webpack_require__(/*! backbone.browserStorage */ "./node_modules/backbone.browserStorage/backbone.browserStorage.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! es6-promise */ "./node_modules/es6-promise/dist/es6-promise.auto.js"), __webpack_require__(/*! lodash.noconflict */ "./src/lodash.noconflict.js"), __webpack_require__(/*! lodash.fp */ "./src/lodash.fp.js"), __webpack_require__(/*! polyfill */ "./src/polyfill.js"), __webpack_require__(/*! i18n */ "./src/i18n.js"), __webpack_require__(/*! utils/core */ "./src/utils/core.js"), __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"), __webpack_require__(/*! strophe */ "./node_modules/strophe.js/strophe.js"), __webpack_require__(/*! pluggable */ "./node_modules/pluggable.js/dist/pluggable.js"), __webpack_require__(/*! backbone.noconflict */ "./src/backbone.noconflict.js"), __webpack_require__(/*! backbone.nativeview */ "./node_modules/backbone.nativeview/backbone.nativeview.js"), __webpack_require__(/*! backbone.browserStorage */ "./node_modules/backbone.browserStorage/backbone.browserStorage.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -67685,11 +67685,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*global define */
 // XEP-0059 Result Set Management
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils */ "./src/utils/core.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! strophe.rsm */ "./node_modules/strophejs-plugin-rsm/strophe.rsm.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! strophe.rsm */ "./node_modules/strophejs-plugin-rsm/strophe.rsm.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (sizzle, converse, utils) {
+})(void 0, function (sizzle, converse) {
   "use strict";
 
   const CHATROOMS_TYPE = 'chatroom';
@@ -67699,6 +67699,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         $iq = _converse$env.$iq,
         _ = _converse$env._,
         moment = _converse$env.moment;
+  const u = converse.env.utils;
   const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count']; // XEP-0313 Message Archive Management
 
   const MAM_ATTRIBUTES = ['with', 'start', 'end'];
@@ -67871,7 +67872,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           const _converse = this.__super__._converse,
-                most_recent_msg = utils.getMostRecentMessage(this.model);
+                most_recent_msg = u.getMostRecentMessage(this.model);
 
           if (_.isNil(most_recent_msg)) {
             this.fetchArchivedMessages();
@@ -68192,7 +68193,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
   !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! templates/action.html */ "./src/templates/action.html"), __webpack_require__(/*! templates/csn.html */ "./src/templates/csn.html"), __webpack_require__(/*! templates/file_progress.html */ "./src/templates/file_progress.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/message.html */ "./src/templates/message.html"), __webpack_require__(/*! templates/spoiler_message.html */ "./src/templates/spoiler_message.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
@@ -69174,7 +69175,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! muc-utils */ "./src/utils/muc.js"), __webpack_require__(/*! templates/add_chatroom_modal.html */ "./src/templates/add_chatroom_modal.html"), __webpack_require__(/*! templates/chatarea.html */ "./src/templates/chatarea.html"), __webpack_require__(/*! templates/chatroom.html */ "./src/templates/chatroom.html"), __webpack_require__(/*! templates/chatroom_details_modal.html */ "./src/templates/chatroom_details_modal.html"), __webpack_require__(/*! templates/chatroom_disconnect.html */ "./src/templates/chatroom_disconnect.html"), __webpack_require__(/*! templates/chatroom_features.html */ "./src/templates/chatroom_features.html"), __webpack_require__(/*! templates/chatroom_form.html */ "./src/templates/chatroom_form.html"), __webpack_require__(/*! templates/chatroom_head.html */ "./src/templates/chatroom_head.html"), __webpack_require__(/*! templates/chatroom_invite.html */ "./src/templates/chatroom_invite.html"), __webpack_require__(/*! templates/chatroom_nickname_form.html */ "./src/templates/chatroom_nickname_form.html"), __webpack_require__(/*! templates/chatroom_password_form.html */ "./src/templates/chatroom_password_form.html"), __webpack_require__(/*! templates/chatroom_sidebar.html */ "./src/templates/chatroom_sidebar.html"), __webpack_require__(/*! templates/chatroom_toolbar.html */ "./src/templates/chatroom_toolbar.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/list_chatrooms_modal.html */ "./src/templates/list_chatrooms_modal.html"), __webpack_require__(/*! templates/occupant.html */ "./src/templates/occupant.html"), __webpack_require__(/*! templates/room_description.html */ "./src/templates/room_description.html"), __webpack_require__(/*! templates/room_item.html */ "./src/templates/room_item.html"), __webpack_require__(/*! templates/room_panel.html */ "./src/templates/room_panel.html"), __webpack_require__(/*! templates/rooms_results.html */ "./src/templates/rooms_results.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! awesomplete */ "./node_modules/awesomplete-avoid-xss/awesomplete.js"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js"), __webpack_require__(/*! templates/add_chatroom_modal.html */ "./src/templates/add_chatroom_modal.html"), __webpack_require__(/*! templates/chatarea.html */ "./src/templates/chatarea.html"), __webpack_require__(/*! templates/chatroom.html */ "./src/templates/chatroom.html"), __webpack_require__(/*! templates/chatroom_details_modal.html */ "./src/templates/chatroom_details_modal.html"), __webpack_require__(/*! templates/chatroom_disconnect.html */ "./src/templates/chatroom_disconnect.html"), __webpack_require__(/*! templates/chatroom_features.html */ "./src/templates/chatroom_features.html"), __webpack_require__(/*! templates/chatroom_form.html */ "./src/templates/chatroom_form.html"), __webpack_require__(/*! templates/chatroom_head.html */ "./src/templates/chatroom_head.html"), __webpack_require__(/*! templates/chatroom_invite.html */ "./src/templates/chatroom_invite.html"), __webpack_require__(/*! templates/chatroom_nickname_form.html */ "./src/templates/chatroom_nickname_form.html"), __webpack_require__(/*! templates/chatroom_password_form.html */ "./src/templates/chatroom_password_form.html"), __webpack_require__(/*! templates/chatroom_sidebar.html */ "./src/templates/chatroom_sidebar.html"), __webpack_require__(/*! templates/chatroom_toolbar.html */ "./src/templates/chatroom_toolbar.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/list_chatrooms_modal.html */ "./src/templates/list_chatrooms_modal.html"), __webpack_require__(/*! templates/occupant.html */ "./src/templates/occupant.html"), __webpack_require__(/*! templates/room_description.html */ "./src/templates/room_description.html"), __webpack_require__(/*! templates/room_item.html */ "./src/templates/room_item.html"), __webpack_require__(/*! templates/room_panel.html */ "./src/templates/room_panel.html"), __webpack_require__(/*! templates/rooms_results.html */ "./src/templates/rooms_results.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! awesomplete */ "./node_modules/awesomplete-avoid-xss/awesomplete.js"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -71120,7 +71121,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! form-utils */ "./src/utils/form.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/dist/backbone.overview.js"), __webpack_require__(/*! backbone.orderedlistview */ "./node_modules/backbone.overview/dist/backbone.orderedlistview.js"), __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/dist/backbone.vdomview.js"), __webpack_require__(/*! muc-utils */ "./src/utils/muc.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! utils/form */ "./src/utils/form.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/dist/backbone.overview.js"), __webpack_require__(/*! backbone.orderedlistview */ "./node_modules/backbone.overview/dist/backbone.orderedlistview.js"), __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/dist/backbone.vdomview.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -72898,14 +72899,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 "use strict";
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// Converse.js
+// https://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
-
-/*global define */
 
 /* This is a Converse.js plugin which add support for application-level pings
  * as specified in XEP-0199 XMPP Ping.
@@ -73312,7 +73310,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! form-utils */ "./src/utils/form.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/form_username.html */ "./src/templates/form_username.html"), __webpack_require__(/*! templates/register_link.html */ "./src/templates/register_link.html"), __webpack_require__(/*! templates/register_panel.html */ "./src/templates/register_panel.html"), __webpack_require__(/*! templates/registration_form.html */ "./src/templates/registration_form.html"), __webpack_require__(/*! templates/registration_request.html */ "./src/templates/registration_request.html"), __webpack_require__(/*! templates/form_input.html */ "./src/templates/form_input.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! converse-controlbox */ "./src/converse-controlbox.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! utils/form */ "./src/utils/form.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/form_username.html */ "./src/templates/form_username.html"), __webpack_require__(/*! templates/register_link.html */ "./src/templates/register_link.html"), __webpack_require__(/*! templates/register_panel.html */ "./src/templates/register_panel.html"), __webpack_require__(/*! templates/registration_form.html */ "./src/templates/registration_form.html"), __webpack_require__(/*! templates/registration_request.html */ "./src/templates/registration_request.html"), __webpack_require__(/*! templates/form_input.html */ "./src/templates/form_input.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! converse-controlbox */ "./src/converse-controlbox.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -74066,11 +74064,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
  * rooms in the "Rooms Panel" of the ControlBox.
  */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! utils */ "./src/utils/core.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! converse-muc */ "./src/converse-muc.js"), __webpack_require__(/*! templates/rooms_list.html */ "./src/templates/rooms_list.html"), __webpack_require__(/*! templates/rooms_list_item.html */ "./src/templates/rooms_list_item.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! converse-muc */ "./src/converse-muc.js"), __webpack_require__(/*! templates/rooms_list.html */ "./src/templates/rooms_list.html"), __webpack_require__(/*! templates/rooms_list_item.html */ "./src/templates/rooms_list_item.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
+})(void 0, function (converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
   const _converse$env = converse.env,
         Backbone = _converse$env.Backbone,
         Promise = _converse$env.Promise,
@@ -74324,7 +74322,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const icon_el = ev.target.querySelector('.fa');
 
           if (icon_el.classList.contains("fa-caret-down")) {
-            utils.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
+            u.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
               this.list_model.save({
                 'toggle-state': _converse.CLOSED
               });
@@ -74332,7 +74330,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               icon_el.classList.add("fa-caret-right");
             });
           } else {
-            utils.slideOut(this.el.querySelector('.open-rooms-list')).then(() => {
+            u.slideOut(this.el.querySelector('.open-rooms-list')).then(() => {
               this.list_model.save({
                 'toggle-state': _converse.OPENED
               });
@@ -76842,7 +76840,8 @@ if (true) {
    * Any of the following components may be removed if they're not needed.
    */
   __webpack_require__(/*! converse-bookmarks */ "./src/converse-bookmarks.js"), // XEP-0048 Bookmarks
-  __webpack_require__(/*! converse-caps */ "./src/converse-caps.js"), __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js"), // Renders standalone chat boxes for single user chat
+  __webpack_require__(/*! converse-caps */ "./src/converse-caps.js"), // XEP-0115 Entity Capabilities
+  __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js"), // Renders standalone chat boxes for single user chat
   __webpack_require__(/*! converse-controlbox */ "./src/converse-controlbox.js"), // The control box
   __webpack_require__(/*! converse-dragresize */ "./src/converse-dragresize.js"), // Allows chat boxes to be resized by dragging them
   __webpack_require__(/*! converse-embedded */ "./src/converse-embedded.js"), __webpack_require__(/*! converse-fullscreen */ "./src/converse-fullscreen.js"), __webpack_require__(/*! converse-headline */ "./src/converse-headline.js"), // Support for headline messages
@@ -81051,7 +81050,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /*global define, escape, Jed */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! lodash.noconflict */ "./src/lodash.noconflict.js"), __webpack_require__(/*! utils */ "./src/utils/core.js"), __webpack_require__(/*! templates/field.html */ "./src/templates/field.html"), __webpack_require__(/*! templates/select_option.html */ "./src/templates/select_option.html"), __webpack_require__(/*! templates/form_select.html */ "./src/templates/form_select.html"), __webpack_require__(/*! templates/form_textarea.html */ "./src/templates/form_textarea.html"), __webpack_require__(/*! templates/form_checkbox.html */ "./src/templates/form_checkbox.html"), __webpack_require__(/*! templates/form_username.html */ "./src/templates/form_username.html"), __webpack_require__(/*! templates/form_input.html */ "./src/templates/form_input.html"), __webpack_require__(/*! templates/form_captcha.html */ "./src/templates/form_captcha.html"), __webpack_require__(/*! templates/form_url.html */ "./src/templates/form_url.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! lodash.noconflict */ "./src/lodash.noconflict.js"), __webpack_require__(/*! utils/core */ "./src/utils/core.js"), __webpack_require__(/*! templates/field.html */ "./src/templates/field.html"), __webpack_require__(/*! templates/select_option.html */ "./src/templates/select_option.html"), __webpack_require__(/*! templates/form_select.html */ "./src/templates/form_select.html"), __webpack_require__(/*! templates/form_textarea.html */ "./src/templates/form_textarea.html"), __webpack_require__(/*! templates/form_checkbox.html */ "./src/templates/form_checkbox.html"), __webpack_require__(/*! templates/form_username.html */ "./src/templates/form_username.html"), __webpack_require__(/*! templates/form_input.html */ "./src/templates/form_input.html"), __webpack_require__(/*! templates/form_captcha.html */ "./src/templates/form_captcha.html"), __webpack_require__(/*! templates/form_url.html */ "./src/templates/form_url.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -81210,7 +81209,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /*global define, escape, Jed */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils */ "./src/utils/core.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils/core */ "./src/utils/core.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));

@@ -11,7 +11,7 @@
             "lodash.fp",
             "polyfill",
             "i18n",
-            "utils",
+            "utils/core",
             "moment",
             "strophe",
             "pluggable",

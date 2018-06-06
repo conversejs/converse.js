@@ -11,7 +11,7 @@
     define([
         "sizzle",
         "lodash.noconflict",
-        "utils",
+        "utils/core",
         "templates/field.html",
         "templates/select_option.html",
         "templates/form_select.html",

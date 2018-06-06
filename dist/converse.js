@@ -76550,6 +76550,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       ChatBoxView: {
         shouldShowOnTextMessage() {
           if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
+            this.model.set('hidden', true);
             return false;
           } else {
             return this.__super__.shouldShowOnTextMessage.apply(this, arguments);

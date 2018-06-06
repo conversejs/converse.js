@@ -1192,8 +1192,20 @@
                     _converse.api.disco.own.features.add('jabber:x:conference'); // Invites
                 }
             });
-            _converse.on('chatBoxesFetched', autoJoinRooms);
-            _converse.on('disconnecting', disconnectChatRooms);
+            _converse.api.listen.on('chatBoxesFetched', autoJoinRooms);
+            _converse.api.listen.on('disconnecting', disconnectChatRooms);
+
+            _converse.api.listen.on('statusInitialized', () => {
+                // XXX: For websocket connections, we disconnect from all
+                // chatrooms when the page reloads. This is a workaround for
+                // issue #1111 and should be removed once we support XEP-0198
+                const options = {'once': true, 'passive': true};
+                window.addEventListener(_converse.unloadevent, () => {
+                    if (_converse.connection._proto instanceof Strophe.Websocket) {
+                        disconnectChatRooms();
+                    }
+                });
+            });
             /************************ END Event Handlers ************************/
 
 

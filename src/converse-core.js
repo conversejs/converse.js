@@ -321,17 +321,16 @@
             _converse._tearDown();
         }
 
-        let unloadevent;
         if ('onpagehide' in window) {
             // Pagehide gets thrown in more cases than unload. Specifically it
             // gets thrown when the page is cached and not just
             // closed/destroyed. It's the only viable event on mobile Safari.
             // https://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/
-            unloadevent = 'pagehide';
+            _converse.unloadevent = 'pagehide';
         } else if ('onbeforeunload' in window) {
-            unloadevent = 'beforeunload';
+            _converse.unloadevent = 'beforeunload';
         } else if ('onunload' in window) {
-            unloadevent = 'unload';
+            _converse.unloadevent = 'unload';
         }
 
         _.assignIn(this, this.default_settings);
@@ -449,7 +448,8 @@
             window.addEventListener('focus', _converse.onUserActivity);
             window.addEventListener('keypress', _converse.onUserActivity);
             window.addEventListener('mousemove', _converse.onUserActivity);
-            window.addEventListener(unloadevent, _converse.onUserActivity);
+            const options = {'once': true, 'passive': true};
+            window.addEventListener(_converse.unloadevent, _converse.onUserActivity, options);
             _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
         };
 
@@ -1090,7 +1090,7 @@
             window.removeEventListener('focus', _converse.onUserActivity);
             window.removeEventListener('keypress', _converse.onUserActivity);
             window.removeEventListener('mousemove', _converse.onUserActivity);
-            window.removeEventListener(unloadevent, _converse.onUserActivity);
+            window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
             window.clearInterval(_converse.everySecondTrigger);
             _converse.emit('afterTearDown');
             return _converse;

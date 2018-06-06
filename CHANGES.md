@@ -19,6 +19,7 @@
 - Add a checkbox to indicate whether a trusted device is being used or not.
   If the device is not trusted, sessionStorage is used and all user data is deleted from the browser cache upon logout.
   If the device is trusted, localStorage is used and user data is cached indefinitely.
+- Initial support for XEP-0357 Push Notifications, specifically registering an "App Server".
 
 ### Bugfixes
 

@@ -14,6 +14,7 @@ if (typeof define !== 'undefined') {
         "converse-dragresize",      // Allows chat boxes to be resized by dragging them
         "converse-embedded",
         "converse-fullscreen",
+        "converse-push",            // XEP-0357 Push Notifications
         "converse-headline",        // Support for headline messages
         "converse-mam",             // XEP-0313 Message Archive Management
         "converse-minimize",        // Allows chat boxes to be minimized

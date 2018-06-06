@@ -20,11 +20,7 @@
             "backbone.browserStorage"
     ], factory);
 }(this, function (sizzle, Promise, _, f, polyfill, i18n, u, moment, Strophe, pluggable, Backbone) {
-
-    /* Cannot use this due to Safari bug.
-     * See https://github.com/jcbrand/converse.js/issues/196
-     */
-    // "use strict";
+    "use strict";
 
     // Strophe globals
     const { $build, $iq, $msg, $pres } = Strophe;
@@ -72,9 +68,9 @@
     // Core plugins are whitelisted automatically
     _converse.core_plugins = [
         'converse-bookmarks',
+        'converse-caps',
         'converse-chatboxes',
         'converse-chatview',
-        'converse-caps',
         'converse-controlbox',
         'converse-core',
         'converse-disco',
@@ -89,9 +85,9 @@
         'converse-muc',
         'converse-muc-views',
         'converse-notification',
-        'converse-otr',
         'converse-ping',
         'converse-profile',
+        'converse-push',
         'converse-register',
         'converse-roomslist',
         'converse-roster',
@@ -130,6 +126,8 @@
     _converse.LOGOUT = "logout";
     _converse.OPENED = 'opened';
     _converse.PREBIND = "prebind";
+
+    _converse.IQ_TIMEOUT = 30000;
 
     _converse.CONNECTION_STATUS = {
         0: 'ERROR',
@@ -298,7 +296,6 @@
 
 
     _converse.initialize = function (settings, callback) {
-        "use strict";
         settings = !_.isUndefined(settings) ? settings : {};
         const init_promise = u.getResolveablePromise();
 
@@ -638,7 +635,7 @@
             _converse.session = new Backbone.Model();
             const id = b64_sha1('converse.bosh-session');
             _converse.session.id = id; // Appears to be necessary for backbone.browserStorage
-            _converse.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+            _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
             _converse.session.fetch();
             _converse.emit('sessionInitialized');
         };
@@ -739,7 +736,7 @@
                         'An error occured while trying to enable message carbons.',
                         Strophe.LogLevel.ERROR);
                 } else {
-                    this.session.save({carbons_enabled: true});
+                    this.session.save({'carbons_enabled': true});
                     _converse.log('Message carbons have been enabled.');
                 }
             }, null, "iq", null, "enablecarbons");
@@ -1289,6 +1286,11 @@
         'send' (stanza) {
             _converse.connection.send(stanza);
         },
+        'sendIQ' (stanza) {
+            return new Promise((resolve, reject) => {
+                _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
+            });
+        }
     };
 
     // The public API

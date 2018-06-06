@@ -64922,11 +64922,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 })(void 0, function (sizzle, Promise, _, f, polyfill, i18n, u, moment, Strophe, pluggable, Backbone) {
-  /* Cannot use this due to Safari bug.
-   * See https://github.com/jcbrand/converse.js/issues/196
-   */
-  // "use strict";
-  // Strophe globals
+  "use strict"; // Strophe globals
+
   const _Strophe = Strophe,
         $build = _Strophe.$build,
         $iq = _Strophe.$iq,
@@ -64974,7 +64971,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   _.extend(_converse, Backbone.Events); // Core plugins are whitelisted automatically
 
 
-  _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-caps', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-profile', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Make converse pluggable
+  _converse.core_plugins = ['converse-bookmarks', 'converse-caps', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-ping', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Make converse pluggable
 
   pluggable.enable(_converse, '_converse', 'pluggable'); // Module-level constants
 
@@ -65004,6 +65001,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   _converse.LOGOUT = "logout";
   _converse.OPENED = 'opened';
   _converse.PREBIND = "prebind";
+  _converse.IQ_TIMEOUT = 30000;
   _converse.CONNECTION_STATUS = {
     0: 'ERROR',
     1: 'CONNECTING',
@@ -65173,8 +65171,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   _converse.router = new Backbone.Router();
 
   _converse.initialize = function (settings, callback) {
-    "use strict";
-
     settings = !_.isUndefined(settings) ? settings : {};
     const init_promise = u.getResolveablePromise();
 
@@ -65564,7 +65560,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       const id = b64_sha1('converse.bosh-session');
       _converse.session.id = id; // Appears to be necessary for backbone.browserStorage
 
-      _converse.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+      _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
 
       _converse.session.fetch();
 
@@ -65682,7 +65678,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           _converse.log('An error occured while trying to enable message carbons.', Strophe.LogLevel.ERROR);
         } else {
           this.session.save({
-            carbons_enabled: true
+            'carbons_enabled': true
           });
 
           _converse.log('Message carbons have been enabled.');
@@ -66272,6 +66268,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
     'send'(stanza) {
       _converse.connection.send(stanza);
+    },
+
+    'sendIQ'(stanza) {
+      return new Promise((resolve, reject) => {
+        _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
+      });
     }
 
   }; // The public API
@@ -73287,6 +73289,94 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /***/ }),
 
+/***/ "./src/converse-push.js":
+/*!******************************!*\
+  !*** ./src/converse-push.js ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
+
+// Converse.js
+// https://conversejs.org
+//
+// Copyright (c) 2013-2018, the Converse.js developers
+// Licensed under the Mozilla Public License (MPLv2)
+
+/* This is a Converse.js plugin which add support for registering
+ * an "App Server" as defined in  XEP-0357
+ */
+(function (root, factory) {
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+})(void 0, function (converse) {
+  "use strict";
+
+  const _converse$env = converse.env,
+        Strophe = _converse$env.Strophe,
+        $iq = _converse$env.$iq;
+  Strophe.addNamespace('PUSH', 'urn:xmpp:push:0');
+  converse.plugins.add('converse-push', {
+    initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      const _converse = this._converse,
+            __ = _converse.__;
+
+      _converse.api.settings.update({
+        'push_service': undefined,
+        'push_service_node': undefined,
+        'push_service_secret': undefined
+      });
+
+      function enablePush() {
+        if (_converse.session.get('push_enabled')) {
+          return;
+        }
+
+        if (_converse.push_service && _converse.push_service_node) {
+          Promise.all([_converse.api.disco.getIdentity('pubsub', 'push', _converse.push_service), _converse.api.disco.supports(Strophe.NS.PUSH, _converse.push_service)]).then(() => _converse.api.disco.supports(Strophe.NS.PUSH, _converse.bare_jid)).then(() => {
+            const stanza = $iq({
+              'type': 'set'
+            }).c('enable', {
+              'xmlns': Strophe.NS.PUSH,
+              'jid': _converse.push_service,
+              'node': _converse.push_service_node
+            });
+
+            if (_converse.push_service_secret) {
+              stanza.c('x', {
+                'xmlns': Strophe.NS.XFORM,
+                'type': 'submit'
+              }).c('field', {
+                'var': 'FORM_TYPE'
+              }).c('value').t(`${Strophe.NS.PUBSUB}#publish-options`).up().up().c('field', {
+                'var': 'secret'
+              }).c('value').t(_converse.push_service_secret);
+            }
+
+            _converse.api.sendIQ(stanza).then(() => _converse.session.set('push_enabled', true)).catch(e => {
+              _converse.log(`Could not enable push service for ${_converse.push_service}`, Strophe.LogLevel.ERROR);
+
+              _converse.log(e, Strophe.LogLevel.ERROR);
+            });
+          });
+        }
+      }
+
+      _converse.api.listen.on('statusInitialized', enablePush);
+    }
+
+  });
+});
+
+/***/ }),
+
 /***/ "./src/converse-register.js":
 /*!**********************************!*\
   !*** ./src/converse-register.js ***!
@@ -76844,7 +76934,8 @@ if (true) {
   __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js"), // Renders standalone chat boxes for single user chat
   __webpack_require__(/*! converse-controlbox */ "./src/converse-controlbox.js"), // The control box
   __webpack_require__(/*! converse-dragresize */ "./src/converse-dragresize.js"), // Allows chat boxes to be resized by dragging them
-  __webpack_require__(/*! converse-embedded */ "./src/converse-embedded.js"), __webpack_require__(/*! converse-fullscreen */ "./src/converse-fullscreen.js"), __webpack_require__(/*! converse-headline */ "./src/converse-headline.js"), // Support for headline messages
+  __webpack_require__(/*! converse-embedded */ "./src/converse-embedded.js"), __webpack_require__(/*! converse-fullscreen */ "./src/converse-fullscreen.js"), __webpack_require__(/*! converse-push */ "./src/converse-push.js"), // XEP-0357 Push Notifications
+  __webpack_require__(/*! converse-headline */ "./src/converse-headline.js"), // Support for headline messages
   __webpack_require__(/*! converse-mam */ "./src/converse-mam.js"), // XEP-0313 Message Archive Management
   __webpack_require__(/*! converse-minimize */ "./src/converse-minimize.js"), // Allows chat boxes to be minimized
   __webpack_require__(/*! converse-muc */ "./src/converse-muc.js"), // XEP-0045 Multi-user chat

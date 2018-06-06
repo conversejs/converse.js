@@ -191,6 +191,7 @@ var specs = [
     "spec/presence",
     "spec/eventemitter",
     "spec/ping",
+    "spec/push",
     "spec/xmppstatus",
     "spec/mam",
     // "spec/otr",

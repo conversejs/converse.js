@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-04-30 16:16+0200\n"
-"PO-Revision-Date: 2018-04-03 10:34+0000\n"
+"PO-Revision-Date: 2018-06-07 10:34+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -17,24 +17,24 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.20-dev\n"
+"X-Generator: Weblate 3.0\n"
 
 #: dist/converse-no-dependencies.js:9854 dist/converse-no-dependencies.js:9883
 msgid "Download"
-msgstr ""
+msgstr "Deskargatu"
 
 #: dist/converse-no-dependencies.js:9873
 #, javascript-format
 msgid "Download: \"%1$s"
-msgstr ""
+msgstr "Deskarga: \"%1$s"
 
 #: dist/converse-no-dependencies.js:9896
 msgid "Download video file"
-msgstr ""
+msgstr "Deskargatu bideo fitxategia"
 
 #: dist/converse-no-dependencies.js:9909
 msgid "Download audio file"
-msgstr ""
+msgstr "Deskargatu audio fitxategia"
 
 #: dist/converse-no-dependencies.js:11206
 msgid "The connection has dropped, attempting to reconnect."
@@ -74,24 +74,24 @@ msgstr "Klikatu kontaktu hauek ezkutatzeko"
 
 #: dist/converse-no-dependencies.js:17811
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "Barkatu, ezin izan da fitxategi igotzeko URL-a zehaztu."
 
 #: dist/converse-no-dependencies.js:17819
 msgid "Sorry, could not determine upload URL."
-msgstr ""
+msgstr "Barkatu, ezin izan da igoera URL-a zehaztu."
 
 #: dist/converse-no-dependencies.js:17851
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "Barkatu, ezin izan da zure fitxategia behar bezala igo."
 
 #: dist/converse-no-dependencies.js:17854
 #, javascript-format
 msgid "Your server's response: \"%1$s\""
-msgstr ""
+msgstr "Zure zerbitzariaren erantzuna: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:18012
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "Barkatu, badirudi zure zerbitzariak ez duela fitxategi igoera onartzen."
 
 #: dist/converse-no-dependencies.js:18022
 #, javascript-format
@@ -99,11 +99,12 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
+"Zure fitxategiaren neurriak, %1$s, zure zerbitzariak gehienez onarturiko "
+"muga( %2$s ) gainditzen du."
 
 #: dist/converse-no-dependencies.js:18681
-#, fuzzy
 msgid "Show more"
-msgstr "Gelak erakutsi"
+msgstr "Gehiago erakutsi"
 
 #: dist/converse-no-dependencies.js:18976
 msgid "Close this chat box"
@@ -134,7 +135,7 @@ msgstr "Aukerako haztarna"
 
 #: dist/converse-no-dependencies.js:19091
 msgid "Choose a file to send"
-msgstr ""
+msgstr "Aukeratu bidaltzeko fitxategia"
 
 #: dist/converse-no-dependencies.js:19142
 msgid "Click to write as a normal (non-spoiler) message"
@@ -194,9 +195,8 @@ msgid "Show this menu"
 msgstr "Menu hau erakutsi"
 
 #: dist/converse-no-dependencies.js:19614
-#, fuzzy
 msgid "Are you sure you want to clear the messages from this conversation?"
-msgstr "Ziur al zaude leiho honetako mezuak ezabatu nahi dituzula?"
+msgstr "Ziur al zaude elkarrizketa honetako mezuak ezabatu nahi dituzula?"
 
 #: dist/converse-no-dependencies.js:19704
 #: dist/converse-no-dependencies.js:30472

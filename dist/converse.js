@@ -62555,8 +62555,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const attrs = this.getMessageAttributesFromStanza.apply(this, arguments);
           const is_csn = u.isOnlyChatStateNotification(attrs);
 
-          if (is_csn && attrs.delayed) {
-            // No need showing old CSNs
+          if (is_csn && (attrs.delayed || attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick'))) {
+            // XXX: MUC leakage
+            // No need showing delayed or our own CSN messages
             return;
           } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
             // TODO: handle <subject> messages (currently being done by ChatRoom)
@@ -62609,9 +62610,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         registerMessageHandler() {
-          _converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
+          _converse.connection.addHandler(stanza => {
+            this.onMessage(stanza);
+            return true;
+          }, null, 'message', 'chat');
 
-          _converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
+          _converse.connection.addHandler(stanza => {
+            this.onErrorMessage(stanza);
+            return true;
+          }, null, 'message', 'error');
         },
 
         chatBoxMayBeShown(chatbox) {
@@ -62641,13 +62648,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         onErrorMessage(message) {
           /* Handler method for all incoming error message stanzas
           */
-          // TODO: we can likely just reuse "onMessage" below
           const from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
 
           if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
             return true;
-          } // Get chat box, but only create a new one when the message has a body.
-
+          }
 
           const chatbox = this.getChatBox(from_jid);
 
@@ -65199,18 +65204,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       _converse._tearDown();
     }
 
-    let unloadevent;
-
     if ('onpagehide' in window) {
       // Pagehide gets thrown in more cases than unload. Specifically it
       // gets thrown when the page is cached and not just
       // closed/destroyed. It's the only viable event on mobile Safari.
       // https://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/
-      unloadevent = 'pagehide';
+      _converse.unloadevent = 'pagehide';
     } else if ('onbeforeunload' in window) {
-      unloadevent = 'beforeunload';
+      _converse.unloadevent = 'beforeunload';
     } else if ('onunload' in window) {
-      unloadevent = 'unload';
+      _converse.unloadevent = 'unload';
     }
 
     _.assignIn(this, this.default_settings); // Allow only whitelisted configuration attributes to be overwritten
@@ -65337,7 +65340,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       window.addEventListener('focus', _converse.onUserActivity);
       window.addEventListener('keypress', _converse.onUserActivity);
       window.addEventListener('mousemove', _converse.onUserActivity);
-      window.addEventListener(unloadevent, _converse.onUserActivity);
+      const options = {
+        'once': true,
+        'passive': true
+      };
+      window.addEventListener(_converse.unloadevent, _converse.onUserActivity, options);
       _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
     };
 
@@ -66044,7 +66051,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       window.removeEventListener('focus', _converse.onUserActivity);
       window.removeEventListener('keypress', _converse.onUserActivity);
       window.removeEventListener('mousemove', _converse.onUserActivity);
-      window.removeEventListener(unloadevent, _converse.onUserActivity);
+      window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
       window.clearInterval(_converse.everySecondTrigger);
 
       _converse.emit('afterTearDown');
@@ -72433,9 +72440,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         }
       });
 
-      _converse.on('chatBoxesFetched', autoJoinRooms);
+      _converse.api.listen.on('chatBoxesFetched', autoJoinRooms);
 
-      _converse.on('disconnecting', disconnectChatRooms);
+      _converse.api.listen.on('disconnecting', disconnectChatRooms);
+
+      _converse.api.listen.on('statusInitialized', () => {
+        // XXX: For websocket connections, we disconnect from all
+        // chatrooms when the page reloads. This is a workaround for
+        // issue #1111 and should be removed once we support XEP-0198
+        const options = {
+          'once': true,
+          'passive': true
+        };
+        window.addEventListener(_converse.unloadevent, () => {
+          if (_converse.connection._proto instanceof Strophe.Websocket) {
+            disconnectChatRooms();
+          }
+        });
+      });
       /************************ END Event Handlers ************************/
 
       /************************ BEGIN API ************************/

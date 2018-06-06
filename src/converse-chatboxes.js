@@ -493,8 +493,9 @@
                      */
                     const attrs = this.getMessageAttributesFromStanza.apply(this, arguments)
                     const is_csn = u.isOnlyChatStateNotification(attrs);
-                    if (is_csn && attrs.delayed) {
-                        // No need showing old CSNs
+                    if (is_csn && (attrs.delayed || (attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick')))) {
+                        // XXX: MUC leakage
+                        // No need showing delayed or our own CSN messages
                         return;
                     } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
                         // TODO: handle <subject> messages (currently being done by ChatRoom)
@@ -545,12 +546,14 @@
                 },
 
                 registerMessageHandler () {
-                    _converse.connection.addHandler(
-                        this.onMessage.bind(this), null, 'message', 'chat'
-                    );
-                    _converse.connection.addHandler(
-                        this.onErrorMessage.bind(this), null, 'message', 'error'
-                    );
+                    _converse.connection.addHandler((stanza) => {
+                        this.onMessage(stanza);
+                        return true;
+                    }, null, 'message', 'chat');
+                    _converse.connection.addHandler((stanza) => {
+                        this.onErrorMessage(stanza);
+                        return true;
+                    }, null, 'message', 'error');
                 },
 
                 chatBoxMayBeShown (chatbox) {
@@ -580,12 +583,10 @@
                 onErrorMessage (message) {
                     /* Handler method for all incoming error message stanzas
                     */
-                    // TODO: we can likely just reuse "onMessage" below
                     const from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
                     if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
                         return true;
                     }
-                    // Get chat box, but only create a new one when the message has a body.
                     const chatbox = this.getChatBox(from_jid);
                     if (!chatbox) {
                         return true;

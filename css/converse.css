@@ -7724,6 +7724,10 @@ body.reset {
     #conversejs.converse-fullscreen .chatbox {
       flex: 0 0 75%;
       max-width: 75%; } }
+  @media (min-width: 992px) {
+    #conversejs.converse-fullscreen .chatbox {
+      flex: 0 0 75%;
+      max-width: 75%; } }
   @media (min-width: 1200px) {
     #conversejs.converse-fullscreen .chatbox {
       flex: 0 0 83.3333333333%;
@@ -8100,6 +8104,11 @@ body.reset {
   padding-left: 15px;
   margin: 0; }
   @media (min-width: 768px) {
+    #conversejs.converse-fullscreen #controlbox,
+    #conversejs.converse-mobile #controlbox {
+      flex: 0 0 25%;
+      max-width: 25%; } }
+  @media (min-width: 992px) {
     #conversejs.converse-fullscreen #controlbox,
     #conversejs.converse-mobile #controlbox {
       flex: 0 0 25%;

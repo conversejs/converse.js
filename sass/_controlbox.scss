@@ -452,6 +452,9 @@
         @include media-breakpoint-up(md) {
             @include make-col(3);
         }
+        @include media-breakpoint-up(lg) {
+            @include make-col(3);
+        }
         @include media-breakpoint-up(xl) {
             @include make-col(2);
         }

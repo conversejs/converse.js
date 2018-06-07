@@ -29,12 +29,6 @@
             // plugin architecture they will replace existing methods on the
             // relevant objects or classes.
 
-            disconnect: function () {
-                const { _converse } = this.__super__;
-                _converse.chatboxviews.closeAllChatBoxes();
-                return this.__super__.disconnect.apply(this, arguments);
-            },
-
             initStatus: function (reconnecting) {
                 const { _converse } = this.__super__;
                 if (!reconnecting) {
@@ -833,7 +827,7 @@
                 _converse.emit('chatBoxesInitialized');
             });
 
-            _converse.api.listen.on('logout', () => {
+            _converse.api.listen.on('clearSession', () => {
                 _converse.chatboxviews.closeAllChatBoxes();
             });
 

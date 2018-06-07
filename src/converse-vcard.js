@@ -133,7 +133,7 @@
                 _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.vcards`));
                 _converse.vcards.fetch();
             }
-            _converse.api.listen.on('connectionInitialized', _converse.initVCardCollection);
+            _converse.api.listen.on('sessionInitialized', _converse.initVCardCollection);
 
 
             _converse.on('addClientFeatures', () => {

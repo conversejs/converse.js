@@ -62089,13 +62089,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
       // relevant objects or classes.
-      disconnect: function disconnect() {
-        const _converse = this.__super__._converse;
-
-        _converse.chatboxviews.closeAllChatBoxes();
-
-        return this.__super__.disconnect.apply(this, arguments);
-      },
       initStatus: function initStatus(reconnecting) {
         const _converse = this.__super__._converse;
 
@@ -62966,7 +62959,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         _converse.emit('chatBoxesInitialized');
       });
 
-      _converse.api.listen.on('logout', () => {
+      _converse.api.listen.on('clearSession', () => {
         _converse.chatboxviews.closeAllChatBoxes();
       });
 
@@ -64358,8 +64351,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // relevant objects or classes.
       //
       // New functions which don't exist yet can also be added.
-      _tearDown() {
-        this.__super__._tearDown.apply(this, arguments);
+      tearDown() {
+        this.__super__.tearDown.apply(this, arguments);
 
         if (this.rosterview) {
           // Removes roster groups
@@ -65225,7 +65218,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _converse.stopListening();
 
-      _converse._tearDown();
+      _converse.tearDown();
     }
 
     if ('onpagehide' in window) {
@@ -65408,7 +65401,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _converse.connection.reconnecting = true;
 
-      _converse._tearDown();
+      _converse.tearDown();
 
       _converse.logIn(null, true);
     }, 3000, {
@@ -65422,7 +65415,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _converse.connection.reset();
 
-      _converse._tearDown();
+      _converse.tearDown();
 
       _converse.emit('disconnected');
     };
@@ -65614,7 +65607,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       if (!_.isUndefined(_converse.connection)) {
         _converse.connection.disconnect();
       } else {
-        _converse._tearDown();
+        _converse.tearDown();
       } // Recreate all the promises
 
 
@@ -66061,7 +66054,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       _converse.emit('connectionInitialized');
     };
 
-    this._tearDown = function () {
+    this.tearDown = function () {
       /* Remove those views which are only allowed with a valid
        * connection.
        */
@@ -71213,7 +71206,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // relevant objects or classes.
       //
       // New functions which don't exist yet can also be added.
-      _tearDown() {
+      tearDown() {
         const rooms = this.chatboxes.where({
           'type': converse.CHATROOMS_TYPE
         });
@@ -71224,7 +71217,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
         });
 
-        this.__super__._tearDown.call(this, arguments);
+        this.__super__.tearDown.call(this, arguments);
       },
 
       ChatBoxes: {
@@ -75525,11 +75518,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         this.__super__.afterReconnected.apply(this, arguments);
       },
 
-      _tearDown() {
+      tearDown() {
         /* Remove the rosterview when tearing down. It gets created
          * anew when reconnecting or logging in.
          */
-        this.__super__._tearDown.apply(this, arguments);
+        this.__super__.tearDown.apply(this, arguments);
 
         if (!_.isUndefined(this.rosterview)) {
           this.rosterview.remove();
@@ -76851,7 +76844,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         _converse.vcards.fetch();
       };
 
-      _converse.api.listen.on('connectionInitialized', _converse.initVCardCollection);
+      _converse.api.listen.on('sessionInitialized', _converse.initVCardCollection);
 
       _converse.on('addClientFeatures', () => {
         _converse.api.disco.own.features.add(Strophe.NS.VCARD);

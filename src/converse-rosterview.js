@@ -49,11 +49,11 @@
                 this.__super__.afterReconnected.apply(this, arguments);
             },
 
-            _tearDown () {
+            tearDown () {
                 /* Remove the rosterview when tearing down. It gets created
                  * anew when reconnecting or logging in.
                  */
-                this.__super__._tearDown.apply(this, arguments);
+                this.__super__.tearDown.apply(this, arguments);
                 if (!_.isUndefined(this.rosterview)) {
                     this.rosterview.remove();
                 }

@@ -76,12 +76,12 @@
             //
             // New functions which don't exist yet can also be added.
 
-            _tearDown () {
+            tearDown () {
                 const rooms = this.chatboxes.where({'type': converse.CHATROOMS_TYPE});
                 _.each(rooms, function (room) {
                     u.safeSave(room, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
                 });
-                this.__super__._tearDown.call(this, arguments);
+                this.__super__.tearDown.call(this, arguments);
             },
 
             ChatBoxes: {

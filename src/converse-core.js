@@ -315,7 +315,7 @@
             _converse.connection.reset();
             _converse.off();
             _converse.stopListening();
-            _converse._tearDown();
+            _converse.tearDown();
         }
 
         if ('onpagehide' in window) {
@@ -478,7 +478,7 @@
                 __('The connection has dropped, attempting to reconnect.')
             );
             _converse.connection.reconnecting = true;
-            _converse._tearDown();
+            _converse.tearDown();
             _converse.logIn(null, true);
         }, 3000, {'leading': true});
 
@@ -486,7 +486,7 @@
             _converse.log('DISCONNECTED');
             delete _converse.connection.reconnecting;
             _converse.connection.reset();
-            _converse._tearDown();
+            _converse.tearDown();
             _converse.emit('disconnected');
         };
 
@@ -656,7 +656,7 @@
             if (!_.isUndefined(_converse.connection)) {
                 _converse.connection.disconnect();
             } else {
-                _converse._tearDown();
+                _converse.tearDown();
             }
             // Recreate all the promises
             _.each(_.keys(_converse.promises), addPromise);
@@ -1075,7 +1075,7 @@
         };
 
 
-        this._tearDown = function () {
+        this.tearDown = function () {
             /* Remove those views which are only allowed with a valid
              * connection.
              */

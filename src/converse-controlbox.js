@@ -91,8 +91,8 @@
             //
             // New functions which don't exist yet can also be added.
 
-            _tearDown () {
-                this.__super__._tearDown.apply(this, arguments);
+            tearDown () {
+                this.__super__.tearDown.apply(this, arguments);
                 if (this.rosterview) {
                     // Removes roster groups
                     this.rosterview.model.off().reset();

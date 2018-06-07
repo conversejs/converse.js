@@ -745,7 +745,7 @@
                             expect(chatbox.messages.length).toEqual(1);
                             var msg_obj = chatbox.messages.models[0];
                             expect(msg_obj.get('sender')).toEqual('me');
-                            expect(msg_obj.get('delayed')).toEqual(false);
+                            expect(msg_obj.get('is_delayed')).toEqual(false);
                             var $chat_content = $(chatboxview.el).find('.chat-content');
                             var status_text = $chat_content.find('.chat-info.chat-state-notification').text();
                             expect(status_text).toBe('Typing from another device');
@@ -893,7 +893,7 @@
                             expect(chatbox.messages.length).toEqual(1);
                             var msg_obj = chatbox.messages.models[0];
                             expect(msg_obj.get('sender')).toEqual('me');
-                            expect(msg_obj.get('delayed')).toEqual(false);
+                            expect(msg_obj.get('is_delayed')).toEqual(false);
                             var $chat_content = $(chatboxview.el).find('.chat-content');
                             var status_text = $chat_content.find('.chat-info.chat-state-notification').text();
                             expect(status_text).toBe('Stopped typing on the other device');

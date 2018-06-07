@@ -225,7 +225,7 @@
                 },
 
                 getExtraMessageClasses () {
-                    let extra_classes = this.model.get('delayed') && 'delayed' || '';
+                    let extra_classes = this.model.get('is_delayed') && 'delayed' || '';
                     if (this.model.get('type') === 'groupchat' && this.model.get('sender') === 'them') {
                         if (this.model.collection.chatbox.isUserMentioned(this.model.get('message'))) {
                             // Add special class to mark groupchat messages

@@ -62532,21 +62532,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            *      that contains the message stanza, if it was
            *      contained, otherwise it's the message stanza itself.
            */
-          delay = delay || message.querySelector('delay');
-
           const _converse = this.__super__._converse,
                 __ = _converse.__,
-                spoiler = message.querySelector(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`),
+                archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
+                spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
+                delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
                 chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
           const attrs = {
-            'type': message.getAttribute('type'),
             'chat_state': chat_state,
-            'delayed': !_.isNull(delay),
+            'is_archived': !_.isNil(archive),
+            'is_delayed': !_.isNil(delay),
+            'is_spoiler': !_.isNil(spoiler),
             'message': this.getMessageBody(message) || undefined,
             'msgid': message.getAttribute('id'),
             'time': delay ? delay.getAttribute('stamp') : moment().format(),
-            'is_spoiler': !_.isNull(spoiler)
+            'type': message.getAttribute('type')
           };
 
           if (attrs.type === 'groupchat') {
@@ -62589,7 +62590,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const attrs = this.getMessageAttributesFromStanza(message, original_stanza);
           const is_csn = u.isOnlyChatStateNotification(attrs);
 
-          if (is_csn && (attrs.delayed || attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick'))) {
+          if (is_csn && (attrs.is_delayed || attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick'))) {
             // XXX: MUC leakage
             // No need showing delayed or our own CSN messages
             return;
@@ -68427,7 +68428,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         getExtraMessageClasses() {
-          let extra_classes = this.model.get('delayed') && 'delayed' || '';
+          let extra_classes = this.model.get('is_delayed') && 'delayed' || '';
 
           if (this.model.get('type') === 'groupchat' && this.model.get('sender') === 'them') {
             if (this.model.collection.chatbox.isUserMentioned(this.model.get('message'))) {
@@ -80775,9 +80776,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
      * message, i.e. not a MAM archived one.
      */
     if (message instanceof Element) {
-      return !sizzle('result[xmlns="' + Strophe.NS.MAM + '"]', message).length && !sizzle('delay[xmlns="' + Strophe.NS.DELAY + '"]', message).length;
+      return !(sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, message).length && sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, message).length);
     } else {
-      return !message.get('delayed');
+      return !(message.get('is_delayed') && message.get('is_archived'));
     }
   };
 

@@ -60,7 +60,7 @@
                     expect(msg_obj.get('message')).toEqual(message);
                     expect(msg_obj.get('fullname')).toEqual(mock.cur_names[0]);
                     expect(msg_obj.get('sender')).toEqual('them');
-                    expect(msg_obj.get('delayed')).toEqual(false);
+                    expect(msg_obj.get('is_delayed')).toEqual(false);
                     // Now check that the message appears inside the chatbox in the DOM
                     var chat_content = chatboxview.el.querySelector('.chat-content');
                     expect(chat_content.querySelector('.chat-msg .chat-msg-text').textContent).toEqual(message);
@@ -176,7 +176,7 @@
                     expect(msg_obj.get('message')).toEqual(message);
                     expect(msg_obj.get('fullname')).toEqual(undefined);
                     expect(msg_obj.get('sender')).toEqual('them');
-                    expect(msg_obj.get('delayed')).toEqual(false);
+                    expect(msg_obj.get('is_delayed')).toEqual(false);
                     // Now check that the message appears inside the chatbox in the DOM
                     var chat_content = chatboxview.el.querySelector('.chat-content');
                     expect(chat_content.querySelector('.chat-msg .chat-msg-text').textContent).toEqual(message);
@@ -690,7 +690,7 @@
             expect(msg_obj.get('message')).toEqual(msgtext);
             expect(msg_obj.get('fullname')).toEqual(mock.cur_names[1]);
             expect(msg_obj.get('sender')).toEqual('them');
-            expect(msg_obj.get('delayed')).toEqual(false);
+            expect(msg_obj.get('is_delayed')).toEqual(false);
             // Now check that the message appears inside the chatbox in the DOM
             var chat_content = chatboxview.el.querySelector('.chat-content');
             expect(chat_content.querySelector('.chat-msg .chat-msg-text').textContent).toEqual(msgtext);
@@ -743,7 +743,7 @@
                 expect(msg_obj.get('message')).toEqual(msgtext);
                 expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
                 expect(msg_obj.get('sender')).toEqual('me');
-                expect(msg_obj.get('delayed')).toEqual(false);
+                expect(msg_obj.get('is_delayed')).toEqual(false);
                 // Now check that the message appears inside the chatbox in the DOM
                 var $chat_content = $(chatboxview.el).find('.chat-content');
                 var msg_txt = $chat_content.find('.chat-msg').find('.chat-msg-text').text();
@@ -899,7 +899,7 @@
                 expect(msg_obj.get('message')).toEqual(message);
                 expect(msg_obj.get('fullname')).toEqual(contact_name);
                 expect(msg_obj.get('sender')).toEqual('them');
-                expect(msg_obj.get('delayed')).toEqual(true);
+                expect(msg_obj.get('is_delayed')).toEqual(true);
 
                 return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === 'Candice van der Knijff')
                 .then(function () {
@@ -945,7 +945,7 @@
                     expect(msg_obj.get('message')).toEqual(message);
                     expect(msg_obj.get('fullname')).toEqual(contact_name);
                     expect(msg_obj.get('sender')).toEqual('them');
-                    expect(msg_obj.get('delayed')).toEqual(false);
+                    expect(msg_obj.get('is_delayed')).toEqual(false);
                     msg_txt = $chat_content.find('.chat-msg').last().find('.chat-msg-text').text();
                     expect(msg_txt).toEqual(message);
 

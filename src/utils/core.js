@@ -483,10 +483,12 @@
          * message, i.e. not a MAM archived one.
          */
         if (message instanceof Element) {
-            return !sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length &&
-                   !sizzle('delay[xmlns="'+Strophe.NS.DELAY+'"]', message).length;
+            return !(
+                sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, message).length &&
+                sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, message).length
+            );
         } else {
-            return !message.get('delayed');
+            return !(message.get('is_delayed') && message.get('is_archived'));
         }
     };
 

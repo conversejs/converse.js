@@ -11,7 +11,7 @@
     define(["converse-core"], factory);
 }(this, function (converse) {
     "use strict";
-    const { Strophe, $iq } = converse.env;
+    const { Strophe, $iq, _ } = converse.env;
 
 
     Strophe.addNamespace('PUSH', 'urn:xmpp:push:0');
@@ -37,31 +37,45 @@
                     return;
                 }
                 if (_converse.push_service && _converse.push_service_node) {
-                    Promise.all([
-                        _converse.api.disco.getIdentity('pubsub', 'push', _converse.push_service),
-                        _converse.api.disco.supports(Strophe.NS.PUSH, _converse.push_service)
-                    ]).then(() => _converse.api.disco.supports(Strophe.NS.PUSH, _converse.bare_jid))
-                      .then(() => {
-                        const stanza = $iq({'type': 'set'})
-                            .c('enable', {
-                                'xmlns': Strophe.NS.PUSH,
-                                'jid': _converse.push_service,
-                                'node': _converse.push_service_node
-                            });
-                          if (_converse.push_service_secret) {
-                              stanza.c('x', {'xmlns': Strophe.NS.XFORM, 'type': 'submit'})
-                                .c('field', {'var': 'FORM_TYPE'})
-                                    .c('value').t(`${Strophe.NS.PUBSUB}#publish-options`).up().up()
-                                .c('field', {'var': 'secret'})
-                                    .c('value').t(_converse.push_service_secret);
-                          }
-                        _converse.api.sendIQ(stanza)
-                          .then(() => _converse.session.set('push_enabled', true))
-                          .catch((e) => {
-                              _converse.log(`Could not enable push service for ${_converse.push_service}`, Strophe.LogLevel.ERROR);
-                              _converse.log(e, Strophe.LogLevel.ERROR);
-                          });
-                    });
+                    _converse.api.disco.getIdentity('pubsub', 'push', _converse.push_service)
+                    .then((identity) => {
+                        if (!identity) {
+                            return _converse.log(
+                                `Not enabling push the service "${_converse.push_service}", it doesn't have the right disco identtiy.`,
+                                Strophe.LogLevel.WARN
+                            );
+                        }
+                        return Promise.all([
+                            _converse.api.disco.supports(Strophe.NS.PUSH, _converse.push_service),
+                            _converse.api.disco.supports(Strophe.NS.PUSH, _converse.bare_jid)
+                        ]).then((result) => {
+                            if (!result[0].length && !result[1].length) {
+                                return _converse.log(
+                                    `Not enabling push service "${_converse.push_service}", no disco support`,
+                                    Strophe.LogLevel.WARN
+                                );
+                            }
+                            const stanza = $iq({'type': 'set'})
+                                .c('enable', {
+                                    'xmlns': Strophe.NS.PUSH,
+                                    'jid': _converse.push_service,
+                                    'node': _converse.push_service_node
+                                });
+                            if (_converse.push_service_secret) {
+                                stanza.c('x', {'xmlns': Strophe.NS.XFORM, 'type': 'submit'})
+                                    .c('field', {'var': 'FORM_TYPE'})
+                                        .c('value').t(`${Strophe.NS.PUBSUB}#publish-options`).up().up()
+                                    .c('field', {'var': 'secret'})
+                                        .c('value').t(_converse.push_service_secret);
+                            }
+                            _converse.api.sendIQ(stanza)
+                                .then(() => _converse.session.set('push_enabled', true))
+                                .catch((e) => {
+                                    _converse.log(`Could not enable push service for ${_converse.push_service}`, Strophe.LogLevel.ERROR);
+                                    _converse.log(e, Strophe.LogLevel.ERROR);
+                                });
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 }
             }
             _converse.api.listen.on('statusInitialized', enablePush);

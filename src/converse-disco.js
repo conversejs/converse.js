@@ -138,7 +138,12 @@
                         }
                         const jid = item.getAttribute('jid');
                         if (_.isUndefined(this.items.get(jid))) {
-                            this.items.create({'jid': jid});
+                            const entity = _converse.disco_entities.get(jid);
+                            if (entity) {
+                                this.items.add(entity);
+                            } else {
+                                this.items.create({'jid': jid});
+                            }
                         }
                     });
                 },
@@ -514,10 +519,8 @@
                          *    (String) entity_jid - The JID of the entity which might have the identity
                          */
                         return new Promise((resolve, reject) => {
-                            _converse.api.waitUntil('discoInitialized').then(() => {
-                                _converse.api.disco.entities.get(entity_jid, true)
-                                    .then((entity) => resolve(entity.getIdentity(category, type)));
-                            })
+                            _converse.api.disco.entities.get(entity_jid, true)
+                                .then((entity) => resolve(entity.getIdentity(category, type)));
                         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
                 }

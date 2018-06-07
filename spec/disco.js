@@ -14,7 +14,11 @@
 
         describe("Whenever converse.js queries a server for its features", function () {
 
-            it("stores the features it receives", mock.initConverseWithAsync(function (done, _converse) {
+            it("stores the features it receives",
+                mock.initConverseWithPromises(
+                    null, ['discoInitialized'], {},
+                    function (done, _converse) {
+
                 var IQ_stanzas = _converse.connection.IQ_stanzas;
                 var IQ_ids =  _converse.connection.IQ_ids;
                 test_utils.waitUntil(function () {

@@ -1068,38 +1068,38 @@ providers_link
 The hyperlink on the registration form which points to a directory of public
 XMPP servers.
 
-push_service
-------------
+push_services
+-------------
 
-* Default: ``undefined``
+* Default: ``[]``
 
-This option allows you to specify a URI for the push notifications service
-(called an "App Server" by `XEP-0357 <https://xmpp.org/extensions/xep-0357.html>`_).
+This option lets you enable or disable so-called push notification "App Servers"
+(as per `XEP-0357 <https://xmpp.org/extensions/xep-0357.html>`_).
 
-If provided, together with a `push_service_node`_, then Converse will instruct
-the user's XMPP server to send push notificatiosn to that URI.
+For each "App Server" an object needs to be passed in. When enabling, you need
+to specify ``jid`` and ``node`` values. You can also provide a
+``secret``, if required by your App Server.
 
-push_service_node
------------------
+When disabling, you need to specify at least a ``jid`` and set ``disabled`` to
+``true``. This will disable notifications to all pubsub nodes on that "App
+Server". If you want to disable only a particular node, then specify a ``node``
+value as well.
 
-* Default: ``undefined``
+For example:
 
-This is the PubSub node of the push notifications service (aka "App Server") specified with the
-`push_service`_ setting.
 
-Push notifications will be sent to this node. If this value is not set, then
-push notifications won't be sent out.
+.. code-block:: javascript
 
-push_service_secret
--------------------
-
-* Default: ``undefined``
-
-Some push notification services (aka "App Servers") require a secret token to
-be used when sending out notifications.
-
-This setting enables you to provide such a secret to Converse which will
-forward it to your XMPP server to be included in push notifications.
+        converse.initialize({
+            'push_services':  [{
+                'jid': 'push-4@client.example',
+                'node': 'yxs32uqsflafdk3iuqo',
+                'disable': true
+            }, {
+                'jid': 'push-5@client.example',
+                'node': 'yxs32uqsflafdk3iuqo',
+            }]
+        });
 
 root
 ----

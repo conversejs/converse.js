@@ -8,22 +8,22 @@
 
     describe("XEP-0357 Push Notifications", function () {
 
-        it("can be enabled by specifying a push_service and push_service_node",
-            mock.initConverseWithPromises(null, 
+        it("can be enabled",
+            mock.initConverseWithPromises(null,
                 ['rosterGroupsFetched'], {
-                    'push_service': 'push-5@client.example',
-                    'push_service_node': 'yxs32uqsflafdk3iuqo' 
+                    'push_services': [{
+                        'jid': 'push-5@client.example',
+                        'node': 'yxs32uqsflafdk3iuqo'
+                    }]
                 }, function (done, _converse) {
 
             const IQ_stanzas = _converse.connection.IQ_stanzas;
             let stanza;
 
-            expect(_converse.push_service).toBe('push-5@client.example');
-            expect(_converse.push_service_node).toBe('yxs32uqsflafdk3iuqo');
             expect(_converse.session.get('push_enabled')).toBeFalsy();
 
             test_utils.waitUntilDiscoConfirmed(
-                _converse, _converse.push_service,
+                _converse, _converse.push_services[0].jid,
                 [{'category': 'pubsub', 'type':'push'}],
                 ['urn:xmpp:push:0'], [], 'info')
             .then(() => test_utils.waitUntilDiscoConfirmed(
@@ -58,25 +58,70 @@
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }));
 
-
-        it("can require a secret token to be included",
-            mock.initConverseWithPromises(null, 
+        it("can be disabled",
+            mock.initConverseWithPromises(null,
                 ['rosterGroupsFetched'], {
-                    'push_service': 'push-5@client.example',
-                    'push_service_node': 'yxs32uqsflafdk3iuqo',
-                    'push_service_secret': 'eruio234vzxc2kla-91'
+                    'push_services': [{
+                        'jid': 'push-5@client.example',
+                        'node': 'yxs32uqsflafdk3iuqo',
+                        'disable': true
+                    }]
                 }, function (done, _converse) {
 
             const IQ_stanzas = _converse.connection.IQ_stanzas;
             let stanza;
 
-            expect(_converse.push_service).toBe('push-5@client.example');
-            expect(_converse.push_service_node).toBe('yxs32uqsflafdk3iuqo');
-            expect(_converse.push_service_secret).toBe('eruio234vzxc2kla-91');
             expect(_converse.session.get('push_enabled')).toBeFalsy();
 
             test_utils.waitUntilDiscoConfirmed(
-                _converse, _converse.push_service,
+                _converse,
+                _converse.bare_jid,
+                [{'category': 'account', 'type':'registered'}],
+                ['urn:xmpp:push:0'], [], 'info')
+            .then(() => {
+                return test_utils.waitUntil(() => {
+                    const node = _.filter(IQ_stanzas, function (iq) {
+                        return iq.nodeTree.querySelector('iq[type="set"] disable[xmlns="urn:xmpp:push:0"]');
+                    }).pop();
+                    if (node) {
+                        stanza = node.nodeTree;
+                        return true;
+                    }
+                })
+            }).then(() => {
+                expect(stanza.outerHTML).toEqual(
+                    `<iq type="set" xmlns="jabber:client" id="${stanza.getAttribute('id')}">`+
+                        '<disable xmlns="urn:xmpp:push:0" jid="push-5@client.example" node="yxs32uqsflafdk3iuqo"/>'+
+                    '</iq>'
+                )
+                _converse.connection._dataRecv(test_utils.createRequest($iq({
+                    'to': _converse.connection.jid,
+                    'type': 'result',
+                    'id': stanza.getAttribute('id')
+                })));
+                return test_utils.waitUntil(() => _converse.session.get('push_enabled'))
+            }).then(() => {
+                done();
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        }));
+
+
+        it("can require a secret token to be included",
+            mock.initConverseWithPromises(null,
+                ['rosterGroupsFetched'], {
+                    'push_services': [{
+                        'jid': 'push-5@client.example',
+                        'node': 'yxs32uqsflafdk3iuqo',
+                        'secret': 'eruio234vzxc2kla-91'
+                    }]
+                }, function (done, _converse) {
+
+            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            let stanza;
+            expect(_converse.session.get('push_enabled')).toBeFalsy();
+
+            test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.push_services[0].jid,
                 [{'category': 'pubsub', 'type':'push'}],
                 ['urn:xmpp:push:0'], [], 'info')
             .then(() => test_utils.waitUntilDiscoConfirmed(

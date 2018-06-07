@@ -158,11 +158,6 @@ watch: dev
 watchjs: dev
 	./node_modules/.bin/npx  webpack --mode=development  --watch
 
-transpile: dev src
-	$(BABEL) --source-maps --out-dir=./builds ./src
-	$(BABEL) --source-maps --out-dir=./builds ./node_modules/backbone.vdomview/backbone.vdomview.js
-	touch transpile
-
 .PHONY: logo
 logo: logo/conversejs-transparent16.png \
       logo/conversejs-transparent19.png \
@@ -211,7 +206,7 @@ dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm
 dist:: build
 
 .PHONY: build
-build:: dev css transpile $(BUILDS)
+build:: dev css $(BUILDS)
 
 ########################################################################
 ## Tests

@@ -46,8 +46,20 @@
             ChatBoxes: {
 
                 chatBoxMayBeShown (chatbox) {
-                    if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
-                        return !chatbox.get('hidden');
+                    const { _converse } = this.__super__;
+                    if (chatbox.get('id') === 'controlbox') {
+                        return true;
+                    }
+                    if (_.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode)) {
+                        const any_chats_visible = _converse.chatboxes
+                            .filter((cb) => cb.get('id') != 'controlbox')
+                            .filter((cb) => !cb.get('hidden')).length > 0;
+
+                        if (any_chats_visible) {
+                            return !chatbox.get('hidden');
+                        } else {
+                            return true;
+                        }
                     } else {
                         return this.__super__.chatBoxMayBeShown.apply(this, arguments);
                     }

@@ -245,13 +245,16 @@
 
 
             _converse.ChatBox = _converse.ModelWithVCardAndPresence.extend({
-                defaults: {
-                    'bookmarked': false,
-                    'chat_state': undefined,
-                    'num_unread': 0,
-                    'type': 'chatbox',
-                    'message_type': 'chat',
-                    'url': ''
+                defaults () {
+                    return {
+                        'bookmarked': false,
+                        'chat_state': undefined,
+                        'num_unread': 0,
+                        'type': 'chatbox',
+                        'message_type': 'chat',
+                        'url': '',
+                        'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode)
+                    }
                 },
 
                 initialize () {

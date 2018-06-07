@@ -62326,13 +62326,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         comparator: 'time'
       });
       _converse.ChatBox = _converse.ModelWithVCardAndPresence.extend({
-        defaults: {
-          'bookmarked': false,
-          'chat_state': undefined,
-          'num_unread': 0,
-          'type': 'chatbox',
-          'message_type': 'chat',
-          'url': ''
+        defaults() {
+          return {
+            'bookmarked': false,
+            'chat_state': undefined,
+            'num_unread': 0,
+            'type': 'chatbox',
+            'message_type': 'chat',
+            'url': '',
+            'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode)
+          };
         },
 
         initialize() {
@@ -76610,8 +76613,20 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // new functions which don't exist yet can also be added.
       ChatBoxes: {
         chatBoxMayBeShown(chatbox) {
-          if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
-            return !chatbox.get('hidden');
+          const _converse = this.__super__._converse;
+
+          if (chatbox.get('id') === 'controlbox') {
+            return true;
+          }
+
+          if (_.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode)) {
+            const any_chats_visible = _converse.chatboxes.filter(cb => cb.get('id') != 'controlbox').filter(cb => !cb.get('hidden')).length > 0;
+
+            if (any_chats_visible) {
+              return !chatbox.get('hidden');
+            } else {
+              return true;
+            }
           } else {
             return this.__super__.chatBoxMayBeShown.apply(this, arguments);
           }

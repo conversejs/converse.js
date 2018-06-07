@@ -62602,7 +62602,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
 
-        newMessageWillBeHidden() {
+        isHidden() {
           /* Returns a boolean to indicate whether a newly received
            * message will be visible to the user or not.
            */
@@ -62617,7 +62617,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return; // The message has no text
           }
 
-          if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+          if (utils.isNewMessage(stanza) && this.isHidden()) {
             this.save({
               'num_unread': this.get('num_unread') + 1
             });
@@ -64141,11 +64141,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         afterShown() {
-          if (u.isPersistableModel(this.model)) {
-            this.model.clearUnreadMsgCounter();
-            this.model.save();
-          }
-
+          this.model.clearUnreadMsgCounter();
           this.setChatState(_converse.ACTIVE);
           this.renderEmojiPicker();
           this.scrollDown();
@@ -64231,7 +64227,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         onWindowStateChanged(state) {
-          if (this.model.get('num_unread', 0) && !this.model.newMessageWillBeHidden()) {
+          if (this.model.get('num_unread', 0) && !this.model.isHidden()) {
             this.model.clearUnreadMsgCounter();
           }
         }
@@ -72205,7 +72201,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return; // The message has no text
           }
 
-          if (u.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+          if (u.isNewMessage(stanza) && this.isHidden()) {
             const settings = {
               'num_unread_general': this.get('num_unread_general') + 1
             };
@@ -76510,71 +76506,23 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
       /* -------- Event Handlers ----------- */
 
-      const onChatBoxMaximized = function onChatBoxMaximized(chatboxview) {
-        /* When a chat box gets maximized, the num_unread counter needs
-         * to be cleared, but if chatbox is scrolled up, then num_unread should not be cleared.
-         */
-        const chatbox = chatboxview.model;
-
-        if (chatbox.get('type') !== 'chatroom') {
-          const contact = _.head(_converse.roster.where({
-            'jid': chatbox.get('jid')
-          }));
-
-          if (!_.isUndefined(contact) && !chatbox.isScrolledUp()) {
-            contact.save({
-              'num_unread': 0
-            });
-          }
-        }
-      };
-
-      const onMessageReceived = function onMessageReceived(data) {
-        /* Given a newly received message, update the unread counter on
-         * the relevant roster contact.
-         */
-        const chatbox = data.chatbox;
-
-        if (_.isUndefined(chatbox)) {
-          return;
-        }
-
-        if (_.isNull(data.stanza.querySelector('body'))) {
-          return; // The message has no text
-        }
-
-        if (chatbox.get('type') !== 'chatroom' && u.isNewMessage(data.stanza) && chatbox.newMessageWillBeHidden()) {
-          const contact = _.head(_converse.roster.where({
-            'jid': chatbox.get('jid')
-          }));
-
-          if (!_.isUndefined(contact)) {
-            contact.save({
-              'num_unread': contact.get('num_unread') + 1
-            });
-          }
-        }
-      };
-
-      const onChatBoxScrolledDown = function onChatBoxScrolledDown(data) {
-        const chatbox = data.chatbox;
-
-        if (_.isUndefined(chatbox)) {
-          return;
-        }
-
+      function updateUnreadCounter(chatbox) {
         const contact = _.head(_converse.roster.where({
           'jid': chatbox.get('jid')
         }));
 
         if (!_.isUndefined(contact)) {
           contact.save({
-            'num_unread': 0
+            'num_unread': chatbox.get('num_unread')
           });
         }
-      };
+      }
 
-      const initRoster = function initRoster() {
+      _converse.api.listen.on('chatBoxesInitialized', () => {
+        _converse.chatboxes.on('change:num_unread', updateUnreadCounter);
+      });
+
+      function initRoster() {
         /* Create an instance of RosterView once the RosterGroups
          * collection has been created (in converse-core.js)
          */
@@ -76585,17 +76533,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         _converse.rosterview.render();
 
         _converse.emit('rosterViewInitialized');
-      };
+      }
 
       _converse.api.listen.on('rosterInitialized', initRoster);
 
       _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
-
-      _converse.api.listen.on('message', onMessageReceived);
-
-      _converse.api.listen.on('chatBoxMaximized', onChatBoxMaximized);
-
-      _converse.api.listen.on('chatBoxScrolledDown', onChatBoxScrolledDown);
     }
 
   });
@@ -76689,7 +76631,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       ChatBoxView: {
         shouldShowOnTextMessage() {
           if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
-            this.model.set('hidden', true);
             return false;
           } else {
             return this.__super__.shouldShowOnTextMessage.apply(this, arguments);

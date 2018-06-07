@@ -953,7 +953,7 @@
                     if (_.isNull(body)) {
                         return; // The message has no text
                     }
-                    if (u.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                    if (u.isNewMessage(stanza) && this.isHidden()) {
                         const settings = {'num_unread_general': this.get('num_unread_general') + 1};
                         if (this.isUserMentioned(body.textContent)) {
                             settings.num_unread = this.get('num_unread') + 1;

@@ -938,53 +938,17 @@
 
             /* -------- Event Handlers ----------- */
 
-            const onChatBoxMaximized = function (chatboxview) {
-                /* When a chat box gets maximized, the num_unread counter needs
-                 * to be cleared, but if chatbox is scrolled up, then num_unread should not be cleared.
-                 */
-                const chatbox = chatboxview.model;
-                if (chatbox.get('type') !== 'chatroom') {
-                    const contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
-                    if (!_.isUndefined(contact) && !chatbox.isScrolledUp()) {
-                        contact.save({'num_unread': 0});
-                    }
-                }
-            };
-
-            const onMessageReceived = function (data) {
-                /* Given a newly received message, update the unread counter on
-                 * the relevant roster contact.
-                 */
-                const { chatbox } = data;
-                if (_.isUndefined(chatbox)) {
-                    return;
-                }
-                if (_.isNull(data.stanza.querySelector('body'))) {
-                    return; // The message has no text
-                }
-                if (chatbox.get('type') !== 'chatroom' &&
-                    u.isNewMessage(data.stanza) &&
-                    chatbox.newMessageWillBeHidden()) {
-
-                    const contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
-                    if (!_.isUndefined(contact)) {
-                        contact.save({'num_unread': contact.get('num_unread') + 1});
-                    }
-                }
-            };
-
-            const onChatBoxScrolledDown = function (data) {
-                const { chatbox } = data;
-                if (_.isUndefined(chatbox)) {
-                    return;
-                }
+            function updateUnreadCounter (chatbox) {
                 const contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
                 if (!_.isUndefined(contact)) {
-                    contact.save({'num_unread': 0});
+                    contact.save({'num_unread': chatbox.get('num_unread')});
                 }
-            };
+            }
+            _converse.api.listen.on('chatBoxesInitialized', () => {
+                _converse.chatboxes.on('change:num_unread', updateUnreadCounter)
+            });
 
-            const initRoster = function () {
+            function initRoster () {
                 /* Create an instance of RosterView once the RosterGroups
                  * collection has been created (in converse-core.js)
                  */
@@ -993,12 +957,9 @@
                 });
                 _converse.rosterview.render();
                 _converse.emit('rosterViewInitialized');
-            };
+            }
             _converse.api.listen.on('rosterInitialized', initRoster);
             _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
-            _converse.api.listen.on('message', onMessageReceived);
-            _converse.api.listen.on('chatBoxMaximized', onChatBoxMaximized);
-            _converse.api.listen.on('chatBoxScrolledDown', onChatBoxScrolledDown);
         }
     });
 }));

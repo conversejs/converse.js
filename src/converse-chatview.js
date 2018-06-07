@@ -1084,10 +1084,7 @@
                 },
 
                 afterShown () {
-                    if (u.isPersistableModel(this.model)) {
-                        this.model.clearUnreadMsgCounter();
-                        this.model.save();
-                    }
+                    this.model.clearUnreadMsgCounter();
                     this.setChatState(_converse.ACTIVE);
                     this.renderEmojiPicker();
                     this.scrollDown();
@@ -1164,7 +1161,7 @@
                 },
 
                 onWindowStateChanged (state) {
-                    if (this.model.get('num_unread', 0) && !this.model.newMessageWillBeHidden()) {
+                    if (this.model.get('num_unread', 0) && !this.model.isHidden()) {
                         this.model.clearUnreadMsgCounter();
                     }
                 }

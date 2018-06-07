@@ -506,7 +506,7 @@
                     }
                 },
 
-                newMessageWillBeHidden () {
+                isHidden () {
                     /* Returns a boolean to indicate whether a newly received
                      * message will be visible to the user or not.
                      */
@@ -523,7 +523,7 @@
                     if (_.isNull(stanza.querySelector('body'))) {
                         return; // The message has no text
                     }
-                    if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                    if (utils.isNewMessage(stanza) && this.isHidden()) {
                         this.save({'num_unread': this.get('num_unread') + 1});
                         _converse.incrementMsgCounter();
                     }

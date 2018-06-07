@@ -427,7 +427,7 @@
 
                 },
 
-                getMessageAttributesFromStanza (message, delay, original_stanza) {
+                getMessageAttributesFromStanza (message, original_stanza) {
                     /* Parses a passed in message stanza and returns an object
                      * of attributes.
                      *
@@ -487,11 +487,11 @@
                     return attrs;
                 },
 
-                createMessage (message, delay, original_stanza) {
+                createMessage (message, original_stanza) {
                     /* Create a Backbone.Message object inside this chat box
                      * based on the identified message stanza.
                      */
-                    const attrs = this.getMessageAttributesFromStanza.apply(this, arguments)
+                    const attrs = this.getMessageAttributesFromStanza(message, original_stanza);
                     const is_csn = u.isOnlyChatStateNotification(attrs);
                     if (is_csn && (attrs.delayed || (attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick')))) {
                         // XXX: MUC leakage
@@ -591,7 +591,7 @@
                     if (!chatbox) {
                         return true;
                     }
-                    chatbox.createMessage(message, null, message);
+                    chatbox.createMessage(message, message);
                     return true;
                 },
 
@@ -602,8 +602,7 @@
                      * Parameters:
                      *    (XMLElement) message - The incoming message stanza
                      */
-                    let contact_jid, delay, resource,
-                        from_jid = message.getAttribute('from'),
+                    let from_jid = message.getAttribute('from'),
                         to_jid = message.getAttribute('to');
 
                     const original_stanza = message,
@@ -632,12 +631,10 @@
                         const forwarded_from = forwarded_message.getAttribute('from');
                         if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
                             // Prevent message forging via carbons
-                            //
                             // https://xmpp.org/extensions/xep-0280.html#security
                             return true;
                         }
                         message = forwarded_message;
-                        delay = forwarded.querySelector('delay');
                         from_jid = message.getAttribute('from');
                         to_jid = message.getAttribute('to');
                     }
@@ -646,13 +643,12 @@
                         from_resource = Strophe.getResourceFromJid(from_jid),
                         is_me = from_bare_jid === _converse.bare_jid;
 
+                    let contact_jid;
                     if (is_me) {
                         // I am the sender, so this must be a forwarded message...
                         contact_jid = Strophe.getBareJidFromJid(to_jid);
-                        resource = Strophe.getResourceFromJid(to_jid);
                     } else {
                         contact_jid = from_bare_jid;
-                        resource = from_resource;
                     }
                     // Get chat box, but only create a new one when the message has a body.
                     const attrs = {
@@ -667,7 +663,7 @@
                             // Only create the message when we're sure it's not a
                             // duplicate
                             chatbox.incrementUnreadMsgCounter(original_stanza);
-                            chatbox.createMessage(message, delay, original_stanza);
+                            chatbox.createMessage(message, original_stanza);
                         }
                     }
                     _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});

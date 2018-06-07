@@ -62520,7 +62520,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
 
-        getMessageAttributesFromStanza(message, delay, original_stanza) {
+        getMessageAttributesFromStanza(message, original_stanza) {
           /* Parses a passed in message stanza and returns an object
            * of attributes.
            *
@@ -62582,11 +62582,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return attrs;
         },
 
-        createMessage(message, delay, original_stanza) {
+        createMessage(message, original_stanza) {
           /* Create a Backbone.Message object inside this chat box
            * based on the identified message stanza.
            */
-          const attrs = this.getMessageAttributesFromStanza.apply(this, arguments);
+          const attrs = this.getMessageAttributesFromStanza(message, original_stanza);
           const is_csn = u.isOnlyChatStateNotification(attrs);
 
           if (is_csn && (attrs.delayed || attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick'))) {
@@ -62694,7 +62694,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return true;
           }
 
-          chatbox.createMessage(message, null, message);
+          chatbox.createMessage(message, message);
           return true;
         },
 
@@ -62705,10 +62705,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * Parameters:
            *    (XMLElement) message - The incoming message stanza
            */
-          let contact_jid,
-              delay,
-              resource,
-              from_jid = message.getAttribute('from'),
+          let from_jid = message.getAttribute('from'),
               to_jid = message.getAttribute('to');
           const original_stanza = message,
                 to_resource = Strophe.getResourceFromJid(to_jid),
@@ -62735,13 +62732,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
             if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
               // Prevent message forging via carbons
-              //
               // https://xmpp.org/extensions/xep-0280.html#security
               return true;
             }
 
             message = forwarded_message;
-            delay = forwarded.querySelector('delay');
             from_jid = message.getAttribute('from');
             to_jid = message.getAttribute('to');
           }
@@ -62749,14 +62744,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
                 from_resource = Strophe.getResourceFromJid(from_jid),
                 is_me = from_bare_jid === _converse.bare_jid;
+          let contact_jid;
 
           if (is_me) {
             // I am the sender, so this must be a forwarded message...
             contact_jid = Strophe.getBareJidFromJid(to_jid);
-            resource = Strophe.getResourceFromJid(to_jid);
           } else {
             contact_jid = from_bare_jid;
-            resource = from_resource;
           } // Get chat box, but only create a new one when the message has a body.
 
 
@@ -62775,7 +62769,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               // Only create the message when we're sure it's not a
               // duplicate
               chatbox.incrementUnreadMsgCounter(original_stanza);
-              chatbox.createMessage(message, delay, original_stanza);
+              chatbox.createMessage(message, original_stanza);
             }
           }
 
@@ -67676,7 +67670,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'from': from_jid
           });
 
-          chatbox.createMessage(message, undefined, message);
+          chatbox.createMessage(message, message);
 
           _converse.emit('message', {
             'chatbox': chatbox,
@@ -67875,7 +67869,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       //
       // New functions which don't exist yet can also be added.
       ChatBox: {
-        getMessageAttributesFromStanza(message, delay, original_stanza) {
+        getMessageAttributesFromStanza(message, original_stanza) {
           const attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
 
           const archive_id = getMessageArchiveID(original_stanza);
@@ -72079,11 +72073,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.fetchFeaturesIfConfigurationChanged(stanza);
           const original_stanza = stanza,
                 forwarded = stanza.querySelector('forwarded');
-          let delay;
 
           if (!_.isNull(forwarded)) {
             stanza = forwarded.querySelector('message');
-            delay = forwarded.querySelector('delay');
           }
 
           const jid = stanza.getAttribute('from'),
@@ -72109,7 +72101,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           this.incrementUnreadMsgCounter(original_stanza);
-          this.createMessage(stanza, delay, original_stanza);
+          this.createMessage(stanza, original_stanza);
 
           if (sender !== this.get('nick')) {
             // We only emit an event if it's not our own message

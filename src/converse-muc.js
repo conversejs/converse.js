@@ -843,10 +843,8 @@
 
                     const original_stanza = stanza,
                           forwarded = stanza.querySelector('forwarded');
-                    let delay;
                     if (!_.isNull(forwarded)) {
                         stanza = forwarded.querySelector('message');
-                        delay = forwarded.querySelector('delay');
                     }
                     const jid = stanza.getAttribute('from'),
                         resource = Strophe.getResourceFromJid(jid),
@@ -863,7 +861,7 @@
                         return;
                     }
                     this.incrementUnreadMsgCounter(original_stanza);
-                    this.createMessage(stanza, delay, original_stanza);
+                    this.createMessage(stanza, original_stanza);
                     if (sender !== this.get('nick')) {
                         // We only emit an event if it's not our own message
                         _converse.emit('message', {'stanza': original_stanza, 'chatbox': this});

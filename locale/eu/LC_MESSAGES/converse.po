@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-04-30 16:16+0200\n"
-"PO-Revision-Date: 2018-06-09 08:43+0000\n"
+"PO-Revision-Date: 2018-06-10 09:34+0000\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.0\n"
+"X-Generator: Weblate 3.0.1-dev\n"
 
 #: dist/converse-no-dependencies.js:9854 dist/converse-no-dependencies.js:9883
 msgid "Download"
@@ -814,7 +814,7 @@ msgstr "Mezua"
 #: dist/converse-no-dependencies.js:29053
 #, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr "%1$s jada ez da moderatzailea."
+msgstr "%1$s jada ez da moderatzailea"
 
 #: dist/converse-no-dependencies.js:29056
 #, javascript-format

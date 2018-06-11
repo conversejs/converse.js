@@ -73353,64 +73353,64 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             __ = _converse.__;
 
       _converse.api.settings.update({
-        'push_services': []
+        'push_app_servers': []
       });
 
-      function disablePushService(push_service) {
-        if (!push_service.jid) {
+      function disablePushAppServer(push_app_server) {
+        if (!push_app_server.jid) {
           return;
         }
 
         Promise.all([_converse.api.disco.supports(Strophe.NS.PUSH, _converse.bare_jid)]).then(result => {
           if (!result[0].length && !result[1].length) {
-            return _converse.log(`Not disabling push service "${push_service.jid}", no disco support from your server.`, Strophe.LogLevel.WARN);
+            return _converse.log(`Not disabling push app server "${push_app_server.jid}", no disco support from your server.`, Strophe.LogLevel.WARN);
           }
 
           const stanza = $iq({
             'type': 'set'
           }).c('disable', {
             'xmlns': Strophe.NS.PUSH,
-            'jid': push_service.jid
+            'jid': push_app_server.jid
           });
 
-          if (push_service.node) {
+          if (push_app_server.node) {
             stanza.attrs({
-              'node': push_service.node
+              'node': push_app_server.node
             });
           }
 
           _converse.api.sendIQ(stanza).then(() => _converse.session.set('push_enabled', true)).catch(e => {
-            _converse.log(`Could not enable push service for ${push_service.jid}`, Strophe.LogLevel.ERROR);
+            _converse.log(`Could not enable push app server for ${push_app_server.jid}`, Strophe.LogLevel.ERROR);
 
             _converse.log(e, Strophe.LogLevel.ERROR);
           });
         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
       }
 
-      function enablePushService(push_service) {
-        if (!push_service.jid || !push_service.node) {
+      function enablePushAppServer(push_app_server) {
+        if (!push_app_server.jid || !push_app_server.node) {
           return;
         }
 
-        _converse.api.disco.getIdentity('pubsub', 'push', push_service.jid).then(identity => {
+        _converse.api.disco.getIdentity('pubsub', 'push', push_app_server.jid).then(identity => {
           if (!identity) {
-            return _converse.log(`Not enabling push the service "${push_service.jid}", it doesn't have the right disco identtiy.`, Strophe.LogLevel.WARN);
+            return _converse.log(`Not enabling push the service "${push_app_server.jid}", it doesn't have the right disco identtiy.`, Strophe.LogLevel.WARN);
           }
 
-          return Promise.all([_converse.api.disco.supports(Strophe.NS.PUSH, push_service.jid), _converse.api.disco.supports(Strophe.NS.PUSH, _converse.bare_jid)]).then(result => {
+          return Promise.all([_converse.api.disco.supports(Strophe.NS.PUSH, push_app_server.jid), _converse.api.disco.supports(Strophe.NS.PUSH, _converse.bare_jid)]).then(result => {
             if (!result[0].length && !result[1].length) {
-              return _converse.log(`Not enabling push service "${push_service.jid}", no disco support from your server.`, Strophe.LogLevel.WARN);
+              return _converse.log(`Not enabling push app server "${push_app_server.jid}", no disco support from your server.`, Strophe.LogLevel.WARN);
             }
 
             const stanza = $iq({
               'type': 'set'
             }).c('enable', {
               'xmlns': Strophe.NS.PUSH,
-              'jid': push_service.jid,
-              'node': push_service.node
+              'jid': push_app_server.jid,
+              'node': push_app_server.node
             });
 
-            if (push_service.secret) {
+            if (push_app_server.secret) {
               stanza.c('x', {
                 'xmlns': Strophe.NS.XFORM,
                 'type': 'submit'
@@ -73418,11 +73418,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 'var': 'FORM_TYPE'
               }).c('value').t(`${Strophe.NS.PUBSUB}#publish-options`).up().up().c('field', {
                 'var': 'secret'
-              }).c('value').t(push_service.secret);
+              }).c('value').t(push_app_server.secret);
             }
 
             _converse.api.sendIQ(stanza).then(() => _converse.session.set('push_enabled', true)).catch(e => {
-              _converse.log(`Could not enable push service for ${push_service.jid}`, Strophe.LogLevel.ERROR);
+              _converse.log(`Could not enable push app server for ${push_app_server.jid}`, Strophe.LogLevel.ERROR);
 
               _converse.log(e, Strophe.LogLevel.ERROR);
             });
@@ -73433,20 +73433,20 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       function enablePush() {
         if (_converse.session.get('push_enabled')) {
           // XXX: this code is still a bit naive. We set push_enabled
-          // to true as soon as the first push service has been set.
+          // to true as soon as the first push app server has been set.
           //
-          // When enabling or disabling multiple push services,
+          // When enabling or disabling multiple push app servers,
           // we won't wait until we have confirmation that all have been set.
           return;
         }
 
-        const enabled_services = _.reject(_converse.push_services, 'disable');
+        const enabled_services = _.reject(_converse.push_app_servers, 'disable');
 
-        _.each(enabled_services, enablePushService);
+        _.each(enabled_services, enablePushAppServer);
 
-        const disabled_services = _.filter(_converse.push_services, 'disable');
+        const disabled_services = _.filter(_converse.push_app_servers, 'disable');
 
-        _.each(disabled_services, disablePushService);
+        _.each(disabled_services, disablePushAppServer);
       }
 
       _converse.api.listen.on('statusInitialized', enablePush);

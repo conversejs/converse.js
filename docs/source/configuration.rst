@@ -1068,7 +1068,7 @@ providers_link
 The hyperlink on the registration form which points to a directory of public
 XMPP servers.
 
-push_services
+push_app_servers
 -------------
 
 * Default: ``[]``
@@ -1091,7 +1091,7 @@ For example:
 .. code-block:: javascript
 
         converse.initialize({
-            'push_services':  [{
+            'push_app_servers':  [{
                 'jid': 'push-4@client.example',
                 'node': 'yxs32uqsflafdk3iuqo',
                 'disable': true

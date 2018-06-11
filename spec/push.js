@@ -11,7 +11,7 @@
         it("can be enabled",
             mock.initConverseWithPromises(null,
                 ['rosterGroupsFetched'], {
-                    'push_services': [{
+                    'push_app_servers': [{
                         'jid': 'push-5@client.example',
                         'node': 'yxs32uqsflafdk3iuqo'
                     }]
@@ -23,7 +23,7 @@
             expect(_converse.session.get('push_enabled')).toBeFalsy();
 
             test_utils.waitUntilDiscoConfirmed(
-                _converse, _converse.push_services[0].jid,
+                _converse, _converse.push_app_servers[0].jid,
                 [{'category': 'pubsub', 'type':'push'}],
                 ['urn:xmpp:push:0'], [], 'info')
             .then(() => test_utils.waitUntilDiscoConfirmed(
@@ -61,7 +61,7 @@
         it("can be disabled",
             mock.initConverseWithPromises(null,
                 ['rosterGroupsFetched'], {
-                    'push_services': [{
+                    'push_app_servers': [{
                         'jid': 'push-5@client.example',
                         'node': 'yxs32uqsflafdk3iuqo',
                         'disable': true
@@ -109,7 +109,7 @@
         it("can require a secret token to be included",
             mock.initConverseWithPromises(null,
                 ['rosterGroupsFetched'], {
-                    'push_services': [{
+                    'push_app_servers': [{
                         'jid': 'push-5@client.example',
                         'node': 'yxs32uqsflafdk3iuqo',
                         'secret': 'eruio234vzxc2kla-91'
@@ -121,7 +121,7 @@
             expect(_converse.session.get('push_enabled')).toBeFalsy();
 
             test_utils.waitUntilDiscoConfirmed(
-                _converse, _converse.push_services[0].jid,
+                _converse, _converse.push_app_servers[0].jid,
                 [{'category': 'pubsub', 'type':'push'}],
                 ['urn:xmpp:push:0'], [], 'info')
             .then(() => test_utils.waitUntilDiscoConfirmed(

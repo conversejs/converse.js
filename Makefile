@@ -184,7 +184,7 @@ BUILDS = dist/converse.js \
 		 dist/converse-headless.min.js \
 		 dist/converse-no-dependencies.min.js \
 		 dist/converse-no-dependencies.js \
-		 dist/converse-no-dependencies-es5.js
+		 dist/converse-no-dependencies-es2015.js
 
 dist/converse.js: src webpack.config.js stamp-npm
 	./node_modules/.bin/npx  webpack --mode=development

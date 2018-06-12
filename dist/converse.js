@@ -73137,8 +73137,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           reader.readAsDataURL(file);
         },
 
-        setVCard(body, data) {
-          _converse.api.vcard.set(data).then(() => _converse.api.vcard.update(this.model.vcard, true)).catch(err => {
+        setVCard(data) {
+          _converse.api.vcard.set(_converse.bare_jid, data).then(() => _converse.api.vcard.update(this.model.vcard, true)).catch(err => {
             _converse.log(err, Strophe.LogLevel.FATAL);
 
             _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), [__("Sorry, an error happened while trying to save your profile data."), __("You can check your browser's developer console for any error output.")]);
@@ -73151,7 +73151,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           ev.preventDefault();
           const reader = new FileReader(),
                 form_data = new FormData(ev.target),
-                body = this.el.querySelector('.modal-body'),
                 image_file = form_data.get('image');
           const data = {
             'fn': form_data.get('fn'),
@@ -73167,7 +73166,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'image_type': this.model.vcard.get('image_type')
             });
 
-            this.setVCard(body, data);
+            this.setVCard(data);
           } else {
             reader.onloadend = () => {
               _.extend(data, {
@@ -73175,7 +73174,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 'image_type': image_file.type
               });
 
-              this.setVCard(body, data);
+              this.setVCard(data);
             };
 
             reader.readAsBinaryString(image_file);
@@ -76817,7 +76816,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       });
 
-      function onVCardData(_converse, jid, iq, callback) {
+      function onVCardData(jid, iq, callback) {
         const vcard = iq.querySelector('vCard');
         let result = {};
 
@@ -76846,7 +76845,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         }
       }
 
-      function onVCardError(_converse, jid, iq, errback) {
+      function onVCardError(jid, iq, errback) {
         if (errback) {
           errback({
             'stanza': iq,
@@ -76875,24 +76874,25 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         return iq;
       }
 
-      function setVCard(data) {
-        return new Promise((resolve, reject) => {
-          const vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
+      function setVCard(jid, data) {
+        if (!jid) {
+          throw Error("No jid provided for the VCard data");
+        }
 
-          _converse.connection.sendIQ(createStanza("set", data.jid, vcard_el), resolve, reject);
-        });
+        const vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
+        return _converse.api.sendIQ(createStanza("set", jid, vcard_el));
       }
 
       function getVCard(_converse, jid) {
         /* Request the VCard of another user. Returns a promise.
-        *
-        * Parameters:
-        *    (String) jid - The Jabber ID of the user whose VCard
-        *      is being requested.
-        */
-        jid = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
+         *
+         * Parameters:
+         *    (String) jid - The Jabber ID of the user whose VCard
+         *      is being requested.
+         */
+        const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
         return new Promise((resolve, reject) => {
-          _converse.connection.sendIQ(createStanza("get", jid), _.partial(onVCardData, _converse, jid, _, resolve), _.partial(onVCardError, _converse, jid, _, resolve), 5000);
+          _converse.connection.sendIQ(createStanza("get", to), _.partial(onVCardData, jid, _, resolve), _.partial(onVCardError, jid, _, resolve), _converse.IQ_TIMEOUT);
         });
       }
       /* Event handlers */
@@ -76913,7 +76913,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _.extend(_converse.api, {
         'vcard': {
-          'set': setVCard,
+          'set'(jid, data) {
+            return setVCard(jid, data);
+          },
 
           'get'(model, force) {
             if (_.isString(model)) {

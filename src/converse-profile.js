@@ -88,8 +88,8 @@
                     reader.readAsDataURL(file);
                 },
 
-                setVCard (body, data) {
-                    _converse.api.vcard.set(data)
+                setVCard (data) {
+                    _converse.api.vcard.set(_converse.bare_jid, data)
                     .then(() => _converse.api.vcard.update(this.model.vcard, true))
                     .catch((err) => {
                         _converse.log(err, Strophe.LogLevel.FATAL);
@@ -107,7 +107,6 @@
                     ev.preventDefault();
                     const reader = new FileReader(),
                           form_data = new FormData(ev.target),
-                          body = this.el.querySelector('.modal-body'),
                           image_file = form_data.get('image');
 
                     const data = {
@@ -122,14 +121,14 @@
                             'image': this.model.vcard.get('image'),
                             'image_type': this.model.vcard.get('image_type')
                         });
-                        this.setVCard(body, data);
+                        this.setVCard(data);
                     } else {
                         reader.onloadend = () => {
                             _.extend(data, {
                                 'image': btoa(reader.result),
                                 'image_type': image_file.type
                             });
-                            this.setVCard(body, data);
+                            this.setVCard(data);
                         };
                         reader.readAsBinaryString(image_file);
                     }

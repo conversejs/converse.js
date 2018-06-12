@@ -56,7 +56,7 @@
             });
 
 
-            function onVCardData (_converse, jid, iq, callback) {
+            function onVCardData (jid, iq, callback) {
                 const vcard = iq.querySelector('vCard');
                 let result = {};
                 if (!_.isNull(vcard)) {
@@ -82,7 +82,7 @@
                 }
             }
 
-            function onVCardError (_converse, jid, iq, errback) {
+            function onVCardError (jid, iq, errback) {
                 if (errback) {
                     errback({
                         'stanza': iq,
@@ -102,27 +102,28 @@
                 return iq;
             }
 
-            function setVCard (data) {
-                return new Promise((resolve, reject) => {
-                    const vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
-                    _converse.connection.sendIQ(createStanza("set", data.jid, vcard_el), resolve, reject);
-                });
+            function setVCard (jid, data) {
+                if (!jid) {
+                    throw Error("No jid provided for the VCard data");
+                }
+                const vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
+                return _converse.api.sendIQ(createStanza("set", jid, vcard_el));
             }
 
             function getVCard (_converse, jid) {
                 /* Request the VCard of another user. Returns a promise.
-                *
-                * Parameters:
-                *    (String) jid - The Jabber ID of the user whose VCard
-                *      is being requested.
-                */
-                jid = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
+                 *
+                 * Parameters:
+                 *    (String) jid - The Jabber ID of the user whose VCard
+                 *      is being requested.
+                 */
+                const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
                 return new Promise((resolve, reject) => {
                     _converse.connection.sendIQ(
-                        createStanza("get", jid),
-                        _.partial(onVCardData, _converse, jid, _, resolve),
-                        _.partial(onVCardError, _converse, jid, _, resolve),
-                        5000
+                        createStanza("get", to),
+                        _.partial(onVCardData, jid, _, resolve),
+                        _.partial(onVCardError, jid, _, resolve),
+                        _converse.IQ_TIMEOUT
                     );
                 });
             }
@@ -142,7 +143,9 @@
 
             _.extend(_converse.api, {
                 'vcard': {
-                    'set': setVCard,
+                    'set' (jid, data) {
+                        return setVCard(jid, data);
+                    },
 
                     'get' (model, force) {
                         if (_.isString(model)) {

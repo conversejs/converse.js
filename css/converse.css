@@ -6947,13 +6947,17 @@ body.reset {
   #conversejs ul, #conversejs ol, #conversejs dl {
     font: inherit;
     margin: 0; }
-  #conversejs a, #conversejs a:visited, #conversejs a:hover, #conversejs a:not([href]):not([tabindex]) {
+  #conversejs a, #conversejs a:visited, #conversejs a:not([href]):not([tabindex]) {
     text-decoration: none;
     color: #578EA9;
     text-shadow: none; }
-    #conversejs a.fa, #conversejs a:visited.fa, #conversejs a:hover.fa, #conversejs a:not([href]):not([tabindex]).fa {
+    #conversejs a:hover, #conversejs a:visited:hover, #conversejs a:not([href]):not([tabindex]):hover {
+      color: #345566;
+      text-decoration: none;
+      text-shadow: none; }
+    #conversejs a.fa, #conversejs a:visited.fa, #conversejs a:not([href]):not([tabindex]).fa {
       color: #A8ABA1; }
-      #conversejs a.fa:hover, #conversejs a:visited.fa:hover, #conversejs a:hover.fa:hover, #conversejs a:not([href]):not([tabindex]).fa:hover {
+      #conversejs a.fa:hover, #conversejs a:visited.fa:hover, #conversejs a:not([href]):not([tabindex]).fa:hover {
         color: #818479; }
   #conversejs canvas {
     border-radius: 4px; }
@@ -7803,6 +7807,20 @@ body.reset {
   #conversejs.converse-fullscreen .chatbox .box-flyout .chatbox-buttons {
     flex: 0 0 25%;
     max-width: 25%; } }
+#conversejs .oauth-providers {
+  text-align: center; }
+  #conversejs .oauth-providers .oauth-provider {
+    margin: 1em 0; }
+    #conversejs .oauth-providers .oauth-provider .oauth-login {
+      margin-left: 0;
+      color: #578EA9;
+      font-size: 16px; }
+      #conversejs .oauth-providers .oauth-provider .oauth-login:hover {
+        color: #345566; }
+      #conversejs .oauth-providers .oauth-provider .oauth-login i {
+        color: #578EA9;
+        font-size: 20px;
+        margin-right: 0.5em; }
 #conversejs .set-xmpp-status .fa-circle, #conversejs .xmpp-status .fa-circle, #conversejs .roster-contacts .fa-circle {
   color: #3AA569; }
 #conversejs .set-xmpp-status .fa-minus-circle, #conversejs .xmpp-status .fa-minus-circle, #conversejs .roster-contacts .fa-minus-circle {
@@ -7921,11 +7939,6 @@ body.reset {
       color: #578EA9; }
   #conversejs #controlbox .toggle-register-login {
     font-weight: bold; }
-  #conversejs #controlbox .oauth-login {
-    margin-left: 0;
-    color: #666; }
-    #conversejs #controlbox .oauth-login .icon-social:before {
-      font-size: 16px; }
   #conversejs #controlbox .controlbox-pane .userinfo {
     padding-bottom: 1em; }
     #conversejs #controlbox .controlbox-pane .userinfo .username {
@@ -8000,6 +8013,7 @@ body.reset {
     #conversejs #controlbox .controlbox-pane .chatbox-btn {
       margin: 0; }
     #conversejs #controlbox .controlbox-pane .switch-form {
+      text-align: center;
       padding: 2em 0; }
       #conversejs #controlbox .controlbox-pane .switch-form p {
         margin-top: 0.5em; }

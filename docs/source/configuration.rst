@@ -986,6 +986,39 @@ This option specifies which icon is shown in HTML5 notifications, as provided
 by the ``src/converse-notification.js`` plugin.
 
 
+oauth_providers
+---------------
+
+* Default: ``[]``
+
+Allows you to specify a list of OAuth providers that the user may use to log in
+with.
+
+.. note::
+    Your XMPP server will have to support Oauth logins
+
+.. code-block:: javascript
+
+        converse.initialize({
+            oauth_providers: {
+                'github': {
+                    'client_id': '1338d9f7ff52b1309b29',
+                    'host': 'chat.example.org',
+                    'class': 'fa-github-alt',
+                    'id': 'github',
+                    'name': 'Github'
+                },
+                'twitter': {
+                    'client_id': '0332d98cff83b1999b22',
+                    'host': 'chat.example.org',
+                    'class': 'fa-twitter',
+                    'id': 'twitter',
+                    'name': 'Twitter'
+                }
+            },
+        });
+
+
 ping_interval
 -------------
 
@@ -1069,7 +1102,7 @@ The hyperlink on the registration form which points to a directory of public
 XMPP servers.
 
 push_app_servers
--------------
+----------------
 
 * Default: ``[]``
 

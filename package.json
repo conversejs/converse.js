@@ -1,8 +1,8 @@
 {
   "name": "converse.js",
   "version": "3.3.4",
-  "description": "Browser based XMPP instant messaging client",
-  "main": "main.js",
+  "description": "Browser based XMPP chat client",
+  "main": "dist/converse.js",
   "directories": {
     "doc": "docs",
     "locale": "locale",
@@ -20,10 +20,13 @@
     "chatrooms",
     "webchat"
   ],
-  "author": "JC Brand",
+  "author": {
+    "name": "JC Brand",
+    "email": "jc@opkode.com"
+  },
   "license": "MPL-2.0",
   "bugs": {
-    "url": "https://github.com/jcbrand/converse.js/issues"
+    "url": "https://github.com/conversejs/converse.js/issues"
   },
   "engines": {
     "browser": "*"
@@ -51,6 +54,7 @@
     "exports-loader": "^0.7.0",
     "filesize": "^3.6.1",
     "font-awesome": "^4.7.0",
+    "hellojs": "^1.16.1",
     "http-server": "^0.10.0",
     "imports-loader": "^0.8.0",
     "install": "^0.9.5",

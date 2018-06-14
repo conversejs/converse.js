@@ -8,16 +8,16 @@ CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
 CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
 ESLINT		  	?= ./node_modules/.bin/eslint
 HTTPSERVE	   	?= ./node_modules/.bin/http-server
-HTTPSERVE_PORT  ?= 8000
-INKSCAPE        ?= inkscape
+HTTPSERVE_PORT		?= 8000
+INKSCAPE		?= inkscape
 JSDOC			?=  ./node_modules/.bin/jsdoc
-OXIPNG          ?= oxipng
+OXIPNG			?= oxipng
 PAPER		   	=
 PO2JSON		 	?= ./node_modules/.bin/po2json
-RJS			 	?= ./node_modules/.bin/r.js
+RJS			?= ./node_modules/.bin/r.js
 WEBPACK 		?= ./node_modules/.bin/npx
 SASS			?= ./.bundle/bin/sass
-SED				?= sed
+SED			?= sed
 SPHINXBUILD	 	?= ./bin/sphinx-build
 SPHINXOPTS	  	=
 UGLIFYJS		?= node_modules/.bin/uglifyjs
@@ -122,7 +122,7 @@ stamp-bundler: Gemfile
 
 .PHONY: clean
 clean:
-	rm -rf node_modules .bundle stamp-npm
+	rm -rf node_modules .bundle stamp-npm stamp-bundler
 	rm dist/*.min.js
 	rm css/website.min.css
 	rm css/converse.min.css
@@ -179,12 +179,12 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 	$(OXIPNG) $@
 
 BUILDS = dist/converse.js \
-		 dist/converse.min.js \
-         dist/converse-headless.js \
-		 dist/converse-headless.min.js \
-		 dist/converse-no-dependencies.min.js \
-		 dist/converse-no-dependencies.js \
-		 dist/converse-no-dependencies-es2015.js
+	dist/converse.min.js \
+	dist/converse-headless.js \
+	dist/converse-headless.min.js \
+	dist/converse-no-dependencies.min.js \
+	dist/converse-no-dependencies.js \
+	dist/converse-no-dependencies-es2015.js
 
 dist/converse.js: src webpack.config.js stamp-npm
 	./node_modules/.bin/npx  webpack --mode=development

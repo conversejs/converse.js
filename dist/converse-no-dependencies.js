@@ -36,17 +36,32 @@
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
 /******/ 		}
 /******/ 	};
 /******/
 /******/ 	// define __esModule on exports
 /******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
 /******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -253,10 +268,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /***/ }),
 
-/***/ "./node_modules/backbone.overview/dist/backbone.orderedlistview.js":
-/*!*************************************************************************!*\
-  !*** ./node_modules/backbone.overview/dist/backbone.orderedlistview.js ***!
-  \*************************************************************************/
+/***/ "./node_modules/backbone.overview/backbone.orderedlistview.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/backbone.overview/backbone.orderedlistview.js ***!
+  \********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -271,101 +286,99 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
  * Licensed under the Mozilla Public License (MPL) 
  */
 (function (root, factory) {
-  if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! underscore */ "./src/underscore-shim.js"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js"), __webpack_require__(/*! backbone.overview */ "backbone.overview")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! underscore */ "./src/underscore-shim.js"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js"), __webpack_require__(/*! backbone.overview */ "backbone.overview")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else {}
-})(this, function (_, Backbone) {
-  "use strict";
+   } else {}
+}(this, function (_, Backbone) {
+    "use strict";
 
-  Backbone.OrderedListView = Backbone.Overview.extend({
-    /* An OrderedListView is a special type of Overview which adds some
-     * methods and conventions for rendering an ordered list of elements.
-     */
-    // The `listItems` attribute denotes the path (from this View) to the
-    // list of items.
-    listItems: 'model',
-    // The `sortEvent` attribute specifies the event which should cause the
-    // ordered list to be sorted.
-    sortEvent: 'change',
-    // The `listSelector` is the selector used to query for the DOM list
-    // element which contains the ordered items.
-    listSelector: '.ordered-items',
-    // The `itemView` is constructor which should be called to create a
-    // View for a new item.
-    ItemView: undefined,
-    // The `subviewIndex` is the attribute of the list element model which
-    // acts as the index of the subview in the overview.
-    // An overview is a "Collection" of views, and they can be retrieved
-    // via an index. By default this is the 'id' attribute, but it could be
-    // set to something else.
-    subviewIndex: 'id',
-    initialize: function initialize() {
-      this.sortEventually = _.debounce(this.sortAndPositionAllItems.bind(this), 500);
-      this.items = _.get(this, this.listItems);
-      this.items.on('add', this.sortAndPositionAllItems, this);
-      this.items.on('remove', this.removeView, this);
+    Backbone.OrderedListView = Backbone.Overview.extend({
+        /* An OrderedListView is a special type of Overview which adds some
+         * methods and conventions for rendering an ordered list of elements.
+         */
 
-      if (!_.isNil(this.sortEvent)) {
-        this.items.on(this.sortEvent, this.sortEventually, this);
-      }
-    },
-    createItemView: function createItemView(item) {
-      var item_view = this.get(item.get(this.subviewIndex));
+        // The `listItems` attribute denotes the path (from this View) to the
+        // list of items.
+        listItems: 'model',
+        // The `sortEvent` attribute specifies the event which should cause the
+        // ordered list to be sorted.
+        sortEvent: 'change',
+        // The `listSelector` is the selector used to query for the DOM list
+        // element which contains the ordered items.
+        listSelector: '.ordered-items',
+        // The `itemView` is constructor which should be called to create a
+        // View for a new item.
+        ItemView: undefined,
+        // The `subviewIndex` is the attribute of the list element model which
+        // acts as the index of the subview in the overview.
+        // An overview is a "Collection" of views, and they can be retrieved
+        // via an index. By default this is the 'id' attribute, but it could be
+        // set to something else.
+        subviewIndex: 'id',
 
-      if (!item_view) {
-        item_view = new this.ItemView({
-          model: item
-        });
-        this.add(item.get(this.subviewIndex), item_view);
-      } else {
-        item_view.model = item;
-        item_view.initialize();
-      }
+        initialize () {
+            this.sortEventually = _.debounce(
+                this.sortAndPositionAllItems.bind(this), 500);
 
-      item_view.render();
-      return item_view;
-    },
-    removeView: function removeView(item) {
-      this.remove(item.get(this.subviewIndex));
-    },
-    sortAndPositionAllItems: function sortAndPositionAllItems() {
-      var _this = this;
+            this.items = _.get(this, this.listItems);
+            this.items.on('add', this.sortAndPositionAllItems, this);
+            this.items.on('remove', this.removeView, this);
+            if (!_.isNil(this.sortEvent)) {
+                this.items.on(this.sortEvent, this.sortEventually, this);
+            }
+        },
 
-      if (!this.items.length) {
-        return;
-      }
+        createItemView (item) {
+            let item_view = this.get(item.get(this.subviewIndex));
+            if (!item_view) {
+                item_view = new this.ItemView({model: item});
+                this.add(item.get(this.subviewIndex), item_view);
+            } else {
+                item_view.model = item;
+                item_view.initialize();
+            }
+            item_view.render();
+            return item_view;
+        },
 
-      this.items.sort();
-      var list_el = this.el.querySelector(this.listSelector);
-      var div = document.createElement('div');
-      list_el.parentNode.replaceChild(div, list_el);
-      this.items.each(function (item) {
-        var view = _this.get(item.get(_this.subviewIndex));
+        removeView (item) {
+            this.remove(item.get(this.subviewIndex));
+        },
 
-        if (_.isUndefined(view)) {
-          view = _this.createItemView(item);
+        sortAndPositionAllItems () {
+            if (!this.items.length) {
+                return;
+            }
+            this.items.sort();
+
+            const list_el = this.el.querySelector(this.listSelector);
+            const div = document.createElement('div');
+            list_el.parentNode.replaceChild(div, list_el);
+            this.items.each((item) => {
+                let view = this.get(item.get(this.subviewIndex));
+                if (_.isUndefined(view)) {
+                    view = this.createItemView(item)
+                }
+                list_el.insertAdjacentElement('beforeend', view.el);
+            });
+            div.parentNode.replaceChild(list_el, div);
         }
+    });
 
-        list_el.insertAdjacentElement('beforeend', view.el);
-      });
-      div.parentNode.replaceChild(list_el, div);
-    }
-  });
-  return Backbone.OrderedListView;
-});
+    return Backbone.OrderedListView;
+}));
 
-//# sourceMappingURL=backbone.orderedlistview.js.map
 
 
 /***/ }),
 
-/***/ "./node_modules/backbone.vdomview/dist/backbone.vdomview.js":
-/*!******************************************************************!*\
-  !*** ./node_modules/backbone.vdomview/dist/backbone.vdomview.js ***!
-  \******************************************************************/
+/***/ "./node_modules/backbone.vdomview/backbone.vdomview.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/backbone.vdomview/backbone.vdomview.js ***!
+  \*************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -373,90 +386,117 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 var backbone = (backbone || {});
 backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_modules/backbone.nativeview/backbone.nativeview.js");
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 /*!
  * Backbone.VDOMView
  *
  * MIT Licensed. Copyright (c) 2017, JC Brand <jc@opkode.com>
  */
 (function (root, factory) {
-  if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! snabbdom */ "./node_modules/snabbdom/dist/snabbdom.js"), __webpack_require__(/*! snabbdom-attributes */ "./node_modules/snabbdom/dist/snabbdom-attributes.js"), __webpack_require__(/*! snabbdom-class */ "./node_modules/snabbdom/dist/snabbdom-class.js"), __webpack_require__(/*! snabbdom-dataset */ "./node_modules/snabbdom/dist/snabbdom-dataset.js"), __webpack_require__(/*! snabbdom-props */ "./node_modules/snabbdom/dist/snabbdom-props.js"), __webpack_require__(/*! snabbdom-style */ "./node_modules/snabbdom/dist/snabbdom-style.js"), __webpack_require__(/*! tovnode */ "./node_modules/snabbdom/dist/tovnode.js"), __webpack_require__(/*! underscore */ "./src/underscore-shim.js"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+            __webpack_require__(/*! snabbdom */ "./node_modules/snabbdom/dist/snabbdom.js"),
+            __webpack_require__(/*! snabbdom-attributes */ "./node_modules/snabbdom/dist/snabbdom-attributes.js"),
+            __webpack_require__(/*! snabbdom-class */ "./node_modules/snabbdom/dist/snabbdom-class.js"),
+            __webpack_require__(/*! snabbdom-dataset */ "./node_modules/snabbdom/dist/snabbdom-dataset.js"),
+            __webpack_require__(/*! snabbdom-props */ "./node_modules/snabbdom/dist/snabbdom-props.js"),
+            __webpack_require__(/*! snabbdom-style */ "./node_modules/snabbdom/dist/snabbdom-style.js"),
+            __webpack_require__(/*! tovnode */ "./node_modules/snabbdom/dist/tovnode.js"),
+            __webpack_require__(/*! underscore */ "./src/underscore-shim.js"),
+            __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js")
+        ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else {}
-})(this, function (snabbdom, snabbdom_attributes, snabbdom_class, snabbdom_dataset, snabbdom_props, snabbdom_style, tovnode, _, Backbone) {
-  "use strict";
+    } else {}
+}(this, function (
+        snabbdom,
+        snabbdom_attributes,
+        snabbdom_class,
+        snabbdom_dataset,
+        snabbdom_props,
+        snabbdom_style,
+        tovnode,
+        _,
+        Backbone) {
+    "use strict";
 
-  var domParser = new DOMParser();
-  var patch = snabbdom.init([snabbdom_attributes.default, snabbdom_class.default, snabbdom_dataset.default, snabbdom_props.default, snabbdom_style.default]);
-  var View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
+    let domParser = new DOMParser();
+    const patch = snabbdom.init([
+        snabbdom_attributes.default,
+        snabbdom_class.default,
+        snabbdom_dataset.default,
+        snabbdom_props.default,
+        snabbdom_style.default
+    ]);
 
-  function parseHTMLToDOM(html_str) {
-    /* Parses a string with HTML and returns a DOM element.
-     *
-     * Forked from vdom_parser:
-     *      https://github.com/bitinn/vdom-parser
-     */
-    if (typeof html_str !== 'string') {
-      throw new Error('Invalid parameter type in parseHTMLToDOM');
+    const View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
+
+    function parseHTMLToDOM (html_str) {
+        /* Parses a string with HTML and returns a DOM element.
+         *
+         * Forked from vdom_parser:
+         *      https://github.com/bitinn/vdom-parser
+         */
+        if (typeof html_str !== 'string') {
+            throw new Error('Invalid parameter type in parseHTMLToDOM');
+        }
+        if ( !('DOMParser' in window) ) {
+            throw new Error(
+                'DOMParser is not available, '+
+                'so parsing string to DOM node is not possible.');
+        }
+        if (!html_str) {
+            return document.createTextNode('');
+        }
+        domParser = domParser || new DOMParser();
+        const doc = domParser.parseFromString(html_str, 'text/html');
+
+        // most tags default to body
+        if (doc.body.firstChild) {
+            return doc.getElementsByTagName('body')[0].firstChild;
+
+        // some tags, like script and style, default to head
+        } else if (doc.head.firstChild && (doc.head.firstChild.tagName !== 'TITLE' || doc.title)) {
+            return doc.head.firstChild;
+
+        // special case for html comment, cdata, doctype
+        } else if (doc.firstChild && doc.firstChild.tagName !== 'HTML') {
+            return doc.firstChild;
+
+        // other element, such as whitespace, or html/body/head tag, fallback to empty text node
+        } else {
+            return document.createTextNode('');
+        }
     }
 
-    if (!('DOMParser' in window)) {
-      throw new Error('DOMParser is not available, ' + 'so parsing string to DOM node is not possible.');
-    }
+    Backbone.VDOMView = View.extend({
 
-    if (!html_str) {
-      return document.createTextNode('');
-    }
+        updateEventListeners (old_vnode, new_vnode) {
+            this.setElement(new_vnode.elm);
+        },
 
-    domParser = domParser || new DOMParser();
-    var doc = domParser.parseFromString(html_str, 'text/html'); // most tags default to body
+        render () {
+            if (_.isFunction(this.beforeRender)) {
+                this.beforeRender();
+            }
+            const new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
+            new_vnode.data.hook = _.extend({
+               create: this.updateEventListeners.bind(this),
+               update: this.updateEventListeners.bind(this)
+            });
+            const el = this.vnode ? this.vnode.elm : this.el;
+            if (el.outerHTML !== new_vnode.elm.outerHTML) {
+                this.vnode = patch(this.vnode || this.el, new_vnode);
+            }
+            if (_.isFunction(this.afterRender)) {
+                this.afterRender();
+            }
+            return this;
+        }
+    });
+    return Backbone.VDOMView;
+}));
 
-    if (doc.body.firstChild) {
-      return doc.getElementsByTagName('body')[0].firstChild; // some tags, like script and style, default to head
-    } else if (doc.head.firstChild && (doc.head.firstChild.tagName !== 'TITLE' || doc.title)) {
-      return doc.head.firstChild; // special case for html comment, cdata, doctype
-    } else if (doc.firstChild && doc.firstChild.tagName !== 'HTML') {
-      return doc.firstChild; // other element, such as whitespace, or html/body/head tag, fallback to empty text node
-    } else {
-      return document.createTextNode('');
-    }
-  }
-
-  Backbone.VDOMView = View.extend({
-    updateEventListeners: function updateEventListeners(old_vnode, new_vnode) {
-      this.setElement(new_vnode.elm);
-    },
-    render: function render() {
-      if (_.isFunction(this.beforeRender)) {
-        this.beforeRender();
-      }
-
-      var new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
-      new_vnode.data.hook = _.extend({
-        create: this.updateEventListeners.bind(this),
-        update: this.updateEventListeners.bind(this)
-      });
-      var el = this.vnode ? this.vnode.elm : this.el;
-
-      if (el.outerHTML !== new_vnode.elm.outerHTML) {
-        this.vnode = patch(this.vnode || this.el, new_vnode);
-      }
-
-      if (_.isFunction(this.afterRender)) {
-        this.afterRender();
-      }
-
-      return this;
-    }
-  });
-  return Backbone.VDOMView;
-});
-
-//# sourceMappingURL=backbone.vdomview.js.map
 
 
 /***/ }),
@@ -2393,7 +2433,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.22 | © dnp_theme | MIT-License
+/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.23 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (true) {
     // AMD support:
@@ -2476,7 +2516,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     clickEvent    = 'click',
     hoverEvent    = 'hover',
     keydownEvent  = 'keydown',
-    keyupEvent    = 'keyup', 
+    keyupEvent    = 'keyup',
     resizeEvent   = 'resize',
     scrollEvent   = 'scroll',
     // originalEvents
@@ -2496,18 +2536,20 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     hasAttribute           = 'hasAttribute',
     createElement          = 'createElement',
     appendChild            = 'appendChild',
-    innerHTML              = 'innerHTML',  
+    innerHTML              = 'innerHTML',
     getElementsByTagName   = 'getElementsByTagName',
     preventDefault         = 'preventDefault',
     getBoundingClientRect  = 'getBoundingClientRect',
     querySelectorAll       = 'querySelectorAll',
     getElementsByCLASSNAME = 'getElementsByClassName',
+    getComputedStyle       = 'getComputedStyle',  
   
     indexOf      = 'indexOf',
     parentNode   = 'parentNode',
     length       = 'length',
     toLowerCase  = 'toLowerCase',
     Transition   = 'Transition',
+    Duration     = 'Duration',
     Webkit       = 'Webkit',
     style        = 'style',
     push         = 'push',
@@ -2527,15 +2569,16 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     // tooltip / popover
     mouseHover = ('onmouseleave' in DOC) ? [ 'mouseenter', 'mouseleave'] : [ 'mouseover', 'mouseout' ],
     tipPositions = /\b(top|bottom|left|right)+/,
-    
+  
     // modal
     modalOverlay = 0,
     fixedTop = 'fixed-top',
     fixedBottom = 'fixed-bottom',
-    
+  
     // transitionEnd since 2.0.4
     supportTransitions = Webkit+Transition in HTML[style] || Transition[toLowerCase]() in HTML[style],
     transitionEndEvent = Webkit+Transition in HTML[style] ? Webkit[toLowerCase]()+Transition+'End' : Transition[toLowerCase]()+'end',
+    transitionDuration = Webkit+Duration in HTML[style] ? Webkit[toLowerCase]()+Transition+Duration : Transition[toLowerCase]()+Duration,
   
     // set new focus element since 2.0.3
     setFocus = function(element){
@@ -2589,9 +2632,16 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         off(element, event, handlerWrapper);
       });
     },
+    getTransitionDurationFromElement = function(element) {
+      var duration = globalObject[getComputedStyle](element)[transitionDuration];
+      duration = parseFloat(duration);
+      duration = typeof duration === 'number' && !isNaN(duration) ? duration * 1000 : 0;
+      return duration + 50; // we take a short offset to make sure we fire on the next frame after animation
+    },
     emulateTransitionEnd = function(element,handler){ // emulateTransitionEnd since 2.0.4
-      if (supportTransitions) { one(element, transitionEndEvent, function(e){ handler(e); }); }
-      else { handler(); }
+      var called = 0, duration = getTransitionDurationFromElement(element);
+      supportTransitions && one(element, transitionEndEvent, function(e){ handler(e); called = 1; });
+      setTimeout(function() { !called && handler(); }, duration);
     },
     bootstrapCustomEvent = function (eventName, componentName, related) {
       var OriginalCustomEvent = new CustomEvent( eventName + '.bs.' + componentName);
@@ -2614,8 +2664,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           scroll = parent === DOC[body] ? getScroll() : { x: parent[offsetLeft] + parent[scrollLeft], y: parent[offsetTop] + parent[scrollTop] },
           linkDimensions = { w: rect[right] - rect[left], h: rect[bottom] - rect[top] },
           isPopover = hasClass(element,'popover'),
-          topPosition, leftPosition, 
-          
+          topPosition, leftPosition,
+  
           arrow = queryElement('.arrow',element),
           arrowTop, arrowLeft, arrowWidth, arrowHeight,
   
@@ -2634,7 +2684,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       position = position === bottom && bottomExceed ? top : position;
       position = position === left && leftExceed ? right : position;
       position = position === right && rightExceed ? left : position;
-      
+  
       // update tooltip/popover class
       element.className[indexOf](position) === -1 && (element.className = element.className.replace(tipPositions,position));
   
@@ -2687,7 +2737,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       arrowLeft && (arrow[style][left] = arrowLeft + 'px');
     };
   
-  BSN.version = '2.0.22';
+  BSN.version = '2.0.23';
   
   /* Native Javascript for Bootstrap 4 | Alert
   -------------------------------------------*/
@@ -2857,7 +2907,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     // DATA API
     var intervalAttribute = element[getAttribute](dataInterval),
         intervalOption = options[interval],
-        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute) || 5000,  // bootstrap carousel default interval
+        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute),  
         pauseData = element[getAttribute](dataPause) === hoverEvent || false,
         keyboardData = element[getAttribute](dataKeyboard) === 'true' || false,
       
@@ -2872,8 +2922,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     this[pause] = (options[pause] === hoverEvent || pauseData) ? hoverEvent : false; // false / hover
   
     this[interval] = typeof intervalOption === 'number' ? intervalOption
-                   : intervalData === 0 ? 0
-                   : intervalData;
+                   : intervalOption === false || intervalData === 0 || intervalData === false ? 0
+                   : 5000; // bootstrap carousel default interval
   
     // bind, event targets
     var self = this, index = element.index = 0, timer = element.timer = 0, 
@@ -2992,10 +3042,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         addClass(slides[next],carouselItem +'-'+ slideDirection);
         addClass(slides[activeItem],carouselItem +'-'+ slideDirection);
   
-        one(slides[activeItem], transitionEndEvent, function(e) {
-          var timeout = e[target] !== slides[activeItem] ? e.elapsedTime*1000 : 0;
+        one(slides[next], transitionEndEvent, function(e) {
+          var timeout = e[target] !== slides[next] ? e.elapsedTime*1000+100 : 20;
           
-          setTimeout(function(){
+          isSliding && setTimeout(function(){
             isSliding = false;
   
             addClass(slides[next],active);
@@ -3010,7 +3060,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             if ( !DOC.hidden && self[interval] && !hasClass(element,paused) ) {
               self.cycle();
             }
-          },timeout+100);
+          }, timeout);
         });
   
       } else {
@@ -3075,23 +3125,24 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   
     // event targets and constants
     var accordion = null, collapse = null, self = this, 
-      isAnimating = false, // when true it will prevent click handlers
       accordionData = element[getAttribute]('data-parent'),
+      activeCollapse, activeElement,
   
       // component strings
       component = 'collapse',
       collapsed = 'collapsed',
+      isAnimating = 'isAnimating',
   
       // private methods
       openAction = function(collapseElement,toggle) {
         bootstrapCustomEvent.call(collapseElement, showEvent, component);
-        isAnimating = true;
+        collapseElement[isAnimating] = true;
         addClass(collapseElement,collapsing);
         removeClass(collapseElement,component);
         collapseElement[style][height] = collapseElement[scrollHeight] + 'px';
         
         emulateTransitionEnd(collapseElement, function() {
-          isAnimating = false;
+          collapseElement[isAnimating] = false;
           collapseElement[setAttribute](ariaExpanded,'true');
           toggle[setAttribute](ariaExpanded,'true');
           removeClass(collapseElement,collapsing);
@@ -3103,7 +3154,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       },
       closeAction = function(collapseElement,toggle) {
         bootstrapCustomEvent.call(collapseElement, hideEvent, component);
-        isAnimating = true;
+        collapseElement[isAnimating] = true;
         collapseElement[style][height] = collapseElement[scrollHeight] + 'px'; // set height first
         removeClass(collapseElement,component);
         removeClass(collapseElement,showClass);
@@ -3112,7 +3163,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         collapseElement[style][height] = '0px';
         
         emulateTransitionEnd(collapseElement, function() {
-          isAnimating = false;
+          collapseElement[isAnimating] = false;
           collapseElement[setAttribute](ariaExpanded,'false');
           toggle[setAttribute](ariaExpanded,'false');
           removeClass(collapseElement,collapsing);
@@ -3131,29 +3182,29 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     // public methods
     this.toggle = function(e) {
       e[preventDefault]();
-      if (isAnimating) return;
       if (!hasClass(collapse,showClass)) { self.show(); } 
       else { self.hide(); }
     };
     this.hide = function() {
+      if ( collapse[isAnimating] ) return;    
       closeAction(collapse,element);
       addClass(element,collapsed);
     };
     this.show = function() {
       if ( accordion ) {
-        var activeCollapse = queryElement('.'+component+'.'+showClass,accordion),
-            toggle = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
-                   || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) ),
-            correspondingCollapse = toggle && (toggle[getAttribute](dataTarget) || toggle.href);
-        if ( activeCollapse && toggle && activeCollapse !== collapse ) {
-          closeAction(activeCollapse,toggle); 
-          if ( correspondingCollapse.split('#')[1] !== collapse.id ) { addClass(toggle,collapsed); } 
-          else { removeClass(toggle,collapsed); }
-        }
+        activeCollapse = queryElement('.'+component+'.'+showClass,accordion);
+        activeElement = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
+                      || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) );
       }
   
-      openAction(collapse,element);
-      removeClass(element,collapsed);
+      if ( !collapse[isAnimating] || activeCollapse && !activeCollapse[isAnimating] ) {
+        if ( activeElement && activeCollapse !== collapse ) {
+          closeAction(activeCollapse,activeElement); 
+          addClass(activeElement,collapsed);
+        }
+        openAction(collapse,element);
+        removeClass(element,collapsed);
+      }
     };
   
     // init
@@ -3161,6 +3212,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       on(element, clickEvent, self.toggle);
     }
     collapse = getTarget();
+    collapse[isAnimating] = false;  // when true it will prevent click handlers  
     accordion = queryElement(options.parent) || accordionData && getClosest(element, accordionData);
     element[stringCollapse] = self;
   };
@@ -3318,6 +3370,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     var btnCheck = element[getAttribute](dataTarget)||element[getAttribute]('href'),
       checkModal = queryElement( btnCheck ),
       modal = hasClass(element,'modal') ? element : checkModal,
+      overlayDelay,
   
       // strings
       component = 'modal',
@@ -3351,13 +3404,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         return globalObject[innerWidth] || (htmlRect[right] - Math.abs(htmlRect[left]));
       },
       setScrollbar = function () {
-        var bodyStyle = globalObject.getComputedStyle(DOC[body]),
+        var bodyStyle = globalObject[getComputedStyle](DOC[body]),
             bodyPad = parseInt((bodyStyle[paddingRight]), 10), itemPad;
         if (bodyIsOverflowing) {
           DOC[body][style][paddingRight] = (bodyPad + scrollbarWidth) + 'px';
           if (fixedItems[length]){
             for (var i = 0; i < fixedItems[length]; i++) {
-              itemPad = globalObject.getComputedStyle(fixedItems[i])[paddingRight];
+              itemPad = globalObject[getComputedStyle](fixedItems[i])[paddingRight];
               fixedItems[i][style][paddingRight] = ( parseInt(itemPad) + scrollbarWidth) + 'px';
             }
           }
@@ -3499,6 +3552,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   
       if ( overlay && modalOverlay && !hasClass(overlay,showClass)) {
         overlay[offsetWidth]; // force reflow to enable trasition
+        overlayDelay = getTransitionDurationFromElement(overlay);              
         addClass(overlay, showClass);
       }
   
@@ -3518,18 +3572,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         keydownHandlerToggle();
   
         hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerShow) : triggerShow();
-      }, supportTransitions ? 150 : 0);
+      }, supportTransitions && overlay ? overlayDelay : 0);
     };
     this.hide = function() {
       bootstrapCustomEvent.call(modal, hideEvent, component);
       overlay = queryElement('.'+modalBackdropString);
+      overlayDelay = overlay && getTransitionDurationFromElement(overlay);    
   
       removeClass(modal,showClass);
       modal[setAttribute](ariaHidden, true);
   
-      (function(){
+      setTimeout(function(){
         hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerHide) : triggerHide();
-      }());
+      }, supportTransitions && overlay ? overlayDelay : 0);
     };
     this.setContent = function( content ) {
       queryElement('.'+component+'-content',modal)[innerHTML] = content;
@@ -3885,7 +3940,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               tabsContentContainer[style][height] = nextHeight + 'px'; // height animation
               tabsContentContainer[offsetWidth];
               emulateTransitionEnd(tabsContentContainer, triggerEnd);
-            },1);
+            },50);
           }
         } else {
           tabs[isAnimating] = false; 
@@ -3912,7 +3967,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           tabsContentContainer[style][height] = containerHeight + 'px'; // height animation
           tabsContentContainer[offsetHeight];
           activeContent[style][float] = '';
-          nextContent[style][float] = '';   
+          nextContent[style][float] = '';
         }
   
         if ( hasClass(nextContent, 'fade') ) {
@@ -4317,6 +4372,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     ns.emojiVersion = '3.1'; // you can [optionally] modify this to load alternate emoji versions. see readme for backwards compatibility and version options
     ns.emojiSize = '32';
     ns.greedyMatch = false; // set to true for greedy unicode matching
+    ns.blacklistChars = '';
     ns.imagePathPNG = 'https://cdn.jsdelivr.net/emojione/assets/' + ns.emojiVersion + '/png/';
     ns.defaultPathPNG = ns.imagePathPNG;
     ns.imageTitleTag = true; // set to false to remove title attribute from img tag
@@ -4330,7 +4386,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     ns.regAscii = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|((\\s|^)"+ns.asciiRegexp+"(?=\\s|$|[!,.?]))", "gi");
     ns.regAsciiRisky = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(()"+ns.asciiRegexp+"())", "gi");
 
-    ns.regUnicode = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(?:\uD83C\uDFF3)\uFE0F?\u200D?(?:\uD83C\uDF08)|(?:\uD83D\uDC41)\uFE0F?\u200D?(?:\uD83D\uDDE8)\uFE0F?|[#-9]\uFE0F?\u20E3|(?:(?:\uD83C\uDFF4)(?:\uDB40[\uDC60-\uDCFF]){1,6})|(?:\uD83C[\uDDE0-\uDDFF]){2}|(?:(?:\uD83D[\uDC68\uDC69]))\uFE0F?(?:\uD83C[\uDFFA-\uDFFF])?\u200D?(?:[\u2695\u2696\u2708]|\uD83C[\uDF3E-\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92])|(?:\uD83D[\uDC68\uDC69]|\uD83E[\uDDD0-\uDDDF])(?:\uD83C[\uDFFA-\uDFFF])?\u200D?[\u2640\u2642\u2695\u2696\u2708]?\uFE0F?|(?:(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])[\u200D\uFE0F]{0,2}){1,3}(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])|(?:(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])\uFE0F?){2,4}|(?:\uD83D[\uDC68\uDC69\uDC6E\uDC71-\uDC87\uDD75\uDE45-\uDE4E]|\uD83E[\uDD26\uDD37]|\uD83C[\uDFC3-\uDFCC]|\uD83E[\uDD38-\uDD3E]|\uD83D[\uDEA3-\uDEB6]|\u26f9|\uD83D\uDC6F)\uFE0F?(?:\uD83C[\uDFFB-\uDFFF])?\u200D?[\u2640\u2642]?\uFE0F?|(?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85-\uDFCC]|\uD83D[\uDC42-\uDCAA\uDD74-\uDD96\uDE45-\uDE4F\uDEA3-\uDECC]|\uD83E[\uDD18-\uDD3E])\uFE0F?(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u2194-\u2199\u21a9-\u21aa]\uFE0F?|[\u0023\u002a]|[\u3030\u303d]\uFE0F?|(?:\ud83c[\udd70-\udd71]|\ud83c\udd8e|\ud83c[\udd91-\udd9a])\uFE0F?|\u24c2\uFE0F?|[\u3297\u3299]\uFE0F?|(?:\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51])\uFE0F?|[\u203c\u2049]\uFE0F?|[\u25aa-\u25ab\u25b6\u25c0\u25fb-\u25fe]\uFE0F?|[\u00a9\u00ae]\uFE0F?|[\u2122\u2139]\uFE0F?|\ud83c\udc04\uFE0F?|[\u2b05-\u2b07\u2b1b-\u2b1c\u2b50\u2b55]\uFE0F?|[\u231a-\u231b\u2328\u23cf\u23e9-\u23f3\u23f8-\u23fa]\uFE0F?|\ud83c\udccf|[\u2934\u2935]\uFE0F?)|[\u2700-\u27bf]\uFE0F?|[\ud800-\udbff][\udc00-\udfff]\uFE0F?|[\u2600-\u26FF]\uFE0F?|[\u0030-\u0039]\uFE0F", "g");
+    ns.regUnicode = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(?:\uD83C\uDFF3)\uFE0F?\u200D?(?:\uD83C\uDF08)|(?:\uD83D\uDC41)\uFE0F?\u200D?(?:\uD83D\uDDE8)\uFE0F?|[#-9]\uFE0F?\u20E3|(?:(?:\uD83C\uDFF4)(?:\uDB40[\uDC60-\uDCFF]){1,6})|(?:\uD83C[\uDDE0-\uDDFF]){2}|(?:(?:\uD83D[\uDC68\uDC69]))\uFE0F?(?:\uD83C[\uDFFA-\uDFFF])?\u200D?(?:[\u2695\u2696\u2708]|\uD83C[\uDF3E-\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92])|(?:\uD83D[\uDC68\uDC69]|\uD83E[\uDDD0-\uDDDF])(?:\uD83C[\uDFFA-\uDFFF])?\u200D?[\u2640\u2642\u2695\u2696\u2708]?\uFE0F?|(?:(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])[\u200D\uFE0F]{0,2})|(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])|(?:(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])\uFE0F?)|(?:\uD83D[\uDC68\uDC69\uDC6E\uDC71-\uDC87\uDD75\uDE45-\uDE4E]|\uD83E[\uDD26\uDD37]|\uD83C[\uDFC3-\uDFCC]|\uD83E[\uDD38-\uDD3E]|\uD83D[\uDEA3-\uDEB6]|\u26f9|\uD83D\uDC6F)\uFE0F?(?:\uD83C[\uDFFB-\uDFFF])?\u200D?[\u2640\u2642]?\uFE0F?|(?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85-\uDFCC]|\uD83D[\uDC42-\uDCAA\uDD74-\uDD96\uDE45-\uDE4F\uDEA3-\uDECC]|\uD83E[\uDD18-\uDD3E])\uFE0F?(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u2194-\u2199\u21a9-\u21aa]\uFE0F?|[\u0023\u002a]|[\u3030\u303d]\uFE0F?|(?:\ud83c[\udd70-\udd71]|\ud83c\udd8e|\ud83c[\udd91-\udd9a])\uFE0F?|\u24c2\uFE0F?|[\u3297\u3299]\uFE0F?|(?:\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51])\uFE0F?|[\u203c\u2049]\uFE0F?|[\u25aa-\u25ab\u25b6\u25c0\u25fb-\u25fe]\uFE0F?|[\u00a9\u00ae]\uFE0F?|[\u2122\u2139]\uFE0F?|\ud83c\udc04\uFE0F?|[\u2b05-\u2b07\u2b1b-\u2b1c\u2b50\u2b55]\uFE0F?|[\u231a-\u231b\u2328\u23cf\u23e9-\u23f3\u23f8-\u23fa]\uFE0F?|\ud83c\udccf|[\u2934\u2935]\uFE0F?)|[\u2700-\u27bf]\uFE0F?|[\ud800-\udbff][\udc00-\udfff]\uFE0F?|[\u2600-\u26FF]\uFE0F?|[\u0030-\u0039]\uFE0F", "g");
 
     ns.toImage = function(str) {
         str = ns.unicodeToImage(str);
@@ -4491,16 +4547,17 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         var replaceWith,unicode,short,fname,alt,category,title,size,ePath;
         var mappedUnicode = ns.mapUnicodeToShort();
         var eList = ns.emojioneList;
+        var bList = ns.blacklistChars.split(',');
         str = str.replace(ns.regUnicode, function(unicodeChar) {
             if( (typeof unicodeChar === 'undefined') || (unicodeChar === '') )
             {
                 return unicodeChar;
             }
-            else if ( unicodeChar in ns.jsEscapeMap )
+            else if ( unicodeChar in ns.jsEscapeMap && bList.indexOf(unicodeChar) === -1 )
             {
                 fname = ns.jsEscapeMap[unicodeChar];
             }
-            else if ( ns.greedyMatch && unicodeChar in ns.jsEscapeMapGreedy )
+            else if ( ns.greedyMatch && unicodeChar in ns.jsEscapeMapGreedy && bList.indexOf(unicodeChar) === -1 )
             {
                 fname = ns.jsEscapeMapGreedy[unicodeChar];
             }
@@ -4912,6 +4969,5955 @@ if(true) module.exports = this.emojione;
 })(typeof window !== "undefined" ? window : global);
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
+/***/ "./node_modules/hellojs/dist/hello.all.js":
+/*!************************************************!*\
+  !*** ./node_modules/hellojs/dist/hello.all.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(process, setImmediate) {var __WEBPACK_AMD_DEFINE_RESULT__;/*! hellojs v1.16.1 | (c) 2012-2017 Andrew Dodson | MIT https://adodson.com/hello.js/LICENSE */
+// ES5 Object.create
+if (!Object.create) {
+
+	// Shim, Object create
+	// A shim for Object.create(), it adds a prototype to a new object
+	Object.create = (function() {
+
+		function F() {}
+
+		return function(o) {
+
+			if (arguments.length != 1) {
+				throw new Error('Object.create implementation only accepts one parameter.');
+			}
+
+			F.prototype = o;
+			return new F();
+		};
+
+	})();
+
+}
+
+// ES5 Object.keys
+if (!Object.keys) {
+	Object.keys = function(o, k, r) {
+		r = [];
+		for (k in o) {
+			if (r.hasOwnProperty.call(o, k))
+				r.push(k);
+		}
+
+		return r;
+	};
+}
+
+// ES5 [].indexOf
+if (!Array.prototype.indexOf) {
+	Array.prototype.indexOf = function(s) {
+
+		for (var j = 0; j < this.length; j++) {
+			if (this[j] === s) {
+				return j;
+			}
+		}
+
+		return -1;
+	};
+}
+
+// ES5 [].forEach
+if (!Array.prototype.forEach) {
+	Array.prototype.forEach = function(fun/*, thisArg*/) {
+
+		if (this === void 0 || this === null) {
+			throw new TypeError();
+		}
+
+		var t = Object(this);
+		var len = t.length >>> 0;
+		if (typeof fun !== 'function') {
+			throw new TypeError();
+		}
+
+		var thisArg = arguments.length >= 2 ? arguments[1] : void 0;
+		for (var i = 0; i < len; i++) {
+			if (i in t) {
+				fun.call(thisArg, t[i], i, t);
+			}
+		}
+
+		return this;
+	};
+}
+
+// ES5 [].filter
+if (!Array.prototype.filter) {
+	Array.prototype.filter = function(fun, thisArg) {
+
+		var a = [];
+		this.forEach(function(val, i, t) {
+			if (fun.call(thisArg || void 0, val, i, t)) {
+				a.push(val);
+			}
+		});
+
+		return a;
+	};
+}
+
+// Production steps of ECMA-262, Edition 5, 15.4.4.19
+// Reference: http://es5.github.io/#x15.4.4.19
+if (!Array.prototype.map) {
+
+	Array.prototype.map = function(fun, thisArg) {
+
+		var a = [];
+		this.forEach(function(val, i, t) {
+			a.push(fun.call(thisArg || void 0, val, i, t));
+		});
+
+		return a;
+	};
+}
+
+// ES5 isArray
+if (!Array.isArray) {
+
+	// Function Array.isArray
+	Array.isArray = function(o) {
+		return Object.prototype.toString.call(o) === '[object Array]';
+	};
+
+}
+
+// Test for location.assign
+if (typeof window === 'object' && typeof window.location === 'object' && !window.location.assign) {
+
+	window.location.assign = function(url) {
+		window.location = url;
+	};
+
+}
+
+// Test for Function.bind
+if (!Function.prototype.bind) {
+
+	// MDN
+	// Polyfill IE8, does not support native Function.bind
+	Function.prototype.bind = function(b) {
+
+		if (typeof this !== 'function') {
+			throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
+		}
+
+		function C() {}
+
+		var a = [].slice;
+		var f = a.call(arguments, 1);
+		var _this = this;
+		var D = function() {
+			return _this.apply(this instanceof C ? this : b || window, f.concat(a.call(arguments)));
+		};
+
+		C.prototype = this.prototype;
+		D.prototype = new C();
+
+		return D;
+	};
+
+}
+
+/**
+ * @hello.js
+ *
+ * HelloJS is a client side Javascript SDK for making OAuth2 logins and subsequent REST calls.
+ *
+ * @author Andrew Dodson
+ * @website https://adodson.com/hello.js/
+ *
+ * @copyright Andrew Dodson, 2012 - 2015
+ * @license MIT: You are free to use and modify this code for any use, on the condition that this copyright notice remains.
+ */
+
+var hello = function(name) {
+	return hello.use(name);
+};
+
+hello.utils = {
+
+	// Extend the first object with the properties and methods of the second
+	extend: function(r /*, a[, b[, ...]] */) {
+
+		// Get the arguments as an array but ommit the initial item
+		Array.prototype.slice.call(arguments, 1).forEach(function(a) {
+			if (Array.isArray(r) && Array.isArray(a)) {
+				Array.prototype.push.apply(r, a);
+			}
+			else if (r && (r instanceof Object || typeof r === 'object') && a && (a instanceof Object || typeof a === 'object') && r !== a) {
+				for (var x in a) {
+					r[x] = hello.utils.extend(r[x], a[x]);
+				}
+			}
+			else {
+
+				if (Array.isArray(a)) {
+					// Clone it
+					a = a.slice(0);
+				}
+
+				r = a;
+			}
+		});
+
+		return r;
+	}
+};
+
+// Core library
+hello.utils.extend(hello, {
+
+	settings: {
+
+		// OAuth2 authentication defaults
+		redirect_uri: window.location.href.split('#')[0],
+		response_type: 'token',
+		display: 'popup',
+		state: '',
+
+		// OAuth1 shim
+		// The path to the OAuth1 server for signing user requests
+		// Want to recreate your own? Checkout https://github.com/MrSwitch/node-oauth-shim
+		oauth_proxy: 'https://auth-server.herokuapp.com/proxy',
+
+		// API timeout in milliseconds
+		timeout: 20000,
+
+		// Popup Options
+		popup: {
+			resizable: 1,
+			scrollbars: 1,
+			width: 500,
+			height: 550
+		},
+
+		// Default scope
+		// Many services require atleast a profile scope,
+		// HelloJS automatially includes the value of provider.scope_map.basic
+		// If that's not required it can be removed via hello.settings.scope.length = 0;
+		scope: ['basic'],
+
+		// Scope Maps
+		// This is the default module scope, these are the defaults which each service is mapped too.
+		// By including them here it prevents the scope from being applied accidentally
+		scope_map: {
+			basic: ''
+		},
+
+		// Default service / network
+		default_service: null,
+
+		// Force authentication
+		// When hello.login is fired.
+		// (null): ignore current session expiry and continue with login
+		// (true): ignore current session expiry and continue with login, ask for user to reauthenticate
+		// (false): if the current session looks good for the request scopes return the current session.
+		force: null,
+
+		// Page URL
+		// When 'display=page' this property defines where the users page should end up after redirect_uri
+		// Ths could be problematic if the redirect_uri is indeed the final place,
+		// Typically this circumvents the problem of the redirect_url being a dumb relay page.
+		page_uri: window.location.href
+	},
+
+	// Service configuration objects
+	services: {},
+
+	// Use
+	// Define a new instance of the HelloJS library with a default service
+	use: function(service) {
+
+		// Create self, which inherits from its parent
+		var self = Object.create(this);
+
+		// Inherit the prototype from its parent
+		self.settings = Object.create(this.settings);
+
+		// Define the default service
+		if (service) {
+			self.settings.default_service = service;
+		}
+
+		// Create an instance of Events
+		self.utils.Event.call(self);
+
+		return self;
+	},
+
+	// Initialize
+	// Define the client_ids for the endpoint services
+	// @param object o, contains a key value pair, service => clientId
+	// @param object opts, contains a key value pair of options used for defining the authentication defaults
+	// @param number timeout, timeout in seconds
+	init: function(services, options) {
+
+		var utils = this.utils;
+
+		if (!services) {
+			return this.services;
+		}
+
+		// Define provider credentials
+		// Reformat the ID field
+		for (var x in services) {if (services.hasOwnProperty(x)) {
+			if (typeof (services[x]) !== 'object') {
+				services[x] = {id: services[x]};
+			}
+		}}
+
+		// Merge services if there already exists some
+		utils.extend(this.services, services);
+
+		// Update the default settings with this one.
+		if (options) {
+			utils.extend(this.settings, options);
+
+			// Do this immediatly incase the browser changes the current path.
+			if ('redirect_uri' in options) {
+				this.settings.redirect_uri = utils.url(options.redirect_uri).href;
+			}
+		}
+
+		return this;
+	},
+
+	// Login
+	// Using the endpoint
+	// @param network stringify       name to connect to
+	// @param options object    (optional)  {display mode, is either none|popup(default)|page, scope: email,birthday,publish, .. }
+	// @param callback  function  (optional)  fired on signin
+	login: function() {
+
+		// Create an object which inherits its parent as the prototype and constructs a new event chain.
+		var _this = this;
+		var utils = _this.utils;
+		var error = utils.error;
+		var promise = utils.Promise();
+
+		// Get parameters
+		var p = utils.args({network: 's', options: 'o', callback: 'f'}, arguments);
+
+		// Local vars
+		var url;
+
+		// Get all the custom options and store to be appended to the querystring
+		var qs = utils.diffKey(p.options, _this.settings);
+
+		// Merge/override options with app defaults
+		var opts = p.options = utils.merge(_this.settings, p.options || {});
+
+		// Merge/override options with app defaults
+		opts.popup = utils.merge(_this.settings.popup, p.options.popup || {});
+
+		// Network
+		p.network = p.network || _this.settings.default_service;
+
+		// Bind callback to both reject and fulfill states
+		promise.proxy.then(p.callback, p.callback);
+
+		// Trigger an event on the global listener
+		function emit(s, value) {
+			hello.emit(s, value);
+		}
+
+		promise.proxy.then(emit.bind(this, 'auth.login auth'), emit.bind(this, 'auth.failed auth'));
+
+		// Is our service valid?
+		if (typeof (p.network) !== 'string' || !(p.network in _this.services)) {
+			// Trigger the default login.
+			// Ahh we dont have one.
+			return promise.reject(error('invalid_network', 'The provided network was not recognized'));
+		}
+
+		var provider = _this.services[p.network];
+
+		// Create a global listener to capture events triggered out of scope
+		var callbackId = utils.globalEvent(function(str) {
+
+			// The responseHandler returns a string, lets save this locally
+			var obj;
+
+			if (str) {
+				obj = JSON.parse(str);
+			}
+			else {
+				obj = error('cancelled', 'The authentication was not completed');
+			}
+
+			// Handle these response using the local
+			// Trigger on the parent
+			if (!obj.error) {
+
+				// Save on the parent window the new credentials
+				// This fixes an IE10 bug i think... atleast it does for me.
+				utils.store(obj.network, obj);
+
+				// Fulfill a successful login
+				promise.fulfill({
+					network: obj.network,
+					authResponse: obj
+				});
+			}
+			else {
+				// Reject a successful login
+				promise.reject(obj);
+			}
+		});
+
+		var redirectUri = utils.url(opts.redirect_uri).href;
+
+		// May be a space-delimited list of multiple, complementary types
+		var responseType = provider.oauth.response_type || opts.response_type;
+
+		// Fallback to token if the module hasn't defined a grant url
+		if (/\bcode\b/.test(responseType) && !provider.oauth.grant) {
+			responseType = responseType.replace(/\bcode\b/, 'token');
+		}
+
+		// Query string parameters, we may pass our own arguments to form the querystring
+		p.qs = utils.merge(qs, {
+			client_id: encodeURIComponent(provider.id),
+			response_type: encodeURIComponent(responseType),
+			redirect_uri: encodeURIComponent(redirectUri),
+			state: {
+				client_id: provider.id,
+				network: p.network,
+				display: opts.display,
+				callback: callbackId,
+				state: opts.state,
+				redirect_uri: redirectUri
+			}
+		});
+
+		// Get current session for merging scopes, and for quick auth response
+		var session = utils.store(p.network);
+
+		// Scopes (authentication permisions)
+		// Ensure this is a string - IE has a problem moving Arrays between windows
+		// Append the setup scope
+		var SCOPE_SPLIT = /[,\s]+/;
+
+		// Include default scope settings (cloned).
+		var scope = _this.settings.scope ? [_this.settings.scope.toString()] : [];
+
+		// Extend the providers scope list with the default
+		var scopeMap = utils.merge(_this.settings.scope_map, provider.scope || {});
+
+		// Add user defined scopes...
+		if (opts.scope) {
+			scope.push(opts.scope.toString());
+		}
+
+		// Append scopes from a previous session.
+		// This helps keep app credentials constant,
+		// Avoiding having to keep tabs on what scopes are authorized
+		if (session && 'scope' in session && session.scope instanceof String) {
+			scope.push(session.scope);
+		}
+
+		// Join and Split again
+		scope = scope.join(',').split(SCOPE_SPLIT);
+
+		// Format remove duplicates and empty values
+		scope = utils.unique(scope).filter(filterEmpty);
+
+		// Save the the scopes to the state with the names that they were requested with.
+		p.qs.state.scope = scope.join(',');
+
+		// Map scopes to the providers naming convention
+		scope = scope.map(function(item) {
+			// Does this have a mapping?
+			return (item in scopeMap) ? scopeMap[item] : item;
+		});
+
+		// Stringify and Arrayify so that double mapped scopes are given the chance to be formatted
+		scope = scope.join(',').split(SCOPE_SPLIT);
+
+		// Again...
+		// Format remove duplicates and empty values
+		scope = utils.unique(scope).filter(filterEmpty);
+
+		// Join with the expected scope delimiter into a string
+		p.qs.scope = scope.join(provider.scope_delim || ',');
+
+		// Is the user already signed in with the appropriate scopes, valid access_token?
+		if (opts.force === false) {
+
+			if (session && 'access_token' in session && session.access_token && 'expires' in session && session.expires > ((new Date()).getTime() / 1e3)) {
+				// What is different about the scopes in the session vs the scopes in the new login?
+				var diff = utils.diff((session.scope || '').split(SCOPE_SPLIT), (p.qs.state.scope || '').split(SCOPE_SPLIT));
+				if (diff.length === 0) {
+
+					// OK trigger the callback
+					promise.fulfill({
+						unchanged: true,
+						network: p.network,
+						authResponse: session
+					});
+
+					// Nothing has changed
+					return promise;
+				}
+			}
+		}
+
+		// Page URL
+		if (opts.display === 'page' && opts.page_uri) {
+			// Add a page location, place to endup after session has authenticated
+			p.qs.state.page_uri = utils.url(opts.page_uri).href;
+		}
+
+		// Bespoke
+		// Override login querystrings from auth_options
+		if ('login' in provider && typeof (provider.login) === 'function') {
+			// Format the paramaters according to the providers formatting function
+			provider.login(p);
+		}
+
+		// Add OAuth to state
+		// Where the service is going to take advantage of the oauth_proxy
+		if (!/\btoken\b/.test(responseType) ||
+		parseInt(provider.oauth.version, 10) < 2 ||
+		(opts.display === 'none' && provider.oauth.grant && session && session.refresh_token)) {
+
+			// Add the oauth endpoints
+			p.qs.state.oauth = provider.oauth;
+
+			// Add the proxy url
+			p.qs.state.oauth_proxy = opts.oauth_proxy;
+
+		}
+
+		// Convert state to a string
+		p.qs.state = encodeURIComponent(JSON.stringify(p.qs.state));
+
+		// URL
+		if (parseInt(provider.oauth.version, 10) === 1) {
+
+			// Turn the request to the OAuth Proxy for 3-legged auth
+			url = utils.qs(opts.oauth_proxy, p.qs, encodeFunction);
+		}
+
+		// Refresh token
+		else if (opts.display === 'none' && provider.oauth.grant && session && session.refresh_token) {
+
+			// Add the refresh_token to the request
+			p.qs.refresh_token = session.refresh_token;
+
+			// Define the request path
+			url = utils.qs(opts.oauth_proxy, p.qs, encodeFunction);
+		}
+		else {
+			url = utils.qs(provider.oauth.auth, p.qs, encodeFunction);
+		}
+
+		// Broadcast this event as an auth:init
+		emit('auth.init', p);
+
+		// Execute
+		// Trigger how we want self displayed
+		if (opts.display === 'none') {
+			// Sign-in in the background, iframe
+			utils.iframe(url, redirectUri);
+		}
+
+		// Triggering popup?
+		else if (opts.display === 'popup') {
+
+			var popup = utils.popup(url, redirectUri, opts.popup);
+
+			var timer = setInterval(function() {
+				if (!popup || popup.closed) {
+					clearInterval(timer);
+					if (!promise.state) {
+
+						var response = error('cancelled', 'Login has been cancelled');
+
+						if (!popup) {
+							response = error('blocked', 'Popup was blocked');
+						}
+
+						response.network = p.network;
+
+						promise.reject(response);
+					}
+				}
+			}, 100);
+		}
+
+		else {
+			window.location = url;
+		}
+
+		return promise.proxy;
+
+		function encodeFunction(s) {return s;}
+
+		function filterEmpty(s) {return !!s;}
+	},
+
+	// Remove any data associated with a given service
+	// @param string name of the service
+	// @param function callback
+	logout: function() {
+
+		var _this = this;
+		var utils = _this.utils;
+		var error = utils.error;
+
+		// Create a new promise
+		var promise = utils.Promise();
+
+		var p = utils.args({name:'s', options: 'o', callback: 'f'}, arguments);
+
+		p.options = p.options || {};
+
+		// Add callback to events
+		promise.proxy.then(p.callback, p.callback);
+
+		// Trigger an event on the global listener
+		function emit(s, value) {
+			hello.emit(s, value);
+		}
+
+		promise.proxy.then(emit.bind(this, 'auth.logout auth'), emit.bind(this, 'error'));
+
+		// Network
+		p.name = p.name || this.settings.default_service;
+		p.authResponse = utils.store(p.name);
+
+		if (p.name && !(p.name in _this.services)) {
+
+			promise.reject(error('invalid_network', 'The network was unrecognized'));
+
+		}
+		else if (p.name && p.authResponse) {
+
+			// Define the callback
+			var callback = function(opts) {
+
+				// Remove from the store
+				utils.store(p.name, null);
+
+				// Emit events by default
+				promise.fulfill(hello.utils.merge({network:p.name}, opts || {}));
+			};
+
+			// Run an async operation to remove the users session
+			var _opts = {};
+			if (p.options.force) {
+				var logout = _this.services[p.name].logout;
+				if (logout) {
+					// Convert logout to URL string,
+					// If no string is returned, then this function will handle the logout async style
+					if (typeof (logout) === 'function') {
+						logout = logout(callback, p);
+					}
+
+					// If logout is a string then assume URL and open in iframe.
+					if (typeof (logout) === 'string') {
+						utils.iframe(logout);
+						_opts.force = null;
+						_opts.message = 'Logout success on providers site was indeterminate';
+					}
+					else if (logout === undefined) {
+						// The callback function will handle the response.
+						return promise.proxy;
+					}
+				}
+			}
+
+			// Remove local credentials
+			callback(_opts);
+		}
+		else {
+			promise.reject(error('invalid_session', 'There was no session to remove'));
+		}
+
+		return promise.proxy;
+	},
+
+	// Returns all the sessions that are subscribed too
+	// @param string optional, name of the service to get information about.
+	getAuthResponse: function(service) {
+
+		// If the service doesn't exist
+		service = service || this.settings.default_service;
+
+		if (!service || !(service in this.services)) {
+			return null;
+		}
+
+		return this.utils.store(service) || null;
+	},
+
+	// Events: placeholder for the events
+	events: {}
+});
+
+// Core utilities
+hello.utils.extend(hello.utils, {
+
+	// Error
+	error: function(code, message) {
+		return {
+			error: {
+				code: code,
+				message: message
+			}
+		};
+	},
+
+	// Append the querystring to a url
+	// @param string url
+	// @param object parameters
+	qs: function(url, params, formatFunction) {
+
+		if (params) {
+
+			// Set default formatting function
+			formatFunction = formatFunction || encodeURIComponent;
+
+			// Override the items in the URL which already exist
+			for (var x in params) {
+				var str = '([\\?\\&])' + x + '=[^\\&]*';
+				var reg = new RegExp(str);
+				if (url.match(reg)) {
+					url = url.replace(reg, '$1' + x + '=' + formatFunction(params[x]));
+					delete params[x];
+				}
+			}
+		}
+
+		if (!this.isEmpty(params)) {
+			return url + (url.indexOf('?') > -1 ? '&' : '?') + this.param(params, formatFunction);
+		}
+
+		return url;
+	},
+
+	// Param
+	// Explode/encode the parameters of an URL string/object
+	// @param string s, string to decode
+	param: function(s, formatFunction) {
+		var b;
+		var a = {};
+		var m;
+
+		if (typeof (s) === 'string') {
+
+			formatFunction = formatFunction || decodeURIComponent;
+
+			m = s.replace(/^[\#\?]/, '').match(/([^=\/\&]+)=([^\&]+)/g);
+			if (m) {
+				for (var i = 0; i < m.length; i++) {
+					b = m[i].match(/([^=]+)=(.*)/);
+					a[b[1]] = formatFunction(b[2]);
+				}
+			}
+
+			return a;
+		}
+		else {
+
+			formatFunction = formatFunction || encodeURIComponent;
+
+			var o = s;
+
+			a = [];
+
+			for (var x in o) {if (o.hasOwnProperty(x)) {
+				if (o.hasOwnProperty(x)) {
+					a.push([x, o[x] === '?' ? '?' : formatFunction(o[x])].join('='));
+				}
+			}}
+
+			return a.join('&');
+		}
+	},
+
+	// Local storage facade
+	store: (function() {
+
+		var a = ['localStorage', 'sessionStorage'];
+		var i = -1;
+		var prefix = 'test';
+
+		// Set LocalStorage
+		var localStorage;
+
+		while (a[++i]) {
+			try {
+				// In Chrome with cookies blocked, calling localStorage throws an error
+				localStorage = window[a[i]];
+				localStorage.setItem(prefix + i, i);
+				localStorage.removeItem(prefix + i);
+				break;
+			}
+			catch (e) {
+				localStorage = null;
+			}
+		}
+
+		if (!localStorage) {
+
+			var cache = null;
+
+			localStorage = {
+				getItem: function(prop) {
+					prop = prop + '=';
+					var m = document.cookie.split(';');
+					for (var i = 0; i < m.length; i++) {
+						var _m = m[i].replace(/(^\s+|\s+$)/, '');
+						if (_m && _m.indexOf(prop) === 0) {
+							return _m.substr(prop.length);
+						}
+					}
+
+					return cache;
+				},
+
+				setItem: function(prop, value) {
+					cache = value;
+					document.cookie = prop + '=' + value;
+				}
+			};
+
+			// Fill the cache up
+			cache = localStorage.getItem('hello');
+		}
+
+		function get() {
+			var json = {};
+			try {
+				json = JSON.parse(localStorage.getItem('hello')) || {};
+			}
+			catch (e) {}
+
+			return json;
+		}
+
+		function set(json) {
+			localStorage.setItem('hello', JSON.stringify(json));
+		}
+
+		// Check if the browser support local storage
+		return function(name, value, days) {
+
+			// Local storage
+			var json = get();
+
+			if (name && value === undefined) {
+				return json[name] || null;
+			}
+			else if (name && value === null) {
+				try {
+					delete json[name];
+				}
+				catch (e) {
+					json[name] = null;
+				}
+			}
+			else if (name) {
+				json[name] = value;
+			}
+			else {
+				return json;
+			}
+
+			set(json);
+
+			return json || null;
+		};
+
+	})(),
+
+	// Create and Append new DOM elements
+	// @param node string
+	// @param attr object literal
+	// @param dom/string
+	append: function(node, attr, target) {
+
+		var n = typeof (node) === 'string' ? document.createElement(node) : node;
+
+		if (typeof (attr) === 'object') {
+			if ('tagName' in attr) {
+				target = attr;
+			}
+			else {
+				for (var x in attr) {if (attr.hasOwnProperty(x)) {
+					if (typeof (attr[x]) === 'object') {
+						for (var y in attr[x]) {if (attr[x].hasOwnProperty(y)) {
+							n[x][y] = attr[x][y];
+						}}
+					}
+					else if (x === 'html') {
+						n.innerHTML = attr[x];
+					}
+
+					// IE doesn't like us setting methods with setAttribute
+					else if (!/^on/.test(x)) {
+						n.setAttribute(x, attr[x]);
+					}
+					else {
+						n[x] = attr[x];
+					}
+				}}
+			}
+		}
+
+		if (target === 'body') {
+			(function self() {
+				if (document.body) {
+					document.body.appendChild(n);
+				}
+				else {
+					setTimeout(self, 16);
+				}
+			})();
+		}
+		else if (typeof (target) === 'object') {
+			target.appendChild(n);
+		}
+		else if (typeof (target) === 'string') {
+			document.getElementsByTagName(target)[0].appendChild(n);
+		}
+
+		return n;
+	},
+
+	// An easy way to create a hidden iframe
+	// @param string src
+	iframe: function(src) {
+		this.append('iframe', {src: src, style: {position:'absolute', left: '-1000px', bottom: 0, height: '1px', width: '1px'}}, 'body');
+	},
+
+	// Recursive merge two objects into one, second parameter overides the first
+	// @param a array
+	merge: function(/* Args: a, b, c, .. n */) {
+		var args = Array.prototype.slice.call(arguments);
+		args.unshift({});
+		return this.extend.apply(null, args);
+	},
+
+	// Makes it easier to assign parameters, where some are optional
+	// @param o object
+	// @param a arguments
+	args: function(o, args) {
+
+		var p = {};
+		var i = 0;
+		var t = null;
+		var x = null;
+
+		// 'x' is the first key in the list of object parameters
+		for (x in o) {if (o.hasOwnProperty(x)) {
+			break;
+		}}
+
+		// Passing in hash object of arguments?
+		// Where the first argument can't be an object
+		if ((args.length === 1) && (typeof (args[0]) === 'object') && o[x] != 'o!') {
+
+			// Could this object still belong to a property?
+			// Check the object keys if they match any of the property keys
+			for (x in args[0]) {if (o.hasOwnProperty(x)) {
+				// Does this key exist in the property list?
+				if (x in o) {
+					// Yes this key does exist so its most likely this function has been invoked with an object parameter
+					// Return first argument as the hash of all arguments
+					return args[0];
+				}
+			}}
+		}
+
+		// Else loop through and account for the missing ones.
+		for (x in o) {if (o.hasOwnProperty(x)) {
+
+			t = typeof (args[i]);
+
+			if ((typeof (o[x]) === 'function' && o[x].test(args[i])) || (typeof (o[x]) === 'string' && (
+			(o[x].indexOf('s') > -1 && t === 'string') ||
+			(o[x].indexOf('o') > -1 && t === 'object') ||
+			(o[x].indexOf('i') > -1 && t === 'number') ||
+			(o[x].indexOf('a') > -1 && t === 'object') ||
+			(o[x].indexOf('f') > -1 && t === 'function')
+			))
+			) {
+				p[x] = args[i++];
+			}
+
+			else if (typeof (o[x]) === 'string' && o[x].indexOf('!') > -1) {
+				return false;
+			}
+		}}
+
+		return p;
+	},
+
+	// Returns a URL instance
+	url: function(path) {
+
+		// If the path is empty
+		if (!path) {
+			return window.location;
+		}
+
+		// Chrome and FireFox support new URL() to extract URL objects
+		else if (window.URL && URL instanceof Function && URL.length !== 0) {
+			return new URL(path, window.location);
+		}
+
+		// Ugly shim, it works!
+		else {
+			var a = document.createElement('a');
+			a.href = path;
+			return a.cloneNode(false);
+		}
+	},
+
+	diff: function(a, b) {
+		return b.filter(function(item) {
+			return a.indexOf(item) === -1;
+		});
+	},
+
+	// Get the different hash of properties unique to `a`, and not in `b`
+	diffKey: function(a, b) {
+		if (a || !b) {
+			var r = {};
+			for (var x in a) {
+				// Does the property not exist?
+				if (!(x in b)) {
+					r[x] = a[x];
+				}
+			}
+
+			return r;
+		}
+
+		return a;
+	},
+
+	// Unique
+	// Remove duplicate and null values from an array
+	// @param a array
+	unique: function(a) {
+		if (!Array.isArray(a)) { return []; }
+
+		return a.filter(function(item, index) {
+			// Is this the first location of item
+			return a.indexOf(item) === index;
+		});
+	},
+
+	isEmpty: function(obj) {
+
+		// Scalar
+		if (!obj)
+			return true;
+
+		// Array
+		if (Array.isArray(obj)) {
+			return !obj.length;
+		}
+		else if (typeof (obj) === 'object') {
+			// Object
+			for (var key in obj) {
+				if (obj.hasOwnProperty(key)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	},
+
+	//jscs:disable
+
+	/*!
+	 **  Thenable -- Embeddable Minimum Strictly-Compliant Promises/A+ 1.1.1 Thenable
+	 **  Copyright (c) 2013-2014 Ralf S. Engelschall <http://engelschall.com>
+	 **  Licensed under The MIT License <http://opensource.org/licenses/MIT>
+	 **  Source-Code distributed on <http://github.com/rse/thenable>
+	 */
+	Promise: (function(){
+		/*  promise states [Promises/A+ 2.1]  */
+		var STATE_PENDING   = 0;                                         /*  [Promises/A+ 2.1.1]  */
+		var STATE_FULFILLED = 1;                                         /*  [Promises/A+ 2.1.2]  */
+		var STATE_REJECTED  = 2;                                         /*  [Promises/A+ 2.1.3]  */
+
+		/*  promise object constructor  */
+		var api = function (executor) {
+			/*  optionally support non-constructor/plain-function call  */
+			if (!(this instanceof api))
+				return new api(executor);
+
+			/*  initialize object  */
+			this.id           = "Thenable/1.0.6";
+			this.state        = STATE_PENDING; /*  initial state  */
+			this.fulfillValue = undefined;     /*  initial value  */     /*  [Promises/A+ 1.3, 2.1.2.2]  */
+			this.rejectReason = undefined;     /*  initial reason */     /*  [Promises/A+ 1.5, 2.1.3.2]  */
+			this.onFulfilled  = [];            /*  initial handlers  */
+			this.onRejected   = [];            /*  initial handlers  */
+
+			/*  provide optional information-hiding proxy  */
+			this.proxy = {
+				then: this.then.bind(this)
+			};
+
+			/*  support optional executor function  */
+			if (typeof executor === "function")
+				executor.call(this, this.fulfill.bind(this), this.reject.bind(this));
+		};
+
+		/*  promise API methods  */
+		api.prototype = {
+			/*  promise resolving methods  */
+			fulfill: function (value) { return deliver(this, STATE_FULFILLED, "fulfillValue", value); },
+			reject:  function (value) { return deliver(this, STATE_REJECTED,  "rejectReason", value); },
+
+			/*  "The then Method" [Promises/A+ 1.1, 1.2, 2.2]  */
+			then: function (onFulfilled, onRejected) {
+				var curr = this;
+				var next = new api();                                    /*  [Promises/A+ 2.2.7]  */
+				curr.onFulfilled.push(
+					resolver(onFulfilled, next, "fulfill"));             /*  [Promises/A+ 2.2.2/2.2.6]  */
+				curr.onRejected.push(
+					resolver(onRejected,  next, "reject" ));             /*  [Promises/A+ 2.2.3/2.2.6]  */
+				execute(curr);
+				return next.proxy;                                       /*  [Promises/A+ 2.2.7, 3.3]  */
+			}
+		};
+
+		/*  deliver an action  */
+		var deliver = function (curr, state, name, value) {
+			if (curr.state === STATE_PENDING) {
+				curr.state = state;                                      /*  [Promises/A+ 2.1.2.1, 2.1.3.1]  */
+				curr[name] = value;                                      /*  [Promises/A+ 2.1.2.2, 2.1.3.2]  */
+				execute(curr);
+			}
+			return curr;
+		};
+
+		/*  execute all handlers  */
+		var execute = function (curr) {
+			if (curr.state === STATE_FULFILLED)
+				execute_handlers(curr, "onFulfilled", curr.fulfillValue);
+			else if (curr.state === STATE_REJECTED)
+				execute_handlers(curr, "onRejected",  curr.rejectReason);
+		};
+
+		/*  execute particular set of handlers  */
+		var execute_handlers = function (curr, name, value) {
+			/* global process: true */
+			/* global setImmediate: true */
+			/* global setTimeout: true */
+
+			/*  short-circuit processing  */
+			if (curr[name].length === 0)
+				return;
+
+			/*  iterate over all handlers, exactly once  */
+			var handlers = curr[name];
+			curr[name] = [];                                             /*  [Promises/A+ 2.2.2.3, 2.2.3.3]  */
+			var func = function () {
+				for (var i = 0; i < handlers.length; i++)
+					handlers[i](value);                                  /*  [Promises/A+ 2.2.5]  */
+			};
+
+			/*  execute procedure asynchronously  */                     /*  [Promises/A+ 2.2.4, 3.1]  */
+			if (typeof process === "object" && typeof process.nextTick === "function")
+				process.nextTick(func);
+			else if (typeof setImmediate === "function")
+				setImmediate(func);
+			else
+				setTimeout(func, 0);
+		};
+
+		/*  generate a resolver function  */
+		var resolver = function (cb, next, method) {
+			return function (value) {
+				if (typeof cb !== "function")                            /*  [Promises/A+ 2.2.1, 2.2.7.3, 2.2.7.4]  */
+					next[method].call(next, value);                      /*  [Promises/A+ 2.2.7.3, 2.2.7.4]  */
+				else {
+					var result;
+					try { result = cb(value); }                          /*  [Promises/A+ 2.2.2.1, 2.2.3.1, 2.2.5, 3.2]  */
+					catch (e) {
+						next.reject(e);                                  /*  [Promises/A+ 2.2.7.2]  */
+						return;
+					}
+					resolve(next, result);                               /*  [Promises/A+ 2.2.7.1]  */
+				}
+			};
+		};
+
+		/*  "Promise Resolution Procedure"  */                           /*  [Promises/A+ 2.3]  */
+		var resolve = function (promise, x) {
+			/*  sanity check arguments  */                               /*  [Promises/A+ 2.3.1]  */
+			if (promise === x || promise.proxy === x) {
+				promise.reject(new TypeError("cannot resolve promise with itself"));
+				return;
+			}
+
+			/*  surgically check for a "then" method
+				(mainly to just call the "getter" of "then" only once)  */
+			var then;
+			if ((typeof x === "object" && x !== null) || typeof x === "function") {
+				try { then = x.then; }                                   /*  [Promises/A+ 2.3.3.1, 3.5]  */
+				catch (e) {
+					promise.reject(e);                                   /*  [Promises/A+ 2.3.3.2]  */
+					return;
+				}
+			}
+
+			/*  handle own Thenables    [Promises/A+ 2.3.2]
+				and similar "thenables" [Promises/A+ 2.3.3]  */
+			if (typeof then === "function") {
+				var resolved = false;
+				try {
+					/*  call retrieved "then" method */                  /*  [Promises/A+ 2.3.3.3]  */
+					then.call(x,
+						/*  resolvePromise  */                           /*  [Promises/A+ 2.3.3.3.1]  */
+						function (y) {
+							if (resolved) return; resolved = true;       /*  [Promises/A+ 2.3.3.3.3]  */
+							if (y === x)                                 /*  [Promises/A+ 3.6]  */
+								promise.reject(new TypeError("circular thenable chain"));
+							else
+								resolve(promise, y);
+						},
+
+						/*  rejectPromise  */                            /*  [Promises/A+ 2.3.3.3.2]  */
+						function (r) {
+							if (resolved) return; resolved = true;       /*  [Promises/A+ 2.3.3.3.3]  */
+							promise.reject(r);
+						}
+					);
+				}
+				catch (e) {
+					if (!resolved)                                       /*  [Promises/A+ 2.3.3.3.3]  */
+						promise.reject(e);                               /*  [Promises/A+ 2.3.3.3.4]  */
+				}
+				return;
+			}
+
+			/*  handle other values  */
+			promise.fulfill(x);                                          /*  [Promises/A+ 2.3.4, 2.3.3.4]  */
+		};
+
+		/*  export API  */
+		return api;
+	})(),
+
+	//jscs:enable
+
+	// Event
+	// A contructor superclass for adding event menthods, on, off, emit.
+	Event: function() {
+
+		var separator = /[\s\,]+/;
+
+		// If this doesn't support getPrototype then we can't get prototype.events of the parent
+		// So lets get the current instance events, and add those to a parent property
+		this.parent = {
+			events: this.events,
+			findEvents: this.findEvents,
+			parent: this.parent,
+			utils: this.utils
+		};
+
+		this.events = {};
+
+		// On, subscribe to events
+		// @param evt   string
+		// @param callback  function
+		this.on = function(evt, callback) {
+
+			if (callback && typeof (callback) === 'function') {
+				var a = evt.split(separator);
+				for (var i = 0; i < a.length; i++) {
+
+					// Has this event already been fired on this instance?
+					this.events[a[i]] = [callback].concat(this.events[a[i]] || []);
+				}
+			}
+
+			return this;
+		};
+
+		// Off, unsubscribe to events
+		// @param evt   string
+		// @param callback  function
+		this.off = function(evt, callback) {
+
+			this.findEvents(evt, function(name, index) {
+				if (!callback || this.events[name][index] === callback) {
+					this.events[name][index] = null;
+				}
+			});
+
+			return this;
+		};
+
+		// Emit
+		// Triggers any subscribed events
+		this.emit = function(evt /*, data, ... */) {
+
+			// Get arguments as an Array, knock off the first one
+			var args = Array.prototype.slice.call(arguments, 1);
+			args.push(evt);
+
+			// Handler
+			var handler = function(name, index) {
+
+				// Replace the last property with the event name
+				args[args.length - 1] = (name === '*' ? evt : name);
+
+				// Trigger
+				this.events[name][index].apply(this, args);
+			};
+
+			// Find the callbacks which match the condition and call
+			var _this = this;
+			while (_this && _this.findEvents) {
+
+				// Find events which match
+				_this.findEvents(evt + ',*', handler);
+				_this = _this.parent;
+			}
+
+			return this;
+		};
+
+		//
+		// Easy functions
+		this.emitAfter = function() {
+			var _this = this;
+			var args = arguments;
+			setTimeout(function() {
+				_this.emit.apply(_this, args);
+			}, 0);
+
+			return this;
+		};
+
+		this.findEvents = function(evt, callback) {
+
+			var a = evt.split(separator);
+
+			for (var name in this.events) {if (this.events.hasOwnProperty(name)) {
+
+				if (a.indexOf(name) > -1) {
+
+					for (var i = 0; i < this.events[name].length; i++) {
+
+						// Does the event handler exist?
+						if (this.events[name][i]) {
+							// Emit on the local instance of this
+							callback.call(this, name, i);
+						}
+					}
+				}
+			}}
+		};
+
+		return this;
+	},
+
+	// Global Events
+	// Attach the callback to the window object
+	// Return its unique reference
+	globalEvent: function(callback, guid) {
+		// If the guid has not been supplied then create a new one.
+		guid = guid || '_hellojs_' + parseInt(Math.random() * 1e12, 10).toString(36);
+
+		// Define the callback function
+		window[guid] = function() {
+			// Trigger the callback
+			try {
+				if (callback.apply(this, arguments)) {
+					delete window[guid];
+				}
+			}
+			catch (e) {
+				console.error(e);
+			}
+		};
+
+		return guid;
+	},
+
+	// Trigger a clientside popup
+	// This has been augmented to support PhoneGap
+	popup: function(url, redirectUri, options) {
+
+		var documentElement = document.documentElement;
+
+		// Multi Screen Popup Positioning (http://stackoverflow.com/a/16861050)
+		// Credit: http://www.xtf.dk/2011/08/center-new-popup-window-even-on.html
+		// Fixes dual-screen position                         Most browsers      Firefox
+
+		if (options.height) {
+			var dualScreenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
+			var height = screen.height || window.innerHeight || documentElement.clientHeight;
+			options.top = (options.top) ? options.top : parseInt((height - options.height) / 2, 10) + dualScreenTop;
+		}
+
+		if (options.width) {
+			var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
+			var width = screen.width || window.innerWidth || documentElement.clientWidth;
+			options.left = (options.left) ? options.left : parseInt((width - options.width) / 2, 10) + dualScreenLeft;
+		}
+
+		// Convert options into an array
+		var optionsArray = [];
+		Object.keys(options).forEach(function(name) {
+			var value = options[name];
+			optionsArray.push(name + (value !== null ? '=' + value : ''));
+		});
+
+		// Call the open() function with the initial path
+		//
+		// OAuth redirect, fixes URI fragments from being lost in Safari
+		// (URI Fragments within 302 Location URI are lost over HTTPS)
+		// Loading the redirect.html before triggering the OAuth Flow seems to fix it.
+		//
+		// Firefox  decodes URL fragments when calling location.hash.
+		//  - This is bad if the value contains break points which are escaped
+		//  - Hence the url must be encoded twice as it contains breakpoints.
+		if (navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1) {
+			url = redirectUri + '#oauth_redirect=' + encodeURIComponent(encodeURIComponent(url));
+		}
+
+		var popup = window.open(
+			url,
+			'_blank',
+			optionsArray.join(',')
+		);
+
+		if (popup && popup.focus) {
+			popup.focus();
+		}
+
+		return popup;
+	},
+
+	// OAuth and API response handler
+	responseHandler: function(window, parent) {
+
+		var _this = this;
+		var p;
+		var location = window.location;
+
+		// Is this an auth relay message which needs to call the proxy?
+		p = _this.param(location.search);
+
+		// OAuth2 or OAuth1 server response?
+		if (p && p.state && (p.code || p.oauth_token)) {
+
+			var state = JSON.parse(p.state);
+
+			// Add this path as the redirect_uri
+			p.redirect_uri = state.redirect_uri || location.href.replace(/[\?\#].*$/, '');
+
+			// Redirect to the host
+			var path = _this.qs(state.oauth_proxy, p);
+
+			location.assign(path);
+
+			return;
+		}
+
+		// Save session, from redirected authentication
+		// #access_token has come in?
+		//
+		// FACEBOOK is returning auth errors within as a query_string... thats a stickler for consistency.
+		// SoundCloud is the state in the querystring and the token in the hashtag, so we'll mix the two together
+
+		p = _this.merge(_this.param(location.search || ''), _this.param(location.hash || ''));
+
+		// If p.state
+		if (p && 'state' in p) {
+
+			// Remove any addition information
+			// E.g. p.state = 'facebook.page';
+			try {
+				var a = JSON.parse(p.state);
+				_this.extend(p, a);
+			}
+			catch (e) {
+				var stateDecoded = decodeURIComponent(p.state);
+				try {
+					var b = JSON.parse(stateDecoded);
+					_this.extend(p, b);
+				}
+				catch (e) {
+					console.error('Could not decode state parameter');
+				}
+			}
+
+			// Access_token?
+			if (('access_token' in p && p.access_token) && p.network) {
+
+				if (!p.expires_in || parseInt(p.expires_in, 10) === 0) {
+					// If p.expires_in is unset, set to 0
+					p.expires_in = 0;
+				}
+
+				p.expires_in = parseInt(p.expires_in, 10);
+				p.expires = ((new Date()).getTime() / 1e3) + (p.expires_in || (60 * 60 * 24 * 365));
+
+				// Lets use the "state" to assign it to one of our networks
+				authCallback(p, window, parent);
+			}
+
+			// Error=?
+			// &error_description=?
+			// &state=?
+			else if (('error' in p && p.error) && p.network) {
+
+				p.error = {
+					code: p.error,
+					message: p.error_message || p.error_description
+				};
+
+				// Let the state handler handle it
+				authCallback(p, window, parent);
+			}
+
+			// API call, or a cancelled login
+			// Result is serialized JSON string
+			else if (p.callback && p.callback in parent) {
+
+				// Trigger a function in the parent
+				var res = 'result' in p && p.result ? JSON.parse(p.result) : false;
+
+				// Trigger the callback on the parent
+				callback(parent, p.callback)(res);
+				closeWindow();
+			}
+
+			// If this page is still open
+			if (p.page_uri) {
+				location.assign(p.page_uri);
+			}
+		}
+
+		// OAuth redirect, fixes URI fragments from being lost in Safari
+		// (URI Fragments within 302 Location URI are lost over HTTPS)
+		// Loading the redirect.html before triggering the OAuth Flow seems to fix it.
+		else if ('oauth_redirect' in p) {
+
+			location.assign(decodeURIComponent(p.oauth_redirect));
+			return;
+		}
+
+		// Trigger a callback to authenticate
+		function authCallback(obj, window, parent) {
+
+			var cb = obj.callback;
+			var network = obj.network;
+
+			// Trigger the callback on the parent
+			_this.store(network, obj);
+
+			// If this is a page request it has no parent or opener window to handle callbacks
+			if (('display' in obj) && obj.display === 'page') {
+				return;
+			}
+
+			// Remove from session object
+			if (parent && cb && cb in parent) {
+
+				try {
+					delete obj.callback;
+				}
+				catch (e) {}
+
+				// Update store
+				_this.store(network, obj);
+
+				// Call the globalEvent function on the parent
+				// It's safer to pass back a string to the parent,
+				// Rather than an object/array (better for IE8)
+				var str = JSON.stringify(obj);
+
+				try {
+					callback(parent, cb)(str);
+				}
+				catch (e) {
+					// Error thrown whilst executing parent callback
+				}
+			}
+
+			closeWindow();
+		}
+
+		function callback(parent, callbackID) {
+			if (callbackID.indexOf('_hellojs_') !== 0) {
+				return function() {
+					throw 'Could not execute callback ' + callbackID;
+				};
+			}
+
+			return parent[callbackID];
+		}
+
+		function closeWindow() {
+
+			if (window.frameElement) {
+				// Inside an iframe, remove from parent
+				parent.document.body.removeChild(window.frameElement);
+			}
+			else {
+				// Close this current window
+				try {
+					window.close();
+				}
+				catch (e) {}
+
+				// IOS bug wont let us close a popup if still loading
+				if (window.addEventListener) {
+					window.addEventListener('load', function() {
+						window.close();
+					});
+				}
+			}
+
+		}
+	}
+});
+
+// Events
+// Extend the hello object with its own event instance
+hello.utils.Event.call(hello);
+
+///////////////////////////////////
+// Monitoring session state
+// Check for session changes
+///////////////////////////////////
+
+(function(hello) {
+
+	// Monitor for a change in state and fire
+	var oldSessions = {};
+
+	// Hash of expired tokens
+	var expired = {};
+
+	// Listen to other triggers to Auth events, use these to update this
+	hello.on('auth.login, auth.logout', function(auth) {
+		if (auth && typeof (auth) === 'object' && auth.network) {
+			oldSessions[auth.network] = hello.utils.store(auth.network) || {};
+		}
+	});
+
+	(function self() {
+
+		var CURRENT_TIME = ((new Date()).getTime() / 1e3);
+		var emit = function(eventName) {
+			hello.emit('auth.' + eventName, {
+				network: name,
+				authResponse: session
+			});
+		};
+
+		// Loop through the services
+		for (var name in hello.services) {if (hello.services.hasOwnProperty(name)) {
+
+			if (!hello.services[name].id) {
+				// We haven't attached an ID so dont listen.
+				continue;
+			}
+
+			// Get session
+			var session = hello.utils.store(name) || {};
+			var provider = hello.services[name];
+			var oldSess = oldSessions[name] || {};
+
+			// Listen for globalEvents that did not get triggered from the child
+			if (session && 'callback' in session) {
+
+				// To do remove from session object...
+				var cb = session.callback;
+				try {
+					delete session.callback;
+				}
+				catch (e) {}
+
+				// Update store
+				// Removing the callback
+				hello.utils.store(name, session);
+
+				// Emit global events
+				try {
+					window[cb](session);
+				}
+				catch (e) {}
+			}
+
+			// Refresh token
+			if (session && ('expires' in session) && session.expires < CURRENT_TIME) {
+
+				// If auto refresh is possible
+				// Either the browser supports
+				var refresh = provider.refresh || session.refresh_token;
+
+				// Has the refresh been run recently?
+				if (refresh && (!(name in expired) || expired[name] < CURRENT_TIME)) {
+					// Try to resignin
+					hello.emit('notice', name + ' has expired trying to resignin');
+					hello.login(name, {display: 'none', force: false});
+
+					// Update expired, every 10 minutes
+					expired[name] = CURRENT_TIME + 600;
+				}
+
+				// Does this provider not support refresh
+				else if (!refresh && !(name in expired)) {
+					// Label the event
+					emit('expired');
+					expired[name] = true;
+				}
+
+				// If session has expired then we dont want to store its value until it can be established that its been updated
+				continue;
+			}
+
+			// Has session changed?
+			else if (oldSess.access_token === session.access_token &&
+			oldSess.expires === session.expires) {
+				continue;
+			}
+
+			// Access_token has been removed
+			else if (!session.access_token && oldSess.access_token) {
+				emit('logout');
+			}
+
+			// Access_token has been created
+			else if (session.access_token && !oldSess.access_token) {
+				emit('login');
+			}
+
+			// Access_token has been updated
+			else if (session.expires !== oldSess.expires) {
+				emit('update');
+			}
+
+			// Updated stored session
+			oldSessions[name] = session;
+
+			// Remove the expired flags
+			if (name in expired) {
+				delete expired[name];
+			}
+		}}
+
+		// Check error events
+		setTimeout(self, 1000);
+	})();
+
+})(hello);
+
+// EOF CORE lib
+//////////////////////////////////
+
+/////////////////////////////////////////
+// API
+// @param path    string
+// @param query   object (optional)
+// @param method  string (optional)
+// @param data    object (optional)
+// @param timeout integer (optional)
+// @param callback  function (optional)
+
+hello.api = function() {
+
+	// Shorthand
+	var _this = this;
+	var utils = _this.utils;
+	var error = utils.error;
+
+	// Construct a new Promise object
+	var promise = utils.Promise();
+
+	// Arguments
+	var p = utils.args({path: 's!', query: 'o', method: 's', data: 'o', timeout: 'i', callback: 'f'}, arguments);
+
+	// Method
+	p.method = (p.method || 'get').toLowerCase();
+
+	// Headers
+	p.headers = p.headers || {};
+
+	// Query
+	p.query = p.query || {};
+
+	// If get, put all parameters into query
+	if (p.method === 'get' || p.method === 'delete') {
+		utils.extend(p.query, p.data);
+		p.data = {};
+	}
+
+	var data = p.data = p.data || {};
+
+	// Completed event callback
+	promise.then(p.callback, p.callback);
+
+	// Remove the network from path, e.g. facebook:/me/friends
+	// Results in { network : facebook, path : me/friends }
+	if (!p.path) {
+		return promise.reject(error('invalid_path', 'Missing the path parameter from the request'));
+	}
+
+	p.path = p.path.replace(/^\/+/, '');
+	var a = (p.path.split(/[\/\:]/, 2) || [])[0].toLowerCase();
+
+	if (a in _this.services) {
+		p.network = a;
+		var reg = new RegExp('^' + a + ':?\/?');
+		p.path = p.path.replace(reg, '');
+	}
+
+	// Network & Provider
+	// Define the network that this request is made for
+	p.network = _this.settings.default_service = p.network || _this.settings.default_service;
+	var o = _this.services[p.network];
+
+	// INVALID
+	// Is there no service by the given network name?
+	if (!o) {
+		return promise.reject(error('invalid_network', 'Could not match the service requested: ' + p.network));
+	}
+
+	// PATH
+	// As long as the path isn't flagged as unavaiable, e.g. path == false
+
+	if (!(!(p.method in o) || !(p.path in o[p.method]) || o[p.method][p.path] !== false)) {
+		return promise.reject(error('invalid_path', 'The provided path is not available on the selected network'));
+	}
+
+	// PROXY
+	// OAuth1 calls always need a proxy
+
+	if (!p.oauth_proxy) {
+		p.oauth_proxy = _this.settings.oauth_proxy;
+	}
+
+	if (!('proxy' in p)) {
+		p.proxy = p.oauth_proxy && o.oauth && parseInt(o.oauth.version, 10) === 1;
+	}
+
+	// TIMEOUT
+	// Adopt timeout from global settings by default
+
+	if (!('timeout' in p)) {
+		p.timeout = _this.settings.timeout;
+	}
+
+	// Format response
+	// Whether to run the raw response through post processing.
+	if (!('formatResponse' in p)) {
+		p.formatResponse = true;
+	}
+
+	// Get the current session
+	// Append the access_token to the query
+	p.authResponse = _this.getAuthResponse(p.network);
+	if (p.authResponse && p.authResponse.access_token) {
+		p.query.access_token = p.authResponse.access_token;
+	}
+
+	var url = p.path;
+	var m;
+
+	// Store the query as options
+	// This is used to populate the request object before the data is augmented by the prewrap handlers.
+	p.options = utils.clone(p.query);
+
+	// Clone the data object
+	// Prevent this script overwriting the data of the incoming object.
+	// Ensure that everytime we run an iteration the callbacks haven't removed some data
+	p.data = utils.clone(data);
+
+	// URL Mapping
+	// Is there a map for the given URL?
+	var actions = o[{'delete': 'del'}[p.method] || p.method] || {};
+
+	// Extrapolate the QueryString
+	// Provide a clean path
+	// Move the querystring into the data
+	if (p.method === 'get') {
+
+		var query = url.split(/[\?#]/)[1];
+		if (query) {
+			utils.extend(p.query, utils.param(query));
+
+			// Remove the query part from the URL
+			url = url.replace(/\?.*?(#|$)/, '$1');
+		}
+	}
+
+	// Is the hash fragment defined
+	if ((m = url.match(/#(.+)/, ''))) {
+		url = url.split('#')[0];
+		p.path = m[1];
+	}
+	else if (url in actions) {
+		p.path = url;
+		url = actions[url];
+	}
+	else if ('default' in actions) {
+		url = actions['default'];
+	}
+
+	// Redirect Handler
+	// This defines for the Form+Iframe+Hash hack where to return the results too.
+	p.redirect_uri = _this.settings.redirect_uri;
+
+	// Define FormatHandler
+	// The request can be procesed in a multitude of ways
+	// Here's the options - depending on the browser and endpoint
+	p.xhr = o.xhr;
+	p.jsonp = o.jsonp;
+	p.form = o.form;
+
+	// Make request
+	if (typeof (url) === 'function') {
+		// Does self have its own callback?
+		url(p, getPath);
+	}
+	else {
+		// Else the URL is a string
+		getPath(url);
+	}
+
+	return promise.proxy;
+
+	// If url needs a base
+	// Wrap everything in
+	function getPath(url) {
+
+		// Format the string if it needs it
+		url = url.replace(/\@\{([a-z\_\-]+)(\|.*?)?\}/gi, function(m, key, defaults) {
+			var val = defaults ? defaults.replace(/^\|/, '') : '';
+			if (key in p.query) {
+				val = p.query[key];
+				delete p.query[key];
+			}
+			else if (p.data && key in p.data) {
+				val = p.data[key];
+				delete p.data[key];
+			}
+			else if (!defaults) {
+				promise.reject(error('missing_attribute', 'The attribute ' + key + ' is missing from the request'));
+			}
+
+			return val;
+		});
+
+		// Add base
+		if (!url.match(/^https?:\/\//)) {
+			url = o.base + url;
+		}
+
+		// Define the request URL
+		p.url = url;
+
+		// Make the HTTP request with the curated request object
+		// CALLBACK HANDLER
+		// @ response object
+		// @ statusCode integer if available
+		utils.request(p, function(r, headers) {
+
+			// Is this a raw response?
+			if (!p.formatResponse) {
+				// Bad request? error statusCode or otherwise contains an error response vis JSONP?
+				if (typeof headers === 'object' ? (headers.statusCode >= 400) : (typeof r === 'object' && 'error' in r)) {
+					promise.reject(r);
+				}
+				else {
+					promise.fulfill(r);
+				}
+
+				return;
+			}
+
+			// Should this be an object
+			if (r === true) {
+				r = {success:true};
+			}
+			else if (!r) {
+				r = {};
+			}
+
+			// The delete callback needs a better response
+			if (p.method === 'delete') {
+				r = (!r || utils.isEmpty(r)) ? {success:true} : r;
+			}
+
+			// FORMAT RESPONSE?
+			// Does self request have a corresponding formatter
+			if (o.wrap && ((p.path in o.wrap) || ('default' in o.wrap))) {
+				var wrap = (p.path in o.wrap ? p.path : 'default');
+				var time = (new Date()).getTime();
+
+				// FORMAT RESPONSE
+				var b = o.wrap[wrap](r, headers, p);
+
+				// Has the response been utterly overwritten?
+				// Typically self augments the existing object.. but for those rare occassions
+				if (b) {
+					r = b;
+				}
+			}
+
+			// Is there a next_page defined in the response?
+			if (r && 'paging' in r && r.paging.next) {
+
+				// Add the relative path if it is missing from the paging/next path
+				if (r.paging.next[0] === '?') {
+					r.paging.next = p.path + r.paging.next;
+				}
+
+				// The relative path has been defined, lets markup the handler in the HashFragment
+				else {
+					r.paging.next += '#' + p.path;
+				}
+			}
+
+			// Dispatch to listeners
+			// Emit events which pertain to the formatted response
+			if (!r || 'error' in r) {
+				promise.reject(r);
+			}
+			else {
+				promise.fulfill(r);
+			}
+		});
+	}
+};
+
+// API utilities
+hello.utils.extend(hello.utils, {
+
+	// Make an HTTP request
+	request: function(p, callback) {
+
+		var _this = this;
+		var error = _this.error;
+
+		// This has to go through a POST request
+		if (!_this.isEmpty(p.data) && !('FileList' in window) && _this.hasBinary(p.data)) {
+
+			// Disable XHR and JSONP
+			p.xhr = false;
+			p.jsonp = false;
+		}
+
+		// Check if the browser and service support CORS
+		var cors = this.request_cors(function() {
+			// If it does then run this...
+			return ((p.xhr === undefined) || (p.xhr && (typeof (p.xhr) !== 'function' || p.xhr(p, p.query))));
+		});
+
+		if (cors) {
+
+			formatUrl(p, function(url) {
+
+				var x = _this.xhr(p.method, url, p.headers, p.data, callback);
+				x.onprogress = p.onprogress || null;
+
+				// Windows Phone does not support xhr.upload, see #74
+				// Feature detect
+				if (x.upload && p.onuploadprogress) {
+					x.upload.onprogress = p.onuploadprogress;
+				}
+
+			});
+
+			return;
+		}
+
+		// Clone the query object
+		// Each request modifies the query object and needs to be tared after each one.
+		var _query = p.query;
+
+		p.query = _this.clone(p.query);
+
+		// Assign a new callbackID
+		p.callbackID = _this.globalEvent();
+
+		// JSONP
+		if (p.jsonp !== false) {
+
+			// Clone the query object
+			p.query.callback = p.callbackID;
+
+			// If the JSONP is a function then run it
+			if (typeof (p.jsonp) === 'function') {
+				p.jsonp(p, p.query);
+			}
+
+			// Lets use JSONP if the method is 'get'
+			if (p.method === 'get') {
+
+				formatUrl(p, function(url) {
+					_this.jsonp(url, callback, p.callbackID, p.timeout);
+				});
+
+				return;
+			}
+			else {
+				// It's not compatible reset query
+				p.query = _query;
+			}
+
+		}
+
+		// Otherwise we're on to the old school, iframe hacks and JSONP
+		if (p.form !== false) {
+
+			// Add some additional query parameters to the URL
+			// We're pretty stuffed if the endpoint doesn't like these
+			p.query.redirect_uri = p.redirect_uri;
+			p.query.state = JSON.stringify({callback:p.callbackID});
+
+			var opts;
+
+			if (typeof (p.form) === 'function') {
+
+				// Format the request
+				opts = p.form(p, p.query);
+			}
+
+			if (p.method === 'post' && opts !== false) {
+
+				formatUrl(p, function(url) {
+					_this.post(url, p.data, opts, callback, p.callbackID, p.timeout);
+				});
+
+				return;
+			}
+		}
+
+		// None of the methods were successful throw an error
+		callback(error('invalid_request', 'There was no mechanism for handling this request'));
+
+		return;
+
+		// Format URL
+		// Constructs the request URL, optionally wraps the URL through a call to a proxy server
+		// Returns the formatted URL
+		function formatUrl(p, callback) {
+
+			// Are we signing the request?
+			var sign;
+
+			// OAuth1
+			// Remove the token from the query before signing
+			if (p.authResponse && p.authResponse.oauth && parseInt(p.authResponse.oauth.version, 10) === 1) {
+
+				// OAUTH SIGNING PROXY
+				sign = p.query.access_token;
+
+				// Remove the access_token
+				delete p.query.access_token;
+
+				// Enfore use of Proxy
+				p.proxy = true;
+			}
+
+			// POST body to querystring
+			if (p.data && (p.method === 'get' || p.method === 'delete')) {
+				// Attach the p.data to the querystring.
+				_this.extend(p.query, p.data);
+				p.data = null;
+			}
+
+			// Construct the path
+			var path = _this.qs(p.url, p.query);
+
+			// Proxy the request through a server
+			// Used for signing OAuth1
+			// And circumventing services without Access-Control Headers
+			if (p.proxy) {
+				// Use the proxy as a path
+				path = _this.qs(p.oauth_proxy, {
+					path: path,
+					access_token: sign || '',
+
+					// This will prompt the request to be signed as though it is OAuth1
+					then: p.proxy_response_type || (p.method.toLowerCase() === 'get' ? 'redirect' : 'proxy'),
+					method: p.method.toLowerCase(),
+					suppress_response_codes: true
+				});
+			}
+
+			callback(path);
+		}
+	},
+
+	// Test whether the browser supports the CORS response
+	request_cors: function(callback) {
+		return 'withCredentials' in new XMLHttpRequest() && callback();
+	},
+
+	// Return the type of DOM object
+	domInstance: function(type, data) {
+		var test = 'HTML' + (type || '').replace(
+			/^[a-z]/,
+			function(m) {
+				return m.toUpperCase();
+			}
+
+		) + 'Element';
+
+		if (!data) {
+			return false;
+		}
+
+		if (window[test]) {
+			return data instanceof window[test];
+		}
+		else if (window.Element) {
+			return data instanceof window.Element && (!type || (data.tagName && data.tagName.toLowerCase() === type));
+		}
+		else {
+			return (!(data instanceof Object || data instanceof Array || data instanceof String || data instanceof Number) && data.tagName && data.tagName.toLowerCase() === type);
+		}
+	},
+
+	// Create a clone of an object
+	clone: function(obj) {
+		// Does not clone DOM elements, nor Binary data, e.g. Blobs, Filelists
+		if (obj === null || typeof (obj) !== 'object' || obj instanceof Date || 'nodeName' in obj || this.isBinary(obj) || (typeof FormData === 'function' && obj instanceof FormData)) {
+			return obj;
+		}
+
+		if (Array.isArray(obj)) {
+			// Clone each item in the array
+			return obj.map(this.clone.bind(this));
+		}
+
+		// But does clone everything else.
+		var clone = {};
+		for (var x in obj) {
+			clone[x] = this.clone(obj[x]);
+		}
+
+		return clone;
+	},
+
+	// XHR: uses CORS to make requests
+	xhr: function(method, url, headers, data, callback) {
+
+		var r = new XMLHttpRequest();
+		var error = this.error;
+
+		// Binary?
+		var binary = false;
+		if (method === 'blob') {
+			binary = method;
+			method = 'GET';
+		}
+
+		method = method.toUpperCase();
+
+		// Xhr.responseType 'json' is not supported in any of the vendors yet.
+		r.onload = function(e) {
+			var json = r.response;
+			try {
+				json = JSON.parse(r.responseText);
+			}
+			catch (_e) {
+				if (r.status === 401) {
+					json = error('access_denied', r.statusText);
+				}
+			}
+
+			var headers = headersToJSON(r.getAllResponseHeaders());
+			headers.statusCode = r.status;
+
+			callback(json || (method === 'GET' ? error('empty_response', 'Could not get resource') : {}), headers);
+		};
+
+		r.onerror = function(e) {
+			var json = r.responseText;
+			try {
+				json = JSON.parse(r.responseText);
+			}
+			catch (_e) {}
+
+			callback(json || error('access_denied', 'Could not get resource'));
+		};
+
+		var x;
+
+		// Should we add the query to the URL?
+		if (method === 'GET' || method === 'DELETE') {
+			data = null;
+		}
+		else if (data && typeof (data) !== 'string' && !(data instanceof FormData) && !(data instanceof File) && !(data instanceof Blob)) {
+			// Loop through and add formData
+			var f = new FormData();
+			for (x in data) if (data.hasOwnProperty(x)) {
+				if (data[x] instanceof HTMLInputElement) {
+					if ('files' in data[x] && data[x].files.length > 0) {
+						f.append(x, data[x].files[0]);
+					}
+				}
+				else if (data[x] instanceof Blob) {
+					f.append(x, data[x], data.name);
+				}
+				else {
+					f.append(x, data[x]);
+				}
+			}
+
+			data = f;
+		}
+
+		// Open the path, async
+		r.open(method, url, true);
+
+		if (binary) {
+			if ('responseType' in r) {
+				r.responseType = binary;
+			}
+			else {
+				r.overrideMimeType('text/plain; charset=x-user-defined');
+			}
+		}
+
+		// Set any bespoke headers
+		if (headers) {
+			for (x in headers) {
+				r.setRequestHeader(x, headers[x]);
+			}
+		}
+
+		r.send(data);
+
+		return r;
+
+		// Headers are returned as a string
+		function headersToJSON(s) {
+			var r = {};
+			var reg = /([a-z\-]+):\s?(.*);?/gi;
+			var m;
+			while ((m = reg.exec(s))) {
+				r[m[1]] = m[2];
+			}
+
+			return r;
+		}
+	},
+
+	// JSONP
+	// Injects a script tag into the DOM to be executed and appends a callback function to the window object
+	// @param string/function pathFunc either a string of the URL or a callback function pathFunc(querystringhash, continueFunc);
+	// @param function callback a function to call on completion;
+	jsonp: function(url, callback, callbackID, timeout) {
+
+		var _this = this;
+		var error = _this.error;
+
+		// Change the name of the callback
+		var bool = 0;
+		var head = document.getElementsByTagName('head')[0];
+		var operaFix;
+		var result = error('server_error', 'server_error');
+		var cb = function() {
+			if (!(bool++)) {
+				window.setTimeout(function() {
+					callback(result);
+					head.removeChild(script);
+				}, 0);
+			}
+
+		};
+
+		// Add callback to the window object
+		callbackID = _this.globalEvent(function(json) {
+			result = json;
+			return true;
+
+			// Mark callback as done
+		}, callbackID);
+
+		// The URL is a function for some cases and as such
+		// Determine its value with a callback containing the new parameters of this function.
+		url = url.replace(new RegExp('=\\?(&|$)'), '=' + callbackID + '$1');
+
+		// Build script tag
+		var script = _this.append('script', {
+			id: callbackID,
+			name: callbackID,
+			src: url,
+			async: true,
+			onload: cb,
+			onerror: cb,
+			onreadystatechange: function() {
+				if (/loaded|complete/i.test(this.readyState)) {
+					cb();
+				}
+			}
+		});
+
+		// Opera fix error
+		// Problem: If an error occurs with script loading Opera fails to trigger the script.onerror handler we specified
+		//
+		// Fix:
+		// By setting the request to synchronous we can trigger the error handler when all else fails.
+		// This action will be ignored if we've already called the callback handler "cb" with a successful onload event
+		if (window.navigator.userAgent.toLowerCase().indexOf('opera') > -1) {
+			operaFix = _this.append('script', {
+				text: 'document.getElementById(\'' + callbackID + '\').onerror();'
+			});
+			script.async = false;
+		}
+
+		// Add timeout
+		if (timeout) {
+			window.setTimeout(function() {
+				result = error('timeout', 'timeout');
+				cb();
+			}, timeout);
+		}
+
+		// TODO: add fix for IE,
+		// However: unable recreate the bug of firing off the onreadystatechange before the script content has been executed and the value of "result" has been defined.
+		// Inject script tag into the head element
+		head.appendChild(script);
+
+		// Append Opera Fix to run after our script
+		if (operaFix) {
+			head.appendChild(operaFix);
+		}
+	},
+
+	// Post
+	// Send information to a remote location using the post mechanism
+	// @param string uri path
+	// @param object data, key value data to send
+	// @param function callback, function to execute in response
+	post: function(url, data, options, callback, callbackID, timeout) {
+
+		var _this = this;
+		var error = _this.error;
+		var doc = document;
+
+		// This hack needs a form
+		var form = null;
+		var reenableAfterSubmit = [];
+		var newform;
+		var i = 0;
+		var x = null;
+		var bool = 0;
+		var cb = function(r) {
+			if (!(bool++)) {
+				callback(r);
+			}
+		};
+
+		// What is the name of the callback to contain
+		// We'll also use this to name the iframe
+		_this.globalEvent(cb, callbackID);
+
+		// Build the iframe window
+		var win;
+		try {
+			// IE7 hack, only lets us define the name here, not later.
+			win = doc.createElement('<iframe name="' + callbackID + '">');
+		}
+		catch (e) {
+			win = doc.createElement('iframe');
+		}
+
+		win.name = callbackID;
+		win.id = callbackID;
+		win.style.display = 'none';
+
+		// Override callback mechanism. Triggger a response onload/onerror
+		if (options && options.callbackonload) {
+			// Onload is being fired twice
+			win.onload = function() {
+				cb({
+					response: 'posted',
+					message: 'Content was posted'
+				});
+			};
+		}
+
+		if (timeout) {
+			setTimeout(function() {
+				cb(error('timeout', 'The post operation timed out'));
+			}, timeout);
+		}
+
+		doc.body.appendChild(win);
+
+		// If we are just posting a single item
+		if (_this.domInstance('form', data)) {
+			// Get the parent form
+			form = data.form;
+
+			// Loop through and disable all of its siblings
+			for (i = 0; i < form.elements.length; i++) {
+				if (form.elements[i] !== data) {
+					form.elements[i].setAttribute('disabled', true);
+				}
+			}
+
+			// Move the focus to the form
+			data = form;
+		}
+
+		// Posting a form
+		if (_this.domInstance('form', data)) {
+			// This is a form element
+			form = data;
+
+			// Does this form need to be a multipart form?
+			for (i = 0; i < form.elements.length; i++) {
+				if (!form.elements[i].disabled && form.elements[i].type === 'file') {
+					form.encoding = form.enctype = 'multipart/form-data';
+					form.elements[i].setAttribute('name', 'file');
+				}
+			}
+		}
+		else {
+			// Its not a form element,
+			// Therefore it must be a JSON object of Key=>Value or Key=>Element
+			// If anyone of those values are a input type=file we shall shall insert its siblings into the form for which it belongs.
+			for (x in data) if (data.hasOwnProperty(x)) {
+				// Is this an input Element?
+				if (_this.domInstance('input', data[x]) && data[x].type === 'file') {
+					form = data[x].form;
+					form.encoding = form.enctype = 'multipart/form-data';
+				}
+			}
+
+			// Do If there is no defined form element, lets create one.
+			if (!form) {
+				// Build form
+				form = doc.createElement('form');
+				doc.body.appendChild(form);
+				newform = form;
+			}
+
+			var input;
+
+			// Add elements to the form if they dont exist
+			for (x in data) if (data.hasOwnProperty(x)) {
+
+				// Is this an element?
+				var el = (_this.domInstance('input', data[x]) || _this.domInstance('textArea', data[x]) || _this.domInstance('select', data[x]));
+
+				// Is this not an input element, or one that exists outside the form.
+				if (!el || data[x].form !== form) {
+
+					// Does an element have the same name?
+					var inputs = form.elements[x];
+					if (input) {
+						// Remove it.
+						if (!(inputs instanceof NodeList)) {
+							inputs = [inputs];
+						}
+
+						for (i = 0; i < inputs.length; i++) {
+							inputs[i].parentNode.removeChild(inputs[i]);
+						}
+
+					}
+
+					// Create an input element
+					input = doc.createElement('input');
+					input.setAttribute('type', 'hidden');
+					input.setAttribute('name', x);
+
+					// Does it have a value attribute?
+					if (el) {
+						input.value = data[x].value;
+					}
+					else if (_this.domInstance(null, data[x])) {
+						input.value = data[x].innerHTML || data[x].innerText;
+					}
+					else {
+						input.value = data[x];
+					}
+
+					form.appendChild(input);
+				}
+
+				// It is an element, which exists within the form, but the name is wrong
+				else if (el && data[x].name !== x) {
+					data[x].setAttribute('name', x);
+					data[x].name = x;
+				}
+			}
+
+			// Disable elements from within the form if they weren't specified
+			for (i = 0; i < form.elements.length; i++) {
+
+				input = form.elements[i];
+
+				// Does the same name and value exist in the parent
+				if (!(input.name in data) && input.getAttribute('disabled') !== true) {
+					// Disable
+					input.setAttribute('disabled', true);
+
+					// Add re-enable to callback
+					reenableAfterSubmit.push(input);
+				}
+			}
+		}
+
+		// Set the target of the form
+		form.setAttribute('method', 'POST');
+		form.setAttribute('target', callbackID);
+		form.target = callbackID;
+
+		// Update the form URL
+		form.setAttribute('action', url);
+
+		// Submit the form
+		// Some reason this needs to be offset from the current window execution
+		setTimeout(function() {
+			form.submit();
+
+			setTimeout(function() {
+				try {
+					// Remove the iframe from the page.
+					//win.parentNode.removeChild(win);
+					// Remove the form
+					if (newform) {
+						newform.parentNode.removeChild(newform);
+					}
+				}
+				catch (e) {
+					try {
+						console.error('HelloJS: could not remove iframe');
+					}
+					catch (ee) {}
+				}
+
+				// Reenable the disabled form
+				for (var i = 0; i < reenableAfterSubmit.length; i++) {
+					if (reenableAfterSubmit[i]) {
+						reenableAfterSubmit[i].setAttribute('disabled', false);
+						reenableAfterSubmit[i].disabled = false;
+					}
+				}
+			}, 0);
+		}, 100);
+	},
+
+	// Some of the providers require that only multipart is used with non-binary forms.
+	// This function checks whether the form contains binary data
+	hasBinary: function(data) {
+		for (var x in data) if (data.hasOwnProperty(x)) {
+			if (this.isBinary(data[x])) {
+				return true;
+			}
+		}
+
+		return false;
+	},
+
+	// Determines if a variable Either Is or like a FormInput has the value of a Blob
+
+	isBinary: function(data) {
+
+		return data instanceof Object && (
+		(this.domInstance('input', data) && data.type === 'file') ||
+		('FileList' in window && data instanceof window.FileList) ||
+		('File' in window && data instanceof window.File) ||
+		('Blob' in window && data instanceof window.Blob));
+
+	},
+
+	// Convert Data-URI to Blob string
+	toBlob: function(dataURI) {
+		var reg = /^data\:([^;,]+(\;charset=[^;,]+)?)(\;base64)?,/i;
+		var m = dataURI.match(reg);
+		if (!m) {
+			return dataURI;
+		}
+
+		var binary = atob(dataURI.replace(reg, ''));
+		var array = [];
+		for (var i = 0; i < binary.length; i++) {
+			array.push(binary.charCodeAt(i));
+		}
+
+		return new Blob([new Uint8Array(array)], {type: m[1]});
+	}
+
+});
+
+// EXTRA: Convert FormElement to JSON for POSTing
+// Wrappers to add additional functionality to existing functions
+(function(hello) {
+
+	// Copy original function
+	var api = hello.api;
+	var utils = hello.utils;
+
+	utils.extend(utils, {
+
+		// DataToJSON
+		// This takes a FormElement|NodeList|InputElement|MixedObjects and convers the data object to JSON.
+		dataToJSON: function(p) {
+
+			var _this = this;
+			var w = window;
+			var data = p.data;
+
+			// Is data a form object
+			if (_this.domInstance('form', data)) {
+				data = _this.nodeListToJSON(data.elements);
+			}
+			else if ('NodeList' in w && data instanceof NodeList) {
+				data = _this.nodeListToJSON(data);
+			}
+			else if (_this.domInstance('input', data)) {
+				data = _this.nodeListToJSON([data]);
+			}
+
+			// Is data a blob, File, FileList?
+			if (('File' in w && data instanceof w.File) ||
+				('Blob' in w && data instanceof w.Blob) ||
+				('FileList' in w && data instanceof w.FileList)) {
+				data = {file: data};
+			}
+
+			// Loop through data if it's not form data it must now be a JSON object
+			if (!('FormData' in w && data instanceof w.FormData)) {
+
+				for (var x in data) if (data.hasOwnProperty(x)) {
+
+					if ('FileList' in w && data[x] instanceof w.FileList) {
+						if (data[x].length === 1) {
+							data[x] = data[x][0];
+						}
+					}
+					else if (_this.domInstance('input', data[x]) && data[x].type === 'file') {
+						continue;
+					}
+					else if (_this.domInstance('input', data[x]) ||
+						_this.domInstance('select', data[x]) ||
+						_this.domInstance('textArea', data[x])) {
+						data[x] = data[x].value;
+					}
+					else if (_this.domInstance(null, data[x])) {
+						data[x] = data[x].innerHTML || data[x].innerText;
+					}
+				}
+			}
+
+			p.data = data;
+			return data;
+		},
+
+		// NodeListToJSON
+		// Given a list of elements extrapolate their values and return as a json object
+		nodeListToJSON: function(nodelist) {
+
+			var json = {};
+
+			// Create a data string
+			for (var i = 0; i < nodelist.length; i++) {
+
+				var input = nodelist[i];
+
+				// If the name of the input is empty or diabled, dont add it.
+				if (input.disabled || !input.name) {
+					continue;
+				}
+
+				// Is this a file, does the browser not support 'files' and 'FormData'?
+				if (input.type === 'file') {
+					json[input.name] = input;
+				}
+				else {
+					json[input.name] = input.value || input.innerHTML;
+				}
+			}
+
+			return json;
+		}
+	});
+
+	// Replace it
+	hello.api = function() {
+
+		// Get arguments
+		var p = utils.args({path: 's!', method: 's', data:'o', timeout: 'i', callback: 'f'}, arguments);
+
+		// Change for into a data object
+		if (p.data) {
+			utils.dataToJSON(p);
+		}
+
+		return api.call(this, p);
+	};
+
+})(hello);
+
+/////////////////////////////////////
+//
+// Save any access token that is in the current page URL
+// Handle any response solicited through iframe hash tag following an API request
+//
+/////////////////////////////////////
+
+hello.utils.responseHandler(window, window.opener || window.parent);
+
+// Script to support ChromeApps
+// This overides the hello.utils.popup method to support chrome.identity.launchWebAuthFlow
+// See https://developer.chrome.com/apps/app_identity#non
+
+// Is this a chrome app?
+
+if (typeof chrome === 'object' && typeof chrome.identity === 'object' && chrome.identity.launchWebAuthFlow) {
+
+	(function() {
+
+		// Swap the popup method
+		hello.utils.popup = function(url) {
+
+			return _open(url, true);
+
+		};
+
+		// Swap the hidden iframe method
+		hello.utils.iframe = function(url) {
+
+			_open(url, false);
+
+		};
+
+		// Swap the request_cors method
+		hello.utils.request_cors = function(callback) {
+
+			callback();
+
+			// Always run as CORS
+
+			return true;
+		};
+
+		// Swap the storage method
+		var _cache = {};
+		chrome.storage.local.get('hello', function(r) {
+			// Update the cache
+			_cache = r.hello || {};
+		});
+
+		hello.utils.store = function(name, value) {
+
+			// Get all
+			if (arguments.length === 0) {
+				return _cache;
+			}
+
+			// Get
+			if (arguments.length === 1) {
+				return _cache[name] || null;
+			}
+
+			// Set
+			if (value) {
+				_cache[name] = value;
+				chrome.storage.local.set({hello: _cache});
+				return value;
+			}
+
+			// Delete
+			if (value === null) {
+				delete _cache[name];
+				chrome.storage.local.set({hello: _cache});
+				return null;
+			}
+		};
+
+		// Open function
+		function _open(url, interactive) {
+
+			// Launch
+			var ref = {
+				closed: false
+			};
+
+			// Launch the webAuthFlow
+			chrome.identity.launchWebAuthFlow({
+				url: url,
+				interactive: interactive
+			}, function(responseUrl) {
+
+				// Did the user cancel this prematurely
+				if (responseUrl === undefined) {
+					ref.closed = true;
+					return;
+				}
+
+				// Split appart the URL
+				var a = hello.utils.url(responseUrl);
+
+				// The location can be augmented in to a location object like so...
+				// We dont have window operations on the popup so lets create some
+				var _popup = {
+					location: {
+
+						// Change the location of the popup
+						assign: function(url) {
+
+							// If there is a secondary reassign
+							// In the case of OAuth1
+							// Trigger this in non-interactive mode.
+							_open(url, false);
+						},
+
+						search: a.search,
+						hash: a.hash,
+						href: a.href
+					},
+					close: function() {}
+				};
+
+				// Then this URL contains information which HelloJS must process
+				// URL string
+				// Window - any action such as window relocation goes here
+				// Opener - the parent window which opened this, aka this script
+
+				hello.utils.responseHandler(_popup, window);
+			});
+
+			// Return the reference
+			return ref;
+		}
+
+	})();
+}
+
+// Phonegap override for hello.phonegap.js
+(function() {
+
+	// Is this a phonegap implementation?
+	if (!(/^file:\/{3}[^\/]/.test(window.location.href) && window.cordova)) {
+		// Cordova is not included.
+		return;
+	}
+
+	// Augment the hidden iframe method
+	hello.utils.iframe = function(url, redirectUri) {
+		hello.utils.popup(url, redirectUri, {hidden: 'yes'});
+	};
+
+	// Augment the popup
+	var utilPopup = hello.utils.popup;
+
+	// Replace popup
+	hello.utils.popup = function(url, redirectUri, options) {
+
+		// Run the standard
+		var popup = utilPopup.call(this, url, redirectUri, options);
+
+		// Create a function for reopening the popup, and assigning events to the new popup object
+		// PhoneGap support
+		// Add an event listener to listen to the change in the popup windows URL
+		// This must appear before popup.focus();
+		try {
+			if (popup && popup.addEventListener) {
+
+				// Get the origin of the redirect URI
+
+				var a = hello.utils.url(redirectUri);
+				var redirectUriOrigin = a.origin || (a.protocol + '//' + a.hostname);
+
+				// Listen to changes in the InAppBrowser window
+
+				popup.addEventListener('loadstart', function(e) {
+
+					var url = e.url;
+
+					// Is this the path, as given by the redirectUri?
+					// Check the new URL agains the redirectUriOrigin.
+					// According to #63 a user could click 'cancel' in some dialog boxes ....
+					// The popup redirects to another page with the same origin, yet we still wish it to close.
+
+					if (url.indexOf(redirectUriOrigin) !== 0) {
+						return;
+					}
+
+					// Split appart the URL
+					var a = hello.utils.url(url);
+
+					// We dont have window operations on the popup so lets create some
+					// The location can be augmented in to a location object like so...
+
+					var _popup = {
+						location: {
+							// Change the location of the popup
+							assign: function(location) {
+
+								// Unfourtunatly an app is may not change the location of a InAppBrowser window.
+								// So to shim this, just open a new one.
+								popup.executeScript({code: 'window.location.href = "' + location + ';"'});
+							},
+
+							search: a.search,
+							hash: a.hash,
+							href: a.href
+						},
+						close: function() {
+							if (popup.close) {
+								popup.close();
+								try {
+									popup.closed = true;
+								}
+								catch (_e) {}
+							}
+						}
+					};
+
+					// Then this URL contains information which HelloJS must process
+					// URL string
+					// Window - any action such as window relocation goes here
+					// Opener - the parent window which opened this, aka this script
+
+					hello.utils.responseHandler(_popup, window);
+
+				});
+			}
+		}
+		catch (e) {}
+
+		return popup;
+	};
+
+})();
+
+(function(hello) {
+
+	// OAuth1
+	var OAuth1Settings = {
+		version: '1.0',
+		auth: 'https://www.dropbox.com/1/oauth/authorize',
+		request: 'https://api.dropbox.com/1/oauth/request_token',
+		token: 'https://api.dropbox.com/1/oauth/access_token'
+	};
+
+	// OAuth2 Settings
+	var OAuth2Settings = {
+		version: 2,
+		auth: 'https://www.dropbox.com/1/oauth2/authorize',
+		grant: 'https://api.dropbox.com/1/oauth2/token'
+	};
+
+	// Initiate the Dropbox module
+	hello.init({
+
+		dropbox: {
+
+			name: 'Dropbox',
+
+			oauth: OAuth2Settings,
+
+			login: function(p) {
+				// OAuth2 non-standard adjustments
+				p.qs.scope = '';
+
+				// Should this be run as OAuth1?
+				// If the redirect_uri is is HTTP (non-secure) then its required to revert to the OAuth1 endpoints
+				var redirect = decodeURIComponent(p.qs.redirect_uri);
+				if (redirect.indexOf('http:') === 0 && redirect.indexOf('http://localhost/') !== 0) {
+
+					// Override the dropbox OAuth settings.
+					hello.services.dropbox.oauth = OAuth1Settings;
+				}
+				else {
+					// Override the dropbox OAuth settings.
+					hello.services.dropbox.oauth = OAuth2Settings;
+				}
+
+				// The dropbox login window is a different size
+				p.options.popup.width = 1000;
+				p.options.popup.height = 1000;
+			},
+
+			/*
+				Dropbox does not allow insecure HTTP URI's in the redirect_uri field
+				...otherwise I'd love to use OAuth2
+
+				Follow request https://forums.dropbox.com/topic.php?id=106505
+
+				p.qs.response_type = 'code';
+				oauth: {
+					version: 2,
+					auth: 'https://www.dropbox.com/1/oauth2/authorize',
+					grant: 'https://api.dropbox.com/1/oauth2/token'
+				}
+			*/
+
+			// API Base URL
+			base: 'https://api.dropbox.com/1/',
+
+			// Bespoke setting: this is states whether to use the custom environment of Dropbox or to use their own environment
+			// Because it's notoriously difficult for Dropbox too provide access from other webservices, this defaults to Sandbox
+			root: 'sandbox',
+
+			// Map GET requests
+			get: {
+				me: 'account/info',
+
+				// Https://www.dropbox.com/developers/core/docs#metadata
+				'me/files': req('metadata/auto/@{parent|}'),
+				'me/folder': req('metadata/auto/@{id}'),
+				'me/folders': req('metadata/auto/'),
+
+				'default': function(p, callback) {
+					if (p.path.match('https://api-content.dropbox.com/1/files/')) {
+						// This is a file, return binary data
+						p.method = 'blob';
+					}
+
+					callback(p.path);
+				}
+			},
+
+			post: {
+				'me/files': function(p, callback) {
+
+					var path = p.data.parent;
+					var fileName = p.data.name;
+
+					p.data = {
+						file: p.data.file
+					};
+
+					// Does this have a data-uri to upload as a file?
+					if (typeof (p.data.file) === 'string') {
+						p.data.file = hello.utils.toBlob(p.data.file);
+					}
+
+					callback('https://api-content.dropbox.com/1/files_put/auto/' + path + '/' + fileName);
+				},
+
+				'me/folders': function(p, callback) {
+
+					var name = p.data.name;
+					p.data = {};
+
+					callback('fileops/create_folder?root=@{root|sandbox}&' + hello.utils.param({
+						path: name
+					}));
+				}
+			},
+
+			// Map DELETE requests
+			del: {
+				'me/files': 'fileops/delete?root=@{root|sandbox}&path=@{id}',
+				'me/folder': 'fileops/delete?root=@{root|sandbox}&path=@{id}'
+			},
+
+			wrap: {
+				me: function(o) {
+					formatError(o);
+					if (!o.uid) {
+						return o;
+					}
+
+					o.name = o.display_name;
+					var m = o.name.split(' ');
+					o.first_name = m.shift();
+					o.last_name = m.join(' ');
+					o.id = o.uid;
+					delete o.uid;
+					delete o.display_name;
+					return o;
+				},
+
+				'default': function(o, headers, req) {
+					formatError(o);
+					if (o.is_dir && o.contents) {
+						o.data = o.contents;
+						delete o.contents;
+
+						o.data.forEach(function(item) {
+							item.root = o.root;
+							formatFile(item, headers, req);
+						});
+					}
+
+					formatFile(o, headers, req);
+
+					if (o.is_deleted) {
+						o.success = true;
+					}
+
+					return o;
+				}
+			},
+
+			// Doesn't return the CORS headers
+			xhr: function(p) {
+
+				// The proxy supports allow-cross-origin-resource
+				// Alas that's the only thing we're using.
+				if (p.data && p.data.file) {
+					var file = p.data.file;
+					if (file) {
+						if (file.files) {
+							p.data = file.files[0];
+						}
+						else {
+							p.data = file;
+						}
+					}
+				}
+
+				if (p.method === 'delete') {
+					p.method = 'post';
+				}
+
+				return true;
+			},
+
+			form: function(p, qs) {
+				delete qs.state;
+				delete qs.redirect_uri;
+			}
+		}
+	});
+
+	function formatError(o) {
+		if (o && 'error' in o) {
+			o.error = {
+				code: 'server_error',
+				message: o.error.message || o.error
+			};
+		}
+	}
+
+	function formatFile(o, headers, req) {
+
+		if (typeof o !== 'object' ||
+			(typeof Blob !== 'undefined' && o instanceof Blob) ||
+			(typeof ArrayBuffer !== 'undefined' && o instanceof ArrayBuffer)) {
+			// This is a file, let it through unformatted
+			return;
+		}
+
+		if ('error' in o) {
+			return;
+		}
+
+		var path = (o.root !== 'app_folder' ? o.root : '') + o.path.replace(/\&/g, '%26');
+		path = path.replace(/^\//, '');
+		if (o.thumb_exists) {
+			o.thumbnail = req.oauth_proxy + '?path=' +
+			encodeURIComponent('https://api-content.dropbox.com/1/thumbnails/auto/' + path + '?format=jpeg&size=m') + '&access_token=' + req.options.access_token;
+		}
+
+		o.type = (o.is_dir ? 'folder' : o.mime_type);
+		o.name = o.path.replace(/.*\//g, '');
+		if (o.is_dir) {
+			o.files = path.replace(/^\//, '');
+		}
+		else {
+			o.downloadLink = hello.settings.oauth_proxy + '?path=' +
+			encodeURIComponent('https://api-content.dropbox.com/1/files/auto/' + path) + '&access_token=' + req.options.access_token;
+			o.file = 'https://api-content.dropbox.com/1/files/auto/' + path;
+		}
+
+		if (!o.id) {
+			o.id = o.path.replace(/^\//, '');
+		}
+
+		// O.media = 'https://api-content.dropbox.com/1/files/' + path;
+	}
+
+	function req(str) {
+		return function(p, cb) {
+			delete p.query.limit;
+			cb(str);
+		};
+	}
+
+})(hello);
+
+(function(hello) {
+	// For APIs, once a version is no longer usable, any calls made to it will be defaulted to the next oldest usable version.
+	// So we explicitly state it.
+	var version = 'v2.9';
+
+	hello.init({
+
+		facebook: {
+
+			name: 'Facebook',
+
+			// SEE https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow
+			oauth: {
+				version: 2,
+				auth: 'https://www.facebook.com/' + version + '/dialog/oauth/',
+				grant: 'https://graph.facebook.com/oauth/access_token'
+			},
+
+			// Authorization scopes
+			scope: {
+				basic: 'public_profile',
+				email: 'email',
+				share: 'user_posts',
+				birthday: 'user_birthday',
+				events: 'user_events',
+				photos: 'user_photos',
+				videos: 'user_videos',
+				friends: 'user_friends',
+				files: 'user_photos,user_videos',
+				publish_files: 'user_photos,user_videos,publish_actions',
+				publish: 'publish_actions',
+
+				// Deprecated in v2.0
+				// Create_event	: 'create_event',
+
+				offline_access: ''
+			},
+
+			// Refresh the access_token
+			refresh: false,
+
+			login: function(p) {
+
+				// Reauthenticate
+				// https://developers.facebook.com/docs/facebook-login/reauthentication
+				if (p.options.force) {
+					p.qs.auth_type = 'reauthenticate';
+				}
+
+				// Set the display value
+				p.qs.display = p.options.display || 'popup';
+			},
+
+			logout: function(callback, options) {
+				// Assign callback to a global handler
+				var callbackID = hello.utils.globalEvent(callback);
+				var redirect = encodeURIComponent(hello.settings.redirect_uri + '?' + hello.utils.param({callback:callbackID, result: JSON.stringify({force:true}), state: '{}'}));
+				var token = (options.authResponse || {}).access_token;
+				hello.utils.iframe('https://www.facebook.com/logout.php?next=' + redirect + '&access_token=' + token);
+
+				// Possible responses:
+				// String URL	- hello.logout should handle the logout
+				// Undefined	- this function will handle the callback
+				// True - throw a success, this callback isn't handling the callback
+				// False - throw a error
+				if (!token) {
+					// If there isn't a token, the above wont return a response, so lets trigger a response
+					return false;
+				}
+			},
+
+			// API Base URL
+			base: 'https://graph.facebook.com/' + version + '/',
+
+			// Map GET requests
+			get: {
+				me: 'me?fields=email,first_name,last_name,name,timezone,verified',
+				'me/friends': 'me/friends',
+				'me/following': 'me/friends',
+				'me/followers': 'me/friends',
+				'me/share': 'me/feed',
+				'me/like': 'me/likes',
+				'me/files': 'me/albums',
+				'me/albums': 'me/albums?fields=cover_photo,name',
+				'me/album': '@{id}/photos?fields=picture',
+				'me/photos': 'me/photos',
+				'me/photo': '@{id}',
+				'friend/albums': '@{id}/albums',
+				'friend/photos': '@{id}/photos'
+
+				// Pagination
+				// Https://developers.facebook.com/docs/reference/api/pagination/
+			},
+
+			// Map POST requests
+			post: {
+				'me/share': 'me/feed',
+				'me/photo': '@{id}'
+
+				// Https://developers.facebook.com/docs/graph-api/reference/v2.2/object/likes/
+			},
+
+			wrap: {
+				me: formatUser,
+				'me/friends': formatFriends,
+				'me/following': formatFriends,
+				'me/followers': formatFriends,
+				'me/albums': format,
+				'me/photos': format,
+				'me/files': format,
+				'default': format
+			},
+
+			// Special requirements for handling XHR
+			xhr: function(p, qs) {
+				if (p.method === 'get' || p.method === 'post') {
+					qs.suppress_response_codes = true;
+				}
+
+				// Is this a post with a data-uri?
+				if (p.method === 'post' && p.data && typeof (p.data.file) === 'string') {
+					// Convert the Data-URI to a Blob
+					p.data.file = hello.utils.toBlob(p.data.file);
+				}
+
+				return true;
+			},
+
+			// Special requirements for handling JSONP fallback
+			jsonp: function(p, qs) {
+				var m = p.method;
+				if (m !== 'get' && !hello.utils.hasBinary(p.data)) {
+					p.data.method = m;
+					p.method = 'get';
+				}
+				else if (p.method === 'delete') {
+					qs.method = 'delete';
+					p.method = 'post';
+				}
+			},
+
+			// Special requirements for iframe form hack
+			form: function(p) {
+				return {
+					// Fire the callback onload
+					callbackonload: true
+				};
+			}
+		}
+	});
+
+	var base = 'https://graph.facebook.com/';
+
+	function formatUser(o) {
+		if (o.id) {
+			o.thumbnail = o.picture = 'https://graph.facebook.com/' + o.id + '/picture';
+		}
+
+		return o;
+	}
+
+	function formatFriends(o) {
+		if ('data' in o) {
+			o.data.forEach(formatUser);
+		}
+
+		return o;
+	}
+
+	function format(o, headers, req) {
+		if (typeof o === 'boolean') {
+			o = {success: o};
+		}
+
+		if (o && 'data' in o) {
+			var token = req.query.access_token;
+
+			if (!(o.data instanceof Array)) {
+				var data = o.data;
+				delete o.data;
+				o.data = [data];
+			}
+
+			o.data.forEach(function(d) {
+
+				if (d.picture) {
+					d.thumbnail = d.picture;
+				}
+
+				d.pictures = (d.images || [])
+					.sort(function(a, b) {
+						return a.width - b.width;
+					});
+
+				if (d.cover_photo && d.cover_photo.id) {
+					d.thumbnail = base + d.cover_photo.id + '/picture?access_token=' + token;
+				}
+
+				if (d.type === 'album') {
+					d.files = d.photos = base + d.id + '/photos';
+				}
+
+				if (d.can_upload) {
+					d.upload_location = base + d.id + '/photos';
+				}
+			});
+		}
+
+		return o;
+	}
+
+})(hello);
+
+(function(hello) {
+
+	hello.init({
+
+		flickr: {
+
+			name: 'Flickr',
+
+			// Ensure that you define an oauth_proxy
+			oauth: {
+				version: '1.0a',
+				auth: 'https://www.flickr.com/services/oauth/authorize?perms=read',
+				request: 'https://www.flickr.com/services/oauth/request_token',
+				token: 'https://www.flickr.com/services/oauth/access_token'
+			},
+
+			// API base URL
+			base: 'https://api.flickr.com/services/rest',
+
+			// Map GET resquests
+			get: {
+				me: sign('flickr.people.getInfo'),
+				'me/friends': sign('flickr.contacts.getList', {per_page:'@{limit|50}'}),
+				'me/following': sign('flickr.contacts.getList', {per_page:'@{limit|50}'}),
+				'me/followers': sign('flickr.contacts.getList', {per_page:'@{limit|50}'}),
+				'me/albums': sign('flickr.photosets.getList', {per_page:'@{limit|50}'}),
+				'me/album': sign('flickr.photosets.getPhotos', {photoset_id: '@{id}'}),
+				'me/photos': sign('flickr.people.getPhotos', {per_page:'@{limit|50}'})
+			},
+
+			wrap: {
+				me: function(o) {
+					formatError(o);
+					o = checkResponse(o, 'person');
+					if (o.id) {
+						if (o.realname) {
+							o.name = o.realname._content;
+							var m = o.name.split(' ');
+							o.first_name = m.shift();
+							o.last_name = m.join(' ');
+						}
+
+						o.thumbnail = getBuddyIcon(o, 'l');
+						o.picture = getBuddyIcon(o, 'l');
+					}
+
+					return o;
+				},
+
+				'me/friends': formatFriends,
+				'me/followers': formatFriends,
+				'me/following': formatFriends,
+				'me/albums': function(o) {
+					formatError(o);
+					o = checkResponse(o, 'photosets');
+					paging(o);
+					if (o.photoset) {
+						o.data = o.photoset;
+						o.data.forEach(function(item) {
+							item.name = item.title._content;
+							item.photos = 'https://api.flickr.com/services/rest' + getApiUrl('flickr.photosets.getPhotos', {photoset_id: item.id}, true);
+						});
+
+						delete o.photoset;
+					}
+
+					return o;
+				},
+
+				'me/photos': function(o) {
+					formatError(o);
+					return formatPhotos(o);
+				},
+
+				'default': function(o) {
+					formatError(o);
+					return formatPhotos(o);
+				}
+			},
+
+			xhr: false,
+
+			jsonp: function(p, qs) {
+				if (p.method == 'get') {
+					delete qs.callback;
+					qs.jsoncallback = p.callbackID;
+				}
+			}
+		}
+	});
+
+	function getApiUrl(method, extraParams, skipNetwork) {
+		var url = ((skipNetwork) ? '' : 'flickr:') +
+			'?method=' + method +
+			'&api_key=' + hello.services.flickr.id +
+			'&format=json';
+		for (var param in extraParams) {
+			if (extraParams.hasOwnProperty(param)) {
+				url += '&' + param + '=' + extraParams[param];
+			}
+		}
+
+		return url;
+	}
+
+	// This is not exactly neat but avoid to call
+	// The method 'flickr.test.login' for each api call
+
+	function withUser(cb) {
+		var auth = hello.getAuthResponse('flickr');
+		cb(auth && auth.user_nsid ? auth.user_nsid : null);
+	}
+
+	function sign(url, params) {
+		if (!params) {
+			params = {};
+		}
+
+		return function(p, callback) {
+			withUser(function(userId) {
+				params.user_id = userId;
+				callback(getApiUrl(url, params, true));
+			});
+		};
+	}
+
+	function getBuddyIcon(profile, size) {
+		var url = 'https://www.flickr.com/images/buddyicon.gif';
+		if (profile.nsid && profile.iconserver && profile.iconfarm) {
+			url = 'https://farm' + profile.iconfarm + '.staticflickr.com/' +
+				profile.iconserver + '/' +
+				'buddyicons/' + profile.nsid +
+				((size) ? '_' + size : '') + '.jpg';
+		}
+
+		return url;
+	}
+
+	// See: https://www.flickr.com/services/api/misc.urls.html
+	function createPhotoUrl(id, farm, server, secret, size) {
+		size = (size) ? '_' + size : '';
+		return 'https://farm' + farm + '.staticflickr.com/' + server + '/' + id + '_' + secret + size + '.jpg';
+	}
+
+	function formatUser(o) {
+	}
+
+	function formatError(o) {
+		if (o && o.stat && o.stat.toLowerCase() != 'ok') {
+			o.error = {
+				code: 'invalid_request',
+				message: o.message
+			};
+		}
+	}
+
+	function formatPhotos(o) {
+		if (o.photoset || o.photos) {
+			var set = ('photoset' in o) ? 'photoset' : 'photos';
+			o = checkResponse(o, set);
+			paging(o);
+			o.data = o.photo;
+			delete o.photo;
+			for (var i = 0; i < o.data.length; i++) {
+				var photo = o.data[i];
+				photo.name = photo.title;
+				photo.picture = createPhotoUrl(photo.id, photo.farm, photo.server, photo.secret, '');
+				photo.pictures = createPictures(photo.id, photo.farm, photo.server, photo.secret);
+				photo.source = createPhotoUrl(photo.id, photo.farm, photo.server, photo.secret, 'b');
+				photo.thumbnail = createPhotoUrl(photo.id, photo.farm, photo.server, photo.secret, 'm');
+			}
+		}
+
+		return o;
+	}
+
+	// See: https://www.flickr.com/services/api/misc.urls.html
+	function createPictures(id, farm, server, secret) {
+
+		var NO_LIMIT = 2048;
+		var sizes = [
+			{id: 't', max: 100},
+			{id: 'm', max: 240},
+			{id: 'n', max: 320},
+			{id: '', max: 500},
+			{id: 'z', max: 640},
+			{id: 'c', max: 800},
+			{id: 'b', max: 1024},
+			{id: 'h', max: 1600},
+			{id: 'k', max: 2048},
+			{id: 'o', max: NO_LIMIT}
+		];
+
+		return sizes.map(function(size) {
+			return {
+				source: createPhotoUrl(id, farm, server, secret, size.id),
+
+				// Note: this is a guess that's almost certain to be wrong (unless square source)
+				width: size.max,
+				height: size.max
+			};
+		});
+	}
+
+	function checkResponse(o, key) {
+
+		if (key in o) {
+			o = o[key];
+		}
+		else if (!('error' in o)) {
+			o.error = {
+				code: 'invalid_request',
+				message: o.message || 'Failed to get data from Flickr'
+			};
+		}
+
+		return o;
+	}
+
+	function formatFriends(o) {
+		formatError(o);
+		if (o.contacts) {
+			o = checkResponse(o, 'contacts');
+			paging(o);
+			o.data = o.contact;
+			delete o.contact;
+			for (var i = 0; i < o.data.length; i++) {
+				var item = o.data[i];
+				item.id = item.nsid;
+				item.name = item.realname || item.username;
+				item.thumbnail = getBuddyIcon(item, 'm');
+			}
+		}
+
+		return o;
+	}
+
+	function paging(res) {
+		if (res.page && res.pages && res.page !== res.pages) {
+			res.paging = {
+				next: '?page=' + (++res.page)
+			};
+		}
+	}
+
+})(hello);
+
+(function(hello) {
+
+	hello.init({
+
+		foursquare: {
+
+			name: 'Foursquare',
+
+			oauth: {
+				// See: https://developer.foursquare.com/overview/auth
+				version: 2,
+				auth: 'https://foursquare.com/oauth2/authenticate',
+				grant: 'https://foursquare.com/oauth2/access_token'
+			},
+
+			// Refresh the access_token once expired
+			refresh: true,
+
+			base: 'https://api.foursquare.com/v2/',
+
+			get: {
+				me: 'users/self',
+				'me/friends': 'users/self/friends',
+				'me/followers': 'users/self/friends',
+				'me/following': 'users/self/friends'
+			},
+
+			wrap: {
+				me: function(o) {
+					formatError(o);
+					if (o && o.response) {
+						o = o.response.user;
+						formatUser(o);
+					}
+
+					return o;
+				},
+
+				'default': function(o) {
+					formatError(o);
+
+					// Format friends
+					if (o && 'response' in o && 'friends' in o.response && 'items' in o.response.friends) {
+						o.data = o.response.friends.items;
+						o.data.forEach(formatUser);
+						delete o.response;
+					}
+
+					return o;
+				}
+			},
+
+			xhr: formatRequest,
+			jsonp: formatRequest
+		}
+	});
+
+	function formatError(o) {
+		if (o.meta && (o.meta.code === 400 || o.meta.code === 401)) {
+			o.error = {
+				code: 'access_denied',
+				message: o.meta.errorDetail
+			};
+		}
+	}
+
+	function formatUser(o) {
+		if (o && o.id) {
+			o.thumbnail = o.photo.prefix + '100x100' + o.photo.suffix;
+			o.name = o.firstName + ' ' + o.lastName;
+			o.first_name = o.firstName;
+			o.last_name = o.lastName;
+			if (o.contact) {
+				if (o.contact.email) {
+					o.email = o.contact.email;
+				}
+			}
+		}
+	}
+
+	function formatRequest(p, qs) {
+		var token = qs.access_token;
+		delete qs.access_token;
+		qs.oauth_token = token;
+		qs.v = 20121125;
+		return true;
+	}
+
+})(hello);
+
+(function(hello) {
+
+	hello.init({
+
+		github: {
+
+			name: 'GitHub',
+
+			oauth: {
+				version: 2,
+				auth: 'https://github.com/login/oauth/authorize',
+				grant: 'https://github.com/login/oauth/access_token',
+				response_type: 'code'
+			},
+
+			scope: {
+				email: 'user:email'
+			},
+
+			base: 'https://api.github.com/',
+
+			get: {
+				me: 'user',
+				'me/friends': 'user/following?per_page=@{limit|100}',
+				'me/following': 'user/following?per_page=@{limit|100}',
+				'me/followers': 'user/followers?per_page=@{limit|100}',
+				'me/like': 'user/starred?per_page=@{limit|100}'
+			},
+
+			wrap: {
+				me: function(o, headers) {
+
+					formatError(o, headers);
+					formatUser(o);
+
+					return o;
+				},
+
+				'default': function(o, headers, req) {
+
+					formatError(o, headers);
+
+					if (Array.isArray(o)) {
+						o = {data:o};
+					}
+
+					if (o.data) {
+						paging(o, headers, req);
+						o.data.forEach(formatUser);
+					}
+
+					return o;
+				}
+			},
+
+			xhr: function(p) {
+
+				if (p.method !== 'get' && p.data) {
+
+					// Serialize payload as JSON
+					p.headers = p.headers || {};
+					p.headers['Content-Type'] = 'application/json';
+					if (typeof (p.data) === 'object') {
+						p.data = JSON.stringify(p.data);
+					}
+				}
+
+				return true;
+			}
+		}
+	});
+
+	function formatError(o, headers) {
+		var code = headers ? headers.statusCode : (o && 'meta' in o && 'status' in o.meta && o.meta.status);
+		if ((code === 401 || code === 403)) {
+			o.error = {
+				code: 'access_denied',
+				message: o.message || (o.data ? o.data.message : 'Could not get response')
+			};
+			delete o.message;
+		}
+	}
+
+	function formatUser(o) {
+		if (o.id) {
+			o.thumbnail = o.picture = o.avatar_url;
+			o.name = o.login;
+		}
+	}
+
+	function paging(res, headers, req) {
+		if (res.data && res.data.length && headers && headers.Link) {
+			var next = headers.Link.match(/<(.*?)>;\s*rel=\"next\"/);
+			if (next) {
+				res.paging = {
+					next: next[1]
+				};
+			}
+		}
+	}
+
+})(hello);
+
+(function(hello) {
+
+	var contactsUrl = 'https://www.google.com/m8/feeds/contacts/default/full?v=3.0&alt=json&max-results=@{limit|1000}&start-index=@{start|1}';
+
+	hello.init({
+
+		google: {
+
+			name: 'Google Plus',
+
+			// See: http://code.google.com/apis/accounts/docs/OAuth2UserAgent.html
+			oauth: {
+				version: 2,
+				auth: 'https://accounts.google.com/o/oauth2/auth',
+				grant: 'https://accounts.google.com/o/oauth2/token'
+			},
+
+			// Authorization scopes
+			scope: {
+				basic: 'https://www.googleapis.com/auth/plus.me profile',
+				email: 'email',
+				birthday: '',
+				events: '',
+				photos: 'https://picasaweb.google.com/data/',
+				videos: 'http://gdata.youtube.com',
+				friends: 'https://www.google.com/m8/feeds, https://www.googleapis.com/auth/plus.login',
+				files: 'https://www.googleapis.com/auth/drive.readonly',
+				publish: '',
+				publish_files: 'https://www.googleapis.com/auth/drive',
+				share: '',
+				create_event: '',
+				offline_access: ''
+			},
+
+			scope_delim: ' ',
+
+			login: function(p) {
+
+				if (p.qs.response_type === 'code') {
+
+					// Let's set this to an offline access to return a refresh_token
+					p.qs.access_type = 'offline';
+				}
+
+				// Reauthenticate
+				// https://developers.google.com/identity/protocols/
+				if (p.options.force) {
+					p.qs.approval_prompt = 'force';
+				}
+			},
+
+			// API base URI
+			base: 'https://www.googleapis.com/',
+
+			// Map GET requests
+			get: {
+				me: 'plus/v1/people/me',
+
+				// Deprecated Sept 1, 2014
+				//'me': 'oauth2/v1/userinfo?alt=json',
+
+				// See: https://developers.google.com/+/api/latest/people/list
+				'me/friends': 'plus/v1/people/me/people/visible?maxResults=@{limit|100}',
+				'me/following': contactsUrl,
+				'me/followers': contactsUrl,
+				'me/contacts': contactsUrl,
+				'me/share': 'plus/v1/people/me/activities/public?maxResults=@{limit|100}',
+				'me/feed': 'plus/v1/people/me/activities/public?maxResults=@{limit|100}',
+				'me/albums': 'https://picasaweb.google.com/data/feed/api/user/default?alt=json&max-results=@{limit|100}&start-index=@{start|1}',
+				'me/album': function(p, callback) {
+					var key = p.query.id;
+					delete p.query.id;
+					callback(key.replace('/entry/', '/feed/'));
+				},
+
+				'me/photos': 'https://picasaweb.google.com/data/feed/api/user/default?alt=json&kind=photo&max-results=@{limit|100}&start-index=@{start|1}',
+
+				// See: https://developers.google.com/drive/v2/reference/files/list
+				'me/file': 'drive/v2/files/@{id}',
+				'me/files': 'drive/v2/files?q=%22@{parent|root}%22+in+parents+and+trashed=false&maxResults=@{limit|100}',
+
+				// See: https://developers.google.com/drive/v2/reference/files/list
+				'me/folders': 'drive/v2/files?q=%22@{id|root}%22+in+parents+and+mimeType+=+%22application/vnd.google-apps.folder%22+and+trashed=false&maxResults=@{limit|100}',
+
+				// See: https://developers.google.com/drive/v2/reference/files/list
+				'me/folder': 'drive/v2/files?q=%22@{id|root}%22+in+parents+and+trashed=false&maxResults=@{limit|100}'
+			},
+
+			// Map POST requests
+			post: {
+
+				// Google Drive
+				'me/files': uploadDrive,
+				'me/folders': function(p, callback) {
+					p.data = {
+						title: p.data.name,
+						parents: [{id: p.data.parent || 'root'}],
+						mimeType: 'application/vnd.google-apps.folder'
+					};
+					callback('drive/v2/files');
+				}
+			},
+
+			// Map PUT requests
+			put: {
+				'me/files': uploadDrive
+			},
+
+			// Map DELETE requests
+			del: {
+				'me/files': 'drive/v2/files/@{id}',
+				'me/folder': 'drive/v2/files/@{id}'
+			},
+
+			// Map PATCH requests
+			patch: {
+				'me/file': 'drive/v2/files/@{id}'
+			},
+
+			wrap: {
+				me: function(o) {
+					if (o.id) {
+						o.last_name = o.family_name || (o.name ? o.name.familyName : null);
+						o.first_name = o.given_name || (o.name ? o.name.givenName : null);
+
+						if (o.emails && o.emails.length) {
+							o.email = o.emails[0].value;
+						}
+
+						formatPerson(o);
+					}
+
+					return o;
+				},
+
+				'me/friends': function(o) {
+					if (o.items) {
+						paging(o);
+						o.data = o.items;
+						o.data.forEach(formatPerson);
+						delete o.items;
+					}
+
+					return o;
+				},
+
+				'me/contacts': formatFriends,
+				'me/followers': formatFriends,
+				'me/following': formatFriends,
+				'me/share': formatFeed,
+				'me/feed': formatFeed,
+				'me/albums': gEntry,
+				'me/photos': formatPhotos,
+				'default': gEntry
+			},
+
+			xhr: function(p) {
+
+				if (p.method === 'post' || p.method === 'put') {
+					toJSON(p);
+				}
+				else if (p.method === 'patch') {
+					hello.utils.extend(p.query, p.data);
+					p.data = null;
+				}
+
+				return true;
+			},
+
+			// Don't even try submitting via form.
+			// This means no POST operations in <=IE9
+			form: false
+		}
+	});
+
+	function toInt(s) {
+		return parseInt(s, 10);
+	}
+
+	function formatFeed(o) {
+		paging(o);
+		o.data = o.items;
+		delete o.items;
+		return o;
+	}
+
+	// Format: ensure each record contains a name, id etc.
+	function formatItem(o) {
+		if (o.error) {
+			return;
+		}
+
+		if (!o.name) {
+			o.name = o.title || o.message;
+		}
+
+		if (!o.picture) {
+			o.picture = o.thumbnailLink;
+		}
+
+		if (!o.thumbnail) {
+			o.thumbnail = o.thumbnailLink;
+		}
+
+		if (o.mimeType === 'application/vnd.google-apps.folder') {
+			o.type = 'folder';
+			o.files = 'https://www.googleapis.com/drive/v2/files?q=%22' + o.id + '%22+in+parents';
+		}
+
+		return o;
+	}
+
+	function formatImage(image) {
+		return {
+			source: image.url,
+			width: image.width,
+			height: image.height
+		};
+	}
+
+	function formatPhotos(o) {
+		o.data = o.feed.entry.map(formatEntry);
+		delete o.feed;
+	}
+
+	// Google has a horrible JSON API
+	function gEntry(o) {
+		paging(o);
+
+		if ('feed' in o && 'entry' in o.feed) {
+			o.data = o.feed.entry.map(formatEntry);
+			delete o.feed;
+		}
+
+		// Old style: Picasa, etc.
+		else if ('entry' in o) {
+			return formatEntry(o.entry);
+		}
+
+		// New style: Google Drive & Plus
+		else if ('items' in o) {
+			o.data = o.items.map(formatItem);
+			delete o.items;
+		}
+		else {
+			formatItem(o);
+		}
+
+		return o;
+	}
+
+	function formatPerson(o) {
+		o.name = o.displayName || o.name;
+		o.picture = o.picture || (o.image ? o.image.url : null);
+		o.thumbnail = o.picture;
+	}
+
+	function formatFriends(o, headers, req) {
+		paging(o);
+		var r = [];
+		if ('feed' in o && 'entry' in o.feed) {
+			var token = req.query.access_token;
+			for (var i = 0; i < o.feed.entry.length; i++) {
+				var a = o.feed.entry[i];
+
+				a.id	= a.id.$t;
+				a.name	= a.title.$t;
+				delete a.title;
+				if (a.gd$email) {
+					a.email	= (a.gd$email && a.gd$email.length > 0) ? a.gd$email[0].address : null;
+					a.emails = a.gd$email;
+					delete a.gd$email;
+				}
+
+				if (a.updated) {
+					a.updated = a.updated.$t;
+				}
+
+				if (a.link) {
+
+					var pic = (a.link.length > 0) ? a.link[0].href : null;
+					if (pic && a.link[0].gd$etag) {
+						pic += (pic.indexOf('?') > -1 ? '&' : '?') + 'access_token=' + token;
+						a.picture = pic;
+						a.thumbnail = pic;
+					}
+
+					delete a.link;
+				}
+
+				if (a.category) {
+					delete a.category;
+				}
+			}
+
+			o.data = o.feed.entry;
+			delete o.feed;
+		}
+
+		return o;
+	}
+
+	function formatEntry(a) {
+
+		var group = a.media$group;
+		var photo = group.media$content.length ? group.media$content[0] : {};
+		var mediaContent = group.media$content || [];
+		var mediaThumbnail = group.media$thumbnail || [];
+
+		var pictures = mediaContent
+			.concat(mediaThumbnail)
+			.map(formatImage)
+			.sort(function(a, b) {
+				return a.width - b.width;
+			});
+
+		var i = 0;
+		var _a;
+		var p = {
+			id: a.id.$t,
+			name: a.title.$t,
+			description: a.summary.$t,
+			updated_time: a.updated.$t,
+			created_time: a.published.$t,
+			picture: photo ? photo.url : null,
+			pictures: pictures,
+			images: [],
+			thumbnail: photo ? photo.url : null,
+			width: photo.width,
+			height: photo.height
+		};
+
+		// Get feed/children
+		if ('link' in a) {
+			for (i = 0; i < a.link.length; i++) {
+				var d = a.link[i];
+				if (d.rel.match(/\#feed$/)) {
+					p.upload_location = p.files = p.photos = d.href;
+					break;
+				}
+			}
+		}
+
+		// Get images of different scales
+		if ('category' in a && a.category.length) {
+			_a = a.category;
+			for (i = 0; i < _a.length; i++) {
+				if (_a[i].scheme && _a[i].scheme.match(/\#kind$/)) {
+					p.type = _a[i].term.replace(/^.*?\#/, '');
+				}
+			}
+		}
+
+		// Get images of different scales
+		if ('media$thumbnail' in group && group.media$thumbnail.length) {
+			_a = group.media$thumbnail;
+			p.thumbnail = _a[0].url;
+			p.images = _a.map(formatImage);
+		}
+
+		_a = group.media$content;
+
+		if (_a && _a.length) {
+			p.images.push(formatImage(_a[0]));
+		}
+
+		return p;
+	}
+
+	function paging(res) {
+
+		// Contacts V2
+		if ('feed' in res && res.feed.openSearch$itemsPerPage) {
+			var limit = toInt(res.feed.openSearch$itemsPerPage.$t);
+			var start = toInt(res.feed.openSearch$startIndex.$t);
+			var total = toInt(res.feed.openSearch$totalResults.$t);
+
+			if ((start + limit) < total) {
+				res.paging = {
+					next: '?start=' + (start + limit)
+				};
+			}
+		}
+		else if ('nextPageToken' in res) {
+			res.paging = {
+				next: '?pageToken=' + res.nextPageToken
+			};
+		}
+	}
+
+	// Construct a multipart message
+	function Multipart() {
+
+		// Internal body
+		var body = [];
+		var boundary = (Math.random() * 1e10).toString(32);
+		var counter = 0;
+		var lineBreak = '\r\n';
+		var delim = lineBreak + '--' + boundary;
+		var ready = function() {};
+
+		var dataUri = /^data\:([^;,]+(\;charset=[^;,]+)?)(\;base64)?,/i;
+
+		// Add file
+		function addFile(item) {
+			var fr = new FileReader();
+			fr.onload = function(e) {
+				addContent(btoa(e.target.result), item.type + lineBreak + 'Content-Transfer-Encoding: base64');
+			};
+
+			fr.readAsBinaryString(item);
+		}
+
+		// Add content
+		function addContent(content, type) {
+			body.push(lineBreak + 'Content-Type: ' + type + lineBreak + lineBreak + content);
+			counter--;
+			ready();
+		}
+
+		// Add new things to the object
+		this.append = function(content, type) {
+
+			// Does the content have an array
+			if (typeof (content) === 'string' || !('length' in Object(content))) {
+				// Converti to multiples
+				content = [content];
+			}
+
+			for (var i = 0; i < content.length; i++) {
+
+				counter++;
+
+				var item = content[i];
+
+				// Is this a file?
+				// Files can be either Blobs or File types
+				if (
+					(typeof (File) !== 'undefined' && item instanceof File) ||
+					(typeof (Blob) !== 'undefined' && item instanceof Blob)
+				) {
+					// Read the file in
+					addFile(item);
+				}
+
+				// Data-URI?
+				// Data:[<mime type>][;charset=<charset>][;base64],<encoded data>
+				// /^data\:([^;,]+(\;charset=[^;,]+)?)(\;base64)?,/i
+				else if (typeof (item) === 'string' && item.match(dataUri)) {
+					var m = item.match(dataUri);
+					addContent(item.replace(dataUri, ''), m[1] + lineBreak + 'Content-Transfer-Encoding: base64');
+				}
+
+				// Regular string
+				else {
+					addContent(item, type);
+				}
+			}
+		};
+
+		this.onready = function(fn) {
+			ready = function() {
+				if (counter === 0) {
+					// Trigger ready
+					body.unshift('');
+					body.push('--');
+					fn(body.join(delim), boundary);
+					body = [];
+				}
+			};
+
+			ready();
+		};
+	}
+
+	// Upload to Drive
+	// If this is PUT then only augment the file uploaded
+	// PUT https://developers.google.com/drive/v2/reference/files/update
+	// POST https://developers.google.com/drive/manage-uploads
+	function uploadDrive(p, callback) {
+
+		var data = {};
+
+		// Test for DOM element
+		if (p.data &&
+			(typeof (HTMLInputElement) !== 'undefined' && p.data instanceof HTMLInputElement)
+		) {
+			p.data = {file: p.data};
+		}
+
+		if (!p.data.name && Object(Object(p.data.file).files).length && p.method === 'post') {
+			p.data.name = p.data.file.files[0].name;
+		}
+
+		if (p.method === 'post') {
+			p.data = {
+				title: p.data.name,
+				parents: [{id: p.data.parent || 'root'}],
+				file: p.data.file
+			};
+		}
+		else {
+
+			// Make a reference
+			data = p.data;
+			p.data = {};
+
+			// Add the parts to change as required
+			if (data.parent) {
+				p.data.parents = [{id: p.data.parent || 'root'}];
+			}
+
+			if (data.file) {
+				p.data.file = data.file;
+			}
+
+			if (data.name) {
+				p.data.title = data.name;
+			}
+		}
+
+		// Extract the file, if it exists from the data object
+		// If the File is an INPUT element lets just concern ourselves with the NodeList
+		var file;
+		if ('file' in p.data) {
+			file = p.data.file;
+			delete p.data.file;
+
+			if (typeof (file) === 'object' && 'files' in file) {
+				// Assign the NodeList
+				file = file.files;
+			}
+
+			if (!file || !file.length) {
+				callback({
+					error: {
+						code: 'request_invalid',
+						message: 'There were no files attached with this request to upload'
+					}
+				});
+				return;
+			}
+		}
+
+		// Set type p.data.mimeType = Object(file[0]).type || 'application/octet-stream';
+
+		// Construct a multipart message
+		var parts = new Multipart();
+		parts.append(JSON.stringify(p.data), 'application/json');
+
+		// Read the file into a  base64 string... yep a hassle, i know
+		// FormData doesn't let us assign our own Multipart headers and HTTP Content-Type
+		// Alas GoogleApi need these in a particular format
+		if (file) {
+			parts.append(file);
+		}
+
+		parts.onready(function(body, boundary) {
+
+			p.headers['content-type'] = 'multipart/related; boundary="' + boundary + '"';
+			p.data = body;
+
+			callback('upload/drive/v2/files' + (data.id ? '/' + data.id : '') + '?uploadType=multipart');
+		});
+
+	}
+
+	function toJSON(p) {
+		if (typeof (p.data) === 'object') {
+			// Convert the POST into a javascript object
+			try {
+				p.data = JSON.stringify(p.data);
+				p.headers['content-type'] = 'application/json';
+			}
+			catch (e) {}
+		}
+	}
+
+})(hello);
+
+(function(hello) {
+
+	hello.init({
+
+		instagram: {
+
+			name: 'Instagram',
+
+			oauth: {
+				// See: http://instagram.com/developer/authentication/
+				version: 2,
+				auth: 'https://instagram.com/oauth/authorize/',
+				grant: 'https://api.instagram.com/oauth/access_token'
+			},
+
+			// Refresh the access_token once expired
+			refresh: true,
+
+			scope: {
+				basic: 'basic',
+				photos: '',
+				friends: 'relationships',
+				publish: 'likes comments',
+				email: '',
+				share: '',
+				publish_files: '',
+				files: '',
+				videos: '',
+				offline_access: ''
+			},
+
+			scope_delim: ' ',
+
+			base: 'https://api.instagram.com/v1/',
+
+			get: {
+				me: 'users/self',
+				'me/feed': 'users/self/feed?count=@{limit|100}',
+				'me/photos': 'users/self/media/recent?min_id=0&count=@{limit|100}',
+				'me/friends': 'users/self/follows?count=@{limit|100}',
+				'me/following': 'users/self/follows?count=@{limit|100}',
+				'me/followers': 'users/self/followed-by?count=@{limit|100}',
+				'friend/photos': 'users/@{id}/media/recent?min_id=0&count=@{limit|100}'
+			},
+
+			post: {
+				'me/like': function(p, callback) {
+					var id = p.data.id;
+					p.data = {};
+					callback('media/' + id + '/likes');
+				}
+			},
+
+			del: {
+				'me/like': 'media/@{id}/likes'
+			},
+
+			wrap: {
+				me: function(o) {
+
+					formatError(o);
+
+					if ('data' in o) {
+						o.id = o.data.id;
+						o.thumbnail = o.data.profile_picture;
+						o.name = o.data.full_name || o.data.username;
+					}
+
+					return o;
+				},
+
+				'me/friends': formatFriends,
+				'me/following': formatFriends,
+				'me/followers': formatFriends,
+				'me/photos': function(o) {
+
+					formatError(o);
+					paging(o);
+
+					if ('data' in o) {
+						o.data = o.data.filter(function(d) {
+							return d.type === 'image';
+						});
+
+						o.data.forEach(function(d) {
+							d.name = d.caption ? d.caption.text : null;
+							d.thumbnail = d.images.thumbnail.url;
+							d.picture = d.images.standard_resolution.url;
+							d.pictures = Object.keys(d.images)
+								.map(function(key) {
+									var image = d.images[key];
+									return formatImage(image);
+								})
+								.sort(function(a, b) {
+									return a.width - b.width;
+								});
+						});
+					}
+
+					return o;
+				},
+
+				'default': function(o) {
+					o = formatError(o);
+					paging(o);
+					return o;
+				}
+			},
+
+			// Instagram does not return any CORS Headers
+			// So besides JSONP we're stuck with proxy
+			xhr: function(p, qs) {
+
+				var method = p.method;
+				var proxy = method !== 'get';
+
+				if (proxy) {
+
+					if ((method === 'post' || method === 'put') && p.query.access_token) {
+						p.data.access_token = p.query.access_token;
+						delete p.query.access_token;
+					}
+
+					// No access control headers
+					// Use the proxy instead
+					p.proxy = proxy;
+				}
+
+				return proxy;
+			},
+
+			// No form
+			form: false
+		}
+	});
+
+	function formatImage(image) {
+		return {
+			source: image.url,
+			width: image.width,
+			height: image.height
+		};
+	}
+
+	function formatError(o) {
+		if (typeof o === 'string') {
+			return {
+				error: {
+					code: 'invalid_request',
+					message: o
+				}
+			};
+		}
+
+		if (o && 'meta' in o && 'error_type' in o.meta) {
+			o.error = {
+				code: o.meta.error_type,
+				message: o.meta.error_message
+			};
+		}
+
+		return o;
+	}
+
+	function formatFriends(o) {
+		paging(o);
+		if (o && 'data' in o) {
+			o.data.forEach(formatFriend);
+		}
+
+		return o;
+	}
+
+	function formatFriend(o) {
+		if (o.id) {
+			o.thumbnail = o.profile_picture;
+			o.name = o.full_name || o.username;
+		}
+	}
+
+	// See: http://instagram.com/developer/endpoints/
+	function paging(res) {
+		if ('pagination' in res) {
+			res.paging = {
+				next: res.pagination.next_url
+			};
+			delete res.pagination;
+		}
+	}
+
+})(hello);
+
+(function(hello) {
+
+	hello.init({
+
+		joinme: {
+
+			name: 'join.me',
+
+			oauth: {
+				version: 2,
+				auth: 'https://secure.join.me/api/public/v1/auth/oauth2',
+				grant: 'https://secure.join.me/api/public/v1/auth/oauth2'
+			},
+
+			refresh: false,
+
+			scope: {
+				basic: 'user_info',
+				user: 'user_info',
+				scheduler: 'scheduler',
+				start: 'start_meeting',
+				email: '',
+				friends: '',
+				share: '',
+				publish: '',
+				photos: '',
+				publish_files: '',
+				files: '',
+				videos: '',
+				offline_access: ''
+			},
+
+			scope_delim: ' ',
+
+			login: function(p) {
+				p.options.popup.width = 400;
+				p.options.popup.height = 700;
+			},
+
+			base: 'https://api.join.me/v1/',
+
+			get: {
+				me: 'user',
+				meetings: 'meetings',
+				'meetings/info': 'meetings/@{id}'
+			},
+
+			post: {
+				'meetings/start/adhoc': function(p, callback) {
+					callback('meetings/start');
+				},
+
+				'meetings/start/scheduled': function(p, callback) {
+					var meetingId = p.data.meetingId;
+					p.data = {};
+					callback('meetings/' + meetingId + '/start');
+				},
+
+				'meetings/schedule': function(p, callback) {
+					callback('meetings');
+				}
+			},
+
+			patch: {
+				'meetings/update': function(p, callback) {
+					callback('meetings/' + p.data.meetingId);
+				}
+			},
+
+			del: {
+				'meetings/delete': 'meetings/@{id}'
+			},
+
+			wrap: {
+				me: function(o, headers) {
+					formatError(o, headers);
+
+					if (!o.email) {
+						return o;
+					}
+
+					o.name = o.fullName;
+					o.first_name = o.name.split(' ')[0];
+					o.last_name = o.name.split(' ')[1];
+					o.id = o.email;
+
+					return o;
+				},
+
+				'default': function(o, headers) {
+					formatError(o, headers);
+
+					return o;
+				}
+			},
+
+			xhr: formatRequest
+
+		}
+	});
+
+	function formatError(o, headers) {
+		var errorCode;
+		var message;
+		var details;
+
+		if (o && ('Message' in o)) {
+			message = o.Message;
+			delete o.Message;
+
+			if ('ErrorCode' in o) {
+				errorCode = o.ErrorCode;
+				delete o.ErrorCode;
+			}
+			else {
+				errorCode = getErrorCode(headers);
+			}
+
+			o.error = {
+				code: errorCode,
+				message: message,
+				details: o
+			};
+		}
+
+		return o;
+	}
+
+	function formatRequest(p, qs) {
+		// Move the access token from the request body to the request header
+		var token = qs.access_token;
+		delete qs.access_token;
+		p.headers.Authorization = 'Bearer ' + token;
+
+		// Format non-get requests to indicate json body
+		if (p.method !== 'get' && p.data) {
+			p.headers['Content-Type'] = 'application/json';
+			if (typeof (p.data) === 'object') {
+				p.data = JSON.stringify(p.data);
+			}
+		}
+
+		if (p.method === 'put') {
+			p.method = 'patch';
+		}
+
+		return true;
+	}
+
+	function getErrorCode(headers) {
+		switch (headers.statusCode) {
+			case 400:
+				return 'invalid_request';
+			case 403:
+				return 'stale_token';
+			case 401:
+				return 'invalid_token';
+			case 500:
+				return 'server_error';
+			default:
+				return 'server_error';
+		}
+	}
+
+}(hello));
+
+(function(hello) {
+
+	hello.init({
+
+		linkedin: {
+
+			oauth: {
+				version: 2,
+				response_type: 'code',
+				auth: 'https://www.linkedin.com/uas/oauth2/authorization',
+				grant: 'https://www.linkedin.com/uas/oauth2/accessToken'
+			},
+
+			// Refresh the access_token once expired
+			refresh: true,
+
+			scope: {
+				basic: 'r_basicprofile',
+				email: 'r_emailaddress',
+				files: '',
+				friends: '',
+				photos: '',
+				publish: 'w_share',
+				publish_files: 'w_share',
+				share: '',
+				videos: '',
+				offline_access: ''
+			},
+			scope_delim: ' ',
+
+			base: 'https://api.linkedin.com/v1/',
+
+			get: {
+				me: 'people/~:(picture-url,first-name,last-name,id,formatted-name,email-address)',
+
+				// See: http://developer.linkedin.com/documents/get-network-updates-and-statistics-api
+				'me/share': 'people/~/network/updates?count=@{limit|250}'
+			},
+
+			post: {
+
+				// See: https://developer.linkedin.com/documents/api-requests-json
+				'me/share': function(p, callback) {
+					var data = {
+						visibility: {
+							code: 'anyone'
+						}
+					};
+
+					if (p.data.id) {
+
+						data.attribution = {
+							share: {
+								id: p.data.id
+							}
+						};
+
+					}
+					else {
+						data.comment = p.data.message;
+						if (p.data.picture && p.data.link) {
+							data.content = {
+								'submitted-url': p.data.link,
+								'submitted-image-url': p.data.picture
+							};
+						}
+					}
+
+					p.data = JSON.stringify(data);
+
+					callback('people/~/shares?format=json');
+				},
+
+				'me/like': like
+			},
+
+			del:{
+				'me/like': like
+			},
+
+			wrap: {
+				me: function(o) {
+					formatError(o);
+					formatUser(o);
+					return o;
+				},
+
+				'me/friends': formatFriends,
+				'me/following': formatFriends,
+				'me/followers': formatFriends,
+				'me/share': function(o) {
+					formatError(o);
+					paging(o);
+					if (o.values) {
+						o.data = o.values.map(formatUser);
+						o.data.forEach(function(item) {
+							item.message = item.headline;
+						});
+
+						delete o.values;
+					}
+
+					return o;
+				},
+
+				'default': function(o, headers) {
+					formatError(o);
+					empty(o, headers);
+					paging(o);
+				}
+			},
+
+			jsonp: function(p, qs) {
+				formatQuery(qs);
+				if (p.method === 'get') {
+					qs.format = 'jsonp';
+					qs['error-callback'] = p.callbackID;
+				}
+			},
+
+			xhr: function(p, qs) {
+				if (p.method !== 'get') {
+					formatQuery(qs);
+					p.headers['Content-Type'] = 'application/json';
+
+					// Note: x-li-format ensures error responses are not returned in XML
+					p.headers['x-li-format'] = 'json';
+					p.proxy = true;
+					return true;
+				}
+
+				return false;
+			}
+		}
+	});
+
+	function formatError(o) {
+		if (o && 'errorCode' in o) {
+			o.error = {
+				code: o.status,
+				message: o.message
+			};
+		}
+	}
+
+	function formatUser(o) {
+		if (o.error) {
+			return;
+		}
+
+		o.first_name = o.firstName;
+		o.last_name = o.lastName;
+		o.name = o.formattedName || (o.first_name + ' ' + o.last_name);
+		o.thumbnail = o.pictureUrl;
+		o.email = o.emailAddress;
+		return o;
+	}
+
+	function formatFriends(o) {
+		formatError(o);
+		paging(o);
+		if (o.values) {
+			o.data = o.values.map(formatUser);
+			delete o.values;
+		}
+
+		return o;
+	}
+
+	function paging(res) {
+		if ('_count' in res && '_start' in res && (res._count + res._start) < res._total) {
+			res.paging = {
+				next: '?start=' + (res._start + res._count) + '&count=' + res._count
+			};
+		}
+	}
+
+	function empty(o, headers) {
+		if (JSON.stringify(o) === '{}' && headers.statusCode === 200) {
+			o.success = true;
+		}
+	}
+
+	function formatQuery(qs) {
+		// LinkedIn signs requests with the parameter 'oauth2_access_token'
+		// ... yeah another one who thinks they should be different!
+		if (qs.access_token) {
+			qs.oauth2_access_token = qs.access_token;
+			delete qs.access_token;
+		}
+	}
+
+	function like(p, callback) {
+		p.headers['x-li-format'] = 'json';
+		var id = p.data.id;
+		p.data = (p.method !== 'delete').toString();
+		p.method = 'put';
+		callback('people/~/network/updates/key=' + id + '/is-liked');
+	}
+
+})(hello);
+
+// See: https://developers.soundcloud.com/docs/api/reference
+(function(hello) {
+
+	hello.init({
+
+		soundcloud: {
+			name: 'SoundCloud',
+
+			oauth: {
+				version: 2,
+				auth: 'https://soundcloud.com/connect',
+				grant: 'https://soundcloud.com/oauth2/token'
+			},
+
+			// Request path translated
+			base: 'https://api.soundcloud.com/',
+			get: {
+				me: 'me.json',
+
+				// Http://developers.soundcloud.com/docs/api/reference#me
+				'me/friends': 'me/followings.json',
+				'me/followers': 'me/followers.json',
+				'me/following': 'me/followings.json',
+
+				// See: http://developers.soundcloud.com/docs/api/reference#activities
+				'default': function(p, callback) {
+
+					// Include '.json at the end of each request'
+					callback(p.path + '.json');
+				}
+			},
+
+			// Response handlers
+			wrap: {
+				me: function(o) {
+					formatUser(o);
+					return o;
+				},
+
+				'default': function(o) {
+					if (Array.isArray(o)) {
+						o = {
+							data: o.map(formatUser)
+						};
+					}
+
+					paging(o);
+					return o;
+				}
+			},
+
+			xhr: formatRequest,
+			jsonp: formatRequest
+		}
+	});
+
+	function formatRequest(p, qs) {
+		// Alter the querystring
+		var token = qs.access_token;
+		delete qs.access_token;
+		qs.oauth_token = token;
+		qs['_status_code_map[302]'] = 200;
+		return true;
+	}
+
+	function formatUser(o) {
+		if (o.id) {
+			o.picture = o.avatar_url;
+			o.thumbnail = o.avatar_url;
+			o.name = o.username || o.full_name;
+		}
+
+		return o;
+	}
+
+	// See: http://developers.soundcloud.com/docs/api/reference#activities
+	function paging(res) {
+		if ('next_href' in res) {
+			res.paging = {
+				next: res.next_href
+			};
+		}
+	}
+
+})(hello);
+
+// See: https://developer.spotify.com/web-api/
+(function(hello) {
+
+	hello.init({
+
+		spotify: {
+			name: 'Spotify',
+
+			oauth: {
+				version: 2,
+				auth: 'https://accounts.spotify.com/authorize',
+				grant: 'https://accounts.spotify.com/api/token'
+			},
+
+			// See: https://developer.spotify.com/web-api/using-scopes/
+			scope_delim: ' ',
+			scope: {
+				basic: '',
+				photos: '',
+				friends: 'user-follow-read',
+				publish: 'user-library-read',
+				email: 'user-read-email',
+				share: '',
+				publish_files: '',
+				files: '',
+				videos: '',
+				offline_access: ''
+			},
+
+			// Request path translated
+			base: 'https://api.spotify.com',
+
+			// See: https://developer.spotify.com/web-api/endpoint-reference/
+			get: {
+				me: '/v1/me',
+				'me/following': '/v1/me/following?type=artist', // Only 'artist' is supported
+
+				// Because tracks, albums and playlist exist on spotify, the tracks are considered
+				// the resource for the 'me/likes' endpoint
+				'me/like': '/v1/me/tracks'
+			},
+
+			// Response handlers
+			wrap: {
+				me: formatUser,
+				'me/following': formatFollowees,
+				'me/like': formatTracks
+			},
+
+			xhr: formatRequest,
+			jsonp: false
+		}
+	});
+
+	// Move the access token from the request body to the request header
+	function formatRequest(p, qs) {
+		var token = qs.access_token;
+		delete qs.access_token;
+		p.headers.Authorization = 'Bearer ' + token;
+
+		return true;
+	}
+
+	function formatUser(o) {
+		if (o.id) {
+			o.name = o.display_name;
+			o.thumbnail = o.images.length ? o.images[0].url : null;
+			o.picture = o.thumbnail;
+		}
+
+		return o;
+	}
+
+	function formatFollowees(o) {
+		paging(o);
+		if (o && 'artists' in o) {
+			o.data = o.artists.items.forEach(formatUser);
+		}
+
+		return o;
+	}
+
+	function formatTracks(o) {
+		paging(o);
+		o.data = o.items;
+
+		return o;
+	}
+
+	function paging(res) {
+		if (res && 'next' in res) {
+			res.paging = {
+				next: res.next
+			};
+			delete res.next;
+		}
+	}
+
+})(hello);
+
+(function(hello) {
+
+	var base = 'https://api.twitter.com/';
+
+	hello.init({
+
+		twitter: {
+
+			// Ensure that you define an oauth_proxy
+			oauth: {
+				version: '1.0a',
+				auth: base + 'oauth/authenticate',
+				request: base + 'oauth/request_token',
+				token: base + 'oauth/access_token'
+			},
+
+			login: function(p) {
+				// Reauthenticate
+				// https://dev.twitter.com/oauth/reference/get/oauth/authenticate
+				var prefix = '?force_login=true';
+				this.oauth.auth = this.oauth.auth.replace(prefix, '') + (p.options.force ? prefix : '');
+			},
+
+			base: base + '1.1/',
+
+			get: {
+				me: 'account/verify_credentials.json',
+				'me/friends': 'friends/list.json?count=@{limit|200}',
+				'me/following': 'friends/list.json?count=@{limit|200}',
+				'me/followers': 'followers/list.json?count=@{limit|200}',
+
+				// Https://dev.twitter.com/docs/api/1.1/get/statuses/user_timeline
+				'me/share': 'statuses/user_timeline.json?count=@{limit|200}',
+
+				// Https://dev.twitter.com/rest/reference/get/favorites/list
+				'me/like': 'favorites/list.json?count=@{limit|200}'
+			},
+
+			post: {
+				'me/share': function(p, callback) {
+
+					var data = p.data;
+					p.data = null;
+
+					var status = [];
+
+					// Change message to status
+					if (data.message) {
+						status.push(data.message);
+						delete data.message;
+					}
+
+					// If link is given
+					if (data.link) {
+						status.push(data.link);
+						delete data.link;
+					}
+
+					if (data.picture) {
+						status.push(data.picture);
+						delete data.picture;
+					}
+
+					// Compound all the components
+					if (status.length) {
+						data.status = status.join(' ');
+					}
+
+					// Tweet media
+					if (data.file) {
+						data['media[]'] = data.file;
+						delete data.file;
+						p.data = data;
+						callback('statuses/update_with_media.json');
+					}
+
+					// Retweet?
+					else if ('id' in data) {
+						callback('statuses/retweet/' + data.id + '.json');
+					}
+
+					// Tweet
+					else {
+						// Assign the post body to the query parameters
+						hello.utils.extend(p.query, data);
+						callback('statuses/update.json?include_entities=1');
+					}
+				},
+
+				// See: https://dev.twitter.com/rest/reference/post/favorites/create
+				'me/like': function(p, callback) {
+					var id = p.data.id;
+					p.data = null;
+					callback('favorites/create.json?id=' + id);
+				}
+			},
+
+			del: {
+
+				// See: https://dev.twitter.com/rest/reference/post/favorites/destroy
+				'me/like': function() {
+					p.method = 'post';
+					var id = p.data.id;
+					p.data = null;
+					callback('favorites/destroy.json?id=' + id);
+				}
+			},
+
+			wrap: {
+				me: function(res) {
+					formatError(res);
+					formatUser(res);
+					return res;
+				},
+
+				'me/friends': formatFriends,
+				'me/followers': formatFriends,
+				'me/following': formatFriends,
+
+				'me/share': function(res) {
+					formatError(res);
+					paging(res);
+					if (!res.error && 'length' in res) {
+						return {data: res};
+					}
+
+					return res;
+				},
+
+				'default': function(res) {
+					res = arrayToDataResponse(res);
+					paging(res);
+					return res;
+				}
+			},
+			xhr: function(p) {
+
+				// Rely on the proxy for non-GET requests.
+				return (p.method !== 'get');
+			}
+		}
+	});
+
+	function formatUser(o) {
+		if (o.id) {
+			if (o.name) {
+				var m = o.name.split(' ');
+				o.first_name = m.shift();
+				o.last_name = m.join(' ');
+			}
+
+			// See: https://dev.twitter.com/overview/general/user-profile-images-and-banners
+			o.thumbnail = o.profile_image_url_https || o.profile_image_url;
+		}
+
+		return o;
+	}
+
+	function formatFriends(o) {
+		formatError(o);
+		paging(o);
+		if (o.users) {
+			o.data = o.users.map(formatUser);
+			delete o.users;
+		}
+
+		return o;
+	}
+
+	function formatError(o) {
+		if (o.errors) {
+			var e = o.errors[0];
+			o.error = {
+				code: 'request_failed',
+				message: e.message
+			};
+		}
+	}
+
+	// Take a cursor and add it to the path
+	function paging(res) {
+		// Does the response include a 'next_cursor_string'
+		if ('next_cursor_str' in res) {
+			// See: https://dev.twitter.com/docs/misc/cursoring
+			res.paging = {
+				next: '?cursor=' + res.next_cursor_str
+			};
+		}
+	}
+
+	function arrayToDataResponse(res) {
+		return Array.isArray(res) ? {data: res} : res;
+	}
+
+	/**
+	// The documentation says to define user in the request
+	// Although its not actually required.
+
+	var user_id;
+
+	function withUserId(callback){
+		if(user_id){
+			callback(user_id);
+		}
+		else{
+			hello.api('twitter:/me', function(o){
+				user_id = o.id;
+				callback(o.id);
+			});
+		}
+	}
+
+	function sign(url){
+		return function(p, callback){
+			withUserId(function(user_id){
+				callback(url+'?user_id='+user_id);
+			});
+		};
+	}
+	*/
+
+})(hello);
+
+// Vkontakte (vk.com)
+(function(hello) {
+
+	hello.init({
+
+		vk: {
+			name: 'Vk',
+
+			// See https://vk.com/dev/oauth_dialog
+			oauth: {
+				version: 2,
+				auth: 'https://oauth.vk.com/authorize',
+				grant: 'https://oauth.vk.com/access_token'
+			},
+
+			// Authorization scopes
+			// See https://vk.com/dev/permissions
+			scope: {
+				email: 'email',
+				friends: 'friends',
+				photos: 'photos',
+				videos: 'video',
+				share: 'share',
+				offline_access: 'offline'
+			},
+
+			// Refresh the access_token
+			refresh: true,
+
+			login: function(p) {
+				p.qs.display = window.navigator &&
+					window.navigator.userAgent &&
+					/ipad|phone|phone|android/.test(window.navigator.userAgent.toLowerCase()) ? 'mobile' : 'popup';
+			},
+
+			// API Base URL
+			base: 'https://api.vk.com/method/',
+
+			// Map GET requests
+			get: {
+				me: function(p, callback) {
+					p.query.fields = 'id,first_name,last_name,photo_max';
+					callback('users.get');
+				}
+			},
+
+			wrap: {
+				me: function(res, headers, req) {
+					formatError(res);
+					return formatUser(res, req);
+				}
+			},
+
+			// No XHR
+			xhr: false,
+
+			// All requests should be JSONP as of missing CORS headers in https://api.vk.com/method/*
+			jsonp: true,
+
+			// No form
+			form: false
+		}
+	});
+
+	function formatUser(o, req) {
+
+		if (o !== null && 'response' in o && o.response !== null && o.response.length) {
+			o = o.response[0];
+			o.id = o.uid;
+			o.thumbnail = o.picture = o.photo_max;
+			o.name = o.first_name + ' ' + o.last_name;
+
+			if (req.authResponse && req.authResponse.email !== null)
+				o.email = req.authResponse.email;
+		}
+
+		return o;
+	}
+
+	function formatError(o) {
+
+		if (o.error) {
+			var e = o.error;
+			o.error = {
+				code: e.error_code,
+				message: e.error_msg
+			};
+		}
+	}
+
+})(hello);
+
+(function(hello) {
+
+	hello.init({
+		windows: {
+			name: 'Windows live',
+
+			// REF: http://msdn.microsoft.com/en-us/library/hh243641.aspx
+			oauth: {
+				version: 2,
+				auth: 'https://login.live.com/oauth20_authorize.srf',
+				grant: 'https://login.live.com/oauth20_token.srf'
+			},
+
+			// Refresh the access_token once expired
+			refresh: true,
+
+			logout: function() {
+				return 'http://login.live.com/oauth20_logout.srf?ts=' + (new Date()).getTime();
+			},
+
+			// Authorization scopes
+			scope: {
+				basic: 'wl.signin,wl.basic',
+				email: 'wl.emails',
+				birthday: 'wl.birthday',
+				events: 'wl.calendars',
+				photos: 'wl.photos',
+				videos: 'wl.photos',
+				friends: 'wl.contacts_emails',
+				files: 'wl.skydrive',
+				publish: 'wl.share',
+				publish_files: 'wl.skydrive_update',
+				share: 'wl.share',
+				create_event: 'wl.calendars_update,wl.events_create',
+				offline_access: 'wl.offline_access'
+			},
+
+			// API base URL
+			base: 'https://apis.live.net/v5.0/',
+
+			// Map GET requests
+			get: {
+
+				// Friends
+				me: 'me',
+				'me/friends': 'me/friends',
+				'me/following': 'me/contacts',
+				'me/followers': 'me/friends',
+				'me/contacts': 'me/contacts',
+
+				'me/albums': 'me/albums',
+
+				// Include the data[id] in the path
+				'me/album': '@{id}/files',
+				'me/photo': '@{id}',
+
+				// Files
+				'me/files': '@{parent|me/skydrive}/files',
+				'me/folders': '@{id|me/skydrive}/files',
+				'me/folder': '@{id|me/skydrive}/files'
+			},
+
+			// Map POST requests
+			post: {
+				'me/albums': 'me/albums',
+				'me/album': '@{id}/files/',
+
+				'me/folders': '@{id|me/skydrive/}',
+				'me/files': '@{parent|me/skydrive}/files'
+			},
+
+			// Map DELETE requests
+			del: {
+				// Include the data[id] in the path
+				'me/album': '@{id}',
+				'me/photo': '@{id}',
+				'me/folder': '@{id}',
+				'me/files': '@{id}'
+			},
+
+			wrap: {
+				me: formatUser,
+
+				'me/friends': formatFriends,
+				'me/contacts': formatFriends,
+				'me/followers': formatFriends,
+				'me/following': formatFriends,
+				'me/albums': formatAlbums,
+				'me/photos': formatDefault,
+				'default': formatDefault
+			},
+
+			xhr: function(p) {
+				if (p.method !== 'get' && p.method !== 'delete' && !hello.utils.hasBinary(p.data)) {
+
+					// Does this have a data-uri to upload as a file?
+					if (typeof (p.data.file) === 'string') {
+						p.data.file = hello.utils.toBlob(p.data.file);
+					}
+					else {
+						p.data = JSON.stringify(p.data);
+						p.headers = {
+							'Content-Type': 'application/json'
+						};
+					}
+				}
+
+				return true;
+			},
+
+			jsonp: function(p) {
+				if (p.method !== 'get' && !hello.utils.hasBinary(p.data)) {
+					p.data.method = p.method;
+					p.method = 'get';
+				}
+			}
+		}
+	});
+
+	function formatDefault(o) {
+		if ('data' in o) {
+			o.data.forEach(function(d) {
+				if (d.picture) {
+					d.thumbnail = d.picture;
+				}
+
+				if (d.images) {
+					d.pictures = d.images
+						.map(formatImage)
+						.sort(function(a, b) {
+							return a.width - b.width;
+						});
+				}
+			});
+		}
+
+		return o;
+	}
+
+	function formatImage(image) {
+		return {
+			width: image.width,
+			height: image.height,
+			source: image.source
+		};
+	}
+
+	function formatAlbums(o) {
+		if ('data' in o) {
+			o.data.forEach(function(d) {
+				d.photos = d.files = 'https://apis.live.net/v5.0/' + d.id + '/photos';
+			});
+		}
+
+		return o;
+	}
+
+	function formatUser(o, headers, req) {
+		if (o.id) {
+			var token = req.query.access_token;
+			if (o.emails) {
+				o.email = o.emails.preferred;
+			}
+
+			// If this is not an non-network friend
+			if (o.is_friend !== false) {
+				// Use the id of the user_id if available
+				var id = (o.user_id || o.id);
+				o.thumbnail = o.picture = 'https://apis.live.net/v5.0/' + id + '/picture?access_token=' + token;
+			}
+		}
+
+		return o;
+	}
+
+	function formatFriends(o, headers, req) {
+		if ('data' in o) {
+			o.data.forEach(function(d) {
+				formatUser(d, headers, req);
+			});
+		}
+
+		return o;
+	}
+
+})(hello);
+
+(function(hello) {
+
+	hello.init({
+
+		yahoo: {
+
+			// Ensure that you define an oauth_proxy
+			oauth: {
+				version: '1.0a',
+				auth: 'https://api.login.yahoo.com/oauth/v2/request_auth',
+				request: 'https://api.login.yahoo.com/oauth/v2/get_request_token',
+				token: 'https://api.login.yahoo.com/oauth/v2/get_token'
+			},
+
+			// Login handler
+			login: function(p) {
+				// Change the default popup window to be at least 560
+				// Yahoo does dynamically change it on the fly for the signin screen (only, what if your already signed in)
+				p.options.popup.width = 560;
+
+				// Yahoo throws an parameter error if for whatever reason the state.scope contains a comma, so lets remove scope
+				try {delete p.qs.state.scope;}
+				catch (e) {}
+			},
+
+			base: 'https://social.yahooapis.com/v1/',
+
+			get: {
+				me: yql('select * from social.profile(0) where guid=me'),
+				'me/friends': yql('select * from social.contacts(0) where guid=me'),
+				'me/following': yql('select * from social.contacts(0) where guid=me')
+			},
+			wrap: {
+				me: formatUser,
+
+				// Can't get IDs
+				// It might be better to loop through the social.relationship table with has unique IDs of users.
+				'me/friends': formatFriends,
+				'me/following': formatFriends,
+				'default': paging
+			}
+		}
+	});
+
+	/*
+		// Auto-refresh fix: bug in Yahoo can't get this to work with node-oauth-shim
+		login : function(o){
+			// Is the user already logged in
+			var auth = hello('yahoo').getAuthResponse();
+
+			// Is this a refresh token?
+			if(o.options.display==='none'&&auth&&auth.access_token&&auth.refresh_token){
+				// Add the old token and the refresh token, including path to the query
+				// See http://developer.yahoo.com/oauth/guide/oauth-refreshaccesstoken.html
+				o.qs.access_token = auth.access_token;
+				o.qs.refresh_token = auth.refresh_token;
+				o.qs.token_url = 'https://api.login.yahoo.com/oauth/v2/get_token';
+			}
+		},
+	*/
+
+	function formatError(o) {
+		if (o && 'meta' in o && 'error_type' in o.meta) {
+			o.error = {
+				code: o.meta.error_type,
+				message: o.meta.error_message
+			};
+		}
+	}
+
+	function formatUser(o) {
+
+		formatError(o);
+		if (o.query && o.query.results && o.query.results.profile) {
+			o = o.query.results.profile;
+			o.id = o.guid;
+			o.last_name = o.familyName;
+			o.first_name = o.givenName || o.nickname;
+			var a = [];
+			if (o.first_name) {
+				a.push(o.first_name);
+			}
+
+			if (o.last_name) {
+				a.push(o.last_name);
+			}
+
+			o.name = a.join(' ');
+			o.email = (o.emails && o.emails[0]) ? o.emails[0].handle : null;
+			o.thumbnail = o.image ? o.image.imageUrl : null;
+		}
+
+		return o;
+	}
+
+	function formatFriends(o, headers, request) {
+		formatError(o);
+		paging(o, headers, request);
+		var contact;
+		var field;
+		if (o.query && o.query.results && o.query.results.contact) {
+			o.data = o.query.results.contact;
+			delete o.query;
+
+			if (!Array.isArray(o.data)) {
+				o.data = [o.data];
+			}
+
+			o.data.forEach(formatFriend);
+		}
+
+		return o;
+	}
+
+	function formatFriend(contact) {
+		contact.id = null;
+
+		// #362: Reports of responses returning a single item, rather than an Array of items.
+		// Format the contact.fields to be an array.
+		if (contact.fields && !(contact.fields instanceof Array)) {
+			contact.fields = [contact.fields];
+		}
+
+		(contact.fields || []).forEach(function(field) {
+			if (field.type === 'email') {
+				contact.email = field.value;
+			}
+
+			if (field.type === 'name') {
+				contact.first_name = field.value.givenName;
+				contact.last_name = field.value.familyName;
+				contact.name = field.value.givenName + ' ' + field.value.familyName;
+			}
+
+			if (field.type === 'yahooid') {
+				contact.id = field.value;
+			}
+		});
+	}
+
+	function paging(res, headers, request) {
+
+		// See: http://developer.yahoo.com/yql/guide/paging.html#local_limits
+		if (res.query && res.query.count && request.options) {
+			res.paging = {
+				next: '?start=' + (res.query.count + (+request.options.start || 1))
+			};
+		}
+
+		return res;
+	}
+
+	function yql(q) {
+		return 'https://query.yahooapis.com/v1/yql?q=' + (q + ' limit @{limit|100} offset @{start|0}').replace(/\s/g, '%20') + '&format=json';
+	}
+
+})(hello);
+
+// Register as anonymous AMD module
+if (true) {
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
+		return hello;
+	}).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+}
+
+// CommonJS module for browserify
+if (typeof module === 'object' && module.exports) {
+	module.exports = hello;
+}
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../process/browser.js */ "./node_modules/process/browser.js"), __webpack_require__(/*! ./../../timers-browserify/main.js */ "./node_modules/timers-browserify/main.js").setImmediate))
 
 /***/ }),
 
@@ -6723,13 +12729,12 @@ var map = {
 
 function webpackContext(req) {
 	var id = webpackContextResolve(req);
-	var module = __webpack_require__(id);
-	return module;
+	return __webpack_require__(id);
 }
 function webpackContextResolve(req) {
 	var id = map[req];
 	if(!(id + 1)) { // check for number or string
-		var e = new Error('Cannot find module "' + req + '".');
+		var e = new Error("Cannot find module '" + req + "'");
 		e.code = 'MODULE_NOT_FOUND';
 		throw e;
 	}
@@ -25885,6 +31890,398 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 //# sourceMappingURL=pluggable.js.map
 
+/***/ }),
+
+/***/ "./node_modules/process/browser.js":
+/*!*****************************************!*\
+  !*** ./node_modules/process/browser.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+
+/***/ "./node_modules/setimmediate/setImmediate.js":
+/*!***************************************************!*\
+  !*** ./node_modules/setimmediate/setImmediate.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
+    "use strict";
+
+    if (global.setImmediate) {
+        return;
+    }
+
+    var nextHandle = 1; // Spec says greater than zero
+    var tasksByHandle = {};
+    var currentlyRunningATask = false;
+    var doc = global.document;
+    var registerImmediate;
+
+    function setImmediate(callback) {
+      // Callback can either be a function or a string
+      if (typeof callback !== "function") {
+        callback = new Function("" + callback);
+      }
+      // Copy function arguments
+      var args = new Array(arguments.length - 1);
+      for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i + 1];
+      }
+      // Store and register the task
+      var task = { callback: callback, args: args };
+      tasksByHandle[nextHandle] = task;
+      registerImmediate(nextHandle);
+      return nextHandle++;
+    }
+
+    function clearImmediate(handle) {
+        delete tasksByHandle[handle];
+    }
+
+    function run(task) {
+        var callback = task.callback;
+        var args = task.args;
+        switch (args.length) {
+        case 0:
+            callback();
+            break;
+        case 1:
+            callback(args[0]);
+            break;
+        case 2:
+            callback(args[0], args[1]);
+            break;
+        case 3:
+            callback(args[0], args[1], args[2]);
+            break;
+        default:
+            callback.apply(undefined, args);
+            break;
+        }
+    }
+
+    function runIfPresent(handle) {
+        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
+        // So if we're currently running a task, we'll need to delay this invocation.
+        if (currentlyRunningATask) {
+            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
+            // "too much recursion" error.
+            setTimeout(runIfPresent, 0, handle);
+        } else {
+            var task = tasksByHandle[handle];
+            if (task) {
+                currentlyRunningATask = true;
+                try {
+                    run(task);
+                } finally {
+                    clearImmediate(handle);
+                    currentlyRunningATask = false;
+                }
+            }
+        }
+    }
+
+    function installNextTickImplementation() {
+        registerImmediate = function(handle) {
+            process.nextTick(function () { runIfPresent(handle); });
+        };
+    }
+
+    function canUsePostMessage() {
+        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
+        // where `global.postMessage` means something completely different and can't be used for this purpose.
+        if (global.postMessage && !global.importScripts) {
+            var postMessageIsAsynchronous = true;
+            var oldOnMessage = global.onmessage;
+            global.onmessage = function() {
+                postMessageIsAsynchronous = false;
+            };
+            global.postMessage("", "*");
+            global.onmessage = oldOnMessage;
+            return postMessageIsAsynchronous;
+        }
+    }
+
+    function installPostMessageImplementation() {
+        // Installs an event handler on `global` for the `message` event: see
+        // * https://developer.mozilla.org/en/DOM/window.postMessage
+        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
+
+        var messagePrefix = "setImmediate$" + Math.random() + "$";
+        var onGlobalMessage = function(event) {
+            if (event.source === global &&
+                typeof event.data === "string" &&
+                event.data.indexOf(messagePrefix) === 0) {
+                runIfPresent(+event.data.slice(messagePrefix.length));
+            }
+        };
+
+        if (global.addEventListener) {
+            global.addEventListener("message", onGlobalMessage, false);
+        } else {
+            global.attachEvent("onmessage", onGlobalMessage);
+        }
+
+        registerImmediate = function(handle) {
+            global.postMessage(messagePrefix + handle, "*");
+        };
+    }
+
+    function installMessageChannelImplementation() {
+        var channel = new MessageChannel();
+        channel.port1.onmessage = function(event) {
+            var handle = event.data;
+            runIfPresent(handle);
+        };
+
+        registerImmediate = function(handle) {
+            channel.port2.postMessage(handle);
+        };
+    }
+
+    function installReadyStateChangeImplementation() {
+        var html = doc.documentElement;
+        registerImmediate = function(handle) {
+            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
+            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
+            var script = doc.createElement("script");
+            script.onreadystatechange = function () {
+                runIfPresent(handle);
+                script.onreadystatechange = null;
+                html.removeChild(script);
+                script = null;
+            };
+            html.appendChild(script);
+        };
+    }
+
+    function installSetTimeoutImplementation() {
+        registerImmediate = function(handle) {
+            setTimeout(runIfPresent, 0, handle);
+        };
+    }
+
+    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
+    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
+    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
+
+    // Don't get fooled by e.g. browserify environments.
+    if ({}.toString.call(global.process) === "[object process]") {
+        // For Node.js before 0.9
+        installNextTickImplementation();
+
+    } else if (canUsePostMessage()) {
+        // For non-IE10 modern browsers
+        installPostMessageImplementation();
+
+    } else if (global.MessageChannel) {
+        // For web workers, where supported
+        installMessageChannelImplementation();
+
+    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
+        // For IE 6–8
+        installReadyStateChangeImplementation();
+
+    } else {
+        // For older browsers
+        installSetTimeoutImplementation();
+    }
+
+    attachTo.setImmediate = setImmediate;
+    attachTo.clearImmediate = clearImmediate;
+}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../process/browser.js */ "./node_modules/process/browser.js")))
 
 /***/ }),
 
@@ -29136,6 +35533,81 @@ exports.default = vnode;
 });
 //# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5vZGVfbW9kdWxlcy8ucmVnaXN0cnkubnBtanMub3JnL2Jyb3dzZXItcGFjay82LjAuMi9ub2RlX21vZHVsZXMvYnJvd3Nlci1wYWNrL19wcmVsdWRlLmpzIiwiaHRtbGRvbWFwaS5qcyIsInRvdm5vZGUuanMiLCJ2bm9kZS5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtBQ0FBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUNqRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUMzQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EiLCJmaWxlIjoiZ2VuZXJhdGVkLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXNDb250ZW50IjpbIihmdW5jdGlvbiBlKHQsbixyKXtmdW5jdGlvbiBzKG8sdSl7aWYoIW5bb10pe2lmKCF0W29dKXt2YXIgYT10eXBlb2YgcmVxdWlyZT09XCJmdW5jdGlvblwiJiZyZXF1aXJlO2lmKCF1JiZhKXJldHVybiBhKG8sITApO2lmKGkpcmV0dXJuIGkobywhMCk7dmFyIGY9bmV3IEVycm9yKFwiQ2Fubm90IGZpbmQgbW9kdWxlICdcIitvK1wiJ1wiKTt0aHJvdyBmLmNvZGU9XCJNT0RVTEVfTk9UX0ZPVU5EXCIsZn12YXIgbD1uW29dPXtleHBvcnRzOnt9fTt0W29dWzBdLmNhbGwobC5leHBvcnRzLGZ1bmN0aW9uKGUpe3ZhciBuPXRbb11bMV1bZV07cmV0dXJuIHMobj9uOmUpfSxsLGwuZXhwb3J0cyxlLHQsbixyKX1yZXR1cm4gbltvXS5leHBvcnRzfXZhciBpPXR5cGVvZiByZXF1aXJlPT1cImZ1bmN0aW9uXCImJnJlcXVpcmU7Zm9yKHZhciBvPTA7bzxyLmxlbmd0aDtvKyspcyhyW29dKTtyZXR1cm4gc30pIiwiXCJ1c2Ugc3RyaWN0XCI7XG5PYmplY3QuZGVmaW5lUHJvcGVydHkoZXhwb3J0cywgXCJfX2VzTW9kdWxlXCIsIHsgdmFsdWU6IHRydWUgfSk7XG5mdW5jdGlvbiBjcmVhdGVFbGVtZW50KHRhZ05hbWUpIHtcbiAgICByZXR1cm4gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCh0YWdOYW1lKTtcbn1cbmZ1bmN0aW9uIGNyZWF0ZUVsZW1lbnROUyhuYW1lc3BhY2VVUkksIHF1YWxpZmllZE5hbWUpIHtcbiAgICByZXR1cm4gZG9jdW1lbnQuY3JlYXRlRWxlbWVudE5TKG5hbWVzcGFjZVVSSSwgcXVhbGlmaWVkTmFtZSk7XG59XG5mdW5jdGlvbiBjcmVhdGVUZXh0Tm9kZSh0ZXh0KSB7XG4gICAgcmV0dXJuIGRvY3VtZW50LmNyZWF0ZVRleHROb2RlKHRleHQpO1xufVxuZnVuY3Rpb24gY3JlYXRlQ29tbWVudCh0ZXh0KSB7XG4gICAgcmV0dXJuIGRvY3VtZW50LmNyZWF0ZUNvbW1lbnQodGV4dCk7XG59XG5mdW5jdGlvbiBpbnNlcnRCZWZvcmUocGFyZW50Tm9kZSwgbmV3Tm9kZSwgcmVmZXJlbmNlTm9kZSkge1xuICAgIHBhcmVudE5vZGUuaW5zZXJ0QmVmb3JlKG5ld05vZGUsIHJlZmVyZW5jZU5vZGUpO1xufVxuZnVuY3Rpb24gcmVtb3ZlQ2hpbGQobm9kZSwgY2hpbGQpIHtcbiAgICBub2RlLnJlbW92ZUNoaWxkKGNoaWxkKTtcbn1cbmZ1bmN0aW9uIGFwcGVuZENoaWxkKG5vZGUsIGNoaWxkKSB7XG4gICAgbm9kZS5hcHBlbmRDaGlsZChjaGlsZCk7XG59XG5mdW5jdGlvbiBwYXJlbnROb2RlKG5vZGUpIHtcbiAgICByZXR1cm4gbm9kZS5wYXJlbnROb2RlO1xufVxuZnVuY3Rpb24gbmV4dFNpYmxpbmcobm9kZSkge1xuICAgIHJldHVybiBub2RlLm5leHRTaWJsaW5nO1xufVxuZnVuY3Rpb24gdGFnTmFtZShlbG0pIHtcbiAgICByZXR1cm4gZWxtLnRhZ05hbWU7XG59XG5mdW5jdGlvbiBzZXRUZXh0Q29udGVudChub2RlLCB0ZXh0KSB7XG4gICAgbm9kZS50ZXh0Q29udGVudCA9IHRleHQ7XG59XG5mdW5jdGlvbiBnZXRUZXh0Q29udGVudChub2RlKSB7XG4gICAgcmV0dXJuIG5vZGUudGV4dENvbnRlbnQ7XG59XG5mdW5jdGlvbiBpc0VsZW1lbnQobm9kZSkge1xuICAgIHJldHVybiBub2RlLm5vZGVUeXBlID09PSAxO1xufVxuZnVuY3Rpb24gaXNUZXh0KG5vZGUpIHtcbiAgICByZXR1cm4gbm9kZS5ub2RlVHlwZSA9PT0gMztcbn1cbmZ1bmN0aW9uIGlzQ29tbWVudChub2RlKSB7XG4gICAgcmV0dXJuIG5vZGUubm9kZVR5cGUgPT09IDg7XG59XG5leHBvcnRzLmh0bWxEb21BcGkgPSB7XG4gICAgY3JlYXRlRWxlbWVudDogY3JlYXRlRWxlbWVudCxcbiAgICBjcmVhdGVFbGVtZW50TlM6IGNyZWF0ZUVsZW1lbnROUyxcbiAgICBjcmVhdGVUZXh0Tm9kZTogY3JlYXRlVGV4dE5vZGUsXG4gICAgY3JlYXRlQ29tbWVudDogY3JlYXRlQ29tbWVudCxcbiAgICBpbnNlcnRCZWZvcmU6IGluc2VydEJlZm9yZSxcbiAgICByZW1vdmVDaGlsZDogcmVtb3ZlQ2hpbGQsXG4gICAgYXBwZW5kQ2hpbGQ6IGFwcGVuZENoaWxkLFxuICAgIHBhcmVudE5vZGU6IHBhcmVudE5vZGUsXG4gICAgbmV4dFNpYmxpbmc6IG5leHRTaWJsaW5nLFxuICAgIHRhZ05hbWU6IHRhZ05hbWUsXG4gICAgc2V0VGV4dENvbnRlbnQ6IHNldFRleHRDb250ZW50LFxuICAgIGdldFRleHRDb250ZW50OiBnZXRUZXh0Q29udGVudCxcbiAgICBpc0VsZW1lbnQ6IGlzRWxlbWVudCxcbiAgICBpc1RleHQ6IGlzVGV4dCxcbiAgICBpc0NvbW1lbnQ6IGlzQ29tbWVudCxcbn07XG5leHBvcnRzLmRlZmF1bHQgPSBleHBvcnRzLmh0bWxEb21BcGk7XG4vLyMgc291cmNlTWFwcGluZ1VSTD1odG1sZG9tYXBpLmpzLm1hcCIsIlwidXNlIHN0cmljdFwiO1xuT2JqZWN0LmRlZmluZVByb3BlcnR5KGV4cG9ydHMsIFwiX19lc01vZHVsZVwiLCB7IHZhbHVlOiB0cnVlIH0pO1xudmFyIHZub2RlXzEgPSByZXF1aXJlKFwiLi92bm9kZVwiKTtcbnZhciBodG1sZG9tYXBpXzEgPSByZXF1aXJlKFwiLi9odG1sZG9tYXBpXCIpO1xuZnVuY3Rpb24gdG9WTm9kZShub2RlLCBkb21BcGkpIHtcbiAgICB2YXIgYXBpID0gZG9tQXBpICE9PSB1bmRlZmluZWQgPyBkb21BcGkgOiBodG1sZG9tYXBpXzEuZGVmYXVsdDtcbiAgICB2YXIgdGV4dDtcbiAgICBpZiAoYXBpLmlzRWxlbWVudChub2RlKSkge1xuICAgICAgICB2YXIgaWQgPSBub2RlLmlkID8gJyMnICsgbm9kZS5pZCA6ICcnO1xuICAgICAgICB2YXIgY24gPSBub2RlLmdldEF0dHJpYnV0ZSgnY2xhc3MnKTtcbiAgICAgICAgdmFyIGMgPSBjbiA/ICcuJyArIGNuLnNwbGl0KCcgJykuam9pbignLicpIDogJyc7XG4gICAgICAgIHZhciBzZWwgPSBhcGkudGFnTmFtZShub2RlKS50b0xvd2VyQ2FzZSgpICsgaWQgKyBjO1xuICAgICAgICB2YXIgYXR0cnMgPSB7fTtcbiAgICAgICAgdmFyIGNoaWxkcmVuID0gW107XG4gICAgICAgIHZhciBuYW1lXzE7XG4gICAgICAgIHZhciBpID0gdm9pZCAwLCBuID0gdm9pZCAwO1xuICAgICAgICB2YXIgZWxtQXR0cnMgPSBub2RlLmF0dHJpYnV0ZXM7XG4gICAgICAgIHZhciBlbG1DaGlsZHJlbiA9IG5vZGUuY2hpbGROb2RlcztcbiAgICAgICAgZm9yIChpID0gMCwgbiA9IGVsbUF0dHJzLmxlbmd0aDsgaSA8IG47IGkrKykge1xuICAgICAgICAgICAgbmFtZV8xID0gZWxtQXR0cnNbaV0ubm9kZU5hbWU7XG4gICAgICAgICAgICBpZiAobmFtZV8xICE9PSAnaWQnICYmIG5hbWVfMSAhPT0gJ2NsYXNzJykge1xuICAgICAgICAgICAgICAgIGF0dHJzW25hbWVfMV0gPSBlbG1BdHRyc1tpXS5ub2RlVmFsdWU7XG4gICAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgICAgZm9yIChpID0gMCwgbiA9IGVsbUNoaWxkcmVuLmxlbmd0aDsgaSA8IG47IGkrKykge1xuICAgICAgICAgICAgY2hpbGRyZW4ucHVzaCh0b1ZOb2RlKGVsbUNoaWxkcmVuW2ldKSk7XG4gICAgICAgIH1cbiAgICAgICAgcmV0dXJuIHZub2RlXzEuZGVmYXVsdChzZWwsIHsgYXR0cnM6IGF0dHJzIH0sIGNoaWxkcmVuLCB1bmRlZmluZWQsIG5vZGUpO1xuICAgIH1cbiAgICBlbHNlIGlmIChhcGkuaXNUZXh0KG5vZGUpKSB7XG4gICAgICAgIHRleHQgPSBhcGkuZ2V0VGV4dENvbnRlbnQobm9kZSk7XG4gICAgICAgIHJldHVybiB2bm9kZV8xLmRlZmF1bHQodW5kZWZpbmVkLCB1bmRlZmluZWQsIHVuZGVmaW5lZCwgdGV4dCwgbm9kZSk7XG4gICAgfVxuICAgIGVsc2UgaWYgKGFwaS5pc0NvbW1lbnQobm9kZSkpIHtcbiAgICAgICAgdGV4dCA9IGFwaS5nZXRUZXh0Q29udGVudChub2RlKTtcbiAgICAgICAgcmV0dXJuIHZub2RlXzEuZGVmYXVsdCgnIScsIHt9LCBbXSwgdGV4dCwgbm9kZSk7XG4gICAgfVxuICAgIGVsc2Uge1xuICAgICAgICByZXR1cm4gdm5vZGVfMS5kZWZhdWx0KCcnLCB7fSwgW10sIHVuZGVmaW5lZCwgdW5kZWZpbmVkKTtcbiAgICB9XG59XG5leHBvcnRzLnRvVk5vZGUgPSB0b1ZOb2RlO1xuZXhwb3J0cy5kZWZhdWx0ID0gdG9WTm9kZTtcbi8vIyBzb3VyY2VNYXBwaW5nVVJMPXRvdm5vZGUuanMubWFwIiwiXCJ1c2Ugc3RyaWN0XCI7XG5PYmplY3QuZGVmaW5lUHJvcGVydHkoZXhwb3J0cywgXCJfX2VzTW9kdWxlXCIsIHsgdmFsdWU6IHRydWUgfSk7XG5mdW5jdGlvbiB2bm9kZShzZWwsIGRhdGEsIGNoaWxkcmVuLCB0ZXh0LCBlbG0pIHtcbiAgICB2YXIga2V5ID0gZGF0YSA9PT0gdW5kZWZpbmVkID8gdW5kZWZpbmVkIDogZGF0YS5rZXk7XG4gICAgcmV0dXJuIHsgc2VsOiBzZWwsIGRhdGE6IGRhdGEsIGNoaWxkcmVuOiBjaGlsZHJlbixcbiAgICAgICAgdGV4dDogdGV4dCwgZWxtOiBlbG0sIGtleToga2V5IH07XG59XG5leHBvcnRzLnZub2RlID0gdm5vZGU7XG5leHBvcnRzLmRlZmF1bHQgPSB2bm9kZTtcbi8vIyBzb3VyY2VNYXBwaW5nVVJMPXZub2RlLmpzLm1hcCJdfQ==
 
+
+/***/ }),
+
+/***/ "./node_modules/timers-browserify/main.js":
+/*!************************************************!*\
+  !*** ./node_modules/timers-browserify/main.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
+            (typeof self !== "undefined" && self) ||
+            window;
+var apply = Function.prototype.apply;
+
+// DOM APIs, for completeness
+
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) {
+  if (timeout) {
+    timeout.close();
+  }
+};
+
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(scope, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// setimmediate attaches itself to the global object
+__webpack_require__(/*! setimmediate */ "./node_modules/setimmediate/setImmediate.js");
+// On some exotic environments, it's not clear which object `setimmediate` was
+// able to install onto.  Search each possibility in the same order as the
+// `setimmediate` library.
+exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
+                       (typeof global !== "undefined" && global.setImmediate) ||
+                       (this && this.setImmediate);
+exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
+                         (typeof global !== "undefined" && global.clearImmediate) ||
+                         (this && this.clearImmediate);
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
@@ -34885,7 +41357,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! templates/chatboxes.html */ "./src/templates/chatboxes.html"), __webpack_require__(/*! backbone.overview */ "backbone.overview"), __webpack_require__(/*! form-utils */ "./src/utils/form.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! templates/chatboxes.html */ "./src/templates/chatboxes.html"), __webpack_require__(/*! backbone.overview */ "backbone.overview"), __webpack_require__(/*! utils/form */ "./src/utils/form.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -34909,20 +41381,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Overrides mentioned here will be picked up by converse.js's
       // plugin architecture they will replace existing methods on the
       // relevant objects or classes.
-      disconnect: function disconnect() {
-        var _converse = this.__super__._converse;
-
-        _converse.chatboxviews.closeAllChatBoxes();
-
-        return this.__super__.disconnect.apply(this, arguments);
-      },
-      logOut: function logOut() {
-        var _converse = this.__super__._converse;
-
-        _converse.chatboxviews.closeAllChatBoxes();
-
-        return this.__super__.logOut.apply(this, arguments);
-      },
       initStatus: function initStatus(reconnecting) {
         var _converse = this.__super__._converse;
 
@@ -35149,13 +41607,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         comparator: 'time'
       });
       _converse.ChatBox = _converse.ModelWithVCardAndPresence.extend({
-        defaults: {
-          'bookmarked': false,
-          'chat_state': undefined,
-          'num_unread': 0,
-          'type': 'chatbox',
-          'message_type': 'chat',
-          'url': ''
+        defaults: function defaults() {
+          return {
+            'bookmarked': false,
+            'chat_state': undefined,
+            'num_unread': 0,
+            'type': 'chatbox',
+            'message_type': 'chat',
+            'url': '',
+            'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode)
+          };
         },
         initialize: function initialize() {
           var _this4 = this;
@@ -35329,9 +41790,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
         getMessageBody: function getMessageBody(message) {
           var type = message.getAttribute('type');
-          return type === 'error' ? _.propertyOf(message.querySelector('error text'))('textContent') : _.propertyOf(message.querySelector('body'))('textContent');
+
+          if (type === 'error') {
+            var error = message.querySelector('error');
+            return _.propertyOf(error.querySelector('text'))('textContent') || __('Sorry, an error occured:') + ' ' + error.innerHTML;
+          } else {
+            return _.propertyOf(message.querySelector('body'))('textContent');
+          }
         },
-        getMessageAttributesFromStanza: function getMessageAttributesFromStanza(message, delay, original_stanza) {
+        getMessageAttributesFromStanza: function getMessageAttributesFromStanza(message, original_stanza) {
           /* Parses a passed in message stanza and returns an object
            * of attributes.
            *
@@ -35343,21 +41810,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            *      that contains the message stanza, if it was
            *      contained, otherwise it's the message stanza itself.
            */
-          delay = delay || message.querySelector('delay');
-
           var _converse = this.__super__._converse,
               __ = _converse.__,
-              spoiler = message.querySelector("spoiler[xmlns=\"".concat(Strophe.NS.SPOILER, "\"]")),
+              archive = sizzle("result[xmlns=\"".concat(Strophe.NS.MAM, "\"]"), original_stanza).pop(),
+              spoiler = sizzle("spoiler[xmlns=\"".concat(Strophe.NS.SPOILER, "\"]"), original_stanza).pop(),
+              delay = sizzle("delay[xmlns=\"".concat(Strophe.NS.DELAY, "\"]"), original_stanza).pop(),
               chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
           var attrs = {
-            'type': message.getAttribute('type'),
             'chat_state': chat_state,
-            'delayed': !_.isNull(delay),
+            'is_archived': !_.isNil(archive),
+            'is_delayed': !_.isNil(delay),
+            'is_spoiler': !_.isNil(spoiler),
             'message': this.getMessageBody(message) || undefined,
             'msgid': message.getAttribute('id'),
             'time': delay ? delay.getAttribute('stamp') : moment().format(),
-            'is_spoiler': !_.isNull(spoiler)
+            'type': message.getAttribute('type')
           };
 
           if (attrs.type === 'groupchat') {
@@ -35392,15 +41860,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           return attrs;
         },
-        createMessage: function createMessage(message, delay, original_stanza) {
+        createMessage: function createMessage(message, original_stanza) {
           /* Create a Backbone.Message object inside this chat box
            * based on the identified message stanza.
            */
-          var attrs = this.getMessageAttributesFromStanza.apply(this, arguments);
+          var attrs = this.getMessageAttributesFromStanza(message, original_stanza);
           var is_csn = u.isOnlyChatStateNotification(attrs);
 
-          if (is_csn && attrs.delayed) {
-            // No need showing old CSNs
+          if (is_csn && (attrs.is_delayed || attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick'))) {
+            // XXX: MUC leakage
+            // No need showing delayed or our own CSN messages
             return;
           } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
             // TODO: handle <subject> messages (currently being done by ChatRoom)
@@ -35409,7 +41878,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return this.messages.create(attrs);
           }
         },
-        newMessageWillBeHidden: function newMessageWillBeHidden() {
+        isHidden: function isHidden() {
           /* Returns a boolean to indicate whether a newly received
            * message will be visible to the user or not.
            */
@@ -35423,7 +41892,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return; // The message has no text
           }
 
-          if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+          if (utils.isNewMessage(stanza) && this.isHidden()) {
             this.save({
               'num_unread': this.get('num_unread') + 1
             });
@@ -35446,19 +41915,29 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return new _converse.ChatBox(attrs, options);
         },
         registerMessageHandler: function registerMessageHandler() {
-          _converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
+          var _this6 = this;
 
-          _converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
+          _converse.connection.addHandler(function (stanza) {
+            _this6.onMessage(stanza);
+
+            return true;
+          }, null, 'message', 'chat');
+
+          _converse.connection.addHandler(function (stanza) {
+            _this6.onErrorMessage(stanza);
+
+            return true;
+          }, null, 'message', 'error');
         },
         chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
           return true;
         },
         onChatBoxesFetched: function onChatBoxesFetched(collection) {
-          var _this6 = this;
+          var _this7 = this;
 
           /* Show chat boxes upon receiving them from sessionStorage */
           collection.each(function (chatbox) {
-            if (_this6.chatBoxMayBeShown(chatbox)) {
+            if (_this7.chatBoxMayBeShown(chatbox)) {
               chatbox.trigger('show');
             }
           });
@@ -35466,23 +41945,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           _converse.emit('chatBoxesFetched');
         },
         onConnected: function onConnected() {
-          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.chatboxes-".concat(_converse.bare_jid)));
+          this.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.chatboxes-".concat(_converse.bare_jid)));
           this.registerMessageHandler();
           this.fetch({
-            add: true,
-            success: this.onChatBoxesFetched.bind(this)
+            'add': true,
+            'success': this.onChatBoxesFetched.bind(this)
           });
         },
         onErrorMessage: function onErrorMessage(message) {
           /* Handler method for all incoming error message stanzas
           */
-          // TODO: we can likely just reuse "onMessage" below
           var from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
 
           if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
             return true;
-          } // Get chat box, but only create a new one when the message has a body.
-
+          }
 
           var chatbox = this.getChatBox(from_jid);
 
@@ -35490,7 +41967,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return true;
           }
 
-          chatbox.createMessage(message, null, message);
+          chatbox.createMessage(message, message);
           return true;
         },
         onMessage: function onMessage(message) {
@@ -35500,10 +41977,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * Parameters:
            *    (XMLElement) message - The incoming message stanza
            */
-          var contact_jid,
-              delay,
-              resource,
-              from_jid = message.getAttribute('from'),
+          var from_jid = message.getAttribute('from'),
               to_jid = message.getAttribute('to');
           var original_stanza = message,
               to_resource = Strophe.getResourceFromJid(to_jid),
@@ -35530,13 +42004,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
             if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
               // Prevent message forging via carbons
-              //
               // https://xmpp.org/extensions/xep-0280.html#security
               return true;
             }
 
             message = forwarded_message;
-            delay = forwarded.querySelector('delay');
             from_jid = message.getAttribute('from');
             to_jid = message.getAttribute('to');
           }
@@ -35544,14 +42016,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           var from_bare_jid = Strophe.getBareJidFromJid(from_jid),
               from_resource = Strophe.getResourceFromJid(from_jid),
               is_me = from_bare_jid === _converse.bare_jid;
+          var contact_jid;
 
           if (is_me) {
             // I am the sender, so this must be a forwarded message...
             contact_jid = Strophe.getBareJidFromJid(to_jid);
-            resource = Strophe.getResourceFromJid(to_jid);
           } else {
             contact_jid = from_bare_jid;
-            resource = from_resource;
           } // Get chat box, but only create a new one when the message has a body.
 
 
@@ -35570,7 +42041,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               // Only create the message when we're sure it's not a
               // duplicate
               chatbox.incrementUnreadMsgCounter(original_stanza);
-              chatbox.createMessage(message, delay, original_stanza);
+              chatbox.createMessage(message, original_stanza);
             }
           }
 
@@ -35755,11 +42226,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         _converse.emit('chatBoxesInitialized');
       });
 
-      _converse.api.listen.on('beforeTearDown', function () {
-        _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
-
-
-        delete _converse.chatboxes.browserStorage;
+      _converse.api.listen.on('clearSession', function () {
+        _converse.chatboxviews.closeAllChatBoxes();
       });
 
       _converse.api.listen.on('presencesInitialized', function () {
@@ -36887,11 +43355,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return this;
         },
         afterShown: function afterShown() {
-          if (u.isPersistableModel(this.model)) {
-            this.model.clearUnreadMsgCounter();
-            this.model.save();
-          }
-
+          this.model.clearUnreadMsgCounter();
           this.setChatState(_converse.ACTIVE);
           this.renderEmojiPicker();
           this.scrollDown();
@@ -36969,7 +43433,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
         },
         onWindowStateChanged: function onWindowStateChanged(state) {
-          if (this.model.get('num_unread', 0) && !this.model.newMessageWillBeHidden()) {
+          if (this.model.get('num_unread', 0) && !this.model.isHidden()) {
             this.model.clearUnreadMsgCounter();
           }
         }
@@ -37096,8 +43560,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // relevant objects or classes.
       //
       // New functions which don't exist yet can also be added.
-      _tearDown: function _tearDown() {
-        this.__super__._tearDown.apply(this, arguments);
+      tearDown: function tearDown() {
+        this.__super__.tearDown.apply(this, arguments);
 
         if (this.rosterview) {
           // Removes roster groups
@@ -37652,16 +44116,13 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! es6-promise */ "es6-promise"), __webpack_require__(/*! lodash.noconflict */ "lodash.noconflict"), __webpack_require__(/*! lodash.fp */ "./src/lodash.fp.js"), __webpack_require__(/*! polyfill */ "./src/polyfill.js"), __webpack_require__(/*! i18n */ "./src/i18n.js"), __webpack_require__(/*! utils */ "./src/utils/core.js"), __webpack_require__(/*! moment */ "moment"), __webpack_require__(/*! strophe */ "strophe"), __webpack_require__(/*! pluggable */ "./node_modules/pluggable.js/dist/pluggable.js"), __webpack_require__(/*! backbone.noconflict */ "./src/backbone.noconflict.js"), __webpack_require__(/*! backbone.nativeview */ "./node_modules/backbone.nativeview/backbone.nativeview.js"), __webpack_require__(/*! backbone.browserStorage */ "backbone.browserStorage")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! es6-promise */ "es6-promise"), __webpack_require__(/*! lodash.noconflict */ "lodash.noconflict"), __webpack_require__(/*! lodash.fp */ "./src/lodash.fp.js"), __webpack_require__(/*! polyfill */ "./src/polyfill.js"), __webpack_require__(/*! i18n */ "./src/i18n.js"), __webpack_require__(/*! utils/core */ "./src/utils/core.js"), __webpack_require__(/*! moment */ "moment"), __webpack_require__(/*! strophe */ "strophe"), __webpack_require__(/*! pluggable */ "./node_modules/pluggable.js/dist/pluggable.js"), __webpack_require__(/*! backbone.noconflict */ "./src/backbone.noconflict.js"), __webpack_require__(/*! backbone.nativeview */ "./node_modules/backbone.nativeview/backbone.nativeview.js"), __webpack_require__(/*! backbone.browserStorage */ "backbone.browserStorage")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 })(void 0, function (sizzle, Promise, _, f, polyfill, i18n, u, moment, Strophe, pluggable, Backbone) {
-  /* Cannot use this due to Safari bug.
-   * See https://github.com/jcbrand/converse.js/issues/196
-   */
-  // "use strict";
-  // Strophe globals
+  "use strict"; // Strophe globals
+
   var _Strophe = Strophe,
       $build = _Strophe.$build,
       $iq = _Strophe.$iq,
@@ -37709,7 +44170,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   _.extend(_converse, Backbone.Events); // Core plugins are whitelisted automatically
 
 
-  _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-caps', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-profile', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Make converse pluggable
+  _converse.core_plugins = ['converse-bookmarks', 'converse-caps', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-oauth', 'converse-ping', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Make converse pluggable
 
   pluggable.enable(_converse, '_converse', 'pluggable'); // Module-level constants
 
@@ -37739,6 +44200,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   _converse.LOGOUT = "logout";
   _converse.OPENED = 'opened';
   _converse.PREBIND = "prebind";
+  _converse.IQ_TIMEOUT = 30000;
   _converse.CONNECTION_STATUS = {
     0: 'ERROR',
     1: 'CONNECTING',
@@ -37910,8 +44372,6 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   _converse.router = new Backbone.Router();
 
   _converse.initialize = function (settings, callback) {
-    "use strict";
-
     var _this = this;
 
     settings = !_.isUndefined(settings) ? settings : {};
@@ -37940,21 +44400,19 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 
       _converse.stopListening();
 
-      _converse._tearDown();
+      _converse.tearDown();
     }
-
-    var unloadevent;
 
     if ('onpagehide' in window) {
       // Pagehide gets thrown in more cases than unload. Specifically it
       // gets thrown when the page is cached and not just
       // closed/destroyed. It's the only viable event on mobile Safari.
       // https://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/
-      unloadevent = 'pagehide';
+      _converse.unloadevent = 'pagehide';
     } else if ('onbeforeunload' in window) {
-      unloadevent = 'beforeunload';
+      _converse.unloadevent = 'beforeunload';
     } else if ('onunload' in window) {
-      unloadevent = 'unload';
+      _converse.unloadevent = 'unload';
     }
 
     _.assignIn(this, this.default_settings); // Allow only whitelisted configuration attributes to be overwritten
@@ -38083,7 +44541,11 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       window.addEventListener('focus', _converse.onUserActivity);
       window.addEventListener('keypress', _converse.onUserActivity);
       window.addEventListener('mousemove', _converse.onUserActivity);
-      window.addEventListener(unloadevent, _converse.onUserActivity);
+      var options = {
+        'once': true,
+        'passive': true
+      };
+      window.addEventListener(_converse.unloadevent, _converse.onUserActivity, options);
       _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
     };
 
@@ -38123,7 +44585,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 
       _converse.connection.reconnecting = true;
 
-      _converse._tearDown();
+      _converse.tearDown();
 
       _converse.logIn(null, true);
     }, 3000, {
@@ -38137,7 +44599,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 
       _converse.connection.reset();
 
-      _converse._tearDown();
+      _converse.tearDown();
 
       _converse.emit('disconnected');
     };
@@ -38304,7 +44766,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       var id = b64_sha1('converse.bosh-session');
       _converse.session.id = id; // Appears to be necessary for backbone.browserStorage
 
-      _converse.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+      _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
 
       _converse.session.fetch();
 
@@ -38330,7 +44792,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       if (!_.isUndefined(_converse.connection)) {
         _converse.connection.disconnect();
       } else {
-        _converse._tearDown();
+        _converse.tearDown();
       } // Recreate all the promises
 
 
@@ -38424,7 +44886,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           _converse.log('An error occured while trying to enable message carbons.', Strophe.LogLevel.ERROR);
         } else {
           _this2.session.save({
-            carbons_enabled: true
+            'carbons_enabled': true
           });
 
           _converse.log('Message carbons have been enabled.');
@@ -38779,7 +45241,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       _converse.emit('connectionInitialized');
     };
 
-    this._tearDown = function () {
+    this.tearDown = function () {
       /* Remove those views which are only allowed with a valid
        * connection.
        */
@@ -38793,7 +45255,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       window.removeEventListener('focus', _converse.onUserActivity);
       window.removeEventListener('keypress', _converse.onUserActivity);
       window.removeEventListener('mousemove', _converse.onUserActivity);
-      window.removeEventListener(unloadevent, _converse.onUserActivity);
+      window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
       window.clearInterval(_converse.everySecondTrigger);
 
       _converse.emit('afterTearDown');
@@ -38993,6 +45455,11 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
     },
     'send': function send(stanza) {
       _converse.connection.send(stanza);
+    },
+    'sendIQ': function sendIQ(stanza) {
+      return new Promise(function (resolve, reject) {
+        _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
+      });
     }
   }; // The public API
 
@@ -39180,9 +45647,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             var jid = item.getAttribute('jid');
 
             if (_.isUndefined(_this2.items.get(jid))) {
-              _this2.items.create({
-                'jid': jid
-              });
+              var entity = _converse.disco_entities.get(jid);
+
+              if (entity) {
+                _this2.items.add(entity);
+              } else {
+                _this2.items.create({
+                  'jid': jid
+                });
+              }
             }
           });
         },
@@ -39625,10 +46098,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
              *    (String) entity_jid - The JID of the entity which might have the identity
              */
             return new Promise(function (resolve, reject) {
-              _converse.api.waitUntil('discoInitialized').then(function () {
-                _converse.api.disco.entities.get(entity_jid, true).then(function (entity) {
-                  return resolve(entity.getIdentity(category, type));
-                });
+              _converse.api.disco.entities.get(entity_jid, true).then(function (entity) {
+                return resolve(entity.getIdentity(category, type));
               });
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
           }
@@ -40303,7 +46774,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'from': from_jid
           });
 
-          chatbox.createMessage(message, undefined, message);
+          chatbox.createMessage(message, message);
 
           _converse.emit('message', {
             'chatbox': chatbox,
@@ -40349,11 +46820,11 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 /*global define */
 // XEP-0059 Result Set Management
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils */ "./src/utils/core.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! strophe.rsm */ "strophe.rsm")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! strophe.rsm */ "strophe.rsm")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (sizzle, converse, utils) {
+})(void 0, function (sizzle, converse) {
   "use strict";
 
   var CHATROOMS_TYPE = 'chatroom';
@@ -40363,6 +46834,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       $iq = _converse$env.$iq,
       _ = _converse$env._,
       moment = _converse$env.moment;
+  var u = converse.env.utils;
   var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count']; // XEP-0313 Message Archive Management
 
   var MAM_ATTRIBUTES = ['with', 'start', 'end'];
@@ -40502,7 +46974,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       //
       // New functions which don't exist yet can also be added.
       ChatBox: {
-        getMessageAttributesFromStanza: function getMessageAttributesFromStanza(message, delay, original_stanza) {
+        getMessageAttributesFromStanza: function getMessageAttributesFromStanza(message, original_stanza) {
           var attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
 
           var archive_id = getMessageArchiveID(original_stanza);
@@ -40533,7 +47005,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           }
 
           var _converse = this.__super__._converse,
-              most_recent_msg = utils.getMostRecentMessage(this.model);
+              most_recent_msg = u.getMostRecentMessage(this.model);
 
           if (_.isNil(most_recent_msg)) {
             this.fetchArchivedMessages();
@@ -40852,7 +47324,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
   !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! templates/action.html */ "./src/templates/action.html"), __webpack_require__(/*! templates/csn.html */ "./src/templates/csn.html"), __webpack_require__(/*! templates/file_progress.html */ "./src/templates/file_progress.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/message.html */ "./src/templates/message.html"), __webpack_require__(/*! templates/spoiler_message.html */ "./src/templates/spoiler_message.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
@@ -41048,7 +47520,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           text = u.geoUriToHttp(text, _converse.geouri_replacement);
         },
         getExtraMessageClasses: function getExtraMessageClasses() {
-          var extra_classes = this.model.get('delayed') && 'delayed' || '';
+          var extra_classes = this.model.get('is_delayed') && 'delayed' || '';
 
           if (this.model.get('type') === 'groupchat' && this.model.get('sender') === 'them') {
             if (this.model.collection.chatbox.isUserMentioned(this.model.get('message'))) {
@@ -41663,7 +48135,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/alert_modal.html */ "./src/templates/alert_modal.html"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/dist/backbone.vdomview.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/alert_modal.html */ "./src/templates/alert_modal.html"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/backbone.vdomview.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -41781,7 +48253,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! muc-utils */ "./src/utils/muc.js"), __webpack_require__(/*! templates/add_chatroom_modal.html */ "./src/templates/add_chatroom_modal.html"), __webpack_require__(/*! templates/chatarea.html */ "./src/templates/chatarea.html"), __webpack_require__(/*! templates/chatroom.html */ "./src/templates/chatroom.html"), __webpack_require__(/*! templates/chatroom_details_modal.html */ "./src/templates/chatroom_details_modal.html"), __webpack_require__(/*! templates/chatroom_disconnect.html */ "./src/templates/chatroom_disconnect.html"), __webpack_require__(/*! templates/chatroom_features.html */ "./src/templates/chatroom_features.html"), __webpack_require__(/*! templates/chatroom_form.html */ "./src/templates/chatroom_form.html"), __webpack_require__(/*! templates/chatroom_head.html */ "./src/templates/chatroom_head.html"), __webpack_require__(/*! templates/chatroom_invite.html */ "./src/templates/chatroom_invite.html"), __webpack_require__(/*! templates/chatroom_nickname_form.html */ "./src/templates/chatroom_nickname_form.html"), __webpack_require__(/*! templates/chatroom_password_form.html */ "./src/templates/chatroom_password_form.html"), __webpack_require__(/*! templates/chatroom_sidebar.html */ "./src/templates/chatroom_sidebar.html"), __webpack_require__(/*! templates/chatroom_toolbar.html */ "./src/templates/chatroom_toolbar.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/list_chatrooms_modal.html */ "./src/templates/list_chatrooms_modal.html"), __webpack_require__(/*! templates/occupant.html */ "./src/templates/occupant.html"), __webpack_require__(/*! templates/room_description.html */ "./src/templates/room_description.html"), __webpack_require__(/*! templates/room_item.html */ "./src/templates/room_item.html"), __webpack_require__(/*! templates/room_panel.html */ "./src/templates/room_panel.html"), __webpack_require__(/*! templates/rooms_results.html */ "./src/templates/rooms_results.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! awesomplete */ "awesomplete"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js"), __webpack_require__(/*! templates/add_chatroom_modal.html */ "./src/templates/add_chatroom_modal.html"), __webpack_require__(/*! templates/chatarea.html */ "./src/templates/chatarea.html"), __webpack_require__(/*! templates/chatroom.html */ "./src/templates/chatroom.html"), __webpack_require__(/*! templates/chatroom_details_modal.html */ "./src/templates/chatroom_details_modal.html"), __webpack_require__(/*! templates/chatroom_disconnect.html */ "./src/templates/chatroom_disconnect.html"), __webpack_require__(/*! templates/chatroom_features.html */ "./src/templates/chatroom_features.html"), __webpack_require__(/*! templates/chatroom_form.html */ "./src/templates/chatroom_form.html"), __webpack_require__(/*! templates/chatroom_head.html */ "./src/templates/chatroom_head.html"), __webpack_require__(/*! templates/chatroom_invite.html */ "./src/templates/chatroom_invite.html"), __webpack_require__(/*! templates/chatroom_nickname_form.html */ "./src/templates/chatroom_nickname_form.html"), __webpack_require__(/*! templates/chatroom_password_form.html */ "./src/templates/chatroom_password_form.html"), __webpack_require__(/*! templates/chatroom_sidebar.html */ "./src/templates/chatroom_sidebar.html"), __webpack_require__(/*! templates/chatroom_toolbar.html */ "./src/templates/chatroom_toolbar.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/list_chatrooms_modal.html */ "./src/templates/list_chatrooms_modal.html"), __webpack_require__(/*! templates/occupant.html */ "./src/templates/occupant.html"), __webpack_require__(/*! templates/room_description.html */ "./src/templates/room_description.html"), __webpack_require__(/*! templates/room_item.html */ "./src/templates/room_item.html"), __webpack_require__(/*! templates/room_panel.html */ "./src/templates/room_panel.html"), __webpack_require__(/*! templates/rooms_results.html */ "./src/templates/rooms_results.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! awesomplete */ "awesomplete"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -41974,6 +48446,67 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           303: ___('Your nickname has been changed to %1$s')
         }
       };
+
+      function insertRoomInfo(el, stanza) {
+        /* Insert room info (based on returned #disco IQ stanza)
+         *
+         * Parameters:
+         *  (HTMLElement) el: The HTML DOM element that should
+         *      contain the info.
+         *  (XMLElement) stanza: The IQ stanza containing the room
+         *      info.
+         */
+        // All MUC features found here: http://xmpp.org/registrar/disco-features.html
+        el.querySelector('span.spinner').remove();
+        el.querySelector('a.room-info').classList.add('selected');
+        el.insertAdjacentHTML('beforeEnd', tpl_room_description({
+          'jid': stanza.getAttribute('from'),
+          'desc': _.get(_.head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
+          'occ': _.get(_.head(sizzle('field[var="muc#roominfo_occupants"] value', stanza)), 'textContent'),
+          'hidden': sizzle('feature[var="muc_hidden"]', stanza).length,
+          'membersonly': sizzle('feature[var="muc_membersonly"]', stanza).length,
+          'moderated': sizzle('feature[var="muc_moderated"]', stanza).length,
+          'nonanonymous': sizzle('feature[var="muc_nonanonymous"]', stanza).length,
+          'open': sizzle('feature[var="muc_open"]', stanza).length,
+          'passwordprotected': sizzle('feature[var="muc_passwordprotected"]', stanza).length,
+          'persistent': sizzle('feature[var="muc_persistent"]', stanza).length,
+          'publicroom': sizzle('feature[var="muc_publicroom"]', stanza).length,
+          'semianonymous': sizzle('feature[var="muc_semianonymous"]', stanza).length,
+          'temporary': sizzle('feature[var="muc_temporary"]', stanza).length,
+          'unmoderated': sizzle('feature[var="muc_unmoderated"]', stanza).length,
+          'label_desc': __('Description:'),
+          'label_jid': __('Room Address (JID):'),
+          'label_occ': __('Occupants:'),
+          'label_features': __('Features:'),
+          'label_requires_auth': __('Requires authentication'),
+          'label_hidden': __('Hidden'),
+          'label_requires_invite': __('Requires an invitation'),
+          'label_moderated': __('Moderated'),
+          'label_non_anon': __('Non-anonymous'),
+          'label_open_room': __('Open room'),
+          'label_permanent_room': __('Permanent room'),
+          'label_public': __('Public'),
+          'label_semi_anon': __('Semi-anonymous'),
+          'label_temp_room': __('Temporary room'),
+          'label_unmoderated': __('Unmoderated')
+        }));
+      }
+
+      function _toggleRoomInfo(ev) {
+        /* Show/hide extra information about a room in a listing. */
+        var parent_el = u.ancestor(ev.target, '.room-item'),
+            div_el = parent_el.querySelector('div.room-info');
+
+        if (div_el) {
+          u.slideIn(div_el).then(u.removeElement);
+          parent_el.querySelector('a.room-info').classList.remove('selected');
+        } else {
+          parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
+
+          _converse.api.disco.info(ev.target.getAttribute('data-room-jid'), null, _.partial(insertRoomInfo, parent_el));
+        }
+      }
+
       _converse.ListChatRoomsModal = _converse.BootstrapModal.extend({
         events: {
           'submit form': 'showRooms',
@@ -42012,20 +48545,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'name': name
           });
         },
-        toggleRoomInfo: function (_toggleRoomInfo) {
-          function toggleRoomInfo(_x) {
-            return _toggleRoomInfo.apply(this, arguments);
-          }
-
-          toggleRoomInfo.toString = function () {
-            return _toggleRoomInfo.toString();
-          };
-
-          return toggleRoomInfo;
-        }(function (ev) {
+        toggleRoomInfo: function toggleRoomInfo(ev) {
           ev.preventDefault();
-          toggleRoomInfo(ev);
-        }),
+
+          _toggleRoomInfo(ev);
+        },
         onDomainChange: function onDomainChange(model) {
           if (_converse.auto_list_rooms) {
             this.updateRoomsList();
@@ -42157,29 +48681,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         initialize: function initialize() {
           _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
 
-          this.model.on('change:features_fetched', this.render());
-
-          if (!this.model.get('features_fetched')) {
-            this.model.getRoomFeatures();
-          }
+          this.model.on('change', this.render, this);
+          this.model.occupants.on('change', this.render, this);
         },
         toHTML: function toHTML() {
           return tpl_chatroom_details_modal(_.extend(this.model.toJSON(), {
             '__': __,
-            'label_desc': __('Description:'),
-            'label_features': __('Features:'),
-            'label_hidden': __('Hidden'),
-            'label_moderated': __('Moderated'),
-            'label_non_anon': __('Non-anonymous'),
-            'label_occ': __('Online users:'),
-            'label_open_room': __('Open room'),
-            'label_permanent_room': __('Permanent room'),
-            'label_public': __('Public'),
-            'label_requires_auth': __('Requires authentication'),
-            'label_requires_invite': __('Requires an invitation'),
-            'label_semi_anon': __('Semi-anonymous'),
-            'label_temp_room': __('Temporary room'),
-            'label_unmoderated': __('Unmoderated'),
+            'display_name': this.model.getDisplayName(),
             'num_occupants': this.model.occupants.length
           }));
         }
@@ -42197,6 +48705,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           'click .chatbox-navback': 'showControlBox',
           'click .close-chatbox-button': 'close',
           'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
+          'click .show-room-details-modal': 'showRoomDetailsModal',
           'click .hide-occupants': 'hideOccupants',
           'click .new-msgs-indicator': 'viewUnreadMessages',
           'click .occupant-nick': 'onOccupantClicked',
@@ -42298,6 +48807,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           return this;
         },
+        showRoomDetailsModal: function showRoomDetailsModal(ev) {
+          ev.preventDefault();
+
+          if (_.isUndefined(this.model.room_details_modal)) {
+            this.model.room_details_modal = new _converse.RoomDetailsModal({
+              'model': this.model
+            });
+          }
+
+          this.model.room_details_modal.show(ev);
+        },
         showChatStateNotification: function showChatStateNotification(message) {
           if (message.get('sender') === 'me') {
             return;
@@ -42338,10 +48858,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           /* Returns the heading HTML to be rendered.
            */
           return tpl_chatroom_head(_.extend(this.model.toJSON(), {
-            Strophe: Strophe,
-            info_close: __('Close and leave this room'),
-            info_configure: __('Configure this room'),
-            description: this.model.get('description') || ''
+            'Strophe': Strophe,
+            'info_close': __('Close and leave this room'),
+            'info_configure': __('Configure this room'),
+            'info_details': __('Show more details about this room'),
+            'description': this.model.get('description') || ''
           }));
         },
         afterShown: function afterShown() {
@@ -43419,34 +49940,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               el = this.el.querySelector('.chatroom-features');
 
           el.innerHTML = tpl_chatroom_features(_.extend(this.chatroomview.model.toJSON(), {
-            'has_features': _.reduce(_.values(picks), iteratee),
-            'label_features': __('Features'),
-            'label_hidden': __('Hidden'),
-            'label_mam_enabled': __('Message archiving'),
-            'label_membersonly': __('Members only'),
-            'label_moderated': __('Moderated'),
-            'label_nonanonymous': __('Non-anonymous'),
-            'label_open': __('Open'),
-            'label_passwordprotected': __('Password protected'),
-            'label_persistent': __('Persistent'),
-            'label_public': __('Public'),
-            'label_semianonymous': __('Semi-anonymous'),
-            'label_temporary': __('Temporary'),
-            'label_unmoderated': __('Unmoderated'),
-            'label_unsecured': __('No password'),
-            'tt_hidden': __('This room is not publicly searchable'),
-            'tt_mam_enabled': __('Messages are archived on the server'),
-            'tt_membersonly': __('This room is restricted to members only'),
-            'tt_moderated': __('This room is being moderated'),
-            'tt_nonanonymous': __('All other room occupants can see your XMPP username'),
-            'tt_open': __('Anyone can join this room'),
-            'tt_passwordprotected': __('This room requires a password before entry'),
-            'tt_persistent': __('This room persists even if it\'s unoccupied'),
-            'tt_public': __('This room is publicly searchable'),
-            'tt_semianonymous': __('Only moderators can see your XMPP username'),
-            'tt_temporary': __('This room will disappear once the last person leaves'),
-            'tt_unmoderated': __('This room is not being moderated'),
-            'tt_unsecured': __('This room does not require a password upon entry')
+            '__': __,
+            'has_features': _.reduce(_.values(picks), iteratee)
           }));
           this.setOccupantsHeight();
           return this;
@@ -43641,13 +50136,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 "use strict";
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
+function _instanceof(left, right) { if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) { return right[Symbol.hasInstance](left); } else { return left instanceof right; } }
+
 // Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! form-utils */ "./src/utils/form.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! backbone.overview */ "backbone.overview"), __webpack_require__(/*! backbone.orderedlistview */ "./node_modules/backbone.overview/dist/backbone.orderedlistview.js"), __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/dist/backbone.vdomview.js"), __webpack_require__(/*! muc-utils */ "./src/utils/muc.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! utils/form */ "./src/utils/form.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! backbone.overview */ "backbone.overview"), __webpack_require__(/*! backbone.orderedlistview */ "./node_modules/backbone.overview/backbone.orderedlistview.js"), __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/backbone.vdomview.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -43709,7 +50206,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // relevant objects or classes.
       //
       // New functions which don't exist yet can also be added.
-      _tearDown: function _tearDown() {
+      tearDown: function tearDown() {
         var rooms = this.chatboxes.where({
           'type': converse.CHATROOMS_TYPE
         });
@@ -43720,7 +50217,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
         });
 
-        this.__super__._tearDown.call(this, arguments);
+        this.__super__.tearDown.call(this, arguments);
       },
       ChatBoxes: {
         model: function model(attrs, options) {
@@ -43887,6 +50384,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           this.handlers[type][name] = callback;
+        },
+        getDisplayName: function getDisplayName() {
+          return this.get('name') || this.get('jid');
         },
         join: function join(nick, password) {
           /* Join the chat room.
@@ -44564,11 +51064,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.fetchFeaturesIfConfigurationChanged(stanza);
           var original_stanza = stanza,
               forwarded = stanza.querySelector('forwarded');
-          var delay;
 
           if (!_.isNull(forwarded)) {
             stanza = forwarded.querySelector('message');
-            delay = forwarded.querySelector('delay');
           }
 
           var jid = stanza.getAttribute('from'),
@@ -44594,7 +51092,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           this.incrementUnreadMsgCounter(original_stanza);
-          this.createMessage(stanza, delay, original_stanza);
+          this.createMessage(stanza, original_stanza);
 
           if (sender !== this.get('nick')) {
             // We only emit an event if it's not our own message
@@ -44693,7 +51191,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return; // The message has no text
           }
 
-          if (u.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+          if (u.isNewMessage(stanza) && this.isHidden()) {
             var settings = {
               'num_unread_general': this.get('num_unread_general') + 1
             };
@@ -44729,14 +51227,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           var vcards = [];
 
           if (this.get('jid')) {
-            vcards.push(this.updateVCard(_converse.vcards.findWhere({
+            vcards.push(_converse.vcards.findWhere({
               'jid': this.get('jid')
-            })));
+            }));
           }
 
-          vcards.push(this.updateVCard(_converse.vcards.findWhere({
+          vcards.push(_converse.vcards.findWhere({
             'jid': this.get('from')
-          })));
+          }));
 
           _.forEach(_.filter(vcards, undefined), function (vcard) {
             if (hash && vcard.get('image_hash') !== hash) {
@@ -44931,7 +51429,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
 
       function disconnectChatRooms() {
-        /* When disconnecting, or reconnecting, mark all chat rooms as
+        /* When disconnecting, mark all chat rooms as
          * disconnected, so that they will be properly entered again
          * when fetched from session storage.
          */
@@ -44955,11 +51453,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         }
       });
 
-      _converse.on('chatBoxesFetched', autoJoinRooms);
+      _converse.api.listen.on('chatBoxesFetched', autoJoinRooms);
 
-      _converse.on('reconnecting', disconnectChatRooms);
+      _converse.api.listen.on('disconnecting', disconnectChatRooms);
 
-      _converse.on('disconnecting', disconnectChatRooms);
+      _converse.api.listen.on('statusInitialized', function () {
+        // XXX: For websocket connections, we disconnect from all
+        // chatrooms when the page reloads. This is a workaround for
+        // issue #1111 and should be removed once we support XEP-0198
+        var options = {
+          'once': true,
+          'passive': true
+        };
+        window.addEventListener(_converse.unloadevent, function () {
+          if (_instanceof(_converse.connection._proto, Strophe.Websocket)) {
+            disconnectChatRooms();
+          }
+        });
+      });
       /************************ END Event Handlers ************************/
 
       /************************ BEGIN API ************************/
@@ -45389,6 +51900,162 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /***/ }),
 
+/***/ "./src/converse-oauth.js":
+/*!*******************************!*\
+  !*** ./src/converse-oauth.js ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
+
+// Converse.js
+// https://conversejs.org
+//
+// Copyright (c) 2013-2018, the Converse.js developers
+// Licensed under the Mozilla Public License (MPLv2)
+(function (root, factory) {
+  if (true) {
+    // AMD. Register as a module called "myplugin"
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/oauth_providers.html */ "./src/templates/oauth_providers.html"), __webpack_require__(/*! hellojs */ "./node_modules/hellojs/dist/hello.all.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else {}
+})(void 0, function (converse, tpl_oauth_providers, hello) {
+  'use strict';
+
+  var _ = converse.env._,
+      Backbone = converse.env.Backbone,
+      Strophe = converse.env.Strophe; // The following line registers your plugin.
+
+  converse.plugins.add("converse-oauth", {
+    /* Optional dependencies are other plugins which might be
+     * overridden or relied upon, and therefore need to be loaded before
+     * this plugin. They are called "optional" because they might not be
+     * available, in which case any overrides applicable to them will be
+     * ignored.
+     *
+     * NB: These plugins need to have already been loaded via require.js.
+     *
+     * It's possible to make optional dependencies non-optional.
+     * If the setting "strict_plugin_dependencies" is set to true,
+     * an error will be raised if the plugin is not found.
+     */
+    'optional_dependencies': ['converse-register'],
+
+    /* If you want to override some function or a Backbone model or
+     * view defined elsewhere in converse.js, then you do that under
+     * the "overrides" namespace.
+     */
+    'overrides': {
+      /* For example, the private *_converse* object has a
+       * method "onConnected". You can override that method as follows:
+       */
+      'LoginPanel': {
+        insertOAuthProviders: function insertOAuthProviders() {
+          var _converse = this.__super__._converse;
+
+          if (_.isUndefined(this.oauth_providers_view)) {
+            this.oauth_providers_view = new _converse.OAuthProvidersView({
+              'model': _converse.oauth_providers
+            });
+            this.oauth_providers_view.render();
+            this.el.querySelector('.buttons').insertAdjacentElement('afterend', this.oauth_providers_view.el);
+          }
+
+          this.oauth_providers_view.render();
+        },
+        render: function render(cfg) {
+          var _converse = this.__super__._converse;
+
+          var result = this.__super__.render.apply(this, arguments);
+
+          if (_converse.oauth_providers && !_converse.auto_login) {
+            this.insertOAuthProviders();
+          }
+
+          return result;
+        }
+      }
+    },
+    initialize: function initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      var _converse = this._converse,
+          __ = _converse.__;
+
+      _converse.api.settings.update({
+        'oauth_providers': {}
+      });
+
+      _converse.OAuthProviders = Backbone.Collection.extend({
+        'sync': __.noop,
+        initialize: function initialize() {
+          var _this = this;
+
+          _.each(_converse.user_settings.oauth_providers, function (provider) {
+            var item = new Backbone.Model(_.extend(provider, {
+              'login_text': __('Log in with %1$s', provider.name)
+            }));
+
+            _this.add(item, {
+              'silent': true
+            });
+          });
+        }
+      });
+      _converse.oauth_providers = new _converse.OAuthProviders();
+      _converse.OAuthProvidersView = Backbone.VDOMView.extend({
+        'events': {
+          'click .oauth-login': 'oauthLogin'
+        },
+        toHTML: function toHTML() {
+          return tpl_oauth_providers(_.extend({
+            '_': _,
+            '__': _converse.__,
+            'providers': this.model.toJSON()
+          }));
+        },
+        fetchOAuthProfileDataAndLogin: function fetchOAuthProfileDataAndLogin() {
+          var _this2 = this;
+
+          this.oauth_service.api('me').then(function (profile) {
+            var response = _this2.oauth_service.getAuthResponse();
+
+            _converse.api.user.login({
+              'jid': "".concat(profile.name, "@").concat(_this2.provider.get('host')),
+              'password': response.access_token
+            });
+          });
+        },
+        oauthLogin: function oauthLogin(ev) {
+          var _this3 = this;
+
+          ev.preventDefault();
+          var id = ev.target.getAttribute('data-id');
+          this.provider = _converse.oauth_providers.get(id);
+          this.oauth_service = hello(id);
+          var data = {};
+          data[id] = this.provider.get('client_id');
+          hello.init(data, {
+            'redirect_uri': '/redirect.html'
+          });
+          this.oauth_service.login().then(function () {
+            return _this3.fetchOAuthProfileDataAndLogin();
+          }, function (error) {
+            return _converse.log(error.error_message, Strophe.LogLevel.ERROR);
+          });
+        }
+      });
+    }
+  });
+});
+
+/***/ }),
+
 /***/ "./src/converse-ping.js":
 /*!******************************!*\
   !*** ./src/converse-ping.js ***!
@@ -45399,14 +52066,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 "use strict";
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// Converse.js
+// https://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-//
-
-/*global define */
 
 /* This is a Converse.js plugin which add support for application-level pings
  * as specified in XEP-0199 XMPP Ping.
@@ -45610,10 +52274,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           reader.readAsDataURL(file);
         },
-        setVCard: function setVCard(body, data) {
+        setVCard: function setVCard(data) {
           var _this2 = this;
 
-          _converse.api.vcard.set(data).then(function () {
+          _converse.api.vcard.set(_converse.bare_jid, data).then(function () {
             return _converse.api.vcard.update(_this2.model.vcard, true);
           }).catch(function (err) {
             _converse.log(err, Strophe.LogLevel.FATAL);
@@ -45629,7 +52293,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           ev.preventDefault();
           var reader = new FileReader(),
               form_data = new FormData(ev.target),
-              body = this.el.querySelector('.modal-body'),
               image_file = form_data.get('image');
           var data = {
             'fn': form_data.get('fn'),
@@ -45645,7 +52308,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'image_type': this.model.vcard.get('image_type')
             });
 
-            this.setVCard(body, data);
+            this.setVCard(data);
           } else {
             reader.onloadend = function () {
               _.extend(data, {
@@ -45653,7 +52316,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 'image_type': image_file.type
               });
 
-              _this3.setVCard(body, data);
+              _this3.setVCard(data);
             };
 
             reader.readAsBinaryString(image_file);
@@ -45778,6 +52441,154 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /***/ }),
 
+/***/ "./src/converse-push.js":
+/*!******************************!*\
+  !*** ./src/converse-push.js ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
+
+// Converse.js
+// https://conversejs.org
+//
+// Copyright (c) 2013-2018, the Converse.js developers
+// Licensed under the Mozilla Public License (MPLv2)
+
+/* This is a Converse.js plugin which add support for registering
+ * an "App Server" as defined in  XEP-0357
+ */
+(function (root, factory) {
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+})(void 0, function (converse) {
+  "use strict";
+
+  var _converse$env = converse.env,
+      Strophe = _converse$env.Strophe,
+      $iq = _converse$env.$iq,
+      _ = _converse$env._;
+  Strophe.addNamespace('PUSH', 'urn:xmpp:push:0');
+  converse.plugins.add('converse-push', {
+    initialize: function initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      var _converse = this._converse,
+          __ = _converse.__;
+
+      _converse.api.settings.update({
+        'push_app_servers': []
+      });
+
+      function disablePushAppServer(push_app_server) {
+        if (!push_app_server.jid) {
+          return;
+        }
+
+        Promise.all([_converse.api.disco.supports(Strophe.NS.PUSH, _converse.bare_jid)]).then(function (result) {
+          if (!result[0].length && !result[1].length) {
+            return _converse.log("Not disabling push app server \"".concat(push_app_server.jid, "\", no disco support from your server."), Strophe.LogLevel.WARN);
+          }
+
+          var stanza = $iq({
+            'type': 'set'
+          }).c('disable', {
+            'xmlns': Strophe.NS.PUSH,
+            'jid': push_app_server.jid
+          });
+
+          if (push_app_server.node) {
+            stanza.attrs({
+              'node': push_app_server.node
+            });
+          }
+
+          _converse.api.sendIQ(stanza).then(function () {
+            return _converse.session.set('push_enabled', true);
+          }).catch(function (e) {
+            _converse.log("Could not enable push app server for ".concat(push_app_server.jid), Strophe.LogLevel.ERROR);
+
+            _converse.log(e, Strophe.LogLevel.ERROR);
+          });
+        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+      }
+
+      function enablePushAppServer(push_app_server) {
+        if (!push_app_server.jid || !push_app_server.node) {
+          return;
+        }
+
+        _converse.api.disco.getIdentity('pubsub', 'push', push_app_server.jid).then(function (identity) {
+          if (!identity) {
+            return _converse.log("Not enabling push the service \"".concat(push_app_server.jid, "\", it doesn't have the right disco identtiy."), Strophe.LogLevel.WARN);
+          }
+
+          return Promise.all([_converse.api.disco.supports(Strophe.NS.PUSH, push_app_server.jid), _converse.api.disco.supports(Strophe.NS.PUSH, _converse.bare_jid)]).then(function (result) {
+            if (!result[0].length && !result[1].length) {
+              return _converse.log("Not enabling push app server \"".concat(push_app_server.jid, "\", no disco support from your server."), Strophe.LogLevel.WARN);
+            }
+
+            var stanza = $iq({
+              'type': 'set'
+            }).c('enable', {
+              'xmlns': Strophe.NS.PUSH,
+              'jid': push_app_server.jid,
+              'node': push_app_server.node
+            });
+
+            if (push_app_server.secret) {
+              stanza.c('x', {
+                'xmlns': Strophe.NS.XFORM,
+                'type': 'submit'
+              }).c('field', {
+                'var': 'FORM_TYPE'
+              }).c('value').t("".concat(Strophe.NS.PUBSUB, "#publish-options")).up().up().c('field', {
+                'var': 'secret'
+              }).c('value').t(push_app_server.secret);
+            }
+
+            _converse.api.sendIQ(stanza).then(function () {
+              return _converse.session.set('push_enabled', true);
+            }).catch(function (e) {
+              _converse.log("Could not enable push app server for ".concat(push_app_server.jid), Strophe.LogLevel.ERROR);
+
+              _converse.log(e, Strophe.LogLevel.ERROR);
+            });
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+      }
+
+      function enablePush() {
+        if (_converse.session.get('push_enabled')) {
+          // XXX: this code is still a bit naive. We set push_enabled
+          // to true as soon as the first push app server has been set.
+          //
+          // When enabling or disabling multiple push app servers,
+          // we won't wait until we have confirmation that all have been set.
+          return;
+        }
+
+        var enabled_services = _.reject(_converse.push_app_servers, 'disable');
+
+        _.each(enabled_services, enablePushAppServer);
+
+        var disabled_services = _.filter(_converse.push_app_servers, 'disable');
+
+        _.each(disabled_services, disablePushAppServer);
+      }
+
+      _converse.api.listen.on('statusInitialized', enablePush);
+    }
+  });
+});
+
+/***/ }),
+
 /***/ "./src/converse-register.js":
 /*!**********************************!*\
   !*** ./src/converse-register.js ***!
@@ -45801,7 +52612,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! form-utils */ "./src/utils/form.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/form_username.html */ "./src/templates/form_username.html"), __webpack_require__(/*! templates/register_link.html */ "./src/templates/register_link.html"), __webpack_require__(/*! templates/register_panel.html */ "./src/templates/register_panel.html"), __webpack_require__(/*! templates/registration_form.html */ "./src/templates/registration_form.html"), __webpack_require__(/*! templates/registration_request.html */ "./src/templates/registration_request.html"), __webpack_require__(/*! templates/form_input.html */ "./src/templates/form_input.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! converse-controlbox */ "./src/converse-controlbox.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! utils/form */ "./src/utils/form.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/form_username.html */ "./src/templates/form_username.html"), __webpack_require__(/*! templates/register_link.html */ "./src/templates/register_link.html"), __webpack_require__(/*! templates/register_panel.html */ "./src/templates/register_panel.html"), __webpack_require__(/*! templates/registration_form.html */ "./src/templates/registration_form.html"), __webpack_require__(/*! templates/registration_request.html */ "./src/templates/registration_request.html"), __webpack_require__(/*! templates/form_input.html */ "./src/templates/form_input.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! converse-controlbox */ "./src/converse-controlbox.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -45843,7 +52654,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'model': this.model
             });
             this.registerlinkview.render();
-            this.el.querySelector('.buttons').insertAdjacentElement('beforeend', this.registerlinkview.el);
+            this.el.querySelector('.buttons').insertAdjacentElement('afterend', this.registerlinkview.el);
           }
 
           this.registerlinkview.render();
@@ -46532,11 +53343,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
  * rooms in the "Rooms Panel" of the ControlBox.
  */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! utils */ "./src/utils/core.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! converse-muc */ "./src/converse-muc.js"), __webpack_require__(/*! templates/rooms_list.html */ "./src/templates/rooms_list.html"), __webpack_require__(/*! templates/rooms_list_item.html */ "./src/templates/rooms_list_item.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! converse-muc */ "./src/converse-muc.js"), __webpack_require__(/*! templates/rooms_list.html */ "./src/templates/rooms_list.html"), __webpack_require__(/*! templates/rooms_list_item.html */ "./src/templates/rooms_list_item.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
+})(void 0, function (converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
   var _converse$env = converse.env,
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
@@ -46771,7 +53582,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           var icon_el = ev.target.querySelector('.fa');
 
           if (icon_el.classList.contains("fa-caret-down")) {
-            utils.slideIn(this.el.querySelector('.open-rooms-list')).then(function () {
+            u.slideIn(this.el.querySelector('.open-rooms-list')).then(function () {
               _this.list_model.save({
                 'toggle-state': _converse.CLOSED
               });
@@ -46780,7 +53591,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               icon_el.classList.add("fa-caret-right");
             });
           } else {
-            utils.slideOut(this.el.querySelector('.open-rooms-list')).then(function () {
+            u.slideOut(this.el.querySelector('.open-rooms-list')).then(function () {
               _this.list_model.save({
                 'toggle-state': _converse.OPENED
               });
@@ -47835,11 +54646,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       afterReconnected: function afterReconnected() {
         this.__super__.afterReconnected.apply(this, arguments);
       },
-      _tearDown: function _tearDown() {
+      tearDown: function tearDown() {
         /* Remove the rosterview when tearing down. It gets created
          * anew when reconnecting or logging in.
          */
-        this.__super__._tearDown.apply(this, arguments);
+        this.__super__.tearDown.apply(this, arguments);
 
         if (!_.isUndefined(this.rosterview)) {
           this.rosterview.remove();
@@ -47942,18 +54753,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'label_xmpp_address': __('XMPP Address'),
             'label_nickname': label_nickname,
             'contact_placeholder': __('name@example.org'),
-            'label_add': __('Add')
+            'label_add': __('Add'),
+            'error_message': __('Please enter a valid XMPP address')
           }));
         },
         afterRender: function afterRender() {
           if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
-            this.initXHRAutoComplete();
+            this.initXHRAutoComplete(this.el);
           } else {
-            this.initJIDAutoComplete();
+            this.initJIDAutoComplete(this.el);
           }
-        },
-        initJIDAutoComplete: function initJIDAutoComplete() {
+
           var jid_input = this.el.querySelector('input[name="jid"]');
+          this.el.addEventListener('shown.bs.modal', function () {
+            jid_input.focus();
+          }, false);
+        },
+        initJIDAutoComplete: function initJIDAutoComplete(root) {
+          var jid_input = root.querySelector('input[name="jid"]');
 
           var list = _.uniq(_converse.roster.map(function (item) {
             return Strophe.getDomainFromJid(item.get('jid'));
@@ -47966,11 +54783,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             },
             'filter': Awesomplete.FILTER_STARTSWITH
           });
-          this.el.addEventListener('shown.bs.modal', function () {
-            jid_input.focus();
-          }, false);
         },
-        initXHRAutoComplete: function initXHRAutoComplete() {
+        initXHRAutoComplete: function initXHRAutoComplete(root) {
           var name_input = this.el.querySelector('input[name="name"]');
           var jid_input = this.el.querySelector('input[name="jid"]');
           var awesomplete = new Awesomplete(name_input, {
@@ -48000,23 +54814,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             jid_input.value = ev.text.value;
             name_input.value = ev.text.label;
           });
-          this.el.addEventListener('shown.bs.modal', function () {
-            name_input.focus();
-          }, false);
         },
         addContactFromForm: function addContactFromForm(ev) {
           ev.preventDefault();
           var data = new FormData(ev.target),
               jid = data.get('jid'),
               name = data.get('name');
-          ev.target.reset();
 
           if (!jid || _.compact(jid.split('@')).length < 2) {
-            this.model.set({
-              'error_message': __('Please enter a valid XMPP address'),
-              'jid': jid
-            });
+            // XXX: we have to do this manually, instead of via
+            // toHTML because Awesomplete messes things up and
+            // confuses Snabbdom
+            u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
+            u.addClass('d-block', this.el.querySelector('.invalid-feedback'));
           } else {
+            ev.target.reset();
+
             _converse.roster.addAndSubscribe(jid, name);
 
             this.model.clear();
@@ -48780,71 +55593,23 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
       /* -------- Event Handlers ----------- */
 
-      var onChatBoxMaximized = function onChatBoxMaximized(chatboxview) {
-        /* When a chat box gets maximized, the num_unread counter needs
-         * to be cleared, but if chatbox is scrolled up, then num_unread should not be cleared.
-         */
-        var chatbox = chatboxview.model;
-
-        if (chatbox.get('type') !== 'chatroom') {
-          var contact = _.head(_converse.roster.where({
-            'jid': chatbox.get('jid')
-          }));
-
-          if (!_.isUndefined(contact) && !chatbox.isScrolledUp()) {
-            contact.save({
-              'num_unread': 0
-            });
-          }
-        }
-      };
-
-      var onMessageReceived = function onMessageReceived(data) {
-        /* Given a newly received message, update the unread counter on
-         * the relevant roster contact.
-         */
-        var chatbox = data.chatbox;
-
-        if (_.isUndefined(chatbox)) {
-          return;
-        }
-
-        if (_.isNull(data.stanza.querySelector('body'))) {
-          return; // The message has no text
-        }
-
-        if (chatbox.get('type') !== 'chatroom' && u.isNewMessage(data.stanza) && chatbox.newMessageWillBeHidden()) {
-          var contact = _.head(_converse.roster.where({
-            'jid': chatbox.get('jid')
-          }));
-
-          if (!_.isUndefined(contact)) {
-            contact.save({
-              'num_unread': contact.get('num_unread') + 1
-            });
-          }
-        }
-      };
-
-      var onChatBoxScrolledDown = function onChatBoxScrolledDown(data) {
-        var chatbox = data.chatbox;
-
-        if (_.isUndefined(chatbox)) {
-          return;
-        }
-
+      function updateUnreadCounter(chatbox) {
         var contact = _.head(_converse.roster.where({
           'jid': chatbox.get('jid')
         }));
 
         if (!_.isUndefined(contact)) {
           contact.save({
-            'num_unread': 0
+            'num_unread': chatbox.get('num_unread')
           });
         }
-      };
+      }
 
-      var initRoster = function initRoster() {
+      _converse.api.listen.on('chatBoxesInitialized', function () {
+        _converse.chatboxes.on('change:num_unread', updateUnreadCounter);
+      });
+
+      function initRoster() {
         /* Create an instance of RosterView once the RosterGroups
          * collection has been created (in converse-core.js)
          */
@@ -48855,17 +55620,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         _converse.rosterview.render();
 
         _converse.emit('rosterViewInitialized');
-      };
+      }
 
       _converse.api.listen.on('rosterInitialized', initRoster);
 
       _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
-
-      _converse.api.listen.on('message', onMessageReceived);
-
-      _converse.api.listen.on('chatBoxMaximized', onChatBoxMaximized);
-
-      _converse.api.listen.on('chatBoxScrolledDown', onChatBoxScrolledDown);
     }
   });
 });
@@ -48937,8 +55696,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // new functions which don't exist yet can also be added.
       ChatBoxes: {
         chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
-          if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
-            return !chatbox.get('hidden');
+          var _converse = this.__super__._converse;
+
+          if (chatbox.get('id') === 'controlbox') {
+            return true;
+          }
+
+          if (_.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode)) {
+            var any_chats_visible = _converse.chatboxes.filter(function (cb) {
+              return cb.get('id') != 'controlbox';
+            }).filter(function (cb) {
+              return !cb.get('hidden');
+            }).length > 0;
+
+            if (any_chats_visible) {
+              return !chatbox.get('hidden');
+            } else {
+              return true;
+            }
           } else {
             return this.__super__.chatBoxMayBeShown.apply(this, arguments);
           }
@@ -49070,7 +55845,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }
       });
 
-      function onVCardData(_converse, jid, iq, callback) {
+      function onVCardData(jid, iq, callback) {
         var vcard = iq.querySelector('vCard');
         var result = {};
 
@@ -49099,7 +55874,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         }
       }
 
-      function onVCardError(_converse, jid, iq, errback) {
+      function onVCardError(jid, iq, errback) {
         if (errback) {
           errback({
             'stanza': iq,
@@ -49128,24 +55903,25 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         return iq;
       }
 
-      function setVCard(data) {
-        return new Promise(function (resolve, reject) {
-          var vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
+      function setVCard(jid, data) {
+        if (!jid) {
+          throw Error("No jid provided for the VCard data");
+        }
 
-          _converse.connection.sendIQ(createStanza("set", data.jid, vcard_el), resolve, reject);
-        });
+        var vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
+        return _converse.api.sendIQ(createStanza("set", jid, vcard_el));
       }
 
       function getVCard(_converse, jid) {
         /* Request the VCard of another user. Returns a promise.
-        *
-        * Parameters:
-        *    (String) jid - The Jabber ID of the user whose VCard
-        *      is being requested.
-        */
-        jid = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
+         *
+         * Parameters:
+         *    (String) jid - The Jabber ID of the user whose VCard
+         *      is being requested.
+         */
+        var to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
         return new Promise(function (resolve, reject) {
-          _converse.connection.sendIQ(createStanza("get", jid), _.partial(onVCardData, _converse, jid, _, resolve), _.partial(onVCardError, _converse, jid, _, resolve), 5000);
+          _converse.connection.sendIQ(createStanza("get", to), _.partial(onVCardData, jid, _, resolve), _.partial(onVCardError, jid, _, resolve), _converse.IQ_TIMEOUT);
         });
       }
       /* Event handlers */
@@ -49158,7 +55934,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         _converse.vcards.fetch();
       };
 
-      _converse.api.listen.on('connectionInitialized', _converse.initVCardCollection);
+      _converse.api.listen.on('sessionInitialized', _converse.initVCardCollection);
 
       _converse.on('addClientFeatures', function () {
         _converse.api.disco.own.features.add(Strophe.NS.VCARD);
@@ -49166,7 +55942,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
       _.extend(_converse.api, {
         'vcard': {
-          'set': setVCard,
+          'set': function set(jid, data) {
+            return setVCard(jid, data);
+          },
           'get': function get(model, force) {
             if (_.isString(model)) {
               return getVCard(_converse, model);
@@ -49220,19 +55998,21 @@ if (true) {
    * Any of the following components may be removed if they're not needed.
    */
   __webpack_require__(/*! converse-bookmarks */ "./src/converse-bookmarks.js"), // XEP-0048 Bookmarks
-  __webpack_require__(/*! converse-caps */ "./src/converse-caps.js"), __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js"), // Renders standalone chat boxes for single user chat
+  __webpack_require__(/*! converse-caps */ "./src/converse-caps.js"), // XEP-0115 Entity Capabilities
+  __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js"), // Renders standalone chat boxes for single user chat
   __webpack_require__(/*! converse-controlbox */ "./src/converse-controlbox.js"), // The control box
   __webpack_require__(/*! converse-dragresize */ "./src/converse-dragresize.js"), // Allows chat boxes to be resized by dragging them
-  __webpack_require__(/*! converse-embedded */ "./src/converse-embedded.js"), __webpack_require__(/*! converse-fullscreen */ "./src/converse-fullscreen.js"), __webpack_require__(/*! converse-headline */ "./src/converse-headline.js"), // Support for headline messages
+  __webpack_require__(/*! converse-embedded */ "./src/converse-embedded.js"), __webpack_require__(/*! converse-fullscreen */ "./src/converse-fullscreen.js"), __webpack_require__(/*! converse-push */ "./src/converse-push.js"), // XEP-0357 Push Notifications
+  __webpack_require__(/*! converse-headline */ "./src/converse-headline.js"), // Support for headline messages
   __webpack_require__(/*! converse-mam */ "./src/converse-mam.js"), // XEP-0313 Message Archive Management
   __webpack_require__(/*! converse-minimize */ "./src/converse-minimize.js"), // Allows chat boxes to be minimized
   __webpack_require__(/*! converse-muc */ "./src/converse-muc.js"), // XEP-0045 Multi-user chat
   __webpack_require__(/*! converse-muc-views */ "./src/converse-muc-views.js"), __webpack_require__(/*! converse-muc-views */ "./src/converse-muc-views.js"), // Views related to MUC
   __webpack_require__(/*! converse-notification */ "./src/converse-notification.js"), // HTML5 Notifications
-  __webpack_require__(/*! converse-ping */ "./src/converse-ping.js"), // XEP-0199 XMPP Ping
-  __webpack_require__(/*! converse-roster */ "./src/converse-roster.js"), __webpack_require__(/*! converse-register */ "./src/converse-register.js"), // XEP-0077 In-band registration
+  __webpack_require__(/*! converse-oauth */ "./src/converse-oauth.js"), __webpack_require__(/*! converse-ping */ "./src/converse-ping.js"), // XEP-0199 XMPP Ping
+  __webpack_require__(/*! converse-register */ "./src/converse-register.js"), // XEP-0077 In-band registration
   __webpack_require__(/*! converse-roomslist */ "./src/converse-roomslist.js"), // Show currently open chat rooms
-  __webpack_require__(/*! converse-vcard */ "./src/converse-vcard.js")], __WEBPACK_AMD_DEFINE_RESULT__ = (function (converse) {
+  __webpack_require__(/*! converse-roster */ "./src/converse-roster.js"), __webpack_require__(/*! converse-vcard */ "./src/converse-vcard.js")], __WEBPACK_AMD_DEFINE_RESULT__ = (function (converse) {
     return converse;
   }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -49584,27 +56364,15 @@ __p += '">\n                        <label class="clearfix" for="jid">' +
 __e(o.label_xmpp_address) +
 ':</label>\n                        <input type="text" name="jid" required="required" value="' +
 __e(o.jid) +
-'"\n                               class="form-control ';
- if (o.error_message) { ;
-__p += ' is-invalid ';
- } ;
-__p += '"\n                               placeholder="' +
+'"\n                               class="form-control"\n                               placeholder="' +
 __e(o.contact_placeholder) +
-'"/>\n                        ';
- if (o.error_message) { ;
-__p += '\n                            <div class="invalid-feedback">' +
+'"/>\n                        <div class="invalid-feedback">' +
 __e(o.error_message) +
-'</div>\n                        ';
- } ;
-__p += '\n                    </div>\n                    <div class="form-group">\n                        <label class="clearfix" for="name">' +
+'</div>\n                    </div>\n                    <div class="form-group">\n                        <label class="clearfix" for="name">' +
 __e(o.label_nickname) +
 ':</label>\n                        <input type="text" name="name" value="' +
 __e(o.nickname) +
-'"\n                               class="form-control ';
- if (o.error_message) { ;
-__p += ' is-invalid ';
- } ;
-__p += '"\n                               placeholder="' +
+'"\n                               class="form-control"\n                               placeholder="' +
 __e(o.nickname_placeholder) +
 '"/>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="submit" class="btn btn-primary">' +
 __e(o.label_add) +
@@ -50077,90 +56845,128 @@ __e(o.display_name) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
 '"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                <div class="room-info">\n                    <p class="room-info"><strong>' +
-__e(o.__('Room Address (JID)')) +
-'</strong> ' +
+__e(o.__('Room address (JID)')) +
+'</strong>: ' +
 __e(o.jid) +
 '</p>\n                    <p class="room-info"><strong>' +
-__e(o.__('Title')) +
-'</strong> ' +
-__e(o.title) +
+__e(o.__('Name')) +
+'</strong>: ' +
+__e(o.name) +
 '</p>\n                    <p class="room-info"><strong>' +
 __e(o.__('Description')) +
-'</strong> ' +
+'</strong>: ' +
 __e(o.description) +
 '</p>\n                    <p class="room-info"><strong>' +
-__e(o.label_occ) +
-'</strong> ' +
+__e(o.__('Online users')) +
+'</strong>: ' +
 __e(o.num_occupants) +
 '</p>\n                    <p class="room-info"><strong>' +
-__e(o.label_features) +
-'</strong>\n                        <ul>\n                            ';
+__e(o.__('Features')) +
+'</strong>:\n                        <div class="chatroom-features">\n                        <ul class="features-list">\n                        ';
  if (o.passwordprotected) { ;
-__p += '\n                            <li class="room-info locked">' +
-__e(o.label_requires_auth) +
-'</li>\n                            ';
+__p += '\n                        <li class="feature" ><span class="fa fa-lock"></span>' +
+__e( o.__('Password protected') ) +
+' - <em>' +
+__e( o.__('This room requires a password before entry') ) +
+'</em></li>\n                        ';
  } ;
-__p += '\n                            ';
+__p += '\n                        ';
+ if (o.unsecured) { ;
+__p += '\n                        <li class="feature" ><span class="fa fa-unlock"></span>' +
+__e( o.__('No password required') ) +
+' - <em>' +
+__e( o.__('This room does not require a password upon entry') ) +
+'</em></li>\n                        ';
+ } ;
+__p += '\n                        ';
  if (o.hidden) { ;
-__p += '\n                            <li class="room-info">' +
-__e(o.label_hidden) +
-'</li>\n                            ';
+__p += '\n                        <li class="feature" ><span class="fa fa-eye-slash"></span>' +
+__e( o.__('Hidden') ) +
+' - <em>' +
+__e( o.__('This room is not publicly searchable') ) +
+'</em></li>\n                        ';
  } ;
-__p += '\n                            ';
+__p += '\n                        ';
+ if (o.public_room) { ;
+__p += '\n                        <li class="feature" ><span class="fa fa-eye"></span>' +
+__e( o.__('Public') ) +
+' - <em>' +
+__e( o.__('This room is publicly searchable') ) +
+'</em></li>\n                        ';
+ } ;
+__p += '\n                        ';
  if (o.membersonly) { ;
-__p += '\n                            <li class="room-info">' +
-__e(o.label_requires_invite) +
-'</li>\n                            ';
+__p += '\n                        <li class="feature" ><span class="fa fa-address-book"></span>' +
+__e( o.__('Members only') ) +
+' - <em>' +
+__e( o.__('this room is restricted to members only') ) +
+'</em></li>\n                        ';
  } ;
-__p += '\n                            ';
- if (o.moderated) { ;
-__p += '\n                            <li class="room-info">' +
-__e(o.label_moderated) +
-'</li>\n                            ';
- } ;
-__p += '\n                            ';
- if (o.nonanonymous) { ;
-__p += '\n                            <li class="room-info">' +
-__e(o.label_non_anon) +
-'</li>\n                            ';
- } ;
-__p += '\n                            ';
+__p += '\n                        ';
  if (o.open) { ;
-__p += '\n                            <li class="room-info">' +
-__e(o.label_open_room) +
-'</li>\n                            ';
+__p += '\n                        <li class="feature" ><span class="fa fa-globe"></span>' +
+__e( o.__('Open') ) +
+' - <em>' +
+__e( o.__('Anyone can join this room') ) +
+'</em></li>\n                        ';
  } ;
-__p += '\n                            ';
+__p += '\n                        ';
  if (o.persistent) { ;
-__p += '\n                            <li class="room-info">' +
-__e(o.label_permanent_room) +
-'</li>\n                            ';
+__p += '\n                        <li class="feature" ><span class="fa fa-save"></span>' +
+__e( o.__('Persistent') ) +
+' - <em>' +
+__e( o.__('This room persists even if it\'s unoccupied') ) +
+'</em></li>\n                        ';
  } ;
-__p += '\n                            ';
- if (o.publicroom) { ;
-__p += '\n                            <li class="room-info">' +
-__e(o.label_public) +
-'</li>\n                            ';
- } ;
-__p += '\n                            ';
- if (o.semianonymous) { ;
-__p += '\n                            <li class="room-info">' +
-__e(o.label_semi_anon) +
-'</li>\n                            ';
- } ;
-__p += '\n                            ';
+__p += '\n                        ';
  if (o.temporary) { ;
-__p += '\n                            <li class="room-info">' +
-__e(o.label_temp_room) +
-'</li>\n                            ';
+__p += '\n                        <li class="feature" ><span class="fa fa-snowflake-o"></span>' +
+__e( o.__('Temporary') ) +
+' - <em>' +
+__e( o.__('This room will disappear once the last person leaves') ) +
+'</em></li>\n                        ';
  } ;
-__p += '\n                            ';
+__p += '\n                        ';
+ if (o.nonanonymous) { ;
+__p += '\n                        <li class="feature" ><span class="fa fa-id-card"></span>' +
+__e( o.__('Not anonymous') ) +
+' - <em>' +
+__e( o.__('All other room occupants can see your XMPP username') ) +
+'</em></li>\n                        ';
+ } ;
+__p += '\n                        ';
+ if (o.semianonymous) { ;
+__p += '\n                        <li class="feature" ><span class="fa fa-user-secret"></span>' +
+__e( o.__('Semi-anonymous') ) +
+' - <em>' +
+__e( o.__('Only moderators can see your XMPP username') ) +
+'</em></li>\n                        ';
+ } ;
+__p += '\n                        ';
+ if (o.moderated) { ;
+__p += '\n                        <li class="feature" ><span class="fa fa-gavel"></span>' +
+__e( o.__('Moderated') ) +
+' - <em>' +
+__e( o.__('This room is being moderated') ) +
+'</em></li>\n                        ';
+ } ;
+__p += '\n                        ';
  if (o.unmoderated) { ;
-__p += '\n                            <li class="room-info">' +
-__e(o.label_unmoderated) +
-'</li>\n                            ';
+__p += '\n                        <li class="feature" ><span class="fa fa-info-circle"></span>' +
+__e( o.__('Not moderated') ) +
+' - <em>' +
+__e( o.__('This room is not being moderated') ) +
+'</em></li>\n                        ';
  } ;
-__p += '\n                        </ul>\n                    </p>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n';
+__p += '\n                        ';
+ if (o.mam_enabled) { ;
+__p += '\n                        <li class="feature" ><span class="fa fa-database"></span>' +
+__e( o.__('Message archiving') ) +
+' - <em>' +
+__e( o.__('Messages are archived on the server') ) +
+'</em></li>\n                        ';
+ } ;
+__p += '\n                        </ul>\n                        </div>\n                    </p>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -50198,111 +57004,111 @@ function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/chatroom_features.html -->\n';
  if (o.has_features) { ;
 __p += '\n<p class="occupants-heading">' +
-__e(o.label_features) +
+__e(o.__('Features')) +
 '</p>\n';
  } ;
 __p += '\n<ul class="features-list">\n';
  if (o.passwordprotected) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.tt_passwordprotected ) +
+__e( o.__('This room requires a password before entry') ) +
 '"><span class="fa fa-lock"></span>' +
-__e( o.label_passwordprotected ) +
+__e( o.__('Password protected') ) +
 '</li>\n';
  } ;
 __p += '\n';
  if (o.unsecured) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.tt_unsecured ) +
+__e( o.__('This room does not require a password upon entry') ) +
 '"><span class="fa fa-unlock"></span>' +
-__e( o.label_unsecured ) +
+__e( o.__('No password') ) +
 '</li>\n';
  } ;
 __p += '\n';
  if (o.hidden) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.tt_hidden ) +
+__e( o.__('This room is not publicly searchable') ) +
 '"><span class="fa fa-eye-slash"></span>' +
-__e( o.label_hidden ) +
+__e( o.__('Hidden') ) +
 '</li>\n';
  } ;
 __p += '\n';
  if (o.public_room) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.tt_public ) +
+__e( o.__('This room is publicly searchable') ) +
 '"><span class="fa fa-eye"></span>' +
-__e( o.label_public ) +
+__e( o.__('Public') ) +
 '</li>\n';
  } ;
 __p += '\n';
  if (o.membersonly) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.tt_membersonly ) +
+__e( o.__('this room is restricted to members only') ) +
 '"><span class="fa fa-address-book"></span>' +
-__e( o.label_membersonly ) +
+__e( o.__('Members only') ) +
 '</li>\n';
  } ;
 __p += '\n';
  if (o.open) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.tt_open ) +
+__e( o.__('Anyone can join this room') ) +
 '"><span class="fa fa-globe"></span>' +
-__e( o.label_open ) +
+__e( o.__('Open') ) +
 '</li>\n';
  } ;
 __p += '\n';
  if (o.persistent) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.tt_persistent ) +
+__e( o.__('This room persists even if it\'s unoccupied') ) +
 '"><span class="fa fa-save"></span>' +
-__e( o.label_persistent ) +
+__e( o.__('Persistent') ) +
 '</li>\n';
  } ;
 __p += '\n';
  if (o.temporary) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.tt_temporary ) +
+__e( o.__('This room will disappear once the last person leaves') ) +
 '"><span class="fa fa-snowflake-o"></span>' +
-__e( o.label_temporary ) +
+__e( o.__('Temporary') ) +
 '</li>\n';
  } ;
 __p += '\n';
  if (o.nonanonymous) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.tt_nonanonymous ) +
+__e( o.__('All other room occupants can see your XMPP username') ) +
 '"><span class="fa fa-id-card"></span>' +
-__e( o.label_nonanonymous ) +
+__e( o.__('Not anonymous') ) +
 '</li>\n';
  } ;
 __p += '\n';
  if (o.semianonymous) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.tt_semianonymous ) +
+__e( o.__('Only moderators can see your XMPP username') ) +
 '"><span class="fa fa-user-secret"></span>' +
-__e( o.label_semianonymous ) +
+__e( o.__('Semi-anonymous') ) +
 '</li>\n';
  } ;
 __p += '\n';
  if (o.moderated) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.tt_moderated ) +
+__e( o.__('This room is being moderated') ) +
 '"><span class="fa fa-gavel"></span>' +
-__e( o.label_moderated ) +
+__e( o.__('Moderated') ) +
 '</li>\n';
  } ;
 __p += '\n';
  if (o.unmoderated) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.tt_unmoderated ) +
+__e( o.__('This room is not being moderated') ) +
 '"><span class="fa fa-info-circle"></span>' +
-__e( o.label_unmoderated ) +
+__e( o.__('Not moderated') ) +
 '</li>\n';
  } ;
 __p += '\n';
  if (o.mam_enabled) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.tt_mam_enabled ) +
+__e( o.__('Messages are archived on the server') ) +
 '"><span class="fa fa-database"></span>' +
-__e( o.label_mam_enabled ) +
+__e( o.__('Message archiving') ) +
 '</li>\n';
  } ;
 __p += '\n</ul>\n';
@@ -50362,7 +57168,9 @@ __p += '\n    <a class="chatbox-btn configure-chatroom-button fa fa-wrench" titl
 __e(o.info_configure) +
 ' "></a>\n    ';
  } ;
-__p += '\n</div>\n';
+__p += '\n    <a class="chatbox-btn show-room-details-modal fa fa-info-circle" title="' +
+__e(o.info_details) +
+'"></a>\n</div>\n';
 return __p
 };
 
@@ -51259,6 +58067,33 @@ return __p
 
 /***/ }),
 
+/***/ "./src/templates/oauth_providers.html":
+/*!********************************************!*\
+  !*** ./src/templates/oauth_providers.html ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
+module.exports = function(o) {
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<!-- src/templates/oauth_providers.html -->\n<fieldset class="oauth-providers">\n    ';
+ o._.forEach(o.providers, function (provider) { ;
+__p += '\n    <p class="oauth-provider">\n        <a class="oauth-login" href="#" data-id="' +
+((__t = (provider.id)) == null ? '' : __t) +
+'">\n            <i class="fa ' +
+((__t = ( provider.class)) == null ? '' : __t) +
+'"></i>' +
+((__t = (provider.login_text)) == null ? '' : __t) +
+'</span>\n        </a>\n    </p>\n    ';
+ }); ;
+__p += '\n</fieldset>\n';
+return __p
+};
+
+/***/ }),
+
 /***/ "./src/templates/occupant.html":
 /*!*************************************!*\
   !*** ./src/templates/occupant.html ***!
@@ -51520,7 +58355,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/register_link.html -->\n<div class="switch-form">\n    ';
+__p += '<!-- src/templates/register_link.html -->\n<fieldset class="switch-form">\n    ';
  if (!o._converse.auto_login && o._converse.CONNECTION_STATUS[o.connection_status] !== 'CONNECTING') { ;
 __p += '\n        <p>' +
 __e( o.__("Don't have a chat account?") ) +
@@ -51528,7 +58363,7 @@ __e( o.__("Don't have a chat account?") ) +
 __e(o.__("Create an account")) +
 '</a></p>\n    ';
  } ;
-__p += '\n</div>\n';
+__p += '\n</fieldset>\n';
 return __p
 };
 
@@ -53007,9 +59842,9 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
      * message, i.e. not a MAM archived one.
      */
     if (_instanceof(message, Element)) {
-      return !sizzle('result[xmlns="' + Strophe.NS.MAM + '"]', message).length && !sizzle('delay[xmlns="' + Strophe.NS.DELAY + '"]', message).length;
+      return !(sizzle("result[xmlns=\"".concat(Strophe.NS.MAM, "\"]"), message).length && sizzle("delay[xmlns=\"".concat(Strophe.NS.DELAY, "\"]"), message).length);
     } else {
-      return !message.get('delayed');
+      return !(message.get('is_delayed') && message.get('is_archived'));
     }
   };
 
@@ -53404,7 +60239,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /*global define, escape, Jed */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! lodash.noconflict */ "lodash.noconflict"), __webpack_require__(/*! utils */ "./src/utils/core.js"), __webpack_require__(/*! templates/field.html */ "./src/templates/field.html"), __webpack_require__(/*! templates/select_option.html */ "./src/templates/select_option.html"), __webpack_require__(/*! templates/form_select.html */ "./src/templates/form_select.html"), __webpack_require__(/*! templates/form_textarea.html */ "./src/templates/form_textarea.html"), __webpack_require__(/*! templates/form_checkbox.html */ "./src/templates/form_checkbox.html"), __webpack_require__(/*! templates/form_username.html */ "./src/templates/form_username.html"), __webpack_require__(/*! templates/form_input.html */ "./src/templates/form_input.html"), __webpack_require__(/*! templates/form_captcha.html */ "./src/templates/form_captcha.html"), __webpack_require__(/*! templates/form_url.html */ "./src/templates/form_url.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! lodash.noconflict */ "lodash.noconflict"), __webpack_require__(/*! utils/core */ "./src/utils/core.js"), __webpack_require__(/*! templates/field.html */ "./src/templates/field.html"), __webpack_require__(/*! templates/select_option.html */ "./src/templates/select_option.html"), __webpack_require__(/*! templates/form_select.html */ "./src/templates/form_select.html"), __webpack_require__(/*! templates/form_textarea.html */ "./src/templates/form_textarea.html"), __webpack_require__(/*! templates/form_checkbox.html */ "./src/templates/form_checkbox.html"), __webpack_require__(/*! templates/form_username.html */ "./src/templates/form_username.html"), __webpack_require__(/*! templates/form_input.html */ "./src/templates/form_input.html"), __webpack_require__(/*! templates/form_captcha.html */ "./src/templates/form_captcha.html"), __webpack_require__(/*! templates/form_url.html */ "./src/templates/form_url.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -53563,7 +60398,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /*global define, escape, Jed */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils */ "./src/utils/core.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils/core */ "./src/utils/core.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));

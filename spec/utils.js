@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["jasmine", "converse-core"], factory);
-} (this, function (jasmine, converse) {
+    define(["jasmine"], factory);
+} (this, function (jasmine) {
     var utils = converse.env.utils,
         _ = converse.env._;
 

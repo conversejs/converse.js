@@ -7,27 +7,28 @@
 (function (root, factory) {
     define([
         "converse-core",
-        "muc-utils",
-        "tpl!add_chatroom_modal",
-        "tpl!chatarea",
-        "tpl!chatroom",
-        "tpl!chatroom_disconnect",
-        "tpl!chatroom_features",
-        "tpl!chatroom_form",
-        "tpl!chatroom_head",
-        "tpl!chatroom_invite",
-        "tpl!chatroom_nickname_form",
-        "tpl!chatroom_password_form",
-        "tpl!chatroom_sidebar",
-        "tpl!chatroom_toolbar",
-        "tpl!info",
-        "tpl!list_chatrooms_modal",
-        "tpl!occupant",
-        "tpl!room_description",
-        "tpl!room_item",
-        "tpl!room_panel",
-        "tpl!rooms_results",
-        "tpl!spinner",
+        "utils/muc",
+        "templates/add_chatroom_modal.html",
+        "templates/chatarea.html",
+        "templates/chatroom.html",
+        "templates/chatroom_details_modal.html",
+        "templates/chatroom_disconnect.html",
+        "templates/chatroom_features.html",
+        "templates/chatroom_form.html",
+        "templates/chatroom_head.html",
+        "templates/chatroom_invite.html",
+        "templates/chatroom_nickname_form.html",
+        "templates/chatroom_password_form.html",
+        "templates/chatroom_sidebar.html",
+        "templates/chatroom_toolbar.html",
+        "templates/info.html",
+        "templates/list_chatrooms_modal.html",
+        "templates/occupant.html",
+        "templates/room_description.html",
+        "templates/room_item.html",
+        "templates/room_panel.html",
+        "templates/rooms_results.html",
+        "templates/spinner.html",
         "awesomplete",
         "converse-modal"
     ], factory);
@@ -37,6 +38,7 @@
     tpl_add_chatroom_modal,
     tpl_chatarea,
     tpl_chatroom,
+    tpl_chatroom_details_modal,
     tpl_chatroom_disconnect,
     tpl_chatroom_features,
     tpl_chatroom_form,
@@ -365,7 +367,7 @@
                         'open_title': __('Click to open this room'),
                         'info_title': __('Show more information on this room')
                     });
-                    return div.firstChild;
+                    return div.firstElementChild;
                 },
 
                 removeSpinner () {
@@ -482,6 +484,26 @@
             });
 
 
+            _converse.RoomDetailsModal = _converse.BootstrapModal.extend({
+
+                initialize () {
+                    _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                    this.model.on('change', this.render, this);
+                    this.model.occupants.on('change', this.render, this);
+                },
+
+                toHTML () {
+                    return tpl_chatroom_details_modal(_.extend(
+                        this.model.toJSON(), {
+                            '__': __,
+                            'display_name': this.model.getDisplayName(),
+                            'num_occupants': this.model.occupants.length
+                        })
+                    );
+                }
+            });
+
+
             _converse.ChatRoomView = _converse.ChatBoxView.extend({
                 /* Backbone.NativeView which renders a chat room, based upon the view
                  * for normal one-on-one chat boxes.
@@ -495,6 +517,7 @@
                     'click .chatbox-navback': 'showControlBox',
                     'click .close-chatbox-button': 'close',
                     'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
+                    'click .show-room-details-modal': 'showRoomDetailsModal',
                     'click .hide-occupants': 'hideOccupants',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant-nick': 'onOccupantClicked',
@@ -595,6 +618,14 @@
                     return this;
                 },
 
+                showRoomDetailsModal (ev) {
+                    ev.preventDefault();
+                    if (_.isUndefined(this.model.room_details_modal)) {
+                        this.model.room_details_modal = new _converse.RoomDetailsModal({'model': this.model});
+                    }
+                    this.model.room_details_modal.show(ev);
+                },
+
                 showChatStateNotification (message) {
                     if (message.get('sender') === 'me') {
                         return;
@@ -632,10 +663,11 @@
                      */
                     return tpl_chatroom_head(
                         _.extend(this.model.toJSON(), {
-                            Strophe: Strophe,
-                            info_close: __('Close and leave this room'),
-                            info_configure: __('Configure this room'),
-                            description: this.model.get('description') || ''
+                            'Strophe': Strophe,
+                            'info_close': __('Close and leave this room'),
+                            'info_configure': __('Configure this room'),
+                            'info_details': __('Show more details about this room'),
+                            'description': this.model.get('description') || ''
                     }));
                 },
 
@@ -1035,7 +1067,8 @@
                         this.closeForm();
                     });
 
-                    form_el.addEventListener('submit', (ev) => {
+                    form_el.addEventListener('submit',
+                        (ev) => {
                             ev.preventDefault();
                             this.model.saveConfiguration(ev.target).then(
                                 this.model.getRoomFeatures.bind(this.model)
@@ -1547,16 +1580,13 @@
 
             _converse.RoomsPanel = Backbone.NativeView.extend({
                 /* Backbone.NativeView which renders MUC section of the control box.
-                 *
-                 * Chat rooms can be listed, joined and new rooms can be created.
                  */
                 tagName: 'div',
                 className: 'controlbox-section',
                 id: 'chatrooms',
                 events: {
                     'click a.chatbox-btn.show-add-muc-modal': 'showAddRoomModal',
-                    'click a.chatbox-btn.show-list-muc-modal': 'showListRoomsModal',
-                    'click a.room-info': 'toggleRoomInfo'
+                    'click a.chatbox-btn.show-list-muc-modal': 'showListRoomsModal'
                 },
 
                 render () {
@@ -1566,11 +1596,6 @@
                         'title_list_rooms': __('Query for rooms')
                     });
                     return this;
-                },
-
-                toggleRoomInfo (ev) {
-                    ev.preventDefault();
-                    toggleRoomInfo(ev);
                 },
 
                 showAddRoomModal (ev) {
@@ -1599,7 +1624,10 @@
                     const show = this.model.get('show');
                     return tpl_occupant(
                         _.extend(
-                            { 'jid': '',
+                            { '_': _, // XXX Normally this should already be included,
+                                      // but with the current webpack build,
+                                      // we only get a subset of the _ methods.
+                              'jid': '',
                               'show': show,
                               'hint_show': _converse.PRETTY_CHAT_STATUS[show],
                               'hint_occupant': __('Click to mention %1$s in your message.', this.model.get('nick')),
@@ -1700,34 +1728,8 @@
 
                     el.innerHTML = tpl_chatroom_features(
                             _.extend(this.chatroomview.model.toJSON(), {
-                                'has_features': _.reduce(_.values(picks), iteratee),
-                                'label_features': __('Features'),
-                                'label_hidden': __('Hidden'),
-                                'label_mam_enabled': __('Message archiving'),
-                                'label_membersonly': __('Members only'),
-                                'label_moderated': __('Moderated'),
-                                'label_nonanonymous': __('Non-anonymous'),
-                                'label_open': __('Open'),
-                                'label_passwordprotected': __('Password protected'),
-                                'label_persistent': __('Persistent'),
-                                'label_public': __('Public'),
-                                'label_semianonymous': __('Semi-anonymous'),
-                                'label_temporary': __('Temporary'),
-                                'label_unmoderated': __('Unmoderated'),
-                                'label_unsecured': __('No password'),
-                                'tt_hidden': __('This room is not publicly searchable'),
-                                'tt_mam_enabled': __('Messages are archived on the server'),
-                                'tt_membersonly': __('This room is restricted to members only'),
-                                'tt_moderated': __('This room is being moderated'),
-                                'tt_nonanonymous': __('All other room occupants can see your XMPP username'),
-                                'tt_open': __('Anyone can join this room'),
-                                'tt_passwordprotected': __('This room requires a password before entry'),
-                                'tt_persistent': __('This room persists even if it\'s unoccupied'),
-                                'tt_public': __('This room is publicly searchable'),
-                                'tt_semianonymous': __('Only moderators can see your XMPP username'),
-                                'tt_temporary': __('This room will disappear once the last person leaves'),
-                                'tt_unmoderated': __('This room is not being moderated'),
-                                'tt_unsecured': __('This room does not require a password upon entry')
+                                '__': __,
+                                'has_features': _.reduce(_.values(picks), iteratee)
                             }));
                     this.setOccupantsHeight();
                     return this;

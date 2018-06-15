@@ -2,12 +2,10 @@
     define([
         "jquery",
         "jasmine",
-        "utils",
-        "converse-core",
         "mock",
         "test-utils"
         ], factory);
-} (this, function ($, jasmine, utils, converse, mock, test_utils) {
+} (this, function ($, jasmine, mock, test_utils) {
     "use strict";
     var _ = converse.env._;
     var $iq = converse.env.$iq;
@@ -62,7 +60,7 @@
                     expect(msg_obj.get('message')).toEqual(message);
                     expect(msg_obj.get('fullname')).toEqual(mock.cur_names[0]);
                     expect(msg_obj.get('sender')).toEqual('them');
-                    expect(msg_obj.get('delayed')).toEqual(false);
+                    expect(msg_obj.get('is_delayed')).toEqual(false);
                     // Now check that the message appears inside the chatbox in the DOM
                     var chat_content = chatboxview.el.querySelector('.chat-content');
                     expect(chat_content.querySelector('.chat-msg .chat-msg-text').textContent).toEqual(message);
@@ -178,7 +176,7 @@
                     expect(msg_obj.get('message')).toEqual(message);
                     expect(msg_obj.get('fullname')).toEqual(undefined);
                     expect(msg_obj.get('sender')).toEqual('them');
-                    expect(msg_obj.get('delayed')).toEqual(false);
+                    expect(msg_obj.get('is_delayed')).toEqual(false);
                     // Now check that the message appears inside the chatbox in the DOM
                     var chat_content = chatboxview.el.querySelector('.chat-content');
                     expect(chat_content.querySelector('.chat-msg .chat-msg-text').textContent).toEqual(message);
@@ -630,7 +628,7 @@
             */
             sinon.spy(_converse, 'log');
             sinon.spy(_converse.chatboxes, 'getChatBox');
-            sinon.spy(utils, 'isHeadlineMessage');
+            sinon.spy(u, 'isHeadlineMessage');
             var msg = $msg({
                     from: 'localhost',
                     to: _converse.bare_jid,
@@ -642,13 +640,13 @@
                 "onMessage: Ignoring incoming headline message sent with type 'chat' from JID: localhost",
                 Strophe.LogLevel.INFO
             )).toBeTruthy();
-            expect(utils.isHeadlineMessage.called).toBeTruthy();
-            expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
+            expect(u.isHeadlineMessage.called).toBeTruthy();
+            expect(u.isHeadlineMessage.returned(true)).toBeTruthy();
             expect(_converse.chatboxes.getChatBox.called).toBeFalsy();
             // Remove sinon spies
             _converse.log.restore();
             _converse.chatboxes.getChatBox.restore();
-            utils.isHeadlineMessage.restore();
+            u.isHeadlineMessage.restore();
             done();
         }));
 
@@ -692,7 +690,7 @@
             expect(msg_obj.get('message')).toEqual(msgtext);
             expect(msg_obj.get('fullname')).toEqual(mock.cur_names[1]);
             expect(msg_obj.get('sender')).toEqual('them');
-            expect(msg_obj.get('delayed')).toEqual(false);
+            expect(msg_obj.get('is_delayed')).toEqual(false);
             // Now check that the message appears inside the chatbox in the DOM
             var chat_content = chatboxview.el.querySelector('.chat-content');
             expect(chat_content.querySelector('.chat-msg .chat-msg-text').textContent).toEqual(msgtext);
@@ -745,7 +743,7 @@
                 expect(msg_obj.get('message')).toEqual(msgtext);
                 expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
                 expect(msg_obj.get('sender')).toEqual('me');
-                expect(msg_obj.get('delayed')).toEqual(false);
+                expect(msg_obj.get('is_delayed')).toEqual(false);
                 // Now check that the message appears inside the chatbox in the DOM
                 var $chat_content = $(chatboxview.el).find('.chat-content');
                 var msg_txt = $chat_content.find('.chat-msg').find('.chat-msg-text').text();
@@ -901,7 +899,7 @@
                 expect(msg_obj.get('message')).toEqual(message);
                 expect(msg_obj.get('fullname')).toEqual(contact_name);
                 expect(msg_obj.get('sender')).toEqual('them');
-                expect(msg_obj.get('delayed')).toEqual(true);
+                expect(msg_obj.get('is_delayed')).toEqual(true);
 
                 return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === 'Candice van der Knijff')
                 .then(function () {
@@ -947,7 +945,7 @@
                     expect(msg_obj.get('message')).toEqual(message);
                     expect(msg_obj.get('fullname')).toEqual(contact_name);
                     expect(msg_obj.get('sender')).toEqual('them');
-                    expect(msg_obj.get('delayed')).toEqual(false);
+                    expect(msg_obj.get('is_delayed')).toEqual(false);
                     msg_txt = $chat_content.find('.chat-msg').last().find('.chat-msg-text').text();
                     expect(msg_txt).toEqual(message);
 
@@ -1089,6 +1087,7 @@
                 expect(view.model.sendMessage).toHaveBeenCalled();
                 var msg = $(view.el).find('.chat-content .chat-msg').last().find('.chat-msg-text');
                 expect(msg.html().trim()).toEqual(
+                    '<!-- src/templates/image.html -->\n'+
                     '<a href="'+base_url+'/logo/conversejs-filled.svg" target="_blank" rel="noopener"><img class="chat-image img-thumbnail"'+
                     ' src="' + message + '"></a>');
                 message += "?param1=val1&param2=val2";
@@ -1100,6 +1099,7 @@
                 expect(view.model.sendMessage).toHaveBeenCalled();
                 var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
                 expect(msg.html().trim()).toEqual(
+                    '<!-- src/templates/image.html -->\n'+
                     '<a href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2" target="_blank" rel="noopener"><img'+
                     ' class="chat-image img-thumbnail" src="'+message.replace(/&/g, '&amp;')+'"></a>')
 
@@ -1342,6 +1342,7 @@
                     expect(msg.outerHTML).toEqual('<span class="chat-msg-text">Have you heard this funny audio?</span>');
                     var media = view.el.querySelector('.chat-msg .chat-msg-media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                        '<!-- src/templates/audio.html -->'+
                         '<audio controls=""><source src="http://localhost/audio.mp3" type="audio/mpeg"></audio>'+
                         '<a target="_blank" rel="noopener" href="http://localhost/audio.mp3">Download audio file</a>');
 
@@ -1359,6 +1360,7 @@
                     expect(msg.innerHTML).toEqual('');
                     media = view.el.querySelector('.chat-msg:last-child .chat-msg-media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                        '<!-- src/templates/audio.html -->'+
                         '<audio controls=""><source src="http://localhost/audio.mp3" type="audio/mpeg"></audio>'+
                         '<a target="_blank" rel="noopener" href="http://localhost/audio.mp3">Download audio file</a>');
                     done();
@@ -1392,6 +1394,7 @@
                     expect(msg.outerHTML).toEqual('<span class="chat-msg-text">Have you seen this funny video?</span>');
                     var media = view.el.querySelector('.chat-msg .chat-msg-media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                        '<!-- src/templates/video.html -->'+
                         '<video controls=""><source src="http://localhost/video.mp4" type="video/mp4"></video>'+
                         '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file</a>');
 
@@ -1409,6 +1412,7 @@
                     expect(msg.innerHTML).toEqual('');
                     media = view.el.querySelector('.chat-msg:last-child .chat-msg-media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                        '<!-- src/templates/video.html -->'+
                         '<video controls=""><source src="http://localhost/video.mp4" type="video/mp4"></video>'+
                         '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file</a>');
                     done();
@@ -1442,6 +1446,7 @@
                     expect(msg.outerHTML).toEqual('<span class="chat-msg-text">Have you downloaded this funny file?</span>');
                     var media = view.el.querySelector('.chat-msg .chat-msg-media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                        '<!-- src/templates/file.html -->'+
                         '<a target="_blank" rel="noopener" href="http://localhost/funny.pdf">Download: "funny.pdf</a>');
                     done();
                 });
@@ -1476,6 +1481,7 @@
                     expect(msg.outerHTML).toEqual('<span class="chat-msg-text">Have you seen this funny image?</span>');
                     var media = view.el.querySelector('.chat-msg .chat-msg-media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                        '<!-- src/templates/image.html -->'+
                         '<a href="http://localhost:8000/logo/conversejs-filled.svg" target="_blank" rel="noopener">'+
                             '<img class="chat-image img-thumbnail" src="http://localhost:8000/logo/conversejs-filled.svg">'+
                         '</a>');

@@ -8,7 +8,7 @@
 
 (function (root, factory) {
     define(["converse-core",
-            "tpl!inverse_brand_heading",
+            "templates/inverse_brand_heading.html",
             "converse-chatview",
             "converse-controlbox",
             "converse-muc",

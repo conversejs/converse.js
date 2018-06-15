@@ -1,6 +1,6 @@
 <field var="{{{o.name}}}">
-{[ if (_.isArray(o.value)) { ]}
-    {[ _.each(o.value,function(arrayValue) { ]}<value>{{{arrayValue}}}</value>{[ }); ]}
+{[ if (o.value.constructor === Array) { ]}
+    {[ o.value.forEach(function (arrayValue) { ]}<value>{{{arrayValue}}}</value>{[ }); ]}
 {[ } else { ]}
     <value>{{{o.value}}}</value>
 {[ } ]}</field>

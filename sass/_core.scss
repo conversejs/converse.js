@@ -159,6 +159,10 @@ body.reset {
         font-weight: 700;
     }
 
+    em {
+        font-style: italic;
+    }
+
     ol, ul {
         list-style: none;
     }
@@ -172,10 +176,16 @@ body.reset {
         margin: 0;
     }
 
-    a, a:visited, a:hover, a:not([href]):not([tabindex]) {
+    a, a:visited, a:not([href]):not([tabindex]) {
         text-decoration: none;
         color: $link-color;
         text-shadow: none;
+        &:hover {
+            color: darken($link-color, 20%);
+            text-decoration: none;
+            text-shadow: none;
+        }
+
         &.fa {
             color: $subdued-color;
             &:hover {

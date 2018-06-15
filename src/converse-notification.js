@@ -31,7 +31,7 @@
                 // ^ a list of JIDs to ignore concerning chat state notifications
                 play_sounds: true,
                 sounds_path: '/sounds/',
-                notification_icon: '/logo/conversejs128.png'
+                notification_icon: '/logo/conversejs-filled.svg'
             });
 
             _converse.isOnlyChatStateNotification = (msg) =>

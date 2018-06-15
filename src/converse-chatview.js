@@ -5,26 +5,25 @@
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
-    define([
-            "converse-core",
+    define(["converse-core",
             "bootstrap",
             "emojione",
             "xss",
-            "tpl!action",
-            "tpl!chatbox",
-            "tpl!chatbox_head",
-            "tpl!chatbox_message_form",
-            "tpl!emojis",
-            "tpl!error_message",
-            "tpl!help_message",
-            "tpl!info",
-            "tpl!new_day",
-            "tpl!user_details_modal",
-            "tpl!toolbar_fileupload",
-            "tpl!spinner",
-            "tpl!spoiler_button",
-            "tpl!status_message",
-            "tpl!toolbar",
+            "templates/action.html",
+            "templates/chatbox.html",
+            "templates/chatbox_head.html",
+            "templates/chatbox_message_form.html",
+            "templates/emojis.html",
+            "templates/error_message.html",
+            "templates/help_message.html",
+            "templates/info.html",
+            "templates/new_day.html",
+            "templates/user_details_modal.html",
+            "templates/toolbar_fileupload.html",
+            "templates/spinner.html",
+            "templates/spoiler_button.html",
+            "templates/status_message.html",
+            "templates/toolbar.html",
             "converse-modal",
             "converse-chatboxes",
             "converse-message-view"
@@ -152,6 +151,7 @@
                     return tpl_emojis(
                         _.extend(
                             this.model.toJSON(), {
+                                '_': _,
                                 'transform': _converse.use_emojione ? emojione.shortnameToImage : emojione.shortnameToUnicode,
                                 'emojis_by_category': u.getEmojisByCategory(_converse, emojione),
                                 'toned_emojis': u.getTonedEmojis(_converse),
@@ -422,6 +422,7 @@
                 },
 
                 showUserDetailsModal (ev) {
+                    ev.preventDefault();
                     if (_.isUndefined(this.user_details_modal)) {
                         this.user_details_modal = new _converse.UserDetailsModal({model: this.model});
                     }
@@ -1083,10 +1084,7 @@
                 },
 
                 afterShown () {
-                    if (u.isPersistableModel(this.model)) {
-                        this.model.clearUnreadMsgCounter();
-                        this.model.save();
-                    }
+                    this.model.clearUnreadMsgCounter();
                     this.setChatState(_converse.ACTIVE);
                     this.renderEmojiPicker();
                     this.scrollDown();
@@ -1163,7 +1161,7 @@
                 },
 
                 onWindowStateChanged (state) {
-                    if (this.model.get('num_unread', 0) && !this.model.newMessageWillBeHidden()) {
+                    if (this.model.get('num_unread', 0) && !this.model.isHidden()) {
                         this.model.clearUnreadMsgCounter();
                     }
                 }

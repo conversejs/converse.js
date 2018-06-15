@@ -7,10 +7,10 @@ Configuration
 =============
 
 The included minified JavaScript and CSS files can be used for demoing or testing, but
-you'll want to configure *Converse.js* to suit your needs before you deploy it
+you'll want to configure *Converse* to suit your needs before you deploy it
 on your website.
 
-*Converse.js* is passed its configuration settings when you call its *initialize* method.
+*Converse* is passed its configuration settings when you call its *initialize* method.
 
 You'll most likely want to call the *initialize* method in your HTML page. For
 an example of how this is done, please see the bottom of the *./index.html* page.
@@ -18,7 +18,7 @@ an example of how this is done, please see the bottom of the *./index.html* page
 Please refer to the `Configuration settings`_ section below for info on
 all the available configuration settings.
 
-After you have configured *Converse.js*, you'll have to regenerate the minified
+After you have configured *Converse*, you'll have to regenerate the minified
 JavaScript file so that it will include the new settings. Please refer to the
 :ref:`minification` section for more info on how to do this.
 
@@ -83,7 +83,7 @@ requiring them to log in manually.
 When a BOSH session is initially created, you'll receive three tokens.
 A JID (jabber ID), SID (session ID) and RID (Request ID).
 
-Converse.js needs these tokens in order to attach to that same session.
+Converse needs these tokens in order to attach to that same session.
 
 There are two complementary configuration settings to ``prebind``.
 They are :ref:`keepalive` and `prebind_url`_.
@@ -200,7 +200,7 @@ allow_public_bookmarks
 Some XMPP servers don't support private PEP/PubSub nodes, as required for
 private bookmarks and outlined in `XEP-0223 <https://xmpp.org/extensions/xep-0223.html>`_.
 
-Even though Converse.js asks for the bookmarks to be kept private (via the
+Even though Converse asks for the bookmarks to be kept private (via the
 `<publish-options>` XML node), the server simply ignores the privacy settings
 and publishes the node contents under the default privacy setting, which makes
 the information available to all roster contacts.
@@ -382,7 +382,7 @@ A list of plugin names that are blacklisted and will therefore not be
 initialized once ``converse.initialize`` is called, even if the same plugin is
 whitelisted.
 
-From Converse.js 3.0 onwards most of the API is available only to plugins and
+From Converse 3.0 onwards most of the API is available only to plugins and
 all plugins need to be whitelisted first.
 
 The usecase for blacklisting is generally to disable removed core plugins
@@ -495,7 +495,7 @@ connection_options
 * Default:  ``{}``
 * Type:  Object
 
-Converse.js relies on `Strophe.js <http://strophe.im>`_ to establish and
+Converse relies on `Strophe.js <http://strophe.im>`_ to establish and
 maintain a connection to the XMPP server.
 
 This option allows you to pass a map of configuration options to be passed into
@@ -725,7 +725,7 @@ The translations for that locale must be available in JSON format at the
 
 If an explicit locale is specified via the ``i18n`` setting and the
 translations for that locale are not found at the `locales_url``, then 
-then Converse.js will fall back to trying to determine the browser's language
+then Converse will fall back to trying to determine the browser's language
 and fetching those translations, or if that fails the default English texts
 will be used.
 
@@ -747,7 +747,7 @@ keepalive
 
 * Default:    ``true``
 
-Determines whether Converse.js will maintain the chat session across page
+Determines whether Converse will maintain the chat session across page
 loads.
 
 This setting should also be used in conjunction with ``authentication`` set to `prebind`_.
@@ -785,7 +785,7 @@ locales
         'ru', 'uk', 'zh'
     ]
 
-This setting restricts the locales that are supported by Converse.js and
+This setting restricts the locales that are supported by Converse and
 therefore what may be given as value for the :ref:`i18n` option.
 
 Any other locales will be ignored.
@@ -800,7 +800,7 @@ locales_url
 
 * Default: ``/locale/{{{locale}}}/LC_MESSAGES/converse.json``,
 
-The URL from where Converse.js should fetch translation JSON.
+The URL from where Converse should fetch translation JSON.
 
 The three curly braces ``{{{ }}}`` are
 `Mustache <https://github.com/janl/mustache.js#readme>`_-style
@@ -812,7 +812,7 @@ The variable being interpolated via the curly braces is ``locale``, which is
 the value passed in to the `i18n`_ setting, or the browser's locale or the
 default local or `en` (resolved in that order).
 
-From version 3.3.0, Converse.js no longer bundles all translations into its
+From version 3.3.0, Converse no longer bundles all translations into its
 final build file. Instead, only the relevant translations are fetched at
 runtime.
 
@@ -953,7 +953,7 @@ muc_show_join_leave
 
 * Default; ``true``
 
-Determines whether Converse.js will show info messages inside a chatroom
+Determines whether Converse will show info messages inside a chatroom
 whenever a user joins or leaves it.
 
 nickname
@@ -986,6 +986,39 @@ This option specifies which icon is shown in HTML5 notifications, as provided
 by the ``src/converse-notification.js`` plugin.
 
 
+oauth_providers
+---------------
+
+* Default: ``[]``
+
+Allows you to specify a list of OAuth providers that the user may use to log in
+with.
+
+.. note::
+    Your XMPP server will have to support Oauth logins
+
+.. code-block:: javascript
+
+        converse.initialize({
+            oauth_providers: {
+                'github': {
+                    'client_id': '1338d9f7ff52b1309b29',
+                    'host': 'chat.example.org',
+                    'class': 'fa-github-alt',
+                    'id': 'github',
+                    'name': 'Github'
+                },
+                'twitter': {
+                    'client_id': '0332d98cff83b1999b22',
+                    'host': 'chat.example.org',
+                    'class': 'fa-twitter',
+                    'id': 'twitter',
+                    'name': 'Twitter'
+                }
+            },
+        });
+
+
 ping_interval
 -------------
 
@@ -1007,7 +1040,7 @@ play_sounds
 Plays a notification sound when you receive a personal message or when your
 nickname is mentioned in a chatroom.
 
-Inside the ``./sounds`` directory of the Converse.js repo you'll see MP3 and Ogg
+Inside the ``./sounds`` directory of the Converse repo you'll see MP3 and Ogg
 formatted sound files. We need both, because neither format is supported by all browsers.
 
 You can set the URL where the sound files are hosted with the `sounds_path`_
@@ -1047,12 +1080,12 @@ priority
 * Type:     Number
 
 Determines the priority used for presence stanzas sent out from this resource
-(i.e. this instance of Converse.js).
+(i.e. this instance of Converse).
 
 The priority of a given XMPP chat client determines the importance of its presence
 stanzas in relation to stanzas received from other clients of the same user.
 
-In Converse.js, the indicated chat status of a roster contact will be taken from the
+In Converse, the indicated chat status of a roster contact will be taken from the
 presence stanza (and associated resource) with the highest priority.
 
 If multiple resources have the same top priority, then the chat status will be
@@ -1067,6 +1100,39 @@ providers_link
 
 The hyperlink on the registration form which points to a directory of public
 XMPP servers.
+
+push_app_servers
+----------------
+
+* Default: ``[]``
+
+This option lets you enable or disable so-called push notification "App Servers"
+(as per `XEP-0357 <https://xmpp.org/extensions/xep-0357.html>`_).
+
+For each "App Server" an object needs to be passed in. When enabling, you need
+to specify ``jid`` and ``node`` values. You can also provide a
+``secret``, if required by your App Server.
+
+When disabling, you need to specify at least a ``jid`` and set ``disabled`` to
+``true``. This will disable notifications to all pubsub nodes on that "App
+Server". If you want to disable only a particular node, then specify a ``node``
+value as well.
+
+For example:
+
+
+.. code-block:: javascript
+
+        converse.initialize({
+            'push_app_servers':  [{
+                'jid': 'push-4@client.example',
+                'node': 'yxs32uqsflafdk3iuqo',
+                'disable': true
+            }, {
+                'jid': 'push-5@client.example',
+                'node': 'yxs32uqsflafdk3iuqo',
+            }]
+        });
 
 root
 ----
@@ -1108,7 +1174,7 @@ configured.
 
 .. note::
     It's currently not possible to use converse.js to assign contacts to groups.
-    Converse.js can only show users and groups that were previously configured
+    Converse can only show users and groups that were previously configured
     elsewhere.
 
 show_chatstate_notifications
@@ -1262,10 +1328,10 @@ loaded), then an error will be raised.
 
 Otherwise a message will simply be logged and the override instruction ignored.
 
-The Converse.js plugins architecture can have an :ref:`dependencies`
+The Converse plugins architecture can have an :ref:`dependencies`
 plugin attribute. This enables you to specify an array of other plugins which
 this one depends on.
-Converse.js (more specifically, `pluggable.js <https://jcbrand.github.io/pluggable.js/>`_)
+Converse (more specifically, `pluggable.js <https://jcbrand.github.io/pluggable.js/>`_)
 will first load these dependencies before executing the plugin's overrides and
 calling its ``initialize`` method.
 
@@ -1302,7 +1368,7 @@ This setting determines whether the default value of the "This is a trusted devi
 When the current device is not trusted, then localStorage and sessionStorage
 will be cleared when the user logs out, thereby removing all cached data.
 
-Clearing the cache in this way makes Converse.js much slower when the user logs
+Clearing the cache in this way makes Converse much slower when the user logs
 in again, because all data needs to be fetch anew.
 
 See also `storage`_.
@@ -1323,7 +1389,7 @@ use_otr_by_default
 
 * Default:  ``false``
 
-If set to ``true``, Converse.js will automatically try to initiate an OTR (off-the-record)
+If set to ``true``, Converse will automatically try to initiate an OTR (off-the-record)
 encrypted chat session every time you open a chatbox.
 
 visible_toolbar_buttons
@@ -1382,7 +1448,7 @@ support.
     configuration setting).
 
 .. note::
-    Converse.js does not yet support "keepalive" with websockets.
+    Converse does not yet support "keepalive" with websockets.
 
 .. _`view_mode`:
 
@@ -1448,7 +1514,7 @@ whitelisted_plugins
 A list of plugin names that are whitelisted and will therefore be
 initialized once ``converse.initialize`` is called.
 
-From Converse.js 3.0 onwards most of the API is available only to plugins and
+From Converse 3.0 onwards most of the API is available only to plugins and
 all plugins need to be whitelisted first.
 
 This is done to prevent malicious scripts from using the API to trick users or

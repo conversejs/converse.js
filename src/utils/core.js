@@ -16,10 +16,10 @@
             "backbone",
             "strophe",
             "uri",
-            "tpl!audio",
-            "tpl!file",
-            "tpl!image",
-            "tpl!video"
+            "templates/audio.html",
+            "templates/file.html",
+            "templates/image.html",
+            "templates/video.html"
         ], factory);
     } else {
         // Used by the mockups
@@ -483,10 +483,12 @@
          * message, i.e. not a MAM archived one.
          */
         if (message instanceof Element) {
-            return !sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length &&
-                   !sizzle('delay[xmlns="'+Strophe.NS.DELAY+'"]', message).length;
+            return !(
+                sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, message).length &&
+                sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, message).length
+            );
         } else {
-            return !message.get('delayed');
+            return !(message.get('is_delayed') && message.get('is_archived'));
         }
     };
 
@@ -565,7 +567,7 @@
          */
         var div = document.createElement('div');
         div.innerHTML = s;
-        return div.firstChild;
+        return div.firstElementChild;
     };
 
     u.getOuterWidth = function (el, include_margin=false) {

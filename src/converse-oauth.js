@@ -1,0 +1,146 @@
+// Converse.js
+// https://conversejs.org
+//
+// Copyright (c) 2013-2018, the Converse.js developers
+// Licensed under the Mozilla Public License (MPLv2)
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as a module called "myplugin"
+        define(["converse-core", "templates/oauth_providers.html", "hellojs"], factory);
+    } else {
+        // Browser globals. If you're not using a module loader such as require.js,
+        // then this line below executes. Make sure that your plugin's <script> tag
+        // appears after the one from converse.js.
+        factory(converse);
+    }
+}(this, function (converse, tpl_oauth_providers, hello) {
+    'use strict';
+    const _ = converse.env._,
+          Backbone = converse.env.Backbone,
+          Strophe = converse.env.Strophe;
+
+    // The following line registers your plugin.
+    converse.plugins.add("converse-oauth", {
+
+        /* Optional dependencies are other plugins which might be
+         * overridden or relied upon, and therefore need to be loaded before
+         * this plugin. They are called "optional" because they might not be
+         * available, in which case any overrides applicable to them will be
+         * ignored.
+         *
+         * NB: These plugins need to have already been loaded via require.js.
+         *
+         * It's possible to make optional dependencies non-optional.
+         * If the setting "strict_plugin_dependencies" is set to true,
+         * an error will be raised if the plugin is not found.
+         */
+        'optional_dependencies': ['converse-register'],
+
+        /* If you want to override some function or a Backbone model or
+         * view defined elsewhere in converse.js, then you do that under
+         * the "overrides" namespace.
+         */
+        'overrides': {
+            /* For example, the private *_converse* object has a
+             * method "onConnected". You can override that method as follows:
+             */
+            'LoginPanel': {
+
+                insertOAuthProviders () {
+                    const { _converse } = this.__super__;
+                    if (_.isUndefined(this.oauth_providers_view)) {
+                        this.oauth_providers_view = 
+                            new _converse.OAuthProvidersView({'model': _converse.oauth_providers});
+
+                        this.oauth_providers_view.render();
+                        this.el.querySelector('.buttons').insertAdjacentElement(
+                            'afterend',
+                            this.oauth_providers_view.el
+                        );
+                    }
+                    this.oauth_providers_view.render();
+                },
+
+                render (cfg) {
+                    const { _converse } = this.__super__;
+                    const result = this.__super__.render.apply(this, arguments);
+                    if (_converse.oauth_providers && !_converse.auto_login) {
+                        this.insertOAuthProviders();
+                    }
+                    return result;
+                }
+            }
+        },
+
+        initialize () {
+            /* The initialize function gets called as soon as the plugin is
+             * loaded by converse.js's plugin machinery.
+             */
+            const { _converse } = this,
+                  { __ } = _converse;
+
+            _converse.api.settings.update({
+                'oauth_providers': {},
+            });
+
+            _converse.OAuthProviders = Backbone.Collection.extend({
+                'sync': __.noop,
+
+                initialize () {
+                    _.each(_converse.user_settings.oauth_providers, (provider) => {
+                        const item = new Backbone.Model(_.extend(provider, {
+                            'login_text': __('Log in with %1$s', provider.name)
+                        }));
+                        this.add(item, {'silent': true});
+                    });
+                }
+            });
+            _converse.oauth_providers = new _converse.OAuthProviders();
+
+
+            _converse.OAuthProvidersView = Backbone.VDOMView.extend({
+                'events': {
+                    'click .oauth-login': 'oauthLogin'
+                },
+
+                toHTML () {
+                    return tpl_oauth_providers(
+                        _.extend({
+                            '_': _,
+                            '__': _converse.__,
+                            'providers': this.model.toJSON()
+                        }));
+                },
+
+                fetchOAuthProfileDataAndLogin () {
+                    this.oauth_service.api('me').then((profile) => {
+                        const response = this.oauth_service.getAuthResponse();
+                        _converse.api.user.login({
+                            'jid': `${profile.name}@${this.provider.get('host')}`,
+                            'password': response.access_token
+                        });
+                    });
+                },
+
+                oauthLogin (ev) {
+                    ev.preventDefault();
+                    const id = ev.target.getAttribute('data-id');
+                    this.provider = _converse.oauth_providers.get(id);
+                    this.oauth_service = hello(id);
+
+                    const data = {};
+                    data[id] = this.provider.get('client_id');
+                    hello.init(data, {
+                        'redirect_uri': '/redirect.html'
+                    });
+
+                    this.oauth_service.login().then(
+                        () => this.fetchOAuthProfileDataAndLogin(),
+                        (error) => _converse.log(error.error_message, Strophe.LogLevel.ERROR)
+                    );
+                }
+            });
+        }
+    });
+}));

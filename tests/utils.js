@@ -1,12 +1,12 @@
 (function (root, factory) {
-    define(['converse', 'es6-promise',  'mock', 'wait-until-promise'], factory);
-}(this, function (converse_api, Promise, mock, waitUntilPromise) {
-    var _ = converse_api.env._;
-    var $msg = converse_api.env.$msg;
-    var $pres = converse_api.env.$pres;
-    var $iq = converse_api.env.$iq;
-    var Strophe = converse_api.env.Strophe;
-    var u = converse_api.env.utils;
+    define(['es6-promise',  'mock', 'wait-until-promise'], factory);
+}(this, function (Promise, mock, waitUntilPromise) {
+    var _ = converse.env._;
+    var $msg = converse.env.$msg;
+    var $pres = converse.env.$pres;
+    var $iq = converse.env.$iq;
+    var Strophe = converse.env.Strophe;
+    var u = converse.env.utils;
     var utils = {};
 
     if (typeof window.Promise === 'undefined') {

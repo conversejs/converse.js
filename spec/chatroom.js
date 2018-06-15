@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["jquery", "jasmine", "mock", "converse-core", "test-utils", "utils" ], factory);
-} (this, function ($, jasmine, mock, converse, test_utils, utils) {
+    define(["jquery", "jasmine", "mock", "test-utils" ], factory);
+} (this, function ($, jasmine, mock, test_utils) {
     var _ = converse.env._;
     var $pres = converse.env.$pres;
     var $iq = converse.env.$iq;
@@ -814,9 +814,8 @@
                             .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
                                 .c('value').t(0);
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
-                test_utils.waitUntil(function () {
-                    return _.get(view.el.querySelector('.chatroom-description'), 'textContent');
-                }).then(function () {
+                test_utils.waitUntil(() => _.get(view.el.querySelector('.chatroom-description'), 'textContent'))
+                .then(function () {
                     expect($(view.el.querySelector('.chatroom-description')).text()).toBe('This is the description');
                     done();
                 });
@@ -1842,7 +1841,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
                 var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                expect(view.model.get('features_fetched')).toBe(true);
+                expect(view.model.get('features_fetched')).toBeTruthy();
                 expect(view.model.get('passwordprotected')).toBe(true);
                 expect(view.model.get('hidden')).toBe(true);
                 expect(view.model.get('temporary')).toBe(true);

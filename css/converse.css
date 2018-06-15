@@ -2371,7 +2371,7 @@
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
 @-ms-viewport {
   width: device-width; }
-#conversejs article, #conversejs aside, #conversejs dialog, #conversejs figcaption, #conversejs figure, #conversejs footer, #conversejs header, #conversejs hgroup, #conversejs main, #conversejs nav, #conversejs section {
+#conversejs article, #conversejs aside, #conversejs figcaption, #conversejs figure, #conversejs footer, #conversejs header, #conversejs hgroup, #conversejs main, #conversejs nav, #conversejs section {
   display: block; }
 #conversejs body {
   margin: 0;
@@ -2458,7 +2458,7 @@
 #conversejs code,
 #conversejs kbd,
 #conversejs samp {
-  font-family: monospace, monospace;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 1em; }
 #conversejs pre {
   margin-top: 0;
@@ -2484,7 +2484,7 @@
   text-align: inherit; }
 #conversejs label {
   display: inline-block;
-  margin-bottom: .5rem; }
+  margin-bottom: 0.5rem; }
 #conversejs button {
   border-radius: 0; }
 #conversejs button:focus {
@@ -3208,6 +3208,9 @@
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; }
+  @media screen and (prefers-reduced-motion: reduce) {
+    #conversejs .form-control {
+      transition: none; } }
   #conversejs .form-control::-ms-expand {
     background-color: transparent;
     border: 0; }
@@ -3255,6 +3258,7 @@
   padding-bottom: 0.375rem;
   margin-bottom: 0;
   line-height: 1.5;
+  color: #212529;
   background-color: transparent;
   border: solid transparent;
   border-width: 1px 0; }
@@ -3371,6 +3375,10 @@
   #conversejs .custom-select.is-valid ~ .valid-feedback,
   #conversejs .custom-select.is-valid ~ .valid-tooltip {
     display: block; }
+.was-validated #conversejs .form-control-file:valid ~ .valid-feedback,
+.was-validated #conversejs .form-control-file:valid ~ .valid-tooltip, #conversejs .form-control-file.is-valid ~ .valid-feedback,
+#conversejs .form-control-file.is-valid ~ .valid-tooltip {
+  display: block; }
 .was-validated #conversejs .form-check-input:valid ~ .form-check-label, #conversejs .form-check-input.is-valid ~ .form-check-label {
   color: #3AA569; }
 .was-validated #conversejs .form-check-input:valid ~ .valid-feedback,
@@ -3435,6 +3443,10 @@
   #conversejs .custom-select.is-invalid ~ .invalid-feedback,
   #conversejs .custom-select.is-invalid ~ .invalid-tooltip {
     display: block; }
+.was-validated #conversejs .form-control-file:invalid ~ .invalid-feedback,
+.was-validated #conversejs .form-control-file:invalid ~ .invalid-tooltip, #conversejs .form-control-file.is-invalid ~ .invalid-feedback,
+#conversejs .form-control-file.is-invalid ~ .invalid-tooltip {
+  display: block; }
 .was-validated #conversejs .form-check-input:invalid ~ .form-check-label, #conversejs .form-check-input.is-invalid ~ .form-check-label {
   color: #E77051; }
 .was-validated #conversejs .form-check-input:invalid ~ .invalid-feedback,
@@ -3487,7 +3499,8 @@
       vertical-align: middle; }
     #conversejs .form-inline .form-control-plaintext {
       display: inline-block; }
-    #conversejs .form-inline .input-group {
+    #conversejs .form-inline .input-group,
+    #conversejs .form-inline .custom-select {
       width: auto; }
     #conversejs .form-inline .form-check {
       display: flex;
@@ -3518,6 +3531,9 @@
   line-height: 1.5;
   border-radius: 0.25rem;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; }
+  @media screen and (prefers-reduced-motion: reduce) {
+    #conversejs .btn {
+      transition: none; } }
   #conversejs .btn:hover, #conversejs .btn:focus {
     text-decoration: none; }
   #conversejs .btn:focus, #conversejs .btn.focus {
@@ -3866,7 +3882,8 @@
     border-color: transparent;
     box-shadow: none; }
   #conversejs .btn-link:disabled, #conversejs .btn-link.disabled {
-    color: #6c757d; }
+    color: #6c757d;
+    pointer-events: none; }
 #conversejs .btn-lg, #conversejs .btn-group-lg > .btn {
   padding: 0.5rem 1rem;
   font-size: 1.25rem;
@@ -3887,25 +3904,26 @@
 #conversejs input[type="button"].btn-block {
   width: 100%; }
 #conversejs .fade {
-  opacity: 0;
   transition: opacity 0.15s linear; }
-  #conversejs .fade.show {
-    opacity: 1; }
-#conversejs .collapse {
+  @media screen and (prefers-reduced-motion: reduce) {
+    #conversejs .fade {
+      transition: none; } }
+  #conversejs .fade:not(.show) {
+    opacity: 0; }
+#conversejs .collapse:not(.show) {
   display: none; }
-  #conversejs .collapse.show {
-    display: block; }
-#conversejs tr.collapse.show {
-  display: table-row; }
-#conversejs tbody.collapse.show {
-  display: table-row-group; }
 #conversejs .collapsing {
   position: relative;
   height: 0;
   overflow: hidden;
   transition: height 0.35s ease; }
+  @media screen and (prefers-reduced-motion: reduce) {
+    #conversejs .collapsing {
+      transition: none; } }
 #conversejs .dropup,
-#conversejs .dropdown {
+#conversejs .dropright,
+#conversejs .dropdown,
+#conversejs .dropleft {
   position: relative; }
 #conversejs .dropdown-toggle::after {
   display: inline-block;
@@ -3938,7 +3956,12 @@
   background-clip: padding-box;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 0.25rem; }
+#conversejs .dropdown-menu-right {
+  right: 0;
+  left: auto; }
 #conversejs .dropup .dropdown-menu {
+  top: auto;
+  bottom: 100%;
   margin-top: 0;
   margin-bottom: 0.125rem; }
 #conversejs .dropup .dropdown-toggle::after {
@@ -3955,6 +3978,9 @@
 #conversejs .dropup .dropdown-toggle:empty::after {
   margin-left: 0; }
 #conversejs .dropright .dropdown-menu {
+  top: 0;
+  right: auto;
+  left: 100%;
   margin-top: 0;
   margin-left: 0.125rem; }
 #conversejs .dropright .dropdown-toggle::after {
@@ -3965,6 +3991,7 @@
   vertical-align: 0.255em;
   content: "";
   border-top: 0.3em solid transparent;
+  border-right: 0;
   border-bottom: 0.3em solid transparent;
   border-left: 0.3em solid; }
 #conversejs .dropright .dropdown-toggle:empty::after {
@@ -3972,6 +3999,9 @@
 #conversejs .dropright .dropdown-toggle::after {
   vertical-align: 0; }
 #conversejs .dropleft .dropdown-menu {
+  top: 0;
+  right: 100%;
+  left: auto;
   margin-top: 0;
   margin-right: 0.125rem; }
 #conversejs .dropleft .dropdown-toggle::after {
@@ -3997,6 +4027,9 @@
   margin-left: 0; }
 #conversejs .dropleft .dropdown-toggle::before {
   vertical-align: 0; }
+#conversejs .dropdown-menu[x-placement^="top"], #conversejs .dropdown-menu[x-placement^="right"], #conversejs .dropdown-menu[x-placement^="bottom"], #conversejs .dropdown-menu[x-placement^="left"] {
+  right: auto;
+  bottom: auto; }
 #conversejs .dropdown-divider {
   height: 0;
   margin: 0.5rem 0;
@@ -4033,6 +4066,10 @@
   font-size: 0.875rem;
   color: #6c757d;
   white-space: nowrap; }
+#conversejs .dropdown-item-text {
+  display: block;
+  padding: 0.25rem 1.5rem;
+  color: #212529; }
 #conversejs .btn-group,
 #conversejs .btn-group-vertical {
   position: relative;
@@ -4078,8 +4115,10 @@
 #conversejs .dropdown-toggle-split {
   padding-right: 0.5625rem;
   padding-left: 0.5625rem; }
-  #conversejs .dropdown-toggle-split::after {
+  #conversejs .dropdown-toggle-split::after, .dropup #conversejs .dropdown-toggle-split::after, .dropright #conversejs .dropdown-toggle-split::after {
     margin-left: 0; }
+  .dropleft #conversejs .dropdown-toggle-split::before {
+    margin-right: 0; }
 #conversejs .btn-sm + .dropdown-toggle-split, #conversejs .btn-group-sm > .btn + .dropdown-toggle-split {
   padding-right: 0.375rem;
   padding-left: 0.375rem; }
@@ -4155,10 +4194,10 @@
   #conversejs .input-group > .custom-file {
     display: flex;
     align-items: center; }
-    #conversejs .input-group > .custom-file:not(:last-child) .custom-file-label, #conversejs .input-group > .custom-file:not(:last-child) .custom-file-label::before {
+    #conversejs .input-group > .custom-file:not(:last-child) .custom-file-label, #conversejs .input-group > .custom-file:not(:last-child) .custom-file-label::after {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0; }
-    #conversejs .input-group > .custom-file:not(:first-child) .custom-file-label, #conversejs .input-group > .custom-file:not(:first-child) .custom-file-label::before {
+    #conversejs .input-group > .custom-file:not(:first-child) .custom-file-label {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0; }
 #conversejs .input-group-prepend,
@@ -4239,11 +4278,12 @@
     #conversejs .custom-control-input:disabled ~ .custom-control-label::before {
       background-color: #e9ecef; }
 #conversejs .custom-control-label {
+  position: relative;
   margin-bottom: 0; }
   #conversejs .custom-control-label::before {
     position: absolute;
     top: 0.25rem;
-    left: 0;
+    left: -1.5rem;
     display: block;
     width: 1rem;
     height: 1rem;
@@ -4254,7 +4294,7 @@
   #conversejs .custom-control-label::after {
     position: absolute;
     top: 0.25rem;
-    left: 0;
+    left: -1.5rem;
     display: block;
     width: 1rem;
     height: 1rem;
@@ -4336,10 +4376,10 @@
   height: calc(2.25rem + 2px);
   margin: 0;
   opacity: 0; }
-  #conversejs .custom-file-input:focus ~ .custom-file-control {
+  #conversejs .custom-file-input:focus ~ .custom-file-label {
     border-color: #7db3cd;
     box-shadow: 0 0 0 0.2rem rgba(56, 117, 146, 0.25); }
-    #conversejs .custom-file-input:focus ~ .custom-file-control::before {
+    #conversejs .custom-file-input:focus ~ .custom-file-label::after {
       border-color: #7db3cd; }
   #conversejs .custom-file-input:lang(en) ~ .custom-file-label::after {
     content: "Browse"; }
@@ -4363,7 +4403,7 @@
     bottom: 0;
     z-index: 3;
     display: block;
-    height: calc(calc(2.25rem + 2px) - 1px * 2);
+    height: 2.25rem;
     padding: 0.375rem 0.75rem;
     line-height: 1.5;
     color: #495057;
@@ -4371,6 +4411,83 @@
     background-color: #e9ecef;
     border-left: 1px solid #ced4da;
     border-radius: 0 0.25rem 0.25rem 0; }
+#conversejs .custom-range {
+  width: 100%;
+  padding-left: 0;
+  background-color: transparent;
+  appearance: none; }
+  #conversejs .custom-range:focus {
+    outline: none; }
+  #conversejs .custom-range::-moz-focus-outer {
+    border: 0; }
+  #conversejs .custom-range::-webkit-slider-thumb {
+    width: 1rem;
+    height: 1rem;
+    margin-top: -0.25rem;
+    background-color: #387592;
+    border: 0;
+    border-radius: 1rem;
+    appearance: none; }
+    #conversejs .custom-range::-webkit-slider-thumb:focus {
+      outline: none;
+      box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(56, 117, 146, 0.25); }
+    #conversejs .custom-range::-webkit-slider-thumb:active {
+      background-color: #a1c9db; }
+  #conversejs .custom-range::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 0.5rem;
+    color: transparent;
+    cursor: pointer;
+    background-color: #dee2e6;
+    border-color: transparent;
+    border-radius: 1rem; }
+  #conversejs .custom-range::-moz-range-thumb {
+    width: 1rem;
+    height: 1rem;
+    background-color: #387592;
+    border: 0;
+    border-radius: 1rem;
+    appearance: none; }
+    #conversejs .custom-range::-moz-range-thumb:focus {
+      outline: none;
+      box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(56, 117, 146, 0.25); }
+    #conversejs .custom-range::-moz-range-thumb:active {
+      background-color: #a1c9db; }
+  #conversejs .custom-range::-moz-range-track {
+    width: 100%;
+    height: 0.5rem;
+    color: transparent;
+    cursor: pointer;
+    background-color: #dee2e6;
+    border-color: transparent;
+    border-radius: 1rem; }
+  #conversejs .custom-range::-ms-thumb {
+    width: 1rem;
+    height: 1rem;
+    background-color: #387592;
+    border: 0;
+    border-radius: 1rem;
+    appearance: none; }
+    #conversejs .custom-range::-ms-thumb:focus {
+      outline: none;
+      box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(56, 117, 146, 0.25); }
+    #conversejs .custom-range::-ms-thumb:active {
+      background-color: #a1c9db; }
+  #conversejs .custom-range::-ms-track {
+    width: 100%;
+    height: 0.5rem;
+    color: transparent;
+    cursor: pointer;
+    background-color: transparent;
+    border-color: transparent;
+    border-width: 0.5rem; }
+  #conversejs .custom-range::-ms-fill-lower {
+    background-color: #dee2e6;
+    border-radius: 1rem; }
+  #conversejs .custom-range::-ms-fill-upper {
+    margin-right: 15px;
+    background-color: #dee2e6;
+    border-radius: 1rem; }
 #conversejs .card {
   position: relative;
   display: flex;
@@ -4516,10 +4633,24 @@
 @media (min-width: 576px) {
   #conversejs .card-columns {
     column-count: 3;
-    column-gap: 1.25rem; }
+    column-gap: 1.25rem;
+    orphans: 1;
+    widows: 1; }
     #conversejs .card-columns .card {
       display: inline-block;
       width: 100%; } }
+#conversejs .accordion .card:not(:first-of-type):not(:last-of-type) {
+  border-bottom: 0;
+  border-radius: 0; }
+#conversejs .accordion .card:not(:first-of-type) .card-header:first-child {
+  border-radius: 0; }
+#conversejs .accordion .card:first-of-type {
+  border-bottom: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0; }
+#conversejs .accordion .card:last-of-type {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0; }
 #conversejs .breadcrumb {
   display: flex;
   flex-wrap: wrap;
@@ -4528,12 +4659,13 @@
   list-style: none;
   background-color: #e9ecef;
   border-radius: 0.25rem; }
-#conversejs .breadcrumb-item + .breadcrumb-item::before {
-  display: inline-block;
-  padding-right: 0.5rem;
-  padding-left: 0.5rem;
-  color: #6c757d;
-  content: "/"; }
+#conversejs .breadcrumb-item + .breadcrumb-item {
+  padding-left: 0.5rem; }
+  #conversejs .breadcrumb-item + .breadcrumb-item::before {
+    display: inline-block;
+    padding-right: 0.5rem;
+    color: #6c757d;
+    content: "/"; }
 #conversejs .breadcrumb-item + .breadcrumb-item:hover::before {
   text-decoration: underline; }
 #conversejs .breadcrumb-item + .breadcrumb-item:hover::before {
@@ -4873,6 +5005,9 @@
   .modal.fade #conversejs .modal-dialog {
     transition: transform 0.3s ease-out;
     transform: translate(0, -25%); }
+    @media screen and (prefers-reduced-motion: reduce) {
+      .modal.fade #conversejs .modal-dialog {
+        transition: none; } }
   .modal.show #conversejs .modal-dialog {
     transform: translate(0, 0); }
 #conversejs .modal-dialog-centered {
@@ -5428,6 +5563,16 @@
   flex-wrap: nowrap !important; }
 #conversejs .flex-wrap-reverse {
   flex-wrap: wrap-reverse !important; }
+#conversejs .flex-fill {
+  flex: 1 1 auto !important; }
+#conversejs .flex-grow-0 {
+  flex-grow: 0 !important; }
+#conversejs .flex-grow-1 {
+  flex-grow: 1 !important; }
+#conversejs .flex-shrink-0 {
+  flex-shrink: 0 !important; }
+#conversejs .flex-shrink-1 {
+  flex-shrink: 1 !important; }
 #conversejs .justify-content-start {
   justify-content: flex-start !important; }
 #conversejs .justify-content-end {
@@ -5487,6 +5632,16 @@
     flex-wrap: nowrap !important; }
   #conversejs .flex-sm-wrap-reverse {
     flex-wrap: wrap-reverse !important; }
+  #conversejs .flex-sm-fill {
+    flex: 1 1 auto !important; }
+  #conversejs .flex-sm-grow-0 {
+    flex-grow: 0 !important; }
+  #conversejs .flex-sm-grow-1 {
+    flex-grow: 1 !important; }
+  #conversejs .flex-sm-shrink-0 {
+    flex-shrink: 0 !important; }
+  #conversejs .flex-sm-shrink-1 {
+    flex-shrink: 1 !important; }
   #conversejs .justify-content-sm-start {
     justify-content: flex-start !important; }
   #conversejs .justify-content-sm-end {
@@ -5546,6 +5701,16 @@
     flex-wrap: nowrap !important; }
   #conversejs .flex-md-wrap-reverse {
     flex-wrap: wrap-reverse !important; }
+  #conversejs .flex-md-fill {
+    flex: 1 1 auto !important; }
+  #conversejs .flex-md-grow-0 {
+    flex-grow: 0 !important; }
+  #conversejs .flex-md-grow-1 {
+    flex-grow: 1 !important; }
+  #conversejs .flex-md-shrink-0 {
+    flex-shrink: 0 !important; }
+  #conversejs .flex-md-shrink-1 {
+    flex-shrink: 1 !important; }
   #conversejs .justify-content-md-start {
     justify-content: flex-start !important; }
   #conversejs .justify-content-md-end {
@@ -5605,6 +5770,16 @@
     flex-wrap: nowrap !important; }
   #conversejs .flex-lg-wrap-reverse {
     flex-wrap: wrap-reverse !important; }
+  #conversejs .flex-lg-fill {
+    flex: 1 1 auto !important; }
+  #conversejs .flex-lg-grow-0 {
+    flex-grow: 0 !important; }
+  #conversejs .flex-lg-grow-1 {
+    flex-grow: 1 !important; }
+  #conversejs .flex-lg-shrink-0 {
+    flex-shrink: 0 !important; }
+  #conversejs .flex-lg-shrink-1 {
+    flex-shrink: 1 !important; }
   #conversejs .justify-content-lg-start {
     justify-content: flex-start !important; }
   #conversejs .justify-content-lg-end {
@@ -5664,6 +5839,16 @@
     flex-wrap: nowrap !important; }
   #conversejs .flex-xl-wrap-reverse {
     flex-wrap: wrap-reverse !important; }
+  #conversejs .flex-xl-fill {
+    flex: 1 1 auto !important; }
+  #conversejs .flex-xl-grow-0 {
+    flex-grow: 0 !important; }
+  #conversejs .flex-xl-grow-1 {
+    flex-grow: 1 !important; }
+  #conversejs .flex-xl-shrink-0 {
+    flex-shrink: 0 !important; }
+  #conversejs .flex-xl-shrink-1 {
+    flex-shrink: 1 !important; }
   #conversejs .justify-content-xl-start {
     justify-content: flex-start !important; }
   #conversejs .justify-content-xl-end {
@@ -5777,7 +5962,6 @@
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
-  clip-path: inset(50%);
   border: 0; }
 #conversejs .sr-only-focusable:active, #conversejs .sr-only-focusable:focus {
   position: static;
@@ -5785,8 +5969,15 @@
   height: auto;
   overflow: visible;
   clip: auto;
-  white-space: normal;
-  clip-path: none; }
+  white-space: normal; }
+#conversejs .shadow-sm {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important; }
+#conversejs .shadow {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important; }
+#conversejs .shadow-lg {
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important; }
+#conversejs .shadow-none {
+  box-shadow: none !important; }
 #conversejs .w-25 {
   width: 25% !important; }
 #conversejs .w-50 {
@@ -5795,6 +5986,8 @@
   width: 75% !important; }
 #conversejs .w-100 {
   width: 100% !important; }
+#conversejs .w-auto {
+  width: auto !important; }
 #conversejs .h-25 {
   height: 25% !important; }
 #conversejs .h-50 {
@@ -5803,6 +5996,8 @@
   height: 75% !important; }
 #conversejs .h-100 {
   height: 100% !important; }
+#conversejs .h-auto {
+  height: auto !important; }
 #conversejs .mw-100 {
   max-width: 100% !important; }
 #conversejs .mh-100 {
@@ -6721,6 +6916,8 @@
   #conversejs .ml-xl-auto,
   #conversejs .mx-xl-auto {
     margin-left: auto !important; } }
+#conversejs .text-monospace {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 #conversejs .text-justify {
   text-align: justify !important; }
 #conversejs .text-nowrap {
@@ -6811,8 +7008,14 @@
   color: #343a40 !important; }
 #conversejs a.text-dark:hover, #conversejs a.text-dark:focus {
   color: #1d2124 !important; }
+#conversejs .text-body {
+  color: #212529 !important; }
 #conversejs .text-muted {
   color: #6c757d !important; }
+#conversejs .text-black-50 {
+  color: rgba(0, 0, 0, 0.5) !important; }
+#conversejs .text-white-50 {
+  color: rgba(255, 255, 255, 0.5) !important; }
 #conversejs .text-hide {
   font: 0/0 a;
   color: transparent;
@@ -6938,6 +7141,8 @@ body.reset {
     min-height: 0; }
   #conversejs strong {
     font-weight: 700; }
+  #conversejs em {
+    font-style: italic; }
   #conversejs ol, #conversejs ul {
     list-style: none; }
   #conversejs li {
@@ -6945,13 +7150,17 @@ body.reset {
   #conversejs ul, #conversejs ol, #conversejs dl {
     font: inherit;
     margin: 0; }
-  #conversejs a, #conversejs a:visited, #conversejs a:hover, #conversejs a:not([href]):not([tabindex]) {
+  #conversejs a, #conversejs a:visited, #conversejs a:not([href]):not([tabindex]) {
     text-decoration: none;
     color: #578EA9;
     text-shadow: none; }
-    #conversejs a.fa, #conversejs a:visited.fa, #conversejs a:hover.fa, #conversejs a:not([href]):not([tabindex]).fa {
+    #conversejs a:hover, #conversejs a:visited:hover, #conversejs a:not([href]):not([tabindex]):hover {
+      color: #345566;
+      text-decoration: none;
+      text-shadow: none; }
+    #conversejs a.fa, #conversejs a:visited.fa, #conversejs a:not([href]):not([tabindex]).fa {
       color: #A8ABA1; }
-      #conversejs a.fa:hover, #conversejs a:visited.fa:hover, #conversejs a:hover.fa:hover, #conversejs a:not([href]):not([tabindex]).fa:hover {
+      #conversejs a.fa:hover, #conversejs a:visited.fa:hover, #conversejs a:not([href]):not([tabindex]).fa:hover {
         color: #818479; }
   #conversejs canvas {
     border-radius: 4px; }
@@ -7722,6 +7931,10 @@ body.reset {
     #conversejs.converse-fullscreen .chatbox {
       flex: 0 0 75%;
       max-width: 75%; } }
+  @media (min-width: 992px) {
+    #conversejs.converse-fullscreen .chatbox {
+      flex: 0 0 75%;
+      max-width: 75%; } }
   @media (min-width: 1200px) {
     #conversejs.converse-fullscreen .chatbox {
       flex: 0 0 83.3333333333%;
@@ -7797,6 +8010,20 @@ body.reset {
   #conversejs.converse-fullscreen .chatbox .box-flyout .chatbox-buttons {
     flex: 0 0 25%;
     max-width: 25%; } }
+#conversejs .oauth-providers {
+  text-align: center; }
+  #conversejs .oauth-providers .oauth-provider {
+    margin: 1em 0; }
+    #conversejs .oauth-providers .oauth-provider .oauth-login {
+      margin-left: 0;
+      color: #578EA9;
+      font-size: 16px; }
+      #conversejs .oauth-providers .oauth-provider .oauth-login:hover {
+        color: #345566; }
+      #conversejs .oauth-providers .oauth-provider .oauth-login i {
+        color: #578EA9;
+        font-size: 20px;
+        margin-right: 0.5em; }
 #conversejs .set-xmpp-status .fa-circle, #conversejs .xmpp-status .fa-circle, #conversejs .roster-contacts .fa-circle {
   color: #3AA569; }
 #conversejs .set-xmpp-status .fa-minus-circle, #conversejs .xmpp-status .fa-minus-circle, #conversejs .roster-contacts .fa-minus-circle {
@@ -7915,11 +8142,6 @@ body.reset {
       color: #578EA9; }
   #conversejs #controlbox .toggle-register-login {
     font-weight: bold; }
-  #conversejs #controlbox .oauth-login {
-    margin-left: 0;
-    color: #666; }
-    #conversejs #controlbox .oauth-login .icon-social:before {
-      font-size: 16px; }
   #conversejs #controlbox .controlbox-pane .userinfo {
     padding-bottom: 1em; }
     #conversejs #controlbox .controlbox-pane .userinfo .username {
@@ -7994,6 +8216,7 @@ body.reset {
     #conversejs #controlbox .controlbox-pane .chatbox-btn {
       margin: 0; }
     #conversejs #controlbox .controlbox-pane .switch-form {
+      text-align: center;
       padding: 2em 0; }
       #conversejs #controlbox .controlbox-pane .switch-form p {
         margin-top: 0.5em; }
@@ -8042,10 +8265,11 @@ body.reset {
         width: 100vw !important;
         height: 100vh !important; }
       #conversejs:not(.converse-embedded) .converse-chatboxes #controlbox {
-        order: 0; }
+        width: 100vw !important; }
         #conversejs:not(.converse-embedded) .converse-chatboxes #controlbox .box-flyout {
           width: 100vw !important;
-          height: 100vh !important; }
+          height: 100vh !important;
+          margin-left: 30px; }
         #conversejs:not(.converse-embedded) .converse-chatboxes #controlbox .sidebar {
           display: block; }
       #conversejs:not(.converse-embedded) .converse-chatboxes.sidebar-open .chatbox:not(#controlbox) {
@@ -8097,6 +8321,11 @@ body.reset {
   padding-left: 15px;
   margin: 0; }
   @media (min-width: 768px) {
+    #conversejs.converse-fullscreen #controlbox,
+    #conversejs.converse-mobile #controlbox {
+      flex: 0 0 25%;
+      max-width: 25%; } }
+  @media (min-width: 992px) {
     #conversejs.converse-fullscreen #controlbox,
     #conversejs.converse-mobile #controlbox {
       flex: 0 0 25%;
@@ -8249,6 +8478,13 @@ body.reset {
     #conversejs .list-container .items-list .open-headline:hover,
     #conversejs .list-container .items-list .open-chatroom:hover {
       background-color: #eff4f7; }
+      #conversejs .list-container .items-list .available-chatroom:hover a.add-bookmark,
+      #conversejs .list-container .items-list .available-chatroom:hover a.room-info,
+      #conversejs .list-container .items-list .open-headline:hover a.add-bookmark,
+      #conversejs .list-container .items-list .open-headline:hover a.room-info,
+      #conversejs .list-container .items-list .open-chatroom:hover a.add-bookmark,
+      #conversejs .list-container .items-list .open-chatroom:hover a.room-info {
+        display: block !important; }
     #conversejs .list-container .items-list .available-chatroom.unread-msgs .msgs-indicator,
     #conversejs .list-container .items-list .open-headline.unread-msgs .msgs-indicator,
     #conversejs .list-container .items-list .open-chatroom.unread-msgs .msgs-indicator {
@@ -8266,10 +8502,18 @@ body.reset {
     #conversejs .list-container .items-list .open-headline a:hover,
     #conversejs .list-container .items-list .open-chatroom a:hover {
       color: #206485; }
-    #conversejs .list-container .items-list .available-chatroom a.room-info:before,
-    #conversejs .list-container .items-list .open-headline a.room-info:before,
-    #conversejs .list-container .items-list .open-chatroom a.room-info:before {
-      font-size: 15px; }
+    #conversejs .list-container .items-list .available-chatroom a.add-bookmark, #conversejs .list-container .items-list .available-chatroom a.room-info,
+    #conversejs .list-container .items-list .open-headline a.add-bookmark,
+    #conversejs .list-container .items-list .open-headline a.room-info,
+    #conversejs .list-container .items-list .open-chatroom a.add-bookmark,
+    #conversejs .list-container .items-list .open-chatroom a.room-info {
+      display: none; }
+      #conversejs .list-container .items-list .available-chatroom a.add-bookmark:before, #conversejs .list-container .items-list .available-chatroom a.room-info:before,
+      #conversejs .list-container .items-list .open-headline a.add-bookmark:before,
+      #conversejs .list-container .items-list .open-headline a.room-info:before,
+      #conversejs .list-container .items-list .open-chatroom a.add-bookmark:before,
+      #conversejs .list-container .items-list .open-chatroom a.room-info:before {
+        font-size: 15px; }
     #conversejs .list-container .items-list .available-chatroom a.open-room,
     #conversejs .list-container .items-list .open-headline a.open-room,
     #conversejs .list-container .items-list .open-chatroom a.open-room {
@@ -8443,6 +8687,26 @@ body.reset {
 #conversejs .add-chatroom input[type="submit"],
 #conversejs .add-chatroom input[type="button"] {
   margin: 0.3em 0; }
+#conversejs.converse-embedded #room-details-modal .features-list,
+#conversejs #room-details-modal .features-list {
+  margin-left: 1em; }
+#conversejs.converse-embedded .chatroom-features,
+#conversejs .chatroom-features {
+  width: 100%; }
+  #conversejs.converse-embedded .chatroom-features .features-list,
+  #conversejs .chatroom-features .features-list {
+    padding-top: 0; }
+    #conversejs.converse-embedded .chatroom-features .features-list .feature,
+    #conversejs .chatroom-features .features-list .feature {
+      width: 100%;
+      margin-right: 0.5em;
+      padding-right: 0;
+      font-size: 1em;
+      cursor: help; }
+      #conversejs.converse-embedded .chatroom-features .features-list .feature .fa,
+      #conversejs .chatroom-features .features-list .feature .fa {
+        margin-right: 0.5em;
+        color: #666; }
 #conversejs.converse-embedded .chat-head-chatroom,
 #conversejs .chat-head-chatroom {
   background-color: #E77051; }
@@ -8567,16 +8831,6 @@ body.reset {
           #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-header .occupants-heading {
             font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif;
             padding: 0.3em 0; }
-        #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .chatroom-features,
-        #conversejs .chatroom .box-flyout .chatroom-body .occupants .chatroom-features {
-          width: 100%; }
-          #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .chatroom-features .feature,
-          #conversejs .chatroom .box-flyout .chatroom-body .occupants .chatroom-features .feature {
-            float: left;
-            margin-right: 0.5em;
-            padding-right: 0;
-            font-size: 1em;
-            cursor: help; }
         #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .awesomplete ul,
         #conversejs .chatroom .box-flyout .chatroom-body .occupants .awesomplete ul {
           padding: 0; }
@@ -8596,15 +8850,6 @@ body.reset {
             flex-basis: 0;
             flex-grow: 1;
             border-bottom: 1px solid lightgrey; }
-          #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants ul.features-list,
-          #conversejs .chatroom .box-flyout .chatroom-body .occupants ul.features-list {
-            padding-top: 0; }
-            #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants ul.features-list .feature,
-            #conversejs .chatroom .box-flyout .chatroom-body .occupants ul.features-list .feature {
-              width: 100%; }
-              #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants ul.features-list .feature .fa,
-              #conversejs .chatroom .box-flyout .chatroom-body .occupants ul.features-list .feature .fa {
-                color: #666; }
           #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants ul li,
           #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li {
             cursor: default;
@@ -8728,24 +8973,17 @@ body.reset {
   max-width: 25%; }
 
 @media (max-width: 767.98px) {
-  #conversejs.converse-mobile .chatroom .box-flyout .chatbox-navback,
-  #conversejs.converse-overlayed .chatroom .box-flyout .chatbox-navback,
-  #conversejs.converse-embedded .chatroom .box-flyout .chatbox-navback,
-  #conversejs.converse-fullscreen .chatroom .box-flyout .chatbox-navback {
-    flex: 0 0 16.6666666667%;
-    max-width: 16.6666666667%; }
-  #conversejs.converse-mobile .chatroom .box-flyout .chatbox-title,
-  #conversejs.converse-overlayed .chatroom .box-flyout .chatbox-title,
-  #conversejs.converse-embedded .chatroom .box-flyout .chatbox-title,
-  #conversejs.converse-fullscreen .chatroom .box-flyout .chatbox-title {
-    flex: 0 0 58.3333333333%;
-    max-width: 58.3333333333%; }
-  #conversejs.converse-mobile .chatroom .box-flyout .chatbox-buttons,
-  #conversejs.converse-overlayed .chatroom .box-flyout .chatbox-buttons,
-  #conversejs.converse-embedded .chatroom .box-flyout .chatbox-buttons,
-  #conversejs.converse-fullscreen .chatroom .box-flyout .chatbox-buttons {
-    flex: 0 0 25%;
-    max-width: 25%; } }
+  #conversejs:not(.converse-embedded) .chatroom {
+    width: 100vw !important; }
+    #conversejs:not(.converse-embedded) .chatroom .box-flyout .chatbox-navback {
+      flex: 0 0 16.6666666667%;
+      max-width: 16.6666666667%; }
+    #conversejs:not(.converse-embedded) .chatroom .box-flyout .chatbox-title {
+      flex: 0 0 58.3333333333%;
+      max-width: 58.3333333333%; }
+    #conversejs:not(.converse-embedded) .chatroom .box-flyout .chatbox-buttons {
+      flex: 0 0 25%;
+      max-width: 25%; } }
 #conversejs.converse-fullscreen .chatroom .box-flyout,
 #conversejs.converse-mobile .chatroom .box-flyout {
   background-color: #E77051;

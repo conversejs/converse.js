@@ -10,10 +10,10 @@
     define(["converse-core",
             "bootstrap",
             "lodash.fp",
-            "tpl!converse_brand_heading",
-            "tpl!controlbox",
-            "tpl!controlbox_toggle",
-            "tpl!login_panel",
+            "templates/converse_brand_heading.html",
+            "templates/controlbox.html",
+            "templates/controlbox_toggle.html",
+            "templates/login_panel.html",
             "converse-chatview",
             "converse-rosterview",
             "converse-profile"
@@ -91,8 +91,8 @@
             //
             // New functions which don't exist yet can also be added.
 
-            _tearDown () {
-                this.__super__._tearDown.apply(this, arguments);
+            tearDown () {
+                this.__super__.tearDown.apply(this, arguments);
                 if (this.rosterview) {
                     // Removes roster groups
                     this.rosterview.model.off().reset();

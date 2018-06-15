@@ -1,72 +1,108 @@
 (function (root, factory) {
-    define(["jquery", "jasmine", "mock", "converse-core", "test-utils"], factory);
-} (this, function ($, jasmine, mock, converse, test_utils) {
+    define(["jquery", "jasmine", "mock", "test-utils"], factory);
+} (this, function ($, jasmine, mock, test_utils) {
     var Strophe = converse.env.Strophe;
     var b64_sha1 = converse.env.b64_sha1;
     var $pres = converse.env.$pres;
     var _ = converse.env._;
 
-    describe("A chatbox with an active OTR session", function() {
-
-        it("will not show the spoiler toolbar button",
+    describe("A chatbox", function() {
+    
+        it("contains a button for starting an encrypted chat session",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
+            var timeout = true, $toolbar, view;
             test_utils.createContacts(_converse, 'current');
-            var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            test_utils.openControlBox();
 
-            // XXX: We need to send a presence from the contact, so that we
-            // have a resource, that resource is then queried to see
-            // whether Strophe.NS.SPOILER is supported, in which case
-            // the spoiler button will appear.
-            var presence = $pres({
-                'from': contact_jid+'/phone',
-                'to': 'dummy@localhost'
-            });
-            _converse.connection._dataRecv(test_utils.createRequest(presence));
-            test_utils.openChatBoxFor(_converse, contact_jid);
+            test_utils.waitUntil(function () {
+                return $(_converse.rosterview.el).find('.roster-group').length;
+            }, 300).then(function () {
+                // TODO: More tests can be added here...
+                var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+                test_utils.openChatBoxFor(_converse, contact_jid);
+                view = _converse.chatboxviews.get(contact_jid);
+                $toolbar = $(view.el).find('ul.chat-toolbar');
+                expect($toolbar.find('.toggle-otr').length).toBe(1);
+                // Register spies
+                spyOn(view, 'toggleOTRMenu').and.callThrough();
+                view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
 
-            test_utils.waitUntilDiscoConfirmed(_converse, contact_jid+'/phone', [], [Strophe.NS.SPOILER]).then(function () {
-                var spoiler_toggle;
-                var view = _converse.chatboxviews.get(contact_jid);
-                spyOn(view, 'addSpoilerButton').and.callThrough();
-                view.model.set('otr_status', 1);
-
-                test_utils.waitUntil(function () {
-                    return _.isNull(view.el.querySelector('.toggle-compose-spoiler'));
-                }).then(function () {
-                    spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
-                    expect(spoiler_toggle).toBe(null);
-
-                    view.model.set('otr_status', 3);
-
-                    return test_utils.waitUntil(function () {
-                        return !_.isNull(view.el.querySelector('.toggle-compose-spoiler'));
-                    });
-                }).then(function () {
-                    spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
-                    expect(spoiler_toggle).not.toBe(null);
-
-                    view.model.set('otr_status', 2);
-                    return test_utils.waitUntil(function () {
-                        return _.isNull(view.el.querySelector('.toggle-compose-spoiler'));
-                    });
-                }).then(function () {
-                    spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
-                    expect(spoiler_toggle).toBe(null);
-
-                    view.model.set('otr_status', 4);
-                    return test_utils.waitUntil(function () {
-                        return !_.isNull(view.el.querySelector('.toggle-compose-spoiler'));
-                    });
-                }).then(function () {
-                    spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
-                    expect(spoiler_toggle).not.toBe(null);
-                    done();
-                });
+                timeout = false;
+                $toolbar[0].querySelector('.toggle-otr').click();
+                return test_utils.waitUntil(function () {
+                    return view.el.querySelector('.otr-menu').offsetHeight;
+                }, 300)
+            }).then(function () {
+                expect(view.toggleOTRMenu).toHaveBeenCalled();
+                done();
             });
         }));
+
+        describe("with an active OTR session", function() {
+
+            it("will not show the spoiler toolbar button",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.createContacts(_converse, 'current');
+                var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+
+                // XXX: We need to send a presence from the contact, so that we
+                // have a resource, that resource is then queried to see
+                // whether Strophe.NS.SPOILER is supported, in which case
+                // the spoiler button will appear.
+                var presence = $pres({
+                    'from': contact_jid+'/phone',
+                    'to': 'dummy@localhost'
+                });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                test_utils.openChatBoxFor(_converse, contact_jid);
+
+                test_utils.waitUntilDiscoConfirmed(_converse, contact_jid+'/phone', [], [Strophe.NS.SPOILER]).then(function () {
+                    var spoiler_toggle;
+                    var view = _converse.chatboxviews.get(contact_jid);
+                    spyOn(view, 'addSpoilerButton').and.callThrough();
+                    view.model.set('otr_status', 1);
+
+                    test_utils.waitUntil(function () {
+                        return _.isNull(view.el.querySelector('.toggle-compose-spoiler'));
+                    }).then(function () {
+                        spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
+                        expect(spoiler_toggle).toBe(null);
+
+                        view.model.set('otr_status', 3);
+
+                        return test_utils.waitUntil(function () {
+                            return !_.isNull(view.el.querySelector('.toggle-compose-spoiler'));
+                        });
+                    }).then(function () {
+                        spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
+                        expect(spoiler_toggle).not.toBe(null);
+
+                        view.model.set('otr_status', 2);
+                        return test_utils.waitUntil(function () {
+                            return _.isNull(view.el.querySelector('.toggle-compose-spoiler'));
+                        });
+                    }).then(function () {
+                        spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
+                        expect(spoiler_toggle).toBe(null);
+
+                        view.model.set('otr_status', 4);
+                        return test_utils.waitUntil(function () {
+                            return !_.isNull(view.el.querySelector('.toggle-compose-spoiler'));
+                        });
+                    }).then(function () {
+                        spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
+                        expect(spoiler_toggle).not.toBe(null);
+                        done();
+                    });
+                });
+            }));
+        });
     });
 
     describe("The OTR module", function() {

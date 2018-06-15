@@ -12,10 +12,10 @@
 (function (root, factory) {
     define(["converse-core",
             "converse-muc",
-            "tpl!chatroom_bookmark_form",
-            "tpl!chatroom_bookmark_toggle",
-            "tpl!bookmark",
-            "tpl!bookmarks_list"
+            "templates/chatroom_bookmark_form.html",
+            "templates/chatroom_bookmark_toggle.html",
+            "templates/bookmark.html",
+            "templates/bookmarks_list.html"
         ],
         factory);
 }(this, function (

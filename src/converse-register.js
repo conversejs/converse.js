@@ -10,15 +10,15 @@
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-    define(["form-utils",
+    define(["utils/form",
             "converse-core",
-            "tpl!form_username",
-            "tpl!register_link",
-            "tpl!register_panel",
-            "tpl!registration_form",
-            "tpl!registration_request",
-            "tpl!form_input",
-            "tpl!spinner",
+            "templates/form_username.html",
+            "templates/register_link.html",
+            "templates/register_panel.html",
+            "templates/registration_form.html",
+            "templates/registration_request.html",
+            "templates/form_input.html",
+            "templates/spinner.html",
             "converse-controlbox"
     ], factory);
 }(this, function (
@@ -67,7 +67,7 @@
                     if (_.isUndefined(this.registerlinkview)) {
                         this.registerlinkview = new _converse.RegisterLinkView({'model': this.model});
                         this.registerlinkview.render();
-                        this.el.querySelector('.buttons').insertAdjacentElement('beforeend', this.registerlinkview.el);
+                        this.el.querySelector('.buttons').insertAdjacentElement('afterend', this.registerlinkview.el);
                     }
                     this.registerlinkview.render();
                 },

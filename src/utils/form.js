@@ -11,16 +11,16 @@
     define([
         "sizzle",
         "lodash.noconflict",
-        "utils",
-        "tpl!field",
-        "tpl!select_option",
-        "tpl!form_select",
-        "tpl!form_textarea",
-        "tpl!form_checkbox",
-        "tpl!form_username",
-        "tpl!form_input",
-        "tpl!form_captcha",
-        "tpl!form_url",
+        "utils/core",
+        "templates/field.html",
+        "templates/select_option.html",
+        "templates/form_select.html",
+        "templates/form_textarea.html",
+        "templates/form_checkbox.html",
+        "templates/form_username.html",
+        "templates/form_input.html",
+        "templates/form_captcha.html",
+        "templates/form_url.html",
     ], factory);
 }(this, function (
         sizzle,
@@ -67,8 +67,8 @@
         }
         return u.stringToNode(
             tpl_field({
-                name: field.getAttribute('name'),
-                value: value
+                'name': field.getAttribute('name'),
+                'value': value
             })
         );
     };

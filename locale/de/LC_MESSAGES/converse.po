@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-04-30 16:16+0200\n"
 "PO-Revision-Date: 2018-06-18 13:39+0000\n"
-"Last-Translator: James Bond <christian.kirbach@gmail.com>\n"
+"Last-Translator: Lyn <root@31337.one>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
 "Language: de\n"
@@ -146,9 +146,8 @@ msgid "Choose a file to send"
 msgstr "Datei versenden"
 
 #: dist/converse-no-dependencies.js:19142
-#, fuzzy
 msgid "Click to write as a normal (non-spoiler) message"
-msgstr "Hier klicken, um Statusnachricht zu ändern"
+msgstr "Hier klicken, um Statusnachricht zu ändern (ohne Spoiler)"
 
 #: dist/converse-no-dependencies.js:19144
 #, fuzzy

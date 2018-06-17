@@ -224,6 +224,7 @@
         storage: 'session',
         strict_plugin_dependencies: false,
         trusted: true,
+        use_xep_0156: false,
         view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
         websocket_url: undefined,
         whitelisted_plugins: []
@@ -1086,18 +1087,69 @@
             /* Creates a new Strophe.Connection instance if we don't already have one.
              */
             if (!this.connection) {
-                if (!this.bosh_service_url && ! this.websocket_url) {
-                    throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
-                }
-                if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
-                    this.connection = new Strophe.Connection(this.websocket_url, this.connection_options);
-                } else if (this.bosh_service_url) {
-                    this.connection = new Strophe.Connection(
-                        this.bosh_service_url,
-                        _.assignIn(this.connection_options, {'keepalive': this.keepalive})
-                    );
+                if (this.use_xep_0156) {
+                    var server = "jabberfr.org";
+                    let xhr = new XMLHttpRequest();
+                    xhr.open('GET', "https://" + server + "/.well-known/host-meta", true);
+                    xhr.setRequestHeader('Accept', "application/xrd+xml, text/xml");
+                    xhr.onload = function(evt) {
+                        if (xhr.status >= 200 && xhr.status < 400) {
+                            const xrd = evt.target.responseXML.documentElement;
+                            if (xrd.nodeName != "XRD" || xrd.namespaceURI != "http://docs.oasis-open.org/ns/xri/xrd-1.0")
+                                return xhr.onerror();
+                            let bosh_methods = [];
+                            let websocket_methods = [];
+                            for (let i = 0; i < xrd.children.length; i++) {
+                                const child = xrd.children[i];
+                                if (child.nodeName != "Link" || child.namespaceURI != "http://docs.oasis-open.org/ns/xri/xrd-1.0")
+                                    continue;
+                                const rel = child.getAttributeNS(null, "rel");
+                                const href = child.getAttributeNS(null, "href");
+                                if (rel == "urn:xmpp:alt-connections:xbosh") {
+                                    bosh_methods.push(href);
+                                } else if (rel == "urn:xmpp:alt-connections:websocket") {
+                                    websocket_methods.push(href);
+                                }
+                            }
+                            if (websocket_methods.length > 0) {
+                                _converse.websocket_url = websocket_methods[0];
+                            }
+                            if (bosh_methods.length > 0) {
+                                _converse.bosh_service_url = bosh_methods[0];
+                            }
+                            if (('WebSocket' in window || 'MozWebSocket' in window) && _converse.websocket_url)
+                                _converse.connection = new Strophe.Connection(_converse.websocket_url, _converse.connection_options);
+                            else if (_converse.bosh_service_url)
+                                _converse.connection = new Strophe.Connection(
+                                    _converse.bosh_service_url,
+                                    _.assignIn(_converse.connection_options, {'keepalive': _converse.keepalive})
+                                );
+                            else
+                                throw new Error("initConnection: neither BOSH nor WebSocket connection methods have been specified with XEP-0156.");
+                            _converse.emit('connectionInitialized');
+                        } else {
+                            return xhr.onerror();
+                        }
+                    };
+                    xhr.onerror = function () {
+                        // TODO: what to do in this case?
+                        //_converse.emit('connectionNotInitialized');
+                    };
+                    return xhr.send();
                 } else {
-                    throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
+                    if (!this.bosh_service_url && ! this.websocket_url) {
+                        throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
+                    }
+                    if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
+                        this.connection = new Strophe.Connection(this.websocket_url, this.connection_options);
+                    } else if (this.bosh_service_url) {
+                        this.connection = new Strophe.Connection(
+                            this.bosh_service_url,
+                            _.assignIn(this.connection_options, {'keepalive': this.keepalive})
+                        );
+                    } else {
+                        throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
+                    }
                 }
             }
             _converse.emit('connectionInitialized');

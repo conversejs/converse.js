@@ -910,7 +910,7 @@
                 keyPressed (ev) {
                     /* Event handler for when a key is pressed in a chat box textarea.
                      */
-                    if (ev.keyCode === KEY.ENTER) {
+                    if (ev.keyCode === KEY.ENTER && !ev.shiftKey) {
                         this.onFormSubmitted(ev);
                     } else if (ev.keyCode !== KEY.FORWARD_SLASH && this.model.get('chat_state') !== _converse.COMPOSING) {
                         // Set chat state to composing if keyCode is not a forward-slash

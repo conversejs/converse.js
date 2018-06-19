@@ -11,6 +11,7 @@
 - #1091 There's now only one CSS file for all view modes.
 - #1094 Show room members who aren't currently online
 - #1106 Support for Roster Versioning
+- #1081 Allow for shift-enter to insert newlines
 - It's now also possible to edit your VCard via the UI
 - Automatically grow/shrink input as text is entered/removed
 - MP4 and MP3 files when sent as XEP-0066 Out of Band Data, are now playable directly in chat

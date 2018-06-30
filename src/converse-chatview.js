@@ -5,26 +5,25 @@
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
-    define([
-            "converse-core",
+    define(["converse-core",
             "bootstrap",
             "emojione",
             "xss",
-            "tpl!action",
-            "tpl!chatbox",
-            "tpl!chatbox_head",
-            "tpl!chatbox_message_form",
-            "tpl!emojis",
-            "tpl!error_message",
-            "tpl!help_message",
-            "tpl!info",
-            "tpl!new_day",
-            "tpl!user_details_modal",
-            "tpl!toolbar_fileupload",
-            "tpl!spinner",
-            "tpl!spoiler_button",
-            "tpl!status_message",
-            "tpl!toolbar",
+            "templates/action.html",
+            "templates/chatbox.html",
+            "templates/chatbox_head.html",
+            "templates/chatbox_message_form.html",
+            "templates/emojis.html",
+            "templates/error_message.html",
+            "templates/help_message.html",
+            "templates/info.html",
+            "templates/new_day.html",
+            "templates/user_details_modal.html",
+            "templates/toolbar_fileupload.html",
+            "templates/spinner.html",
+            "templates/spoiler_button.html",
+            "templates/status_message.html",
+            "templates/toolbar.html",
             "converse-modal",
             "converse-chatboxes",
             "converse-message-view"
@@ -101,10 +100,11 @@
                 { __ } = _converse;
 
             _converse.api.settings.update({
-                'use_emojione': false,
                 'emojione_image_path': emojione.imagePathPNG,
+                'show_send_button': false,
                 'show_toolbar': true,
                 'time_format': 'HH:mm',
+                'use_emojione': false,
                 'visible_toolbar_buttons': {
                     'call': false,
                     'clear': true,
@@ -151,6 +151,7 @@
                     return tpl_emojis(
                         _.extend(
                             this.model.toJSON(), {
+                                '_': _,
                                 'transform': _converse.use_emojione ? emojione.shortnameToImage : emojione.shortnameToUnicode,
                                 'emojis_by_category': u.getEmojisByCategory(_converse, emojione),
                                 'toned_emojis': u.getTonedEmojis(_converse),
@@ -320,16 +321,17 @@
 
                 events: {
                     'change input.fileupload': 'onFileSelection',
+                    'click .chatbox-navback': 'showControlBox',
                     'click .close-chatbox-button': 'close',
-                    'click .show-user-details-modal': 'showUserDetailsModal',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .send-button': 'onFormSubmitted',
+                    'click .show-user-details-modal': 'showUserDetailsModal',
+                    'click .spoiler-toggle': 'toggleSpoilerMessage',
                     'click .toggle-call': 'toggleCall',
                     'click .toggle-clear': 'clearMessages',
                     'click .toggle-compose-spoiler': 'toggleComposeSpoilerMessage',
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-smiley': 'toggleEmojiMenu',
-                    'click .spoiler-toggle': 'toggleSpoilerMessage',
                     'click .upload-file': 'toggleFileUpload',
                     'keypress .chat-textarea': 'keyPressed',
                     'input .chat-textarea': 'inputChanged'
@@ -413,7 +415,15 @@
                     this.renderToolbar();
                 },
 
+                showControlBox () {
+                    // Used in mobile view, to navigate back to the controlbox
+                    const view = _converse.chatboxviews.get('controlbox');
+                    view.show();
+                    this.hide();
+                },
+
                 showUserDetailsModal (ev) {
+                    ev.preventDefault();
                     if (_.isUndefined(this.user_details_modal)) {
                         this.user_details_modal = new _converse.UserDetailsModal({model: this.model});
                     }
@@ -901,7 +911,7 @@
                 keyPressed (ev) {
                     /* Event handler for when a key is pressed in a chat box textarea.
                      */
-                    if (ev.keyCode === KEY.ENTER) {
+                    if (ev.keyCode === KEY.ENTER && !ev.shiftKey) {
                         this.onFormSubmitted(ev);
                     } else if (ev.keyCode !== KEY.FORWARD_SLASH && this.model.get('chat_state') !== _converse.COMPOSING) {
                         // Set chat state to composing if keyCode is not a forward-slash
@@ -1075,10 +1085,7 @@
                 },
 
                 afterShown () {
-                    if (u.isPersistableModel(this.model)) {
-                        this.model.clearUnreadMsgCounter();
-                        this.model.save();
-                    }
+                    this.model.clearUnreadMsgCounter();
                     this.setChatState(_converse.ACTIVE);
                     this.renderEmojiPicker();
                     this.scrollDown();
@@ -1155,7 +1162,7 @@
                 },
 
                 onWindowStateChanged (state) {
-                    if (this.model.get('num_unread', 0) && !this.model.newMessageWillBeHidden()) {
+                    if (this.model.get('num_unread', 0) && !this.model.isHidden()) {
                         this.model.clearUnreadMsgCounter();
                     }
                 }

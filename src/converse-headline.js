@@ -9,7 +9,7 @@
 (function (root, factory) {
     define([
             "converse-core",
-            "tpl!chatbox",
+            "templates/chatbox.html",
             "converse-chatview",
     ], factory);
 }(this, function (converse, tpl_chatbox) {
@@ -138,7 +138,7 @@
                         'type': 'headline',
                         'from': from_jid
                     });
-                    chatbox.createMessage(message, undefined, message);
+                    chatbox.createMessage(message, message);
                     _converse.emit('message', {'chatbox': chatbox, 'stanza': message});
                 }
                 return true;

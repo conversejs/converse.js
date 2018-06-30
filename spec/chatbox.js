@@ -2,12 +2,10 @@
     define([
         "jquery",
         "jasmine",
-        "utils",
-        "converse-core",
         "mock",
         "test-utils"
         ], factory);
-} (this, function ($, jasmine, utils, converse, mock, test_utils) {
+} (this, function ($, jasmine, mock, test_utils) {
     "use strict";
     var _ = converse.env._;
     var $iq = converse.env.$iq;
@@ -429,9 +427,9 @@
                     var view = _converse.chatboxviews.get(contact_jid);
                     expect(chatbox).toBeDefined();
                     expect(view).toBeDefined();
-                    var $toolbar = $(view.el).find('ul.chat-toolbar');
-                    expect($toolbar.length).toBe(1);
-                    expect($toolbar.children('li').length).toBe(1);
+                    var toolbar = view.el.querySelector('ul.chat-toolbar');
+                    expect(_.isElement(toolbar)).toBe(true);
+                    expect(toolbar.querySelectorAll(':scope > li').length).toBe(1);
                     done();
                 }));
 
@@ -458,7 +456,7 @@
                     var timeout = false;
 
                     test_utils.waitUntil(function () {
-                        return utils.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container'));
+                        return u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container'));
                     }, 500).then(function () {
                         var picker = view.el.querySelector('.toggle-smiley .emoji-picker-container');
                         var items = picker.querySelectorAll('.emoji-picker li');
@@ -747,7 +745,7 @@
                             expect(chatbox.messages.length).toEqual(1);
                             var msg_obj = chatbox.messages.models[0];
                             expect(msg_obj.get('sender')).toEqual('me');
-                            expect(msg_obj.get('delayed')).toEqual(false);
+                            expect(msg_obj.get('is_delayed')).toEqual(false);
                             var $chat_content = $(chatboxview.el).find('.chat-content');
                             var status_text = $chat_content.find('.chat-info.chat-state-notification').text();
                             expect(status_text).toBe('Typing from another device');
@@ -895,7 +893,7 @@
                             expect(chatbox.messages.length).toEqual(1);
                             var msg_obj = chatbox.messages.models[0];
                             expect(msg_obj.get('sender')).toEqual('me');
-                            expect(msg_obj.get('delayed')).toEqual(false);
+                            expect(msg_obj.get('is_delayed')).toEqual(false);
                             var $chat_content = $(chatboxview.el).find('.chat-content');
                             var status_text = $chat_content.find('.chat-info.chat-state-notification').text();
                             expect(status_text).toBe('Stopped typing on the other device');

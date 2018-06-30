@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["jasmine", "mock", "converse-core", "test-utils"], factory);
-} (this, function (jasmine, mock, converse, test_utils) {
+    define(["jasmine", "mock", "test-utils"], factory);
+} (this, function (jasmine, mock, test_utils) {
     var Strophe = converse.env.Strophe;
     var b64_sha1 = converse.env.b64_sha1;
     var $iq = converse.env.$iq;

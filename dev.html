@@ -9,35 +9,33 @@
     <meta name="author" content="JC Brand" />
     <meta name="keywords" content="xmpp chat webchat converse.js" />
     <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="css/inverse.css" />
-    <script src="node_modules/requirejs/require.js"></script>
-    <script src="src/config.js"></script>
+    <link type="text/css" rel="stylesheet" media="screen" href="css/fullpage.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
+    <script src="dist/converse.js"></script>
 </head>
 
 <body class="reset">
 
 <script>
-    require(['converse', 'converse-omemo'], function (converse) {
-        converse.initialize({
-            auto_away: 300,
-            i18n: 'en',
-            // auto_join_rooms: [
-            //     'discuss@conference.conversejs.org',
-            //     'prosody@conference.prosody.im',
-            //     'jdev@conference.jabber.org'
-            // ],
-            // websocket_url: 'ws://chat.example.org:5280/xmpp-websocket',
-            view_mode: 'fullscreen',
-            archived_messages_page_size: '500',
-            allow_public_bookmarks: true,
-            notify_all_room_messages: [
-                'discuss@conference.conversejs.org'
-            ],
-            // bosh_service_url: 'http://chat.example.org:5280/http-bind/',
-            bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
-            message_archiving: 'always',
-            debug: true
-        });
+    converse.initialize({
+        auto_away: 300,
+        i18n: 'en',
+        // auto_join_rooms: [
+        //     'discuss@conference.conversejs.org',
+        //     'prosody@conference.prosody.im',
+        //     'jdev@conference.jabber.org'
+        // ],
+        // websocket_url: 'ws://chat.example.org:5280/xmpp-websocket',
+        view_mode: 'fullscreen',
+        archived_messages_page_size: '500',
+        allow_public_bookmarks: true,
+        notify_all_room_messages: [
+            'discuss@conference.conversejs.org'
+        ],
+        // bosh_service_url: 'http://chat.example.org:5280/http-bind/',
+        bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+        message_archiving: 'always',
+        debug: true
     });
 </script>
 </body>

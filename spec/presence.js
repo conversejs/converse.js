@@ -4,15 +4,15 @@
     define([
         "jasmine",
         "jquery",
-        "converse-core",
         "mock",
         "test-utils",
-        "lodash"], factory);
-} (this, function (jasmine, $, converse, mock, test_utils, _) {
+    ], factory);
+} (this, function (jasmine, $, mock, test_utils) {
     "use strict";
     var Strophe = converse.env.Strophe;
     var $iq = converse.env.$iq;
     var $pres = converse.env.$pres;
+    var _ = converse.env._;
     var u = converse.env.utils;
     // See: https://xmpp.org/rfcs/rfc3921.html
 

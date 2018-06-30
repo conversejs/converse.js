@@ -94,7 +94,7 @@
                         !(utils.isOTRMessage($message[0]) && !_.includes([UNVERIFIED, VERIFIED], this.get('otr_status')));
                 },
 
-                createMessage (message, delay, original_stanza) {
+                createMessage (message, original_stanza) {
                     const { _converse } = this.__super__,
                         text = _.propertyOf(message.querySelector('body'))('textContent');
 

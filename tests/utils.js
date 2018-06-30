@@ -1,12 +1,12 @@
 (function (root, factory) {
-    define(['converse', 'es6-promise',  'mock', 'wait-until-promise'], factory);
-}(this, function (converse_api, Promise, mock, waitUntilPromise) {
-    var _ = converse_api.env._;
-    var $msg = converse_api.env.$msg;
-    var $pres = converse_api.env.$pres;
-    var $iq = converse_api.env.$iq;
-    var Strophe = converse_api.env.Strophe;
-    var u = converse_api.env.utils;
+    define(['es6-promise',  'mock', 'wait-until-promise'], factory);
+}(this, function (Promise, mock, waitUntilPromise) {
+    var _ = converse.env._;
+    var $msg = converse.env.$msg;
+    var $pres = converse.env.$pres;
+    var $iq = converse.env.$iq;
+    var Strophe = converse.env.Strophe;
+    var u = converse.env.utils;
     var utils = {};
 
     if (typeof window.Promise === 'undefined') {
@@ -107,7 +107,7 @@
         return new Promise(function (resolve, reject) {
             utils.openControlBox(_converse);
             var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
-            roomspanel.el.querySelector('.trigger-add-chatrooms-modal').click();
+            roomspanel.el.querySelector('.show-add-muc-modal').click();
             utils.closeControlBox(_converse);
             const modal = roomspanel.add_room_modal;
             utils.waitUntil(function () {

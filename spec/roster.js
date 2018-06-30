@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["jquery", "jasmine", "mock", "converse-core", "test-utils"], factory);
-} (this, function ($, jasmine, mock, converse, test_utils) {
+    define(["jquery", "jasmine", "mock", "test-utils"], factory);
+} (this, function ($, jasmine, mock, test_utils) {
     var _ = converse.env._;
     var Strophe = converse.env.Strophe;
     var $pres = converse.env.$pres;
@@ -34,6 +34,68 @@
 
 
     describe("The Contacts Roster", function () {
+
+        it("supports roster versioning",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
+            var IQ_stanzas = _converse.connection.IQ_stanzas;
+            var stanza;
+
+            test_utils.waitUntil(() => {
+                const node = _.filter(IQ_stanzas, function (iq) {
+                    return iq.nodeTree.querySelector('iq query[xmlns="jabber:iq:roster"]');
+                }).pop();
+                if (node) {
+                    stanza = node.nodeTree;
+                    return true;
+                }
+            }).then(() => {
+                expect(_converse.roster.data.get('version')).toBeUndefined();
+                expect(stanza.outerHTML).toBe(
+                    `<iq type="get" id="${stanza.getAttribute('id')}" xmlns="jabber:client">`+
+                        `<query xmlns="jabber:iq:roster"/>`+
+                    `</iq>`);
+                let result = $iq({
+                    'to': _converse.connection.jid,
+                    'type': 'result',
+                    'id': stanza.getAttribute('id')
+                }).c('query', {
+                    'xmlns': 'jabber:iq:roster',
+                    'ver': 'ver7'
+                }).c('item', {'jid': 'nurse@example.com'}).up()
+                  .c('item', {'jid': 'romeo@example.com'})
+                _converse.connection._dataRecv(test_utils.createRequest(result));
+                expect(_converse.roster.data.get('version')).toBe('ver7');
+                expect(_converse.roster.models.length).toBe(2);
+
+                _converse.roster.fetchFromServer();
+                stanza = _converse.connection.IQ_stanzas.pop().nodeTree;
+                expect(stanza.outerHTML).toBe(
+                    `<iq type="get" id="${stanza.getAttribute('id')}" xmlns="jabber:client">`+
+                        `<query xmlns="jabber:iq:roster" ver="ver7"/>`+
+                    `</iq>`);
+
+                result = $iq({
+                    'to': _converse.connection.jid,
+                    'type': 'result',
+                    'id': stanza.getAttribute('id')
+                });
+                _converse.connection._dataRecv(test_utils.createRequest(result));
+
+                const roster_push = $iq({
+                    'to': _converse.connection.jid,
+                    'type': 'set',
+                }).c('query', {'xmlns': 'jabber:iq:roster', 'ver': 'ver34'})
+                    .c('item', {'jid': 'romeo@example.com', 'subscription': 'remove'});
+                _converse.connection._dataRecv(test_utils.createRequest(roster_push));
+                expect(_converse.roster.data.get('version')).toBe('ver34');
+                expect(_converse.roster.models.length).toBe(1);
+                expect(_converse.roster.at(0).get('jid')).toBe('nurse@example.com');
+                done();
+            });
+        }));
 
         describe("The live filter", function () {
 

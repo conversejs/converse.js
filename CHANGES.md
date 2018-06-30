@@ -7,7 +7,11 @@
 - #161 XEP-0363: HTTP File Upload
 - #194 Include entity capabilities in outgoing presence stanzas
 - #337 API call to update a VCard
+- #968 Use nickname from VCard when joining a room
+- #1091 There's now only one CSS file for all view modes.
 - #1094 Show room members who aren't currently online
+- #1106 Support for Roster Versioning
+- #1081 Allow for shift-enter to insert newlines
 - It's now also possible to edit your VCard via the UI
 - Automatically grow/shrink input as text is entered/removed
 - MP4 and MP3 files when sent as XEP-0066 Out of Band Data, are now playable directly in chat
@@ -16,6 +20,8 @@
 - Add a checkbox to indicate whether a trusted device is being used or not.
   If the device is not trusted, sessionStorage is used and all user data is deleted from the browser cache upon logout.
   If the device is trusted, localStorage is used and user data is cached indefinitely.
+- Initial support for XEP-0357 Push Notifications, specifically registering an "App Server".
+- Add support for logging in via OAuth (see the [oauth_providers](https://conversejs.org/docs/html/configurations.html#oauth-providers) setting)
 
 ### Bugfixes
 

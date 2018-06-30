@@ -1,11 +1,11 @@
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
-    define(["converse-core", "crypto", "tpl!vcard"], factory);
+    define(["converse-core", "crypto", "templates/vcard.html"], factory);
 }(this, function (converse, CryptoJS, tpl_vcard) {
     "use strict";
     const { Backbone, Promise, Strophe, SHA1, _, $iq, $build, b64_sha1, moment, sizzle } = converse.env;
@@ -56,7 +56,7 @@
             });
 
 
-            function onVCardData (_converse, jid, iq, callback) {
+            function onVCardData (jid, iq, callback) {
                 const vcard = iq.querySelector('vCard');
                 let result = {};
                 if (!_.isNull(vcard)) {
@@ -68,7 +68,9 @@
                         'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
                         'url': _.get(vcard.querySelector('URL'), 'textContent'),
                         'role': _.get(vcard.querySelector('ROLE'), 'textContent'),
-                        'email': _.get(vcard.querySelector('EMAIL USERID'), 'textContent')
+                        'email': _.get(vcard.querySelector('EMAIL USERID'), 'textContent'),
+                        'vcard_updated': moment().format(),
+                        'vcard_error': undefined
                     };
                 }
                 if (result.image) {
@@ -80,9 +82,13 @@
                 }
             }
 
-            function onVCardError (_converse, jid, iq, errback) {
+            function onVCardError (jid, iq, errback) {
                 if (errback) {
-                    errback({'stanza': iq, 'jid': jid});
+                    errback({
+                        'stanza': iq,
+                        'jid': jid,
+                        'vcard_error': moment().format()
+                    });
                 }
             }
 
@@ -96,27 +102,28 @@
                 return iq;
             }
 
-            function setVCard (data) {
-                return new Promise((resolve, reject) => {
-                    const vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
-                    _converse.connection.sendIQ(createStanza("set", data.jid, vcard_el), resolve, reject);
-                });
+            function setVCard (jid, data) {
+                if (!jid) {
+                    throw Error("No jid provided for the VCard data");
+                }
+                const vcard_el = Strophe.xmlHtmlNode(tpl_vcard(data)).firstElementChild;
+                return _converse.api.sendIQ(createStanza("set", jid, vcard_el));
             }
 
             function getVCard (_converse, jid) {
                 /* Request the VCard of another user. Returns a promise.
-                *
-                * Parameters:
-                *    (String) jid - The Jabber ID of the user whose VCard
-                *      is being requested.
-                */
-                jid = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
+                 *
+                 * Parameters:
+                 *    (String) jid - The Jabber ID of the user whose VCard
+                 *      is being requested.
+                 */
+                const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
                 return new Promise((resolve, reject) => {
                     _converse.connection.sendIQ(
-                        createStanza("get", jid),
-                        _.partial(onVCardData, _converse, jid, _, resolve),
-                        _.partial(onVCardError, _converse, jid, _, resolve),
-                        5000
+                        createStanza("get", to),
+                        _.partial(onVCardData, jid, _, resolve),
+                        _.partial(onVCardError, jid, _, resolve),
+                        _converse.IQ_TIMEOUT
                     );
                 });
             }
@@ -127,7 +134,7 @@
                 _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.vcards`));
                 _converse.vcards.fetch();
             }
-            _converse.api.listen.on('connectionInitialized', _converse.initVCardCollection);
+            _converse.api.listen.on('sessionInitialized', _converse.initVCardCollection);
 
 
             _converse.on('addClientFeatures', () => {
@@ -136,13 +143,18 @@
 
             _.extend(_converse.api, {
                 'vcard': {
-                    'set': setVCard,
+                    'set' (jid, data) {
+                        return setVCard(jid, data);
+                    },
 
                     'get' (model, force) {
                         if (_.isString(model)) {
                             return getVCard(_converse, model);
-                        } else if (!model.get('vcard_updated') || force) {
-                            const jid = model.get('jid') || model.get('muc_jid');
+                        } else if (force ||
+                                !model.get('vcard_updated') ||
+                                !moment(model.get('vcard_error')).isSame(new Date(), "day")) {
+
+                            const jid = model.get('jid');
                             if (!jid) {
                                 throw new Error("No JID to get vcard for!");
                             }
@@ -155,10 +167,8 @@
                     'update' (model, force) {
                         return new Promise((resolve, reject) => {
                             this.get(model, force).then((vcard) => {
-                                model.save(_.extend(
-                                    _.pick(vcard, ['fullname', 'nickname', 'email', 'url', 'role', 'image_type', 'image', 'image_hash']),
-                                    {'vcard_updated': moment().format()}
-                                ));
+                                delete vcard['stanza']
+                                model.save(vcard);
                                 resolve();
                             });
                         });

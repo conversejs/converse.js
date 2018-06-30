@@ -6,14 +6,14 @@
 
 (function (root, factory) {
     define([
-            "form-utils",
+            "utils/form",
             "converse-core",
             "emojione",
             "converse-disco",
             "backbone.overview",
             "backbone.orderedlistview",
             "backbone.vdomview",
-            "muc-utils"
+            "utils/muc"
     ], factory);
 }(this, function (u, converse, emojione) {
     "use strict";
@@ -76,12 +76,12 @@
             //
             // New functions which don't exist yet can also be added.
 
-            _tearDown () {
+            tearDown () {
                 const rooms = this.chatboxes.where({'type': converse.CHATROOMS_TYPE});
                 _.each(rooms, function (room) {
                     u.safeSave(room, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
                 });
-                this.__super__._tearDown.call(this, arguments);
+                this.__super__.tearDown.call(this, arguments);
             },
 
             ChatBoxes: {
@@ -246,6 +246,10 @@
                     this.handlers[type][name] = callback;
                 },
 
+                getDisplayName () {
+                    return this.get('name') || this.get('jid');
+                },
+
                 join (nick, password) {
                     /* Join the chat room.
                      *
@@ -322,13 +326,14 @@
                     /* Fetch the room disco info, parse it and then save it.
                      */
                     return new Promise((resolve, reject) => {
-                        _converse.api.disco.info(
-                            this.get('jid'),
-                            null,
-                            _.flow(this.parseRoomFeatures.bind(this), resolve),
-                            () => { reject(new Error("Could not parse the room features")) },
-                            5000
-                        );
+                        _converse.api.disco.info(this.get('jid'), null)
+                            .then((stanza) => {
+                                this.parseRoomFeatures(stanza);
+                                resolve()
+                            }).catch((err) => {
+                                _converse.log(err, Strophe.LogLevel.ERROR);
+                                reject(new Error("Could not parse the room features"));
+                            });
                     });
                 },
 
@@ -398,6 +403,7 @@
                     };
                     if (reason !== null) { attrs.reason = reason; }
                     if (this.get('password')) { attrs.password = this.get('password'); }
+
                     const invitation = $msg({
                         from: _converse.connection.jid,
                         to: recipient,
@@ -430,7 +436,7 @@
                      *  <feature var='urn:xmpp:mam:0'/>
                      */
                     const features = {
-                        'features_fetched': true,
+                        'features_fetched': moment().format(),
                         'name': iq.querySelector('identity').getAttribute('name')
                     }
                     _.each(iq.querySelectorAll('feature'), function (field) {
@@ -742,8 +748,7 @@
                     }
                     const occupant = this.occupants.findOccupant(data);
                     if (data.type === 'unavailable' && occupant) {
-                        if (!_.includes(data.states, converse.MUC_NICK_CHANGED_CODE) &&
-                                !_.includes(['admin', 'owner', 'member'], occupant.get('affiliation'))) {
+                        if (!_.includes(data.states, converse.MUC_NICK_CHANGED_CODE) && !occupant.isMember()) {
                             // We only destroy the occupant if this is not a nickname change operation.
                             // and if they're not on the member lists.
                             // Before destroying we set the new data, so
@@ -767,12 +772,13 @@
 
                 parsePresence (pres) {
                     const from = pres.getAttribute("from"),
+                          type = pres.getAttribute("type"),
                           data = {
                             'from': from,
                             'nick': Strophe.getResourceFromJid(from),
-                            'type': pres.getAttribute("type"),
+                            'type': type,
                             'states': [],
-                            'show': 'online'
+                            'show': type !== 'unavailable' ? 'online' : 'offline'
                           };
                     _.each(pres.childNodes, function (child) {
                         switch (child.nodeName) {
@@ -839,10 +845,8 @@
 
                     const original_stanza = stanza,
                           forwarded = stanza.querySelector('forwarded');
-                    let delay;
                     if (!_.isNull(forwarded)) {
                         stanza = forwarded.querySelector('message');
-                        delay = forwarded.querySelector('delay');
                     }
                     const jid = stanza.getAttribute('from'),
                         resource = Strophe.getResourceFromJid(jid),
@@ -859,7 +863,7 @@
                         return;
                     }
                     this.incrementUnreadMsgCounter(original_stanza);
-                    this.createMessage(stanza, delay, original_stanza);
+                    this.createMessage(stanza, original_stanza);
                     if (sender !== this.get('nick')) {
                         // We only emit an event if it's not our own message
                         _converse.emit('message', {'stanza': original_stanza, 'chatbox': this});
@@ -951,7 +955,7 @@
                     if (_.isNull(body)) {
                         return; // The message has no text
                     }
-                    if (u.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                    if (u.isNewMessage(stanza) && this.isHidden()) {
                         const settings = {'num_unread_general': this.get('num_unread_general') + 1};
                         if (this.isUserMentioned(body.textContent)) {
                             settings.num_unread = this.get('num_unread') + 1;
@@ -985,17 +989,26 @@
                 },
 
                 onAvatarChanged () {
-                    const vcard = _converse.vcards.findWhere({'jid': this.get('from')});
-                    if (!vcard) { return; }
-
                     const hash = this.get('image_hash');
-                    if (hash && vcard.get('image_hash') !== hash) {
-                        _converse.api.vcard.update(vcard);
+                    const vcards = [];
+                    if (this.get('jid')) {
+                        vcards.push(_converse.vcards.findWhere({'jid': this.get('jid')}));
                     }
+                    vcards.push(_converse.vcards.findWhere({'jid': this.get('from')}));
+
+                    _.forEach(_.filter(vcards, undefined), (vcard) => {
+                        if (hash && vcard.get('image_hash') !== hash) {
+                            _converse.api.vcard.update(vcard);
+                        }
+                    });
                 },
 
                 getDisplayName () {
                     return this.get('nick') || this.get('jid');
+                },
+
+                isMember () {
+                    return _.includes(['admin', 'owner', 'member'], this.get('affiliation'));
                 }
             });
 
@@ -1028,6 +1041,7 @@
                             // Remove absent occupants who've been removed from
                             // the members lists.
                             const occupant = this.findOccupant({'jid': removed_jid});
+                            if (!occupant) { return; }
                             if (occupant.get('show') === 'offline') {
                                 occupant.destroy();
                             }
@@ -1113,7 +1127,7 @@
             if (_converse.allow_muc_invitations) {
                 const registerDirectInvitationHandler = function () {
                     _converse.connection.addHandler(
-                        function (message) {
+                        (message) =>  {
                             _converse.onDirectMUCInvitation(message);
                             return true;
                         }, 'jabber:x:conference', 'message');
@@ -1158,7 +1172,7 @@
             }
 
             function disconnectChatRooms () {
-                /* When disconnecting, or reconnecting, mark all chat rooms as
+                /* When disconnecting, mark all chat rooms as
                  * disconnected, so that they will be properly entered again
                  * when fetched from session storage.
                  */
@@ -1178,9 +1192,20 @@
                     _converse.api.disco.own.features.add('jabber:x:conference'); // Invites
                 }
             });
-            _converse.on('chatBoxesFetched', autoJoinRooms);
-            _converse.on('reconnecting', disconnectChatRooms);
-            _converse.on('disconnecting', disconnectChatRooms);
+            _converse.api.listen.on('chatBoxesFetched', autoJoinRooms);
+            _converse.api.listen.on('disconnecting', disconnectChatRooms);
+
+            _converse.api.listen.on('statusInitialized', () => {
+                // XXX: For websocket connections, we disconnect from all
+                // chatrooms when the page reloads. This is a workaround for
+                // issue #1111 and should be removed once we support XEP-0198
+                const options = {'once': true, 'passive': true};
+                window.addEventListener(_converse.unloadevent, () => {
+                    if (_converse.connection._proto instanceof Strophe.Websocket) {
+                        disconnectChatRooms();
+                    }
+                });
+            });
             /************************ END Event Handlers ************************/
 
 

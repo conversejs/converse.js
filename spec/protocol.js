@@ -2,10 +2,9 @@
     define([
         "jasmine",
         "jquery",
-        "converse-core",
         "mock",
         "test-utils"], factory);
-} (this, function (jasmine, $, converse, mock, test_utils) {
+} (this, function (jasmine, $, mock, test_utils) {
     "use strict";
     var Strophe = converse.env.Strophe;
     var $iq = converse.env.$iq;
@@ -210,7 +209,7 @@
                      *  </iq>
                      */
                     spyOn(_converse.roster, "updateContact").and.callThrough();
-                    stanza = $iq({'type': 'set', 'from': 'dummy@localhost'})
+                    stanza = $iq({'type': 'set', 'from': _converse.connection.jid})
                         .c('query', {'xmlns': 'jabber:iq:roster'})
                         .c('item', {
                             'jid': 'contact@example.org',

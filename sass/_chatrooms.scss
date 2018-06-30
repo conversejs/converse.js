@@ -7,12 +7,37 @@
         }
     }
 
+    #room-details-modal {
+        .features-list {
+            margin-left: 1em;
+        }
+    }
+
+    .chatroom-features {
+        width: 100%;
+        .features-list {
+            padding-top: 0;
+            .feature {
+                width: 100%;
+                margin-right: 0.5em;
+                padding-right: 0;
+                font-size: 1em;
+                cursor: help;
+                .fa {
+                    margin-right: 0.5em;
+                    color: $text-color;
+                }
+            }
+        }
+    }
+
+
     .chat-head-chatroom {
         background-color: $chatroom-head-color;
 
         .chatroom-description {
             color: lighten($chatroom-head-color, 25%);
-            font-size: $font-size-large;
+            font-size: $font-size;
             font-size: 70%;
             margin-top: 3px;
             overflow-y: hidden;
@@ -101,15 +126,11 @@
                     display: flex;
                     flex-direction: column;
                     word-wrap: break-word; 
-                    min-width: $chat-width;
                     .new-msgs-indicator {
                         background-color: $chatroom-head-color;
                     }
                     .chat-content {
                         height: 100%;
-                    }
-                    &.full {
-                        min-width: 100%;
                     }
                 }
                 .occupants {
@@ -124,21 +145,19 @@
                     border-bottom-right-radius: $chatbox-border-radius;
                     padding: 0.5em;
 
-                    .occupants-heading {
-                        font-family: $heading-font; 
-                        padding: 0.3em 0;
-                    }
-
-                    .chatroom-features {
-                        width: 100%;
-                        .feature {
-                            float: left;
-                            margin-right: 0.5em;
-                            padding-right: 0;
-                            font-size: 1em;
-                            cursor: help;
+                    .occupants-header {
+                        display: flex;
+                        flex-direction: column;
+                        .hide-occupants {
+                            align-self: flex-end;
+                            cursor: pointer;
+                        }
+                        .occupants-heading {
+                            font-family: $heading-font; 
+                            padding: 0.3em 0;
                         }
                     }
+
                     .awesomplete {
                         ul {
                             padding: 0;
@@ -159,15 +178,6 @@
                             flex-basis: 0;
                             flex-grow: 1;
                             border-bottom: 1px solid lightgrey;
-                        }
-                        &.features-list {
-                            padding-top: 0;
-                            .feature {
-                                width: 100%;
-                                .fa {
-                                    color: $text-color;
-                                }
-                            }
                         }
                         li {
                             cursor: default;
@@ -279,13 +289,128 @@
     }
 }
 
-@media screen and (max-width: 767px) {
-    #conversejs:not(.converse-embedded)  {
-        .chatbox {
+/* ******************* Overlay  styles *************************** */
+
+#conversejs.converse-overlayed {
+    .chatbox {
+        &.chatroom {
+            min-width: $chatroom-width !important;
+            width: $chatroom-width;
             .box-flyout {
-                .chatroom-body {
-                    .chat-area {
+                min-width: $chatroom-width !important;
+                width: $chatroom-width;
+            }
+            .chatbox-title {
+                @include make-col(8);
+                .chatroom-description {
+                    font-size: 80%;
+                }
+            }
+            .chatbox-buttons {
+                @include make-col(4);
+            }
+            .chatroom-body {
+                .occupants {
+                    .chatroom-features {
+                        .feature {
+                            font-size: $font-size-small;
+                        }
                     }
+                }
+                .chat-area {
+                    min-width: $overlayed-chat-width;
+                }
+            }
+        }
+    }
+}
+
+#conversejs.converse-fullscreen {
+    .chatroom {
+        .box-flyout {
+            .chatbox-title {
+                @include make-col(9);
+            }
+            .chatbox-buttons {
+                @include make-col(3);
+            }
+        }
+    }
+}
+
+@include media-breakpoint-down(sm) {
+
+    #conversejs:not(.converse-embedded) {
+        .chatroom {
+            width: 100vw !important;
+            .box-flyout {
+                .chatbox-navback {
+                    @include make-col(2);
+                }
+                .chatbox-title {
+                    @include make-col(7);
+                }
+                .chatbox-buttons {
+                    @include make-col(3);
+                }
+            }
+        }
+    }
+}
+
+#conversejs.converse-fullscreen,
+#conversejs.converse-mobile {
+
+    .chatroom {
+        .box-flyout {
+            background-color: $chatroom-head-color;
+            border: $flyout-padding solid $chatroom-head-color;
+            border-top: 0.8em solid $chatroom-head-color;
+            width: 100%;
+
+            .chatbox-title {
+                .chatroom-description {
+                    font-size: 70%;
+                }
+            }
+
+            .chatroom-body {
+                @include border-top-radius($chatbox-border-radius);
+                .chatroom-form-container {
+                    border-radius: $chatbox-border-radius;
+                }
+                .chat-area {
+                    border-top-left-radius: $chatbox-border-radius;
+                    .chat-content {
+                        border-top-left-radius: $chatbox-border-radius;
+                    }
+                    &.full {
+                        max-width: 100%;
+                        .new-msgs-indicator {
+                            max-width: 100%;
+                        }
+                    }
+                }
+                .occupants {
+                    border-top-right-radius: $chatbox-border-radius;;
+                    padding: $occupants-padding;
+                    .occupants-heading {
+                        font-size: $font-size-large;
+                    }
+                    ul {
+                        &.occupant-list {
+                            li {
+                                font-size: $font-size-small;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .room-invite {
+            span {
+                .invited-contact {
+                    margin: 0 0 0.5em -1px;
                 }
             }
         }

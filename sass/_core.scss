@@ -61,6 +61,23 @@ body.reset {
     direction: ltr;
     z-index: 1031; // One more than bootstrap navbar
 
+    &.converse-overlayed {
+        > .row {
+            flex-direction: row-reverse;
+        }
+    }
+
+    &.converse-fullscreen,
+    &.converse-mobile {
+        .converse-chatboxes {
+            width: 100vw;
+            right: 15px; // Hack due to padding added by bootstrap
+        }
+    }
+    &.converse-overlayed {
+        height: 3em;
+    }
+
     .brand-heading {
         font-family: $heading-font; 
         .icon-conversejs {
@@ -76,7 +93,6 @@ body.reset {
         z-index: 1031; // One more than bootstrap navbar
         position: fixed;
         bottom: 0;
-        height: 2.7rem;
         right: 0;
     }
 
@@ -143,6 +159,10 @@ body.reset {
         font-weight: 700;
     }
 
+    em {
+        font-style: italic;
+    }
+
     ol, ul {
         list-style: none;
     }
@@ -156,10 +176,16 @@ body.reset {
         margin: 0;
     }
 
-    a, a:visited, a:hover, a:not([href]):not([tabindex]) {
+    a, a:visited, a:not([href]):not([tabindex]) {
         text-decoration: none;
         color: $link-color;
         text-shadow: none;
+        &:hover {
+            color: darken($link-color, 20%);
+            text-decoration: none;
+            text-shadow: none;
+        }
+
         &.fa {
             color: $subdued-color;
             &:hover {

@@ -1,4 +1,24 @@
 #conversejs {
+    .oauth-providers {
+        text-align: center;
+        .oauth-provider {
+            margin: 1em 0;
+
+            .oauth-login {
+                margin-left: 0;
+                color: $link-color;
+                font-size: $font-size-large;
+                &:hover {
+                    color: darken($link-color, 20%);
+                }
+                i {
+                    color: $link-color;
+                    font-size: $font-size-huge;
+                    margin-right: 0.5em;
+                }
+            }
+        }
+    }
 
     .set-xmpp-status, .xmpp-status, .roster-contacts {
         .fa-circle {
@@ -173,15 +193,6 @@
             font-weight: bold;
         }
 
-        .oauth-login {
-            margin-left: 0;
-            color: $text-color;
-            .icon-social:before {
-                font-size: $font-size-large;
-            }
-        }
-
-
         .controlbox-pane {
             .userinfo {
                 padding-bottom: 1em;
@@ -296,6 +307,7 @@
             }
 
             .switch-form {
+                text-align: center;
                 padding: 2em 0;
                 p {
                     margin-top: 0.5em;
@@ -357,7 +369,6 @@
 
             .chatbox { 
                 .box-flyout {
-                    top: -100vh;
                     margin-left: 15px; // Counteracts Bootstrap margins, but
                                        // not clear why needed...
                     left: 0;
@@ -369,10 +380,11 @@
             }
 
             #controlbox {
-                order: 0;
+                width: 100vw !important;
                 .box-flyout {
                     width: 100vw !important;
                     height: 100vh !important;
+                    margin-left: 30px;
                 }
                 .sidebar {
                     display: block;
@@ -393,7 +405,7 @@
     }
 }
 
-#conversejs:not(.converse-fullscreen) {
+#conversejs.converse-overlayed {
     #controlbox {
         order: -1;
         min-width: $controlbox-width !important;
@@ -441,6 +453,113 @@
 
         .controlbox-panes {
             border-radius: $chatbox-border-radius;
+        }
+    }
+}
+
+#conversejs.converse-fullscreen,
+#conversejs.converse-mobile {
+    #controlbox {
+        @include make-col-ready();
+        @include media-breakpoint-up(md) {
+            @include make-col(3);
+        }
+        @include media-breakpoint-up(lg) {
+            @include make-col(3);
+        }
+        @include media-breakpoint-up(xl) {
+            @include make-col(2);
+        }
+
+        &.logged-out {
+            @include make-col(12);
+        }
+
+        margin: 0;
+
+        .controlbox-pane {
+            border-radius: 0;
+        }
+
+        .flyout {
+            border-radius: 0;
+        }
+
+        #converse-login-panel {
+            border-radius: 0;
+            .converse-form {
+                padding: 3em 2em 3em;
+            }
+        }
+
+        .toggle-register-login {
+            line-height: $line-height-huge;
+        }
+
+        .brand-heading-container {
+            @include make-col(12);
+            text-align: center;
+            .brand-heading {
+                font-size: 150%;
+                font-size: 600%;
+                padding: 0.7em 0 0 0;
+                opacity: 0.8;
+                color: $blue;
+            }
+            .brand-subtitle {
+                font-size: 90%;
+                padding: 0.5em;
+            }
+            @media screen and (max-width: $mobile-portrait-length) {
+                .brand-heading {
+                    font-size: 400%;
+                }
+            }
+        }
+
+        &.logged-out {
+            @include make-col(12);
+            @include fade-in;
+            width: 100%;
+            .box-flyout {
+                width: 100%;
+            }
+        }
+        .box-flyout {
+            border: 0;
+            width: 100%;
+            z-index: 1;
+            background-color: $controlbox-head-color;
+
+            .controlbox-head {
+                display: none;
+            }
+        }
+
+        #converse-register, #converse-login {
+            @include make-col-ready();
+            @include make-col(8);
+            @include make-col-offset(2);
+
+            @include media-breakpoint-up(sm) {
+                @include make-col(8);
+                @include make-col-offset(2);
+            }
+            @include media-breakpoint-up(md) {
+                @include make-col(8);
+                @include make-col-offset(2);
+            }
+            @include media-breakpoint-up(lg) {
+                @include make-col(6);
+                @include make-col-offset(3);
+            }
+            .title, .instructions {
+                margin: 1em 0;
+            }
+            input[type=submit],
+            input[type=button] {
+                width: auto;
+            }
         }
     }
 }

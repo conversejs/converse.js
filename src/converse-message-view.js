@@ -1,7 +1,7 @@
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
@@ -10,12 +10,12 @@
         "xss",
         "emojione",
         "filesize",
-        "tpl!action",
-        "tpl!csn",
-        "tpl!file_progress",
-        "tpl!info",
-        "tpl!message",
-        "tpl!spoiler_message"
+        "templates/action.html",
+        "templates/csn.html",
+        "templates/file_progress.html",
+        "templates/info.html",
+        "templates/message.html",
+        "templates/spoiler_message.html"
     ], factory);
 }(this, function (
         converse,
@@ -145,6 +145,7 @@
                         msg_content.innerHTML = _.flow(
                             _.partial(u.geoUriToHttp, _, _converse.geouri_replacement),
                             u.addHyperlinks,
+                            u.renderNewLines,
                             _.partial(u.addEmoji, _converse, emojione, _)
                         )(text);
                     }
@@ -225,7 +226,7 @@
                 },
 
                 getExtraMessageClasses () {
-                    let extra_classes = this.model.get('delayed') && 'delayed' || '';
+                    let extra_classes = this.model.get('is_delayed') && 'delayed' || '';
                     if (this.model.get('type') === 'groupchat' && this.model.get('sender') === 'them') {
                         if (this.model.collection.chatbox.isUserMentioned(this.model.get('message'))) {
                             // Add special class to mark groupchat messages

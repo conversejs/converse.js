@@ -10,13 +10,12 @@
  * rooms in the "Rooms Panel" of the ControlBox.
  */
 (function (root, factory) {
-    define(["utils",
-            "converse-core",
+    define(["converse-core",
             "converse-muc",
-            "tpl!rooms_list",
-            "tpl!rooms_list_item"
+            "templates/rooms_list.html",
+            "templates/rooms_list_item.html"
         ], factory);
-}(this, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
+}(this, function (converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
     const { Backbone, Promise, Strophe, b64_sha1, sizzle, _ } = converse.env;
     const u = converse.env.utils;
 
@@ -45,6 +44,7 @@
 
 
             _converse.OpenRooms = Backbone.Collection.extend({
+
                 comparator (room) {
                     if (room.get('bookmarked')) {
                         const bookmark = _.head(_converse.bookmarksview.model.where({'jid': room.get('jid')}));
@@ -97,6 +97,10 @@
             });
 
             _converse.RoomsListElementView = Backbone.VDOMView.extend({
+                events: {
+                    'click a.room-info': 'showRoomDetailsModal'
+                },
+
                 initialize () {
                     this.model.on('destroy', this.remove, this);
                     this.model.on('remove', this.remove, this);
@@ -104,15 +108,6 @@
                     this.model.on('change:name', this.render, this);
                     this.model.on('change:num_unread', this.render, this);
                     this.model.on('change:num_unread_general', this.render, this);
-                },
-
-                getRoomsListElementName () {
-                    if (this.model.get('bookmarked') && _converse.bookmarksview) {
-                        const bookmark = _.head(_converse.bookmarksview.model.where({'jid': this.model.get('jid')}));
-                        return bookmark.get('name');
-                    } else {
-                        return this.model.get('name');
-                    }
                 },
 
                 toHTML () {
@@ -130,8 +125,27 @@
                             'name': this.getRoomsListElementName(),
                             'open_title': __('Click to open this room')
                         }));
+                },
+
+                showRoomDetailsModal (ev) {
+                    const room = _converse.chatboxes.get(this.model.get('jid'));
+                    ev.preventDefault();
+                    if (_.isUndefined(room.room_details_modal)) {
+                        room.room_details_modal = new _converse.RoomDetailsModal({'model': room});
+                    }
+                    room.room_details_modal.show(ev);
+                },
+
+                getRoomsListElementName () {
+                    if (this.model.get('bookmarked') && _converse.bookmarksview) {
+                        const bookmark = _.head(_converse.bookmarksview.model.where({'jid': this.model.get('jid')}));
+                        return bookmark.get('name');
+                    } else {
+                        return this.model.get('name');
+                    }
                 }
             });
+
 
             _converse.RoomsListView = Backbone.OrderedListView.extend({
                 tagName: 'div',
@@ -232,13 +246,13 @@
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     const icon_el = ev.target.querySelector('.fa');
                     if (icon_el.classList.contains("fa-caret-down")) {
-                        utils.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
+                        u.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
                             this.list_model.save({'toggle-state': _converse.CLOSED});
                             icon_el.classList.remove("fa-caret-down");
                             icon_el.classList.add("fa-caret-right");
                         });
                     } else {
-                        utils.slideOut(this.el.querySelector('.open-rooms-list')).then(() => {
+                        u.slideOut(this.el.querySelector('.open-rooms-list')).then(() => {
                             this.list_model.save({'toggle-state': _converse.OPENED});
                             icon_el.classList.remove("fa-caret-right");
                             icon_el.classList.add("fa-caret-down");

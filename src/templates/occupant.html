@@ -8,7 +8,7 @@
     {[ if (o.role === "visitor") { ]}
        title="{{{ o.jid }}} {{{ o.desc_visitor }}} {{{ o.hint_occupant }}}"
     {[ } ]}
-    {[ if (!_.includes(["visitor", "participant", "moderator"], o.role)) { ]}
+    {[ if (!o._.includes(["visitor", "participant", "moderator"], o.role)) { ]}
        title="{{{ o.jid }}} {{{ o.hint_occupant }}}"
     {[ } ]}>
     <div class="row no-gutters">

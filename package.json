@@ -1,8 +1,8 @@
 {
   "name": "converse.js",
   "version": "3.3.4",
-  "description": "Browser based XMPP instant messaging client",
-  "main": "main.js",
+  "description": "Browser based XMPP chat client",
+  "main": "dist/converse.js",
   "directories": {
     "doc": "docs",
     "locale": "locale",
@@ -20,20 +20,24 @@
     "chatrooms",
     "webchat"
   ],
-  "author": "JC Brand",
+  "author": {
+    "name": "JC Brand",
+    "email": "jc@opkode.com"
+  },
   "license": "MPL-2.0",
   "bugs": {
-    "url": "https://github.com/jcbrand/converse.js/issues"
+    "url": "https://github.com/conversejs/converse.js/issues"
   },
   "engines": {
     "browser": "*"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0-beta.35",
-    "@babel/core": "^7.0.0-beta.35",
-    "@babel/preset-env": "^7.0.0-beta.35",
-    "almond": "~0.3.3",
+    "@babel/cli": "^7.0.0-beta.48",
+    "@babel/core": "^7.0.0-beta.48",
+    "@babel/preset-env": "^7.0.0-beta.48",
+    "@babel/preset-es2015": "^7.0.0-beta.49",
     "awesomplete-avoid-xss": "^1.1.2",
+    "babel-loader": "^8.0.0-beta.3",
     "backbone": "1.3.3",
     "backbone.browserStorage": "0.0.3",
     "backbone.nativeview": "^0.3.3",
@@ -48,9 +52,12 @@
     "es6-promise": "^4.1.0",
     "eslint": "4.19.1",
     "eslint-plugin-lodash": "^2.3.3",
+    "exports-loader": "^0.7.0",
     "filesize": "^3.6.1",
     "font-awesome": "^4.7.0",
+    "hellojs": "^1.16.1",
     "http-server": "^0.10.0",
+    "imports-loader": "^0.8.0",
     "install": "^0.9.5",
     "jasmine-core": "2.6.4",
     "jed": "1.1.1",
@@ -60,7 +67,10 @@
     "lodash": "4.17.4",
     "lodash-template-loader": "^2.0.0",
     "long": "^3.1.0",
+    "lodash-template-webpack-loader": "jcbrand/lodash-template-webpack-loader",
+    "minimist": "^1.2.0",
     "moment": "~> 2.19.3 ",
+    "npm": "^5.7.1",
     "otr": "0.2.16",
     "pluggable.js": "2.0.0",
     "po2json": "^0.4.4",
@@ -70,17 +80,15 @@
     "sinon": "^2.1.0",
     "sizzle": "^2.3.3",
     "snabbdom": "0.7.1",
-    "strophe.js": "1.2.14",
+    "strophe.js": "1.2.15",
     "strophejs-plugin-ping": "0.0.1",
     "strophejs-plugin-register": "0.0.1",
     "strophejs-plugin-rsm": "0.0.1",
-    "text": "requirejs/text#2.0.15",
     "uglify-es": "^3.0.24",
     "urijs": "^1.19.1",
     "wait-until-promise": "^1.0.0",
+    "webpack": "^4.0.1",
+    "webpack-cli": "^2.1.4",
     "xss": "^0.3.3"
-  },
-  "dependencies": {
-    "npm": "^5.7.1"
   }
 }

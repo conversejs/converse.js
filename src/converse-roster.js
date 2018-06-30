@@ -22,6 +22,12 @@
             const { _converse } = this,
                   { __ } = _converse;
 
+            _converse.api.settings.update({
+                'allow_contact_requests': true,
+                'auto_subscribe': false,
+                'synchronize_availability': true,
+            });
+
             _converse.api.promises.add([
                 'cachedRoster',
                 'roster',
@@ -48,6 +54,13 @@
                 _converse.roster = new _converse.RosterContacts();
                 _converse.roster.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                     b64_sha1(`converse.contacts-${_converse.bare_jid}`));
+
+                _converse.roster.data = new Backbone.Model();
+                const id = b64_sha1(`converse-roster-model-${_converse.bare_jid}`);
+                _converse.roster.data.id = id;
+                _converse.roster.data.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+                _converse.roster.data.fetch();
+
                 _converse.rostergroups = new _converse.RosterGroups();
                 _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                     b64_sha1(`converse.roster.groups${_converse.bare_jid}`));
@@ -90,9 +103,11 @@
 
 
             _converse.Presence = Backbone.Model.extend({
-                defaults: {
-                    'show': 'offline',
-                    'resources': {}
+                defaults () {
+                    return {
+                        'show': 'offline',
+                        'resources': {}
+                    }
                 },
 
                 getHighestPriorityResource () {
@@ -121,12 +136,10 @@
                      * Also updates the presence if the resource has higher priority (and is newer).
                      */
                     const jid = presence.getAttribute('from'),
-                        show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
-                        resource = Strophe.getResourceFromJid(jid),
-                        delay = presence.querySelector(
-                            `delay[xmlns="${Strophe.NS.DELAY}"]`
-                        ),
-                        timestamp = _.isNull(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
+                          show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
+                          resource = Strophe.getResourceFromJid(jid),
+                          delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, presence).pop(),
+                          timestamp = _.isNil(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
 
                     let priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0;
                     priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
@@ -156,17 +169,17 @@
                      * Also redetermines the presence given that there's one less
                      * resource.
                      */
-                     let resources = this.get('resources');
-                     if (!_.isObject(resources)) {
-                         resources = {};
-                     } else {
-                         delete resources[resource];
-                     }
-                     this.save({
-                         'resources': resources,
-                         'show': _.propertyOf(
-                             this.getHighestPriorityResource())('show') || 'offline'
-                     });
+                    let resources = this.get('resources');
+                    if (!_.isObject(resources)) {
+                        resources = {};
+                    } else {
+                        delete resources[resource];
+                    }
+                    this.save({
+                        'resources': resources,
+                        'show': _.propertyOf(
+                            this.getHighestPriorityResource())('show') || 'offline'
+                    });
                 },
 
             });
@@ -330,28 +343,28 @@
 
                 onConnected () {
                     /* Called as soon as the connection has been established
-                    * (either after initial login, or after reconnection).
-                    *
-                    * Use the opportunity to register stanza handlers.
-                    */
+                     * (either after initial login, or after reconnection).
+                     *
+                     * Use the opportunity to register stanza handlers.
+                     */
                     this.registerRosterHandler();
                     this.registerRosterXHandler();
                 },
 
                 registerRosterHandler () {
                     /* Register a handler for roster IQ "set" stanzas, which update
-                    * roster contacts.
-                    */
-                    _converse.connection.addHandler(
-                        _converse.roster.onRosterPush.bind(_converse.roster),
-                        Strophe.NS.ROSTER, 'iq', "set"
-                    );
+                     * roster contacts.
+                     */
+                    _converse.connection.addHandler((iq) => {
+                        _converse.roster.onRosterPush(iq);
+                        return true;
+                    }, Strophe.NS.ROSTER, 'iq', "set");
                 },
 
                 registerRosterXHandler () {
                     /* Register a handler for RosterX message stanzas, which are
-                    * used to suggest roster contacts to a user.
-                    */
+                     * used to suggest roster contacts to a user.
+                     */
                     let t = 0;
                     _converse.connection.addHandler(
                         function (msg) {
@@ -375,12 +388,14 @@
                      * Returns a promise which resolves once the contacts have been
                      * fetched.
                      */
+                    const that = this;
                     return new Promise((resolve, reject) => {
                         this.fetch({
                             'add': true,
                             'silent': true,
                             success (collection) {
-                                if (collection.length === 0) {
+                                if (collection.length === 0 || 
+                                        (that.rosterVersioningSupported() && !_converse.session.get('roster_fetched'))) {
                                     _converse.send_initial_presence = true;
                                     _converse.roster.fetchFromServer().then(resolve).catch(reject);
                                 } else {
@@ -506,30 +521,44 @@
 
                 onRosterPush (iq) {
                     /* Handle roster updates from the XMPP server.
-                    * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
-                    *
-                    * Parameters:
-                    *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
-                    */
+                     * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
+                     *
+                     * Parameters:
+                     *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
+                     */
                     const id = iq.getAttribute('id');
                     const from = iq.getAttribute('from');
-                    if (from && from !== "" && Strophe.getBareJidFromJid(from) !== _converse.bare_jid) {
-                        // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
-                        // XXX: Some naughty servers apparently send from a full
-                        // JID so we need to explicitly compare bare jids here.
-                        // https://github.com/jcbrand/converse.js/issues/493
-                        _converse.connection.send(
-                            $iq({type: 'error', id, from: _converse.connection.jid})
-                                .c('error', {'type': 'cancel'})
-                                .c('service-unavailable', {'xmlns': Strophe.NS.ROSTER })
-                        );
-                        return true;
+                    if (from && from !== _converse.connection.jid) {
+                        // https://tools.ietf.org/html/rfc6121#page-15
+                        // 
+                        // A receiving client MUST ignore the stanza unless it has no 'from'
+                        // attribute (i.e., implicitly from the bare JID of the user's
+                        // account) or it has a 'from' attribute whose value matches the
+                        // user's bare JID <user@domainpart>.
+                        return;
                     }
                     _converse.connection.send($iq({type: 'result', id, from: _converse.connection.jid}));
-                    const items = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"] item`, iq);
-                    _.each(items, this.updateContact.bind(this));
+
+                    const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
+                    this.data.save('version', query.getAttribute('ver'));
+
+                    const items = sizzle(`item`, query);
+                    if (items.length > 1) {
+                        _converse.log(iq, Strophe.LogLevel.ERROR);
+                        throw new Error('Roster push query may not contain more than one "item" element.');
+                    }
+                    if (items.length === 0) {
+                        _converse.log(iq, Strophe.LogLevel.WARN);
+                        _converse.log('Received a roster push stanza without an "item" element.', Strophe.LogLevel.WARN);
+                        return;
+                    }
+                    this.updateContact(items.pop());
                     _converse.emit('rosterPush', iq);
-                    return true;
+                    return;
+                },
+
+                rosterVersioningSupported () {
+                    return _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
                 },
 
                 fetchFromServer () {
@@ -539,7 +568,9 @@
                             'type': 'get',
                             'id': _converse.connection.getUniqueId('roster')
                         }).c('query', {xmlns: Strophe.NS.ROSTER});
-
+                        if (this.rosterVersioningSupported()) {
+                            iq.attrs({'ver': this.data.get('version')});
+                        }
                         const callback = _.flow(this.onReceivedFromServer.bind(this), resolve);
                         const errback = function (iq) {
                             const errmsg = "Error while trying to fetch roster from the server";
@@ -552,17 +583,22 @@
 
                 onReceivedFromServer (iq) {
                     /* An IQ stanza containing the roster has been received from
-                    * the XMPP server.
-                    */
-                    const items = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"] item`, iq);
-                    _.each(items, this.updateContact.bind(this));
+                     * the XMPP server.
+                     */
+                    const query = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, iq).pop();
+                    if (query) {
+                        const items = sizzle(`item`, query);
+                        _.each(items, (item) => this.updateContact(item));
+                        this.data.save('version', query.getAttribute('ver'));
+                        _converse.session.save('roster_fetched', true);
+                    }
                     _converse.emit('roster', iq);
                 },
 
                 updateContact (item) {
                     /* Update or create RosterContact models based on items
-                    * received in the IQ from the server.
-                    */
+                     * received in the IQ from the server.
+                     */
                     const jid = item.getAttribute('jid');
                     if (this.isSelf(jid)) { return; }
 
@@ -642,54 +678,64 @@
                     }
                 },
 
+                handleOwnPresence (presence) {
+                    const jid = presence.getAttribute('from'),
+                          resource = Strophe.getResourceFromJid(jid),
+                          presence_type = presence.getAttribute('type');
+
+                    if ((_converse.connection.jid !== jid) &&
+                            (presence_type !== 'unavailable') &&
+                            (_converse.synchronize_availability === true ||
+                            _converse.synchronize_availability === resource)) {
+                        // Another resource has changed its status and
+                        // synchronize_availability option set to update,
+                        // we'll update ours as well.
+                        const show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online';
+                        _converse.xmppstatus.save({'status': show});
+
+                        const status_message = _.propertyOf(presence.querySelector('status'))('textContent');
+                        if (status_message) {
+                            _converse.xmppstatus.save({'status_message': status_message});
+                        }
+                    }
+                    if (_converse.jid === jid && presence_type === 'unavailable') {
+                        // XXX: We've received an "unavailable" presence from our
+                        // own resource. Apparently this happens due to a
+                        // Prosody bug, whereby we send an IQ stanza to remove
+                        // a roster contact, and Prosody then sends
+                        // "unavailable" globally, instead of directed to the
+                        // particular user that's removed.
+                        //
+                        // Here is the bug report: https://prosody.im/issues/1121
+                        //
+                        // I'm not sure whether this might legitimately happen
+                        // in other cases.
+                        //
+                        // As a workaround for now we simply send our presence again,
+                        // otherwise we're treated as offline.
+                        _converse.xmppstatus.sendPresence();
+                    }
+                },
+
                 presenceHandler (presence) {
                     const presence_type = presence.getAttribute('type');
                     if (presence_type === 'error') { return true; }
 
                     const jid = presence.getAttribute('from'),
-                        bare_jid = Strophe.getBareJidFromJid(jid),
-                        resource = Strophe.getResourceFromJid(jid),
-                        status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
-                        contact = this.get(bare_jid);
-
+                          bare_jid = Strophe.getBareJidFromJid(jid);
                     if (this.isSelf(bare_jid)) {
-                        if ((_converse.connection.jid !== jid) &&
-                            (presence_type !== 'unavailable') &&
-                            (_converse.synchronize_availability === true ||
-                            _converse.synchronize_availability === resource)) {
-                            // Another resource has changed its status and
-                            // synchronize_availability option set to update,
-                            // we'll update ours as well.
-                            const show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online';
-                            _converse.xmppstatus.save({'status': show});
-                            if (status_message) {
-                                _converse.xmppstatus.save({'status_message': status_message});
-                            }
-                        }
-                        if (_converse.jid === jid && presence_type === 'unavailable') {
-                            // XXX: We've received an "unavailable" presence from our
-                            // own resource. Apparently this happens due to a
-                            // Prosody bug, whereby we send an IQ stanza to remove
-                            // a roster contact, and Prosody then sends
-                            // "unavailable" globally, instead of directed to the
-                            // particular user that's removed.
-                            //
-                            // Here is the bug report: https://prosody.im/issues/1121
-                            //
-                            // I'm not sure whether this might legitimately happen
-                            // in other cases.
-                            //
-                            // As a workaround for now we simply send our presence again,
-                            // otherwise we're treated as offline.
-                            _converse.xmppstatus.sendPresence();
-                        }
-                        return;
+                        return this.handleOwnPresence(presence);
                     } else if (sizzle(`query[xmlns="${Strophe.NS.MUC}"]`, presence).length) {
                         return; // Ignore MUC
                     }
+
+                    const status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
+                          contact = this.get(bare_jid);
+
                     if (contact && (status_message !== contact.get('status'))) {
                         contact.save({'status': status_message});
                     }
+
                     if (presence_type === 'subscribed' && contact) {
                         contact.ackSubscribe();
                     } else if (presence_type === 'unsubscribed' && contact) {
@@ -699,6 +745,7 @@
                     } else if (presence_type === 'subscribe') {
                         this.handleIncomingSubscription(presence);
                     } else if (presence_type === 'unavailable' && contact) {
+                        const resource = Strophe.getResourceFromJid(jid);
                         contact.presence.removeResource(resource);
                     } else if (contact) {
                         // presence_type is undefined
@@ -754,7 +801,7 @@
             _converse.api.listen.on('beforeTearDown', _converse.unregisterPresenceHandler());
 
             _converse.api.listen.on('afterTearDown', () => {
-                if (_converse.presence) {
+                if (_converse.presences) {
                     _converse.presences.off().reset(); // Remove presences
                 }
             });
@@ -765,14 +812,17 @@
                 }
             });
 
-            _converse.api.listen.on('connectionInitialized', () => {
-                _converse.presences = new _converse.Presences();
-                _converse.presences.browserStorage = 
-                    new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
-                _converse.presences.fetch();
+            _converse.api.listen.on('statusInitialized', (reconnecting) => {
+                if (!reconnecting) {
+                    _converse.presences = new _converse.Presences();
+                    _converse.presences.browserStorage = 
+                        new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
+                    _converse.presences.fetch();
+                }
+                _converse.emit('presencesInitialized', reconnecting);
             });
 
-            _converse.api.listen.on('statusInitialized', (reconnecting) => {
+            _converse.api.listen.on('presencesInitialized', (reconnecting) => {
                 if (reconnecting) {
                     // No need to recreate the roster, otherwise we lose our
                     // cached data. However we still emit an event, to give

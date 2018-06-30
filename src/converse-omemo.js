@@ -9,7 +9,7 @@
 (function (root, factory) {
     define([
         "converse-core",
-        "tpl!toolbar_omemo"
+        "templates/toolbar_omemo.html"
     ], factory);
 }(this, function (converse, tpl_toolbar_omemo) {
 

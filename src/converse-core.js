@@ -1,7 +1,7 @@
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
@@ -11,7 +11,7 @@
             "lodash.fp",
             "polyfill",
             "i18n",
-            "utils",
+            "utils/core",
             "moment",
             "strophe",
             "pluggable",
@@ -20,11 +20,7 @@
             "backbone.browserStorage"
     ], factory);
 }(this, function (sizzle, Promise, _, f, polyfill, i18n, u, moment, Strophe, pluggable, Backbone) {
-
-    /* Cannot use this due to Safari bug.
-     * See https://github.com/jcbrand/converse.js/issues/196
-     */
-    // "use strict";
+    "use strict";
 
     // Strophe globals
     const { $build, $iq, $msg, $pres } = Strophe;
@@ -72,9 +68,9 @@
     // Core plugins are whitelisted automatically
     _converse.core_plugins = [
         'converse-bookmarks',
+        'converse-caps',
         'converse-chatboxes',
         'converse-chatview',
-        'converse-caps',
         'converse-controlbox',
         'converse-core',
         'converse-disco',
@@ -90,8 +86,10 @@
         'converse-muc-views',
         'converse-notification',
         'converse-omemo',
+        'converse-oauth',
         'converse-ping',
         'converse-profile',
+        'converse-push',
         'converse-register',
         'converse-roomslist',
         'converse-roster',
@@ -152,6 +150,64 @@
 
     _converse.DEFAULT_IMAGE_TYPE = 'image/png';
     _converse.DEFAULT_IMAGE = "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";
+
+    _converse.TIMEOUTS = { // Set as module attr so that we can override in tests.
+        'PAUSED':     10000,
+        'INACTIVE':   90000
+    };
+
+    // XEP-0085 Chat states
+    // http://xmpp.org/extensions/xep-0085.html
+    _converse.INACTIVE = 'inactive';
+    _converse.ACTIVE = 'active';
+    _converse.COMPOSING = 'composing';
+    _converse.PAUSED = 'paused';
+    _converse.GONE = 'gone';
+
+    // Default configuration values
+    // ----------------------------
+    _converse.default_settings = {
+        allow_non_roster_messaging: false,
+        animate: true,
+        authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
+        auto_away: 0, // Seconds after which user status is set to 'away'
+        auto_login: false, // Currently only used in connection with anonymous login
+        auto_reconnect: true,
+        auto_xa: 0, // Seconds after which user status is set to 'xa'
+        blacklisted_plugins: [],
+        bosh_service_url: undefined,
+        connection_options: {},
+        credentials_url: null, // URL from where login credentials can be fetched
+        csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
+        debug: false,
+        default_state: 'online',
+        expose_rid_and_sid: false,
+        geouri_regex: /https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
+        geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
+        jid: undefined,
+        keepalive: true,
+        locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
+        locales: [
+            'af', 'ar', 'bg', 'ca', 'de', 'es', 'eu', 'en', 'fr', 'he',
+            'hu', 'id', 'it', 'ja', 'nb', 'nl',
+            'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'
+        ],
+        message_carbons: true,
+        nickname: undefined,
+        password: undefined,
+        prebind_url: null,
+        priority: 0,
+        rid: undefined,
+        root: window.document,
+        sid: undefined,
+        storage: 'session',
+        strict_plugin_dependencies: false,
+        trusted: true,
+        view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
+        websocket_url: undefined,
+        whitelisted_plugins: []
+    };
+
 
     _converse.log = function (message, level, style='') {
         /* Logs messages to the browser's developer console.
@@ -242,7 +298,6 @@
 
 
     _converse.initialize = function (settings, callback) {
-        "use strict";
         settings = !_.isUndefined(settings) ? settings : {};
         const init_promise = u.getResolveablePromise();
 
@@ -262,89 +317,21 @@
             _converse.connection.reset();
             _converse.off();
             _converse.stopListening();
-            _converse._tearDown();
+            _converse.tearDown();
         }
 
-        let unloadevent;
         if ('onpagehide' in window) {
             // Pagehide gets thrown in more cases than unload. Specifically it
             // gets thrown when the page is cached and not just
             // closed/destroyed. It's the only viable event on mobile Safari.
             // https://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/
-            unloadevent = 'pagehide';
+            _converse.unloadevent = 'pagehide';
         } else if ('onbeforeunload' in window) {
-            unloadevent = 'beforeunload';
+            _converse.unloadevent = 'beforeunload';
         } else if ('onunload' in window) {
-            unloadevent = 'unload';
+            _converse.unloadevent = 'unload';
         }
 
-        // Instance level constants
-        this.TIMEOUTS = { // Set as module attr so that we can override in tests.
-            'PAUSED':     10000,
-            'INACTIVE':   90000
-        };
-
-        // XEP-0085 Chat states
-        // http://xmpp.org/extensions/xep-0085.html
-        this.INACTIVE = 'inactive';
-        this.ACTIVE = 'active';
-        this.COMPOSING = 'composing';
-        this.PAUSED = 'paused';
-        this.GONE = 'gone';
-
-        // Default configuration values
-        // ----------------------------
-        this.default_settings = {
-            allow_contact_requests: true,
-            allow_non_roster_messaging: false,
-            animate: true,
-            authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
-            auto_away: 0, // Seconds after which user status is set to 'away'
-            auto_login: false, // Currently only used in connection with anonymous login
-            auto_reconnect: true,
-            auto_subscribe: false,
-            auto_xa: 0, // Seconds after which user status is set to 'xa'
-            blacklisted_plugins: [],
-            bosh_service_url: undefined,
-            connection_options: {},
-            credentials_url: null, // URL from where login credentials can be fetched
-            csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
-            debug: false,
-            default_state: 'online',
-            expose_rid_and_sid: false,
-            filter_by_resource: false,
-            forward_messages: false,
-            geouri_regex: /https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
-            geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
-            hide_offline_users: false,
-            include_offline_state: false,
-            jid: undefined,
-            keepalive: true,
-            locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
-            locales: [
-                'af', 'ar', 'bg', 'ca', 'de', 'es', 'eu', 'en', 'fr', 'he',
-                'hu', 'id', 'it', 'ja', 'nb', 'nl',
-                'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'
-            ],
-            message_carbons: true,
-            nickname: undefined,
-            password: undefined,
-            prebind_url: null,
-            priority: 0,
-            registration_domain: '',
-            rid: undefined,
-            root: window.document,
-            show_only_online_users: false,
-            show_send_button: false,
-            sid: undefined,
-            storage: 'session',
-            strict_plugin_dependencies: false,
-            synchronize_availability: true,
-            trusted: true,
-            view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
-            websocket_url: undefined,
-            whitelisted_plugins: []
-        };
         _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
         _.assignIn(this, _.pick(settings, _.keys(this.default_settings)));
@@ -460,7 +447,8 @@
             window.addEventListener('focus', _converse.onUserActivity);
             window.addEventListener('keypress', _converse.onUserActivity);
             window.addEventListener('mousemove', _converse.onUserActivity);
-            window.addEventListener(unloadevent, _converse.onUserActivity);
+            const options = {'once': true, 'passive': true};
+            window.addEventListener(_converse.unloadevent, _converse.onUserActivity, options);
             _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
         };
 
@@ -492,7 +480,7 @@
                 __('The connection has dropped, attempting to reconnect.')
             );
             _converse.connection.reconnecting = true;
-            _converse._tearDown();
+            _converse.tearDown();
             _converse.logIn(null, true);
         }, 3000, {'leading': true});
 
@@ -500,7 +488,7 @@
             _converse.log('DISCONNECTED');
             delete _converse.connection.reconnecting;
             _converse.connection.reset();
-            _converse._tearDown();
+            _converse.tearDown();
             _converse.emit('disconnected');
         };
 
@@ -649,8 +637,9 @@
             _converse.session = new Backbone.Model();
             const id = b64_sha1('converse.bosh-session');
             _converse.session.id = id; // Appears to be necessary for backbone.browserStorage
-            _converse.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+            _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
             _converse.session.fetch();
+            _converse.emit('sessionInitialized');
         };
 
         this.clearSession = function () {
@@ -669,7 +658,7 @@
             if (!_.isUndefined(_converse.connection)) {
                 _converse.connection.disconnect();
             } else {
-                _converse._tearDown();
+                _converse.tearDown();
             }
             // Recreate all the promises
             _.each(_.keys(_converse.promises), addPromise);
@@ -727,6 +716,7 @@
             if( document[hidden] !== undefined ) {
                 _.partial(_converse.saveWindowState, _, hidden)({type: document[hidden] ? "blur" : "focus"});
             }
+            _converse.emit('registeredGlobalEventHandlers');
         };
 
         this.enableCarbons = function () {
@@ -748,7 +738,7 @@
                         'An error occured while trying to enable message carbons.',
                         Strophe.LogLevel.ERROR);
                 } else {
-                    this.session.save({carbons_enabled: true});
+                    this.session.save({'carbons_enabled': true});
                     _converse.log('Message carbons have been enabled.');
                 }
             }, null, "iq", null, "enablecarbons");
@@ -1087,7 +1077,7 @@
         };
 
 
-        this._tearDown = function () {
+        this.tearDown = function () {
             /* Remove those views which are only allowed with a valid
              * connection.
              */
@@ -1099,7 +1089,7 @@
             window.removeEventListener('focus', _converse.onUserActivity);
             window.removeEventListener('keypress', _converse.onUserActivity);
             window.removeEventListener('mousemove', _converse.onUserActivity);
-            window.removeEventListener(unloadevent, _converse.onUserActivity);
+            window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
             window.clearInterval(_converse.everySecondTrigger);
             _converse.emit('afterTearDown');
             return _converse;
@@ -1298,6 +1288,11 @@
         'send' (stanza) {
             _converse.connection.send(stanza);
         },
+        'sendIQ' (stanza) {
+            return new Promise((resolve, reject) => {
+                _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
+            });
+        }
     };
 
     // The public API

@@ -10,6 +10,7 @@
     "extends": ["eslint:recommended", "plugin:lodash/canonical"],
     "globals": {
         "Promise": true,
+        "converse": true,
         "define": true,
         "require": true,
         "sinon": true,

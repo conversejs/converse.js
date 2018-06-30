@@ -8,15 +8,16 @@ CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
 CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
 ESLINT		  	?= ./node_modules/.bin/eslint
 HTTPSERVE	   	?= ./node_modules/.bin/http-server
-HTTPSERVE_PORT  ?= 8000
-INKSCAPE        ?= inkscape
+HTTPSERVE_PORT		?= 8000
+INKSCAPE		?= inkscape
 JSDOC			?=  ./node_modules/.bin/jsdoc
-OXIPNG          ?= oxipng
+OXIPNG			?= oxipng
 PAPER		   	=
 PO2JSON		 	?= ./node_modules/.bin/po2json
-RJS			 	?= ./node_modules/.bin/r.js
+RJS			?= ./node_modules/.bin/r.js
+WEBPACK 		?= ./node_modules/.bin/npx
 SASS			?= ./.bundle/bin/sass
-SED				?= sed
+SED			?= sed
 SPHINXBUILD	 	?= ./bin/sphinx-build
 SPHINXOPTS	  	=
 UGLIFYJS		?= node_modules/.bin/uglifyjs
@@ -73,7 +74,7 @@ serve_bg: dev
 GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.3.4 -c
 
 .PHONY: pot
-pot: dist/converse-no-dependencies.js
+pot: dist/converse-no-dependencies-es2015.js
 	$(GETTEXT) 2>&1 > /dev/null; exit $$?;
 
 .PHONY: po
@@ -121,7 +122,7 @@ stamp-bundler: Gemfile
 
 .PHONY: clean
 clean:
-	rm -rf node_modules .bundle stamp-npm
+	rm -rf node_modules .bundle stamp-npm stamp-bundler
 	rm dist/*.min.js
 	rm css/website.min.css
 	rm css/converse.min.css
@@ -134,10 +135,7 @@ dev: stamp-bundler stamp-npm
 ## Builds
 
 .PHONY: css
-css: dev sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/inverse.css css/inverse.min.css css/fonts.css
-
-css/inverse.css:: dev sass sass
-	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/inverse.scss css/inverse.css
+css: dev sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/fonts.css
 
 css/converse.css:: dev sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/converse.scss css/converse.css
@@ -158,12 +156,7 @@ watch: dev
 
 .PHONY: watchjs
 watchjs: dev
-	$(BABEL) --source-maps --watch=./src --out-dir=./builds
-
-transpile: dev src
-	$(BABEL) --source-maps --out-dir=./builds ./src
-	$(BABEL) --source-maps --out-dir=./builds ./node_modules/backbone.vdomview/backbone.vdomview.js
-	touch transpile
+	./node_modules/.bin/npx  webpack --mode=development  --watch
 
 .PHONY: logo
 logo: logo/conversejs-transparent16.png \
@@ -186,37 +179,34 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 	$(OXIPNG) $@
 
 BUILDS = dist/converse.js \
-		 dist/converse.min.js \
-         dist/converse-headless.js \
-		 dist/converse-headless.min.js \
-		 dist/converse-no-dependencies.min.js \
-		 dist/converse-no-dependencies.js
+	dist/converse.min.js \
+	dist/converse-headless.js \
+	dist/converse-headless.min.js \
+	dist/converse-no-dependencies.min.js \
+	dist/converse-no-dependencies.js \
+	dist/converse-no-dependencies-es2015.js
 
-# dist/converse-esnext.js \
-# dist/converse-esnext.min.js \
+dist/converse.js: src webpack.config.js stamp-npm
+	./node_modules/.bin/npx  webpack --mode=development
+dist/converse.min.js: src webpack.config.js stamp-npm
+	./node_modules/.bin/npx  webpack --mode=production
+dist/converse-headless.js: src webpack.config.js stamp-npm
+	./node_modules/.bin/npx  webpack --mode=development --type=headless
+dist/converse-headless.min.js: src webpack.config.js stamp-npm
+	./node_modules/.bin/npx  webpack --mode=production --type=headless
+dist/converse-no-dependencies.js: src webpack.config.js stamp-npm
+	./node_modules/.bin/npx  webpack --mode=development --type=nodeps
+dist/converse-no-dependencies.min.js: src webpack.config.js stamp-npm
+	./node_modules/.bin/npx  webpack --mode=production --type=nodeps 
+dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm
+	./node_modules/.bin/npx  webpack --mode=development --type=nodeps --lang=es2015
 
-dist/converse.js: transpile src stamp-npm
-	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
-dist/converse.min.js: transpile src stamp-npm
-	$(RJS) -o src/build.js include=converse out=dist/converse.min.js
-dist/converse-headless.js: transpile src stamp-npm
-	$(RJS) -o src/build.js paths.converse=src/headless include=converse out=dist/converse-headless.js optimize=none 
-dist/converse-headless.min.js: transpile src stamp-npm
-	$(RJS) -o src/build.js paths.converse=src/headless include=converse out=dist/converse-headless.min.js
-dist/converse-esnext.js: src stamp-npm
-	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.js optimize=none 
-dist/converse-esnext.min.js: src stamp-npm
-	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.min.js
-dist/converse-no-dependencies.js: transpile src stamp-npm
-	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
-dist/converse-no-dependencies.min.js: transpile src stamp-npm
-	$(RJS) -o src/build-no-dependencies.js out=dist/converse-no-dependencies.min.js
 
 .PHONY: dist
 dist:: build
 
 .PHONY: build
-build:: dev css transpile $(BUILDS)
+build:: dev css $(BUILDS)
 
 ########################################################################
 ## Tests

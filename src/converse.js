@@ -8,12 +8,13 @@ if (typeof define !== 'undefined') {
          * Any of the following components may be removed if they're not needed.
          */
         "converse-bookmarks",       // XEP-0048 Bookmarks
-        "converse-caps",
+        "converse-caps",            // XEP-0115 Entity Capabilities
         "converse-chatview",        // Renders standalone chat boxes for single user chat
         "converse-controlbox",      // The control box
         "converse-dragresize",      // Allows chat boxes to be resized by dragging them
         "converse-embedded",
         "converse-fullscreen",
+        "converse-push",            // XEP-0357 Push Notifications
         "converse-headline",        // Support for headline messages
         "converse-mam",             // XEP-0313 Message Archive Management
         "converse-minimize",        // Allows chat boxes to be minimized
@@ -23,9 +24,9 @@ if (typeof define !== 'undefined') {
         "converse-notification",    // HTML5 Notifications
         "converse-omemo",
         "converse-ping",            // XEP-0199 XMPP Ping
-        "converse-roster",
         "converse-register",        // XEP-0077 In-band registration
         "converse-roomslist",       // Show currently open chat rooms
+        "converse-roster",
         "converse-vcard",           // XEP-0054 VCard-temp
         /* END: Removable components */
     ], function (converse) {

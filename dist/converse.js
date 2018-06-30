@@ -85416,9 +85416,11 @@ __p += ' <span class="badge badge-secondary">' +
 __e(role) +
 '</span> ';
  }); ;
-__p += '\n            </span>\n            <span class="chat-msg-time">' +
+__p += '\n            </span>\n            <time timestamp="' +
+__e(o.isodate) +
+'" class="chat-msg-time">' +
 __e(o.pretty_time) +
-'</span>\n        </span>\n        <span class="chat-msg-text"></span>\n        <div class="chat-msg-media"></div>\n    </div>\n</div>\n';
+'</time>\n        </span>\n        <span class="chat-msg-text"></span>\n        <div class="chat-msg-media"></div>\n    </div>\n</div>\n';
 return __p
 };
 

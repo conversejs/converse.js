@@ -1067,6 +1067,43 @@
             done();
         }));
 
+        it("will render newlines", mock.initConverseWithPromises(null, ['rosterGroupsFetched'], {}, function (done, _converse) {
+            test_utils.createContacts(_converse, 'current');
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            test_utils.openChatBoxFor(_converse, contact_jid);
+
+            let stanza = Strophe.xmlHtmlNode(
+                "<message from='"+contact_jid+"'"+
+                "         type='chat'"+
+                "         to='dummy@localhost/resource'>"+
+                "    <body>Hey\nHave you heard the news?</body>"+
+                "</message>").firstChild;
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+            const view = _converse.chatboxviews.get(contact_jid);
+            const chat_content = view.el.querySelector('.chat-content');
+            expect(chat_content.querySelector('.chat-msg-text').innerHTML).toBe('Hey<br>Have you heard the news?');
+
+            stanza = Strophe.xmlHtmlNode(
+                "<message from='"+contact_jid+"'"+
+                "         type='chat'"+
+                "         to='dummy@localhost/resource'>"+
+                "    <body>Hey\n\n\nHave you heard the news?</body>"+
+                "</message>").firstChild;
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            expect(chat_content.querySelector('.message:last-child .chat-msg-text').innerHTML).toBe('Hey<br>Have you heard the news?');
+
+            stanza = Strophe.xmlHtmlNode(
+                "<message from='"+contact_jid+"'"+
+                "         type='chat'"+
+                "         to='dummy@localhost/resource'>"+
+                "    <body>Hey\nHave you heard\nthe news?</body>"+
+                "</message>").firstChild;
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            expect(chat_content.querySelector('.message:last-child .chat-msg-text').innerHTML).toBe('Hey<br>Have you heard<br>the news?');
+            done();
+        }));
+
         it("will render images from their URLs",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
@@ -1081,9 +1118,8 @@
             spyOn(view.model, 'sendMessage').and.callThrough();
             test_utils.sendMessage(view, message);
 
-            test_utils.waitUntil(function () {
-                return view.el.querySelectorAll('.chat-content .chat-image').length;
-            }, 1000).then(function () {
+            test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length)
+            .then(() => {
                 expect(view.model.sendMessage).toHaveBeenCalled();
                 var msg = $(view.el).find('.chat-content .chat-msg').last().find('.chat-msg-text');
                 expect(msg.html().trim()).toEqual(
@@ -1095,7 +1131,7 @@
                 return test_utils.waitUntil(function () {
                     return view.el.querySelectorAll('.chat-content .chat-image').length === 2;
                 }, 1000);
-            }).then(function () {
+            }).then(() => {
                 expect(view.model.sendMessage).toHaveBeenCalled();
                 var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
                 expect(msg.html().trim()).toEqual(

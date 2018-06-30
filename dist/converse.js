@@ -78646,7 +78646,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       if (_converse.allow_muc_invitations) {
         const registerDirectInvitationHandler = function registerDirectInvitationHandler() {
-          _converse.connection.addHandler(function (message) {
+          _converse.connection.addHandler(message => {
             _converse.onDirectMUCInvitation(message);
 
             return true;

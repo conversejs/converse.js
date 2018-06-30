@@ -403,6 +403,7 @@
                     };
                     if (reason !== null) { attrs.reason = reason; }
                     if (this.get('password')) { attrs.password = this.get('password'); }
+
                     const invitation = $msg({
                         from: _converse.connection.jid,
                         to: recipient,
@@ -1126,7 +1127,7 @@
             if (_converse.allow_muc_invitations) {
                 const registerDirectInvitationHandler = function () {
                     _converse.connection.addHandler(
-                        function (message) {
+                        (message) =>  {
                             _converse.onDirectMUCInvitation(message);
                             return true;
                         }, 'jabber:x:conference', 'message');

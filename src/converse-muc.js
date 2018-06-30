@@ -326,13 +326,14 @@
                     /* Fetch the room disco info, parse it and then save it.
                      */
                     return new Promise((resolve, reject) => {
-                        _converse.api.disco.info(
-                            this.get('jid'),
-                            null,
-                            _.flow(this.parseRoomFeatures.bind(this), resolve),
-                            () => { reject(new Error("Could not parse the room features")) },
-                            5000
-                        );
+                        _converse.api.disco.info(this.get('jid'), null)
+                            .then((stanza) => {
+                                this.parseRoomFeatures(stanza);
+                                resolve()
+                            }).catch((err) => {
+                                _converse.log(err, Strophe.LogLevel.ERROR);
+                                reject(new Error("Could not parse the room features"));
+                            });
                     });
                 },
 

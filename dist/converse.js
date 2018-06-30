@@ -67949,7 +67949,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'node': 'storage:bookmarks'
           });
 
-          _converse.connection.sendIQ(stanza, _.bind(this.onBookmarksReceived, this, deferred), _.bind(this.onBookmarksReceivedError, this, deferred));
+          _converse.api.sendIQ(stanza).then(iq => this.onBookmarksReceived(deferred, iq)).catch(iq => this.onBookmarksReceivedError(deferred, iq));
         },
 
         markRoomAsBookmarked(bookmark) {
@@ -71268,7 +71268,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   _converse.LOGOUT = "logout";
   _converse.OPENED = 'opened';
   _converse.PREBIND = "prebind";
-  _converse.IQ_TIMEOUT = 30000;
+  _converse.IQ_TIMEOUT = 20000;
   _converse.CONNECTION_STATUS = {
     0: 'ERROR',
     1: 'CONNECTING',
@@ -72719,7 +72719,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         queryInfo() {
-          _converse.api.disco.info(this.get('jid'), null, this.onInfo.bind(this));
+          _converse.api.disco.info(this.get('jid'), null).then(stanza => this.onInfo(stanza)).catch(iq => {
+            this.waitUntilFeaturesDiscovered.resolve();
+
+            _converse.log(iq, Strophe.LogLevel.ERROR);
+          });
         },
 
         onDiscoItems(stanza) {
@@ -73086,7 +73090,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             }
           },
 
-          'info'(jid, node, callback, errback, timeout) {
+          'info'(jid, node) {
             const attrs = {
               xmlns: Strophe.NS.DISCO_INFO
             };
@@ -73100,8 +73104,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'to': jid,
               'type': 'get'
             }).c('query', attrs);
-
-            _converse.connection.sendIQ(info, callback, errback, timeout);
+            return _converse.api.sendIQ(info);
           },
 
           'items'(jid, node, callback, errback, timeout) {
@@ -75702,7 +75705,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         } else {
           parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
 
-          _converse.api.disco.info(ev.target.getAttribute('data-room-jid'), null, _.partial(insertRoomInfo, parent_el));
+          _converse.api.disco.info(ev.target.getAttribute('data-room-jid'), null).then(stanza => insertRoomInfo(parent_el, stanza)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
         }
       }
 
@@ -77732,9 +77735,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           /* Fetch the room disco info, parse it and then save it.
            */
           return new Promise((resolve, reject) => {
-            _converse.api.disco.info(this.get('jid'), null, _.flow(this.parseRoomFeatures.bind(this), resolve), () => {
+            _converse.api.disco.info(this.get('jid'), null).then(stanza => {
+              this.parseRoomFeatures(stanza);
+              resolve();
+            }).catch(err => {
+              _converse.log(err, Strophe.LogLevel.ERROR);
+
               reject(new Error("Could not parse the room features"));
-            }, 5000);
+            });
           });
         },
 

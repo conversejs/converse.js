@@ -86946,7 +86946,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   };
 
   u.renderNewLines = function (text) {
-    return text.replace(/\n+/g, '<br/>');
+    return text.replace(/\n\n+/g, '<br><br>').replace(/\n/g, '<br/>');
   };
 
   u.renderImageURLs = function (_converse, obj) {

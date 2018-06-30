@@ -1091,7 +1091,7 @@
                 "    <body>Hey\n\n\nHave you heard the news?</body>"+
                 "</message>").firstChild;
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            expect(chat_content.querySelector('.message:last-child .chat-msg-text').innerHTML).toBe('Hey<br>Have you heard the news?');
+            expect(chat_content.querySelector('.message:last-child .chat-msg-text').innerHTML).toBe('Hey<br><br>Have you heard the news?');
 
             stanza = Strophe.xmlHtmlNode(
                 "<message from='"+contact_jid+"'"+

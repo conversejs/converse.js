@@ -577,7 +577,7 @@
                 expect($el.hasClass('chat-msg-followup')).toBe(false);
                 expect($el.text()).toEqual('Older message');
 
-                $time = $chat_content.find('time:eq(1)');
+                $time = $chat_content.find('time.separator-text:eq(1)');
                 expect($time.text()).toEqual("Monday Jan 1st 2018");
 
                 $day = $chat_content.find('.date-separator:eq(1)');
@@ -591,7 +591,7 @@
                 expect($el.find('.chat-msg-text').text()).toEqual('another inbetween message');
                 expect($el.hasClass('chat-msg-followup')).toBe(true);
 
-                $time = $chat_content.find('time:nth(2)');
+                $time = $chat_content.find('time.separator-text:nth(2)');
                 expect($time.text()).toEqual("Tuesday Jan 2nd 2018");
 
                 $day = $chat_content.find('.date-separator:nth(2)');
@@ -928,7 +928,7 @@
                     expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                     // Check that there is a <time> element, with the required
                     // props.
-                    expect($chat_content[0].querySelectorAll('time').length).toEqual(2); // There are now two time elements
+                    expect($chat_content[0].querySelectorAll('time.separator-text').length).toEqual(2); // There are now two time elements
 
                     var message_date = new Date();
                     $day = $chat_content.find('.date-separator:last');

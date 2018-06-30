@@ -714,8 +714,8 @@
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                    var $time = $chat_content.find('time');
-                    expect($time.length).toEqual(4);
+                    let time = chat_content.querySelectorAll('time.separator-text');
+                    expect(time.length).toEqual(4);
 
                     var $indicator = $chat_content.find('.date-separator:eq(3)');
                     expect($indicator.attr('class')).toEqual('message date-separator');
@@ -753,8 +753,8 @@
                             });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                    $time = $chat_content.find('time');
-                    expect($time.length).toEqual(6);
+                    time = chat_content.querySelectorAll('time.separator-text');
+                    expect(time.length).toEqual(6);
 
                     $indicator = $chat_content.find('.date-separator:eq(5)');
                     expect($indicator.attr('class')).toEqual('message date-separator');

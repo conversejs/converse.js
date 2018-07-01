@@ -166,15 +166,13 @@
                 },
 
                 sendMessage (attrs) {
-                    const { _converse } = this.__super__;
-                    const message = this.messages.create(attrs);
-
                     if (this.get('omemo_active')) {
+                        const message = this.messages.create(attrs);
                         this.getBundlesAndBuildSessions()
                             .then((bundles) => this.createOMEMOMessageStanza(message, bundles))
                             .then((stanza) => this.sendMessageStanza(stanza));
                     } else {
-                        this.sendMessageStanza(this.createMessageStanza(message));
+                        return this.__super__.sendMessage.apply(this, arguments);
                     }
                 },
             },

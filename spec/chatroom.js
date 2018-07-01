@@ -2948,7 +2948,6 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                var muc_iq;
                 var sent_IQs = [], IQ_ids = [];
                 var invitee_jid, sent_stanza, sent_id;
                 var sendIQ = _converse.connection.sendIQ;
@@ -3078,13 +3077,15 @@
                     return test_utils.waitUntil(() => IQ_ids.length, 300);
                 }).then(() => {
                     // Check that the member list now gets updated
-                    expect(muc_iq.toLocaleString()).toBe("<iq to='coven@chat.shakespeare.lit' type='set' xmlns='jabber:client' id='"+muc_iq.nodeTree.getAttribute('id')+"'>"+
+                    var iq = "<iq to='coven@chat.shakespeare.lit' type='set' xmlns='jabber:client' id='"+IQ_ids.pop()+"'>"+
                             "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
                                 "<item affiliation='member' jid='"+invitee_jid+"'>"+
                                     "<reason>Please join this chat room</reason>"+
                                 "</item>"+
                             "</query>"+
-                        "</iq>");
+                        "</iq>";
+                    return test_utils.waitUntil(() => _.includes(_.invokeMap(sent_IQs, Object.prototype.toLocaleString), iq), 300);
+                }).then(() => {
                     // Finally check that the user gets invited.
                     expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
                         "<message from='dummy@localhost/resource' to='"+invitee_jid+"' id='"+sent_id+"' xmlns='jabber:client'>"+

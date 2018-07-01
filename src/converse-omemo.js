@@ -141,9 +141,9 @@
                 },
 
                 createOMEMOMessageStanza (message, bundles) {
-                    const { _converse } = this.__super__;
-                    const body = "This is an OMEMO encrypted message which your client doesn’t seem to support. "+
-                                 "Find more information on https://conversations.im/omemo";
+                    const { _converse } = this.__super__, { __ } = _converse;
+                    const body = __("This is an OMEMO encrypted message which your client doesn’t seem to support. "+
+                                    "Find more information on https://conversations.im/omemo");
                     return new Promise((resolve, reject) => {
                         this.encryptMessage(message).then((payload) => {
                             const stanza = $msg({
@@ -165,37 +165,17 @@
                     });
                 },
 
-                createMessageStanza (message) {
-                    if (this.get('omemo_active')) {
-                        return this.getBundlesAndBuildSessions()
-                            .then((bundles) => this.createOMEMOMessageStanza(message, bundles));
-                    } else {
-                        return Promise.resolve(this.__super__.createMessageStanza.apply(this, arguments));
-                    }
-                },
-
-                sendMessageStanza (message) {
+                sendMessage (attrs) {
                     const { _converse } = this.__super__;
+                    const message = this.messages.create(attrs);
 
-                    // TODO: merge this back into converse-chatboxes
-                    this.createMessageStanza(message).then((stanza) => {
-                        _converse.connection.send(stanza);
-                        if (_converse.forward_messages) {
-                            // Forward the message, so that other connected resources are also aware of it.
-                            _converse.connection.send(
-                                $msg({
-                                    'to': _converse.bare_jid,
-                                    'type': this.get('message_type'),
-                                    'id': message.get('msgid')
-                                }).c('forwarded', {'xmlns': Strophe.NS.FORWARD})
-                                    .c('delay', {
-                                            'xmns': Strophe.NS.DELAY,
-                                            'stamp': moment().format()
-                                    }).up()
-                                .cnode(stanza.tree())
-                            );
-                        }
-                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                    if (this.get('omemo_active')) {
+                        this.getBundlesAndBuildSessions()
+                            .then((bundles) => this.createOMEMOMessageStanza(message, bundles))
+                            .then((stanza) => this.sendMessageStanza(stanza));
+                    } else {
+                        this.sendMessageStanza(this.createMessageStanza(message));
+                    }
                 },
             },
 

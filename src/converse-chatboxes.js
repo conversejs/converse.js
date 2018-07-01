@@ -264,7 +264,7 @@
 
                     this.messages.on('change:upload', (message) => {
                         if (message.get('upload') === _converse.SUCCESS) {
-                            this.sendMessageStanza(message);
+                            this.sendMessageStanza(this.createMessageStanza(message));
                         }
                     });
 
@@ -318,8 +318,7 @@
                     return stanza;
                 },
 
-                sendMessageStanza (message) {
-                    const stanza = this.createMessageStanza(message);
+                sendMessageStanza (stanza) {
                     _converse.connection.send(stanza);
                     if (_converse.forward_messages) {
                         // Forward the message, so that other connected resources are also aware of it.
@@ -358,7 +357,8 @@
                      *  Parameters:
                      *    (Message) message - The chat message
                      */
-                    this.sendMessageStanza(this.messages.create(attrs));
+                    const message = this.messages.create(attrs);
+                    this.sendMessageStanza(this.createMessageStanza(message));
                 },
 
                 sendChatState () {

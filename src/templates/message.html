@@ -7,7 +7,7 @@
             <span class="chat-msg-author">{{{o.username}}}
                 {[o.roles.forEach(function (role) { ]} <span class="badge badge-secondary">{{{role}}}</span> {[ }); ]}
             </span>
-            <span class="chat-msg-time">{{{o.pretty_time}}}</span>
+            <time timestamp="{{{o.isodate}}}" class="chat-msg-time">{{{o.pretty_time}}}</time>
         </span>
         <span class="chat-msg-text"></span>
         <div class="chat-msg-media"></div>

@@ -337,10 +337,9 @@
                         'type': 'get',
                     }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                         .c('items', {'node': 'storage:bookmarks'});
-                    _converse.connection.sendIQ(
-                        stanza,
-                        _.bind(this.onBookmarksReceived, this, deferred),
-                        _.bind(this.onBookmarksReceivedError, this, deferred)
+                    _converse.api.sendIQ(stanza)
+                        .then((iq) => this.onBookmarksReceived(deferred, iq))
+                        .catch((iq) => this.onBookmarksReceivedError(deferred, iq)
                     );
                 },
 

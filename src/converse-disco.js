@@ -126,7 +126,12 @@
                 },
 
                 queryInfo () {
-                    _converse.api.disco.info(this.get('jid'), null, this.onInfo.bind(this));
+                    _converse.api.disco.info(this.get('jid'), null)
+                        .then((stanza) => this.onInfo(stanza))
+                        .catch((iq) => {
+                            this.waitUntilFeaturesDiscovered.resolve();
+                            _converse.log(iq, Strophe.LogLevel.ERROR);
+                        });
                 },
 
                 onDiscoItems (stanza) {
@@ -427,7 +432,7 @@
                         }
                     },
 
-                    'info' (jid, node, callback, errback, timeout) {
+                    'info' (jid, node) {
                         const attrs = {xmlns: Strophe.NS.DISCO_INFO};
                         if (node) {
                             attrs.node = node;
@@ -437,7 +442,7 @@
                             'to':jid,
                             'type':'get'
                         }).c('query', attrs);
-                        _converse.connection.sendIQ(info, callback, errback, timeout);
+                        return _converse.api.sendIQ(info);
                     },
 
                     'items' (jid, node, callback, errback, timeout) {

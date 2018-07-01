@@ -222,6 +222,10 @@
         });
     };
 
+    u.renderNewLines = function (text) {
+        return text.replace(/\n\n+/g, '<br><br>').replace(/\n/g, '<br/>');
+    };
+
     u.renderImageURLs = function (_converse, obj) {
         /* Returns a Promise which resolves once all images have been loaded.
          */

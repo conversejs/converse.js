@@ -714,8 +714,8 @@
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                    var $time = $chat_content.find('time');
-                    expect($time.length).toEqual(4);
+                    let time = chat_content.querySelectorAll('time.separator-text');
+                    expect(time.length).toEqual(4);
 
                     var $indicator = $chat_content.find('.date-separator:eq(3)');
                     expect($indicator.attr('class')).toEqual('message date-separator');
@@ -753,8 +753,8 @@
                             });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                    $time = $chat_content.find('time');
-                    expect($time.length).toEqual(6);
+                    time = chat_content.querySelectorAll('time.separator-text');
+                    expect(time.length).toEqual(6);
 
                     $indicator = $chat_content.find('.date-separator:eq(5)');
                     expect($indicator.attr('class')).toEqual('message date-separator');
@@ -1800,6 +1800,8 @@
                         "<query xmlns='http://jabber.org/protocol/disco#info'/>"+
                     "</iq>");
 
+                var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                spyOn(view.model, 'parseRoomFeatures').and.callThrough();
                 /* <iq from='coven@chat.shakespeare.lit'
                  *      id='ik3vs715'
                  *      to='hag66@shakespeare.lit/pda'
@@ -1839,16 +1841,17 @@
                         .c('feature', {'var': 'muc_unmoderated'}).up()
                         .c('feature', {'var': 'muc_nonanonymous'});
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
-
-                var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                expect(view.model.get('features_fetched')).toBeTruthy();
-                expect(view.model.get('passwordprotected')).toBe(true);
-                expect(view.model.get('hidden')).toBe(true);
-                expect(view.model.get('temporary')).toBe(true);
-                expect(view.model.get('open')).toBe(true);
-                expect(view.model.get('unmoderated')).toBe(true);
-                expect(view.model.get('nonanonymous')).toBe(true);
-                done();
+                test_utils.waitUntil(() => view.model.parseRoomFeatures.calls.count(), 300)
+                .then(() => {
+                    expect(view.model.get('features_fetched')).toBeTruthy();
+                    expect(view.model.get('passwordprotected')).toBe(true);
+                    expect(view.model.get('hidden')).toBe(true);
+                    expect(view.model.get('temporary')).toBe(true);
+                    expect(view.model.get('open')).toBe(true);
+                    expect(view.model.get('unmoderated')).toBe(true);
+                    expect(view.model.get('nonanonymous')).toBe(true);
+                    done();
+                });
             }));
 
             it("updates the shown features when the room configuration has changed",
@@ -2946,6 +2949,7 @@
                     function (done, _converse) {
 
                 var sent_IQs = [], IQ_ids = [];
+                var invitee_jid, sent_stanza, sent_id;
                 var sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_IQs.push(iq);
@@ -2953,6 +2957,9 @@
                 });
 
                 _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'dummy'});
+
+                var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                spyOn(view.model, 'parseRoomFeatures').and.callThrough();
 
                 // State that the chat is members-only via the features IQ
                 var features_stanza = $iq({
@@ -2973,104 +2980,102 @@
                         .c('feature', {'var': 'muc_membersonly'}).up();
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
-                var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                expect(view.model.get('membersonly')).toBeTruthy();
+                test_utils.waitUntil(() => view.model.parseRoomFeatures.calls.count(), 300)
+                .then(() => {
+                   expect(view.model.get('membersonly')).toBeTruthy();
 
-                test_utils.createContacts(_converse, 'current');
+                   test_utils.createContacts(_converse, 'current');
 
-                var sent_stanza, sent_id;
-                spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
-                    if (stanza.nodeTree && stanza.nodeTree.nodeName === 'message') {
-                        sent_id = stanza.nodeTree.getAttribute('id');
-                        sent_stanza = stanza;
-                    }
-                });
-                var name = mock.cur_names[0];
-                var invitee_jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
-                var reason = "Please join this chat room";
-                view.model.directInvite(invitee_jid, reason);
+                   spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
+                       if (stanza.nodeTree && stanza.nodeTree.nodeName === 'message') {
+                           sent_id = stanza.nodeTree.getAttribute('id');
+                           sent_stanza = stanza;
+                       }
+                   });
+                   var name = mock.cur_names[0];
+                   invitee_jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                   var reason = "Please join this chat room";
+                   view.model.directInvite(invitee_jid, reason);
 
-                // Check in reverse order that we requested all three lists
-                // (member, owner and admin).
-                var admin_iq_id = IQ_ids.pop();
-                var owner_iq_id = IQ_ids.pop();
-                var member_iq_id = IQ_ids.pop();
+                   // Check in reverse order that we requested all three lists
+                   // (member, owner and admin).
+                   var admin_iq_id = IQ_ids.pop();
+                   var owner_iq_id = IQ_ids.pop();
+                   var member_iq_id = IQ_ids.pop();
 
-                expect(sent_IQs.pop().toLocaleString()).toBe(
-                    "<iq to='coven@chat.shakespeare.lit' type='get' xmlns='jabber:client' id='"+admin_iq_id+"'>"+
-                        "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
-                            "<item affiliation='admin'/>"+
-                        "</query>"+
-                    "</iq>");
-                expect(sent_IQs.pop().toLocaleString()).toBe(
-                    "<iq to='coven@chat.shakespeare.lit' type='get' xmlns='jabber:client' id='"+owner_iq_id+"'>"+
-                        "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
-                            "<item affiliation='owner'/>"+
-                        "</query>"+
-                    "</iq>");
-                expect(sent_IQs.pop().toLocaleString()).toBe(
-                    "<iq to='coven@chat.shakespeare.lit' type='get' xmlns='jabber:client' id='"+member_iq_id+"'>"+
-                        "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
-                            "<item affiliation='member'/>"+
-                        "</query>"+
-                    "</iq>");
+                   expect(sent_IQs.pop().toLocaleString()).toBe(
+                       "<iq to='coven@chat.shakespeare.lit' type='get' xmlns='jabber:client' id='"+admin_iq_id+"'>"+
+                           "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                               "<item affiliation='admin'/>"+
+                           "</query>"+
+                       "</iq>");
+                   expect(sent_IQs.pop().toLocaleString()).toBe(
+                       "<iq to='coven@chat.shakespeare.lit' type='get' xmlns='jabber:client' id='"+owner_iq_id+"'>"+
+                           "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                               "<item affiliation='owner'/>"+
+                           "</query>"+
+                       "</iq>");
+                   expect(sent_IQs.pop().toLocaleString()).toBe(
+                       "<iq to='coven@chat.shakespeare.lit' type='get' xmlns='jabber:client' id='"+member_iq_id+"'>"+
+                           "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                               "<item affiliation='member'/>"+
+                           "</query>"+
+                       "</iq>");
 
-                /* Now the service sends the member list to the user
-                 *
-                 *  <iq from='coven@chat.shakespeare.lit'
-                 *      id='member3'
-                 *      to='crone1@shakespeare.lit/desktop'
-                 *      type='result'>
-                 *  <query xmlns='http://jabber.org/protocol/muc#admin'>
-                 *      <item affiliation='member'
-                 *          jid='hag66@shakespeare.lit'
-                 *          nick='thirdwitch'
-                 *          role='participant'/>
-                 *  </query>
-                 *  </iq>
-                 */
-                var member_list_stanza = $iq({
-                        'from': 'coven@chat.shakespeare.lit',
-                        'id': member_iq_id,
-                        'to': 'dummy@localhost/resource',
-                        'type': 'result'
-                    }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
-                        .c('item', {
-                            'affiliation': 'member',
-                            'jid': 'hag66@shakespeare.lit',
-                            'nick': 'thirdwitch',
-                            'role': 'participant'
-                        });
-                _converse.connection._dataRecv(test_utils.createRequest(member_list_stanza));
+                   /* Now the service sends the member list to the user
+                    *
+                    *  <iq from='coven@chat.shakespeare.lit'
+                    *      id='member3'
+                    *      to='crone1@shakespeare.lit/desktop'
+                    *      type='result'>
+                    *  <query xmlns='http://jabber.org/protocol/muc#admin'>
+                    *      <item affiliation='member'
+                    *          jid='hag66@shakespeare.lit'
+                    *          nick='thirdwitch'
+                    *          role='participant'/>
+                    *  </query>
+                    *  </iq>
+                    */
+                   var member_list_stanza = $iq({
+                           'from': 'coven@chat.shakespeare.lit',
+                           'id': member_iq_id,
+                           'to': 'dummy@localhost/resource',
+                           'type': 'result'
+                       }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
+                           .c('item', {
+                               'affiliation': 'member',
+                               'jid': 'hag66@shakespeare.lit',
+                               'nick': 'thirdwitch',
+                               'role': 'participant'
+                           });
+                   _converse.connection._dataRecv(test_utils.createRequest(member_list_stanza));
 
-                var admin_list_stanza = $iq({
-                        'from': 'coven@chat.shakespeare.lit',
-                        'id': admin_iq_id,
-                        'to': 'dummy@localhost/resource',
-                        'type': 'result'
-                    }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
-                        .c('item', {
-                            'affiliation': 'admin',
-                            'jid': 'wiccarocks@shakespeare.lit',
-                            'nick': 'secondwitch'
-                        });
-                _converse.connection._dataRecv(test_utils.createRequest(admin_list_stanza));
+                   var admin_list_stanza = $iq({
+                           'from': 'coven@chat.shakespeare.lit',
+                           'id': admin_iq_id,
+                           'to': 'dummy@localhost/resource',
+                           'type': 'result'
+                       }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
+                           .c('item', {
+                               'affiliation': 'admin',
+                               'jid': 'wiccarocks@shakespeare.lit',
+                               'nick': 'secondwitch'
+                           });
+                   _converse.connection._dataRecv(test_utils.createRequest(admin_list_stanza));
 
-                var owner_list_stanza = $iq({
-                        'from': 'coven@chat.shakespeare.lit',
-                        'id': owner_iq_id,
-                        'to': 'dummy@localhost/resource',
-                        'type': 'result'
-                    }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
-                        .c('item', {
-                            'affiliation': 'owner',
-                            'jid': 'crone1@shakespeare.lit',
-                        });
-                _converse.connection._dataRecv(test_utils.createRequest(owner_list_stanza));
-
-                test_utils.waitUntil(function () {
-                    return IQ_ids.length;
-                }, 300).then(function () {
+                   var owner_list_stanza = $iq({
+                           'from': 'coven@chat.shakespeare.lit',
+                           'id': owner_iq_id,
+                           'to': 'dummy@localhost/resource',
+                           'type': 'result'
+                       }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
+                           .c('item', {
+                               'affiliation': 'owner',
+                               'jid': 'crone1@shakespeare.lit',
+                           });
+                   _converse.connection._dataRecv(test_utils.createRequest(owner_list_stanza));
+                    return test_utils.waitUntil(() => IQ_ids.length, 300);
+                }).then(() => {
                     // Check that the member list now gets updated
                     var iq = "<iq to='coven@chat.shakespeare.lit' type='set' xmlns='jabber:client' id='"+IQ_ids.pop()+"'>"+
                             "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
@@ -3079,18 +3084,15 @@
                                 "</item>"+
                             "</query>"+
                         "</iq>";
-
-                    test_utils.waitUntil(function () {
-                        return _.includes(_.invokeMap(sent_IQs, Object.prototype.toLocaleString), iq);
-                    }, 300).then(function () {
-                        // Finally check that the user gets invited.
-                        expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
-                            "<message from='dummy@localhost/resource' to='"+invitee_jid+"' id='"+sent_id+"' xmlns='jabber:client'>"+
-                                "<x xmlns='jabber:x:conference' jid='coven@chat.shakespeare.lit' reason='Please join this chat room'/>"+
-                            "</message>"
-                        );
-                        done();
-                    });
+                    return test_utils.waitUntil(() => _.includes(_.invokeMap(sent_IQs, Object.prototype.toLocaleString), iq), 300);
+                }).then(() => {
+                    // Finally check that the user gets invited.
+                    expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
+                        "<message from='dummy@localhost/resource' to='"+invitee_jid+"' id='"+sent_id+"' xmlns='jabber:client'>"+
+                            "<x xmlns='jabber:x:conference' jid='coven@chat.shakespeare.lit' reason='Please join this chat room'/>"+
+                        "</message>"
+                    );
+                    done();
                 });
             }));
         });

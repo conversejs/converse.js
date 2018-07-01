@@ -377,14 +377,14 @@
                 ['http://jabber.org/protocol/pubsub#publish-options']
             ).then(function () {
                 /* Client requests all items
-                * -------------------------
-                *
-                *  <iq from='juliet@capulet.lit/randomID' type='get' id='retrieve1'>
-                *  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-                *      <items node='storage:bookmarks'/>
-                *  </pubsub>
-                *  </iq>
-                */
+                 * -------------------------
+                 *
+                 *  <iq from='juliet@capulet.lit/randomID' type='get' id='retrieve1'>
+                 *  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+                 *      <items node='storage:bookmarks'/>
+                 *  </pubsub>
+                 *  </iq>
+                 */
                 var IQ_id;
                 expect(_.filter(_converse.connection.send.calls.all(), function (call) {
                     var stanza = call.args[0];
@@ -407,27 +407,29 @@
                 }).length).toBe(1);
 
                 /*
-                * Server returns all items
-                * ------------------------
-                * <iq type='result'
-                *     to='juliet@capulet.lit/randomID'
-                *     id='retrieve1'>
-                * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-                *     <items node='storage:bookmarks'>
-                *     <item id='current'>
-                *         <storage xmlns='storage:bookmarks'>
-                *         <conference name='The Play&apos;s the Thing'
-                *                     autojoin='true'
-                *                     jid='theplay@conference.shakespeare.lit'>
-                *             <nick>JC</nick>
-                *         </conference>
-                *         </storage>
-                *     </item>
-                *     </items>
-                * </pubsub>
-                * </iq>
-                */
+                 * Server returns all items
+                 * ------------------------
+                 * <iq type='result'
+                 *     to='juliet@capulet.lit/randomID'
+                 *     id='retrieve1'>
+                 * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+                 *     <items node='storage:bookmarks'>
+                 *     <item id='current'>
+                 *         <storage xmlns='storage:bookmarks'>
+                 *         <conference name='The Play&apos;s the Thing'
+                 *                     autojoin='true'
+                 *                     jid='theplay@conference.shakespeare.lit'>
+                 *             <nick>JC</nick>
+                 *         </conference>
+                 *         </storage>
+                 *     </item>
+                 *     </items>
+                 * </pubsub>
+                 * </iq>
+                 */
                 expect(_converse.bookmarks.models.length).toBe(0);
+
+                spyOn(_converse.bookmarks, 'onBookmarksReceived').and.callThrough();
                 var stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':IQ_id})
                     .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                         .c('items', {'node': 'storage:bookmarks'})
@@ -444,11 +446,13 @@
                                         'jid': 'another@conference.shakespeare.lit'
                                     }); // Purposefully exclude the <nick> element to test #1043
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                return test_utils.waitUntil(() => _converse.bookmarks.onBookmarksReceived.calls.count(), 300)
+            }).then(() => {
                 expect(_converse.bookmarks.models.length).toBe(2);
                 expect(_converse.bookmarks.findWhere({'jid': 'theplay@conference.shakespeare.lit'}).get('autojoin')).toBe(true);
                 expect(_converse.bookmarks.findWhere({'jid': 'another@conference.shakespeare.lit'}).get('autojoin')).toBe(false);
                 done();
-            });
+            }).catch(_.partial(console.error, _));
         }));
 
         describe("The rooms panel", function () {

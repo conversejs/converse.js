@@ -145,6 +145,7 @@
                         msg_content.innerHTML = _.flow(
                             _.partial(u.geoUriToHttp, _, _converse.geouri_replacement),
                             u.addHyperlinks,
+                            u.renderNewLines,
                             _.partial(u.addEmoji, _converse, emojione, _)
                         )(text);
                     }

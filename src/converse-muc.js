@@ -326,13 +326,14 @@
                     /* Fetch the room disco info, parse it and then save it.
                      */
                     return new Promise((resolve, reject) => {
-                        _converse.api.disco.info(
-                            this.get('jid'),
-                            null,
-                            _.flow(this.parseRoomFeatures.bind(this), resolve),
-                            () => { reject(new Error("Could not parse the room features")) },
-                            5000
-                        );
+                        _converse.api.disco.info(this.get('jid'), null)
+                            .then((stanza) => {
+                                this.parseRoomFeatures(stanza);
+                                resolve()
+                            }).catch((err) => {
+                                _converse.log(err, Strophe.LogLevel.ERROR);
+                                reject(new Error("Could not parse the room features"));
+                            });
                     });
                 },
 
@@ -402,6 +403,7 @@
                     };
                     if (reason !== null) { attrs.reason = reason; }
                     if (this.get('password')) { attrs.password = this.get('password'); }
+
                     const invitation = $msg({
                         from: _converse.connection.jid,
                         to: recipient,
@@ -1125,7 +1127,7 @@
             if (_converse.allow_muc_invitations) {
                 const registerDirectInvitationHandler = function () {
                     _converse.connection.addHandler(
-                        function (message) {
+                        (message) =>  {
                             _converse.onDirectMUCInvitation(message);
                             return true;
                         }, 'jabber:x:conference', 'message');

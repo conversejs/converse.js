@@ -577,7 +577,7 @@
                 expect($el.hasClass('chat-msg-followup')).toBe(false);
                 expect($el.text()).toEqual('Older message');
 
-                $time = $chat_content.find('time:eq(1)');
+                $time = $chat_content.find('time.separator-text:eq(1)');
                 expect($time.text()).toEqual("Monday Jan 1st 2018");
 
                 $day = $chat_content.find('.date-separator:eq(1)');
@@ -591,7 +591,7 @@
                 expect($el.find('.chat-msg-text').text()).toEqual('another inbetween message');
                 expect($el.hasClass('chat-msg-followup')).toBe(true);
 
-                $time = $chat_content.find('time:nth(2)');
+                $time = $chat_content.find('time.separator-text:nth(2)');
                 expect($time.text()).toEqual("Tuesday Jan 2nd 2018");
 
                 $day = $chat_content.find('.date-separator:nth(2)');
@@ -928,7 +928,7 @@
                     expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                     // Check that there is a <time> element, with the required
                     // props.
-                    expect($chat_content[0].querySelectorAll('time').length).toEqual(2); // There are now two time elements
+                    expect($chat_content[0].querySelectorAll('time.separator-text').length).toEqual(2); // There are now two time elements
 
                     var message_date = new Date();
                     $day = $chat_content.find('.date-separator:last');
@@ -1067,6 +1067,43 @@
             done();
         }));
 
+        it("will render newlines", mock.initConverseWithPromises(null, ['rosterGroupsFetched'], {}, function (done, _converse) {
+            test_utils.createContacts(_converse, 'current');
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            test_utils.openChatBoxFor(_converse, contact_jid);
+
+            let stanza = Strophe.xmlHtmlNode(
+                "<message from='"+contact_jid+"'"+
+                "         type='chat'"+
+                "         to='dummy@localhost/resource'>"+
+                "    <body>Hey\nHave you heard the news?</body>"+
+                "</message>").firstChild;
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+            const view = _converse.chatboxviews.get(contact_jid);
+            const chat_content = view.el.querySelector('.chat-content');
+            expect(chat_content.querySelector('.chat-msg-text').innerHTML).toBe('Hey<br>Have you heard the news?');
+
+            stanza = Strophe.xmlHtmlNode(
+                "<message from='"+contact_jid+"'"+
+                "         type='chat'"+
+                "         to='dummy@localhost/resource'>"+
+                "    <body>Hey\n\n\nHave you heard the news?</body>"+
+                "</message>").firstChild;
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            expect(chat_content.querySelector('.message:last-child .chat-msg-text').innerHTML).toBe('Hey<br><br>Have you heard the news?');
+
+            stanza = Strophe.xmlHtmlNode(
+                "<message from='"+contact_jid+"'"+
+                "         type='chat'"+
+                "         to='dummy@localhost/resource'>"+
+                "    <body>Hey\nHave you heard\nthe news?</body>"+
+                "</message>").firstChild;
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            expect(chat_content.querySelector('.message:last-child .chat-msg-text').innerHTML).toBe('Hey<br>Have you heard<br>the news?');
+            done();
+        }));
+
         it("will render images from their URLs",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
@@ -1081,9 +1118,8 @@
             spyOn(view.model, 'sendMessage').and.callThrough();
             test_utils.sendMessage(view, message);
 
-            test_utils.waitUntil(function () {
-                return view.el.querySelectorAll('.chat-content .chat-image').length;
-            }, 1000).then(function () {
+            test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length)
+            .then(() => {
                 expect(view.model.sendMessage).toHaveBeenCalled();
                 var msg = $(view.el).find('.chat-content .chat-msg').last().find('.chat-msg-text');
                 expect(msg.html().trim()).toEqual(
@@ -1095,7 +1131,7 @@
                 return test_utils.waitUntil(function () {
                     return view.el.querySelectorAll('.chat-content .chat-image').length === 2;
                 }, 1000);
-            }).then(function () {
+            }).then(() => {
                 expect(view.model.sendMessage).toHaveBeenCalled();
                 var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
                 expect(msg.html().trim()).toEqual(

@@ -326,7 +326,6 @@
                             $msg({
                                 'to': _converse.bare_jid,
                                 'type': this.get('message_type'),
-                                'id': message.get('msgid')
                             }).c('forwarded', {'xmlns': Strophe.NS.FORWARD})
                                 .c('delay', {
                                         'xmns': Strophe.NS.DELAY,

@@ -36,32 +36,17 @@
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
 /******/ 		}
 /******/ 	};
 /******/
 /******/ 	// define __esModule on exports
 /******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
 /******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -479,7 +464,13 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
             if (_.isFunction(this.beforeRender)) {
                 this.beforeRender();
             }
-            const new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
+            let new_vnode;
+            if (!_.isNil(this.toHTML)) {
+                new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
+            } else {
+                new_vnode = tovnode.toVNode(this.toDOM());
+            }
+
             new_vnode.data.hook = _.extend({
                create: this.updateEventListeners.bind(this),
                update: this.updateEventListeners.bind(this)
@@ -2433,7 +2424,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.23 | © dnp_theme | MIT-License
+/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.22 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (true) {
     // AMD support:
@@ -2516,7 +2507,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     clickEvent    = 'click',
     hoverEvent    = 'hover',
     keydownEvent  = 'keydown',
-    keyupEvent    = 'keyup',
+    keyupEvent    = 'keyup', 
     resizeEvent   = 'resize',
     scrollEvent   = 'scroll',
     // originalEvents
@@ -2536,20 +2527,18 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     hasAttribute           = 'hasAttribute',
     createElement          = 'createElement',
     appendChild            = 'appendChild',
-    innerHTML              = 'innerHTML',
+    innerHTML              = 'innerHTML',  
     getElementsByTagName   = 'getElementsByTagName',
     preventDefault         = 'preventDefault',
     getBoundingClientRect  = 'getBoundingClientRect',
     querySelectorAll       = 'querySelectorAll',
     getElementsByCLASSNAME = 'getElementsByClassName',
-    getComputedStyle       = 'getComputedStyle',  
   
     indexOf      = 'indexOf',
     parentNode   = 'parentNode',
     length       = 'length',
     toLowerCase  = 'toLowerCase',
     Transition   = 'Transition',
-    Duration     = 'Duration',
     Webkit       = 'Webkit',
     style        = 'style',
     push         = 'push',
@@ -2569,16 +2558,15 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // tooltip / popover
     mouseHover = ('onmouseleave' in DOC) ? [ 'mouseenter', 'mouseleave'] : [ 'mouseover', 'mouseout' ],
     tipPositions = /\b(top|bottom|left|right)+/,
-  
+    
     // modal
     modalOverlay = 0,
     fixedTop = 'fixed-top',
     fixedBottom = 'fixed-bottom',
-  
+    
     // transitionEnd since 2.0.4
     supportTransitions = Webkit+Transition in HTML[style] || Transition[toLowerCase]() in HTML[style],
     transitionEndEvent = Webkit+Transition in HTML[style] ? Webkit[toLowerCase]()+Transition+'End' : Transition[toLowerCase]()+'end',
-    transitionDuration = Webkit+Duration in HTML[style] ? Webkit[toLowerCase]()+Transition+Duration : Transition[toLowerCase]()+Duration,
   
     // set new focus element since 2.0.3
     setFocus = function(element){
@@ -2632,16 +2620,9 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         off(element, event, handlerWrapper);
       });
     },
-    getTransitionDurationFromElement = function(element) {
-      var duration = globalObject[getComputedStyle](element)[transitionDuration];
-      duration = parseFloat(duration);
-      duration = typeof duration === 'number' && !isNaN(duration) ? duration * 1000 : 0;
-      return duration + 50; // we take a short offset to make sure we fire on the next frame after animation
-    },
     emulateTransitionEnd = function(element,handler){ // emulateTransitionEnd since 2.0.4
-      var called = 0, duration = getTransitionDurationFromElement(element);
-      supportTransitions && one(element, transitionEndEvent, function(e){ handler(e); called = 1; });
-      setTimeout(function() { !called && handler(); }, duration);
+      if (supportTransitions) { one(element, transitionEndEvent, function(e){ handler(e); }); }
+      else { handler(); }
     },
     bootstrapCustomEvent = function (eventName, componentName, related) {
       var OriginalCustomEvent = new CustomEvent( eventName + '.bs.' + componentName);
@@ -2664,8 +2645,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
           scroll = parent === DOC[body] ? getScroll() : { x: parent[offsetLeft] + parent[scrollLeft], y: parent[offsetTop] + parent[scrollTop] },
           linkDimensions = { w: rect[right] - rect[left], h: rect[bottom] - rect[top] },
           isPopover = hasClass(element,'popover'),
-          topPosition, leftPosition,
-  
+          topPosition, leftPosition, 
+          
           arrow = queryElement('.arrow',element),
           arrowTop, arrowLeft, arrowWidth, arrowHeight,
   
@@ -2684,7 +2665,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       position = position === bottom && bottomExceed ? top : position;
       position = position === left && leftExceed ? right : position;
       position = position === right && rightExceed ? left : position;
-  
+      
       // update tooltip/popover class
       element.className[indexOf](position) === -1 && (element.className = element.className.replace(tipPositions,position));
   
@@ -2737,7 +2718,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       arrowLeft && (arrow[style][left] = arrowLeft + 'px');
     };
   
-  BSN.version = '2.0.23';
+  BSN.version = '2.0.22';
   
   /* Native Javascript for Bootstrap 4 | Alert
   -------------------------------------------*/
@@ -2907,7 +2888,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // DATA API
     var intervalAttribute = element[getAttribute](dataInterval),
         intervalOption = options[interval],
-        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute),  
+        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute) || 5000,  // bootstrap carousel default interval
         pauseData = element[getAttribute](dataPause) === hoverEvent || false,
         keyboardData = element[getAttribute](dataKeyboard) === 'true' || false,
       
@@ -2922,8 +2903,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     this[pause] = (options[pause] === hoverEvent || pauseData) ? hoverEvent : false; // false / hover
   
     this[interval] = typeof intervalOption === 'number' ? intervalOption
-                   : intervalOption === false || intervalData === 0 || intervalData === false ? 0
-                   : 5000; // bootstrap carousel default interval
+                   : intervalData === 0 ? 0
+                   : intervalData;
   
     // bind, event targets
     var self = this, index = element.index = 0, timer = element.timer = 0, 
@@ -3042,10 +3023,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         addClass(slides[next],carouselItem +'-'+ slideDirection);
         addClass(slides[activeItem],carouselItem +'-'+ slideDirection);
   
-        one(slides[next], transitionEndEvent, function(e) {
-          var timeout = e[target] !== slides[next] ? e.elapsedTime*1000+100 : 20;
+        one(slides[activeItem], transitionEndEvent, function(e) {
+          var timeout = e[target] !== slides[activeItem] ? e.elapsedTime*1000 : 0;
           
-          isSliding && setTimeout(function(){
+          setTimeout(function(){
             isSliding = false;
   
             addClass(slides[next],active);
@@ -3060,7 +3041,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
             if ( !DOC.hidden && self[interval] && !hasClass(element,paused) ) {
               self.cycle();
             }
-          }, timeout);
+          },timeout+100);
         });
   
       } else {
@@ -3125,24 +3106,23 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
     // event targets and constants
     var accordion = null, collapse = null, self = this, 
+      isAnimating = false, // when true it will prevent click handlers
       accordionData = element[getAttribute]('data-parent'),
-      activeCollapse, activeElement,
   
       // component strings
       component = 'collapse',
       collapsed = 'collapsed',
-      isAnimating = 'isAnimating',
   
       // private methods
       openAction = function(collapseElement,toggle) {
         bootstrapCustomEvent.call(collapseElement, showEvent, component);
-        collapseElement[isAnimating] = true;
+        isAnimating = true;
         addClass(collapseElement,collapsing);
         removeClass(collapseElement,component);
         collapseElement[style][height] = collapseElement[scrollHeight] + 'px';
         
         emulateTransitionEnd(collapseElement, function() {
-          collapseElement[isAnimating] = false;
+          isAnimating = false;
           collapseElement[setAttribute](ariaExpanded,'true');
           toggle[setAttribute](ariaExpanded,'true');
           removeClass(collapseElement,collapsing);
@@ -3154,7 +3134,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       },
       closeAction = function(collapseElement,toggle) {
         bootstrapCustomEvent.call(collapseElement, hideEvent, component);
-        collapseElement[isAnimating] = true;
+        isAnimating = true;
         collapseElement[style][height] = collapseElement[scrollHeight] + 'px'; // set height first
         removeClass(collapseElement,component);
         removeClass(collapseElement,showClass);
@@ -3163,7 +3143,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         collapseElement[style][height] = '0px';
         
         emulateTransitionEnd(collapseElement, function() {
-          collapseElement[isAnimating] = false;
+          isAnimating = false;
           collapseElement[setAttribute](ariaExpanded,'false');
           toggle[setAttribute](ariaExpanded,'false');
           removeClass(collapseElement,collapsing);
@@ -3182,29 +3162,29 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // public methods
     this.toggle = function(e) {
       e[preventDefault]();
+      if (isAnimating) return;
       if (!hasClass(collapse,showClass)) { self.show(); } 
       else { self.hide(); }
     };
     this.hide = function() {
-      if ( collapse[isAnimating] ) return;    
       closeAction(collapse,element);
       addClass(element,collapsed);
     };
     this.show = function() {
       if ( accordion ) {
-        activeCollapse = queryElement('.'+component+'.'+showClass,accordion);
-        activeElement = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
-                      || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) );
+        var activeCollapse = queryElement('.'+component+'.'+showClass,accordion),
+            toggle = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
+                   || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) ),
+            correspondingCollapse = toggle && (toggle[getAttribute](dataTarget) || toggle.href);
+        if ( activeCollapse && toggle && activeCollapse !== collapse ) {
+          closeAction(activeCollapse,toggle); 
+          if ( correspondingCollapse.split('#')[1] !== collapse.id ) { addClass(toggle,collapsed); } 
+          else { removeClass(toggle,collapsed); }
+        }
       }
   
-      if ( !collapse[isAnimating] || activeCollapse && !activeCollapse[isAnimating] ) {
-        if ( activeElement && activeCollapse !== collapse ) {
-          closeAction(activeCollapse,activeElement); 
-          addClass(activeElement,collapsed);
-        }
-        openAction(collapse,element);
-        removeClass(element,collapsed);
-      }
+      openAction(collapse,element);
+      removeClass(element,collapsed);
     };
   
     // init
@@ -3212,7 +3192,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       on(element, clickEvent, self.toggle);
     }
     collapse = getTarget();
-    collapse[isAnimating] = false;  // when true it will prevent click handlers  
     accordion = queryElement(options.parent) || accordionData && getClosest(element, accordionData);
     element[stringCollapse] = self;
   };
@@ -3370,7 +3349,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     var btnCheck = element[getAttribute](dataTarget)||element[getAttribute]('href'),
       checkModal = queryElement( btnCheck ),
       modal = hasClass(element,'modal') ? element : checkModal,
-      overlayDelay,
   
       // strings
       component = 'modal',
@@ -3404,13 +3382,13 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         return globalObject[innerWidth] || (htmlRect[right] - Math.abs(htmlRect[left]));
       },
       setScrollbar = function () {
-        var bodyStyle = globalObject[getComputedStyle](DOC[body]),
+        var bodyStyle = globalObject.getComputedStyle(DOC[body]),
             bodyPad = parseInt((bodyStyle[paddingRight]), 10), itemPad;
         if (bodyIsOverflowing) {
           DOC[body][style][paddingRight] = (bodyPad + scrollbarWidth) + 'px';
           if (fixedItems[length]){
             for (var i = 0; i < fixedItems[length]; i++) {
-              itemPad = globalObject[getComputedStyle](fixedItems[i])[paddingRight];
+              itemPad = globalObject.getComputedStyle(fixedItems[i])[paddingRight];
               fixedItems[i][style][paddingRight] = ( parseInt(itemPad) + scrollbarWidth) + 'px';
             }
           }
@@ -3552,7 +3530,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
       if ( overlay && modalOverlay && !hasClass(overlay,showClass)) {
         overlay[offsetWidth]; // force reflow to enable trasition
-        overlayDelay = getTransitionDurationFromElement(overlay);              
         addClass(overlay, showClass);
       }
   
@@ -3572,19 +3549,18 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         keydownHandlerToggle();
   
         hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerShow) : triggerShow();
-      }, supportTransitions && overlay ? overlayDelay : 0);
+      }, supportTransitions ? 150 : 0);
     };
     this.hide = function() {
       bootstrapCustomEvent.call(modal, hideEvent, component);
       overlay = queryElement('.'+modalBackdropString);
-      overlayDelay = overlay && getTransitionDurationFromElement(overlay);    
   
       removeClass(modal,showClass);
       modal[setAttribute](ariaHidden, true);
   
-      setTimeout(function(){
+      (function(){
         hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerHide) : triggerHide();
-      }, supportTransitions && overlay ? overlayDelay : 0);
+      }());
     };
     this.setContent = function( content ) {
       queryElement('.'+component+'-content',modal)[innerHTML] = content;
@@ -3940,7 +3916,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
               tabsContentContainer[style][height] = nextHeight + 'px'; // height animation
               tabsContentContainer[offsetWidth];
               emulateTransitionEnd(tabsContentContainer, triggerEnd);
-            },50);
+            },1);
           }
         } else {
           tabs[isAnimating] = false; 
@@ -3967,7 +3943,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
           tabsContentContainer[style][height] = containerHeight + 'px'; // height animation
           tabsContentContainer[offsetHeight];
           activeContent[style][float] = '';
-          nextContent[style][float] = '';
+          nextContent[style][float] = '';   
         }
   
         if ( hasClass(nextContent, 'fade') ) {
@@ -4372,7 +4348,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     ns.emojiVersion = '3.1'; // you can [optionally] modify this to load alternate emoji versions. see readme for backwards compatibility and version options
     ns.emojiSize = '32';
     ns.greedyMatch = false; // set to true for greedy unicode matching
-    ns.blacklistChars = '';
     ns.imagePathPNG = 'https://cdn.jsdelivr.net/emojione/assets/' + ns.emojiVersion + '/png/';
     ns.defaultPathPNG = ns.imagePathPNG;
     ns.imageTitleTag = true; // set to false to remove title attribute from img tag
@@ -4386,7 +4361,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     ns.regAscii = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|((\\s|^)"+ns.asciiRegexp+"(?=\\s|$|[!,.?]))", "gi");
     ns.regAsciiRisky = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(()"+ns.asciiRegexp+"())", "gi");
 
-    ns.regUnicode = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(?:\uD83C\uDFF3)\uFE0F?\u200D?(?:\uD83C\uDF08)|(?:\uD83D\uDC41)\uFE0F?\u200D?(?:\uD83D\uDDE8)\uFE0F?|[#-9]\uFE0F?\u20E3|(?:(?:\uD83C\uDFF4)(?:\uDB40[\uDC60-\uDCFF]){1,6})|(?:\uD83C[\uDDE0-\uDDFF]){2}|(?:(?:\uD83D[\uDC68\uDC69]))\uFE0F?(?:\uD83C[\uDFFA-\uDFFF])?\u200D?(?:[\u2695\u2696\u2708]|\uD83C[\uDF3E-\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92])|(?:\uD83D[\uDC68\uDC69]|\uD83E[\uDDD0-\uDDDF])(?:\uD83C[\uDFFA-\uDFFF])?\u200D?[\u2640\u2642\u2695\u2696\u2708]?\uFE0F?|(?:(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])[\u200D\uFE0F]{0,2})|(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])|(?:(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])\uFE0F?)|(?:\uD83D[\uDC68\uDC69\uDC6E\uDC71-\uDC87\uDD75\uDE45-\uDE4E]|\uD83E[\uDD26\uDD37]|\uD83C[\uDFC3-\uDFCC]|\uD83E[\uDD38-\uDD3E]|\uD83D[\uDEA3-\uDEB6]|\u26f9|\uD83D\uDC6F)\uFE0F?(?:\uD83C[\uDFFB-\uDFFF])?\u200D?[\u2640\u2642]?\uFE0F?|(?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85-\uDFCC]|\uD83D[\uDC42-\uDCAA\uDD74-\uDD96\uDE45-\uDE4F\uDEA3-\uDECC]|\uD83E[\uDD18-\uDD3E])\uFE0F?(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u2194-\u2199\u21a9-\u21aa]\uFE0F?|[\u0023\u002a]|[\u3030\u303d]\uFE0F?|(?:\ud83c[\udd70-\udd71]|\ud83c\udd8e|\ud83c[\udd91-\udd9a])\uFE0F?|\u24c2\uFE0F?|[\u3297\u3299]\uFE0F?|(?:\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51])\uFE0F?|[\u203c\u2049]\uFE0F?|[\u25aa-\u25ab\u25b6\u25c0\u25fb-\u25fe]\uFE0F?|[\u00a9\u00ae]\uFE0F?|[\u2122\u2139]\uFE0F?|\ud83c\udc04\uFE0F?|[\u2b05-\u2b07\u2b1b-\u2b1c\u2b50\u2b55]\uFE0F?|[\u231a-\u231b\u2328\u23cf\u23e9-\u23f3\u23f8-\u23fa]\uFE0F?|\ud83c\udccf|[\u2934\u2935]\uFE0F?)|[\u2700-\u27bf]\uFE0F?|[\ud800-\udbff][\udc00-\udfff]\uFE0F?|[\u2600-\u26FF]\uFE0F?|[\u0030-\u0039]\uFE0F", "g");
+    ns.regUnicode = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(?:\uD83C\uDFF3)\uFE0F?\u200D?(?:\uD83C\uDF08)|(?:\uD83D\uDC41)\uFE0F?\u200D?(?:\uD83D\uDDE8)\uFE0F?|[#-9]\uFE0F?\u20E3|(?:(?:\uD83C\uDFF4)(?:\uDB40[\uDC60-\uDCFF]){1,6})|(?:\uD83C[\uDDE0-\uDDFF]){2}|(?:(?:\uD83D[\uDC68\uDC69]))\uFE0F?(?:\uD83C[\uDFFA-\uDFFF])?\u200D?(?:[\u2695\u2696\u2708]|\uD83C[\uDF3E-\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92])|(?:\uD83D[\uDC68\uDC69]|\uD83E[\uDDD0-\uDDDF])(?:\uD83C[\uDFFA-\uDFFF])?\u200D?[\u2640\u2642\u2695\u2696\u2708]?\uFE0F?|(?:(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])[\u200D\uFE0F]{0,2}){1,3}(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])|(?:(?:\u2764|\uD83D[\uDC66-\uDC69\uDC8B])\uFE0F?){2,4}|(?:\uD83D[\uDC68\uDC69\uDC6E\uDC71-\uDC87\uDD75\uDE45-\uDE4E]|\uD83E[\uDD26\uDD37]|\uD83C[\uDFC3-\uDFCC]|\uD83E[\uDD38-\uDD3E]|\uD83D[\uDEA3-\uDEB6]|\u26f9|\uD83D\uDC6F)\uFE0F?(?:\uD83C[\uDFFB-\uDFFF])?\u200D?[\u2640\u2642]?\uFE0F?|(?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85-\uDFCC]|\uD83D[\uDC42-\uDCAA\uDD74-\uDD96\uDE45-\uDE4F\uDEA3-\uDECC]|\uD83E[\uDD18-\uDD3E])\uFE0F?(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u2194-\u2199\u21a9-\u21aa]\uFE0F?|[\u0023\u002a]|[\u3030\u303d]\uFE0F?|(?:\ud83c[\udd70-\udd71]|\ud83c\udd8e|\ud83c[\udd91-\udd9a])\uFE0F?|\u24c2\uFE0F?|[\u3297\u3299]\uFE0F?|(?:\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51])\uFE0F?|[\u203c\u2049]\uFE0F?|[\u25aa-\u25ab\u25b6\u25c0\u25fb-\u25fe]\uFE0F?|[\u00a9\u00ae]\uFE0F?|[\u2122\u2139]\uFE0F?|\ud83c\udc04\uFE0F?|[\u2b05-\u2b07\u2b1b-\u2b1c\u2b50\u2b55]\uFE0F?|[\u231a-\u231b\u2328\u23cf\u23e9-\u23f3\u23f8-\u23fa]\uFE0F?|\ud83c\udccf|[\u2934\u2935]\uFE0F?)|[\u2700-\u27bf]\uFE0F?|[\ud800-\udbff][\udc00-\udfff]\uFE0F?|[\u2600-\u26FF]\uFE0F?|[\u0030-\u0039]\uFE0F", "g");
 
     ns.toImage = function(str) {
         str = ns.unicodeToImage(str);
@@ -4547,17 +4522,16 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         var replaceWith,unicode,short,fname,alt,category,title,size,ePath;
         var mappedUnicode = ns.mapUnicodeToShort();
         var eList = ns.emojioneList;
-        var bList = ns.blacklistChars.split(',');
         str = str.replace(ns.regUnicode, function(unicodeChar) {
             if( (typeof unicodeChar === 'undefined') || (unicodeChar === '') )
             {
                 return unicodeChar;
             }
-            else if ( unicodeChar in ns.jsEscapeMap && bList.indexOf(unicodeChar) === -1 )
+            else if ( unicodeChar in ns.jsEscapeMap )
             {
                 fname = ns.jsEscapeMap[unicodeChar];
             }
-            else if ( ns.greedyMatch && unicodeChar in ns.jsEscapeMapGreedy && bList.indexOf(unicodeChar) === -1 )
+            else if ( ns.greedyMatch && unicodeChar in ns.jsEscapeMapGreedy )
             {
                 fname = ns.jsEscapeMapGreedy[unicodeChar];
             }
@@ -12729,12 +12703,13 @@ var map = {
 
 function webpackContext(req) {
 	var id = webpackContextResolve(req);
-	return __webpack_require__(id);
+	var module = __webpack_require__(id);
+	return module;
 }
 function webpackContextResolve(req) {
 	var id = map[req];
 	if(!(id + 1)) { // check for number or string
-		var e = new Error("Cannot find module '" + req + "'");
+		var e = new Error('Cannot find module "' + req + '".');
 		e.code = 'MODULE_NOT_FOUND';
 		throw e;
 	}
@@ -31890,6 +31865,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 //# sourceMappingURL=pluggable.js.map
 
+
 /***/ }),
 
 /***/ "./node_modules/process/browser.js":
@@ -40994,6 +40970,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           window.alert(__("Sorry, something went wrong while trying to save your bookmark."));
         },
         fetchBookmarksFromServer: function fetchBookmarksFromServer(deferred) {
+          var _this2 = this;
+
           var stanza = $iq({
             'from': _converse.connection.jid,
             'type': 'get'
@@ -41003,7 +40981,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'node': 'storage:bookmarks'
           });
 
-          _converse.connection.sendIQ(stanza, _.bind(this.onBookmarksReceived, this, deferred), _.bind(this.onBookmarksReceivedError, this, deferred));
+          _converse.api.sendIQ(stanza).then(function (iq) {
+            return _this2.onBookmarksReceived(deferred, iq);
+          }).catch(function (iq) {
+            return _this2.onBookmarksReceivedError(deferred, iq);
+          });
         },
         markRoomAsBookmarked: function markRoomAsBookmarked(bookmark) {
           var room = _converse.chatboxes.get(bookmark.get('jid'));
@@ -41020,12 +41002,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
         createBookmarksFromStanza: function createBookmarksFromStanza(stanza) {
-          var _this2 = this;
+          var _this3 = this;
 
           var bookmarks = sizzle('items[node="storage:bookmarks"] ' + 'item#current ' + 'storage[xmlns="storage:bookmarks"] ' + 'conference', stanza);
 
           _.forEach(bookmarks, function (bookmark) {
-            _this2.create({
+            _this3.create({
               'jid': bookmark.getAttribute('jid'),
               'name': bookmark.getAttribute('name'),
               'autojoin': bookmark.getAttribute('autojoin') === 'true',
@@ -43175,7 +43157,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         keyPressed: function keyPressed(ev) {
           /* Event handler for when a key is pressed in a chat box textarea.
            */
-          if (ev.keyCode === KEY.ENTER) {
+          if (ev.keyCode === KEY.ENTER && !ev.shiftKey) {
             this.onFormSubmitted(ev);
           } else if (ev.keyCode !== KEY.FORWARD_SLASH && this.model.get('chat_state') !== _converse.COMPOSING) {
             // Set chat state to composing if keyCode is not a forward-slash
@@ -44200,7 +44182,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   _converse.LOGOUT = "logout";
   _converse.OPENED = 'opened';
   _converse.PREBIND = "prebind";
-  _converse.IQ_TIMEOUT = 30000;
+  _converse.IQ_TIMEOUT = 20000;
   _converse.CONNECTION_STATUS = {
     0: 'ERROR',
     1: 'CONNECTING',
@@ -44299,6 +44281,8 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 
     if (_instanceof(message, Error)) {
       message = message.stack;
+    } else if (_.isElement(message)) {
+      message = message.outerHTML;
     }
 
     var prefix = style ? '%c' : '';
@@ -45632,10 +45616,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
         queryInfo: function queryInfo() {
-          _converse.api.disco.info(this.get('jid'), null, this.onInfo.bind(this));
+          var _this2 = this;
+
+          _converse.api.disco.info(this.get('jid'), null).then(function (stanza) {
+            return _this2.onInfo(stanza);
+          }).catch(function (iq) {
+            _this2.waitUntilFeaturesDiscovered.resolve();
+
+            _converse.log(iq, Strophe.LogLevel.ERROR);
+          });
         },
         onDiscoItems: function onDiscoItems(stanza) {
-          var _this2 = this;
+          var _this3 = this;
 
           _.each(sizzle("query[xmlns=\"".concat(Strophe.NS.DISCO_ITEMS, "\"] item"), stanza), function (item) {
             if (item.getAttribute("node")) {
@@ -45646,13 +45638,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
             var jid = item.getAttribute('jid');
 
-            if (_.isUndefined(_this2.items.get(jid))) {
+            if (_.isUndefined(_this3.items.get(jid))) {
               var entity = _converse.disco_entities.get(jid);
 
               if (entity) {
-                _this2.items.add(entity);
+                _this3.items.add(entity);
               } else {
-                _this2.items.create({
+                _this3.items.create({
                   'jid': jid
                 });
               }
@@ -45671,10 +45663,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           _converse.api.disco.items(this.get('jid'), null, this.onDiscoItems.bind(this));
         },
         onInfo: function onInfo(stanza) {
-          var _this3 = this;
+          var _this4 = this;
 
           _.forEach(stanza.querySelectorAll('identity'), function (identity) {
-            _this3.identities.create({
+            _this4.identities.create({
               'category': identity.getAttribute('category'),
               'type': identity.getAttribute('type'),
               'name': identity.getAttribute('name')
@@ -45691,7 +45683,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               };
             });
 
-            _this3.dataforms.create(data);
+            _this4.dataforms.create(data);
           });
 
           if (stanza.querySelector("feature[var=\"".concat(Strophe.NS.DISCO_ITEMS, "\"]"))) {
@@ -45699,7 +45691,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           _.forEach(stanza.querySelectorAll('feature'), function (feature) {
-            _this3.features.create({
+            _this4.features.create({
               'var': feature.getAttribute('var'),
               'from': stanza.getAttribute('from')
             });
@@ -45712,10 +45704,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       _converse.DiscoEntities = Backbone.Collection.extend({
         model: _converse.DiscoEntity,
         fetchEntities: function fetchEntities() {
-          var _this4 = this;
+          var _this5 = this;
 
           return new Promise(function (resolve, reject) {
-            _this4.fetch({
+            _this5.fetch({
               add: true,
               success: resolve,
               error: function error() {
@@ -45993,7 +45985,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               }
             }
           },
-          'info': function info(jid, node, callback, errback, timeout) {
+          'info': function info(jid, node) {
             var attrs = {
               xmlns: Strophe.NS.DISCO_INFO
             };
@@ -46007,8 +45999,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'to': jid,
               'type': 'get'
             }).c('query', attrs);
-
-            _converse.connection.sendIQ(info, callback, errback, timeout);
+            return _converse.api.sendIQ(info);
           },
           'items': function items(jid, node, callback, errback, timeout) {
             var attrs = {
@@ -47447,7 +47438,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             text = xss.filterXSS(text, {
               'whiteList': {}
             });
-            msg_content.innerHTML = _.flow(_.partial(u.geoUriToHttp, _, _converse.geouri_replacement), u.addHyperlinks, _.partial(u.addEmoji, _converse, emojione, _))(text);
+            msg_content.innerHTML = _.flow(_.partial(u.geoUriToHttp, _, _converse.geouri_replacement), u.addHyperlinks, u.renderNewLines, _.partial(u.addEmoji, _converse, emojione, _))(text);
           }
 
           u.renderImageURLs(_converse, msg_content).then(function () {
@@ -48503,7 +48494,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         } else {
           parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
 
-          _converse.api.disco.info(ev.target.getAttribute('data-room-jid'), null, _.partial(insertRoomInfo, parent_el));
+          _converse.api.disco.info(ev.target.getAttribute('data-room-jid'), null).then(function (stanza) {
+            return insertRoomInfo(parent_el, stanza);
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
         }
       }
 
@@ -48686,8 +48679,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
         toHTML: function toHTML() {
           return tpl_chatroom_details_modal(_.extend(this.model.toJSON(), {
+            '_': _,
             '__': __,
-            'display_name': this.model.getDisplayName(),
+            'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),
             'num_occupants': this.model.occupants.length
           }));
         }
@@ -48792,13 +48786,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            */
           if (_.isNull(this.el.querySelector('.chat-area'))) {
             var container_el = this.el.querySelector('.chatroom-body');
-            container_el.innerHTML = tpl_chatarea({
+            container_el.insertAdjacentHTML('beforeend', tpl_chatarea({
               'label_message': __('Message'),
               'label_send': __('Send'),
               'show_send_button': _converse.show_send_button,
               'show_toolbar': _converse.show_toolbar,
               'unread_msgs': __('You have unread messages')
-            });
+            }));
             container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
             this.renderToolbar(tpl_chatroom_toolbar);
             this.content = this.el.querySelector('.chat-content');
@@ -49471,15 +49465,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.model.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
           this.el.querySelector('.chatroom-form').addEventListener('submit', this.submitPassword.bind(this), false);
         },
-        showDisconnectMessage: function showDisconnectMessage(msg) {
+        showDisconnectMessages: function showDisconnectMessages(msgs) {
+          if (_.isString(msgs)) {
+            msgs = [msgs];
+          }
+
           u.hideElement(this.el.querySelector('.chat-area'));
           u.hideElement(this.el.querySelector('.occupants'));
 
           _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
 
-          this.el.querySelector('.chatroom-body').insertAdjacentHTML('beforeend', tpl_chatroom_disconnect({
-            'disconnect_message': msg
-          }));
+          var container = this.el.querySelector('.disconnect-container');
+          container.innerHTML = tpl_chatroom_disconnect({
+            '_': _,
+            'disconnect_messages': msgs
+          });
+          u.showElement(container);
         },
         getMessageFromStatus: function getMessageFromStatus(stat, stanza, is_self) {
           /* Parameters:
@@ -49577,16 +49578,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * information to the user.
            */
           if (notification.disconnected) {
-            this.showDisconnectMessage(notification.disconnection_message);
+            var messages = [];
+            messages.push(notification.disconnection_message);
 
             if (notification.actor) {
-              this.showDisconnectMessage(__('This action was done by %1$s.', notification.actor));
+              messages.push(__('This action was done by %1$s.', notification.actor));
             }
 
             if (notification.reason) {
-              this.showDisconnectMessage(__('The reason given is: "%1$s".', notification.reason));
+              messages.push(__('The reason given is: "%1$s".', notification.reason));
             }
 
+            this.showDisconnectMessages(messages);
             this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
             return;
           }
@@ -49724,25 +49727,35 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             if (!_.isNull(error.querySelector('not-authorized'))) {
               this.renderPasswordForm();
             } else if (!_.isNull(error.querySelector('registration-required'))) {
-              this.showDisconnectMessage(__('You are not on the member list of this room.'));
+              this.showDisconnectMessages(__('You are not on the member list of this room.'));
             } else if (!_.isNull(error.querySelector('forbidden'))) {
-              this.showDisconnectMessage(__('You have been banned from this room.'));
+              this.showDisconnectMessages(__('You have been banned from this room.'));
             }
           } else if (error.getAttribute('type') === 'modify') {
             if (!_.isNull(error.querySelector('jid-malformed'))) {
-              this.showDisconnectMessage(__('No nickname was specified.'));
+              this.showDisconnectMessages(__('No nickname was specified.'));
             }
           } else if (error.getAttribute('type') === 'cancel') {
             if (!_.isNull(error.querySelector('not-allowed'))) {
-              this.showDisconnectMessage(__('You are not allowed to create new rooms.'));
+              this.showDisconnectMessages(__('You are not allowed to create new rooms.'));
             } else if (!_.isNull(error.querySelector('not-acceptable'))) {
-              this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies."));
+              this.showDisconnectMessages(__("Your nickname doesn't conform to this room's policies."));
             } else if (!_.isNull(error.querySelector('conflict'))) {
               this.onNicknameClash(presence);
             } else if (!_.isNull(error.querySelector('item-not-found'))) {
-              this.showDisconnectMessage(__("This room does not (yet) exist."));
+              this.showDisconnectMessages(__("This room does not (yet) exist."));
             } else if (!_.isNull(error.querySelector('service-unavailable'))) {
-              this.showDisconnectMessage(__("This room has reached its maximum number of occupants."));
+              this.showDisconnectMessages(__("This room has reached its maximum number of occupants."));
+            } else if (!_.isNull(error.querySelector('remote-server-not-found'))) {
+              var messages = [__("Remote server not found")];
+
+              var reason = _.get(error.querySelector('text'), 'textContent');
+
+              if (reason) {
+                messages.push(__('The explanation given is: "%1$s".', reason));
+              }
+
+              this.showDisconnectMessages(messages);
             }
           }
         },
@@ -50335,7 +50348,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
             _this.onPresence(stanza);
 
             return true;
-          }, Strophe.NS.MUC, 'presence', null, null, room_jid, {
+          }, null, 'presence', null, null, room_jid, {
             'ignoreNamespaceFragment': true,
             'matchBareFromJid': true
           });
@@ -50479,9 +50492,17 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           /* Fetch the room disco info, parse it and then save it.
            */
           return new Promise(function (resolve, reject) {
-            _converse.api.disco.info(_this2.get('jid'), null, _.flow(_this2.parseRoomFeatures.bind(_this2), resolve), function () {
-              reject(new Error("Could not parse the room features"));
-            }, 5000);
+            _converse.api.disco.info(_this2.get('jid'), null).then(function (stanza) {
+              _this2.parseRoomFeatures(stanza);
+
+              resolve();
+            }).catch(function (err) {
+              _converse.log("Could not parse the room features", Strophe.LogLevel.WARN);
+
+              _converse.log(err, Strophe.LogLevel.WARN);
+
+              reject(err);
+            });
           });
         },
         getRoomJIDAndNick: function getRoomJIDAndNick(nick) {
@@ -56770,7 +56791,7 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '';
-__p += '<!-- src/templates/chatroom.html -->\n<div class="flyout box-flyout">\n    <div class="chat-head chat-head-chatroom row no-gutters"></div>\n    <div class="chat-body chatroom-body row no-gutters"></div>\n</div>\n';
+__p += '<!-- src/templates/chatroom.html -->\n<div class="flyout box-flyout">\n    <div class="chat-head chat-head-chatroom row no-gutters"></div>\n    <div class="chat-body chatroom-body row no-gutters">\n        <div class="disconnect-container hidden"></div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -56845,18 +56866,30 @@ __e(o.display_name) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
 '"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                <div class="room-info">\n                    <p class="room-info"><strong>' +
-__e(o.__('Room address (JID)')) +
-'</strong>: ' +
-__e(o.jid) +
-'</p>\n                    <p class="room-info"><strong>' +
 __e(o.__('Name')) +
 '</strong>: ' +
 __e(o.name) +
 '</p>\n                    <p class="room-info"><strong>' +
+__e(o.__('Room address (JID)')) +
+'</strong>: ' +
+__e(o.jid) +
+'</p>\n                    <p class="room-info"><strong>' +
 __e(o.__('Description')) +
 '</strong>: ' +
 __e(o.description) +
-'</p>\n                    <p class="room-info"><strong>' +
+'</p>\n                    ';
+ if (o.subject) { ;
+__p += '\n                        <p class="room-info"><strong>' +
+__e(o.__('Topic')) +
+'</strong>: ' +
+__e(o._.get(o.subject, 'text')) +
+'</p>\n                        <p class="room-info"><strong>' +
+__e(o.__('Topic author')) +
+'</strong>: ' +
+__e(o._.get(o.subject, 'author')) +
+'</p>\n                    ';
+ } ;
+__p += '\n                    <p class="room-info"><strong>' +
 __e(o.__('Online users')) +
 '</strong>: ' +
 __e(o.num_occupants) +
@@ -56981,10 +57014,17 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/chatroom_disconnect.html -->\n<p class="disconnect-msg">' +
-__e(o.disconnect_message) +
-'</p>\n';
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<!-- src/templates/chatroom_disconnect.html -->\n<div class="alert alert-danger">\n    <h3 class="alert-heading disconnect-msg">' +
+__e(o.disconnect_messages[0]) +
+'</h3>\n\n    ';
+ o._.forEach(o.disconnect_messages.slice(1), function (msg) { ;
+__p += '\n        <p class="disconnect-msg">' +
+__e(msg) +
+'</p>\n    ';
+ }); ;
+__p += '\n</div>\n';
 return __p
 };
 
@@ -58037,9 +58077,11 @@ __p += ' <span class="badge badge-secondary">' +
 __e(role) +
 '</span> ';
  }); ;
-__p += '\n            </span>\n            <span class="chat-msg-time">' +
+__p += '\n            </span>\n            <time timestamp="' +
+__e(o.isodate) +
+'" class="chat-msg-time">' +
 __e(o.pretty_time) +
-'</span>\n        </span>\n        <span class="chat-msg-text"></span>\n        <div class="chat-msg-media"></div>\n    </div>\n</div>\n';
+'</time>\n        </span>\n        <span class="chat-msg-text"></span>\n        <div class="chat-msg-media"></div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -59574,6 +59616,10 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
       return "<a target=\"_blank\" rel=\"noopener\" href=\"".concat(u.escapeHTML(url), "\">").concat(u.escapeHTML(uri.readable()), "</a>");
     });
+  };
+
+  u.renderNewLines = function (text) {
+    return text.replace(/\n\n+/g, '<br><br>').replace(/\n/g, '<br/>');
   };
 
   u.renderImageURLs = function (_converse, obj) {

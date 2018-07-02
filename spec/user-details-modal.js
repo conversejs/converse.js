@@ -1,12 +1,10 @@
 (function (root, factory) {
     define([
         "jasmine",
-        "utils",
-        "converse-core",
         "mock",
         "test-utils"
         ], factory);
-} (this, function (jasmine, utils, converse, mock, test_utils) {
+} (this, function (jasmine, mock, test_utils) {
     "use strict";
     var _ = converse.env._;
     var $iq = converse.env.$iq;

@@ -12,10 +12,10 @@
 (function (root, factory) {
     define(["converse-core",
             "converse-muc",
-            "tpl!chatroom_bookmark_form",
-            "tpl!chatroom_bookmark_toggle",
-            "tpl!bookmark",
-            "tpl!bookmarks_list"
+            "templates/chatroom_bookmark_form.html",
+            "templates/chatroom_bookmark_toggle.html",
+            "templates/bookmark.html",
+            "templates/bookmarks_list.html"
         ],
         factory);
 }(this, function (
@@ -50,15 +50,6 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-
-            clearSession () {
-                this.__super__.clearSession.apply(this, arguments);
-                if (!_.isUndefined(this.bookmarks)) {
-                    this.bookmarks.reset();
-                    this.bookmarks.browserStorage._clear();
-                    window.sessionStorage.removeItem(this.bookmarks.fetched_flag);
-                }
-            },
 
             ChatRoomView: {
                 events: {
@@ -261,9 +252,7 @@
 
                     const cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
                     this.fetched_flag = b64_sha1(cache_key+'fetched');
-                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                        b64_sha1(cache_key)
-                    );
+                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(cache_key));
                 },
 
                 openBookmarkedRoom (bookmark) {
@@ -348,10 +337,9 @@
                         'type': 'get',
                     }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                         .c('items', {'node': 'storage:bookmarks'});
-                    _converse.connection.sendIQ(
-                        stanza,
-                        _.bind(this.onBookmarksReceived, this, deferred),
-                        _.bind(this.onBookmarksReceivedError, this, deferred)
+                    _converse.api.sendIQ(stanza)
+                        .then((iq) => this.onBookmarksReceived(deferred, iq))
+                        .catch((iq) => this.onBookmarksReceivedError(deferred, iq)
                     );
                 },
 
@@ -480,8 +468,7 @@
 
                 insertIntoControlBox () {
                     const controlboxview = _converse.chatboxviews.get('controlbox');
-                    if (!_.isUndefined(controlboxview) &&
-                            !_converse.root.contains(this.el)) {
+                    if (!_.isUndefined(controlboxview) && !u.rootContains(_converse.root, this.el)) {
                         const el = controlboxview.el.querySelector('.bookmarks-list');
                         if (!_.isNull(el)) {
                             el.parentNode.replaceChild(this.el, el);
@@ -576,6 +563,14 @@
                     {'object': _converse, 'event': 'chatBoxesFetched'},
                     {'object': _converse, 'event': 'roomsPanelRendered'}
                 ], initBookmarks);
+
+
+            _converse.on('clearSession', () => {
+                if (!_.isUndefined(_converse.bookmarks)) {
+                    _converse.bookmarks.browserStorage._clear();
+                    window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
+                }
+            });
 
             _converse.on('reconnected', initBookmarks);
 

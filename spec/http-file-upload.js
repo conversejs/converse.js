@@ -1,11 +1,9 @@
 (function (root, factory) {
     define([
         "jasmine",
-        "jquery",
-        "converse-core",
         "mock",
         "test-utils"], factory);
-} (this, function (jasmine, $, converse, mock, test_utils) {
+} (this, function (jasmine, mock, test_utils) {
     "use strict";
     var Strophe = converse.env.Strophe;
     var $iq = converse.env.$iq;
@@ -367,6 +365,7 @@
                                         }).then(function () {
                                             // Check that the image renders
                                             expect(view.el.querySelector('.chat-msg .chat-msg-media').innerHTML.trim()).toEqual(
+                                                '<!-- src/templates/image.html -->\n'+
                                                 '<a href="http://localhost:8000/logo/conversejs-filled.svg" target="_blank" rel="noopener">'+
                                                     '<img class="chat-image img-thumbnail" src="http://localhost:8000/logo/conversejs-filled.svg">'+
                                                 '</a>');
@@ -474,6 +473,7 @@
                                             }).then(function () {
                                                 // Check that the image renders
                                                 expect(view.el.querySelector('.chat-msg .chat-msg-media').innerHTML.trim()).toEqual(
+                                                    '<!-- src/templates/image.html -->\n'+
                                                     '<a href="http://localhost:8000/logo/conversejs-filled.svg" target="_blank" rel="noopener">'+
                                                         '<img class="chat-image img-thumbnail" src="http://localhost:8000/logo/conversejs-filled.svg"></a>')
                                                 XMLHttpRequest.prototype.send = send_backup;

@@ -32,6 +32,10 @@
             .open-chatroom {
                 &:hover {
                     background-color: lighten($controlbox-head-color, 45%);
+                    a.add-bookmark,
+                    a.room-info {
+                        display: block !important;
+                    }
                 }
                 &.unread-msgs {
                     .msgs-indicator {
@@ -48,7 +52,9 @@
                     &:hover {
                         color: $dark-link-color;
                     }
+                    &.add-bookmark,
                     &.room-info {
+                        display: none;
                         &:before {
                             font-size: 15px;
                         }

@@ -1,9 +1,10 @@
 (function (root, factory) {
-    define("mock", ['converse'], factory);
-}(this, function (converse) {
+    define("mock", [], factory);
+}(this, function () {
     var _ = converse.env._;
     var Promise = converse.env.Promise;
     var Strophe = converse.env.Strophe;
+    var moment = converse.env.moment;
     var $iq = converse.env.$iq;
     var mock = {};
 
@@ -62,6 +63,18 @@
                 this.IQ_ids.push(id);
                 return id;
             }
+            c.features = Strophe.xmlHtmlNode(
+                '<stream:features xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client">'+
+                    '<ver xmlns="urn:xmpp:features:rosterver"/>'+
+                    '<csi xmlns="urn:xmpp:csi:0"/>'+
+                    '<c xmlns="http://jabber.org/protocol/caps" ver="UwBpfJpEt3IoLYfWma/o/p3FFRo=" hash="sha-1" node="http://prosody.im"/>'+
+                    '<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind">'+
+                        '<required/>'+
+                    '</bind>'+
+                    '<session xmlns="urn:ietf:params:xml:ns:xmpp-session">'+
+                        '<optional/>'+
+                    '</session>'+
+                '</stream:features>').firstChild;
 
             c._proto._connect = function () {
                 c.authenticated = true;
@@ -99,6 +112,7 @@
         }, settings || {}));
 
         _converse.ChatBoxViews.prototype.trimChat = function () {};
+
         _converse.api.vcard.get = function (model, force) {
             return new Promise((resolve, reject) => {
                 let jid;
@@ -120,11 +134,13 @@
                 }
                 var vcard = $iq().c('vCard').c('FN').t(fullname).nodeTree;
                 var result = {
-                    'stanza': vcard,
+                    'vcard': vcard,
                     'fullname': _.get(vcard.querySelector('FN'), 'textContent'),
                     'image': _.get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
                     'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
-                    'url': _.get(vcard.querySelector('URL'), 'textContent')
+                    'url': _.get(vcard.querySelector('URL'), 'textContent'),
+                    'vcard_updated': moment().format(),
+                    'vcard_error': undefined
                 };
                 resolve(result);
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));

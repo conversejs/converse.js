@@ -8,10 +8,10 @@
 
 (function (root, factory) {
     define(["converse-core",
-            "tpl!chatbox_minimize",
-            "tpl!toggle_chats",
-            "tpl!trimmed_chat",
-            "tpl!chats_panel",
+            "templates/chatbox_minimize.html",
+            "templates/toggle_chats.html",
+            "templates/trimmed_chat.html",
+            "templates/chats_panel.html",
             "converse-chatview"
     ], factory);
 }(this, function (
@@ -51,16 +51,6 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-
-            registerGlobalEventHandlers () {
-                const { _converse } = this.__super__;
-                window.addEventListener("resize", _.debounce(function (ev) {
-                    if (_converse.connection.connected) {
-                        _converse.chatboxviews.trimChats();
-                    }
-                }, 200));
-                return this.__super__.registerGlobalEventHandlers.apply(this, arguments);
-            },
 
             ChatBox: {
                 initialize () {
@@ -540,6 +530,15 @@
                 });
                 _converse.emit('minimizedChatsInitialized');
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
+
+            _converse.on('registeredGlobalEventHandlers', function () {
+                window.addEventListener("resize", _.debounce(function (ev) {
+                    if (_converse.connection.connected) {
+                        _converse.chatboxviews.trimChats();
+                    }
+                }, 200));
+            });
 
             _converse.on('controlBoxOpened', function (chatbox) {
                 // Wrapped in anon method because at scan time, chatboxviews

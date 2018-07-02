@@ -16,10 +16,10 @@
             "backbone",
             "strophe",
             "uri",
-            "tpl!audio",
-            "tpl!file",
-            "tpl!image",
-            "tpl!video"
+            "templates/audio.html",
+            "templates/file.html",
+            "templates/image.html",
+            "templates/video.html"
         ], factory);
     } else {
         // Used by the mockups
@@ -220,6 +220,10 @@
             url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
             return `<a target="_blank" rel="noopener" href="${u.escapeHTML(url)}">${u.escapeHTML(uri.readable())}</a>`;
         });
+    };
+
+    u.renderNewLines = function (text) {
+        return text.replace(/\n\n+/g, '<br><br>').replace(/\n/g, '<br/>');
     };
 
     u.renderImageURLs = function (_converse, obj) {
@@ -483,10 +487,12 @@
          * message, i.e. not a MAM archived one.
          */
         if (message instanceof Element) {
-            return !sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length &&
-                   !sizzle('delay[xmlns="'+Strophe.NS.DELAY+'"]', message).length;
+            return !(
+                sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, message).length &&
+                sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, message).length
+            );
         } else {
-            return !message.get('delayed');
+            return !(message.get('is_delayed') && message.get('is_archived'));
         }
     };
 
@@ -565,7 +571,7 @@
          */
         var div = document.createElement('div');
         div.innerHTML = s;
-        return div.firstChild;
+        return div.firstElementChild;
     };
 
     u.getOuterWidth = function (el, include_margin=false) {
@@ -652,6 +658,14 @@
         return function (item) {
             return !(u.contains(attr, query)(item));
         };
+    };
+
+    u.rootContains = function (root, el) {
+        // The document element does not have the contains method in IE.
+        if (root === document && !root.contains) {
+            return document.head.contains(el) || document.body.contains(el);
+        }
+        return root.contains ? root.contains(el) : window.HTMLElement.prototype.contains.call(root, el);
     };
 
     u.createFragmentFromText = function (markup) {

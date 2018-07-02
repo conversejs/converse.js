@@ -6,14 +6,14 @@
 
 (function (root, factory) {
     define(["converse-core",
-            "tpl!add_contact_modal",
-            "tpl!group_header",
-            "tpl!pending_contact",
-            "tpl!requesting_contact",
-            "tpl!roster",
-            "tpl!roster_filter",
-            "tpl!roster_item",
-            "tpl!search_contact",
+            "templates/add_contact_modal.html",
+            "templates/group_header.html",
+            "templates/pending_contact.html",
+            "templates/requesting_contact.html",
+            "templates/roster.html",
+            "templates/roster_filter.html",
+            "templates/roster_item.html",
+            "templates/search_contact.html",
             "awesomplete",
             "converse-chatboxes",
             "converse-modal"
@@ -49,11 +49,11 @@
                 this.__super__.afterReconnected.apply(this, arguments);
             },
 
-            _tearDown () {
+            tearDown () {
                 /* Remove the rosterview when tearing down. It gets created
                  * anew when reconnecting or logging in.
                  */
-                this.__super__._tearDown.apply(this, arguments);
+                this.__super__.tearDown.apply(this, arguments);
                 if (!_.isUndefined(this.rosterview)) {
                     this.rosterview.remove();
                 }
@@ -80,7 +80,9 @@
             _converse.api.settings.update({
                 'allow_chat_pending_contacts': true,
                 'allow_contact_removal': true,
+                'hide_offline_users': false,
                 'roster_groups': true,
+                'show_only_online_users': false,
                 'show_toolbar': true,
                 'xhr_user_search_url': null
             });
@@ -140,26 +142,31 @@
 
                 toHTML () {
                     const label_nickname = _converse.xhr_user_search_url ? __('Contact name') : __('Optional nickname');
-                    return tpl_add_contact_modal(_.extend(this.model.toJSON(), {
+                    return  tpl_add_contact_modal(_.extend(this.model.toJSON(), {
                         '_converse': _converse,
                         'heading_new_contact': __('Add a Contact'),
                         'label_xmpp_address': __('XMPP Address'),
                         'label_nickname': label_nickname,
                         'contact_placeholder': __('name@example.org'),
                         'label_add': __('Add'),
+                        'error_message': __('Please enter a valid XMPP address')
                     }));
                 },
 
                 afterRender () {
                     if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
-                        this.initXHRAutoComplete();
+                        this.initXHRAutoComplete(this.el);
                     } else {
-                        this.initJIDAutoComplete();
+                        this.initJIDAutoComplete(this.el);
                     }
+                    const jid_input = this.el.querySelector('input[name="jid"]');
+                    this.el.addEventListener('shown.bs.modal', () => {
+                        jid_input.focus();
+                    }, false);
                 },
 
-                initJIDAutoComplete () {
-                    const jid_input = this.el.querySelector('input[name="jid"]');
+                initJIDAutoComplete (root) {
+                    const jid_input = root.querySelector('input[name="jid"]');
                     const list = _.uniq(_converse.roster.map((item) => Strophe.getDomainFromJid(item.get('jid'))));
                     new Awesomplete(jid_input, {
                         'list': list,
@@ -168,12 +175,9 @@
                         },
                         'filter': Awesomplete.FILTER_STARTSWITH
                     });
-                    this.el.addEventListener('shown.bs.modal', () => {
-                        jid_input.focus();
-                    }, false);
                 },
 
-                initXHRAutoComplete () {
+                initXHRAutoComplete (root) {
                     const name_input = this.el.querySelector('input[name="name"]');
                     const jid_input = this.el.querySelector('input[name="jid"]');
                     const awesomplete = new Awesomplete(name_input, {
@@ -191,16 +195,13 @@
                         }
                     };
                     name_input.addEventListener('input', _.debounce(() => {
-                        xhr.open("GET", `${_converse.xhr_user_search_url}?q=${name_input.value}`, true);
+                        xhr.open("GET", `${_converse.xhr_user_search_url}q=${name_input.value}`, true);
                         xhr.send()
                     } , 300));
                     this.el.addEventListener('awesomplete-selectcomplete', (ev) => {
                         jid_input.value = ev.text.value;
                         name_input.value = ev.text.label;
                     });
-                    this.el.addEventListener('shown.bs.modal', () => {
-                        name_input.focus();
-                    }, false);
                 },
 
                 addContactFromForm (ev) {
@@ -208,14 +209,14 @@
                     const data = new FormData(ev.target),
                           jid = data.get('jid'),
                           name = data.get('name');
-                    ev.target.reset();
-
                     if (!jid || _.compact(jid.split('@')).length < 2) {
-                        this.model.set({
-                            'error_message': __('Please enter a valid XMPP address'),
-                            'jid': jid
-                        })
+                        // XXX: we have to do this manually, instead of via
+                        // toHTML because Awesomplete messes things up and
+                        // confuses Snabbdom
+                        u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
+                        u.addClass('d-block', this.el.querySelector('.invalid-feedback'));
                     } else {
+                        ev.target.reset();
                         _converse.roster.addAndSubscribe(jid, name);
                         this.model.clear();
                         this.modal.hide();
@@ -357,7 +358,7 @@
 
             _converse.RosterContactView = Backbone.NativeView.extend({
                 tagName: 'li',
-                className: 'd-flex hidden',
+                className: 'd-flex hidden controlbox-padded',
 
                 events: {
                     "click .accept-xmpp-request": "acceptRequest",
@@ -371,6 +372,8 @@
                     this.model.on("destroy", this.remove, this);
                     this.model.on("open", this.openChat, this);
                     this.model.on("remove", this.remove, this);
+                    
+                    this.model.presence.on("change:show", this.render, this);
                     this.model.vcard.on('change:fullname', this.render, this);
                 },
 
@@ -382,7 +385,7 @@
                     }
                     const item = this.model,
                         ask = item.get('ask'),
-                        chat_status = item.get('chat_status'),
+                        show = item.presence.get('show'),
                         requesting  = item.get('requesting'),
                         subscription = item.get('subscription');
 
@@ -398,8 +401,8 @@
                                 that.el.classList.remove(cls);
                             }
                         });
-                    this.el.classList.add(chat_status);
-                    this.el.setAttribute('data-status', chat_status);
+                    this.el.classList.add(show);
+                    this.el.setAttribute('data-status', show);
 
                     if ((ask === 'subscribe') || (subscription === 'from')) {
                         /* ask === 'subscribe'
@@ -444,21 +447,21 @@
 
                 renderRosterItem (item) {
                     let status_icon = 'fa-times-circle';
-                    const chat_status = item.get('chat_status') || 'offline';
-                    if (chat_status === 'online') {
+                    const show = item.presence.get('show') || 'offline';
+                    if (show === 'online') {
                         status_icon = 'fa-circle';
-                    } else if (chat_status === 'away') {
+                    } else if (show === 'away') {
                         status_icon = 'fa-dot-circle-o';
-                    } else if (chat_status === 'xa') {
+                    } else if (show === 'xa') {
                         status_icon = 'fa-circle-o';
-                    } else if (chat_status === 'dnd') {
+                    } else if (show === 'dnd') {
                         status_icon = 'fa-minus-circle';
                     }
                     const display_name = item.getDisplayName();
                     this.el.innerHTML = tpl_roster_item(
                         _.extend(item.toJSON(), {
                             'display_name': display_name,
-                            'desc_status': STATUSES[chat_status],
+                            'desc_status': STATUSES[show],
                             'status_icon': status_icon,
                             'desc_chat': __('Click to chat with %1$s (JID: %2$s)', display_name, item.get('jid')),
                             'desc_remove': __('Click to remove %1$s as a contact', display_name),
@@ -476,7 +479,7 @@
                      * It doesn't check for the more specific case of whether
                      * the group it's in is collapsed.
                      */
-                    const chatStatus = this.model.get('chat_status');
+                    const chatStatus = this.model.presence.get('show');
                     if ((_converse.show_only_online_users && chatStatus !== 'online') ||
                         (_converse.hide_offline_users && chatStatus === 'offline')) {
                         // If pending or requesting, show
@@ -544,7 +547,7 @@
                 ItemView: _converse.RosterContactView,
                 listItems: 'model.contacts',
                 listSelector: '.roster-group-contacts',
-                sortEvent: 'change:chat_status',
+                sortEvent: 'presenceChanged',
 
                 initialize () {
                     Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
@@ -629,13 +632,13 @@
                             // show requesting contacts, even though they don't
                             // have the state in question.
                             matches = this.model.contacts.filter(
-                                (contact) => u.contains.not('chat_status', q)(contact) && !contact.get('requesting')
+                                (contact) => !_.includes(contact.presence.get('show'), q) && !contact.get('requesting')
                             );
                         } else if (q === 'unread_messages') {
                             matches = this.model.contacts.filter({'num_unread': 0});
                         } else {
                             matches = this.model.contacts.filter(
-                                u.contains.not('chat_status', q)
+                                (contact) => !_.includes(contact.presence.get('show'), q)
                             );
                         }
                     } else  {
@@ -745,6 +748,10 @@
                     _converse.roster.on('change', this.onContactChange, this);
                     _converse.roster.on("destroy", this.update, this);
                     _converse.roster.on("remove", this.update, this);
+                    _converse.presences.on('change:show', () => {
+                        this.update();
+                        this.updateFilter();
+                    });
 
                     this.model.on("reset", this.reset, this);
 
@@ -848,12 +855,14 @@
                 },
 
                 onContactAdded (contact) {
-                    this.addRosterContact(contact).update();
+                    this.addRosterContact(contact)
+                    this.update();
                     this.updateFilter();
                 },
 
                 onContactChange (contact) {
-                    this.updateChatBox(contact).update();
+                    this.updateChatBox(contact)
+                    this.update();
                     if (_.has(contact.changed, 'subscription')) {
                         if (contact.changed.subscription === 'from') {
                             this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
@@ -875,9 +884,6 @@
                         changes = {};
                     if (!chatbox) {
                         return this;
-                    }
-                    if (_.has(contact.changed, 'chat_status')) {
-                        changes.chat_status = contact.get('chat_status');
                     }
                     if (_.has(contact.changed, 'status')) {
                         changes.status = contact.get('status');
@@ -932,53 +938,17 @@
 
             /* -------- Event Handlers ----------- */
 
-            const onChatBoxMaximized = function (chatboxview) {
-                /* When a chat box gets maximized, the num_unread counter needs
-                 * to be cleared, but if chatbox is scrolled up, then num_unread should not be cleared.
-                 */
-                const chatbox = chatboxview.model;
-                if (chatbox.get('type') !== 'chatroom') {
-                    const contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
-                    if (!_.isUndefined(contact) && !chatbox.isScrolledUp()) {
-                        contact.save({'num_unread': 0});
-                    }
-                }
-            };
-
-            const onMessageReceived = function (data) {
-                /* Given a newly received message, update the unread counter on
-                 * the relevant roster contact.
-                 */
-                const { chatbox } = data;
-                if (_.isUndefined(chatbox)) {
-                    return;
-                }
-                if (_.isNull(data.stanza.querySelector('body'))) {
-                    return; // The message has no text
-                }
-                if (chatbox.get('type') !== 'chatroom' &&
-                    u.isNewMessage(data.stanza) &&
-                    chatbox.newMessageWillBeHidden()) {
-
-                    const contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
-                    if (!_.isUndefined(contact)) {
-                        contact.save({'num_unread': contact.get('num_unread') + 1});
-                    }
-                }
-            };
-
-            const onChatBoxScrolledDown = function (data) {
-                const { chatbox } = data;
-                if (_.isUndefined(chatbox)) {
-                    return;
-                }
+            function updateUnreadCounter (chatbox) {
                 const contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
                 if (!_.isUndefined(contact)) {
-                    contact.save({'num_unread': 0});
+                    contact.save({'num_unread': chatbox.get('num_unread')});
                 }
-            };
+            }
+            _converse.api.listen.on('chatBoxesInitialized', () => {
+                _converse.chatboxes.on('change:num_unread', updateUnreadCounter)
+            });
 
-            const initRoster = function () {
+            function initRoster () {
                 /* Create an instance of RosterView once the RosterGroups
                  * collection has been created (in converse-core.js)
                  */
@@ -987,12 +957,9 @@
                 });
                 _converse.rosterview.render();
                 _converse.emit('rosterViewInitialized');
-            };
+            }
             _converse.api.listen.on('rosterInitialized', initRoster);
             _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
-            _converse.api.listen.on('message', onMessageReceived);
-            _converse.api.listen.on('chatBoxMaximized', onChatBoxMaximized);
-            _converse.api.listen.on('chatBoxScrolledDown', onChatBoxScrolledDown);
         }
     });
 }));

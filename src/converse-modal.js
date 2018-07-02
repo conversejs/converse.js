@@ -8,7 +8,7 @@
     if (typeof define === 'function' && define.amd) {
         define([
             "converse-core",
-            "tpl!alert_modal",
+            "templates/alert_modal.html",
             "bootstrap",
             "backbone.vdomview"
         ], factory);

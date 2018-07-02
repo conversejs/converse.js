@@ -7,27 +7,28 @@
 (function (root, factory) {
     define([
         "converse-core",
-        "muc-utils",
-        "tpl!add_chatroom_modal",
-        "tpl!chatarea",
-        "tpl!chatroom",
-        "tpl!chatroom_disconnect",
-        "tpl!chatroom_features",
-        "tpl!chatroom_form",
-        "tpl!chatroom_head",
-        "tpl!chatroom_invite",
-        "tpl!chatroom_nickname_form",
-        "tpl!chatroom_password_form",
-        "tpl!chatroom_sidebar",
-        "tpl!chatroom_toolbar",
-        "tpl!info",
-        "tpl!list_chatrooms_modal",
-        "tpl!occupant",
-        "tpl!room_description",
-        "tpl!room_item",
-        "tpl!room_panel",
-        "tpl!rooms_results",
-        "tpl!spinner",
+        "utils/muc",
+        "templates/add_chatroom_modal.html",
+        "templates/chatarea.html",
+        "templates/chatroom.html",
+        "templates/chatroom_details_modal.html",
+        "templates/chatroom_disconnect.html",
+        "templates/chatroom_features.html",
+        "templates/chatroom_form.html",
+        "templates/chatroom_head.html",
+        "templates/chatroom_invite.html",
+        "templates/chatroom_nickname_form.html",
+        "templates/chatroom_password_form.html",
+        "templates/chatroom_sidebar.html",
+        "templates/chatroom_toolbar.html",
+        "templates/info.html",
+        "templates/list_chatrooms_modal.html",
+        "templates/occupant.html",
+        "templates/room_description.html",
+        "templates/room_item.html",
+        "templates/room_panel.html",
+        "templates/rooms_results.html",
+        "templates/spinner.html",
         "awesomplete",
         "converse-modal"
     ], factory);
@@ -37,6 +38,7 @@
     tpl_add_chatroom_modal,
     tpl_chatarea,
     tpl_chatroom,
+    tpl_chatroom_details_modal,
     tpl_chatroom_disconnect,
     tpl_chatroom_features,
     tpl_chatroom_form,
@@ -110,7 +112,7 @@
 
                     if (!this.roomspanel.model.get('nick')) {
                         this.roomspanel.model.save({
-                            nick: _converse.xmppstatus.get('nickname') || Strophe.getNodeFromJid(_converse.bare_jid)
+                            nick: _converse.xmppstatus.vcard.get('nickname') || Strophe.getNodeFromJid(_converse.bare_jid)
                         });
                     }
                     _converse.emit('roomsPanelRendered');
@@ -295,11 +297,9 @@
                     parent_el.querySelector('a.room-info').classList.remove('selected');
                 } else {
                     parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
-                    _converse.api.disco.info(
-                        ev.target.getAttribute('data-room-jid'),
-                        null,
-                        _.partial(insertRoomInfo, parent_el)
-                    );
+                    _converse.api.disco.info(ev.target.getAttribute('data-room-jid'), null)
+                        .then((stanza) => insertRoomInfo(parent_el, stanza))
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                 }
             }
 
@@ -365,7 +365,7 @@
                         'open_title': __('Click to open this room'),
                         'info_title': __('Show more information on this room')
                     });
-                    return div.firstChild;
+                    return div.firstElementChild;
                 },
 
                 removeSpinner () {
@@ -482,6 +482,27 @@
             });
 
 
+            _converse.RoomDetailsModal = _converse.BootstrapModal.extend({
+
+                initialize () {
+                    _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                    this.model.on('change', this.render, this);
+                    this.model.occupants.on('change', this.render, this);
+                },
+
+                toHTML () {
+                    return tpl_chatroom_details_modal(_.extend(
+                        this.model.toJSON(), {
+                            '_': _,
+                            '__': __,
+                            'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),
+                            'num_occupants': this.model.occupants.length
+                        })
+                    );
+                }
+            });
+
+
             _converse.ChatRoomView = _converse.ChatBoxView.extend({
                 /* Backbone.NativeView which renders a chat room, based upon the view
                  * for normal one-on-one chat boxes.
@@ -492,8 +513,11 @@
                 is_chatroom: true,
                 events: {
                     'change input.fileupload': 'onFileSelection',
+                    'click .chatbox-navback': 'showControlBox',
                     'click .close-chatbox-button': 'close',
                     'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
+                    'click .show-room-details-modal': 'showRoomDetailsModal',
+                    'click .hide-occupants': 'hideOccupants',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant-nick': 'onOccupantClicked',
                     'click .send-button': 'onFormSubmitted',
@@ -523,6 +547,16 @@
 
                     this.model.occupants.on('add', this.showJoinNotification, this);
                     this.model.occupants.on('remove', this.showLeaveNotification, this);
+                    this.model.occupants.on('change:show', (occupant) => {
+                        if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
+                            return;
+                        }
+                        if (occupant.get('show') === 'offline') {
+                            this.showLeaveNotification(occupant);
+                        } else if (occupant.get('show') === 'online') {
+                            this.showJoinNotification(occupant);
+                        }
+                    });
 
                     this.createEmojiPicker();
                     this.createOccupantsView();
@@ -568,19 +602,27 @@
                      */
                     if (_.isNull(this.el.querySelector('.chat-area'))) {
                         const container_el = this.el.querySelector('.chatroom-body');
-                        container_el.innerHTML = tpl_chatarea({
+                        container_el.insertAdjacentHTML('beforeend', tpl_chatarea({
                             'label_message': __('Message'),
                             'label_send': __('Send'),
                             'show_send_button': _converse.show_send_button,
                             'show_toolbar': _converse.show_toolbar,
                             'unread_msgs': __('You have unread messages')
-                        });
+                        }));
                         container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
                         this.renderToolbar(tpl_chatroom_toolbar);
                         this.content = this.el.querySelector('.chat-content');
                         this.toggleOccupants(null, true);
                     }
                     return this;
+                },
+
+                showRoomDetailsModal (ev) {
+                    ev.preventDefault();
+                    if (_.isUndefined(this.model.room_details_modal)) {
+                        this.model.room_details_modal = new _converse.RoomDetailsModal({'model': this.model});
+                    }
+                    this.model.room_details_modal.show(ev);
                 },
 
                 showChatStateNotification (message) {
@@ -620,10 +662,11 @@
                      */
                     return tpl_chatroom_head(
                         _.extend(this.model.toJSON(), {
-                            Strophe: Strophe,
-                            info_close: __('Close and leave this room'),
-                            info_configure: __('Configure this room'),
-                            description: this.model.get('description') || ''
+                            'Strophe': Strophe,
+                            'info_close': __('Close and leave this room'),
+                            'info_configure': __('Configure this room'),
+                            'info_details': __('Show more details about this room'),
+                            'description': this.model.get('description') || ''
                     }));
                 },
 
@@ -687,13 +730,30 @@
                 setOccupantsVisibility () {
                     const icon_el = this.el.querySelector('.toggle-occupants');
                     if (this.model.get('hidden_occupants')) {
-                        this.el.querySelector('.chat-area').classList.add('full');
+                        u.removeClass('fa-angle-double-right', icon_el);
+                        u.addClass('fa-angle-double-left', icon_el);
+                        u.addClass('full', this.el.querySelector('.chat-area'));
                         u.hideElement(this.el.querySelector('.occupants'));
                     } else {
-                        this.el.querySelector('.chat-area').classList.remove('full');
-                        this.el.querySelector('.occupants').classList.remove('hidden');
+                        u.addClass('fa-angle-double-right', icon_el);
+                        u.removeClass('fa-angle-double-left', icon_el);
+                        u.removeClass('full', this.el.querySelector('.chat-area'));
+                        u.removeClass('hidden', this.el.querySelector('.occupants'));
                     }
                     this.occupantsview.setOccupantsHeight();
+                },
+
+                hideOccupants (ev, preserve_state) {
+                    /* Show or hide the right sidebar containing the chat
+                     * occupants (and the invite widget).
+                     */
+                    if (ev) {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                    }
+                    this.model.save({'hidden_occupants': true});
+                    this.setOccupantsVisibility();
+                    this.scrollDown();
                 },
 
                 toggleOccupants (ev, preserve_state) {
@@ -1006,7 +1066,8 @@
                         this.closeForm();
                     });
 
-                    form_el.addEventListener('submit', (ev) => {
+                    form_el.addEventListener('submit',
+                        (ev) => {
                             ev.preventDefault();
                             this.model.saveConfiguration(ev.target).then(
                                 this.model.getRoomFeatures.bind(this.model)
@@ -1096,10 +1157,9 @@
                 },
 
                 onNickNameNotFound (message) {
-                    if (_converse.muc_nickname_from_jid) {
-                        // We try to enter the room with the node part of
-                        // the user's JID.
-                        this.join(this.getDefaultNickName());
+                    const nick = this.getDefaultNickName();
+                    if (nick) {
+                        this.join(nick);
                     } else {
                         this.renderNicknameForm(message);
                     }
@@ -1111,7 +1171,12 @@
                      * We put this in a separate method so that it can be
                      * overridden by plugins.
                      */
-                    return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+                    const nick = _converse.xmppstatus.vcard.get('nickname');
+                    if (nick) {
+                        return nick;
+                    } else if (_converse.muc_nickname_from_jid) {
+                        return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+                    }
                 },
 
                 onNicknameClash (presence) {
@@ -1195,16 +1260,19 @@
                         'submit', this.submitPassword.bind(this), false);
                 },
 
-                showDisconnectMessage (msg) {
+                showDisconnectMessages (msgs) {
+                    if (_.isString(msgs)) {
+                        msgs = [msgs];
+                    }
                     u.hideElement(this.el.querySelector('.chat-area'));
                     u.hideElement(this.el.querySelector('.occupants'));
                     _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
-                    this.el.querySelector('.chatroom-body').insertAdjacentHTML(
-                        'beforeend',
-                        tpl_chatroom_disconnect({
-                            'disconnect_message': msg
-                        })
-                    );
+                    const container = this.el.querySelector('.disconnect-container');
+                    container.innerHTML = tpl_chatroom_disconnect({
+                        '_': _,
+                        'disconnect_messages': msgs
+                    })
+                    u.showElement(container);
                 },
 
                 getMessageFromStatus (stat, stanza, is_self) {
@@ -1282,13 +1350,15 @@
                      * information to the user.
                      */
                     if (notification.disconnected) {
-                        this.showDisconnectMessage(notification.disconnection_message);
+                        const messages = [];
+                        messages.push(notification.disconnection_message);
                         if (notification.actor) {
-                            this.showDisconnectMessage(__('This action was done by %1$s.', notification.actor));
+                            messages.push(__('This action was done by %1$s.', notification.actor));
                         }
                         if (notification.reason) {
-                            this.showDisconnectMessage(__('The reason given is: "%1$s".', notification.reason));
+                            messages.push(__('The reason given is: "%1$s".', notification.reason));
                         }
+                        this.showDisconnectMessages(messages);
                         this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         return;
                     }
@@ -1354,10 +1424,13 @@
                 },
 
                 showLeaveNotification (occupant) {
-                    const nick = occupant.get('nick');
-                    const stat = occupant.get('status');
-                    const last_el = this.content.lastElementChild;
+                    const nick = occupant.get('nick'),
+                          stat = occupant.get('status'),
+                          last_el = this.content.lastElementChild,
+                          last_msg_date = last_el.getAttribute('data-isodate');
+
                     if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
+                            moment(last_msg_date).isSame(new Date(), "day") &&
                             _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
 
                         let message;
@@ -1421,25 +1494,32 @@
                         if (!_.isNull(error.querySelector('not-authorized'))) {
                             this.renderPasswordForm();
                         } else if (!_.isNull(error.querySelector('registration-required'))) {
-                            this.showDisconnectMessage(__('You are not on the member list of this room.'));
+                            this.showDisconnectMessages(__('You are not on the member list of this room.'));
                         } else if (!_.isNull(error.querySelector('forbidden'))) {
-                            this.showDisconnectMessage(__('You have been banned from this room.'));
+                            this.showDisconnectMessages(__('You have been banned from this room.'));
                         }
                     } else if (error.getAttribute('type') === 'modify') {
                         if (!_.isNull(error.querySelector('jid-malformed'))) {
-                            this.showDisconnectMessage(__('No nickname was specified.'));
+                            this.showDisconnectMessages(__('No nickname was specified.'));
                         }
                     } else if (error.getAttribute('type') === 'cancel') {
                         if (!_.isNull(error.querySelector('not-allowed'))) {
-                            this.showDisconnectMessage(__('You are not allowed to create new rooms.'));
+                            this.showDisconnectMessages(__('You are not allowed to create new rooms.'));
                         } else if (!_.isNull(error.querySelector('not-acceptable'))) {
-                            this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies."));
+                            this.showDisconnectMessages(__("Your nickname doesn't conform to this room's policies."));
                         } else if (!_.isNull(error.querySelector('conflict'))) {
                             this.onNicknameClash(presence);
                         } else if (!_.isNull(error.querySelector('item-not-found'))) {
-                            this.showDisconnectMessage(__("This room does not (yet) exist."));
+                            this.showDisconnectMessages(__("This room does not (yet) exist."));
                         } else if (!_.isNull(error.querySelector('service-unavailable'))) {
-                            this.showDisconnectMessage(__("This room has reached its maximum number of occupants."));
+                            this.showDisconnectMessages(__("This room has reached its maximum number of occupants."));
+                        } else if (!_.isNull(error.querySelector('remote-server-not-found'))) {
+                            const messages = [__("Remote server not found")];
+                            const reason = _.get(error.querySelector('text'), 'textContent');
+                            if (reason) {
+                                messages.push(__('The explanation given is: "%1$s".', reason));
+                            }
+                            this.showDisconnectMessages(messages);
                         }
                     }
                 },
@@ -1511,16 +1591,13 @@
 
             _converse.RoomsPanel = Backbone.NativeView.extend({
                 /* Backbone.NativeView which renders MUC section of the control box.
-                 *
-                 * Chat rooms can be listed, joined and new rooms can be created.
                  */
                 tagName: 'div',
                 className: 'controlbox-section',
                 id: 'chatrooms',
                 events: {
-                    'click a.chatbox-btn.fa-users': 'showAddRoomModal',
-                    'click a.chatbox-btn.fa-list-ul': 'showListRoomsModal',
-                    'click a.room-info': 'toggleRoomInfo'
+                    'click a.chatbox-btn.show-add-muc-modal': 'showAddRoomModal',
+                    'click a.chatbox-btn.show-list-muc-modal': 'showListRoomsModal'
                 },
 
                 render () {
@@ -1530,11 +1607,6 @@
                         'title_list_rooms': __('Query for rooms')
                     });
                     return this;
-                },
-
-                toggleRoomInfo (ev) {
-                    ev.preventDefault();
-                    toggleRoomInfo(ev);
                 },
 
                 showAddRoomModal (ev) {
@@ -1563,7 +1635,10 @@
                     const show = this.model.get('show');
                     return tpl_occupant(
                         _.extend(
-                            { 'jid': '',
+                            { '_': _, // XXX Normally this should already be included,
+                                      // but with the current webpack build,
+                                      // we only get a subset of the _ methods.
+                              'jid': '',
                               'show': show,
                               'hint_show': _converse.PRETTY_CHAT_STATUS[show],
                               'hint_occupant': __('Click to mention %1$s in your message.', this.model.get('nick')),
@@ -1664,34 +1739,8 @@
 
                     el.innerHTML = tpl_chatroom_features(
                             _.extend(this.chatroomview.model.toJSON(), {
-                                'has_features': _.reduce(_.values(picks), iteratee),
-                                'label_features': __('Features'),
-                                'label_hidden': __('Hidden'),
-                                'label_mam_enabled': __('Message archiving'),
-                                'label_membersonly': __('Members only'),
-                                'label_moderated': __('Moderated'),
-                                'label_nonanonymous': __('Non-anonymous'),
-                                'label_open': __('Open'),
-                                'label_passwordprotected': __('Password protected'),
-                                'label_persistent': __('Persistent'),
-                                'label_public': __('Public'),
-                                'label_semianonymous': __('Semi-anonymous'),
-                                'label_temporary': __('Temporary'),
-                                'label_unmoderated': __('Unmoderated'),
-                                'label_unsecured': __('No password'),
-                                'tt_hidden': __('This room is not publicly searchable'),
-                                'tt_mam_enabled': __('Messages are archived on the server'),
-                                'tt_membersonly': __('This room is restricted to members only'),
-                                'tt_moderated': __('This room is being moderated'),
-                                'tt_nonanonymous': __('All other room occupants can see your XMPP username'),
-                                'tt_open': __('Anyone can join this room'),
-                                'tt_passwordprotected': __('This room requires a password before entry'),
-                                'tt_persistent': __('This room persists even if it\'s unoccupied'),
-                                'tt_public': __('This room is publicly searchable'),
-                                'tt_semianonymous': __('Only moderators can see your XMPP username'),
-                                'tt_temporary': __('This room will disappear once the last person leaves'),
-                                'tt_unmoderated': __('This room is not being moderated'),
-                                'tt_unsecured': __('This room does not require a password upon entry')
+                                '__': __,
+                                'has_features': _.reduce(_.values(picks), iteratee)
                             }));
                     this.setOccupantsHeight();
                     return this;

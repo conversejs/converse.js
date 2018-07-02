@@ -2,12 +2,10 @@
     define([
         "jquery",
         "jasmine",
-        "utils",
-        "converse-core",
         "mock",
         "test-utils"
         ], factory);
-} (this, function ($, jasmine, utils, converse, mock, test_utils) {
+} (this, function ($, jasmine, mock, test_utils) {
     "use strict";
     var _ = converse.env._;
     var $iq = converse.env.$iq;
@@ -105,10 +103,6 @@
                         expect($(view.el).find('.chat-msg-text:last').text()).toBe(' wrote a 3rd person message');
                         expect($(view.el).find('.chat-msg-author:last').is(':visible')).toBeTruthy();
                         expect(u.hasClass('chat-msg-followup', message_el)).toBeFalsy();
-
-
-                        message = 'This a normal message';
-
                         done();
                     });
                 });
@@ -433,9 +427,9 @@
                     var view = _converse.chatboxviews.get(contact_jid);
                     expect(chatbox).toBeDefined();
                     expect(view).toBeDefined();
-                    var $toolbar = $(view.el).find('ul.chat-toolbar');
-                    expect($toolbar.length).toBe(1);
-                    expect($toolbar.children('li').length).toBe(2);
+                    var toolbar = view.el.querySelector('ul.chat-toolbar');
+                    expect(_.isElement(toolbar)).toBe(true);
+                    expect(toolbar.querySelectorAll(':scope > li').length).toBe(1);
                     done();
                 }));
 
@@ -462,7 +456,7 @@
                     var timeout = false;
 
                     test_utils.waitUntil(function () {
-                        return utils.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container'));
+                        return u.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container'));
                     }, 500).then(function () {
                         var picker = view.el.querySelector('.toggle-smiley .emoji-picker-container');
                         var items = picker.querySelectorAll('.emoji-picker li');
@@ -498,39 +492,6 @@
                         expect(view.insertEmoji).toHaveBeenCalled();
                         done();
                     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                }));
-
-                it("contains a button for starting an encrypted chat session",
-                    mock.initConverseWithPromises(
-                        null, ['rosterGroupsFetched'], {},
-                        function (done, _converse) {
-
-                    var timeout = true, $toolbar, view;
-                    test_utils.createContacts(_converse, 'current');
-                    test_utils.openControlBox();
-
-                    test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('.roster-group').length;
-                    }, 300).then(function () {
-                        // TODO: More tests can be added here...
-                        var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        test_utils.openChatBoxFor(_converse, contact_jid);
-                        view = _converse.chatboxviews.get(contact_jid);
-                        $toolbar = $(view.el).find('ul.chat-toolbar');
-                        expect($toolbar.find('.toggle-otr').length).toBe(1);
-                        // Register spies
-                        spyOn(view, 'toggleOTRMenu').and.callThrough();
-                        view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-
-                        timeout = false;
-                        $toolbar[0].querySelector('.toggle-otr').click();
-                        return test_utils.waitUntil(function () {
-                            return view.el.querySelector('.otr-menu').offsetHeight;
-                        }, 300)
-                    }).then(function () {
-                        expect(view.toggleOTRMenu).toHaveBeenCalled();
-                        done();
-                    });
                 }));
 
                 it("can contain a button for starting a call",
@@ -784,7 +745,7 @@
                             expect(chatbox.messages.length).toEqual(1);
                             var msg_obj = chatbox.messages.models[0];
                             expect(msg_obj.get('sender')).toEqual('me');
-                            expect(msg_obj.get('delayed')).toEqual(false);
+                            expect(msg_obj.get('is_delayed')).toEqual(false);
                             var $chat_content = $(chatboxview.el).find('.chat-content');
                             var status_text = $chat_content.find('.chat-info.chat-state-notification').text();
                             expect(status_text).toBe('Typing from another device');
@@ -932,7 +893,7 @@
                             expect(chatbox.messages.length).toEqual(1);
                             var msg_obj = chatbox.messages.models[0];
                             expect(msg_obj.get('sender')).toEqual('me');
-                            expect(msg_obj.get('delayed')).toEqual(false);
+                            expect(msg_obj.get('is_delayed')).toEqual(false);
                             var $chat_content = $(chatboxview.el).find('.chat-content');
                             var status_text = $chat_content.find('.chat-info.chat-state-notification').text();
                             expect(status_text).toBe('Stopped typing on the other device');

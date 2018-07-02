@@ -50,14 +50,33 @@ body.reset {
 }
 
 #conversejs {
+    bottom: 0;
+    height: 100%;
+    position: fixed;
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
     color: $text-color;
     font-family: "Helvetica", "Arial", sans-serif;
     font-size: $font-size;
     direction: ltr;
-    display: block;
     z-index: 1031; // One more than bootstrap navbar
+
+    &.converse-overlayed {
+        > .row {
+            flex-direction: row-reverse;
+        }
+    }
+
+    &.converse-fullscreen,
+    &.converse-mobile {
+        .converse-chatboxes {
+            width: 100vw;
+            right: 15px; // Hack due to padding added by bootstrap
+        }
+    }
+    &.converse-overlayed {
+        height: 3em;
+    }
 
     .brand-heading {
         font-family: $heading-font; 
@@ -66,11 +85,14 @@ body.reset {
         }
     }
 
+    .popover {
+        position: fixed;
+    }
+
     .converse-chatboxes {
         z-index: 1031; // One more than bootstrap navbar
         position: fixed;
         bottom: 0;
-        height: 2.7rem;
         right: 0;
     }
 
@@ -88,23 +110,6 @@ body.reset {
     }
     ::placeholder {
         color: $subdued-color;
-    }
-    .form-control {
-        &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-            color: $subdued-color;
-        }
-        &::-moz-placeholder { /* Firefox 19+ */
-            color: $subdued-color;
-        }
-        &:-ms-input-placeholder { /* IE 10+ */
-            color: $subdued-color;
-        }
-        &:-moz-placeholder { /* Firefox 18- */
-            color: $subdued-color;
-        }
-        &::placeholder {
-            color: $subdued-color;
-        }
     }
 
     ::selection {
@@ -154,6 +159,10 @@ body.reset {
         font-weight: 700;
     }
 
+    em {
+        font-style: italic;
+    }
+
     ol, ul {
         list-style: none;
     }
@@ -167,10 +176,16 @@ body.reset {
         margin: 0;
     }
 
-    a, a:visited, a:hover, a:not([href]):not([tabindex]) {
+    a, a:visited, a:not([href]):not([tabindex]) {
         text-decoration: none;
         color: $link-color;
         text-shadow: none;
+        &:hover {
+            color: darken($link-color, 20%);
+            text-decoration: none;
+            text-shadow: none;
+        }
+
         &.fa {
             color: $subdued-color;
             &:hover {
@@ -400,66 +415,6 @@ body.reset {
     .button-cancel {
         color: white;
         background-color: $text-color;
-    }
-
-    form {
-        .clear-input {
-            position: absolute;
-            right: 0.2em;
-            cursor: pointer;
-            font-size: 0.75rem;
-        }
-
-        &.converse-form {
-            background: white;
-            padding: 1em;
-            legend {
-                color: $text-color;
-                font-size: 125%;
-                margin-bottom: 1.5em;
-            }
-            input[type=checkbox] {
-                display: block;
-            }
-            select,
-            input[type=password],
-            input[type=number],
-            input[type=text] {
-                min-width: 50%;
-            }
-            input[type=text],
-            input[type=password],
-            input[type=number],
-            input[type=button],
-            input[type=submit] {
-                padding: 0.5em;
-            }
-            input[type=button],
-            input[type=submit] {
-                padding-left: 1em;
-                padding-right: 1em;
-                margin: 0.5em 0;
-                border: none;
-            }
-            input.error {
-                border: 1px solid $error-color;
-                color: $text-color;
-            }
-            .text-muted {
-                color: $subdued-color !important;
-                font-size: 85%;
-                padding-top: 0.5em;
-                a {
-                    color: lighten($link-color, 10%);
-                }
-                &.error {
-                    color: $error-color;
-                }
-            }
-        }
-        &.converse-centered-form {
-            text-align: center;
-        }
     }
 
     .chat-textarea-chatbox-selected {

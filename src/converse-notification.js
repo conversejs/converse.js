@@ -31,7 +31,7 @@
                 // ^ a list of JIDs to ignore concerning chat state notifications
                 play_sounds: true,
                 sounds_path: '/sounds/',
-                notification_icon: '/logo/conversejs128.png'
+                notification_icon: '/logo/conversejs-filled.svg'
             });
 
             _converse.isOnlyChatStateNotification = (msg) =>
@@ -225,7 +225,7 @@
             };
 
             _converse.handleChatStateNotification = function (contact) {
-                /* Event handler for on('contactStatusChanged').
+                /* Event handler for on('contactPresenceChanged').
                  * Will show an HTML5 notification to indicate that the chat
                  * status has changed.
                  */
@@ -274,7 +274,7 @@
                 // registered, because other plugins might override some of our
                 // handlers.
                 _converse.on('contactRequest',  _converse.handleContactRequestNotification);
-                _converse.on('contactStatusChanged',  _converse.handleChatStateNotification);
+                _converse.on('contactPresenceChanged',  _converse.handleChatStateNotification);
                 _converse.on('message',  _converse.handleMessageNotification);
                 _converse.on('feedback', _converse.handleFeedback);
                 _converse.on('connected', _converse.requestPermission);

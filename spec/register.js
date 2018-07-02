@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["jquery", "jasmine", "mock", "converse-core", "test-utils"], factory);
-} (this, function ($, jasmine, mock, converse, test_utils) {
+    define(["jquery", "jasmine", "mock", "test-utils"], factory);
+} (this, function ($, jasmine, mock, test_utils) {
     var Strophe = converse.env.Strophe;
     var $iq = converse.env.$iq;
     var _ = converse.env._;
@@ -14,15 +14,12 @@
                   allow_registration: false },
                 function (done, _converse) {
 
-            test_utils.waitUntil(function () {
-                    return _converse.chatboxviews.get('controlbox');
-                }, 300)
+            test_utils.waitUntil(() => _converse.chatboxviews.get('controlbox'))
             .then(function () {
-
-            test_utils.openControlBox();
-            var cbview = _converse.chatboxviews.get('controlbox');
-            expect($(cbview.el.querySelector('a.register-account')).length).toBe(0);
-            done();
+                test_utils.openControlBox();
+                var cbview = _converse.chatboxviews.get('controlbox');
+                expect($(cbview.el.querySelector('a.register-account')).length).toBe(0);
+                done();
             });
         }));
 
@@ -267,10 +264,24 @@
                 registerview.el.querySelector('input[type=submit]').click();
 
                 expect(_converse.connection.send).toHaveBeenCalled();
-                var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
-                expect($stanza.children('query').children().length).toBe(1);
-                expect($stanza.children('query').children().children().length).toBe(3);
-                expect($stanza.children('query').children().children()[0].tagName).toBe('field');
+                stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                expect(stanza.outerHTML.trim().replace(/(\n|\s{2,})/g, '')).toEqual(
+                    '<iq type="set" id="'+stanza.getAttribute('id')+'" xmlns="jabber:client">'+
+                        '<query xmlns="jabber:iq:register">'+
+                            '<x xmlns="jabber:x:data" type="submit">'+
+                                '<field xmlns="http://www.w3.org/1999/xhtml" var="username">'+
+                                    '<value>testusername</value>'+
+                                '</field>'+
+                                '<field xmlns="http://www.w3.org/1999/xhtml" var="password">'+
+                                    '<value>testpassword</value>'+
+                                '</field>'+
+                                '<field xmlns="http://www.w3.org/1999/xhtml" var="email">'+
+                                    '<value>test@email.local</value>'+
+                                '</field>'+
+                            '</x>'+
+                        '</query>'+
+                    '</iq>'
+                );
                 done();
             });
         }));

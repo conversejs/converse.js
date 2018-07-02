@@ -34,8 +34,6 @@ via the *script* and *link* tags:
     <script src="https://cdn.conversejs.org/dist/converse.min.js" charset="utf-8"></script>
 
 
-.. note:: For the fullscreen :ref:`view_mode` version of converse.js, replace ``converse.min.css`` with ``inverse.min.css``.
-
 .. note:: Instead of always loading the latest version of Converse.js via the
     CDN, it's generally better to load a specific version (preferably the
     latest one), to avoid breakage when new backwards-incompatible versions are
@@ -111,19 +109,13 @@ split up into two parts, with the UI part dropped for this build.
 Fullscreen version
 ------------------
 
-Converse.js also comes in a fullscreen version (often referred to as Inverse).
+Converse.js also comes in a fullscreen version.
 A hosted version is available online at `inverse.chat <https://inverse.chat>`_.
 
 Originally this version was available as a separate build file, but 
 as of version 4.0.0 and higher, the difference between the "overlay" and the
 "fullscreen" versions of converse.js is simply a matter of configuring the 
-:ref:`view_mode` and including the right CSS file.
-
-For the default "overlay" version, ``converse.css`` is used, and for the
-"fullscreen" version ``inverse.css`` is used.
-
-We'd like to eventually not require two different CSS files, and to allow you
-to seamlessly switch between the different view modes.
+:ref:`view_mode`.
 
 To generate the headless build, run ``make dist/converse-headless.js`` and/or 
 ``make dist/converse-headless.min.js``.

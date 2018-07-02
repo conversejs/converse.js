@@ -10,15 +10,15 @@
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-    define(["form-utils",
+    define(["utils/form",
             "converse-core",
-            "tpl!form_username",
-            "tpl!register_link",
-            "tpl!register_panel",
-            "tpl!registration_form",
-            "tpl!registration_request",
-            "tpl!form_input",
-            "tpl!spinner",
+            "templates/form_username.html",
+            "templates/register_link.html",
+            "templates/register_panel.html",
+            "templates/registration_form.html",
+            "templates/registration_request.html",
+            "templates/form_input.html",
+            "templates/spinner.html",
             "converse-controlbox"
     ], factory);
 }(this, function (
@@ -62,16 +62,21 @@
 
             LoginPanel: {
 
-                render: function (cfg) {
+                insertRegisterLink () {
+                    const { _converse } = this.__super__;
+                    if (_.isUndefined(this.registerlinkview)) {
+                        this.registerlinkview = new _converse.RegisterLinkView({'model': this.model});
+                        this.registerlinkview.render();
+                        this.el.querySelector('.buttons').insertAdjacentElement('afterend', this.registerlinkview.el);
+                    }
+                    this.registerlinkview.render();
+                },
+
+                render (cfg) {
                     const { _converse } = this.__super__;
                     this.__super__.render.apply(this, arguments);
-                    if (_converse.allow_registration) {
-                        if (_.isUndefined(this.registerlinkview)) {
-                            this.registerlinkview = new _converse.RegisterLinkView({'model': this.model});
-                            this.registerlinkview.render();
-                            this.el.querySelector('.buttons').insertAdjacentElement('beforeend', this.registerlinkview.el);
-                        }
-                        this.registerlinkview.render();
+                    if (_converse.allow_registration && !_converse.auto_login) {
+                        this.insertRegisterLink();
                     }
                     return this;
                 }
@@ -139,9 +144,10 @@
             _converse.CONNECTION_STATUS[Strophe.Status.NOTACCEPTABLE] = 'NOTACCEPTABLE';
 
             _converse.api.settings.update({
-                allow_registration: true,
-                domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
-                providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
+                'allow_registration': true,
+                'domain_placeholder': __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
+                'providers_link': 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
+                'registration_domain': ''
             });
 
 

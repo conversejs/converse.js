@@ -9,9 +9,9 @@
         "converse-core",
         "emojione",
         "filesize",
-        "tpl!chatboxes",
+        "templates/chatboxes.html",
         "backbone.overview",
-        "form-utils"
+        "utils/form"
     ], factory);
 }(this, function (converse, emojione, filesize, tpl_chatboxes) {
     "use strict";
@@ -28,18 +28,6 @@
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
             // relevant objects or classes.
-
-            disconnect: function () {
-                const { _converse } = this.__super__;
-                _converse.chatboxviews.closeAllChatBoxes();
-                return this.__super__.disconnect.apply(this, arguments);
-            },
-
-            logOut: function () {
-                const { _converse } = this.__super__;
-                _converse.chatboxviews.closeAllChatBoxes();
-                return this.__super__.logOut.apply(this, arguments);
-            },
 
             initStatus: function (reconnecting) {
                 const { _converse } = this.__super__;
@@ -62,7 +50,9 @@
             // Refer to docs/source/configuration.rst for explanations of these
             // configuration settings.
             _converse.api.settings.update({
-                auto_join_private_chats: [],
+                'filter_by_resource': false,
+                'auto_join_private_chats': [],
+                'forward_messages': false,
             });
             _converse.api.promises.add([
                 'chatBoxesFetched',
@@ -110,17 +100,35 @@
                     }
                 },
 
+                getVCardForChatroomOccupant () {
+                    const chatbox = this.collection.chatbox,
+                          nick = Strophe.getResourceFromJid(this.get('from'));
+
+                    if (chatbox.get('nick') === nick) {
+                        return _converse.xmppstatus.vcard;
+                    } else {
+                        let vcard;
+                        if (this.get('vcard_jid')) {
+                            vcard = _converse.vcards.findWhere({'jid': this.get('vcard_jid')});
+                        }
+                        if (!vcard) {
+                            let jid;
+                            const occupant = chatbox.occupants.findWhere({'nick': nick});
+                            if (occupant && occupant.get('jid')) {
+                                jid = occupant.get('jid');
+                                this.save({'vcard_jid': jid}, {'silent': true});
+                            } else {
+                                jid = this.get('from');
+                            }
+                            vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
+                        }
+                        return vcard;
+                    }
+                },
+
                 setVCard () {
                     if (this.get('type') === 'groupchat') {
-                        const chatbox = this.collection.chatbox,
-                              nick = Strophe.getResourceFromJid(this.get('from'));
-                        if (chatbox.get('nick') === nick) {
-                            this.vcard = _converse.xmppstatus.vcard;
-                        } else {
-                            const occupant = chatbox.occupants.findWhere({'nick': nick});
-                            const jid = (occupant && occupant.get('jid')) ? occupant.get('jid') : this.get('from');
-                            this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
-                        }
+                        this.vcard = this.getVCardForChatroomOccupant();
                     } else {
                         const jid = this.get('from');
                         this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
@@ -230,26 +238,27 @@
             });
 
 
-            _converse.ChatBox = Backbone.Model.extend({
-                defaults: {
-                    'bookmarked': false,
-                    'chat_state': undefined,
-                    'num_unread': 0,
-                    'type': 'chatbox',
-                    'message_type': 'chat',
-                    'url': ''
+            _converse.ChatBox = _converse.ModelWithVCardAndPresence.extend({
+                defaults () {
+                    return {
+                        'bookmarked': false,
+                        'chat_state': undefined,
+                        'num_unread': 0,
+                        'type': 'chatbox',
+                        'message_type': 'chat',
+                        'url': '',
+                        'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode)
+                    }
                 },
 
                 initialize () {
-                    this.vcard = _converse.vcards.findWhere({'jid': this.get('jid')});
-                    if (_.isNil(this.vcard)) {
-                        this.vcard = _converse.vcards.create({'jid': this.get('jid')});
-                    }
+                    _converse.ModelWithVCardAndPresence.prototype.initialize.apply(this, arguments);
+
                     _converse.api.waitUntil('rosterContactsFetched').then(() => {
                         this.addRelatedContact(_converse.roster.findWhere({'jid': this.get('jid')}));
                     });
                     this.messages = new _converse.Messages();
-                    this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
+                    this.messages.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                         b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
                     this.messages.chatbox = this;
 
@@ -405,12 +414,17 @@
 
                 getMessageBody (message) {
                     const type = message.getAttribute('type');
-                    return (type === 'error') ?
-                        _.propertyOf(message.querySelector('error text'))('textContent') :
-                            _.propertyOf(message.querySelector('body'))('textContent');
+                    if (type === 'error') {
+                        const error = message.querySelector('error');
+                        return _.propertyOf(error.querySelector('text'))('textContent') ||
+                            __('Sorry, an error occured:') + ' ' + error.innerHTML;
+                    } else {
+                        return _.propertyOf(message.querySelector('body'))('textContent');
+                    }
+
                 },
 
-                getMessageAttributesFromStanza (message, delay, original_stanza) {
+                getMessageAttributesFromStanza (message, original_stanza) {
                     /* Parses a passed in message stanza and returns an object
                      * of attributes.
                      *
@@ -422,11 +436,11 @@
                      *      that contains the message stanza, if it was
                      *      contained, otherwise it's the message stanza itself.
                      */
-                    delay = delay || message.querySelector('delay');
-
                     const { _converse } = this.__super__,
                           { __ } = _converse,
-                          spoiler = message.querySelector(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`),
+                          archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
+                          spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
+                          delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
                           chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
                                 message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
                                 message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
@@ -434,13 +448,14 @@
                                 message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
                     const attrs = {
-                        'type': message.getAttribute('type'),
                         'chat_state': chat_state,
-                        'delayed': !_.isNull(delay),
+                        'is_archived': !_.isNil(archive),
+                        'is_delayed': !_.isNil(delay),
+                        'is_spoiler': !_.isNil(spoiler),
                         'message': this.getMessageBody(message) || undefined,
                         'msgid': message.getAttribute('id'),
                         'time': delay ? delay.getAttribute('stamp') : moment().format(),
-                        'is_spoiler': !_.isNull(spoiler)
+                        'type': message.getAttribute('type')
                     };
                     if (attrs.type === 'groupchat') {
                         attrs.from = message.getAttribute('from');
@@ -470,14 +485,15 @@
                     return attrs;
                 },
 
-                createMessage (message, delay, original_stanza) {
+                createMessage (message, original_stanza) {
                     /* Create a Backbone.Message object inside this chat box
                      * based on the identified message stanza.
                      */
-                    const attrs = this.getMessageAttributesFromStanza.apply(this, arguments)
+                    const attrs = this.getMessageAttributesFromStanza(message, original_stanza);
                     const is_csn = u.isOnlyChatStateNotification(attrs);
-                    if (is_csn && attrs.delayed) {
-                        // No need showing old CSNs
+                    if (is_csn && (attrs.is_delayed || (attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick')))) {
+                        // XXX: MUC leakage
+                        // No need showing delayed or our own CSN messages
                         return;
                     } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
                         // TODO: handle <subject> messages (currently being done by ChatRoom)
@@ -487,7 +503,7 @@
                     }
                 },
 
-                newMessageWillBeHidden () {
+                isHidden () {
                     /* Returns a boolean to indicate whether a newly received
                      * message will be visible to the user or not.
                      */
@@ -504,7 +520,7 @@
                     if (_.isNull(stanza.querySelector('body'))) {
                         return; // The message has no text
                     }
-                    if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                    if (utils.isNewMessage(stanza) && this.isHidden()) {
                         this.save({'num_unread': this.get('num_unread') + 1});
                         _converse.incrementMsgCounter();
                     }
@@ -528,12 +544,14 @@
                 },
 
                 registerMessageHandler () {
-                    _converse.connection.addHandler(
-                        this.onMessage.bind(this), null, 'message', 'chat'
-                    );
-                    _converse.connection.addHandler(
-                        this.onErrorMessage.bind(this), null, 'message', 'error'
-                    );
+                    _converse.connection.addHandler((stanza) => {
+                        this.onMessage(stanza);
+                        return true;
+                    }, null, 'message', 'chat');
+                    _converse.connection.addHandler((stanza) => {
+                        this.onErrorMessage(stanza);
+                        return true;
+                    }, null, 'message', 'error');
                 },
 
                 chatBoxMayBeShown (chatbox) {
@@ -551,29 +569,27 @@
                 },
 
                 onConnected () {
-                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    this.browserStorage = new Backbone.BrowserStorage.session(
                         b64_sha1(`converse.chatboxes-${_converse.bare_jid}`));
                     this.registerMessageHandler();
                     this.fetch({
-                        add: true,
-                        success: this.onChatBoxesFetched.bind(this)
+                        'add': true,
+                        'success': this.onChatBoxesFetched.bind(this)
                     });
                 },
 
                 onErrorMessage (message) {
                     /* Handler method for all incoming error message stanzas
                     */
-                    // TODO: we can likely just reuse "onMessage" below
                     const from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
                     if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
                         return true;
                     }
-                    // Get chat box, but only create a new one when the message has a body.
                     const chatbox = this.getChatBox(from_jid);
                     if (!chatbox) {
                         return true;
                     }
-                    chatbox.createMessage(message, null, message);
+                    chatbox.createMessage(message, message);
                     return true;
                 },
 
@@ -584,8 +600,7 @@
                      * Parameters:
                      *    (XMLElement) message - The incoming message stanza
                      */
-                    let contact_jid, delay, resource,
-                        from_jid = message.getAttribute('from'),
+                    let from_jid = message.getAttribute('from'),
                         to_jid = message.getAttribute('to');
 
                     const original_stanza = message,
@@ -614,12 +629,10 @@
                         const forwarded_from = forwarded_message.getAttribute('from');
                         if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
                             // Prevent message forging via carbons
-                            //
                             // https://xmpp.org/extensions/xep-0280.html#security
                             return true;
                         }
                         message = forwarded_message;
-                        delay = forwarded.querySelector('delay');
                         from_jid = message.getAttribute('from');
                         to_jid = message.getAttribute('to');
                     }
@@ -628,13 +641,12 @@
                         from_resource = Strophe.getResourceFromJid(from_jid),
                         is_me = from_bare_jid === _converse.bare_jid;
 
+                    let contact_jid;
                     if (is_me) {
                         // I am the sender, so this must be a forwarded message...
                         contact_jid = Strophe.getBareJidFromJid(to_jid);
-                        resource = Strophe.getResourceFromJid(to_jid);
                     } else {
                         contact_jid = from_bare_jid;
-                        resource = from_resource;
                     }
                     // Get chat box, but only create a new one when the message has a body.
                     const attrs = {
@@ -649,7 +661,7 @@
                             // Only create the message when we're sure it's not a
                             // duplicate
                             chatbox.incrementUnreadMsgCounter(original_stanza);
-                            chatbox.createMessage(message, delay, original_stanza);
+                            chatbox.createMessage(message, original_stanza);
                         }
                     }
                     _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});
@@ -703,9 +715,6 @@
                                 // Perhaps inside a web component?
                                 _converse.root.appendChild(el);
                             }
-                        }
-                        if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
-                            el.classList.add('fullscreen');
                         }
                         el.innerHTML = '';
                         this.setElement(el, false);
@@ -818,12 +827,11 @@
                 _converse.emit('chatBoxesInitialized');
             });
 
-            _converse.api.listen.on('beforeTearDown', () => {
-                _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
-                delete _converse.chatboxes.browserStorage;
+            _converse.api.listen.on('clearSession', () => {
+                _converse.chatboxviews.closeAllChatBoxes();
             });
 
-            _converse.api.listen.on('statusInitialized', () => _converse.chatboxes.onConnected());
+            _converse.api.listen.on('presencesInitialized', () => _converse.chatboxes.onConnected());
             /************************ END Event Handlers ************************/
 
 

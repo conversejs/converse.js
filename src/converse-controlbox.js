@@ -8,17 +8,19 @@
 
 (function (root, factory) {
     define(["converse-core",
+            "bootstrap",
             "lodash.fp",
-            "tpl!converse_brand_heading",
-            "tpl!controlbox",
-            "tpl!controlbox_toggle",
-            "tpl!login_panel",
+            "templates/converse_brand_heading.html",
+            "templates/controlbox.html",
+            "templates/controlbox_toggle.html",
+            "templates/login_panel.html",
             "converse-chatview",
             "converse-rosterview",
             "converse-profile"
     ], factory);
 }(this, function (
             converse,
+            bootstrap,
             fp,
             tpl_brand_heading,
             tpl_controlbox,
@@ -89,8 +91,8 @@
             //
             // New functions which don't exist yet can also be added.
 
-            _tearDown () {
-                this.__super__._tearDown.apply(this, arguments);
+            tearDown () {
+                this.__super__.tearDown.apply(this, arguments);
                 if (this.rosterview) {
                     // Removes roster groups
                     this.rosterview.model.off().reset();
@@ -99,19 +101,6 @@
                         groupview.remove();
                     });
                     this.rosterview.removeAll().remove();
-                }
-            },
-
-            clearSession () {
-                this.__super__.clearSession.apply(this, arguments);
-                const chatboxes = _.get(this, 'chatboxes', null);
-                if (!_.isNil(chatboxes)) {
-                    const controlbox = chatboxes.get('controlbox');
-                    if (controlbox &&
-                            controlbox.collection &&
-                            controlbox.collection.browserStorage) {
-                        controlbox.save({'connected': false});
-                    }
                 }
             },
 
@@ -414,6 +403,14 @@
                 initialize (cfg) {
                     this.model.on('change', this.render, this);
                     this.listenTo(_converse.connfeedback, 'change', this.render);
+                    this.render();
+                    _.forEach(this.el.querySelectorAll('[data-title]'), (el) => {
+                        const popover = new bootstrap.Popover(el, {
+                            'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
+                            'dismissible': _converse.view_mode === 'mobile' && true || false,
+                            'container': _converse.chatboxviews.el
+                        })
+                    });
                 },
 
                 toHTML () {
@@ -465,18 +462,19 @@
                         this.connect(_converse.jid, null);
                         return;
                     }
-                    if (!this.validate()) {
-                        return;
-                    }
-                    let jid = ev.target.querySelector('input[name=jid]').value;
+                    if (!this.validate()) { return; }
+
+                    const form_data = new FormData(ev.target);
+                    _converse.trusted = form_data.get('trusted');
+                    _converse.storage = form_data.get('trusted') ? 'local' : 'session';
+
+                    let jid = form_data.get('jid');
                     if (_converse.locked_domain) {
                         jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
                     } else if (_converse.default_domain && !_.includes(jid, '@')) {
                         jid = jid + '@' + _converse.default_domain;
                     }
-                    this.connect(
-                        jid, _.get(ev.target.querySelector('input[name=password]'), 'value')
-                    );
+                    this.connect(jid, form_data.get('password'));
                 },
 
                 connect (jid, password) {
@@ -575,6 +573,20 @@
                         }
                     } else {
                         this.showControlBox();
+                    }
+                }
+            });
+
+            _converse.on('clearSession', () => {
+                if (_converse.trusted) {
+                    const chatboxes = _.get(_converse, 'chatboxes', null);
+                    if (!_.isNil(chatboxes)) {
+                        const controlbox = chatboxes.get('controlbox');
+                        if (controlbox &&
+                                controlbox.collection &&
+                                controlbox.collection.browserStorage) {
+                            controlbox.save({'connected': false});
+                        }
                     }
                 }
             });

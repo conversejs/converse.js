@@ -9,11 +9,11 @@
 (function (root, factory) {
     define(["converse-core",
             "bootstrap",
-            "tpl!alert",
-            "tpl!chat_status_modal",
-            "tpl!profile_modal",
-            "tpl!profile_view",
-            "tpl!status_option",
+            "templates/alert.html",
+            "templates/chat_status_modal.html",
+            "templates/profile_modal.html",
+            "templates/profile_view.html",
+            "templates/status_option.html",
             "converse-vcard",
             "converse-modal"
     ], factory);
@@ -88,8 +88,8 @@
                     reader.readAsDataURL(file);
                 },
 
-                setVCard (body, data) {
-                    _converse.api.vcard.set(data)
+                setVCard (data) {
+                    _converse.api.vcard.set(_converse.bare_jid, data)
                     .then(() => _converse.api.vcard.update(this.model.vcard, true))
                     .catch((err) => {
                         _converse.log(err, Strophe.LogLevel.FATAL);
@@ -107,11 +107,11 @@
                     ev.preventDefault();
                     const reader = new FileReader(),
                           form_data = new FormData(ev.target),
-                          body = this.el.querySelector('.modal-body'),
                           image_file = form_data.get('image');
 
                     const data = {
                         'fn': form_data.get('fn'),
+                        'nickname': form_data.get('nickname'),
                         'role': form_data.get('role'),
                         'email': form_data.get('email'),
                         'url': form_data.get('url'),
@@ -121,14 +121,14 @@
                             'image': this.model.vcard.get('image'),
                             'image_type': this.model.vcard.get('image_type')
                         });
-                        this.setVCard(body, data);
+                        this.setVCard(data);
                     } else {
                         reader.onloadend = () => {
                             _.extend(data, {
                                 'image': btoa(reader.result),
                                 'image_type': image_file.type
                             });
-                            this.setVCard(body, data);
+                            this.setVCard(data);
                         };
                         reader.readAsBinaryString(image_file);
                     }

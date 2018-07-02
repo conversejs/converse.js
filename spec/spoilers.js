@@ -1,13 +1,6 @@
 (function (root, factory) {
-    define([
-        "jasmine",
-        "utils",
-        "mock",
-        "converse-core",
-        "test-utils"
-        ], factory);
-} (this, function (jasmine, utils, mock, converse, test_utils) {
-
+    define(["jasmine", "mock", "test-utils"], factory);
+} (this, function (jasmine, mock, test_utils) {
     var _ = converse.env._;
     var Strophe = converse.env.Strophe;
     var $msg = converse.env.$msg;
@@ -94,7 +87,7 @@
                 var spoiler_hint_el = view.el.querySelector('.spoiler-hint');
                 expect(spoiler_hint_el.textContent).toBe('');
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }));
 
         it("can be sent without a hint",
@@ -169,7 +162,7 @@
                 spoiler_toggle.click();
                 expect(_.includes(spoiler_msg_el.classList, 'collapsed')).toBeTruthy();
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }));
 
         it("can be sent with a hint",

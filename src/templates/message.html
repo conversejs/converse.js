@@ -5,9 +5,9 @@
     <div class="chat-msg-content">
         <span class="chat-msg-heading">
             <span class="chat-msg-author">{{{o.username}}}
-                {[ _.each(o.roles, function (role) { ]} <span class="badge badge-secondary">{{{role}}}</span> {[ }); ]}
+                {[o.roles.forEach(function (role) { ]} <span class="badge badge-secondary">{{{role}}}</span> {[ }); ]}
             </span>
-            <span class="chat-msg-time">{{{o.pretty_time}}}</span>
+            <time timestamp="{{{o.isodate}}}" class="chat-msg-time">{{{o.pretty_time}}}</time>
         </span>
         <span class="chat-msg-text"></span>
         <div class="chat-msg-media"></div>

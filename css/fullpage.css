@@ -1,0 +1,26 @@
+body {
+    font-family: "Lora", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #ffffff;
+    background-color: #578EA9;
+}
+.brand-heading {
+    font-size: 600%;
+    margin-left: -10%;
+}
+.icon-conversejs {
+    font-size: 88%;
+}
+.brand-heading div.content {
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    background-color: #578EA9;
+}
+.brand-heading div.content .inner-content {
+    text-align: center;
+    padding: 7%;
+}
+p.no-chats {
+    padding-right: 10%;
+    font-size: 120%;
+}

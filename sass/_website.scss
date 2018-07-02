@@ -113,29 +113,41 @@ a:hover, a:focus {
 .features-section,
 .outro,
 .intro {
-  width: 100%;
-  padding: 100px 0;
-  text-align: center;
-  color: #fff;
+    width: 100%;
+    padding: 100px 0;
+    text-align: center;
+    color: #fff;
 }
 .intro {
-  background: url(images/header.jpg) no-repeat bottom center scroll;
-  background-color: #211018;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  background-size: cover;
-  -o-background-size: cover;
+    background: url(images/header.jpg) no-repeat bottom center scroll;
+    background-color: #211018;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
 }
 .features-section {
-  background: url('images/bgtr.svg') top right no-repeat, url('images/bgbl.svg') bottom left no-repeat, url('images/bgbl.svg') bottom left no-repeat, url('images/overlay.png'), linear-gradient(45deg, #85505f, #384955, #655361);
+    background: url('images/bgtr.svg') top right no-repeat, url('images/bgbl.svg') bottom left no-repeat, url('images/bgbl.svg') bottom left no-repeat, url('images/overlay.png'), linear-gradient(45deg, #85505f, #384955, #655361);
 }
 .features-section a {
-  color: #82B397;
+    color: #82B397;
 }
 .outro {
-  background: url('images/bgtr.svg') top right no-repeat, url('images/bgbl.svg') bottom left no-repeat, url('images/overlay.png'), linear-gradient(45deg, #384955, #655361, #85505f);
+    background: url('images/bgtr.svg') top right no-repeat, url('images/bgbl.svg') bottom left no-repeat, url('images/overlay.png'), linear-gradient(45deg, #384955, #655361, #85505f);
 }
 
+section {
+    h2 {
+        color: #E7A151;
+    }
+    h3 {
+        color: #89B7CD;
+    }
+    h4 {
+        color: #5CBC86;
+        font-size: 1.5em;
+    }
+}
 
 .brand-heading {
     font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
@@ -205,25 +217,38 @@ a:hover, a:focus {
 }
 
 .content-section {
-  padding-top: 100px;
+    padding-top: 100px;
+    padding-top: 100px;
+    min-height: 100vh;
+
+    .privacy-policy {
+        padding-top: 2em;
+        h4 {
+            padding-top: 1.5em;
+        }
+        p {
+            font-size: 1.2em;
+            padding-bottom: 0;
+            margin-bottom: 1em;
+        }
+    }
 }
 .donate-section {
-  width: 100%;
-  padding: 50px 0;
-  color: #ffffff;
-  background-color: #211018;
+    width: 100%;
+    padding: 50px 0;
+    color: #ffffff;
+    background-color: #211018;
 }
 .donate-section p.bitcoin-header {
-  margin: 0 0 5px;
+    margin: 0 0 5px;
 }
 @media (min-width: 767px) {
-  .content-section {
-    padding-top: 150px;
-    padding-bottom: 50px;
-  }
-  .donate-section {
-    padding: 100px 0;
-  }
+    .content-section {
+        padding-bottom: 50px;
+    }
+    .donate-section {
+        padding: 100px 0;
+    }
 }
 .btn {
   font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
@@ -332,6 +357,9 @@ ul.features {
     clear: both;
     font-size: 1.4em;
     padding: 2em 0 6em 0;
+    ul {
+        padding: 0;
+    }
 }
 .sponsors h2 {
     text-align: center;

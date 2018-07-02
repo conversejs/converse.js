@@ -7,12 +7,21 @@
 - #161 XEP-0363: HTTP File Upload
 - #194 Include entity capabilities in outgoing presence stanzas
 - #337 API call to update a VCard
+- #968 Use nickname from VCard when joining a room
+- #1091 There's now only one CSS file for all view modes.
 - #1094 Show room members who aren't currently online
+- #1106 Support for Roster Versioning
+- #1081 Allow for shift-enter to insert newlines
 - It's now also possible to edit your VCard via the UI
 - Automatically grow/shrink input as text is entered/removed
 - MP4 and MP3 files when sent as XEP-0066 Out of Band Data, are now playable directly in chat
 - Support for rendering URLs sent according to XEP-0066 Out of Band Data.
 - Geo-URIs (e.g. from Conversations) are now replaced by links to openstreetmap (works in reverse also)
+- Add a checkbox to indicate whether a trusted device is being used or not.
+  If the device is not trusted, sessionStorage is used and all user data is deleted from the browser cache upon logout.
+  If the device is trusted, localStorage is used and user data is cached indefinitely.
+- Initial support for XEP-0357 Push Notifications, specifically registering an "App Server".
+- Add support for logging in via OAuth (see the [oauth_providers](https://conversejs.org/docs/html/configurations.html#oauth-providers) setting)
 
 ### Bugfixes
 
@@ -22,10 +31,13 @@
 - #1039 Multi-option data form elements not shown and saved correctly
 
 ### API changes
+
 - `_converse.api.vcard.get` now also accepts a `Backbone.Model` instance and
   has an additional `force` parameter to force fetching the vcard even if it
   has already been fetched.
 - New API method `_converse.api.vcard.update`.
+- The `contactStatusChanged` event has been renamed to `contactPresenceChanged`
+  and a event `presenceChanged` is now also triggered on the contact.
 
 ## UI changes
 
@@ -41,6 +53,8 @@
   [statusMessageChanged](https://conversejs.org/docs/html/events.html#contactstatusmessagechanged)
   event and make the XMLHttpRequest yourself.
 - Removed  `xhr_user_search` in favor of only accepting `xhr_user_search_url` as configuration option.
+- `xhr_user_search_url` has to include the `?` character now in favor of more
+flexibility. See example in the documentation.
 - The data returned from the `xhr_user_search_url` must now include the user's
   `jid` instead of just an `id`.
 - New configuration settings [nickname](https://conversejs.org/docs/html/configurations.html#nickname)

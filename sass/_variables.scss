@@ -63,6 +63,8 @@ $message-them-color: $green !default;
 
 $roster-height: 194px !default;
 
+$flyout-padding: 1.2em;
+
 $chat-head-color: $green !default;
 $chat-head-text-color: white !default;
 $chat-head-inverse-text-color: white !default;
@@ -110,10 +112,11 @@ $font-path: "../fonticons/fonts/" !default;
 $normal-font: "Helvetica", "Arial", sans-serif;
 $heading-font: 'Century Gothic', futura, 'URW Gothic L', Verdana, sans-serif !default;
 
-$chatroom-head-color: $red !default;
-$chatroom-color-light: $light-red !default;
 $chatroom-color-dark: $darkest-red !default;
+$chatroom-color-light: $light-red !default;
+$chatroom-head-color: $red !default;
 $chatroom-message-them-color: $green !default;
+$chatroom-width: 400px !default;
 
 $headline-head-color: $orange !default;
 
@@ -124,3 +127,30 @@ $box-close-button-padding-right: 4px !default;
 
 $chatbox-button-size: 14px !default;
 $fullpage-chatbox-button-size: 16px !default;
+
+$font-size-small: 12px !default;
+$font-size: 14px !default;
+$font-size-large: 16px !default;
+$font-size-huge: 20px !default;
+
+$legend-font-size: 16px !default;
+
+$line-height-small:  14px !default;
+$line-height:  16px !default;
+$line-height-large:  20px !default;
+$line-height-huge:  24px !default;
+
+$occupants-padding: 1em;
+
+$fullpage-chat-head-height: 62px !default;
+$fullpage-chat-height: 100vh;
+$fullpage-chat-width: 100%;
+$fullpage-emoji-picker-height: 150px !default;
+$fullpage-max-chat-textarea-height: 400px !default;
+
+$overlayed-chat-head-height: 55px !default;
+$overlayed-chat-height: 450px !default;
+$overlayed-chat-width: 250px !default;
+$overlayed-chatbox-hover-height: 1em !default;
+$overlayed-emoji-picker-height: 100px !default;
+$overlayed-max-chat-textarea-height: 200px !default;

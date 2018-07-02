@@ -11,14 +11,14 @@
 (function (root, factory) {
     define(["sizzle",
             "converse-core",
-            "utils",
             "converse-disco",
             "strophe.rsm"
     ], factory);
-}(this, function (sizzle, converse, utils) {
+}(this, function (sizzle, converse) {
     "use strict";
     const CHATROOMS_TYPE = 'chatroom';
     const { Promise, Strophe, $iq, _, moment } = converse.env;
+    const u = converse.env.utils;
 
     const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
     // XEP-0313 Message Archive Management
@@ -128,7 +128,7 @@
             //
             // New functions which don't exist yet can also be added.
             ChatBox: {
-                getMessageAttributesFromStanza (message, delay, original_stanza) {
+                getMessageAttributesFromStanza (message, original_stanza) {
                     const attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
                     const archive_id = getMessageArchiveID(original_stanza);
                     if (archive_id) {
@@ -153,7 +153,7 @@
                      */
                     if (this.disable_mam) { return; }
                     const { _converse } = this.__super__,
-                          most_recent_msg = utils.getMostRecentMessage(this.model);
+                          most_recent_msg = u.getMostRecentMessage(this.model);
 
                     if (_.isNil(most_recent_msg)) {
                         this.fetchArchivedMessages();

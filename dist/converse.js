@@ -85074,11 +85074,15 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/form_input.html -->\n<div class="form-group">\n    <label for="' +
+__p += '<!-- src/templates/form_input.html -->\n<div class="form-group">\n    ';
+ if (o.type !== 'hidden') { ;
+__p += '\n        <label for="' +
 __e(o.id) +
 '">' +
 __e(o.label) +
-'</label>\n    <input class="form-control" name="' +
+'</label>\n    ';
+ } ;
+__p += '\n    <input class="form-control" name="' +
 __e(o.name) +
 '" type="' +
 __e(o.type) +

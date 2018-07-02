@@ -331,8 +331,9 @@
                                 this.parseRoomFeatures(stanza);
                                 resolve()
                             }).catch((err) => {
-                                _converse.log(err, Strophe.LogLevel.ERROR);
-                                reject(new Error("Could not parse the room features"));
+                                _converse.log("Could not parse the room features", Strophe.LogLevel.WARN);
+                                _converse.log(err, Strophe.LogLevel.WARN);
+                                reject(err);
                             });
                     });
                 },

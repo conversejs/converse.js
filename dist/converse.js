@@ -71341,6 +71341,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
     if (message instanceof Error) {
       message = message.stack;
+    } else if (_.isElement(message)) {
+      message = message.outerHTML;
     }
 
     const prefix = style ? '%c' : '';
@@ -75985,13 +75987,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            */
           if (_.isNull(this.el.querySelector('.chat-area'))) {
             const container_el = this.el.querySelector('.chatroom-body');
-            container_el.innerHTML = tpl_chatarea({
+            container_el.insertAdjacentHTML('beforeend', tpl_chatarea({
               'label_message': __('Message'),
               'label_send': __('Send'),
               'show_send_button': _converse.show_send_button,
               'show_toolbar': _converse.show_toolbar,
               'unread_msgs': __('You have unread messages')
-            });
+            }));
             container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
             this.renderToolbar(tpl_chatroom_toolbar);
             this.content = this.el.querySelector('.chat-content');
@@ -76674,15 +76676,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.el.querySelector('.chatroom-form').addEventListener('submit', this.submitPassword.bind(this), false);
         },
 
-        showDisconnectMessage(msg) {
+        showDisconnectMessages(msgs) {
+          if (_.isString(msgs)) {
+            msgs = [msgs];
+          }
+
           u.hideElement(this.el.querySelector('.chat-area'));
           u.hideElement(this.el.querySelector('.occupants'));
 
           _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
 
-          this.el.querySelector('.chatroom-body').insertAdjacentHTML('beforeend', tpl_chatroom_disconnect({
-            'disconnect_message': msg
-          }));
+          const container = this.el.querySelector('.disconnect-container');
+          container.innerHTML = tpl_chatroom_disconnect({
+            '_': _,
+            'disconnect_messages': msgs
+          });
+          u.showElement(container);
         },
 
         getMessageFromStatus(stat, stanza, is_self) {
@@ -76781,16 +76790,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * information to the user.
            */
           if (notification.disconnected) {
-            this.showDisconnectMessage(notification.disconnection_message);
+            const messages = [];
+            messages.push(notification.disconnection_message);
 
             if (notification.actor) {
-              this.showDisconnectMessage(__('This action was done by %1$s.', notification.actor));
+              messages.push(__('This action was done by %1$s.', notification.actor));
             }
 
             if (notification.reason) {
-              this.showDisconnectMessage(__('The reason given is: "%1$s".', notification.reason));
+              messages.push(__('The reason given is: "%1$s".', notification.reason));
             }
 
+            this.showDisconnectMessages(messages);
             this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
             return;
           }
@@ -76932,25 +76943,35 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             if (!_.isNull(error.querySelector('not-authorized'))) {
               this.renderPasswordForm();
             } else if (!_.isNull(error.querySelector('registration-required'))) {
-              this.showDisconnectMessage(__('You are not on the member list of this room.'));
+              this.showDisconnectMessages(__('You are not on the member list of this room.'));
             } else if (!_.isNull(error.querySelector('forbidden'))) {
-              this.showDisconnectMessage(__('You have been banned from this room.'));
+              this.showDisconnectMessages(__('You have been banned from this room.'));
             }
           } else if (error.getAttribute('type') === 'modify') {
             if (!_.isNull(error.querySelector('jid-malformed'))) {
-              this.showDisconnectMessage(__('No nickname was specified.'));
+              this.showDisconnectMessages(__('No nickname was specified.'));
             }
           } else if (error.getAttribute('type') === 'cancel') {
             if (!_.isNull(error.querySelector('not-allowed'))) {
-              this.showDisconnectMessage(__('You are not allowed to create new rooms.'));
+              this.showDisconnectMessages(__('You are not allowed to create new rooms.'));
             } else if (!_.isNull(error.querySelector('not-acceptable'))) {
-              this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies."));
+              this.showDisconnectMessages(__("Your nickname doesn't conform to this room's policies."));
             } else if (!_.isNull(error.querySelector('conflict'))) {
               this.onNicknameClash(presence);
             } else if (!_.isNull(error.querySelector('item-not-found'))) {
-              this.showDisconnectMessage(__("This room does not (yet) exist."));
+              this.showDisconnectMessages(__("This room does not (yet) exist."));
             } else if (!_.isNull(error.querySelector('service-unavailable'))) {
-              this.showDisconnectMessage(__("This room has reached its maximum number of occupants."));
+              this.showDisconnectMessages(__("This room has reached its maximum number of occupants."));
+            } else if (!_.isNull(error.querySelector('remote-server-not-found'))) {
+              const messages = [__("Remote server not found")];
+
+              const reason = _.get(error.querySelector('text'), 'textContent');
+
+              if (reason) {
+                messages.push(__('The explanation given is: "%1$s".', reason));
+              }
+
+              this.showDisconnectMessages(messages);
             }
           }
         },
@@ -77564,7 +77585,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
             this.onPresence(stanza);
             return true;
-          }, Strophe.NS.MUC, 'presence', null, null, room_jid, {
+          }, null, 'presence', null, null, room_jid, {
             'ignoreNamespaceFragment': true,
             'matchBareFromJid': true
           });
@@ -77715,9 +77736,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               this.parseRoomFeatures(stanza);
               resolve();
             }).catch(err => {
-              _converse.log(err, Strophe.LogLevel.ERROR);
+              _converse.log("Could not parse the room features", Strophe.LogLevel.WARN);
 
-              reject(new Error("Could not parse the room features"));
+              _converse.log(err, Strophe.LogLevel.WARN);
+
+              reject(err);
             });
           });
         },
@@ -84149,7 +84172,7 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '';
-__p += '<!-- src/templates/chatroom.html -->\n<div class="flyout box-flyout">\n    <div class="chat-head chat-head-chatroom row no-gutters"></div>\n    <div class="chat-body chatroom-body row no-gutters"></div>\n</div>\n';
+__p += '<!-- src/templates/chatroom.html -->\n<div class="flyout box-flyout">\n    <div class="chat-head chat-head-chatroom row no-gutters"></div>\n    <div class="chat-body chatroom-body row no-gutters">\n        <div class="disconnect-container hidden"></div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -84360,10 +84383,17 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/chatroom_disconnect.html -->\n<p class="disconnect-msg">' +
-__e(o.disconnect_message) +
-'</p>\n';
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<!-- src/templates/chatroom_disconnect.html -->\n<div class="alert alert-danger">\n    <h3 class="alert-heading disconnect-msg">' +
+__e(o.disconnect_messages[0]) +
+'</h3>\n\n    ';
+ o._.forEach(o.disconnect_messages.slice(1), function (msg) { ;
+__p += '\n        <p class="disconnect-msg">' +
+__e(msg) +
+'</p>\n    ';
+ }); ;
+__p += '\n</div>\n';
 return __p
 };
 

@@ -601,13 +601,13 @@
                      */
                     if (_.isNull(this.el.querySelector('.chat-area'))) {
                         const container_el = this.el.querySelector('.chatroom-body');
-                        container_el.innerHTML = tpl_chatarea({
+                        container_el.insertAdjacentHTML('beforeend', tpl_chatarea({
                             'label_message': __('Message'),
                             'label_send': __('Send'),
                             'show_send_button': _converse.show_send_button,
                             'show_toolbar': _converse.show_toolbar,
                             'unread_msgs': __('You have unread messages')
-                        });
+                        }));
                         container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
                         this.renderToolbar(tpl_chatroom_toolbar);
                         this.content = this.el.querySelector('.chat-content');
@@ -1259,16 +1259,19 @@
                         'submit', this.submitPassword.bind(this), false);
                 },
 
-                showDisconnectMessage (msg) {
+                showDisconnectMessages (msgs) {
+                    if (_.isString(msgs)) {
+                        msgs = [msgs];
+                    }
                     u.hideElement(this.el.querySelector('.chat-area'));
                     u.hideElement(this.el.querySelector('.occupants'));
                     _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
-                    this.el.querySelector('.chatroom-body').insertAdjacentHTML(
-                        'beforeend',
-                        tpl_chatroom_disconnect({
-                            'disconnect_message': msg
-                        })
-                    );
+                    const container = this.el.querySelector('.disconnect-container');
+                    container.innerHTML = tpl_chatroom_disconnect({
+                        '_': _,
+                        'disconnect_messages': msgs
+                    })
+                    u.showElement(container);
                 },
 
                 getMessageFromStatus (stat, stanza, is_self) {
@@ -1346,13 +1349,15 @@
                      * information to the user.
                      */
                     if (notification.disconnected) {
-                        this.showDisconnectMessage(notification.disconnection_message);
+                        const messages = [];
+                        messages.push(notification.disconnection_message);
                         if (notification.actor) {
-                            this.showDisconnectMessage(__('This action was done by %1$s.', notification.actor));
+                            messages.push(__('This action was done by %1$s.', notification.actor));
                         }
                         if (notification.reason) {
-                            this.showDisconnectMessage(__('The reason given is: "%1$s".', notification.reason));
+                            messages.push(__('The reason given is: "%1$s".', notification.reason));
                         }
+                        this.showDisconnectMessages(messages);
                         this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         return;
                     }
@@ -1488,25 +1493,32 @@
                         if (!_.isNull(error.querySelector('not-authorized'))) {
                             this.renderPasswordForm();
                         } else if (!_.isNull(error.querySelector('registration-required'))) {
-                            this.showDisconnectMessage(__('You are not on the member list of this room.'));
+                            this.showDisconnectMessages(__('You are not on the member list of this room.'));
                         } else if (!_.isNull(error.querySelector('forbidden'))) {
-                            this.showDisconnectMessage(__('You have been banned from this room.'));
+                            this.showDisconnectMessages(__('You have been banned from this room.'));
                         }
                     } else if (error.getAttribute('type') === 'modify') {
                         if (!_.isNull(error.querySelector('jid-malformed'))) {
-                            this.showDisconnectMessage(__('No nickname was specified.'));
+                            this.showDisconnectMessages(__('No nickname was specified.'));
                         }
                     } else if (error.getAttribute('type') === 'cancel') {
                         if (!_.isNull(error.querySelector('not-allowed'))) {
-                            this.showDisconnectMessage(__('You are not allowed to create new rooms.'));
+                            this.showDisconnectMessages(__('You are not allowed to create new rooms.'));
                         } else if (!_.isNull(error.querySelector('not-acceptable'))) {
-                            this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies."));
+                            this.showDisconnectMessages(__("Your nickname doesn't conform to this room's policies."));
                         } else if (!_.isNull(error.querySelector('conflict'))) {
                             this.onNicknameClash(presence);
                         } else if (!_.isNull(error.querySelector('item-not-found'))) {
-                            this.showDisconnectMessage(__("This room does not (yet) exist."));
+                            this.showDisconnectMessages(__("This room does not (yet) exist."));
                         } else if (!_.isNull(error.querySelector('service-unavailable'))) {
-                            this.showDisconnectMessage(__("This room has reached its maximum number of occupants."));
+                            this.showDisconnectMessages(__("This room has reached its maximum number of occupants."));
+                        } else if (!_.isNull(error.querySelector('remote-server-not-found'))) {
+                            const messages = [__("Remote server not found")];
+                            const reason = _.get(error.querySelector('text'), 'textContent');
+                            if (reason) {
+                                messages.push(__('The explanation given is: "%1$s".', reason));
+                            }
+                            this.showDisconnectMessages(messages);
                         }
                     }
                 },

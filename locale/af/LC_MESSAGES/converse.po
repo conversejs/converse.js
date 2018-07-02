@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-05-17 11:19+0200\n"
-"PO-Revision-Date: 2018-03-05 16:35+0100\n"
+"PO-Revision-Date: 2018-07-02 11:29+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -1032,7 +1032,7 @@ msgstr "Hierdie aksie is uitgevoer deur %1$s."
 #: dist/converse-no-dependencies.js:29759
 #, javascript-format
 msgid "The reason given is: \"%1$s\"."
-msgstr "Die gegewe rede is \"%1$s\"."
+msgstr "Die gegewe rede is: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:29781
 #, fuzzy, javascript-format

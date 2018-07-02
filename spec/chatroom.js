@@ -1997,15 +1997,17 @@
                         .c('status').attrs({code:'307'}).nodeTree;
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                    var view = _converse.chatboxviews.get('lounge@localhost');
+                    const view = _converse.chatboxviews.get('lounge@localhost');
                     expect($(view.el.querySelector('.chat-area')).is(':visible')).toBeFalsy();
                     expect($(view.el.querySelector('.occupants')).is(':visible')).toBeFalsy();
-                    var $chat_body = $(view.el.querySelector('.chatroom-body'));
-                    expect($chat_body.find('.disconnect-msg').text()).toBe(
-                        'You have been kicked from this room'+
-                        'This action was done by Fluellen.'+
-                        'The reason given is: "Avaunt, you cullion!".'
-                    );
+                    const chat_body = view.el.querySelector('.chatroom-body');
+                    expect(chat_body.querySelectorAll('.disconnect-msg').length).toBe(3);
+                    expect(chat_body.querySelector('.disconnect-msg:first-child').textContent).toBe(
+                        'You have been kicked from this room');
+                    expect(chat_body.querySelector('.disconnect-msg:nth-child(2)').textContent).toBe(
+                        'This action was done by Fluellen.');
+                    expect(chat_body.querySelector('.disconnect-msg:nth-child(3)').textContent).toBe(
+                        'The reason given is: "Avaunt, you cullion!".');
                     done();
                 });
             }));
@@ -2731,7 +2733,8 @@
                     var view = _converse.chatboxviews.get('problematic@muc.localhost');
                     spyOn(view, 'showErrorMessage').and.callThrough();
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($(view.el).find('.chatroom-body p:last').text()).toBe('You are not on the member list of this room.');
+                    expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
+                        .toBe('You are not on the member list of this room.');
                     done();
                 }).catch(_.partial(console.error, _));
             }));
@@ -2754,7 +2757,8 @@
                     var view = _converse.chatboxviews.get('problematic@muc.localhost');
                     spyOn(view, 'showErrorMessage').and.callThrough();
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($(view.el).find('.chatroom-body p:last').text()).toBe('You have been banned from this room.');
+                    expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
+                        .toBe('You have been banned from this room.');
                     done();
                 }).catch(_.partial(console.error, _));
             }));
@@ -2866,7 +2870,8 @@
                     var view = _converse.chatboxviews.get('problematic@muc.localhost');
                     spyOn(view, 'showErrorMessage').and.callThrough();
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($(view.el).find('.chatroom-body p:last').text()).toBe('You are not allowed to create new rooms.');
+                    expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
+                        .toBe('You are not allowed to create new rooms.');
                     done();
                 }).catch(_.partial(console.error, _));
             }));
@@ -2889,7 +2894,8 @@
                     var view = _converse.chatboxviews.get('problematic@muc.localhost');
                     spyOn(view, 'showErrorMessage').and.callThrough();
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($(view.el).find('.chatroom-body p:last').text()).toBe("Your nickname doesn't conform to this room's policies.");
+                    expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
+                        .toBe("Your nickname doesn't conform to this room's policies.");
                     done();
                 }).catch(_.partial(console.error, _));
             }));
@@ -2912,7 +2918,8 @@
                     var view = _converse.chatboxviews.get('problematic@muc.localhost');
                     spyOn(view, 'showErrorMessage').and.callThrough();
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($(view.el).find('.chatroom-body p:last').text()).toBe("This room does not (yet) exist.");
+                    expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
+                        .toBe("This room does not (yet) exist.");
                     done();
                 }).catch(_.partial(console.error, _));
             }));
@@ -2935,7 +2942,8 @@
                     var view = _converse.chatboxviews.get('problematic@muc.localhost');
                     spyOn(view, 'showErrorMessage').and.callThrough();
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($(view.el).find('.chatroom-body p:last').text()).toBe("This room has reached its maximum number of occupants.");
+                    expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
+                        .toBe("This room has reached its maximum number of occupants.");
                     done();
                 }).catch(_.partial(console.error, _));
             }));

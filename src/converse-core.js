@@ -227,6 +227,8 @@
         }
         if (message instanceof Error) {
             message = message.stack;
+        } else if (_.isElement(message)) {
+            message = message.outerHTML;
         }
         const prefix = style ? '%c' : '';
         const logger = _.assign({

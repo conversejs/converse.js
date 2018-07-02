@@ -54,7 +54,7 @@
         ));
     });
 
-    describe("A room shown in the rooms list", function () {
+    describe("A room shown in the groupchats list", function () {
 
         it("has an info icon which opens a details modal when clicked", mock.initConverseWithPromises(
             null, ['rosterGroupsFetched'],
@@ -182,7 +182,7 @@
             var close_el = _converse.rooms_list_view.el.querySelector(".close-room");
             close_el.click();
             expect(window.confirm).toHaveBeenCalledWith(
-                'Are you sure you want to leave the room lounge@conference.shakespeare.lit?');
+                'Are you sure you want to leave the groupchat lounge@conference.shakespeare.lit?');
             room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(0);
             expect(_converse.chatboxes.length).toBe(1);
@@ -215,7 +215,7 @@
                             type: 'groupchat'
                         }).c('body').t('foo').tree());
 
-                    // If the user isn't mentioned, the counter doesn't get incremented, but the text of the room is bold
+                    // If the user isn't mentioned, the counter doesn't get incremented, but the text of the groupchat is bold
                     var room_el = _converse.rooms_list_view.el.querySelector(
                         ".available-chatroom"
                     );

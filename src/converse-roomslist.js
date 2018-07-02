@@ -118,12 +118,12 @@
                             // supported by the XMPP server. So we can use it
                             // as a check for support (other ways of checking are async).
                             'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
-                            'info_leave_room': __('Leave this room'),
-                            'info_remove_bookmark': __('Unbookmark this room'),
-                            'info_add_bookmark': __('Bookmark this room'),
-                            'info_title': __('Show more information on this room'),
+                            'info_leave_room': __('Leave this groupchat'),
+                            'info_remove_bookmark': __('Unbookmark this groupchat'),
+                            'info_add_bookmark': __('Bookmark this groupchat'),
+                            'info_title': __('Show more information on this groupchat'),
                             'name': this.getRoomsListElementName(),
-                            'open_title': __('Click to open this room')
+                            'open_title': __('Click to open this groupchat')
                         }));
                 },
 
@@ -181,8 +181,8 @@
                 render () {
                     this.el.innerHTML = tpl_rooms_list({
                         'toggle_state': this.list_model.get('toggle-state'),
-                        'desc_rooms': __('Click to toggle the rooms list'),
-                        'label_rooms': __('Open Rooms'),
+                        'desc_rooms': __('Click to toggle the list of open groupchats'),
+                        'label_rooms': __('Open Groupchats'),
                         '_converse': _converse
                     });
                     if (this.list_model.get('toggle-state') !== _converse.OPENED) {
@@ -225,7 +225,7 @@
                     ev.preventDefault();
                     const name = ev.target.getAttribute('data-room-name');
                     const jid = ev.target.getAttribute('data-room-jid');
-                    if (confirm(__("Are you sure you want to leave the room %1$s?", name))) {
+                    if (confirm(__("Are you sure you want to leave the groupchat %1$s?", name))) {
                         // TODO: replace with API call
                         _converse.chatboxviews.get(jid).close();
                     }

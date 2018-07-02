@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-02 15:40+0200\n"
+"POT-Creation-Date: 2018-07-02 16:28+0200\n"
 "PO-Revision-Date: 2018-04-29 18:41+0000\n"
 "Last-Translator: Anton Tikhomirov <anton.d.tikhomirov@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
@@ -23,7 +23,8 @@ msgstr ""
 #: dist/converse-no-dependencies.js:40690
 #: dist/converse-no-dependencies.js:40775
 #: dist/converse-no-dependencies.js:53478
-msgid "Bookmark this room"
+#, fuzzy
+msgid "Bookmark this groupchat"
 msgstr "Добавить эту комнату в закладки"
 
 #: dist/converse-no-dependencies.js:40776
@@ -31,12 +32,14 @@ msgid "The name for this bookmark:"
 msgstr "Имя для этой закладки:"
 
 #: dist/converse-no-dependencies.js:40777
-msgid "Would you like this room to be automatically joined upon startup?"
+#, fuzzy
+msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr ""
 "Хотели бы вы, чтобы вход в эту комнату совершался автоматически при запуске?"
 
 #: dist/converse-no-dependencies.js:40778
-msgid "What should your nickname for this room be?"
+#, fuzzy
+msgid "What should your nickname for this groupchat be?"
 msgstr "Какой должен быть псевдоним для этой комнаты?"
 
 #: dist/converse-no-dependencies.js:40780
@@ -65,7 +68,8 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:41055
 #: dist/converse-no-dependencies.js:53476
-msgid "Leave this room"
+#, fuzzy
+msgid "Leave this groupchat"
 msgstr "Покинуть эту комнату"
 
 #: dist/converse-no-dependencies.js:41056
@@ -74,19 +78,22 @@ msgstr "Удалить эту закладку"
 
 #: dist/converse-no-dependencies.js:41057
 #: dist/converse-no-dependencies.js:53477
-msgid "Unbookmark this room"
+#, fuzzy
+msgid "Unbookmark this groupchat"
 msgstr "Удалить эту комнату из закладок"
 
 #: dist/converse-no-dependencies.js:41058
 #: dist/converse-no-dependencies.js:48558
 #: dist/converse-no-dependencies.js:53479
-msgid "Show more information on this room"
+#, fuzzy
+msgid "Show more information on this groupchat"
 msgstr "Показать больше информации об этом чате"
 
 #: dist/converse-no-dependencies.js:41061
 #: dist/converse-no-dependencies.js:48557
 #: dist/converse-no-dependencies.js:53481
-msgid "Click to open this room"
+#, fuzzy
+msgid "Click to open this groupchat"
 msgstr "Зайти в чат"
 
 #: dist/converse-no-dependencies.js:41097
@@ -371,68 +378,84 @@ msgid "Minimized"
 msgstr "Свёрнуто"
 
 #: dist/converse-no-dependencies.js:48400
-msgid "This room is not anonymous"
+#, fuzzy
+msgid "This groupchat is not anonymous"
 msgstr "Этот чат не анонимный"
 
 #: dist/converse-no-dependencies.js:48401
-msgid "This room now shows unavailable members"
+#, fuzzy
+msgid "This groupchat now shows unavailable members"
 msgstr "Этот чат показывает недоступных собеседников"
 
 #: dist/converse-no-dependencies.js:48402
-msgid "This room does not show unavailable members"
+#, fuzzy
+msgid "This groupchat does not show unavailable members"
 msgstr "Этот чат не показывает недоступных собеседников"
 
 #: dist/converse-no-dependencies.js:48403
-msgid "The room configuration has changed"
+#, fuzzy
+msgid "The groupchat configuration has changed"
 msgstr "Настройки комнаты изменились"
 
 #: dist/converse-no-dependencies.js:48404
-msgid "Room logging is now enabled"
+#, fuzzy
+msgid "groupchat logging is now enabled"
 msgstr "Протокол чата включен"
 
 #: dist/converse-no-dependencies.js:48405
-msgid "Room logging is now disabled"
+#, fuzzy
+msgid "groupchat logging is now disabled"
 msgstr "Протокол чата выключен"
 
 #: dist/converse-no-dependencies.js:48406
-msgid "This room is now no longer anonymous"
+#, fuzzy
+msgid "This groupchat is now no longer anonymous"
 msgstr "Эта комната больше не анонимная"
 
 #: dist/converse-no-dependencies.js:48407
-msgid "This room is now semi-anonymous"
+#, fuzzy
+msgid "This groupchat is now semi-anonymous"
 msgstr "Этот чат частично анонимный"
 
 #: dist/converse-no-dependencies.js:48408
-msgid "This room is now fully-anonymous"
+#, fuzzy
+msgid "This groupchat is now fully-anonymous"
 msgstr "Этот чат стал полностью анонимный"
 
 #: dist/converse-no-dependencies.js:48409
-msgid "A new room has been created"
+#, fuzzy
+msgid "A new groupchat has been created"
 msgstr "Появился новый чат"
 
 #: dist/converse-no-dependencies.js:48412
-msgid "You have been banned from this room"
+#, fuzzy
+msgid "You have been banned from this groupchat"
 msgstr "Вам запрещено подключатся к этому чату"
 
 #: dist/converse-no-dependencies.js:48413
-msgid "You have been kicked from this room"
+#, fuzzy
+msgid "You have been kicked from this groupchat"
 msgstr "Вас выкинули из чата"
 
 #: dist/converse-no-dependencies.js:48414
-msgid "You have been removed from this room because of an affiliation change"
+#, fuzzy
+msgid ""
+"You have been removed from this groupchat because of an affiliation change"
 msgstr "Вас удалили из-за изменения прав"
 
 #: dist/converse-no-dependencies.js:48415
+#, fuzzy
 msgid ""
-"You have been removed from this room because the room has changed to members-"
-"only and you're not a member"
+"You have been removed from this groupchat because the groupchat has changed "
+"to members-only and you're not a member"
 msgstr ""
 "Вы отключены от чата, потому что он теперь только для участников и вы не "
 "являетесь членом"
 
 #: dist/converse-no-dependencies.js:48416
+#, fuzzy
 msgid ""
-"You have been removed from this room because the MUC (Multi-user chat) "
+"You have been removed from this groupchat because the MUC (Multi-user chat) "
 "service is being shut down"
 msgstr ""
 "Вы были удалены из этой комнаты, потому что сервис многопользовательского "
@@ -488,11 +511,13 @@ msgid "Description:"
 msgstr "Описание:"
 
 #: dist/converse-no-dependencies.js:48469
-msgid "Room Address (JID):"
+#, fuzzy
+msgid "Groupchat Address (JID):"
 msgstr "Адрес комнаты (идентификатор):"
 
 #: dist/converse-no-dependencies.js:48470
-msgid "Occupants:"
+#, fuzzy
+msgid "Participants:"
 msgstr "Участники:"
 
 #: dist/converse-no-dependencies.js:48471
@@ -524,11 +549,14 @@ msgid "Non-anonymous"
 msgstr "Не анонимная"
 
 #: dist/converse-no-dependencies.js:48477
-msgid "Open room"
-msgstr "Открыть чат"
+#: dist/converse-no-dependencies.js:56941
+#: dist/converse-no-dependencies.js:57095
+msgid "Open"
+msgstr "Открыть"
 
 #: dist/converse-no-dependencies.js:48478
-msgid "Permanent room"
+#, fuzzy
+msgid "Permanent"
 msgstr "Постоянный чат"
 
 #: dist/converse-no-dependencies.js:48479
@@ -544,16 +572,19 @@ msgid "Semi-anonymous"
 msgstr "Частично анонимный"
 
 #: dist/converse-no-dependencies.js:48481
-msgid "Temporary room"
-msgstr "Временный чат"
+#: dist/converse-no-dependencies.js:56957
+#: dist/converse-no-dependencies.js:57111
+msgid "Temporary"
+msgstr "Временный"
 
 #: dist/converse-no-dependencies.js:48482
 msgid "Unmoderated"
 msgstr "Немодерируемый"
 
 #: dist/converse-no-dependencies.js:48518
-msgid "Query for Chatrooms"
-msgstr "Очередь в чат"
+#, fuzzy
+msgid "Query for Groupchats"
+msgstr "Запросить список комнат"
 
 #: dist/converse-no-dependencies.js:48519
 msgid "Server address"
@@ -576,12 +607,13 @@ msgid "Rooms found:"
 msgstr "Комнат найдено:"
 
 #: dist/converse-no-dependencies.js:48639
-msgid "Enter a new Chatroom"
+#, fuzzy
+msgid "Enter a new Groupchat"
 msgstr "Войти в новую комнату"
 
 #: dist/converse-no-dependencies.js:48640
 #, fuzzy
-msgid "Room address"
+msgid "Groupchat address"
 msgstr "Адрес комнаты (идентификатор):"
 
 #: dist/converse-no-dependencies.js:48641
@@ -627,20 +659,23 @@ msgid "%1$s is now a moderator"
 msgstr "%1$s теперь модератор."
 
 #: dist/converse-no-dependencies.js:48856
-msgid "Close and leave this room"
+#, fuzzy
+msgid "Close and leave this groupchat"
 msgstr "Закрыть и покинуть эту комнату"
 
 #: dist/converse-no-dependencies.js:48857
-msgid "Configure this room"
+#, fuzzy
+msgid "Configure this groupchat"
 msgstr "Настроить эту комнату"
 
 #: dist/converse-no-dependencies.js:48858
 #, fuzzy
-msgid "Show more details about this room"
+msgid "Show more details about this groupchat"
 msgstr "Показать больше информации об этом чате"
 
 #: dist/converse-no-dependencies.js:48898
-msgid "Hide the list of occupants"
+#, fuzzy
+msgid "Hide the list of participants"
 msgstr "Спрятать список участников"
 
 #: dist/converse-no-dependencies.js:49014
@@ -663,7 +698,8 @@ msgid "Change user's affiliation to admin"
 msgstr "Дать права администратора"
 
 #: dist/converse-no-dependencies.js:49082
-msgid "Ban user from room"
+#, fuzzy
+msgid "Ban user from groupchat"
 msgstr "Забанить пользователя в этом чате"
 
 #: dist/converse-no-dependencies.js:49082
@@ -671,7 +707,8 @@ msgid "Change user role to participant"
 msgstr "Изменить роль пользователя на \"участник\""
 
 #: dist/converse-no-dependencies.js:49082
-msgid "Kick user from room"
+#, fuzzy
+msgid "Kick user from groupchat"
 msgstr "Удалить пользователя из чата"
 
 #: dist/converse-no-dependencies.js:49082
@@ -695,7 +732,8 @@ msgid "Grant moderator role to user"
 msgstr "Предоставить права модератора пользователю"
 
 #: dist/converse-no-dependencies.js:49082
-msgid "Grant ownership of this room"
+#, fuzzy
+msgid "Grant ownership of this groupchat"
 msgstr "Предоставить права владельца на этот чат"
 
 #: dist/converse-no-dependencies.js:49082
@@ -703,11 +741,13 @@ msgid "Revoke user's membership"
 msgstr "Отозвать членство пользователя"
 
 #: dist/converse-no-dependencies.js:49082
-msgid "Set room subject"
+#, fuzzy
+msgid "Set groupchat subject"
 msgstr "Установить тему комнаты"
 
 #: dist/converse-no-dependencies.js:49082
-msgid "Set room subject (alias for /subject)"
+#, fuzzy
+msgid "Set groupchat subject (alias for /subject)"
 msgstr "Установить тему комнаты (псевдоним для темы)"
 
 #: dist/converse-no-dependencies.js:49082
@@ -727,11 +767,13 @@ msgid "Please choose your nickname"
 msgstr "Пожалуйста, выберите свой псевдоним"
 
 #: dist/converse-no-dependencies.js:49440
-msgid "Enter room"
+#, fuzzy
+msgid "Enter groupchat"
 msgstr "Войти в комнату"
 
 #: dist/converse-no-dependencies.js:49461
-msgid "This chatroom requires a password"
+#, fuzzy
+msgid "This groupchat requires a password"
 msgstr "Для доступа в чат необходим пароль"
 
 #: dist/converse-no-dependencies.js:49462
@@ -754,46 +796,48 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "Причиной является: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:49628
-#, javascript-format
-msgid "%1$s has left and re-entered the room"
+#, fuzzy, javascript-format
+msgid "%1$s has left and re-entered the groupchat"
 msgstr "%1$s перезашел в комнату"
 
 #: dist/converse-no-dependencies.js:49634
-#, javascript-format
-msgid "%1$s has entered the room"
+#, fuzzy, javascript-format
+msgid "%1$s has entered the groupchat"
 msgstr "%1$s вошёл в комнату"
 
 #: dist/converse-no-dependencies.js:49636
-#, javascript-format
-msgid "%1$s has entered the room. \"%2$s\""
+#, fuzzy, javascript-format
+msgid "%1$s has entered the groupchat. \"%2$s\""
 msgstr "%1$s вошёл в комнату. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:49667
-#, javascript-format
-msgid "%1$s has entered and left the room"
+#, fuzzy, javascript-format
+msgid "%1$s has entered and left the groupchat"
 msgstr "%1$s вошёл и покинул комнату"
 
 #: dist/converse-no-dependencies.js:49669
-#, javascript-format
-msgid "%1$s has entered and left the room. \"%2$s\""
+#, fuzzy, javascript-format
+msgid "%1$s has entered and left the groupchat. \"%2$s\""
 msgstr "%1$s вошёл и покинул комнату. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:49682
-#, javascript-format
-msgid "%1$s has left the room"
+#, fuzzy, javascript-format
+msgid "%1$s has left the groupchat"
 msgstr "%1$s покинул комнату"
 
 #: dist/converse-no-dependencies.js:49684
-#, javascript-format
-msgid "%1$s has left the room. \"%2$s\""
+#, fuzzy, javascript-format
+msgid "%1$s has left the groupchat. \"%2$s\""
 msgstr "%1$s покинул комнату. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:49730
-msgid "You are not on the member list of this room."
+#, fuzzy
+msgid "You are not on the member list of this groupchat."
 msgstr "Вы не находитесь в списке членов этой комнаты."
 
 #: dist/converse-no-dependencies.js:49732
-msgid "You have been banned from this room."
+#, fuzzy
+msgid "You have been banned from this groupchat."
 msgstr "Вам был ограничен доступ к этой комнате."
 
 #: dist/converse-no-dependencies.js:49736
@@ -805,15 +849,18 @@ msgid "You are not allowed to create new rooms."
 msgstr "Вам не разрешено создавать новые комнаты."
 
 #: dist/converse-no-dependencies.js:49742
-msgid "Your nickname doesn't conform to this room's policies."
+#, fuzzy
+msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr "Ваш псевдоним не соответствует правилам этой комнаты."
 
 #: dist/converse-no-dependencies.js:49746
-msgid "This room does not (yet) exist."
+#, fuzzy
+msgid "This groupchat does not (yet) exist."
 msgstr "Эта комната не существует (пока)."
 
 #: dist/converse-no-dependencies.js:49748
-msgid "This room has reached its maximum number of occupants."
+#, fuzzy
+msgid "This groupchat has reached its maximum number of participants."
 msgstr "Эта комната достигла максимального количества участников."
 
 #: dist/converse-no-dependencies.js:49750
@@ -831,8 +878,9 @@ msgid "Topic set by %1$s"
 msgstr "Тему установил(а) %1$s"
 
 #: dist/converse-no-dependencies.js:49831
-msgid "Chatrooms"
-msgstr "Чаты"
+#, fuzzy
+msgid "Groupchats"
+msgstr "Группы"
 
 #: dist/converse-no-dependencies.js:49832
 msgid "Add a new room"
@@ -852,11 +900,13 @@ msgid "This user is a moderator."
 msgstr "Этот пользователь является модератором."
 
 #: dist/converse-no-dependencies.js:49873
-msgid "This user can send messages in this room."
+#, fuzzy
+msgid "This user can send messages in this groupchat."
 msgstr "Этот пользователь может отправлять сообщения в этой комнате."
 
 #: dist/converse-no-dependencies.js:49874
-msgid "This user can NOT send messages in this room."
+#, fuzzy
+msgid "This user can NOT send messages in this groupchat."
 msgstr "Этот пользователь НЕ может отправлять сообщения в этой комнате."
 
 #: dist/converse-no-dependencies.js:49875
@@ -882,8 +932,8 @@ msgid "Admin"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:49921
-msgid "Occupants"
-msgstr "Участники"
+msgid "Participants"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:49938
 #: dist/converse-no-dependencies.js:50019
@@ -1108,16 +1158,17 @@ msgstr ""
 "правильно ли введены значения."
 
 #: dist/converse-no-dependencies.js:53537
-msgid "Click to toggle the rooms list"
+#, fuzzy
+msgid "Click to toggle the list of open groupchats"
 msgstr "Нажмите, чтобы переключить список комнат"
 
 #: dist/converse-no-dependencies.js:53538
-msgid "Open Rooms"
-msgstr "Открыть комнаты"
+msgid "Open Groupchats"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:53582
-#, javascript-format
-msgid "Are you sure you want to leave the room %1$s?"
+#, fuzzy, javascript-format
+msgid "Are you sure you want to leave the groupchat %1$s?"
 msgstr "Вы уверены, что хотите покинуть комнату \"%1$s\"?"
 
 #: dist/converse-no-dependencies.js:54191
@@ -1297,7 +1348,6 @@ msgid "Password protected"
 msgstr "Пароль защищён"
 
 #: dist/converse-no-dependencies.js:56903
-#: dist/converse-no-dependencies.js:57053
 msgid "This room requires a password before entry"
 msgstr "Эта комната требует ввести пароль перед входом"
 
@@ -1307,17 +1357,14 @@ msgid "No password required"
 msgstr "Нет пароля"
 
 #: dist/converse-no-dependencies.js:56911
-#: dist/converse-no-dependencies.js:57061
 msgid "This room does not require a password upon entry"
 msgstr "Эта комната не требует пароля для входа"
 
 #: dist/converse-no-dependencies.js:56919
-#: dist/converse-no-dependencies.js:57069
 msgid "This room is not publicly searchable"
 msgstr "Эта комната недоступна для публичного поиска"
 
 #: dist/converse-no-dependencies.js:56927
-#: dist/converse-no-dependencies.js:57077
 msgid "This room is publicly searchable"
 msgstr "Эта комната доступна для публичного поиска"
 
@@ -1327,18 +1374,11 @@ msgid "Members only"
 msgstr "Только для членов"
 
 #: dist/converse-no-dependencies.js:56935
-#: dist/converse-no-dependencies.js:57085
 #, fuzzy
 msgid "this room is restricted to members only"
 msgstr "Эта комната предназначена только для участников"
 
-#: dist/converse-no-dependencies.js:56941
-#: dist/converse-no-dependencies.js:57095
-msgid "Open"
-msgstr "Открыть"
-
 #: dist/converse-no-dependencies.js:56943
-#: dist/converse-no-dependencies.js:57093
 msgid "Anyone can join this room"
 msgstr "Каждый может присоединиться к этой комнате"
 
@@ -1348,17 +1388,10 @@ msgid "Persistent"
 msgstr "Стойкий"
 
 #: dist/converse-no-dependencies.js:56951
-#: dist/converse-no-dependencies.js:57101
 msgid "This room persists even if it's unoccupied"
 msgstr "Эта комната сохраняется, даже если в ней нет участников"
 
-#: dist/converse-no-dependencies.js:56957
-#: dist/converse-no-dependencies.js:57111
-msgid "Temporary"
-msgstr "Временный"
-
 #: dist/converse-no-dependencies.js:56959
-#: dist/converse-no-dependencies.js:57109
 msgid "This room will disappear once the last person leaves"
 msgstr "Эта комната исчезнет после выхода последнего человека"
 
@@ -1369,7 +1402,6 @@ msgid "Not anonymous"
 msgstr "Не анонимная"
 
 #: dist/converse-no-dependencies.js:56967
-#: dist/converse-no-dependencies.js:57117
 msgid "All other room occupants can see your XMPP username"
 msgstr "Участники всех других комнат могут видеть ваш псевдоним XMPP"
 
@@ -1379,7 +1411,6 @@ msgid "Only moderators can see your XMPP username"
 msgstr "Только модераторы могут видеть ваш псевдоним XMPP"
 
 #: dist/converse-no-dependencies.js:56983
-#: dist/converse-no-dependencies.js:57133
 msgid "This room is being moderated"
 msgstr "Эта комната модерируется"
 
@@ -1390,7 +1421,6 @@ msgid "Not moderated"
 msgstr "Немодерируемый"
 
 #: dist/converse-no-dependencies.js:56991
-#: dist/converse-no-dependencies.js:57141
 msgid "This room is not being moderated"
 msgstr "Эта комната не модерируется"
 
@@ -1404,9 +1434,64 @@ msgstr "Архивация сообщений"
 msgid "Messages are archived on the server"
 msgstr "Сообщения архивируются на сервере"
 
+#: dist/converse-no-dependencies.js:57053
+#, fuzzy
+msgid "This groupchat requires a password before entry"
+msgstr "Эта комната требует ввести пароль перед входом"
+
+#: dist/converse-no-dependencies.js:57061
+#, fuzzy
+msgid "This groupchat does not require a password upon entry"
+msgstr "Эта комната не требует пароля для входа"
+
 #: dist/converse-no-dependencies.js:57063
 msgid "No password"
 msgstr "Нет пароля"
+
+#: dist/converse-no-dependencies.js:57069
+#, fuzzy
+msgid "This groupchat is not publicly searchable"
+msgstr "Эта комната недоступна для публичного поиска"
+
+#: dist/converse-no-dependencies.js:57077
+#, fuzzy
+msgid "This groupchat is publicly searchable"
+msgstr "Эта комната доступна для публичного поиска"
+
+#: dist/converse-no-dependencies.js:57085
+#, fuzzy
+msgid "this groupchat is restricted to members only"
+msgstr "Эта комната предназначена только для участников"
+
+#: dist/converse-no-dependencies.js:57093
+#, fuzzy
+msgid "Anyone can join this groupchat"
+msgstr "Каждый может присоединиться к этой комнате"
+
+#: dist/converse-no-dependencies.js:57101
+#, fuzzy
+msgid "This groupchat persists even if it's unoccupied"
+msgstr "Эта комната сохраняется, даже если в ней нет участников"
+
+#: dist/converse-no-dependencies.js:57109
+#, fuzzy
+msgid "This groupchat will disappear once the last person leaves"
+msgstr "Эта комната исчезнет после выхода последнего человека"
+
+#: dist/converse-no-dependencies.js:57117
+#, fuzzy
+msgid "All other groupchat participants can see your XMPP username"
+msgstr "Участники всех других комнат могут видеть ваш псевдоним XMPP"
+
+#: dist/converse-no-dependencies.js:57133
+#, fuzzy
+msgid "This groupchat is being moderated"
+msgstr "Эта комната модерируется"
+
+#: dist/converse-no-dependencies.js:57141
+#, fuzzy
+msgid "This groupchat is not being moderated"
+msgstr "Эта комната не модерируется"
 
 #: dist/converse-no-dependencies.js:58006
 msgid "XMPP Username:"
@@ -1498,6 +1583,24 @@ msgstr ""
 #: dist/converse-no-dependencies.js:59698
 msgid "Download audio file"
 msgstr ""
+
+#~ msgid "Open room"
+#~ msgstr "Открыть чат"
+
+#~ msgid "Temporary room"
+#~ msgstr "Временный чат"
+
+#~ msgid "Query for Chatrooms"
+#~ msgstr "Очередь в чат"
+
+#~ msgid "Chatrooms"
+#~ msgstr "Чаты"
+
+#~ msgid "Occupants"
+#~ msgstr "Участники"
+
+#~ msgid "Open Rooms"
+#~ msgstr "Открыть комнаты"
 
 #~ msgid "Re-establishing encrypted session"
 #~ msgstr "Восстанавливается зашифрованная сессия"

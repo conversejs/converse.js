@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-02 15:40+0200\n"
+"POT-Creation-Date: 2018-07-02 16:28+0200\n"
 "PO-Revision-Date: 2018-07-02 15:36+0200\n"
 "Last-Translator: Bitelaserkhalif 555 <khalif.ops@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/conversejs/"
@@ -23,7 +23,8 @@ msgstr ""
 #: dist/converse-no-dependencies.js:40690
 #: dist/converse-no-dependencies.js:40775
 #: dist/converse-no-dependencies.js:53478
-msgid "Bookmark this room"
+#, fuzzy
+msgid "Bookmark this groupchat"
 msgstr "Tandai ruang ini"
 
 #: dist/converse-no-dependencies.js:40776
@@ -32,13 +33,13 @@ msgstr "Nama untuk penanda ini:"
 
 #: dist/converse-no-dependencies.js:40777
 #, fuzzy
-msgid "Would you like this room to be automatically joined upon startup?"
+msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr ""
 "Apakah Anda ingin ruangan ini digabungkan secara otomatis saat startup?"
 
 #: dist/converse-no-dependencies.js:40778
 #, fuzzy
-msgid "What should your nickname for this room be?"
+msgid "What should your nickname for this groupchat be?"
 msgstr "Apa nama panggilanmu untuk ruangan ini?"
 
 #: dist/converse-no-dependencies.js:40780
@@ -70,7 +71,7 @@ msgstr "Maaf, ada yang tidak beres saat mencoba menyimpan penanda Anda."
 #: dist/converse-no-dependencies.js:41055
 #: dist/converse-no-dependencies.js:53476
 #, fuzzy
-msgid "Leave this room"
+msgid "Leave this groupchat"
 msgstr "Meninggalkan ruangan ini"
 
 #: dist/converse-no-dependencies.js:41056
@@ -81,21 +82,21 @@ msgstr "Hapus penanda ini"
 #: dist/converse-no-dependencies.js:41057
 #: dist/converse-no-dependencies.js:53477
 #, fuzzy
-msgid "Unbookmark this room"
+msgid "Unbookmark this groupchat"
 msgstr "Melepas penanda ruangan ini"
 
 #: dist/converse-no-dependencies.js:41058
 #: dist/converse-no-dependencies.js:48558
 #: dist/converse-no-dependencies.js:53479
 #, fuzzy
-msgid "Show more information on this room"
+msgid "Show more information on this groupchat"
 msgstr "Tampilkan lebih informasi ruangan ini"
 
 #: dist/converse-no-dependencies.js:41061
 #: dist/converse-no-dependencies.js:48557
 #: dist/converse-no-dependencies.js:53481
 #, fuzzy
-msgid "Click to open this room"
+msgid "Click to open this groupchat"
 msgstr "Klik untuk membuka ruangan ini"
 
 #: dist/converse-no-dependencies.js:41097
@@ -400,63 +401,76 @@ msgid "Minimized"
 msgstr "Diminimalkan"
 
 #: dist/converse-no-dependencies.js:48400
-msgid "This room is not anonymous"
+#, fuzzy
+msgid "This groupchat is not anonymous"
 msgstr "Ruang ini tidak anonim"
 
 #: dist/converse-no-dependencies.js:48401
-msgid "This room now shows unavailable members"
+#, fuzzy
+msgid "This groupchat now shows unavailable members"
 msgstr "Ruang ini sekarang menampilkan anggota yang tidak tersedia"
 
 #: dist/converse-no-dependencies.js:48402
-msgid "This room does not show unavailable members"
+#, fuzzy
+msgid "This groupchat does not show unavailable members"
 msgstr "Ruang ini tidak menampilkan anggota yang tidak tersedia"
 
 #: dist/converse-no-dependencies.js:48403
 #, fuzzy
-msgid "The room configuration has changed"
+msgid "The groupchat configuration has changed"
 msgstr "Konfigurasi ruangan yang tak berhubungan dengan privasi telah diubah"
 
 #: dist/converse-no-dependencies.js:48404
-msgid "Room logging is now enabled"
+#, fuzzy
+msgid "groupchat logging is now enabled"
 msgstr "Pencatatan di ruang ini sekarang dinyalakan"
 
 #: dist/converse-no-dependencies.js:48405
-msgid "Room logging is now disabled"
+#, fuzzy
+msgid "groupchat logging is now disabled"
 msgstr "Pencatatan di ruangan ini sekarang dimatikan"
 
 #: dist/converse-no-dependencies.js:48406
 #, fuzzy
-msgid "This room is now no longer anonymous"
+msgid "This groupchat is now no longer anonymous"
 msgstr "Ruangan ini sekarang tak-anonim"
 
 #: dist/converse-no-dependencies.js:48407
-msgid "This room is now semi-anonymous"
+#, fuzzy
+msgid "This groupchat is now semi-anonymous"
 msgstr "Ruang ini sekarang semi-anonim"
 
 #: dist/converse-no-dependencies.js:48408
-msgid "This room is now fully-anonymous"
+#, fuzzy
+msgid "This groupchat is now fully-anonymous"
 msgstr "Ruang ini sekarang anonim"
 
 #: dist/converse-no-dependencies.js:48409
-msgid "A new room has been created"
+#, fuzzy
+msgid "A new groupchat has been created"
 msgstr "Ruang baru telah dibuat"
 
 #: dist/converse-no-dependencies.js:48412
-msgid "You have been banned from this room"
+#, fuzzy
+msgid "You have been banned from this groupchat"
 msgstr "Anda telah dicekal dari ruang ini"
 
 #: dist/converse-no-dependencies.js:48413
-msgid "You have been kicked from this room"
+#, fuzzy
+msgid "You have been kicked from this groupchat"
 msgstr "Anda telah ditendang dari ruang ini"
 
 #: dist/converse-no-dependencies.js:48414
-msgid "You have been removed from this room because of an affiliation change"
+#, fuzzy
+msgid ""
+"You have been removed from this groupchat because of an affiliation change"
 msgstr "Anda telah dihapus dari ruang ini karena perubahan afiliasi"
 
 #: dist/converse-no-dependencies.js:48415
+#, fuzzy
 msgid ""
-"You have been removed from this room because the room has changed to members-"
-"only and you're not a member"
+"You have been removed from this groupchat because the groupchat has changed "
+"to members-only and you're not a member"
 msgstr ""
 "Anda telah dihapus dari ruang ini karena ruang ini telah diganti menjadi "
 "khusus anggota dan anda bukan anggota"
@@ -464,7 +478,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:48416
 #, fuzzy
 msgid ""
-"You have been removed from this room because the MUC (Multi-user chat) "
+"You have been removed from this groupchat because the MUC (Multi-user chat) "
 "service is being shut down"
 msgstr ""
 "Anda telah dihapus dari ruang ini karena layanan MUC (Multi-user chat) telah "
@@ -520,11 +534,13 @@ msgid "Description:"
 msgstr "Deskripsi:"
 
 #: dist/converse-no-dependencies.js:48469
-msgid "Room Address (JID):"
-msgstr ""
+#, fuzzy
+msgid "Groupchat Address (JID):"
+msgstr "Nama ruang"
 
 #: dist/converse-no-dependencies.js:48470
-msgid "Occupants:"
+#, fuzzy
+msgid "Participants:"
 msgstr "Penghuni:"
 
 #: dist/converse-no-dependencies.js:48471
@@ -556,11 +572,15 @@ msgid "Non-anonymous"
 msgstr "Tidak anonim"
 
 #: dist/converse-no-dependencies.js:48477
-msgid "Open room"
-msgstr "Ruang terbuka"
+#: dist/converse-no-dependencies.js:56941
+#: dist/converse-no-dependencies.js:57095
+#, fuzzy
+msgid "Open"
+msgstr "Ruangan terbuka"
 
 #: dist/converse-no-dependencies.js:48478
-msgid "Permanent room"
+#, fuzzy
+msgid "Permanent"
 msgstr "Ruang permanen"
 
 #: dist/converse-no-dependencies.js:48479
@@ -576,16 +596,20 @@ msgid "Semi-anonymous"
 msgstr "Semi-anonim"
 
 #: dist/converse-no-dependencies.js:48481
-msgid "Temporary room"
-msgstr "Ruang sementara"
+#: dist/converse-no-dependencies.js:56957
+#: dist/converse-no-dependencies.js:57111
+#, fuzzy
+msgid "Temporary"
+msgstr "Ruangan sementara"
 
 #: dist/converse-no-dependencies.js:48482
 msgid "Unmoderated"
 msgstr "Tidak dimoderasi"
 
 #: dist/converse-no-dependencies.js:48518
-msgid "Query for Chatrooms"
-msgstr ""
+#, fuzzy
+msgid "Query for Groupchats"
+msgstr "Larang pengguna dari ruangan"
 
 #: dist/converse-no-dependencies.js:48519
 #, fuzzy
@@ -613,12 +637,12 @@ msgstr "Ruangan di %1$s"
 
 #: dist/converse-no-dependencies.js:48639
 #, fuzzy
-msgid "Enter a new Chatroom"
+msgid "Enter a new Groupchat"
 msgstr "Ruangan terbuka"
 
 #: dist/converse-no-dependencies.js:48640
 #, fuzzy
-msgid "Room address"
+msgid "Groupchat address"
 msgstr "Nama ruang"
 
 #: dist/converse-no-dependencies.js:48641
@@ -666,22 +690,22 @@ msgstr "Pengguna ini adalah moderator"
 
 #: dist/converse-no-dependencies.js:48856
 #, fuzzy
-msgid "Close and leave this room"
+msgid "Close and leave this groupchat"
 msgstr "Tutup dan tinggalkan ruang ini"
 
 #: dist/converse-no-dependencies.js:48857
 #, fuzzy
-msgid "Configure this room"
+msgid "Configure this groupchat"
 msgstr "Konfigurasi ruang ini"
 
 #: dist/converse-no-dependencies.js:48858
 #, fuzzy
-msgid "Show more details about this room"
+msgid "Show more details about this groupchat"
 msgstr "Tampilkan lebih informasi ruangan ini"
 
 #: dist/converse-no-dependencies.js:48898
 #, fuzzy
-msgid "Hide the list of occupants"
+msgid "Hide the list of participants"
 msgstr "Sembunyikan daftar penghuni"
 
 #: dist/converse-no-dependencies.js:49014
@@ -704,7 +728,7 @@ msgstr "Ubah afiliasi pengguna ke admin"
 
 #: dist/converse-no-dependencies.js:49082
 #, fuzzy
-msgid "Ban user from room"
+msgid "Ban user from groupchat"
 msgstr "Larang pengguna dari ruangan"
 
 #: dist/converse-no-dependencies.js:49082
@@ -714,7 +738,7 @@ msgstr "Ubah peran pengguna menjadi penghuni"
 
 #: dist/converse-no-dependencies.js:49082
 #, fuzzy
-msgid "Kick user from room"
+msgid "Kick user from groupchat"
 msgstr "Tendang pengguna dari ruangan"
 
 #: dist/converse-no-dependencies.js:49082
@@ -740,7 +764,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:49082
 #, fuzzy
-msgid "Grant ownership of this room"
+msgid "Grant ownership of this groupchat"
 msgstr "Anda bukan anggota dari ruangan ini"
 
 #: dist/converse-no-dependencies.js:49082
@@ -749,11 +773,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:49082
 #, fuzzy
-msgid "Set room subject"
+msgid "Set groupchat subject"
 msgstr "Setel topik ruangan"
 
 #: dist/converse-no-dependencies.js:49082
-msgid "Set room subject (alias for /subject)"
+msgid "Set groupchat subject (alias for /subject)"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:49082
@@ -772,11 +796,12 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:49440
 #, fuzzy
-msgid "Enter room"
+msgid "Enter groupchat"
 msgstr "Ruangan terbuka"
 
 #: dist/converse-no-dependencies.js:49461
-msgid "This chatroom requires a password"
+#, fuzzy
+msgid "This groupchat requires a password"
 msgstr "Ruangan ini membutuhkan kata sandi"
 
 #: dist/converse-no-dependencies.js:49462
@@ -800,47 +825,47 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:49628
 #, fuzzy, javascript-format
-msgid "%1$s has left and re-entered the room"
+msgid "%1$s has left and re-entered the groupchat"
 msgstr "Klik untuk membuka ruangan ini"
 
 #: dist/converse-no-dependencies.js:49634
 #, fuzzy, javascript-format
-msgid "%1$s has entered the room"
+msgid "%1$s has entered the groupchat"
 msgstr "Klik untuk membuka ruangan ini"
 
 #: dist/converse-no-dependencies.js:49636
 #, fuzzy, javascript-format
-msgid "%1$s has entered the room. \"%2$s\""
+msgid "%1$s has entered the groupchat. \"%2$s\""
 msgstr "Klik untuk membuka ruangan ini"
 
 #: dist/converse-no-dependencies.js:49667
 #, fuzzy, javascript-format
-msgid "%1$s has entered and left the room"
+msgid "%1$s has entered and left the groupchat"
 msgstr "Klik untuk membuka ruangan ini"
 
 #: dist/converse-no-dependencies.js:49669
 #, fuzzy, javascript-format
-msgid "%1$s has entered and left the room. \"%2$s\""
+msgid "%1$s has entered and left the groupchat. \"%2$s\""
 msgstr "Klik untuk membuka ruangan ini"
 
 #: dist/converse-no-dependencies.js:49682
 #, fuzzy, javascript-format
-msgid "%1$s has left the room"
+msgid "%1$s has left the groupchat"
 msgstr "Klik untuk membuka ruangan ini"
 
 #: dist/converse-no-dependencies.js:49684
 #, fuzzy, javascript-format
-msgid "%1$s has left the room. \"%2$s\""
+msgid "%1$s has left the groupchat. \"%2$s\""
 msgstr "Klik untuk membuka ruangan ini"
 
 #: dist/converse-no-dependencies.js:49730
 #, fuzzy
-msgid "You are not on the member list of this room."
+msgid "You are not on the member list of this groupchat."
 msgstr "Anda bukan anggota dari ruangan ini"
 
 #: dist/converse-no-dependencies.js:49732
 #, fuzzy
-msgid "You have been banned from this room."
+msgid "You have been banned from this groupchat."
 msgstr "Anda telah dicekal dari ruangan ini"
 
 #: dist/converse-no-dependencies.js:49736
@@ -855,17 +880,17 @@ msgstr "Anda tak diizinkan untuk membuat ruangan baru"
 
 #: dist/converse-no-dependencies.js:49742
 #, fuzzy
-msgid "Your nickname doesn't conform to this room's policies."
+msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr "Nama panggilan anda tidak sesuai aturan ruangan ini"
 
 #: dist/converse-no-dependencies.js:49746
 #, fuzzy
-msgid "This room does not (yet) exist."
+msgid "This groupchat does not (yet) exist."
 msgstr "Ruangan ini belum dibuat"
 
 #: dist/converse-no-dependencies.js:49748
 #, fuzzy
-msgid "This room has reached its maximum number of occupants."
+msgid "This groupchat has reached its maximum number of participants."
 msgstr "Ruangan ini telah mencapai jumlah penghuni maksimum"
 
 #: dist/converse-no-dependencies.js:49750
@@ -883,9 +908,8 @@ msgid "Topic set by %1$s"
 msgstr "Topik diganti oleh %1$s menjadi: %2$s"
 
 #: dist/converse-no-dependencies.js:49831
-#, fuzzy
-msgid "Chatrooms"
-msgstr "Tampilkan ruangan"
+msgid "Groupchats"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:49832
 msgid "Add a new room"
@@ -908,12 +932,12 @@ msgstr "Pengguna ini adalah moderator"
 
 #: dist/converse-no-dependencies.js:49873
 #, fuzzy
-msgid "This user can send messages in this room."
+msgid "This user can send messages in this groupchat."
 msgstr "Pengguna ini dapat mengirim pesan di ruangan ini"
 
 #: dist/converse-no-dependencies.js:49874
 #, fuzzy
-msgid "This user can NOT send messages in this room."
+msgid "This user can NOT send messages in this groupchat."
 msgstr "Pengguna ini tak dapat mengirim pesan di ruangan ini"
 
 #: dist/converse-no-dependencies.js:49875
@@ -938,9 +962,8 @@ msgid "Admin"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:49921
-#, fuzzy
-msgid "Occupants"
-msgstr "Penghuni:"
+msgid "Participants"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:49938
 #: dist/converse-no-dependencies.js:50019
@@ -1165,17 +1188,16 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:53537
 #, fuzzy
-msgid "Click to toggle the rooms list"
+msgid "Click to toggle the list of open groupchats"
 msgstr "Klik untuk membuka ruangan ini"
 
 #: dist/converse-no-dependencies.js:53538
-#, fuzzy
-msgid "Open Rooms"
-msgstr "Ruangan terbuka"
+msgid "Open Groupchats"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:53582
 #, fuzzy, javascript-format
-msgid "Are you sure you want to leave the room %1$s?"
+msgid "Are you sure you want to leave the groupchat %1$s?"
 msgstr "Klik untuk menghapus teman ini"
 
 #: dist/converse-no-dependencies.js:54191
@@ -1366,7 +1388,6 @@ msgid "Password protected"
 msgstr "Kata sandi: "
 
 #: dist/converse-no-dependencies.js:56903
-#: dist/converse-no-dependencies.js:57053
 #, fuzzy
 msgid "This room requires a password before entry"
 msgstr "Ruangan ini membutuhkan kata sandi"
@@ -1377,19 +1398,16 @@ msgid "No password required"
 msgstr "kata sandi"
 
 #: dist/converse-no-dependencies.js:56911
-#: dist/converse-no-dependencies.js:57061
 #, fuzzy
 msgid "This room does not require a password upon entry"
 msgstr "Ruangan ini membutuhkan kata sandi"
 
 #: dist/converse-no-dependencies.js:56919
-#: dist/converse-no-dependencies.js:57069
 #, fuzzy
 msgid "This room is not publicly searchable"
 msgstr "Ruangan ini tidak anonim"
 
 #: dist/converse-no-dependencies.js:56927
-#: dist/converse-no-dependencies.js:57077
 #, fuzzy
 msgid "This room is publicly searchable"
 msgstr "Ruangan ini tidak anonim"
@@ -1400,19 +1418,11 @@ msgid "Members only"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:56935
-#: dist/converse-no-dependencies.js:57085
 #, fuzzy
 msgid "this room is restricted to members only"
 msgstr "Ruangan ini telah mencapai jumlah penghuni maksimum"
 
-#: dist/converse-no-dependencies.js:56941
-#: dist/converse-no-dependencies.js:57095
-#, fuzzy
-msgid "Open"
-msgstr "Ruangan terbuka"
-
 #: dist/converse-no-dependencies.js:56943
-#: dist/converse-no-dependencies.js:57093
 #, fuzzy
 msgid "Anyone can join this room"
 msgstr "Klik untuk membuka ruangan ini"
@@ -1423,18 +1433,10 @@ msgid "Persistent"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:56951
-#: dist/converse-no-dependencies.js:57101
 msgid "This room persists even if it's unoccupied"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:56957
-#: dist/converse-no-dependencies.js:57111
-#, fuzzy
-msgid "Temporary"
-msgstr "Ruangan sementara"
-
 #: dist/converse-no-dependencies.js:56959
-#: dist/converse-no-dependencies.js:57109
 msgid "This room will disappear once the last person leaves"
 msgstr ""
 
@@ -1445,7 +1447,6 @@ msgid "Not anonymous"
 msgstr "Tidak anonim"
 
 #: dist/converse-no-dependencies.js:56967
-#: dist/converse-no-dependencies.js:57117
 msgid "All other room occupants can see your XMPP username"
 msgstr ""
 
@@ -1455,7 +1456,6 @@ msgid "Only moderators can see your XMPP username"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:56983
-#: dist/converse-no-dependencies.js:57133
 #, fuzzy
 msgid "This room is being moderated"
 msgstr "Pengguna ini adalah moderator"
@@ -1467,7 +1467,6 @@ msgid "Not moderated"
 msgstr "Tidak dimoderasi"
 
 #: dist/converse-no-dependencies.js:56991
-#: dist/converse-no-dependencies.js:57141
 #, fuzzy
 msgid "This room is not being moderated"
 msgstr "Ruangan ini tidak anonim"
@@ -1482,10 +1481,62 @@ msgstr ""
 msgid "Messages are archived on the server"
 msgstr ""
 
+#: dist/converse-no-dependencies.js:57053
+#, fuzzy
+msgid "This groupchat requires a password before entry"
+msgstr "Ruangan ini membutuhkan kata sandi"
+
+#: dist/converse-no-dependencies.js:57061
+#, fuzzy
+msgid "This groupchat does not require a password upon entry"
+msgstr "Ruangan ini membutuhkan kata sandi"
+
 #: dist/converse-no-dependencies.js:57063
 #, fuzzy
 msgid "No password"
 msgstr "kata sandi"
+
+#: dist/converse-no-dependencies.js:57069
+#, fuzzy
+msgid "This groupchat is not publicly searchable"
+msgstr "Ruangan ini tidak anonim"
+
+#: dist/converse-no-dependencies.js:57077
+#, fuzzy
+msgid "This groupchat is publicly searchable"
+msgstr "Ruangan ini tidak anonim"
+
+#: dist/converse-no-dependencies.js:57085
+#, fuzzy
+msgid "this groupchat is restricted to members only"
+msgstr "Ruangan ini telah mencapai jumlah penghuni maksimum"
+
+#: dist/converse-no-dependencies.js:57093
+#, fuzzy
+msgid "Anyone can join this groupchat"
+msgstr "Klik untuk membuka ruangan ini"
+
+#: dist/converse-no-dependencies.js:57101
+msgid "This groupchat persists even if it's unoccupied"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:57109
+msgid "This groupchat will disappear once the last person leaves"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:57117
+msgid "All other groupchat participants can see your XMPP username"
+msgstr ""
+
+#: dist/converse-no-dependencies.js:57133
+#, fuzzy
+msgid "This groupchat is being moderated"
+msgstr "Pengguna ini adalah moderator"
+
+#: dist/converse-no-dependencies.js:57141
+#, fuzzy
+msgid "This groupchat is not being moderated"
+msgstr "Ruangan ini tidak anonim"
 
 #: dist/converse-no-dependencies.js:58006
 #, fuzzy
@@ -1579,6 +1630,24 @@ msgstr "Unduh file video"
 #: dist/converse-no-dependencies.js:59698
 msgid "Download audio file"
 msgstr "Unduh file audio"
+
+#~ msgid "Open room"
+#~ msgstr "Ruang terbuka"
+
+#~ msgid "Temporary room"
+#~ msgstr "Ruang sementara"
+
+#, fuzzy
+#~ msgid "Chatrooms"
+#~ msgstr "Tampilkan ruangan"
+
+#, fuzzy
+#~ msgid "Occupants"
+#~ msgstr "Penghuni:"
+
+#, fuzzy
+#~ msgid "Open Rooms"
+#~ msgstr "Ruangan terbuka"
 
 #, fuzzy
 #~ msgid "Re-establishing encrypted session"

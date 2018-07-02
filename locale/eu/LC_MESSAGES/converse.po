@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-02 15:40+0200\n"
+"POT-Creation-Date: 2018-07-02 16:28+0200\n"
 "PO-Revision-Date: 2018-07-02 15:33+0200\n"
 "Last-Translator: aitzol berasategi <aitzol76@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
@@ -22,7 +22,8 @@ msgstr ""
 #: dist/converse-no-dependencies.js:40690
 #: dist/converse-no-dependencies.js:40775
 #: dist/converse-no-dependencies.js:53478
-msgid "Bookmark this room"
+#, fuzzy
+msgid "Bookmark this groupchat"
 msgstr "Egin gela honen laster-marka"
 
 #: dist/converse-no-dependencies.js:40776
@@ -30,11 +31,13 @@ msgid "The name for this bookmark:"
 msgstr "Laster-marka honen izena:"
 
 #: dist/converse-no-dependencies.js:40777
-msgid "Would you like this room to be automatically joined upon startup?"
+#, fuzzy
+msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr "Gela honetan automatikoki sartu nahiko zenuke abioan?"
 
 #: dist/converse-no-dependencies.js:40778
-msgid "What should your nickname for this room be?"
+#, fuzzy
+msgid "What should your nickname for this groupchat be?"
 msgstr "Zein izango litzateke gela honetarako zure ezizena?"
 
 #: dist/converse-no-dependencies.js:40780
@@ -62,7 +65,8 @@ msgstr "Barkatu, zerbaitek huts egin du zure laster-marka gordetzerakoan."
 
 #: dist/converse-no-dependencies.js:41055
 #: dist/converse-no-dependencies.js:53476
-msgid "Leave this room"
+#, fuzzy
+msgid "Leave this groupchat"
 msgstr "Gela hau utzi"
 
 #: dist/converse-no-dependencies.js:41056
@@ -71,19 +75,22 @@ msgstr "Laster-marka hau ezabatu"
 
 #: dist/converse-no-dependencies.js:41057
 #: dist/converse-no-dependencies.js:53477
-msgid "Unbookmark this room"
+#, fuzzy
+msgid "Unbookmark this groupchat"
 msgstr "Gela honi laster-marka kendu"
 
 #: dist/converse-no-dependencies.js:41058
 #: dist/converse-no-dependencies.js:48558
 #: dist/converse-no-dependencies.js:53479
-msgid "Show more information on this room"
+#, fuzzy
+msgid "Show more information on this groupchat"
 msgstr "Gelari buruzko informazio gehiago erakutsi"
 
 #: dist/converse-no-dependencies.js:41061
 #: dist/converse-no-dependencies.js:48557
 #: dist/converse-no-dependencies.js:53481
-msgid "Click to open this room"
+#, fuzzy
+msgid "Click to open this groupchat"
 msgstr "Klikatu gela hau irekitzeko"
 
 #: dist/converse-no-dependencies.js:41097
@@ -368,68 +375,84 @@ msgid "Minimized"
 msgstr "Minimizaturik"
 
 #: dist/converse-no-dependencies.js:48400
-msgid "This room is not anonymous"
+#, fuzzy
+msgid "This groupchat is not anonymous"
 msgstr "Gela hau ez da erabiltzaile anonimoentzat"
 
 #: dist/converse-no-dependencies.js:48401
-msgid "This room now shows unavailable members"
+#, fuzzy
+msgid "This groupchat now shows unavailable members"
 msgstr "Gela honek orain kide eskuragaitzak erakusten ditu"
 
 #: dist/converse-no-dependencies.js:48402
-msgid "This room does not show unavailable members"
+#, fuzzy
+msgid "This groupchat does not show unavailable members"
 msgstr "Gela honek ez ditu kide eskuragaitzak erakusten"
 
 #: dist/converse-no-dependencies.js:48403
-msgid "The room configuration has changed"
+#, fuzzy
+msgid "The groupchat configuration has changed"
 msgstr "Gelaren ezarpenak aldatudira egin dira"
 
 #: dist/converse-no-dependencies.js:48404
-msgid "Room logging is now enabled"
+#, fuzzy
+msgid "groupchat logging is now enabled"
 msgstr "Gelan izen ematea gaiturik dago orain"
 
 #: dist/converse-no-dependencies.js:48405
-msgid "Room logging is now disabled"
+#, fuzzy
+msgid "groupchat logging is now disabled"
 msgstr "Gelan izen ematea desgaiturik dago orain"
 
 #: dist/converse-no-dependencies.js:48406
-msgid "This room is now no longer anonymous"
+#, fuzzy
+msgid "This groupchat is now no longer anonymous"
 msgstr "Dagoeneko gela hau ez da anonimoa"
 
 #: dist/converse-no-dependencies.js:48407
-msgid "This room is now semi-anonymous"
+#, fuzzy
+msgid "This groupchat is now semi-anonymous"
 msgstr "Gela hau orain erdi-anonimoa da"
 
 #: dist/converse-no-dependencies.js:48408
-msgid "This room is now fully-anonymous"
+#, fuzzy
+msgid "This groupchat is now fully-anonymous"
 msgstr "Gela hau orain erabat anonimoa da"
 
 #: dist/converse-no-dependencies.js:48409
-msgid "A new room has been created"
+#, fuzzy
+msgid "A new groupchat has been created"
 msgstr "Gela berri bat sortua izan da"
 
 #: dist/converse-no-dependencies.js:48412
-msgid "You have been banned from this room"
+#, fuzzy
+msgid "You have been banned from this groupchat"
 msgstr "Gela honetan blokeatua izan zara"
 
 #: dist/converse-no-dependencies.js:48413
-msgid "You have been kicked from this room"
+#, fuzzy
+msgid "You have been kicked from this groupchat"
 msgstr "Gela honetatik bidalia izan zara"
 
 #: dist/converse-no-dependencies.js:48414
-msgid "You have been removed from this room because of an affiliation change"
+#, fuzzy
+msgid ""
+"You have been removed from this groupchat because of an affiliation change"
 msgstr "Gela honetatik ezabatua izan zara afiliazio aldaketa bat dela eta"
 
 #: dist/converse-no-dependencies.js:48415
+#, fuzzy
 msgid ""
-"You have been removed from this room because the room has changed to members-"
-"only and you're not a member"
+"You have been removed from this groupchat because the groupchat has changed "
+"to members-only and you're not a member"
 msgstr ""
 "Gela honetatik ezabatua izan zara gelako sarbidea kideentzako soilik ezarri "
 "delako eta zu ez zara kidea"
 
 #: dist/converse-no-dependencies.js:48416
+#, fuzzy
 msgid ""
-"You have been removed from this room because the MUC (Multi-user chat) "
+"You have been removed from this groupchat because the MUC (Multi-user chat) "
 "service is being shut down"
 msgstr ""
 "Gela honetatik ezabatua izan zara MUC (Multi-user chat) zerbitzua bertan "
@@ -485,11 +508,13 @@ msgid "Description:"
 msgstr "Deskribapena:"
 
 #: dist/converse-no-dependencies.js:48469
-msgid "Room Address (JID):"
+#, fuzzy
+msgid "Groupchat Address (JID):"
 msgstr "Gelaren helbidea (JID):"
 
 #: dist/converse-no-dependencies.js:48470
-msgid "Occupants:"
+#, fuzzy
+msgid "Participants:"
 msgstr "Kideak:"
 
 #: dist/converse-no-dependencies.js:48471
@@ -521,11 +546,14 @@ msgid "Non-anonymous"
 msgstr "Ez-anonimoa"
 
 #: dist/converse-no-dependencies.js:48477
-msgid "Open room"
-msgstr "Gela irekia"
+#: dist/converse-no-dependencies.js:56941
+#: dist/converse-no-dependencies.js:57095
+msgid "Open"
+msgstr "Ireki"
 
 #: dist/converse-no-dependencies.js:48478
-msgid "Permanent room"
+#, fuzzy
+msgid "Permanent"
 msgstr "Gela iraunkorra"
 
 #: dist/converse-no-dependencies.js:48479
@@ -541,16 +569,19 @@ msgid "Semi-anonymous"
 msgstr "Erdi-anonimoa"
 
 #: dist/converse-no-dependencies.js:48481
-msgid "Temporary room"
-msgstr "Aldi baterako gela"
+#: dist/converse-no-dependencies.js:56957
+#: dist/converse-no-dependencies.js:57111
+msgid "Temporary"
+msgstr "Aldi baterako"
 
 #: dist/converse-no-dependencies.js:48482
 msgid "Unmoderated"
 msgstr "Moderatu gabea"
 
 #: dist/converse-no-dependencies.js:48518
-msgid "Query for Chatrooms"
-msgstr "Txat geletarako kontsulta"
+#, fuzzy
+msgid "Query for Groupchats"
+msgstr "Geletarako kontsulta"
 
 #: dist/converse-no-dependencies.js:48519
 msgid "Server address"
@@ -573,11 +604,13 @@ msgid "Rooms found:"
 msgstr "Aurkitutako gelak:"
 
 #: dist/converse-no-dependencies.js:48639
-msgid "Enter a new Chatroom"
+#, fuzzy
+msgid "Enter a new Groupchat"
 msgstr "Gela berri batean sartu"
 
 #: dist/converse-no-dependencies.js:48640
-msgid "Room address"
+#, fuzzy
+msgid "Groupchat address"
 msgstr "Gelaren helbidea"
 
 #: dist/converse-no-dependencies.js:48641
@@ -623,20 +656,23 @@ msgid "%1$s is now a moderator"
 msgstr "%1$s orain moderatzailea da"
 
 #: dist/converse-no-dependencies.js:48856
-msgid "Close and leave this room"
+#, fuzzy
+msgid "Close and leave this groupchat"
 msgstr "Itxi eta gela hau utzi"
 
 #: dist/converse-no-dependencies.js:48857
-msgid "Configure this room"
+#, fuzzy
+msgid "Configure this groupchat"
 msgstr "Gela hau konfiguratu"
 
 #: dist/converse-no-dependencies.js:48858
 #, fuzzy
-msgid "Show more details about this room"
+msgid "Show more details about this groupchat"
 msgstr "Gelari buruzko informazio gehiago erakutsi"
 
 #: dist/converse-no-dependencies.js:48898
-msgid "Hide the list of occupants"
+#, fuzzy
+msgid "Hide the list of participants"
 msgstr "Kideen zerrenda ezkutatu"
 
 #: dist/converse-no-dependencies.js:49014
@@ -659,7 +695,8 @@ msgid "Change user's affiliation to admin"
 msgstr "Aldatu erabiltzailearen afiliazioa administratzailera"
 
 #: dist/converse-no-dependencies.js:49082
-msgid "Ban user from room"
+#, fuzzy
+msgid "Ban user from groupchat"
 msgstr "Erabiltzailea gelatik bidali"
 
 #: dist/converse-no-dependencies.js:49082
@@ -667,7 +704,8 @@ msgid "Change user role to participant"
 msgstr "Erabiltzaile rola parte hartzaile moduan ezarri"
 
 #: dist/converse-no-dependencies.js:49082
-msgid "Kick user from room"
+#, fuzzy
+msgid "Kick user from groupchat"
 msgstr "Erabiltzailea gelatik bidali"
 
 #: dist/converse-no-dependencies.js:49082
@@ -691,7 +729,8 @@ msgid "Grant moderator role to user"
 msgstr "Eman moderatzaile rola erabiltzaileari"
 
 #: dist/converse-no-dependencies.js:49082
-msgid "Grant ownership of this room"
+#, fuzzy
+msgid "Grant ownership of this groupchat"
 msgstr "Eman gela honen jabegotza"
 
 #: dist/converse-no-dependencies.js:49082
@@ -699,11 +738,13 @@ msgid "Revoke user's membership"
 msgstr "Erabiltzaile harpidetza baliogabetu"
 
 #: dist/converse-no-dependencies.js:49082
-msgid "Set room subject"
+#, fuzzy
+msgid "Set groupchat subject"
 msgstr "Gelaren gaia ezarri"
 
 #: dist/converse-no-dependencies.js:49082
-msgid "Set room subject (alias for /subject)"
+#, fuzzy
+msgid "Set groupchat subject (alias for /subject)"
 msgstr "Gelaren gaia ezarri (aliasa/gaia)"
 
 #: dist/converse-no-dependencies.js:49082
@@ -723,11 +764,13 @@ msgid "Please choose your nickname"
 msgstr "Mesedez, aukeratu zure ezizena"
 
 #: dist/converse-no-dependencies.js:49440
-msgid "Enter room"
+#, fuzzy
+msgid "Enter groupchat"
 msgstr "Gelan sartu"
 
 #: dist/converse-no-dependencies.js:49461
-msgid "This chatroom requires a password"
+#, fuzzy
+msgid "This groupchat requires a password"
 msgstr "Txat gela honek pasahitza behar du"
 
 #: dist/converse-no-dependencies.js:49462
@@ -750,46 +793,48 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "Emandako arrazoia ondorengoa da: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:49628
-#, javascript-format
-msgid "%1$s has left and re-entered the room"
+#, fuzzy, javascript-format
+msgid "%1$s has left and re-entered the groupchat"
 msgstr "%1$s irten egin da eta berriro sartu da gelan"
 
 #: dist/converse-no-dependencies.js:49634
-#, javascript-format
-msgid "%1$s has entered the room"
+#, fuzzy, javascript-format
+msgid "%1$s has entered the groupchat"
 msgstr "%1$s gelan sartu da"
 
 #: dist/converse-no-dependencies.js:49636
-#, javascript-format
-msgid "%1$s has entered the room. \"%2$s\""
+#, fuzzy, javascript-format
+msgid "%1$s has entered the groupchat. \"%2$s\""
 msgstr "%1$s gelan sartu da. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:49667
-#, javascript-format
-msgid "%1$s has entered and left the room"
+#, fuzzy, javascript-format
+msgid "%1$s has entered and left the groupchat"
 msgstr "%1$s gelan sartu eta irten egin da"
 
 #: dist/converse-no-dependencies.js:49669
-#, javascript-format
-msgid "%1$s has entered and left the room. \"%2$s\""
+#, fuzzy, javascript-format
+msgid "%1$s has entered and left the groupchat. \"%2$s\""
 msgstr "%1$s gelan sartu eta irten egin da. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:49682
-#, javascript-format
-msgid "%1$s has left the room"
+#, fuzzy, javascript-format
+msgid "%1$s has left the groupchat"
 msgstr "%1$s -k gela utzi du"
 
 #: dist/converse-no-dependencies.js:49684
-#, javascript-format
-msgid "%1$s has left the room. \"%2$s\""
+#, fuzzy, javascript-format
+msgid "%1$s has left the groupchat. \"%2$s\""
 msgstr "%1$s -k gela utzi du. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:49730
-msgid "You are not on the member list of this room."
+#, fuzzy
+msgid "You are not on the member list of this groupchat."
 msgstr "Ez zaude  gela honen kideen zerrendan."
 
 #: dist/converse-no-dependencies.js:49732
-msgid "You have been banned from this room."
+#, fuzzy
+msgid "You have been banned from this groupchat."
 msgstr "Gela honetatik bidalia izan zara."
 
 #: dist/converse-no-dependencies.js:49736
@@ -801,15 +846,18 @@ msgid "You are not allowed to create new rooms."
 msgstr "Ez duzu baimenik gela berriak sortzeko."
 
 #: dist/converse-no-dependencies.js:49742
-msgid "Your nickname doesn't conform to this room's policies."
+#, fuzzy
+msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr "Zure ezizak ez ditu gela honetako arauak betetzen."
 
 #: dist/converse-no-dependencies.js:49746
-msgid "This room does not (yet) exist."
+#, fuzzy
+msgid "This groupchat does not (yet) exist."
 msgstr "Gela hau ez da existitzen (oraindik)."
 
 #: dist/converse-no-dependencies.js:49748
-msgid "This room has reached its maximum number of occupants."
+#, fuzzy
+msgid "This groupchat has reached its maximum number of participants."
 msgstr "Gela hau gehienezko kide kopurura iritsi da."
 
 #: dist/converse-no-dependencies.js:49750
@@ -827,8 +875,9 @@ msgid "Topic set by %1$s"
 msgstr "%1$s -k ezarritako gaia"
 
 #: dist/converse-no-dependencies.js:49831
-msgid "Chatrooms"
-msgstr "Gelak"
+#, fuzzy
+msgid "Groupchats"
+msgstr "Taldeak"
 
 #: dist/converse-no-dependencies.js:49832
 msgid "Add a new room"
@@ -848,11 +897,13 @@ msgid "This user is a moderator."
 msgstr "Erabiltzaile hau moderatzailea da."
 
 #: dist/converse-no-dependencies.js:49873
-msgid "This user can send messages in this room."
+#, fuzzy
+msgid "This user can send messages in this groupchat."
 msgstr "Erabiltzaile honek mezuak bidal ditzake gela honetan."
 
 #: dist/converse-no-dependencies.js:49874
-msgid "This user can NOT send messages in this room."
+#, fuzzy
+msgid "This user can NOT send messages in this groupchat."
 msgstr "Erabiltzaile honek EZIN ditu mezuak bidali gela honetan."
 
 #: dist/converse-no-dependencies.js:49875
@@ -878,8 +929,8 @@ msgid "Admin"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:49921
-msgid "Occupants"
-msgstr "Kideak"
+msgid "Participants"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:49938
 #: dist/converse-no-dependencies.js:50019
@@ -1104,16 +1155,17 @@ msgstr ""
 "balioak zuzenak direla."
 
 #: dist/converse-no-dependencies.js:53537
-msgid "Click to toggle the rooms list"
+#, fuzzy
+msgid "Click to toggle the list of open groupchats"
 msgstr "Klikatu gela zerrenda ordezkatzeko"
 
 #: dist/converse-no-dependencies.js:53538
-msgid "Open Rooms"
-msgstr "Gela irekiak"
+msgid "Open Groupchats"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:53582
-#, javascript-format
-msgid "Are you sure you want to leave the room %1$s?"
+#, fuzzy, javascript-format
+msgid "Are you sure you want to leave the groupchat %1$s?"
 msgstr "Ziur al zaude %1$s gela utzi nahi duzula?"
 
 #: dist/converse-no-dependencies.js:54191
@@ -1292,7 +1344,6 @@ msgid "Password protected"
 msgstr "Pasahitzez babestua"
 
 #: dist/converse-no-dependencies.js:56903
-#: dist/converse-no-dependencies.js:57053
 msgid "This room requires a password before entry"
 msgstr "Gela honek pasahitza behar du sartu aurretik"
 
@@ -1302,17 +1353,14 @@ msgid "No password required"
 msgstr "Pasahitzik gabe"
 
 #: dist/converse-no-dependencies.js:56911
-#: dist/converse-no-dependencies.js:57061
 msgid "This room does not require a password upon entry"
 msgstr "Gela honek ez du pasahitzik behar sartzeko"
 
 #: dist/converse-no-dependencies.js:56919
-#: dist/converse-no-dependencies.js:57069
 msgid "This room is not publicly searchable"
 msgstr "Gela hau ezin da publikoki bilatua izan"
 
 #: dist/converse-no-dependencies.js:56927
-#: dist/converse-no-dependencies.js:57077
 msgid "This room is publicly searchable"
 msgstr "Gela hau publikoki bilatua izan daiteke"
 
@@ -1322,18 +1370,11 @@ msgid "Members only"
 msgstr "Kideak soilik"
 
 #: dist/converse-no-dependencies.js:56935
-#: dist/converse-no-dependencies.js:57085
 #, fuzzy
 msgid "this room is restricted to members only"
 msgstr "Gela hau kideei soilik dagokie"
 
-#: dist/converse-no-dependencies.js:56941
-#: dist/converse-no-dependencies.js:57095
-msgid "Open"
-msgstr "Ireki"
-
 #: dist/converse-no-dependencies.js:56943
-#: dist/converse-no-dependencies.js:57093
 msgid "Anyone can join this room"
 msgstr "Gela honetan edozein sartu daiteke"
 
@@ -1343,17 +1384,10 @@ msgid "Persistent"
 msgstr "Iraunkorra"
 
 #: dist/converse-no-dependencies.js:56951
-#: dist/converse-no-dependencies.js:57101
 msgid "This room persists even if it's unoccupied"
 msgstr "Gela honek bere horretan jarraituko du hustu arren"
 
-#: dist/converse-no-dependencies.js:56957
-#: dist/converse-no-dependencies.js:57111
-msgid "Temporary"
-msgstr "Aldi baterako"
-
 #: dist/converse-no-dependencies.js:56959
-#: dist/converse-no-dependencies.js:57109
 msgid "This room will disappear once the last person leaves"
 msgstr "Gela hau desagertu egingo da azken pertsonak uzten duen unean"
 
@@ -1364,7 +1398,6 @@ msgid "Not anonymous"
 msgstr "Ez-anonimoa"
 
 #: dist/converse-no-dependencies.js:56967
-#: dist/converse-no-dependencies.js:57117
 msgid "All other room occupants can see your XMPP username"
 msgstr "Gelako gainontzeko kideek zure XMPP erabiltzailea ikus dezakete"
 
@@ -1374,7 +1407,6 @@ msgid "Only moderators can see your XMPP username"
 msgstr "Moderatzaileek soilik ikus dezakete zure XMPP erabiltzailea"
 
 #: dist/converse-no-dependencies.js:56983
-#: dist/converse-no-dependencies.js:57133
 msgid "This room is being moderated"
 msgstr "Gela hau moderatua izaten ari da"
 
@@ -1385,7 +1417,6 @@ msgid "Not moderated"
 msgstr "Moderatu gabea"
 
 #: dist/converse-no-dependencies.js:56991
-#: dist/converse-no-dependencies.js:57141
 msgid "This room is not being moderated"
 msgstr "Gela hau ez da moderatua izaten ari"
 
@@ -1399,9 +1430,64 @@ msgstr "Mezu artxibaketa"
 msgid "Messages are archived on the server"
 msgstr "Mezuak zerbitzarian gordetzen dira"
 
+#: dist/converse-no-dependencies.js:57053
+#, fuzzy
+msgid "This groupchat requires a password before entry"
+msgstr "Gela honek pasahitza behar du sartu aurretik"
+
+#: dist/converse-no-dependencies.js:57061
+#, fuzzy
+msgid "This groupchat does not require a password upon entry"
+msgstr "Gela honek ez du pasahitzik behar sartzeko"
+
 #: dist/converse-no-dependencies.js:57063
 msgid "No password"
 msgstr "Pasahitzik gabe"
+
+#: dist/converse-no-dependencies.js:57069
+#, fuzzy
+msgid "This groupchat is not publicly searchable"
+msgstr "Gela hau ezin da publikoki bilatua izan"
+
+#: dist/converse-no-dependencies.js:57077
+#, fuzzy
+msgid "This groupchat is publicly searchable"
+msgstr "Gela hau publikoki bilatua izan daiteke"
+
+#: dist/converse-no-dependencies.js:57085
+#, fuzzy
+msgid "this groupchat is restricted to members only"
+msgstr "Gela hau kideei soilik dagokie"
+
+#: dist/converse-no-dependencies.js:57093
+#, fuzzy
+msgid "Anyone can join this groupchat"
+msgstr "Gela honetan edozein sartu daiteke"
+
+#: dist/converse-no-dependencies.js:57101
+#, fuzzy
+msgid "This groupchat persists even if it's unoccupied"
+msgstr "Gela honek bere horretan jarraituko du hustu arren"
+
+#: dist/converse-no-dependencies.js:57109
+#, fuzzy
+msgid "This groupchat will disappear once the last person leaves"
+msgstr "Gela hau desagertu egingo da azken pertsonak uzten duen unean"
+
+#: dist/converse-no-dependencies.js:57117
+#, fuzzy
+msgid "All other groupchat participants can see your XMPP username"
+msgstr "Gelako gainontzeko kideek zure XMPP erabiltzailea ikus dezakete"
+
+#: dist/converse-no-dependencies.js:57133
+#, fuzzy
+msgid "This groupchat is being moderated"
+msgstr "Gela hau moderatua izaten ari da"
+
+#: dist/converse-no-dependencies.js:57141
+#, fuzzy
+msgid "This groupchat is not being moderated"
+msgstr "Gela hau ez da moderatua izaten ari"
 
 #: dist/converse-no-dependencies.js:58006
 msgid "XMPP Username:"
@@ -1493,6 +1579,24 @@ msgstr "Deskargatu bideo fitxategia"
 #: dist/converse-no-dependencies.js:59698
 msgid "Download audio file"
 msgstr "Deskargatu audio fitxategia"
+
+#~ msgid "Open room"
+#~ msgstr "Gela irekia"
+
+#~ msgid "Temporary room"
+#~ msgstr "Aldi baterako gela"
+
+#~ msgid "Query for Chatrooms"
+#~ msgstr "Txat geletarako kontsulta"
+
+#~ msgid "Chatrooms"
+#~ msgstr "Gelak"
+
+#~ msgid "Occupants"
+#~ msgstr "Kideak"
+
+#~ msgid "Open Rooms"
+#~ msgstr "Gela irekiak"
 
 #~ msgid "Re-establishing encrypted session"
 #~ msgstr "Saio enkriptatua berrezartzen"

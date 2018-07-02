@@ -8,6 +8,7 @@
     define([
         "converse-core",
         "utils/muc",
+        "xss",
         "templates/add_chatroom_modal.html",
         "templates/chatarea.html",
         "templates/chatroom.html",
@@ -35,6 +36,7 @@
 }(this, function (
     converse,
     muc_utils,
+    xss,
     tpl_add_chatroom_modal,
     tpl_chatarea,
     tpl_chatroom,
@@ -495,6 +497,7 @@
                         this.model.toJSON(), {
                             '_': _,
                             '__': __,
+                            'topic': u.addHyperlinks(xss.filterXSS(_.get(this.model.get('subject'), 'text'), {'whiteList': {}})),
                             'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),
                             'num_occupants': this.model.occupants.length
                         })

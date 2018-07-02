@@ -204,7 +204,7 @@
                             this.onPresence(stanza);
                             return true;
                         },
-                        Strophe.NS.MUC, 'presence', null, null, room_jid,
+                        null, 'presence', null, null, room_jid,
                         {'ignoreNamespaceFragment': true, 'matchBareFromJid': true}
                     );
                     this.message_handler = _converse.connection.addHandler((stanza) => {

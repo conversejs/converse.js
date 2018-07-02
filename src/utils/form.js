@@ -73,6 +73,14 @@
         );
     };
 
+    u.getUniqueId = function () {
+        return 'xxxxxxxx-xxxx'.replace(/[x]/g, function(c) {
+            var r = Math.random() * 16 | 0,
+                v = c === 'x' ? r : r & 0x3 | 0x8;
+            return v.toString(16);
+        });
+    };
+
     u.xForm2webForm = function (field, stanza, domain) {
         /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
          * and turns it into an HTML field.
@@ -104,6 +112,7 @@
                     }
                 );
                 return tpl_form_select({
+                    'id': u.getUniqueId(),
                     'name': field.getAttribute('var'),
                     'label': field.getAttribute('label'),
                     'options': options.join(''),
@@ -122,8 +131,8 @@
                 });
             } else if (field.getAttribute('type') === 'boolean') {
                 return tpl_form_checkbox({
+                    'id': u.getUniqueId(),
                     'name': field.getAttribute('var'),
-                    'type': XFORM_TYPE_MAP[field.getAttribute('type')],
                     'label': field.getAttribute('label') || '',
                     'checked': _.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
                     'required': !_.isNil(field.querySelector('required'))
@@ -144,6 +153,7 @@
                 });
             } else {
                 return tpl_form_input({
+                    'id': u.getUniqueId(),
                     'label': field.getAttribute('label') || '',
                     'name': field.getAttribute('var'),
                     'placeholder': null,

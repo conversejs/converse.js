@@ -76473,7 +76473,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           fieldset_el.insertAdjacentHTML('beforeend', `<legend>${title}</legend>`);
 
           if (instructions && instructions !== title) {
-            fieldset_el.insertAdjacentHTML('beforeend', `<p class="instructions">${instructions}</p>`);
+            fieldset_el.insertAdjacentHTML('beforeend', `<p class="form-help">${instructions}</p>`);
           }
 
           _.each(fields, function (field) {
@@ -85041,18 +85041,23 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/form_checkbox.html -->\n<label class="checkbox" for="' +
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<!-- src/templates/form_checkbox.html -->\n<div class="form-group">\n    <input id="' +
+__e(o.id) +
+'" name="' +
 __e(o.name) +
+'" type="checkbox" ' +
+__e(o.checked) +
+' ';
+ if (o.required) { ;
+__p += ' required ';
+ } ;
+__p += ' >\n    <label class="form-check-label" for="' +
+__e(o.id) +
 '">' +
 __e(o.label) +
-'<input name="' +
-__e(o.name) +
-'" type="' +
-__e(o.type) +
-'" ' +
-__e(o.checked) +
-'></label>\n\n';
+'</label>\n</div>\n';
 return __p
 };
 
@@ -85069,13 +85074,17 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/form_input.html -->\n<label>\n    ' +
+__p += '<!-- src/templates/form_input.html -->\n<div class="form-group">\n    <label for="' +
+__e(o.id) +
+'">' +
 __e(o.label) +
-'\n    <input name="' +
+'</label>\n    <input class="form-control" name="' +
 __e(o.name) +
 '" type="' +
 __e(o.type) +
-'" \n        ';
+'" id="' +
+__e(o.id) +
+'"\n        ';
  if (o.placeholder) { ;
 __p += ' placeholder="' +
 __e(o.placeholder) +
@@ -85089,9 +85098,9 @@ __e(o.value) +
  } ;
 __p += '\n        ';
  if (o.required) { ;
-__p += ' class="required" ';
+__p += ' required ';
  } ;
-__p += ' >\n</label>\n';
+__p += ' >\n</div>\n';
 return __p
 };
 
@@ -85108,17 +85117,21 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/form_select.html -->\n<label>\n    ' +
+__p += '<!-- src/templates/form_select.html -->\n<div class="form-group">\n    <label for="' +
+__e(o.id) +
+'">' +
 __e(o.label) +
-'\n    <select name="' +
+'</label>\n    <select class="form-control" id="' +
+__e(o.id) +
+'" name="' +
 __e(o.name) +
-'"  ';
+'" ';
  if (o.multiple) { ;
 __p += ' multiple="multiple" ';
  } ;
 __p += '>' +
 ((__t = (o.options)) == null ? '' : __t) +
-'</select>\n</label>\n';
+'</select>\n</div>\n';
 return __p
 };
 
@@ -85855,7 +85868,7 @@ __e(o.__("Account Registration:")) +
 __e(o.domain) +
 '</legend>\n<p class="title">' +
 __e(o.title) +
-'</p>\n<p class="instructions">' +
+'</p>\n<p class="form-help instructions">' +
 __e(o.instructions) +
 '</p>\n<div class="form-errors hidden"></div>\n\n<fieldset class="buttons">\n    <input type="submit" class="btn btn-primary" value="' +
 __e(o.__('Register')) +
@@ -87673,6 +87686,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }));
   };
 
+  u.getUniqueId = function () {
+    return 'xxxxxxxx-xxxx'.replace(/[x]/g, function (c) {
+      var r = Math.random() * 16 | 0,
+          v = c === 'x' ? r : r & 0x3 | 0x8;
+      return v.toString(16);
+    });
+  };
+
   u.xForm2webForm = function (field, stanza, domain) {
     /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
      * and turns it into an HTML field.
@@ -87699,6 +87720,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         });
 
         return tpl_form_select({
+          'id': u.getUniqueId(),
           'name': field.getAttribute('var'),
           'label': field.getAttribute('label'),
           'options': options.join(''),
@@ -87718,8 +87740,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         });
       } else if (field.getAttribute('type') === 'boolean') {
         return tpl_form_checkbox({
+          'id': u.getUniqueId(),
           'name': field.getAttribute('var'),
-          'type': XFORM_TYPE_MAP[field.getAttribute('type')],
           'label': field.getAttribute('label') || '',
           'checked': _.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
           'required': !_.isNil(field.querySelector('required'))
@@ -87740,6 +87762,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         });
       } else {
         return tpl_form_input({
+          'id': u.getUniqueId(),
           'label': field.getAttribute('label') || '',
           'name': field.getAttribute('var'),
           'placeholder': null,

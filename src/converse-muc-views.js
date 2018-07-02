@@ -1045,7 +1045,7 @@
                     fieldset_el.insertAdjacentHTML('beforeend', `<legend>${title}</legend>`);
 
                     if (instructions && instructions !== title) {
-                        fieldset_el.insertAdjacentHTML('beforeend', `<p class="instructions">${instructions}</p>`);
+                        fieldset_el.insertAdjacentHTML('beforeend', `<p class="form-help">${instructions}</p>`);
                     }
                     _.each(fields, function (field) {
                         fieldset_el.insertAdjacentHTML('beforeend', u.xForm2webForm(field, stanza));

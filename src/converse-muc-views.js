@@ -493,6 +493,7 @@
                 toHTML () {
                     return tpl_chatroom_details_modal(_.extend(
                         this.model.toJSON(), {
+                            '_': _,
                             '__': __,
                             'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),
                             'num_occupants': this.model.occupants.length

@@ -75878,6 +75878,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         toHTML() {
           return tpl_chatroom_details_modal(_.extend(this.model.toJSON(), {
+            '_': _,
             '__': __,
             'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),
             'num_occupants': this.model.occupants.length
@@ -84258,15 +84259,19 @@ __e(o.jid) +
 __e(o.__('Description')) +
 '</strong>: ' +
 __e(o.description) +
-'</p>\n                    <p class="room-info"><strong>' +
+'</p>\n                    ';
+ if (o.subject) { ;
+__p += '\n                        <p class="room-info"><strong>' +
 __e(o.__('Topic')) +
 '</strong>: ' +
-__e(o.subject.text) +
-'</p>\n                    <p class="room-info"><strong>' +
-__e(o.__('Topic Author')) +
+__e(o._.get(o.subject, 'text')) +
+'</p>\n                        <p class="room-info"><strong>' +
+__e(o.__('Topic author')) +
 '</strong>: ' +
-__e(o.subject.author) +
-'</p>\n                    <p class="room-info"><strong>' +
+__e(o._.get(o.subject, 'author')) +
+'</p>\n                    ';
+ } ;
+__p += '\n                    <p class="room-info"><strong>' +
 __e(o.__('Online users')) +
 '</strong>: ' +
 __e(o.num_occupants) +

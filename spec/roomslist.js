@@ -114,7 +114,7 @@
 
                 const room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
                 expect(room_els.length).toBe(1);
-                var info_el = _converse.rooms_list_view.el.querySelector(".room-info");
+                const info_el = _converse.rooms_list_view.el.querySelector(".room-info");
                 info_el.click();
 
                 const modal = view.model.room_details_modal;
@@ -122,8 +122,8 @@
             }).then(() => {
                 const modal = view.model.room_details_modal;
                 let els = modal.el.querySelectorAll('p.room-info');
-                expect(els[0].textContent).toBe("Room address (JID): coven@chat.shakespeare.lit")
-                expect(els[1].textContent).toBe("Name: A Dark Cave")
+                expect(els[0].textContent).toBe("Name: A Dark Cave")
+                expect(els[1].textContent).toBe("Room address (JID): coven@chat.shakespeare.lit")
                 expect(els[2].textContent).toBe("Description: This is the description")
                 expect(els[3].textContent).toBe("Online users: 1")
                 const features_list = modal.el.querySelector('.features-list');
@@ -149,8 +149,17 @@
 
                 els = modal.el.querySelectorAll('p.room-info');
                 expect(els[3].textContent).toBe("Online users: 2")
+
+                view.model.set({'subject': {'author': 'someone', 'text': 'Hatching dark plots'}});
+                els = modal.el.querySelectorAll('p.room-info');
+                expect(els[0].textContent).toBe("Name: A Dark Cave")
+                expect(els[1].textContent).toBe("Room address (JID): coven@chat.shakespeare.lit")
+                expect(els[2].textContent).toBe("Description: This is the description")
+                expect(els[3].textContent).toBe("Topic: Hatching dark plots")
+                expect(els[4].textContent).toBe("Topic author: someone")
+                expect(els[5].textContent).toBe("Online users: 2")
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }));
 
         it("can be closed", mock.initConverseWithPromises(

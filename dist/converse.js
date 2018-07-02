@@ -75879,7 +75879,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         toHTML() {
           return tpl_chatroom_details_modal(_.extend(this.model.toJSON(), {
             '__': __,
-            'display_name': this.model.getDisplayName(),
+            'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),
             'num_occupants': this.model.occupants.length
           }));
         }
@@ -84247,17 +84247,25 @@ __e(o.display_name) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
 '"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                <div class="room-info">\n                    <p class="room-info"><strong>' +
-__e(o.__('Room address (JID)')) +
-'</strong>: ' +
-__e(o.jid) +
-'</p>\n                    <p class="room-info"><strong>' +
 __e(o.__('Name')) +
 '</strong>: ' +
 __e(o.name) +
 '</p>\n                    <p class="room-info"><strong>' +
+__e(o.__('Room address (JID)')) +
+'</strong>: ' +
+__e(o.jid) +
+'</p>\n                    <p class="room-info"><strong>' +
 __e(o.__('Description')) +
 '</strong>: ' +
 __e(o.description) +
+'</p>\n                    <p class="room-info"><strong>' +
+__e(o.__('Topic')) +
+'</strong>: ' +
+__e(o.subject.text) +
+'</p>\n                    <p class="room-info"><strong>' +
+__e(o.__('Topic Author')) +
+'</strong>: ' +
+__e(o.subject.author) +
 '</p>\n                    <p class="room-info"><strong>' +
 __e(o.__('Online users')) +
 '</strong>: ' +

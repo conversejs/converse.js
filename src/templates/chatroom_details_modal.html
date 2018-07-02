@@ -7,9 +7,11 @@
             </div>
             <div class="modal-body">
                 <div class="room-info">
-                    <p class="room-info"><strong>{{{o.__('Room address (JID)')}}}</strong>: {{{o.jid}}}</p>
                     <p class="room-info"><strong>{{{o.__('Name')}}}</strong>: {{{o.name}}}</p>
+                    <p class="room-info"><strong>{{{o.__('Room address (JID)')}}}</strong>: {{{o.jid}}}</p>
                     <p class="room-info"><strong>{{{o.__('Description')}}}</strong>: {{{o.description}}}</p>
+                    <p class="room-info"><strong>{{{o.__('Topic')}}}</strong>: {{{o.subject.text}}}</p>
+                    <p class="room-info"><strong>{{{o.__('Topic Author')}}}</strong>: {{{o.subject.author}}}</p>
                     <p class="room-info"><strong>{{{o.__('Online users')}}}</strong>: {{{o.num_occupants}}}</p>
                     <p class="room-info"><strong>{{{o.__('Features')}}}</strong>:
                         <div class="chatroom-features">

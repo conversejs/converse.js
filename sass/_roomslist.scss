@@ -32,8 +32,9 @@
             .open-chatroom {
                 &:hover {
                     background-color: lighten($controlbox-head-color, 45%);
-                    a.add-bookmark,
-                    a.room-info {
+                    .remove-bookmark,
+                    .add-bookmark,
+                    .room-info {
                         display: block !important;
                     }
                 }
@@ -52,6 +53,7 @@
                     &:hover {
                         color: $dark-link-color;
                     }
+                    &.remove-bookmark,
                     &.add-bookmark,
                     &.room-info {
                         display: none;
@@ -72,6 +74,7 @@
                     }
                 }
                 .add-bookmark,
+                .remove-bookmark,
                 .remove-bookmark {
                     &.button-on {
                         color: $link-color;
@@ -80,24 +83,6 @@
                         }
                     }
                     color: $subdued-color;
-                }
-            }
-        }
-    }
-}
-
-#conversejs.fullscreen {
-    #controlbox {
-        #chatrooms {
-            .bookmarks-list {
-                dl.rooms-list.bookmarks {
-                    dd.available-chatroom {
-                        a {
-                            &.open-room {
-                                width: 80%;
-                            }
-                        }
-                    }
                 }
             }
         }

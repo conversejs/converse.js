@@ -8275,12 +8275,15 @@ body.reset {
     #conversejs .list-container .items-list .open-headline:hover,
     #conversejs .list-container .items-list .open-chatroom:hover {
       background-color: #eff4f7; }
-      #conversejs .list-container .items-list .available-chatroom:hover a.add-bookmark,
-      #conversejs .list-container .items-list .available-chatroom:hover a.room-info,
-      #conversejs .list-container .items-list .open-headline:hover a.add-bookmark,
-      #conversejs .list-container .items-list .open-headline:hover a.room-info,
-      #conversejs .list-container .items-list .open-chatroom:hover a.add-bookmark,
-      #conversejs .list-container .items-list .open-chatroom:hover a.room-info {
+      #conversejs .list-container .items-list .available-chatroom:hover .remove-bookmark,
+      #conversejs .list-container .items-list .available-chatroom:hover .add-bookmark,
+      #conversejs .list-container .items-list .available-chatroom:hover .room-info,
+      #conversejs .list-container .items-list .open-headline:hover .remove-bookmark,
+      #conversejs .list-container .items-list .open-headline:hover .add-bookmark,
+      #conversejs .list-container .items-list .open-headline:hover .room-info,
+      #conversejs .list-container .items-list .open-chatroom:hover .remove-bookmark,
+      #conversejs .list-container .items-list .open-chatroom:hover .add-bookmark,
+      #conversejs .list-container .items-list .open-chatroom:hover .room-info {
         display: block !important; }
     #conversejs .list-container .items-list .available-chatroom.unread-msgs .msgs-indicator,
     #conversejs .list-container .items-list .open-headline.unread-msgs .msgs-indicator,
@@ -8299,15 +8302,19 @@ body.reset {
     #conversejs .list-container .items-list .open-headline a:hover,
     #conversejs .list-container .items-list .open-chatroom a:hover {
       color: #206485; }
-    #conversejs .list-container .items-list .available-chatroom a.add-bookmark, #conversejs .list-container .items-list .available-chatroom a.room-info,
+    #conversejs .list-container .items-list .available-chatroom a.remove-bookmark, #conversejs .list-container .items-list .available-chatroom a.add-bookmark, #conversejs .list-container .items-list .available-chatroom a.room-info,
+    #conversejs .list-container .items-list .open-headline a.remove-bookmark,
     #conversejs .list-container .items-list .open-headline a.add-bookmark,
     #conversejs .list-container .items-list .open-headline a.room-info,
+    #conversejs .list-container .items-list .open-chatroom a.remove-bookmark,
     #conversejs .list-container .items-list .open-chatroom a.add-bookmark,
     #conversejs .list-container .items-list .open-chatroom a.room-info {
       display: none; }
-      #conversejs .list-container .items-list .available-chatroom a.add-bookmark:before, #conversejs .list-container .items-list .available-chatroom a.room-info:before,
+      #conversejs .list-container .items-list .available-chatroom a.remove-bookmark:before, #conversejs .list-container .items-list .available-chatroom a.add-bookmark:before, #conversejs .list-container .items-list .available-chatroom a.room-info:before,
+      #conversejs .list-container .items-list .open-headline a.remove-bookmark:before,
       #conversejs .list-container .items-list .open-headline a.add-bookmark:before,
       #conversejs .list-container .items-list .open-headline a.room-info:before,
+      #conversejs .list-container .items-list .open-chatroom a.remove-bookmark:before,
       #conversejs .list-container .items-list .open-chatroom a.add-bookmark:before,
       #conversejs .list-container .items-list .open-chatroom a.room-info:before {
         font-size: 15px; }
@@ -8326,28 +8333,34 @@ body.reset {
       width: 85%; }
     #conversejs .list-container .items-list .available-chatroom .add-bookmark,
     #conversejs .list-container .items-list .available-chatroom .remove-bookmark,
+    #conversejs .list-container .items-list .available-chatroom .remove-bookmark,
     #conversejs .list-container .items-list .open-headline .add-bookmark,
     #conversejs .list-container .items-list .open-headline .remove-bookmark,
+    #conversejs .list-container .items-list .open-headline .remove-bookmark,
     #conversejs .list-container .items-list .open-chatroom .add-bookmark,
+    #conversejs .list-container .items-list .open-chatroom .remove-bookmark,
     #conversejs .list-container .items-list .open-chatroom .remove-bookmark {
       color: #A8ABA1; }
       #conversejs .list-container .items-list .available-chatroom .add-bookmark.button-on,
       #conversejs .list-container .items-list .available-chatroom .remove-bookmark.button-on,
+      #conversejs .list-container .items-list .available-chatroom .remove-bookmark.button-on,
       #conversejs .list-container .items-list .open-headline .add-bookmark.button-on,
       #conversejs .list-container .items-list .open-headline .remove-bookmark.button-on,
+      #conversejs .list-container .items-list .open-headline .remove-bookmark.button-on,
       #conversejs .list-container .items-list .open-chatroom .add-bookmark.button-on,
+      #conversejs .list-container .items-list .open-chatroom .remove-bookmark.button-on,
       #conversejs .list-container .items-list .open-chatroom .remove-bookmark.button-on {
         color: #578EA9; }
         #conversejs .list-container .items-list .available-chatroom .add-bookmark.button-on:hover,
         #conversejs .list-container .items-list .available-chatroom .remove-bookmark.button-on:hover,
+        #conversejs .list-container .items-list .available-chatroom .remove-bookmark.button-on:hover,
         #conversejs .list-container .items-list .open-headline .add-bookmark.button-on:hover,
         #conversejs .list-container .items-list .open-headline .remove-bookmark.button-on:hover,
+        #conversejs .list-container .items-list .open-headline .remove-bookmark.button-on:hover,
         #conversejs .list-container .items-list .open-chatroom .add-bookmark.button-on:hover,
+        #conversejs .list-container .items-list .open-chatroom .remove-bookmark.button-on:hover,
         #conversejs .list-container .items-list .open-chatroom .remove-bookmark.button-on:hover {
           color: #206485; }
-
-#conversejs.fullscreen #controlbox #chatrooms .bookmarks-list dl.rooms-list.bookmarks dd.available-chatroom a.open-room {
-  width: 80%; }
 
 #conversejs #converse-roster {
   text-align: left;
@@ -9031,6 +9044,9 @@ body.reset {
   #conversejs.converse-overlayed #minimized-chats .unread-message-count-hidden,
   #conversejs.converse-overlayed #minimized-chats .chat-head-message-count-hidden {
     display: none; }
+
+#conversejs.fullscreen #controlbox #chatrooms .bookmarks-list dl.rooms-list.bookmarks dd.available-chatroom a.open-room {
+  width: 80%; }
 
 #conversejs [hidden] {
   display: none; }

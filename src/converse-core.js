@@ -295,6 +295,10 @@
         }
     };
 
+    _converse.isSingleton = function () {
+        return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
+    }
+
     _converse.router = new Backbone.Router();
 
 

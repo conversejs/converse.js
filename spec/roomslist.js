@@ -54,7 +54,38 @@
         ));
     });
 
-    describe("A room shown in the groupchats list", function () {
+    describe("A groupchat shown in the groupchats list", function () {
+
+        it("is highlighted if its currently open", mock.initConverseWithPromises(
+            null, ['rosterGroupsFetched'],
+            { whitelisted_plugins: ['converse-roomslist'],
+              allow_bookmarks: false // Makes testing easier, otherwise we
+                                     // have to mock stanza traffic.
+            }, function (done, _converse) {
+
+            spyOn(_converse, 'isSingleton').and.callFake(function () {
+                return true;
+            });
+
+            test_utils.openControlBox();
+            _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
+            let room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom");
+            expect(room_els.length).toBe(1);
+
+            let item = room_els[0];
+            expect(u.hasClass('open', item)).toBe(true);
+            expect(item.textContent.trim()).toBe('coven@chat.shakespeare.lit');
+
+            _converse.api.rooms.open('balcony@chat.shakespeare.lit', {'nick': 'some1'});
+            room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+            expect(room_els.length).toBe(2);
+
+            room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom.open");
+            expect(room_els.length).toBe(1);
+            item = room_els[0];
+            expect(item.textContent.trim()).toBe('balcony@chat.shakespeare.lit');
+            done();
+        }));
 
         it("has an info icon which opens a details modal when clicked", mock.initConverseWithPromises(
             null, ['rosterGroupsFetched'],

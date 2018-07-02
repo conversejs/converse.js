@@ -71413,6 +71413,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
   };
 
+  _converse.isSingleton = function () {
+    return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
+  };
+
   _converse.router = new Backbone.Router();
 
   _converse.initialize = function (settings, callback) {
@@ -80671,7 +80675,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-controlbox", "converse-muc", "converse-bookmarks"],
+    dependencies: ["converse-singleton", "converse-controlbox", "converse-muc", "converse-bookmarks"],
 
     initialize() {
       /* The initialize function gets called as soon as the plugin is
@@ -80696,6 +80700,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.open-rooms-{_converse.bare_jid}`));
 
           _converse.chatboxes.on('add', this.onChatBoxAdded, this);
+
+          _converse.chatboxes.on('change:hidden', this.onChatBoxChanged, this);
 
           _converse.chatboxes.on('change:bookmarked', this.onChatBoxChanged, this);
 
@@ -80743,13 +80749,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
       _converse.RoomsListElementView = Backbone.VDOMView.extend({
         events: {
-          'click a.room-info': 'showRoomDetailsModal'
+          'click .room-info': 'showRoomDetailsModal'
         },
 
         initialize() {
           this.model.on('destroy', this.remove, this);
           this.model.on('remove', this.remove, this);
           this.model.on('change:bookmarked', this.render, this);
+          this.model.on('change:hidden', this.render, this);
           this.model.on('change:name', this.render, this);
           this.model.on('change:num_unread', this.render, this);
           this.model.on('change:num_unread_general', this.render, this);
@@ -80762,6 +80769,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             // supported by the XMPP server. So we can use it
             // as a check for support (other ways of checking are async).
             'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
+            'currently_open': _converse.isSingleton() && !this.model.get('hidden'),
             'info_leave_room': __('Leave this groupchat'),
             'info_remove_bookmark': __('Unbookmark this groupchat'),
             'info_add_bookmark': __('Bookmark this groupchat'),
@@ -83084,7 +83092,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return true;
           }
 
-          if (_.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode)) {
+          if (_converse.isSingleton()) {
             const any_chats_visible = _converse.chatboxes.filter(cb => cb.get('id') != 'controlbox').filter(cb => !cb.get('hidden')).length > 0;
 
             if (any_chats_visible) {
@@ -83099,7 +83107,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         createChatBox(jid, attrs) {
           /* Make sure new chat boxes are hidden by default. */
-          if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
+          const _converse = this.__super__._converse;
+
+          if (_converse.isSingleton()) {
             attrs = attrs || {};
             attrs.hidden = true;
           }
@@ -83110,7 +83120,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       },
       ChatBoxView: {
         shouldShowOnTextMessage() {
-          if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
+          const _converse = this.__super__._converse;
+
+          if (_converse.isSingleton()) {
             return false;
           } else {
             return this.__super__.shouldShowOnTextMessage.apply(this, arguments);
@@ -83122,7 +83134,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * time. So before opening a chat, we make sure all other
            * chats are hidden.
            */
-          if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
+          const _converse = this.__super__._converse;
+
+          if (_converse.isSingleton()) {
             _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
 
             this.model.set('hidden', false);
@@ -83134,7 +83148,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       },
       ChatRoomView: {
         show(focus) {
-          if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
+          const _converse = this.__super__._converse;
+
+          if (_converse.isSingleton()) {
             _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
 
             this.model.set('hidden', false);
@@ -86138,11 +86154,15 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/rooms_list_item.html -->\n<div class="list-item controlbox-padded available-chatroom d-flex flex-row ';
+__p += '<!-- src/templates/rooms_list_item.html -->\n<div class="list-item controlbox-padded available-chatroom d-flex flex-row\n    ';
+ if (o.currently_open) { ;
+__p += ' open ';
+ } ;
+__p += '\n    ';
  if (o.num_unread_general) { ;
 __p += ' unread-msgs ';
  } ;
-__p += '" data-room-jid="' +
+__p += '"\n    data-room-jid="' +
 __e(o.jid) +
 '">\n';
  if (o.num_unread) { ;
@@ -86156,15 +86176,9 @@ __e(o.jid) +
 __e(o.open_title) +
 '" href="#">' +
 __e(o.name || o.jid) +
-'</a>\n\n<a class="right close-room icon-leave"\n   data-room-jid="' +
-__e(o.jid) +
-'"\n   data-room-name="' +
-__e(o.name || o.jid) +
-'"\n   title="' +
-__e(o.info_leave_room) +
-'" href="#">&nbsp;</a>\n\n';
+'</a>\n\n';
  if (o.allow_bookmarks) { ;
-__p += '\n<a class="fa align-self-center ';
+__p += '\n<a class="fa ';
  if (o.bookmarked) { ;
 __p += ' fa-bookmark remove-bookmark button-on ';
  } else { ;
@@ -86186,11 +86200,17 @@ __e(o.info_add_bookmark) +
  } ;
 __p += '"\n   href="#">&nbsp;</a>\n';
  } ;
-__p += '\n<a class="room-info fa fa-info-circle align-self-center" data-room-jid="' +
+__p += '\n<a class="room-info fa fa-info-circle" data-room-jid="' +
 __e(o.jid) +
 '"\n   title="' +
 __e(o.info_title) +
-'" href="#">&nbsp;</a>\n</div>\n';
+'" href="#">&nbsp;</a>\n\n<a class="fa fa-times close-room"\n   data-room-jid="' +
+__e(o.jid) +
+'"\n   data-room-name="' +
+__e(o.name || o.jid) +
+'"\n   title="' +
+__e(o.info_leave_room) +
+'" href="#">&nbsp;</a>\n\n</div>\n';
 return __p
 };
 

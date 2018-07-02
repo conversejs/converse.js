@@ -34,8 +34,15 @@
                     background-color: lighten($controlbox-head-color, 45%);
                     .remove-bookmark,
                     .add-bookmark,
+                    .close-room,
                     .room-info {
                         display: block !important;
+                    }
+                }
+                &.open {
+                    background-color: $controlbox-head-color;
+                    a {
+                        color: white !important;
                     }
                 }
                 &.unread-msgs {
@@ -55,6 +62,7 @@
                     }
                     &.remove-bookmark,
                     &.add-bookmark,
+                    &.close-room,
                     &.room-info {
                         display: none;
                         &:before {
@@ -75,7 +83,8 @@
                 }
                 .add-bookmark,
                 .remove-bookmark,
-                .remove-bookmark {
+                .close-room,
+                .room-info {
                     &.button-on {
                         color: $link-color;
                         &:hover {

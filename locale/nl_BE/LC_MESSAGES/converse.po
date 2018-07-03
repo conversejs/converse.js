@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-05-17 11:19+0200\n"
-"PO-Revision-Date: 2018-07-02 15:39+0200\n"
-"Last-Translator: Nathan Follens <nathan@email.is>\n"
+"PO-Revision-Date: 2018-07-03 10:26+0000\n"
+"Last-Translator: Nathan Follens <nthn@unseen.is>\n"
 "Language-Team: Flemish <https://hosted.weblate.org/projects/conversejs/"
 "translations/nl_BE/>\n"
 "Language: nl_BE\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.0-dev\n"
+"X-Generator: Weblate 3.1-dev\n"
 
 #: dist/converse-no-dependencies.js:9853 dist/converse-no-dependencies.js:9882
 msgid "Download"
@@ -206,7 +206,7 @@ msgstr "Dit gespreksvenster sluiten"
 
 #: dist/converse-no-dependencies.js:22516
 msgid "The User's Profile Image"
-msgstr ""
+msgstr "Profielafbeelding van gebruiker"
 
 #: dist/converse-no-dependencies.js:22519
 #: dist/converse-no-dependencies.js:25289
@@ -217,16 +217,16 @@ msgstr "Sluiten"
 #: dist/converse-no-dependencies.js:22520
 #: dist/converse-no-dependencies.js:25290
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
 #: dist/converse-no-dependencies.js:22521
 #: dist/converse-no-dependencies.js:25291
 msgid "Full Name"
-msgstr ""
+msgstr "Volledige naam"
 
 #: dist/converse-no-dependencies.js:22522
 msgid "Jabber ID"
-msgstr ""
+msgstr "Jabber-ID"
 
 #: dist/converse-no-dependencies.js:22523
 #: dist/converse-no-dependencies.js:25292
@@ -235,23 +235,22 @@ msgid "Nickname"
 msgstr "Bijnaam"
 
 #: dist/converse-no-dependencies.js:22524
-#, fuzzy
 msgid "Remove as contact"
-msgstr "Voeg een contact toe"
+msgstr "Contact verwijderen"
 
 #: dist/converse-no-dependencies.js:22525
 msgid "Refresh"
-msgstr ""
+msgstr "Vernieuwen"
 
 #: dist/converse-no-dependencies.js:22526
 #: dist/converse-no-dependencies.js:25294
 msgid "Role"
-msgstr ""
+msgstr "Rol"
 
 #: dist/converse-no-dependencies.js:22527
 #: dist/converse-no-dependencies.js:25297
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: dist/converse-no-dependencies.js:22566
 #: dist/converse-no-dependencies.js:24293
@@ -261,7 +260,7 @@ msgstr "Zij’ ge zeker da’ ge dit contact wild verwijderen?"
 #: dist/converse-no-dependencies.js:22575
 #: dist/converse-no-dependencies.js:25325
 msgid "Error"
-msgstr ""
+msgstr "Fout"
 
 #: dist/converse-no-dependencies.js:22575
 #: dist/converse-no-dependencies.js:24301
@@ -621,28 +620,30 @@ msgid "Your Profile"
 msgstr "Uw profiel"
 
 #: dist/converse-no-dependencies.js:25293
-#, fuzzy
 msgid "XMPP Address (JID)"
-msgstr "XMPP-adres"
+msgstr "XMPP-adres (JID)"
 
 #: dist/converse-no-dependencies.js:25295
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
 msgstr ""
+"Gebruikt komma’s voor meerdere rollen op te geven. Uw rollen worden naast "
+"uwe naam op uw berichten weergegeven."
 
 #: dist/converse-no-dependencies.js:25298
 msgid "Your avatar image"
-msgstr ""
+msgstr "Uw avatarafbeelding"
 
 #: dist/converse-no-dependencies.js:25325
-#, fuzzy
 msgid "Sorry, an error happened while trying to save your profile data."
-msgstr "Sorry, der ging iets mis bij het opslaan van uwen bladwijzer."
+msgstr ""
+"Sorry, der is een fout opgetreden bij het opslaan van uw profielgegevens."
 
 #: dist/converse-no-dependencies.js:25325
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
+"Ge kunt de ontwikkelaarsconsole van uwen browser nakijken voor foutenuitvoer."
 
 #: dist/converse-no-dependencies.js:25377
 msgid "Custom status"
@@ -1005,6 +1006,8 @@ msgid ""
 "Sorry, an error happened while running the command. Check your browser's "
 "developer console for details."
 msgstr ""
+"Sorry, der is een fout opgetreden bij het uitvoeren van de opdracht. "
+"Controleert den ontwikkelaarsconsole van uwen browser voor details."
 
 #: dist/converse-no-dependencies.js:29263
 msgid "Change user's affiliation to admin"
@@ -1195,26 +1198,24 @@ msgid "This user can NOT send messages in this room."
 msgstr "Deze gebruiker kan GEEN berichten sturen in dit groepsgesprek."
 
 #: dist/converse-no-dependencies.js:30026
-#, fuzzy
 msgid "Moderator"
-msgstr "Gemodereerd"
+msgstr "Moderator"
 
 #: dist/converse-no-dependencies.js:30027
 msgid "Visitor"
-msgstr ""
+msgstr "Bezoeker"
 
 #: dist/converse-no-dependencies.js:30028
 msgid "Owner"
-msgstr ""
+msgstr "Eigenaar"
 
 #: dist/converse-no-dependencies.js:30029
-#, fuzzy
 msgid "Member"
-msgstr "Alleen-leden"
+msgstr "Lid"
 
 #: dist/converse-no-dependencies.js:30030
 msgid "Admin"
-msgstr ""
+msgstr "Beheerder"
 
 #: dist/converse-no-dependencies.js:30082
 msgid "Occupants"

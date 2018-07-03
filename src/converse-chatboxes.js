@@ -417,7 +417,7 @@
                     if (type === 'error') {
                         const error = message.querySelector('error');
                         return _.propertyOf(error.querySelector('text'))('textContent') ||
-                            __('Sorry, an error occured:') + ' ' + error.innerHTML;
+                            __('Sorry, an error occurred:') + ' ' + error.innerHTML;
                     } else {
                         return _.propertyOf(message.querySelector('body'))('textContent');
                     }

@@ -68732,7 +68732,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           if (type === 'error') {
             const error = message.querySelector('error');
-            return _.propertyOf(error.querySelector('text'))('textContent') || __('Sorry, an error occured:') + ' ' + error.innerHTML;
+            return _.propertyOf(error.querySelector('text'))('textContent') || __('Sorry, an error occurred:') + ' ' + error.innerHTML;
           } else {
             return _.propertyOf(message.querySelector('body'))('textContent');
           }
@@ -71924,7 +71924,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
       this.connection.addHandler(iq => {
         if (iq.querySelectorAll('error').length > 0) {
-          _converse.log('An error occured while trying to enable message carbons.', Strophe.LogLevel.ERROR);
+          _converse.log('An error occurred while trying to enable message carbons.', Strophe.LogLevel.WARN);
         } else {
           this.session.save({
             'carbons_enabled': true
@@ -81216,8 +81216,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'jid': bare_jid,
             'user_id': Strophe.getNodeFromJid(jid)
           }, attributes));
+          this.setChatBox();
           this.presence.on('change:show', () => _converse.emit('contactPresenceChanged', this));
           this.presence.on('change:show', () => this.trigger('presenceChanged'));
+        },
+
+        setChatBox(chatbox = null) {
+          chatbox = chatbox || _converse.chatboxes.get(this.get('jid'));
+
+          if (chatbox) {
+            this.chatbox = chatbox;
+            this.chatbox.on('change:hidden', this.render, this);
+          }
         },
 
         getDisplayName() {
@@ -81464,7 +81474,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            *    (String) name - The name of that user
            *    (Array of Strings) groups - Any roster groups the user might belong to
            *    (Function) callback - A function to call once the IQ is returned
-           *    (Function) errback - A function to call if an error occured
+           *    (Function) errback - A function to call if an error occurred
            */
           name = _.isEmpty(name) ? jid : name;
           const iq = $iq({
@@ -81872,6 +81882,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       };
       /********** Event Handlers *************/
 
+
+      function updateUnreadCounter(chatbox) {
+        const contact = _converse.roster.findWhere({
+          'jid': chatbox.get('jid')
+        });
+
+        if (!_.isUndefined(contact)) {
+          contact.save({
+            'num_unread': chatbox.get('num_unread')
+          });
+        }
+      }
+
+      _converse.api.listen.on('chatBoxesInitialized', () => {
+        _converse.chatboxes.on('change:num_unread', updateUnreadCounter);
+      });
 
       _converse.api.listen.on('beforeTearDown', _converse.unregisterPresenceHandler());
 
@@ -82348,7 +82374,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
       _converse.RosterContactView = Backbone.NativeView.extend({
         tagName: 'li',
-        className: 'd-flex hidden controlbox-padded',
+        className: 'list-item d-flex hidden controlbox-padded',
         events: {
           "click .accept-xmpp-request": "acceptRequest",
           "click .decline-xmpp-request": "declineRequest",
@@ -82358,6 +82384,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         initialize() {
           this.model.on("change", this.render, this);
+          this.model.on("highlight", this.highlight, this);
           this.model.on("destroy", this.remove, this);
           this.model.on("open", this.openChat, this);
           this.model.on("remove", this.remove, this);
@@ -82373,11 +82400,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return this;
           }
 
-          const item = this.model,
-                ask = item.get('ask'),
-                show = item.presence.get('show'),
-                requesting = item.get('requesting'),
-                subscription = item.get('subscription');
+          const ask = this.model.get('ask'),
+                show = this.model.presence.get('show'),
+                requesting = this.model.get('requesting'),
+                subscription = this.model.get('subscription');
           const classes_to_remove = ['current-xmpp-contact', 'pending-xmpp-contact', 'requesting-xmpp-contact'].concat(_.keys(STATUSES));
 
           _.each(classes_to_remove, function (cls) {
@@ -82388,6 +82414,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           this.el.classList.add(show);
           this.el.setAttribute('data-status', show);
+          this.highlight();
+
+          if (_converse.isSingleton()) {
+            const chatbox = _converse.chatboxes.get(this.model.get('jid'));
+
+            if (chatbox) {
+              if (chatbox.get('hidden')) {
+                this.el.classList.remove('open');
+              } else {
+                this.el.classList.add('open');
+              }
+            }
+          }
 
           if (ask === 'subscribe' || subscription === 'from') {
             /* ask === 'subscribe'
@@ -82401,17 +82440,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
              *
              *  So in both cases the user is a "pending" contact.
              */
-            const display_name = item.getDisplayName();
+            const display_name = this.model.getDisplayName();
             this.el.classList.add('pending-xmpp-contact');
-            this.el.innerHTML = tpl_pending_contact(_.extend(item.toJSON(), {
+            this.el.innerHTML = tpl_pending_contact(_.extend(this.model.toJSON(), {
               'display_name': display_name,
               'desc_remove': __('Click to remove %1$s as a contact', display_name),
               'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
             }));
           } else if (requesting === true) {
-            const display_name = item.getDisplayName();
+            const display_name = this.model.getDisplayName();
             this.el.classList.add('requesting-xmpp-contact');
-            this.el.innerHTML = tpl_requesting_contact(_.extend(item.toJSON(), {
+            this.el.innerHTML = tpl_requesting_contact(_.extend(this.model.toJSON(), {
               'display_name': display_name,
               'desc_accept': __("Click to accept the contact request from %1$s", display_name),
               'desc_decline': __("Click to decline the contact request from %1$s", display_name),
@@ -82421,10 +82460,26 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             this.el.classList.add('current-xmpp-contact');
             this.el.classList.remove(_.without(['both', 'to'], subscription)[0]);
             this.el.classList.add(subscription);
-            this.renderRosterItem(item);
+            this.renderRosterItem(this.model);
           }
 
           return this;
+        },
+
+        highlight() {
+          /* If appropriate, highlight the contact (by adding the 'open' class).
+           */
+          if (_converse.isSingleton()) {
+            const chatbox = _converse.chatboxes.get(this.model.get('jid'));
+
+            if (chatbox) {
+              if (chatbox.get('hidden')) {
+                this.el.classList.remove('open');
+              } else {
+                this.el.classList.add('open');
+              }
+            }
+          }
         },
 
         renderRosterItem(item) {
@@ -82913,18 +82968,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         updateChatBox(contact) {
-          const chatbox = _converse.chatboxes.get(contact.get('jid')),
-                changes = {};
-
-          if (!chatbox) {
+          if (!this.model.chatbox) {
             return this;
           }
+
+          const changes = {};
 
           if (_.has(contact.changed, 'status')) {
             changes.status = contact.get('status');
           }
 
-          chatbox.save(changes);
+          this.model.chatbox.save(changes);
           return this;
         },
 
@@ -82982,20 +83036,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
       /* -------- Event Handlers ----------- */
 
-      function updateUnreadCounter(chatbox) {
-        const contact = _.head(_converse.roster.where({
-          'jid': chatbox.get('jid')
-        }));
-
-        if (!_.isUndefined(contact)) {
-          contact.save({
-            'num_unread': chatbox.get('num_unread')
-          });
-        }
-      }
-
       _converse.api.listen.on('chatBoxesInitialized', () => {
-        _converse.chatboxes.on('change:num_unread', updateUnreadCounter);
+        _converse.chatboxes.on('change:hidden', chatbox => {
+          const contact = _converse.roster.findWhere({
+            'jid': chatbox.get('jid')
+          });
+
+          if (!_.isUndefined(contact)) {
+            contact.trigger('highlight', contact);
+          }
+        });
       });
 
       function initRoster() {
@@ -85266,7 +85316,7 @@ __p += ' fa-caret-right ';
  } ;
 __p += '">\n    </span> ' +
 __e(o.label_group) +
-'</a>\n<ul class="roster-group-contacts ';
+'</a>\n<ul class="items-list roster-group-contacts ';
  if (o.toggle_state === o._converse.CLOSED) { ;
 __p += ' collapsed ';
  } ;
@@ -86368,7 +86418,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/roster_item.html -->\n<a class="open-chat w-100 ';
+__p += '<!-- src/templates/roster_item.html -->\n<a class="cbox-list-item open-chat w-100 ';
  if (o.num_unread) { ;
 __p += ' unread-msgs ';
  } ;

@@ -232,8 +232,18 @@
                         'user_id': Strophe.getNodeFromJid(jid)
                     }, attributes));
 
+                    this.setChatBox();
+
                     this.presence.on('change:show', () => _converse.emit('contactPresenceChanged', this));
                     this.presence.on('change:show', () => this.trigger('presenceChanged'));
+                },
+
+                setChatBox (chatbox=null) {
+                    chatbox = chatbox || _converse.chatboxes.get(this.get('jid'));
+                    if (chatbox) {
+                        this.chatbox = chatbox;
+                        this.chatbox.on('change:hidden', this.render, this);
+                    }
                 },
 
                 getDisplayName () {
@@ -450,7 +460,7 @@
                      *    (String) name - The name of that user
                      *    (Array of Strings) groups - Any roster groups the user might belong to
                      *    (Function) callback - A function to call once the IQ is returned
-                     *    (Function) errback - A function to call if an error occured
+                     *    (Function) errback - A function to call if an error occurred
                      */
                     name = _.isEmpty(name)? jid: name;
                     const iq = $iq({type: 'set'})
@@ -797,6 +807,16 @@
 
 
             /********** Event Handlers *************/
+
+            function updateUnreadCounter (chatbox) {
+                const contact = _converse.roster.findWhere({'jid': chatbox.get('jid')});
+                if (!_.isUndefined(contact)) {
+                    contact.save({'num_unread': chatbox.get('num_unread')});
+                }
+            }
+            _converse.api.listen.on('chatBoxesInitialized', () => {
+                _converse.chatboxes.on('change:num_unread', updateUnreadCounter)
+            });
 
             _converse.api.listen.on('beforeTearDown', _converse.unregisterPresenceHandler());
 

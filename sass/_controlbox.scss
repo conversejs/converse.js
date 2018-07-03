@@ -20,7 +20,9 @@
         }
     }
 
-    .set-xmpp-status, .xmpp-status, .roster-contacts {
+    .set-xmpp-status,
+    .xmpp-status,
+    .roster-contacts {
         .fa-circle {
             color: $green;
         }
@@ -30,9 +32,7 @@
         .fa-dot-circle-o {
             color: $orange,
         }
-        .fa-circle-o {
-            color: $subdued-color;
-        }
+        .fa-circle-o,
         .fa-times-circle {
             color: $subdued-color;
         }

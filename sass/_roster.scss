@@ -94,14 +94,6 @@
                         padding: 0 0.2em 0 0;
                     }
                 }
-                a {
-                    &:hover {
-                        color: $dark-link-color;
-                    }
-                    .fa:hover {
-                        color: white;
-                    }
-                }
 
                 .open-chat {
                     margin: 0;

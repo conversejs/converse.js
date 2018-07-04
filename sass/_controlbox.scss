@@ -384,7 +384,6 @@
                 .box-flyout {
                     width: 100vw !important;
                     height: 100vh !important;
-                    margin-left: 30px;
                 }
                 .sidebar {
                     display: block;
@@ -461,8 +460,9 @@
 #conversejs.converse-mobile {
     #controlbox {
         @include make-col-ready();
+
         @include media-breakpoint-up(md) {
-            @include make-col(3);
+            @include make-col(4);
         }
         @include media-breakpoint-up(lg) {
             @include make-col(3);

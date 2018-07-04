@@ -7726,8 +7726,8 @@ body.reset {
   padding-left: 15px; }
   @media (min-width: 768px) {
     #conversejs.converse-fullscreen .chatbox {
-      flex: 0 0 75%;
-      max-width: 75%; } }
+      flex: 0 0 66.6666666667%;
+      max-width: 66.6666666667%; } }
   @media (min-width: 992px) {
     #conversejs.converse-fullscreen .chatbox {
       flex: 0 0 75%;
@@ -8074,8 +8074,7 @@ body.reset {
         width: 100vw !important; }
         #conversejs:not(.converse-embedded) .converse-chatboxes #controlbox .box-flyout {
           width: 100vw !important;
-          height: 100vh !important;
-          margin-left: 30px; }
+          height: 100vh !important; }
         #conversejs:not(.converse-embedded) .converse-chatboxes #controlbox .sidebar {
           display: block; }
       #conversejs:not(.converse-embedded) .converse-chatboxes.sidebar-open .chatbox:not(#controlbox) {
@@ -8129,8 +8128,8 @@ body.reset {
   @media (min-width: 768px) {
     #conversejs.converse-fullscreen #controlbox,
     #conversejs.converse-mobile #controlbox {
-      flex: 0 0 25%;
-      max-width: 25%; } }
+      flex: 0 0 33.3333333333%;
+      max-width: 33.3333333333%; } }
   @media (min-width: 992px) {
     #conversejs.converse-fullscreen #controlbox,
     #conversejs.converse-mobile #controlbox {

@@ -83944,7 +83944,7 @@ __p += ' hidden ';
  } ;
 __p += '" data-room-jid="' +
 __e(o.jid) +
-'">\n    <a class="open-room w-100" data-room-jid="' +
+'">\n    <a class="list-item-link open-room w-100" data-room-jid="' +
 __e(o.jid) +
 '" title="' +
 __e(o.open_title) +

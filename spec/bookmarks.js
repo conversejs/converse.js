@@ -516,20 +516,28 @@
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                     test_utils.waitUntil(function () {
-                        return $('#chatrooms div.bookmarks.rooms-list .room-item').length;
+                        return document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length;
                     }, 300).then(function () {
-                        expect($('#chatrooms div.bookmarks.rooms-list .room-item').length).toBe(4);
-                        expect($('#chatrooms div.bookmarks.rooms-list .room-item a').text().trim()).toBe(
-                            "1st Bookmark  Another room  Bookmark with a very very long name that will be shortened  The Play's the Thing")
+                        expect(document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length).toBe(4);
+                        const els = document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item a.list-item-link');
+                        expect(els[0].textContent).toBe("1st Bookmark");
+                        expect(els[1].textContent).toBe("Another room");
+                        expect(els[2].textContent).toBe("Bookmark with a very very long name that will be shortened");
+                        expect(els[3].textContent).toBe("The Play's the Thing");
 
                         spyOn(window, 'confirm').and.returnValue(true);
-                        $('#chatrooms .bookmarks.rooms-list .room-item:nth-child(2) a:nth-child(2)')[0].click();
+                        document.querySelector('#chatrooms .bookmarks.rooms-list .room-item:nth-child(2) a:nth-child(2)').click();
                         expect(window.confirm).toHaveBeenCalled();
                         return test_utils.waitUntil(function () {
-                            return $('#chatrooms .bookmarks.rooms-list .room-item a').text().trim() ===
-                                "1st Bookmark  Bookmark with a very very long name that will be shortened  The Play's the Thing";
+                            return document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length === 3;
                         }, 300)
-                    }).then(done);
+                    }).then(() => {
+                        const els = document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item a.list-item-link');
+                        expect(els[0].textContent).toBe("1st Bookmark");
+                        expect(els[1].textContent).toBe("Bookmark with a very very long name that will be shortened");
+                        expect(els[2].textContent).toBe("The Play's the Thing");
+                        done();
+                    }).catch(_.partial(console.error, _));
                 });
             }));
 

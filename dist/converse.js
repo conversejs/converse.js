@@ -78556,6 +78556,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             _.each(_.difference(old_jids, jids), removed_jid => {
               // Remove absent occupants who've been removed from
               // the members lists.
+              if (removed_jid === _converse.bare_jid) {
+                return;
+              }
+
               const occupant = this.findOccupant({
                 'jid': removed_jid
               });

@@ -1041,6 +1041,7 @@
                         _.each(_.difference(old_jids, jids), (removed_jid) => {
                             // Remove absent occupants who've been removed from
                             // the members lists.
+                            if (removed_jid === _converse.bare_jid) { return; }
                             const occupant = this.findOccupant({'jid': removed_jid});
                             if (!occupant) { return; }
                             if (occupant.get('show') === 'offline') {

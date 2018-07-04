@@ -83960,10 +83960,6 @@ __e(o.jid) +
 __e(o.name) +
 '"\n        title="' +
 __e(o.info_remove_bookmark) +
-'" href="#">&nbsp;</a>\n    <a class="room-info fa fa-info-circle align-self-center" data-room-jid="' +
-__e(o.jid) +
-'"\n        title="' +
-__e(o.info_title) +
 '" href="#">&nbsp;</a>\n</div>\n';
 return __p
 };

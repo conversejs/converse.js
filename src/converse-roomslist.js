@@ -156,7 +156,7 @@
                 events: {
                     'click .add-bookmark': 'addBookmark',
                     'click .close-room': 'closeRoom',
-                    'click .rooms-toggle': 'toggleRoomsList',
+                    'click .list-toggle': 'toggleRoomsList',
                     'click .remove-bookmark': 'removeBookmark',
                     'click .open-room': 'openRoom',
                 },

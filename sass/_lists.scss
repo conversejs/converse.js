@@ -3,7 +3,7 @@
         text-align: left;
         padding: 0.3em 0;
 
-        .rooms-toggle {
+        .list-toggle {
             font-family: $heading-font; 
             display: block;
             color: $text-color;
@@ -28,16 +28,58 @@
             text-shadow: 0 1px 0 $text-shadow-color;
             word-wrap: break-word;
 
+            .list-item-link {
+                &:hover {
+                    color: $dark-link-color;
+                }
+                font-size: $font-size;
+                line-height: $font-size;
+                padding-right: 0.5em;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            .list-item-action {
+                opacity: 0;
+                font-size: $font-size-tiny;
+                padding: 0;
+                margin: 0 0 0 0.4em;
+                width: 1.6em;
+                &:before {
+                    font-size: $font-size;
+                }
+                &.button-on {
+                    color: $link-color;
+                    &:hover {
+                        color: $dark-link-color;
+                    }
+                }
+                color: $subdued-color;
+                &:hover {
+                    color: $gray-color;
+                    opacity: 1;
+                }
+            }
+
             &.open {
                 background-color: $controlbox-head-color;
                 &:hover {
                     background-color: $controlbox-head-color !important;
                 }
                 a {
-                    color: white !important;
-                }
-                .fa:hover {
                     color: white;
+                }
+                .list-item-link {
+                    &:hover {
+                        color: white;
+                    }
+                }
+                .list-item-action {
+                    color: lighten($lightest-blue, 25%);
+                    &:hover {
+                        color: white;
+                    }
                 }
                 .fa-circle {
                     color: lighten($green, 25%);
@@ -54,16 +96,10 @@
                 }
             }
 
-        }
-
-        .available-chatroom,
-        .open-headline,
-        .open-chatroom,
-        .list-item {
             &:hover {
                 background-color: lighten($controlbox-head-color, 45%);
                 .fa {
-                    display: block !important;
+                    opacity: 1;
                 }
             }
             &.unread-msgs {
@@ -76,40 +112,6 @@
                     width: 100%;
                     font-weight: bold;
                 }
-            }
-            a {
-                &:hover {
-                    color: $dark-link-color;
-                }
-                &.fa {
-                    display: none;
-                    &:before {
-                        font-size: 15px;
-                    }
-                }
-                &.open-room {
-                    width: 68%;
-                    float: left;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    padding-right: 0.5em;
-                }
-                &.available-room {
-                    width: 85%;
-                }
-            }
-            .add-bookmark,
-            .remove-bookmark,
-            .close-room,
-            .room-info {
-                &.button-on {
-                    color: $link-color;
-                    &:hover {
-                        color: $dark-link-color;
-                    }
-                }
-                color: $subdued-color;
             }
         }
     }

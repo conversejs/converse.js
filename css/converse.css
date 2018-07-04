@@ -8258,153 +8258,6 @@ body.reset {
     #conversejs.converse-mobile #controlbox #converse-login input[type=button] {
       width: auto; }
 
-#conversejs .list-container {
-  text-align: left;
-  padding: 0.3em 0; }
-  #conversejs .list-container .rooms-toggle {
-    font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif;
-    display: block;
-    color: #666;
-    padding: 0 0 0.5rem 0; }
-    #conversejs .list-container .rooms-toggle:hover {
-      color: #585B51; }
-#conversejs .items-list {
-  text-align: left; }
-  #conversejs .items-list .list-item {
-    border: none;
-    clear: both;
-    color: #666;
-    display: block;
-    height: 2em;
-    overflow: hidden;
-    padding-top: 0.5em;
-    text-shadow: 0 1px 0 #FAFAFA;
-    word-wrap: break-word; }
-    #conversejs .items-list .list-item.open {
-      background-color: #578EA9; }
-      #conversejs .items-list .list-item.open:hover {
-        background-color: #578EA9 !important; }
-      #conversejs .items-list .list-item.open a {
-        color: white !important; }
-      #conversejs .items-list .list-item.open .fa:hover {
-        color: white; }
-      #conversejs .items-list .list-item.open .fa-circle {
-        color: #89d6ab; }
-      #conversejs .items-list .list-item.open .fa-minus-circle {
-        color: #f0a794; }
-      #conversejs .items-list .list-item.open .fa-dot-circle-o {
-        color: #f0c594; }
-      #conversejs .items-list .list-item.open .fa-circle-o,
-      #conversejs .items-list .list-item.open .fa-times-circle {
-        color: #e6e7e4; }
-  #conversejs .items-list .available-chatroom:hover,
-  #conversejs .items-list .open-headline:hover,
-  #conversejs .items-list .open-chatroom:hover,
-  #conversejs .items-list .list-item:hover {
-    background-color: #eff4f7; }
-    #conversejs .items-list .available-chatroom:hover .fa,
-    #conversejs .items-list .open-headline:hover .fa,
-    #conversejs .items-list .open-chatroom:hover .fa,
-    #conversejs .items-list .list-item:hover .fa {
-      display: block !important; }
-  #conversejs .items-list .available-chatroom.unread-msgs .msgs-indicator,
-  #conversejs .items-list .open-headline.unread-msgs .msgs-indicator,
-  #conversejs .items-list .open-chatroom.unread-msgs .msgs-indicator,
-  #conversejs .items-list .list-item.unread-msgs .msgs-indicator {
-    border-radius: 10%;
-    opacity: 1; }
-  #conversejs .items-list .available-chatroom.unread-msgs .available-room,
-  #conversejs .items-list .available-chatroom.unread-msgs .open-room,
-  #conversejs .items-list .open-headline.unread-msgs .available-room,
-  #conversejs .items-list .open-headline.unread-msgs .open-room,
-  #conversejs .items-list .open-chatroom.unread-msgs .available-room,
-  #conversejs .items-list .open-chatroom.unread-msgs .open-room,
-  #conversejs .items-list .list-item.unread-msgs .available-room,
-  #conversejs .items-list .list-item.unread-msgs .open-room {
-    width: 100%;
-    font-weight: bold; }
-  #conversejs .items-list .available-chatroom a:hover,
-  #conversejs .items-list .open-headline a:hover,
-  #conversejs .items-list .open-chatroom a:hover,
-  #conversejs .items-list .list-item a:hover {
-    color: #206485; }
-  #conversejs .items-list .available-chatroom a.fa,
-  #conversejs .items-list .open-headline a.fa,
-  #conversejs .items-list .open-chatroom a.fa,
-  #conversejs .items-list .list-item a.fa {
-    display: none; }
-    #conversejs .items-list .available-chatroom a.fa:before,
-    #conversejs .items-list .open-headline a.fa:before,
-    #conversejs .items-list .open-chatroom a.fa:before,
-    #conversejs .items-list .list-item a.fa:before {
-      font-size: 15px; }
-  #conversejs .items-list .available-chatroom a.open-room,
-  #conversejs .items-list .open-headline a.open-room,
-  #conversejs .items-list .open-chatroom a.open-room,
-  #conversejs .items-list .list-item a.open-room {
-    width: 68%;
-    float: left;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding-right: 0.5em; }
-  #conversejs .items-list .available-chatroom a.available-room,
-  #conversejs .items-list .open-headline a.available-room,
-  #conversejs .items-list .open-chatroom a.available-room,
-  #conversejs .items-list .list-item a.available-room {
-    width: 85%; }
-  #conversejs .items-list .available-chatroom .add-bookmark,
-  #conversejs .items-list .available-chatroom .remove-bookmark,
-  #conversejs .items-list .available-chatroom .close-room,
-  #conversejs .items-list .available-chatroom .room-info,
-  #conversejs .items-list .open-headline .add-bookmark,
-  #conversejs .items-list .open-headline .remove-bookmark,
-  #conversejs .items-list .open-headline .close-room,
-  #conversejs .items-list .open-headline .room-info,
-  #conversejs .items-list .open-chatroom .add-bookmark,
-  #conversejs .items-list .open-chatroom .remove-bookmark,
-  #conversejs .items-list .open-chatroom .close-room,
-  #conversejs .items-list .open-chatroom .room-info,
-  #conversejs .items-list .list-item .add-bookmark,
-  #conversejs .items-list .list-item .remove-bookmark,
-  #conversejs .items-list .list-item .close-room,
-  #conversejs .items-list .list-item .room-info {
-    color: #A8ABA1; }
-    #conversejs .items-list .available-chatroom .add-bookmark.button-on,
-    #conversejs .items-list .available-chatroom .remove-bookmark.button-on,
-    #conversejs .items-list .available-chatroom .close-room.button-on,
-    #conversejs .items-list .available-chatroom .room-info.button-on,
-    #conversejs .items-list .open-headline .add-bookmark.button-on,
-    #conversejs .items-list .open-headline .remove-bookmark.button-on,
-    #conversejs .items-list .open-headline .close-room.button-on,
-    #conversejs .items-list .open-headline .room-info.button-on,
-    #conversejs .items-list .open-chatroom .add-bookmark.button-on,
-    #conversejs .items-list .open-chatroom .remove-bookmark.button-on,
-    #conversejs .items-list .open-chatroom .close-room.button-on,
-    #conversejs .items-list .open-chatroom .room-info.button-on,
-    #conversejs .items-list .list-item .add-bookmark.button-on,
-    #conversejs .items-list .list-item .remove-bookmark.button-on,
-    #conversejs .items-list .list-item .close-room.button-on,
-    #conversejs .items-list .list-item .room-info.button-on {
-      color: #578EA9; }
-      #conversejs .items-list .available-chatroom .add-bookmark.button-on:hover,
-      #conversejs .items-list .available-chatroom .remove-bookmark.button-on:hover,
-      #conversejs .items-list .available-chatroom .close-room.button-on:hover,
-      #conversejs .items-list .available-chatroom .room-info.button-on:hover,
-      #conversejs .items-list .open-headline .add-bookmark.button-on:hover,
-      #conversejs .items-list .open-headline .remove-bookmark.button-on:hover,
-      #conversejs .items-list .open-headline .close-room.button-on:hover,
-      #conversejs .items-list .open-headline .room-info.button-on:hover,
-      #conversejs .items-list .open-chatroom .add-bookmark.button-on:hover,
-      #conversejs .items-list .open-chatroom .remove-bookmark.button-on:hover,
-      #conversejs .items-list .open-chatroom .close-room.button-on:hover,
-      #conversejs .items-list .open-chatroom .room-info.button-on:hover,
-      #conversejs .items-list .list-item .add-bookmark.button-on:hover,
-      #conversejs .items-list .list-item .remove-bookmark.button-on:hover,
-      #conversejs .items-list .list-item .close-room.button-on:hover,
-      #conversejs .items-list .list-item .room-info.button-on:hover {
-        color: #206485; }
-
 #conversejs #converse-roster {
   text-align: left;
   width: 100%;
@@ -8454,82 +8307,141 @@ body.reset {
         padding-bottom: 0.3rem; }
         #conversejs #converse-roster .roster-contacts .roster-group .group-toggle:hover {
           color: #585B51; }
-      #conversejs #converse-roster .roster-contacts .roster-group li {
-        border: none;
-        clear: both;
-        color: #666;
-        display: block;
-        overflow-y: hidden;
-        text-shadow: 0 1px 0 #FAFAFA;
-        line-height: 14px;
-        width: 100%;
-        height: 2em;
-        padding-top: 0.5em; }
-        #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a {
-          line-height: 16px; }
-          #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a.fa {
-            width: 1.5em; }
-        #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact .req-contact-name {
-          padding: 0 0.2em 0 0; }
-        #conversejs #converse-roster .roster-contacts .roster-group li .open-chat {
-          margin: 0;
-          padding: 0; }
-          #conversejs #converse-roster .roster-contacts .roster-group li .open-chat.unread-msgs {
-            font-weight: bold; }
-            #conversejs #converse-roster .roster-contacts .roster-group li .open-chat.unread-msgs .contact-name {
-              width: 70%; }
-          #conversejs #converse-roster .roster-contacts .roster-group li .open-chat .msgs-indicator {
-            color: white;
-            background-color: #3AA569;
-            opacity: 1;
-            border-radius: 10%;
-            padding: 0.2em;
-            font-size: 12px; }
-          #conversejs #converse-roster .roster-contacts .roster-group li .open-chat .contact-name {
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            padding: 0;
-            margin: 0;
-            max-width: 80%;
-            float: none;
-            height: 100%; }
-            #conversejs #converse-roster .roster-contacts .roster-group li .open-chat .contact-name.unread-msgs {
-              max-width: 60%; }
-          #conversejs #converse-roster .roster-contacts .roster-group li .open-chat .avatar {
-            float: left;
-            display: inline-block; }
-        #conversejs #converse-roster .roster-contacts .roster-group li.current-xmpp-contact span {
-          font-size: 14px;
-          float: left;
-          margin-right: 0.5em; }
-        #conversejs #converse-roster .roster-contacts .roster-group li.odd {
-          background-color: #DCEAC5;
-          /* Make this difference */ }
-        #conversejs #converse-roster .roster-contacts .roster-group li a, #conversejs #converse-roster .roster-contacts .roster-group li span {
-          display: inline-block;
+      #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a {
+        line-height: 16px; }
+        #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a.fa {
+          width: 1.5em; }
+      #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact .req-contact-name {
+        padding: 0 0.2em 0 0; }
+      #conversejs #converse-roster .roster-contacts .roster-group li .open-chat {
+        margin: 0;
+        padding: 0; }
+        #conversejs #converse-roster .roster-contacts .roster-group li .open-chat.unread-msgs {
+          font-weight: bold; }
+          #conversejs #converse-roster .roster-contacts .roster-group li .open-chat.unread-msgs .contact-name {
+            width: 70%; }
+        #conversejs #converse-roster .roster-contacts .roster-group li .open-chat .msgs-indicator {
+          color: white;
+          background-color: #3AA569;
+          opacity: 1;
+          border-radius: 10%;
+          padding: 0.2em;
+          font-size: 12px; }
+        #conversejs #converse-roster .roster-contacts .roster-group li .open-chat .contact-name {
           overflow: hidden;
           white-space: nowrap;
-          text-overflow: ellipsis; }
-        #conversejs #converse-roster .roster-contacts .roster-group li span {
-          padding: 0; }
-        #conversejs #converse-roster .roster-contacts .roster-group li .decline-xmpp-request {
-          margin-left: 5px; }
-        #conversejs #converse-roster .roster-contacts .roster-group li .remove-xmpp-contact {
-          font-size: 10px;
-          margin: 0;
+          text-overflow: ellipsis;
           padding: 0;
-          width: 2em;
-          display: none; }
-          #conversejs #converse-roster .roster-contacts .roster-group li .remove-xmpp-contact:before {
-            font-size: 14px; }
-        #conversejs #converse-roster .roster-contacts .roster-group li:hover {
-          background-color: #eff4f7; }
-          #conversejs #converse-roster .roster-contacts .roster-group li:hover .remove-xmpp-contact {
-            display: inline-block; }
+          margin: 0;
+          max-width: 90%;
+          float: none;
+          height: 100%; }
+          #conversejs #converse-roster .roster-contacts .roster-group li .open-chat .contact-name.unread-msgs {
+            max-width: 60%; }
+        #conversejs #converse-roster .roster-contacts .roster-group li .open-chat .avatar {
+          float: left;
+          display: inline-block; }
+      #conversejs #converse-roster .roster-contacts .roster-group li.current-xmpp-contact span {
+        font-size: 14px;
+        float: left;
+        margin-right: 0.5em; }
+      #conversejs #converse-roster .roster-contacts .roster-group li.odd {
+        background-color: #DCEAC5;
+        /* Make this difference */ }
+      #conversejs #converse-roster .roster-contacts .roster-group li a, #conversejs #converse-roster .roster-contacts .roster-group li span {
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis; }
+      #conversejs #converse-roster .roster-contacts .roster-group li .decline-xmpp-request {
+        margin-left: 5px; }
+      #conversejs #converse-roster .roster-contacts .roster-group li:hover {
+        background-color: #eff4f7; }
+        #conversejs #converse-roster .roster-contacts .roster-group li:hover .remove-xmpp-contact {
+          display: inline-block; }
   #conversejs #converse-roster span.pending-contact-name {
     line-height: 16px;
     width: 100%; }
+
+#conversejs .list-container {
+  text-align: left;
+  padding: 0.3em 0; }
+  #conversejs .list-container .list-toggle {
+    font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif;
+    display: block;
+    color: #666;
+    padding: 0 0 0.5rem 0; }
+    #conversejs .list-container .list-toggle:hover {
+      color: #585B51; }
+#conversejs .items-list {
+  text-align: left; }
+  #conversejs .items-list .list-item {
+    border: none;
+    clear: both;
+    color: #666;
+    display: block;
+    height: 2em;
+    overflow: hidden;
+    padding-top: 0.5em;
+    text-shadow: 0 1px 0 #FAFAFA;
+    word-wrap: break-word; }
+    #conversejs .items-list .list-item .list-item-link {
+      font-size: 14px;
+      line-height: 14px;
+      padding-right: 0.5em;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis; }
+      #conversejs .items-list .list-item .list-item-link:hover {
+        color: #206485; }
+    #conversejs .items-list .list-item .list-item-action {
+      opacity: 0;
+      font-size: 10px;
+      padding: 0;
+      margin: 0 0 0 0.4em;
+      width: 1.6em;
+      color: #A8ABA1; }
+      #conversejs .items-list .list-item .list-item-action:before {
+        font-size: 14px; }
+      #conversejs .items-list .list-item .list-item-action.button-on {
+        color: #578EA9; }
+        #conversejs .items-list .list-item .list-item-action.button-on:hover {
+          color: #206485; }
+      #conversejs .items-list .list-item .list-item-action:hover {
+        color: #818479;
+        opacity: 1; }
+    #conversejs .items-list .list-item.open {
+      background-color: #578EA9; }
+      #conversejs .items-list .list-item.open:hover {
+        background-color: #578EA9 !important; }
+      #conversejs .items-list .list-item.open a {
+        color: white; }
+      #conversejs .items-list .list-item.open .list-item-link:hover {
+        color: white; }
+      #conversejs .items-list .list-item.open .list-item-action {
+        color: #e3eef3; }
+        #conversejs .items-list .list-item.open .list-item-action:hover {
+          color: white; }
+      #conversejs .items-list .list-item.open .fa-circle {
+        color: #89d6ab; }
+      #conversejs .items-list .list-item.open .fa-minus-circle {
+        color: #f0a794; }
+      #conversejs .items-list .list-item.open .fa-dot-circle-o {
+        color: #f0c594; }
+      #conversejs .items-list .list-item.open .fa-circle-o,
+      #conversejs .items-list .list-item.open .fa-times-circle {
+        color: #e6e7e4; }
+    #conversejs .items-list .list-item:hover {
+      background-color: #eff4f7; }
+      #conversejs .items-list .list-item:hover .fa {
+        opacity: 1; }
+    #conversejs .items-list .list-item.unread-msgs .msgs-indicator {
+      border-radius: 10%;
+      opacity: 1; }
+    #conversejs .items-list .list-item.unread-msgs .available-room,
+    #conversejs .items-list .list-item.unread-msgs .open-room {
+      width: 100%;
+      font-weight: bold; }
 
 #conversejs.converse-embedded .add-chatroom input[type="submit"],
 #conversejs.converse-embedded .add-chatroom input[type="button"],

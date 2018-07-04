@@ -80816,7 +80816,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         events: {
           'click .add-bookmark': 'addBookmark',
           'click .close-room': 'closeRoom',
-          'click .rooms-toggle': 'toggleRoomsList',
+          'click .list-toggle': 'toggleRoomsList',
           'click .remove-bookmark': 'removeBookmark',
           'click .open-room': 'openRoom'
         },
@@ -83950,7 +83950,7 @@ __e(o.jid) +
 __e(o.open_title) +
 '" href="#">' +
 __e(o.name) +
-'</a>\n    <a class="remove-bookmark fa fa-bookmark align-self-center ';
+'</a>\n    <a class="list-item-action remove-bookmark fa fa-bookmark align-self-center ';
  if (o.bookmarked) { ;
 __p += ' button-on ';
  } ;
@@ -83977,7 +83977,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/bookmarks_list.html -->\n<a href="#" class="rooms-toggle bookmarks-toggle controlbox-padded" title="' +
+__p += '<!-- src/templates/bookmarks_list.html -->\n<a href="#" class="list-toggle bookmarks-toggle controlbox-padded" title="' +
 __e(o.desc_bookmarks) +
 '">\n    <span class="fa ';
  if (o.toggle_state === o._converse.OPENED) { ;
@@ -86177,7 +86177,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/rooms_list.html -->\n<a href="#" class="rooms-toggle open-rooms-toggle controlbox-padded" title="' +
+__p += '<!-- src/templates/rooms_list.html -->\n<a href="#" class="list-toggle open-rooms-toggle controlbox-padded" title="' +
 __e(o.desc_rooms) +
 '">\n    <span class="fa ';
  if (o.toggle_state === o._converse.OPENED) { ;
@@ -86220,7 +86220,7 @@ __p += '\n    <span class="msgs-indicator badge badge-info">' +
 __e( o.num_unread ) +
 '</span>\n';
  } ;
-__p += '\n<a class="open-room available-room w-100"\n    data-room-jid="' +
+__p += '\n<a class="list-item-link open-room available-room w-100"\n    data-room-jid="' +
 __e(o.jid) +
 '"\n    title="' +
 __e(o.open_title) +
@@ -86228,7 +86228,7 @@ __e(o.open_title) +
 __e(o.name || o.jid) +
 '</a>\n\n';
  if (o.allow_bookmarks) { ;
-__p += '\n<a class="fa ';
+__p += '\n<a class="list-item-action fa ';
  if (o.bookmarked) { ;
 __p += ' fa-bookmark remove-bookmark button-on ';
  } else { ;
@@ -86250,11 +86250,11 @@ __e(o.info_add_bookmark) +
  } ;
 __p += '"\n   href="#">&nbsp;</a>\n';
  } ;
-__p += '\n<a class="room-info fa fa-info-circle" data-room-jid="' +
+__p += '\n\n<a class="list-item-action room-info fa fa-info-circle" data-room-jid="' +
 __e(o.jid) +
 '"\n   title="' +
 __e(o.info_title) +
-'" href="#">&nbsp;</a>\n\n<a class="fa fa-times close-room"\n   data-room-jid="' +
+'" href="#">&nbsp;</a>\n\n<a class="list-item-action fa fa-times close-room"\n   data-room-jid="' +
 __e(o.jid) +
 '"\n   data-room-name="' +
 __e(o.name || o.jid) +
@@ -86418,7 +86418,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/roster_item.html -->\n<a class="cbox-list-item open-chat w-100 ';
+__p += '<!-- src/templates/roster_item.html -->\n<a class="list-item-link cbox-list-item open-chat w-100 ';
  if (o.num_unread) { ;
 __p += ' unread-msgs ';
  } ;
@@ -86442,7 +86442,7 @@ __p += '">' +
 __e(o.display_name) +
 '</span></a>\n';
  if (o.allow_contact_removal) { ;
-__p += '\n<a class="remove-xmpp-contact fa fa-trash" title="' +
+__p += '\n<a class="list-item-action remove-xmpp-contact fa fa-trash" title="' +
 __e(o.desc_remove) +
 '" href="#"></a>\n';
  } ;

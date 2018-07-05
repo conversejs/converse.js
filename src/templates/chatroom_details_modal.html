@@ -1,8 +1,8 @@
-<div class="modal fade" id="room-details-modal" tabindex="-1" role="dialog" aria-labelledby="user-profile-modal-label" aria-hidden="true">
+<div class="modal fade" id="room-details-modal" tabindex="-1" role="dialog" aria-labelledby="room-details-modal-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="user-profile-modal-label">{{{o.display_name}}}</h5>
+                <h5 class="modal-title" id="room-details-modal-label">{{{o.display_name}}}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="{{{o.label_close}}}"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
@@ -61,6 +61,9 @@
                         </div>
                     </p>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{{o.__('Close')}}}</button>
             </div>
         </div>
     </div>

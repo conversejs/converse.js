@@ -68988,9 +68988,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             });
 
             if (replace) {
+              const older_versions = message.get('older_versions') || [];
+              older_versions.push(message.get('message'));
               message.save({
                 'message': getMessageBody(stanza),
-                'older_versions': (message.get('older_versions') || []).push(message.get('message')),
+                'older_versions': older_versions,
                 'edited': true
               });
             } else if (!message) {
@@ -74463,11 +74465,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! templates/action.html */ "./src/templates/action.html"), __webpack_require__(/*! templates/csn.html */ "./src/templates/csn.html"), __webpack_require__(/*! templates/file_progress.html */ "./src/templates/file_progress.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/message.html */ "./src/templates/message.html"), __webpack_require__(/*! templates/spoiler_message.html */ "./src/templates/spoiler_message.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! templates/action.html */ "./src/templates/action.html"), __webpack_require__(/*! templates/csn.html */ "./src/templates/csn.html"), __webpack_require__(/*! templates/file_progress.html */ "./src/templates/file_progress.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/message.html */ "./src/templates/message.html"), __webpack_require__(/*! templates/message_versions_modal.html */ "./src/templates/message_versions_modal.html"), __webpack_require__(/*! templates/spoiler_message.html */ "./src/templates/spoiler_message.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, xss, emojione, filesize, tpl_action, tpl_csn, tpl_file_progress, tpl_info, tpl_message, tpl_spoiler_message) {
+})(void 0, function (converse, xss, emojione, filesize, tpl_action, tpl_csn, tpl_file_progress, tpl_info, tpl_message, tpl_message_versions_modal, tpl_spoiler_message) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -74511,7 +74513,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         }
 
       });
+      _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
+        toHTML() {
+          return tpl_message_versions_modal(_.extend(this.model.toJSON(), {
+            '__': __
+          }));
+        }
+
+      });
       _converse.MessageView = _converse.ViewWithAvatar.extend({
+        events: {
+          'click .chat-msg-edited': 'showMessageVersionsModal'
+        },
+
         initialize() {
           this.model.vcard.on('change', this.render, this);
           this.model.on('change:progress', this.renderFileUploadProgresBar, this);
@@ -74646,6 +74660,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           })));
           this.replaceElement(msg);
           this.renderAvatar();
+        },
+
+        showMessageVersionsModal(ev) {
+          ev.preventDefault();
+
+          if (_.isUndefined(this.message_versions_modal)) {
+            this.message_versions_modal = new _converse.MessageVersionsModal({
+              'model': this.model
+            });
+          }
+
+          this.message_versions_modal.show(ev);
         },
 
         isMeCommand() {
@@ -84322,7 +84348,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/chatroom_details_modal.html -->\n<div class="modal fade" id="room-details-modal" tabindex="-1" role="dialog" aria-labelledby="user-profile-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="user-profile-modal-label">' +
+__p += '<!-- src/templates/chatroom_details_modal.html -->\n<div class="modal fade" id="room-details-modal" tabindex="-1" role="dialog" aria-labelledby="room-details-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="room-details-modal-label">' +
 __e(o.display_name) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
@@ -84460,7 +84486,9 @@ __e( o.__('Message archiving') ) +
 __e( o.__('Messages are archived on the server') ) +
 '</em></li>\n                        ';
  } ;
-__p += '\n                        </ul>\n                        </div>\n                    </p>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n';
+__p += '\n                        </ul>\n                        </div>\n                    </p>\n                </div>\n            </div>\n            <div class="modal-footer">\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
+__e(o.__('Close')) +
+'</button>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -85563,9 +85591,40 @@ __e(o.pretty_time) +
  if (o.edited) { ;
 __p += ' <i title="' +
 __e(o.__('This message has been edited')) +
-'" class="fa fa-edit"></i> ';
+'" class="fa fa-edit chat-msg-edited"></i> ';
  } ;
 __p += '\n    </div>\n</div>\n';
+return __p
+};
+
+/***/ }),
+
+/***/ "./src/templates/message_versions_modal.html":
+/*!***************************************************!*\
+  !*** ./src/templates/message_versions_modal.html ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
+module.exports = function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<!-- src/templates/message_versions_modal.html -->\n<div class="modal fade" id="message-versions-modal" tabindex="-1" role="dialog" aria-labelledby="message-versions-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h4 class="modal-title" id="message-versions-modal-label">' +
+__e(o.__('Message versions')) +
+'</h4>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
+__e(o.label_close) +
+'"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                <h4>Older versions</h4>\n                ';
+o.older_versions.forEach(function (text) { ;
+__p += ' <p>' +
+__e(text) +
+'</p> ';
+ }); ;
+__p += '\n                <hr>\n                <h4>Current version</h4>\n                <p>' +
+__e(o.message) +
+'</p>\n            </div>\n            <div class="modal-footer">\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
+__e(o.__('Close')) +
+'</button>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 

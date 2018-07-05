@@ -15,6 +15,7 @@
         "templates/file_progress.html",
         "templates/info.html",
         "templates/message.html",
+        "templates/message_versions_modal.html",
         "templates/spoiler_message.html"
     ], factory);
 }(this, function (
@@ -27,6 +28,7 @@
         tpl_file_progress,
         tpl_info,
         tpl_message,
+        tpl_message_versions_modal,
         tpl_spoiler_message
     ) {
     "use strict";
@@ -69,7 +71,23 @@
                 },
             });
 
+
+            _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
+
+                toHTML () {
+                    return tpl_message_versions_modal(_.extend(
+                        this.model.toJSON(), {
+                        '__': __
+                    }));
+                }
+            });
+
+
             _converse.MessageView = _converse.ViewWithAvatar.extend({
+
+                events: {
+                    'click .chat-msg-edited': 'showMessageVersionsModal'
+                },
 
                 initialize () {
                     this.model.vcard.on('change', this.render, this);
@@ -210,6 +228,14 @@
                         })));
                     this.replaceElement(msg);
                     this.renderAvatar();
+                },
+
+                showMessageVersionsModal (ev) {
+                    ev.preventDefault();
+                    if (_.isUndefined(this.message_versions_modal)) {
+                        this.message_versions_modal = new _converse.MessageVersionsModal({'model': this.model});
+                    }
+                    this.message_versions_modal.show(ev);
                 },
 
                 isMeCommand () {

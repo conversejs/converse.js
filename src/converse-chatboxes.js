@@ -662,9 +662,11 @@
                               message = msgid && chatbox.messages.findWhere({msgid});
 
                         if (replace) {
+                            const older_versions = message.get('older_versions') || [];
+                            older_versions.push(message.get('message'));
                             message.save({
                                 'message': getMessageBody(stanza),
-                                'older_versions': (message.get('older_versions') || []).push(message.get('message')),
+                                'older_versions': older_versions,
                                 'edited': true
                             });
                         } else if (!message) {

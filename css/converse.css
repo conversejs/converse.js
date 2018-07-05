@@ -8871,6 +8871,8 @@ body.reset {
   #conversejs .message.chat-msg .chat-msg-content {
     margin-left: 0.5rem;
     width: 100%; }
+  #conversejs .message.chat-msg .chat-msg-edited {
+    cursor: pointer; }
   #conversejs .message.chat-msg.headline .chat-msg-content {
     margin-left: 0; }
   #conversejs .message.chat-msg .chat-msg-text {

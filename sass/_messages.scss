@@ -95,6 +95,9 @@
                 margin-left: 0.5rem;
                 width: 100%;
             }
+            .chat-msg-edited {
+                cursor: pointer;
+            }
             &.headline {
                 .chat-msg-content {
                     margin-left: 0;

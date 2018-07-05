@@ -11,5 +11,6 @@
         </span>
         <span class="chat-msg-text"></span>
         <div class="chat-msg-media"></div>
+        {[ if (o.edited) { ]} <i title="{{{o.__('This message has been edited')}}}" class="fa fa-edit"></i> {[ } ]}
     </div>
 </div>

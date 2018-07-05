@@ -68988,7 +68988,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             });
 
             if (replace) {
-              message.save('message', getMessageBody(stanza));
+              message.save({
+                'message': getMessageBody(stanza),
+                'older_versions': (message.get('older_versions') || []).push(message.get('message')),
+                'edited': true
+              });
             } else if (!message) {
               // Only create the message when we're sure it's not a duplicate
               chatbox.incrementUnreadMsgCounter(original_stanza);
@@ -74562,6 +74566,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 role = this.model.vcard.get('role'),
                 roles = role ? role.split(',') : [];
           const msg = u.stringToElement(template(_.extend(this.model.toJSON(), {
+            '__': __,
             'roles': roles,
             'pretty_time': moment_time.format(_converse.time_format),
             'time': moment_time.format(),
@@ -85554,7 +85559,13 @@ __p += '\n            </span>\n            <time timestamp="' +
 __e(o.isodate) +
 '" class="chat-msg-time">' +
 __e(o.pretty_time) +
-'</time>\n        </span>\n        <span class="chat-msg-text"></span>\n        <div class="chat-msg-media"></div>\n    </div>\n</div>\n';
+'</time>\n        </span>\n        <span class="chat-msg-text"></span>\n        <div class="chat-msg-media"></div>\n        ';
+ if (o.edited) { ;
+__p += ' <i title="' +
+__e(o.__('This message has been edited')) +
+'" class="fa fa-edit"></i> ';
+ } ;
+__p += '\n    </div>\n</div>\n';
 return __p
 };
 

@@ -105,7 +105,11 @@
 
                 expect(chatboxview.el.querySelectorAll('.chat-msg').length).toBe(1);
                 test_utils.waitUntil(() => chatboxview.el.querySelector('.chat-msg-text').textContent ===
-                    'But soft, what light through yonder window breaks?').then(done);
+                    'But soft, what light through yonder window breaks?').then(() => {
+
+                    expect(chatboxview.el.querySelectorAll('.chat-msg-content .fa-edit').length).toBe(1);
+                    done();
+                });
             }));
 
             describe("when a chatbox is opened for someone who is not in the roster", function () {

@@ -121,6 +121,7 @@
                     const msg = u.stringToElement(template(
                         _.extend(
                             this.model.toJSON(), {
+                            '__': __,
                             'roles': roles,
                             'pretty_time': moment_time.format(_converse.time_format),
                             'time': moment_time.format(),

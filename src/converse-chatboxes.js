@@ -662,7 +662,11 @@
                               message = msgid && chatbox.messages.findWhere({msgid});
 
                         if (replace) {
-                            message.save('message', getMessageBody(stanza));
+                            message.save({
+                                'message': getMessageBody(stanza),
+                                'older_versions': (message.get('older_versions') || []).push(message.get('message')),
+                                'edited': true
+                            });
                         } else if (!message) {
                             // Only create the message when we're sure it's not a duplicate
                             chatbox.incrementUnreadMsgCounter(original_stanza);

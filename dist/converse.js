@@ -74531,6 +74531,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.model.on('change:progress', this.renderFileUploadProgresBar, this);
           this.model.on('change:type', this.render, this);
           this.model.on('change:upload', this.render, this);
+          this.model.on('change:message', this.render, this);
           this.model.on('destroy', this.remove, this);
           this.render();
         },
@@ -74665,13 +74666,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         showMessageVersionsModal(ev) {
           ev.preventDefault();
 
-          if (_.isUndefined(this.message_versions_modal)) {
-            this.message_versions_modal = new _converse.MessageVersionsModal({
+          if (_.isUndefined(this.model.message_versions_modal)) {
+            this.model.message_versions_modal = new _converse.MessageVersionsModal({
               'model': this.model
             });
           }
 
-          this.message_versions_modal.show(ev);
+          this.model.message_versions_modal.show(ev);
         },
 
         isMeCommand() {
@@ -85616,7 +85617,7 @@ __e(o.__('Message versions')) +
 __e(o.label_close) +
 '"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                <h4>Older versions</h4>\n                ';
 o.older_versions.forEach(function (text) { ;
-__p += ' <p>' +
+__p += ' <p class="older-msg">' +
 __e(text) +
 '</p> ';
  }); ;

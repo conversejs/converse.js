@@ -100,14 +100,37 @@
                         'to': _converse.connection.jid,
                         'type': 'chat',
                         'id': u.getUniqueId(),
-                    }).c('body').t('But soft, what light through yonder window breaks?').up()
+                    }).c('body').t('But soft, what light through yonder chimney breaks?').up()
                       .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
 
-                expect(chatboxview.el.querySelectorAll('.chat-msg').length).toBe(1);
                 test_utils.waitUntil(() => chatboxview.el.querySelector('.chat-msg-text').textContent ===
-                    'But soft, what light through yonder window breaks?').then(() => {
+                    'But soft, what light through yonder chimney breaks?').then(() => {
 
+                    expect(chatboxview.el.querySelectorAll('.chat-msg').length).toBe(1);
                     expect(chatboxview.el.querySelectorAll('.chat-msg-content .fa-edit').length).toBe(1);
+
+                    _converse.chatboxes.onMessage($msg({
+                            'from': sender_jid,
+                            'to': _converse.connection.jid,
+                            'type': 'chat',
+                            'id': u.getUniqueId(),
+                        }).c('body').t('But soft, what light through yonder window breaks?').up()
+                        .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
+
+                    return test_utils.waitUntil(() => chatboxview.el.querySelector('.chat-msg-text').textContent ===
+                        'But soft, what light through yonder window breaks?');
+                }).then(() => {
+                    expect(chatboxview.el.querySelectorAll('.chat-msg').length).toBe(1);
+                    expect(chatboxview.el.querySelectorAll('.chat-msg-content .fa-edit').length).toBe(1);
+                    chatboxview.el.querySelector('.chat-msg-content .fa-edit').click();
+                    const modal = chatboxview.model.messages.at(0).message_versions_modal;
+                    return test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+                }).then(() => {
+                    const modal = chatboxview.model.messages.at(0).message_versions_modal;
+                    const older_msgs = modal.el.querySelectorAll('.older-msg');
+                    expect(older_msgs.length).toBe(2);
+                    expect(older_msgs[0].textContent).toBe('But soft, what light through yonder airlock breaks?');
+                    expect(older_msgs[1].textContent).toBe('But soft, what light through yonder chimney breaks?');
                     done();
                 });
             }));

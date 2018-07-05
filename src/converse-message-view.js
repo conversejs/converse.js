@@ -94,6 +94,7 @@
                     this.model.on('change:progress', this.renderFileUploadProgresBar, this);
                     this.model.on('change:type', this.render, this);
                     this.model.on('change:upload', this.render, this);
+                    this.model.on('change:message', this.render, this);
                     this.model.on('destroy', this.remove, this);
                     this.render();
                 },
@@ -232,10 +233,10 @@
 
                 showMessageVersionsModal (ev) {
                     ev.preventDefault();
-                    if (_.isUndefined(this.message_versions_modal)) {
-                        this.message_versions_modal = new _converse.MessageVersionsModal({'model': this.model});
+                    if (_.isUndefined(this.model.message_versions_modal)) {
+                        this.model.message_versions_modal = new _converse.MessageVersionsModal({'model': this.model});
                     }
-                    this.message_versions_modal.show(ev);
+                    this.model.message_versions_modal.show(ev);
                 },
 
                 isMeCommand () {

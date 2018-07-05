@@ -3182,9 +3182,8 @@
                 roomspanel.el.querySelector('.show-add-muc-modal').click();
                 test_utils.closeControlBox(_converse);
                 const modal = roomspanel.add_room_modal;
-                test_utils.waitUntil(function () {
-                    return u.isVisible(modal.el);
-                }, 1000).then(function () {
+                test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
+               .then(function () {
                     spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(function () {
                         var deferred = new $.Deferred();
                         deferred.resolve();

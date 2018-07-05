@@ -68340,6 +68340,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _converse.api.promises.add(['chatBoxesFetched', 'chatBoxesInitialized', 'privateChatsAutoJoined']);
 
+      function getMessageBody(stanza) {
+        /* Given a message stanza, return the text contained in its body.
+        */
+        const type = stanza.getAttribute('type');
+
+        if (type === 'error') {
+          const error = stanza.querySelector('error');
+          return _.propertyOf(error.querySelector('text'))('textContent') || __('Sorry, an error occurred:') + ' ' + error.innerHTML;
+        } else {
+          return _.propertyOf(stanza.querySelector('body'))('textContent');
+        }
+      }
+
       function openChat(jid) {
         if (!utils.isValidJID(jid)) {
           return _converse.log(`Invalid JID "${jid}" provided in URL fragment`, Strophe.LogLevel.WARN);
@@ -68727,23 +68740,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         },
 
-        getMessageBody(message) {
-          const type = message.getAttribute('type');
-
-          if (type === 'error') {
-            const error = message.querySelector('error');
-            return _.propertyOf(error.querySelector('text'))('textContent') || __('Sorry, an error occurred:') + ' ' + error.innerHTML;
-          } else {
-            return _.propertyOf(message.querySelector('body'))('textContent');
-          }
-        },
-
-        getMessageAttributesFromStanza(message, original_stanza) {
+        getMessageAttributesFromStanza(stanza, original_stanza) {
           /* Parses a passed in message stanza and returns an object
            * of attributes.
            *
            * Parameters:
-           *    (XMLElement) message - The message stanza
+           *    (XMLElement) stanza - The message stanza
            *    (XMLElement) delay - The <delay> node from the
            *      stanza, if there was one.
            *    (XMLElement) original_stanza - The original stanza,
@@ -68755,21 +68757,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
                 spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
                 delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
-                chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
+                chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
           const attrs = {
             'chat_state': chat_state,
             'is_archived': !_.isNil(archive),
             'is_delayed': !_.isNil(delay),
             'is_spoiler': !_.isNil(spoiler),
-            'message': this.getMessageBody(message) || undefined,
-            'msgid': message.getAttribute('id'),
+            'message': getMessageBody(stanza) || undefined,
+            'msgid': stanza.getAttribute('id'),
             'time': delay ? delay.getAttribute('stamp') : moment().format(),
-            'type': message.getAttribute('type')
+            'type': stanza.getAttribute('type')
           };
 
           if (attrs.type === 'groupchat') {
-            attrs.from = message.getAttribute('from');
+            attrs.from = stanza.getAttribute('from');
             attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
 
             if (attrs.from === this.get('nick')) {
@@ -68778,7 +68780,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               attrs.sender = 'them';
             }
           } else {
-            attrs.from = Strophe.getBareJidFromJid(message.getAttribute('from'));
+            attrs.from = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
 
             if (attrs.from === _converse.bare_jid) {
               attrs.sender = 'me';
@@ -68789,7 +68791,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             }
           }
 
-          _.each(sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, message), xform => {
+          _.each(sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, stanza), xform => {
             attrs['oob_url'] = xform.querySelector('url').textContent;
             attrs['oob_desc'] = xform.querySelector('url').textContent;
           });
@@ -68926,9 +68928,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            */
           let from_jid = stanza.getAttribute('from'),
               to_jid = stanza.getAttribute('to');
-          const original_stanza = stanza,
-                to_resource = Strophe.getResourceFromJid(to_jid),
-                is_carbon = !_.isNull(stanza.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
+          const to_resource = Strophe.getResourceFromJid(to_jid);
 
           if (_converse.filter_by_resource && to_resource && to_resource !== _converse.resource) {
             _converse.log(`onMessage: Ignoring incoming message intended for a different resource: ${to_jid}`, Strophe.LogLevel.INFO);
@@ -68943,11 +68943,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return true;
           }
 
-          const forwarded = stanza.querySelector('forwarded');
+          const forwarded = stanza.querySelector('forwarded'),
+                original_stanza = stanza;
 
           if (!_.isNull(forwarded)) {
-            const forwarded_message = forwarded.querySelector('message');
-            const forwarded_from = forwarded_message.getAttribute('from');
+            const forwarded_message = forwarded.querySelector('message'),
+                  forwarded_from = forwarded_message.getAttribute('from'),
+                  is_carbon = !_.isNull(stanza.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
 
             if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
               // Prevent message forging via carbons
@@ -68976,17 +68978,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const attrs = {
             'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
           };
-          const chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(stanza.querySelector('body'))),
-                msgid = stanza.getAttribute('id');
+          const chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(stanza.querySelector('body')));
 
           if (chatbox) {
-            const messages = msgid && chatbox.messages.findWhere({
+            const replace = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop(),
+                  msgid = replace && replace.getAttribute('id') || stanza.getAttribute('id'),
+                  message = msgid && chatbox.messages.findWhere({
               msgid
-            }) || [];
+            });
 
-            if (_.isEmpty(messages)) {
-              // Only create the message when we're sure it's not a
-              // duplicate
+            if (replace) {
+              message.save('message', getMessageBody(stanza));
+            } else if (!message) {
+              // Only create the message when we're sure it's not a duplicate
               chatbox.incrementUnreadMsgCounter(original_stanza);
               chatbox.createMessage(stanza, original_stanza);
             }
@@ -71183,6 +71187,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
   Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
   Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
+  Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
   Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
   Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
   Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');

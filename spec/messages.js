@@ -104,9 +104,8 @@
                       .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
 
                 expect(chatboxview.el.querySelectorAll('.chat-msg').length).toBe(1);
-                expect(chatboxview.el.querySelector('.chat-msg-text').textContent)
-                    .toBe('But soft, what light through yonder window breaks?');
-                done();
+                test_utils.waitUntil(() => chatboxview.el.querySelector('.chat-msg-text').textContent ===
+                    'But soft, what light through yonder window breaks?').then(done);
             }));
 
             describe("when a chatbox is opened for someone who is not in the roster", function () {

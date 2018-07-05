@@ -60,6 +60,19 @@
                 'privateChatsAutoJoined'
             ]);
 
+            function getMessageBody (stanza) {
+                /* Given a message stanza, return the text contained in its body.
+                */
+                const type = stanza.getAttribute('type');
+                if (type === 'error') {
+                    const error = stanza.querySelector('error');
+                    return _.propertyOf(error.querySelector('text'))('textContent') ||
+                        __('Sorry, an error occurred:') + ' ' + error.innerHTML;
+                } else {
+                    return _.propertyOf(stanza.querySelector('body'))('textContent');
+                }
+            }
+
             function openChat (jid) {
                 if (!utils.isValidJID(jid)) {
                     return _converse.log(
@@ -412,18 +425,6 @@
                     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
-                getMessageBody (message) {
-                    const type = message.getAttribute('type');
-                    if (type === 'error') {
-                        const error = message.querySelector('error');
-                        return _.propertyOf(error.querySelector('text'))('textContent') ||
-                            __('Sorry, an error occurred:') + ' ' + error.innerHTML;
-                    } else {
-                        return _.propertyOf(message.querySelector('body'))('textContent');
-                    }
-
-                },
-
                 getMessageAttributesFromStanza (stanza, original_stanza) {
                     /* Parses a passed in message stanza and returns an object
                      * of attributes.
@@ -452,7 +453,7 @@
                         'is_archived': !_.isNil(archive),
                         'is_delayed': !_.isNil(delay),
                         'is_spoiler': !_.isNil(spoiler),
-                        'message': this.getMessageBody(stanza) || undefined,
+                        'message': getMessageBody(stanza) || undefined,
                         'msgid': stanza.getAttribute('id'),
                         'time': delay ? delay.getAttribute('stamp') : moment().format(),
                         'type': stanza.getAttribute('type')
@@ -602,10 +603,7 @@
                      */
                     let from_jid = stanza.getAttribute('from'),
                         to_jid = stanza.getAttribute('to');
-
-                    const original_stanza = stanza,
-                        to_resource = Strophe.getResourceFromJid(to_jid),
-                        is_carbon = !_.isNull(stanza.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
+                    const to_resource = Strophe.getResourceFromJid(to_jid);
 
                     if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
                         _converse.log(
@@ -623,10 +621,15 @@
                         );
                         return true;
                     }
-                    const forwarded = stanza.querySelector('forwarded');
+
+                    const forwarded = stanza.querySelector('forwarded'),
+                          original_stanza = stanza;
+
                     if (!_.isNull(forwarded)) {
-                        const forwarded_message = forwarded.querySelector('message');
-                        const forwarded_from = forwarded_message.getAttribute('from');
+                        const forwarded_message = forwarded.querySelector('message'),
+                              forwarded_from = forwarded_message.getAttribute('from'),
+                              is_carbon = !_.isNull(stanza.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
+
                         if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
                             // Prevent message forging via carbons
                             // https://xmpp.org/extensions/xep-0280.html#security
@@ -638,8 +641,8 @@
                     }
 
                     const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
-                        from_resource = Strophe.getResourceFromJid(from_jid),
-                        is_me = from_bare_jid === _converse.bare_jid;
+                          from_resource = Strophe.getResourceFromJid(from_jid),
+                          is_me = from_bare_jid === _converse.bare_jid;
 
                     let contact_jid;
                     if (is_me) {
@@ -652,14 +655,16 @@
                     const attrs = {
                         'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
                     }
-                    const chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(stanza.querySelector('body'))),
-                          msgid = stanza.getAttribute('id');
-
+                    const chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(stanza.querySelector('body')));
                     if (chatbox) {
-                        const messages = msgid && chatbox.messages.findWhere({msgid}) || [];
-                        if (_.isEmpty(messages)) {
-                            // Only create the message when we're sure it's not a
-                            // duplicate
+                        const replace = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop(),
+                              msgid = replace && replace.getAttribute('id') || stanza.getAttribute('id'),
+                              message = msgid && chatbox.messages.findWhere({msgid});
+
+                        if (replace) {
+                            message.save('message', getMessageBody(stanza));
+                        } else if (!message) {
+                            // Only create the message when we're sure it's not a duplicate
                             chatbox.incrementUnreadMsgCounter(original_stanza);
                             chatbox.createMessage(stanza, original_stanza);
                         }

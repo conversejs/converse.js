@@ -7,13 +7,13 @@
         ], factory);
 } (this, function ($, jasmine, mock, test_utils) {
     "use strict";
-    var _ = converse.env._;
-    var $iq = converse.env.$iq;
-    var $msg = converse.env.$msg;
-    var Strophe = converse.env.Strophe;
-    var Promise = converse.env.Promise;
-    var moment = converse.env.moment;
-    var u = converse.env.utils;
+    const _ = converse.env._;
+    const $iq = converse.env.$iq;
+    const $msg = converse.env.$msg;
+    const Strophe = converse.env.Strophe;
+    const Promise = converse.env.Promise;
+    const moment = converse.env.moment;
+    const u = converse.env.utils;
 
 
     describe("A Chat Message", function () {
@@ -27,14 +27,12 @@
 
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('.roster-group').length;
-                    }, 300)
+                test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300)
                 .then(function () {
                     spyOn(_converse, 'emit');
-                    var message = 'This is a received message';
-                    var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var msg = $msg({
+                    const message = 'This is a received message';
+                    const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    const msg = $msg({
                             'from': sender_jid,
                             'to': _converse.connection.jid,
                             'type': 'chat',
@@ -50,19 +48,19 @@
                     expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
 
                     // Check that the chatbox and its view now exist
-                    var chatbox = _converse.chatboxes.get(sender_jid);
-                    var chatboxview = _converse.chatboxviews.get(sender_jid);
+                    const chatbox = _converse.chatboxes.get(sender_jid);
+                    const chatboxview = _converse.chatboxviews.get(sender_jid);
                     expect(chatbox).toBeDefined();
                     expect(chatboxview).toBeDefined();
                     // Check that the message was received and check the message parameters
                     expect(chatbox.messages.length).toEqual(1);
-                    var msg_obj = chatbox.messages.models[0];
+                    const msg_obj = chatbox.messages.models[0];
                     expect(msg_obj.get('message')).toEqual(message);
                     expect(msg_obj.get('fullname')).toEqual(mock.cur_names[0]);
                     expect(msg_obj.get('sender')).toEqual('them');
                     expect(msg_obj.get('is_delayed')).toEqual(false);
                     // Now check that the message appears inside the chatbox in the DOM
-                    var chat_content = chatboxview.el.querySelector('.chat-content');
+                    const chat_content = chatboxview.el.querySelector('.chat-content');
                     expect(chat_content.querySelector('.chat-msg .chat-msg-text').textContent).toEqual(message);
                     expect(chat_content.querySelector('.chat-msg-time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
                     return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0])
@@ -71,6 +69,44 @@
                         done();
                     });
                 });
+            }));
+
+            it("can be replaced with a correction",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.createContacts(_converse, 'current', 1);
+                test_utils.openControlBox();
+                const message = 'This is a received message';
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                test_utils.openChatBoxFor(_converse, sender_jid);
+
+                const msg_id = u.getUniqueId();
+                _converse.chatboxes.onMessage($msg({
+                        'from': sender_jid,
+                        'to': _converse.connection.jid,
+                        'type': 'chat',
+                        'id': msg_id,
+                    }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
+
+                var chatboxview = _converse.chatboxviews.get(sender_jid);
+                expect(chatboxview.el.querySelectorAll('.chat-msg').length).toBe(1);
+                expect(chatboxview.el.querySelector('.chat-msg-text').textContent)
+                    .toBe('But soft, what light through yonder airlock breaks?');
+
+                _converse.chatboxes.onMessage($msg({
+                        'from': sender_jid,
+                        'to': _converse.connection.jid,
+                        'type': 'chat',
+                        'id': u.getUniqueId(),
+                    }).c('body').t('But soft, what light through yonder window breaks?').up()
+                      .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
+
+                expect(chatboxview.el.querySelectorAll('.chat-msg').length).toBe(1);
+                expect(chatboxview.el.querySelector('.chat-msg-text').textContent)
+                    .toBe('But soft, what light through yonder window breaks?');
+                done();
             }));
 
             describe("when a chatbox is opened for someone who is not in the roster", function () {

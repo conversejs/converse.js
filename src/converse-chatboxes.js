@@ -424,12 +424,12 @@
 
                 },
 
-                getMessageAttributesFromStanza (message, original_stanza) {
+                getMessageAttributesFromStanza (stanza, original_stanza) {
                     /* Parses a passed in message stanza and returns an object
                      * of attributes.
                      *
                      * Parameters:
-                     *    (XMLElement) message - The message stanza
+                     *    (XMLElement) stanza - The message stanza
                      *    (XMLElement) delay - The <delay> node from the
                      *      stanza, if there was one.
                      *    (XMLElement) original_stanza - The original stanza,
@@ -441,24 +441,24 @@
                           archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
                           spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
                           delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
-                          chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
-                                message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
-                                message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
-                                message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
-                                message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
+                          chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
+                                stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
+                                stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
+                                stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
+                                stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
                     const attrs = {
                         'chat_state': chat_state,
                         'is_archived': !_.isNil(archive),
                         'is_delayed': !_.isNil(delay),
                         'is_spoiler': !_.isNil(spoiler),
-                        'message': this.getMessageBody(message) || undefined,
-                        'msgid': message.getAttribute('id'),
+                        'message': this.getMessageBody(stanza) || undefined,
+                        'msgid': stanza.getAttribute('id'),
                         'time': delay ? delay.getAttribute('stamp') : moment().format(),
-                        'type': message.getAttribute('type')
+                        'type': stanza.getAttribute('type')
                     };
                     if (attrs.type === 'groupchat') {
-                        attrs.from = message.getAttribute('from');
+                        attrs.from = stanza.getAttribute('from');
                         attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
                         if (attrs.from === this.get('nick')) {
                             attrs.sender = 'me';
@@ -466,7 +466,7 @@
                             attrs.sender = 'them';
                         }
                     } else {
-                        attrs.from = Strophe.getBareJidFromJid(message.getAttribute('from'));
+                        attrs.from = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
                         if (attrs.from === _converse.bare_jid) {
                             attrs.sender = 'me';
                             attrs.fullname = _converse.xmppstatus.get('fullname');
@@ -475,7 +475,7 @@
                             attrs.fullname = this.get('fullname');
                         }
                     }
-                    _.each(sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, message), (xform) => {
+                    _.each(sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, stanza), (xform) => {
                         attrs['oob_url'] = xform.querySelector('url').textContent;
                         attrs['oob_desc'] = xform.querySelector('url').textContent;
                     });
@@ -593,19 +593,19 @@
                     return true;
                 },
 
-                onMessage (message) {
+                onMessage (stanza) {
                     /* Handler method for all incoming single-user chat "message"
                      * stanzas.
                      *
                      * Parameters:
-                     *    (XMLElement) message - The incoming message stanza
+                     *    (XMLElement) stanza - The incoming message stanza
                      */
-                    let from_jid = message.getAttribute('from'),
-                        to_jid = message.getAttribute('to');
+                    let from_jid = stanza.getAttribute('from'),
+                        to_jid = stanza.getAttribute('to');
 
-                    const original_stanza = message,
+                    const original_stanza = stanza,
                         to_resource = Strophe.getResourceFromJid(to_jid),
-                        is_carbon = !_.isNull(message.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
+                        is_carbon = !_.isNull(stanza.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
 
                     if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
                         _converse.log(
@@ -613,7 +613,7 @@
                             Strophe.LogLevel.INFO
                         );
                         return true;
-                    } else if (utils.isHeadlineMessage(_converse, message)) {
+                    } else if (utils.isHeadlineMessage(_converse, stanza)) {
                         // XXX: Ideally we wouldn't have to check for headline
                         // messages, but Prosody sends headline messages with the
                         // wrong type ('chat'), so we need to filter them out here.
@@ -623,7 +623,7 @@
                         );
                         return true;
                     }
-                    const forwarded = message.querySelector('forwarded');
+                    const forwarded = stanza.querySelector('forwarded');
                     if (!_.isNull(forwarded)) {
                         const forwarded_message = forwarded.querySelector('message');
                         const forwarded_from = forwarded_message.getAttribute('from');
@@ -632,9 +632,9 @@
                             // https://xmpp.org/extensions/xep-0280.html#security
                             return true;
                         }
-                        message = forwarded_message;
-                        from_jid = message.getAttribute('from');
-                        to_jid = message.getAttribute('to');
+                        stanza = forwarded_message;
+                        from_jid = stanza.getAttribute('from');
+                        to_jid = stanza.getAttribute('to');
                     }
 
                     const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
@@ -652,8 +652,8 @@
                     const attrs = {
                         'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
                     }
-                    const chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(message.querySelector('body'))),
-                          msgid = message.getAttribute('id');
+                    const chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(stanza.querySelector('body'))),
+                          msgid = stanza.getAttribute('id');
 
                     if (chatbox) {
                         const messages = msgid && chatbox.messages.findWhere({msgid}) || [];
@@ -661,7 +661,7 @@
                             // Only create the message when we're sure it's not a
                             // duplicate
                             chatbox.incrementUnreadMsgCounter(original_stanza);
-                            chatbox.createMessage(message, original_stanza);
+                            chatbox.createMessage(stanza, original_stanza);
                         }
                     }
                     _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});

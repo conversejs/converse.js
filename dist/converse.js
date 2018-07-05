@@ -68917,24 +68917,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return true;
         },
 
-        onMessage(message) {
+        onMessage(stanza) {
           /* Handler method for all incoming single-user chat "message"
            * stanzas.
            *
            * Parameters:
-           *    (XMLElement) message - The incoming message stanza
+           *    (XMLElement) stanza - The incoming message stanza
            */
-          let from_jid = message.getAttribute('from'),
-              to_jid = message.getAttribute('to');
-          const original_stanza = message,
+          let from_jid = stanza.getAttribute('from'),
+              to_jid = stanza.getAttribute('to');
+          const original_stanza = stanza,
                 to_resource = Strophe.getResourceFromJid(to_jid),
-                is_carbon = !_.isNull(message.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
+                is_carbon = !_.isNull(stanza.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
 
           if (_converse.filter_by_resource && to_resource && to_resource !== _converse.resource) {
             _converse.log(`onMessage: Ignoring incoming message intended for a different resource: ${to_jid}`, Strophe.LogLevel.INFO);
 
             return true;
-          } else if (utils.isHeadlineMessage(_converse, message)) {
+          } else if (utils.isHeadlineMessage(_converse, stanza)) {
             // XXX: Ideally we wouldn't have to check for headline
             // messages, but Prosody sends headline messages with the
             // wrong type ('chat'), so we need to filter them out here.
@@ -68943,7 +68943,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return true;
           }
 
-          const forwarded = message.querySelector('forwarded');
+          const forwarded = stanza.querySelector('forwarded');
 
           if (!_.isNull(forwarded)) {
             const forwarded_message = forwarded.querySelector('message');
@@ -68955,9 +68955,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               return true;
             }
 
-            message = forwarded_message;
-            from_jid = message.getAttribute('from');
-            to_jid = message.getAttribute('to');
+            stanza = forwarded_message;
+            from_jid = stanza.getAttribute('from');
+            to_jid = stanza.getAttribute('to');
           }
 
           const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
@@ -68976,8 +68976,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const attrs = {
             'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
           };
-          const chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(message.querySelector('body'))),
-                msgid = message.getAttribute('id');
+          const chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(stanza.querySelector('body'))),
+                msgid = stanza.getAttribute('id');
 
           if (chatbox) {
             const messages = msgid && chatbox.messages.findWhere({
@@ -68988,7 +68988,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               // Only create the message when we're sure it's not a
               // duplicate
               chatbox.incrementUnreadMsgCounter(original_stanza);
-              chatbox.createMessage(message, original_stanza);
+              chatbox.createMessage(stanza, original_stanza);
             }
           }
 

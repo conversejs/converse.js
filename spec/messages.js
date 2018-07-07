@@ -10,6 +10,7 @@
     const _ = converse.env._;
     const $iq = converse.env.$iq;
     const $msg = converse.env.$msg;
+    const $pres = converse.env.$pres;
     const Strophe = converse.env.Strophe;
     const Promise = converse.env.Promise;
     const moment = converse.env.moment;
@@ -1587,5 +1588,86 @@
                 });
             }));
         });
+    });
+
+
+    describe("A Groupchat Message", function () {
+
+        it("can be replaced with a correction",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
+            let msg_id, view;
+
+            test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy')
+            .then(() => {
+                const jid = 'lounge@localhost';
+                const room = _converse.api.rooms.get(jid);
+                view = _converse.chatboxviews.get(jid);
+
+                const stanza = $pres({
+                        to: 'dummy@localhost/_converse.js-29092160',
+                        from: 'coven@chat.shakespeare.lit/newguy'
+                    })
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': 'newguy@localhost/_converse.js-290929789',
+                        'role': 'participant'
+                    }).tree();
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                msg_id = u.getUniqueId();
+                _converse.chatboxes.onMessage($msg({
+                        'from': 'lounge@localhost/newguy',
+                        'to': _converse.connection.jid,
+                        'type': 'groupchat',
+                        'id': msg_id,
+                    }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
+
+                expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+                expect(view.el.querySelector('.chat-msg-text').textContent)
+                    .toBe('But soft, what light through yonder airlock breaks?');
+
+                _converse.chatboxes.onMessage($msg({
+                        'from': 'lounge@localhost/newguy',
+                        'to': _converse.connection.jid,
+                        'type': 'chat',
+                        'id': u.getUniqueId(),
+                    }).c('body').t('But soft, what light through yonder chimney breaks?').up()
+                        .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
+
+                return test_utils.waitUntil(() => view.el.querySelector('.chat-msg-text').textContent ===
+                    'But soft, what light through yonder chimney breaks?');
+            }).then(() => {
+                expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+                expect(view.el.querySelectorAll('.chat-msg-content .fa-edit').length).toBe(1);
+
+                _converse.chatboxes.onMessage($msg({
+                        'from': 'lounge@localhost/newguy',
+                        'to': _converse.connection.jid,
+                        'type': 'chat',
+                        'id': u.getUniqueId(),
+                    }).c('body').t('But soft, what light through yonder window breaks?').up()
+                        .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
+
+            return test_utils.waitUntil(() => view.el.querySelector('.chat-msg-text').textContent ===
+                'But soft, what light through yonder window breaks?');
+            }).then(() => {
+                expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+                expect(view.el.querySelectorAll('.chat-msg-content .fa-edit').length).toBe(1);
+                view.el.querySelector('.chat-msg-content .fa-edit').click();
+                const modal = view.model.messages.at(0).message_versions_modal;
+                return test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+            }).then(() => {
+                const modal = view.model.messages.at(0).message_versions_modal;
+                const older_msgs = modal.el.querySelectorAll('.older-msg');
+                expect(older_msgs.length).toBe(2);
+                expect(older_msgs[0].textContent).toBe('But soft, what light through yonder airlock breaks?');
+                expect(older_msgs[1].textContent).toBe('But soft, what light through yonder chimney breaks?');
+                done();
+            });
+        }));
     });
 }));

@@ -635,7 +635,7 @@
                             spyOn(_converse.connection, 'send');
                             spyOn(_converse, 'emit');
                             view.keyPressed({
-                                target: $(view.el).find('textarea.chat-textarea'),
+                                target: view.el.querySelector('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
@@ -648,7 +648,7 @@
 
                             // The notification is not sent again
                             view.keyPressed({
-                                target: $(view.el).find('textarea.chat-textarea'),
+                                target: view.el.querySelector('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
@@ -776,7 +776,7 @@
                             spyOn(view, 'setChatState').and.callThrough();
                             expect(view.model.get('chat_state')).toBe('active');
                             view.keyPressed({
-                                target: $(view.el).find('textarea.chat-textarea'),
+                                target: view.el.querySelector('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
@@ -803,14 +803,14 @@
                             // out if the user simply types longer than the
                             // timeout.
                             view.keyPressed({
-                                target: $(view.el).find('textarea.chat-textarea'),
+                                target: view.el.querySelector('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.setChatState).toHaveBeenCalled();
                             expect(view.model.get('chat_state')).toBe('composing');
 
                             view.keyPressed({
-                                target: $(view.el).find('textarea.chat-textarea'),
+                                target: view.el.querySelector('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
@@ -921,33 +921,25 @@
                             contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                             test_utils.openChatBoxFor(_converse, contact_jid);
                             view = _converse.chatboxviews.get(contact_jid);
-                            return test_utils.waitUntil(function () {
-                                return view.model.get('chat_state') === 'active';
-                            }, 500);
+                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'active', 500);
                         }).then(function () {
                             console.log('chat_state set to active');
                             view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('active');
                             view.keyPressed({
-                                target: $(view.el).find('textarea.chat-textarea'),
+                                target: view.el.querySelector('textarea.chat-textarea'),
                                 keyCode: 1
                             });
-                            return test_utils.waitUntil(function () {
-                                return view.model.get('chat_state') === 'composing';
-                            }, 500);
+                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'composing', 500);
                         }).then(function () {
                             console.log('chat_state set to composing');
                             view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('composing');
                             spyOn(_converse.connection, 'send');
-                            return test_utils.waitUntil(function () {
-                                return view.model.get('chat_state') === 'paused';
-                            }, 500);
+                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'paused', 500);
                         }).then(function () {
                             console.log('chat_state set to paused');
-                            return test_utils.waitUntil(function () {
-                                return view.model.get('chat_state') === 'inactive';
-                            }, 500);
+                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'inactive', 500);
                         }).then(function () {
                             console.log('chat_state set to inactive');
                             expect(_converse.connection.send).toHaveBeenCalled();

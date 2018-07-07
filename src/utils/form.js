@@ -73,14 +73,6 @@
         );
     };
 
-    u.getUniqueId = function () {
-        return 'xxxxxxxx-xxxx'.replace(/[x]/g, function(c) {
-            var r = Math.random() * 16 | 0,
-                v = c === 'x' ? r : r & 0x3 | 0x8;
-            return v.toString(16);
-        });
-    };
-
     u.xForm2webForm = function (field, stanza, domain) {
         /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
          * and turns it into an HTML field.

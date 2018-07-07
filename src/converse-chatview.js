@@ -54,6 +54,7 @@
     const u = converse.env.utils;
     const KEY = {
         ENTER: 13,
+        UP_ARROW: 38,
         FORWARD_SLASH: 47
     };
 
@@ -333,7 +334,7 @@
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .upload-file': 'toggleFileUpload',
-                    'keypress .chat-textarea': 'keyPressed',
+                    'keyup .chat-textarea': 'keyPressed',
                     'input .chat-textarea': 'inputChanged'
                 },
 
@@ -847,6 +848,7 @@
                         return;
                     }
                     const attrs = this.model.getOutgoingMessageAttributes(text, spoiler_hint);
+                    delete this.model.correction;
                     this.model.sendMessage(attrs);
                 },
 
@@ -912,10 +914,24 @@
                      */
                     if (ev.keyCode === KEY.ENTER && !ev.shiftKey) {
                         this.onFormSubmitted(ev);
+                    } else if (ev.keyCode === KEY.UP_ARROW && !ev.shiftKey) {
+                        this.editPreviousMessage();
                     } else if (ev.keyCode !== KEY.FORWARD_SLASH && this.model.get('chat_state') !== _converse.COMPOSING) {
                         // Set chat state to composing if keyCode is not a forward-slash
                         // (which would imply an internal command and not a message).
                         this.setChatState(_converse.COMPOSING);
+                    }
+                },
+
+                editPreviousMessage () {
+                    const msg = _.findLast(this.model.messages.models, (msg) => msg.get('message'));
+                    if (msg) {
+                        const textbox_el = this.el.querySelector('.chat-textarea');
+                        textbox_el.value = msg.get('message');
+                        textbox_el.focus()
+                        // We don't set "correcting" the Backbone-way, because
+                        // we don't want it to persist to storage.
+                        this.model.correction = msg.get('id');
                     }
                 },
 

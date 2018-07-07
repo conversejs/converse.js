@@ -7,6 +7,7 @@
 - #161 XEP-0363: HTTP File Upload
 - #194 Include entity capabilities in outgoing presence stanzas
 - #337 API call to update a VCard
+- #421 XEP-0308: Last Message Correction
 - #968 Use nickname from VCard when joining a room
 - #1091 There's now only one CSS file for all view modes.
 - #1094 Show room members who aren't currently online
@@ -22,7 +23,6 @@
   If the device is trusted, localStorage is used and user data is cached indefinitely.
 - Initial support for XEP-0357 Push Notifications, specifically registering an "App Server".
 - Add support for logging in via OAuth (see the [oauth_providers](https://conversejs.org/docs/html/configurations.html#oauth-providers) setting)
-- XEP-0308: Render message corrections 
 
 ### Bugfixes
 

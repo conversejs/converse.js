@@ -60,6 +60,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   Server-side archiving of messages [XEP 313](http://xmpp.org/extensions/xep-0313.html)
 -   Hidden Messages (aka Spoilers) [XEP 382](http://xmpp.org/extensions/xep-0382.html)
 -   Client state indication [XEP 352](http://xmpp.org/extensions/xep-0352.html)
+-   Last Message Correction [XEP 308](http://xmpp.org/extensions/xep-0308.html)
 -   Off-the-record encryption
 -   Translated into 16 languages
 

@@ -68305,6 +68305,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         utils = _converse$env.utils,
         _ = _converse$env._;
   const u = converse.env.utils;
+  Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
   converse.plugins.add('converse-chatboxes', {
     dependencies: ["converse-roster", "converse-vcard"],
     overrides: {
@@ -68615,7 +68616,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'from': _converse.connection.jid,
             'to': this.get('jid'),
             'type': this.get('message_type'),
-            'id': message.get('msgid')
+            'id': message.get('edited') && _converse.connection.getUniqueId() || message.get('msgid')
           }).c('body').t(message.get('message')).up().c(_converse.ACTIVE, {
             'xmlns': Strophe.NS.CHATSTATES
           }).up();
@@ -68636,6 +68637,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             stanza.c('x', {
               'xmlns': Strophe.NS.OUTOFBAND
             }).c('url').t(message.get('message')).up();
+          }
+
+          if (message.get('edited')) {
+            stanza.c('replace', {
+              'xmlns': Strophe.NS.MESSAGE_CORRECT,
+              'id': message.get('msgid')
+            }).up();
           }
 
           return stanza;
@@ -68667,6 +68675,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           return {
             'fullname': fullname,
+            'replace': this.correction,
             'from': _converse.bare_jid,
             'sender': 'me',
             'time': moment().format(),
@@ -68682,7 +68691,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            *  Parameters:
            *    (Message) message - The chat message
            */
-          this.sendMessageStanza(this.messages.create(attrs));
+          if (attrs.replace) {
+            const message = this.messages.findWhere({
+              'id': attrs.replace
+            });
+
+            if (message) {
+              const older_versions = message.get('older_versions') || [];
+              older_versions.push(message.get('message'));
+              message.save({
+                'message': attrs.message,
+                'older_versions': older_versions,
+                'edited': true
+              });
+              return this.sendMessageStanza(message);
+            }
+          }
+
+          return this.sendMessageStanza(this.messages.create(attrs));
         },
 
         sendChatState() {
@@ -69177,6 +69203,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
 
       _converse.on('addClientFeatures', () => {
+        _converse.api.disco.own.features.add(Strophe.NS.MESSAGE_CORRECT);
+
         _converse.api.disco.own.features.add(Strophe.NS.HTTPUPLOAD);
 
         _converse.api.disco.own.features.add(Strophe.NS.OUTOFBAND);
@@ -69315,6 +69343,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   const u = converse.env.utils;
   const KEY = {
     ENTER: 13,
+    UP_ARROW: 38,
     FORWARD_SLASH: 47
   };
   converse.plugins.add('converse-chatview', {
@@ -69592,7 +69621,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
           'click .toggle-smiley': 'toggleEmojiMenu',
           'click .upload-file': 'toggleFileUpload',
-          'keypress .chat-textarea': 'keyPressed',
+          'keyup .chat-textarea': 'keyPressed',
           'input .chat-textarea': 'inputChanged'
         },
 
@@ -70113,6 +70142,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           const attrs = this.model.getOutgoingMessageAttributes(text, spoiler_hint);
+          delete this.model.correction;
           this.model.sendMessage(attrs);
         },
 
@@ -70175,10 +70205,25 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            */
           if (ev.keyCode === KEY.ENTER && !ev.shiftKey) {
             this.onFormSubmitted(ev);
+          } else if (ev.keyCode === KEY.UP_ARROW && !ev.shiftKey) {
+            this.editPreviousMessage();
           } else if (ev.keyCode !== KEY.FORWARD_SLASH && this.model.get('chat_state') !== _converse.COMPOSING) {
             // Set chat state to composing if keyCode is not a forward-slash
             // (which would imply an internal command and not a message).
             this.setChatState(_converse.COMPOSING);
+          }
+        },
+
+        editPreviousMessage() {
+          const msg = _.findLast(this.model.messages.models, msg => msg.get('message'));
+
+          if (msg) {
+            const textbox_el = this.el.querySelector('.chat-textarea');
+            textbox_el.value = msg.get('message');
+            textbox_el.focus(); // We don't set "correcting" the Backbone-way, because
+            // we don't want it to persist to storage.
+
+            this.model.correction = msg.get('id');
           }
         },
 
@@ -71193,7 +71238,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
   Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
   Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
-  Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
   Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
   Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
   Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
@@ -87771,6 +87815,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return result;
   };
 
+  u.getUniqueId = function () {
+    return 'xxxxxxxx-xxxx'.replace(/[x]/g, function (c) {
+      var r = Math.random() * 16 | 0,
+          v = c === 'x' ? r : r & 0x3 | 0x8;
+      return v.toString(16);
+    });
+  };
+
   return u;
 });
 
@@ -87837,14 +87889,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       'name': field.getAttribute('name'),
       'value': value
     }));
-  };
-
-  u.getUniqueId = function () {
-    return 'xxxxxxxx-xxxx'.replace(/[x]/g, function (c) {
-      var r = Math.random() * 16 | 0,
-          v = c === 'x' ? r : r & 0x3 | 0x8;
-      return v.toString(16);
-    });
   };
 
   u.xForm2webForm = function (field, stanza, domain) {

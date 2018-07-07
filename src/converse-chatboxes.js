@@ -19,6 +19,8 @@
     const { $msg, Backbone, Promise, Strophe, b64_sha1, moment, sizzle, utils, _ } = converse.env;
     const u = converse.env.utils;
 
+    Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
+
 
     converse.plugins.add('converse-chatboxes', {
 
@@ -43,7 +45,7 @@
              * loaded by converse.js's plugin machinery.
              */
             const { _converse } = this,
-                { __ } = _converse;
+                  { __ } = _converse;
 
             // Configuration values for this plugin
             // ====================================
@@ -314,7 +316,7 @@
                             'from': _converse.connection.jid,
                             'to': this.get('jid'),
                             'type': this.get('message_type'),
-                            'id': message.get('msgid')
+                            'id': message.get('edited') && _converse.connection.getUniqueId() || message.get('msgid'),
                         }).c('body').t(message.get('message')).up()
                           .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
 
@@ -327,6 +329,12 @@
                     }
                     if (message.get('file')) {
                         stanza.c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('message')).up();
+                    }
+                    if (message.get('edited')) {
+                        stanza.c('replace', {
+                            'xmlns': Strophe.NS.MESSAGE_CORRECT,
+                            'id': message.get('msgid')
+                        }).up();
                     }
                     return stanza;
                 },
@@ -357,6 +365,7 @@
 
                     return {
                         'fullname': fullname,
+                        'replace': this.correction,
                         'from': _converse.bare_jid,
                         'sender': 'me',
                         'time': moment().format(),
@@ -372,7 +381,20 @@
                      *  Parameters:
                      *    (Message) message - The chat message
                      */
-                    this.sendMessageStanza(this.messages.create(attrs));
+                    if (attrs.replace) {
+                        const message = this.messages.findWhere({'id': attrs.replace})
+                        if (message) {
+                            const older_versions = message.get('older_versions') || [];
+                            older_versions.push(message.get('message'));
+                            message.save({
+                                'message': attrs.message,
+                                'older_versions': older_versions,
+                                'edited': true
+                            });
+                            return this.sendMessageStanza(message);
+                        }
+                    }
+                    return this.sendMessageStanza(this.messages.create(attrs));
                 },
 
                 sendChatState () {
@@ -826,6 +848,7 @@
 
 
             _converse.on('addClientFeatures', () => {
+                _converse.api.disco.own.features.add(Strophe.NS.MESSAGE_CORRECT);
                 _converse.api.disco.own.features.add(Strophe.NS.HTTPUPLOAD);
                 _converse.api.disco.own.features.add(Strophe.NS.OUTOFBAND);
             });

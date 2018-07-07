@@ -136,6 +136,70 @@
                 });
             }));
 
+            it("can be sent as a correction",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.createContacts(_converse, 'current', 1);
+                test_utils.openControlBox();
+                const message = 'This is a received message';
+                const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                test_utils.openChatBoxFor(_converse, contact_jid);
+
+                const view = _converse.chatboxviews.get(contact_jid);
+                const textarea = view.el.querySelector('textarea.chat-textarea');
+                expect(textarea.value).toBe('');
+                view.keyPressed({
+                    target: textarea,
+                    keyCode: 38
+                });
+                expect(textarea.value).toBe('');
+
+                textarea.value = 'But soft, what light through yonder airlock breaks?';
+                view.keyPressed({
+                    target: textarea,
+                    preventDefault: _.noop,
+                    keyCode: 13
+                });
+                expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+                expect(view.el.querySelector('.chat-msg-text').textContent)
+                    .toBe('But soft, what light through yonder airlock breaks?');
+
+                const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
+                expect(textarea.value).toBe('');
+                view.keyPressed({
+                    target: textarea,
+                    keyCode: 38
+                });
+                expect(textarea.value).toBe('But soft, what light through yonder airlock breaks?');
+
+                spyOn(_converse.connection, 'send');
+                textarea.value = 'But soft, what light through yonder window breaks?';
+                view.keyPressed({
+                    target: textarea,
+                    preventDefault: _.noop,
+                    keyCode: 13
+                });
+                expect(_converse.connection.send).toHaveBeenCalled();
+
+                const msg = _converse.connection.send.calls.all()[0].args[0];
+                expect(msg.toLocaleString())
+                .toBe(`<message from='dummy@localhost/resource' `+
+                        `to='max.frankfurter@localhost' type='chat' id='${msg.nodeTree.getAttribute('id')}' `+
+                        `xmlns='jabber:client'>`+
+                            `<body>But soft, what light through yonder window breaks?</body>`+
+                            `<active xmlns='http://jabber.org/protocol/chatstates'/>`+
+                            `<replace xmlns='urn:xmpp:message-correct:0' id='${first_msg.get('msgid')}'/>`+
+                    `</message>`);
+                expect(view.model.messages.models.length).toBe(1);
+                const corrected_message = view.model.messages.at(0);
+                expect(corrected_message.get('msgid')).toBe(first_msg.get('msgid'));
+                expect(corrected_message.get('older_versions').length).toBe(1);
+                expect(corrected_message.get('older_versions')[0]).toBe('But soft, what light through yonder airlock breaks?');
+                done();
+            }));
+
             describe("when a chatbox is opened for someone who is not in the roster", function () {
 
                 it("the VCard for that user is fetched and the chatbox updated with the results",

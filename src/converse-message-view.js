@@ -91,7 +91,7 @@
 
                 initialize () {
                     this.model.vcard.on('change', this.render, this);
-                    this.model.on('change:correcting', this.render, this);
+                    this.model.on('change:correcting', this.onMessageCorrection, this);
                     this.model.on('change:message', this.render, this);
                     this.model.on('change:progress', this.renderFileUploadProgresBar, this);
                     this.model.on('change:type', this.render, this);
@@ -116,6 +116,14 @@
                         u.addClass('chat-msg-followup', this.el);
                     }
                     return this.el;
+                },
+
+                onMessageCorrection () {
+                    this.render();
+                    if (!this.model.get('correcting') && this.model.changed.message) {
+                        this.el.addEventListener('animationend', () => u.removeClass('onload', this.el));
+                        u.addClass('onload', this.el);
+                    }
                 },
 
                 replaceElement (msg) {

@@ -74587,7 +74587,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         initialize() {
           this.model.vcard.on('change', this.render, this);
-          this.model.on('change:correcting', this.render, this);
+          this.model.on('change:correcting', this.onMessageCorrection, this);
           this.model.on('change:message', this.render, this);
           this.model.on('change:progress', this.renderFileUploadProgresBar, this);
           this.model.on('change:type', this.render, this);
@@ -74615,6 +74615,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           return this.el;
+        },
+
+        onMessageCorrection() {
+          this.render();
+
+          if (!this.model.get('correcting') && this.model.changed.message) {
+            this.el.addEventListener('animationend', () => u.removeClass('onload', this.el));
+            u.addClass('onload', this.el);
+          }
         },
 
         replaceElement(msg) {

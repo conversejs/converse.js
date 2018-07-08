@@ -919,9 +919,9 @@
                     if (ev.keyCode === KEY.ENTER) {
                         this.onFormSubmitted(ev);
                     } else if (ev.keyCode === KEY.UP_ARROW && !ev.target.selectionEnd) {
-                        this.editPreviousMessage();
+                        this.editEarlierMessage();
                     } else if (ev.keyCode === KEY.DOWN_ARROW && ev.target.selectionEnd === ev.target.value.length) {
-                        this.cancelMessageCorrection();
+                        this.editLaterMessage();
                     } else if (ev.keyCode !== KEY.FORWARD_SLASH && this.model.get('chat_state') !== _converse.COMPOSING) {
                         // Set chat state to composing if keyCode is not a forward-slash
                         // (which would imply an internal command and not a message).
@@ -929,18 +929,44 @@
                     }
                 },
 
-                cancelMessageCorrection () {
-                    this.insertIntoTextArea('', true);
-                    this.model.messages.where('correcting').forEach(msg => msg.save('correcting', false));
+                editLaterMessage () {
+                    let message;
+                    let idx = this.model.messages.findLastIndex('correcting');
+                    if (idx >= 0) {
+                        this.model.messages.at(idx).save('correcting', false);
+                        while (idx < this.model.messages.length-1) {
+                            idx += 1;
+                            if (this.model.messages.at(idx).get('message')) {
+                                message = this.model.messages.at(idx);
+                                break;
+                            }
+                        }
+                    }
+                    if (message) {
+                        this.insertIntoTextArea(message.get('message'), true);
+                        message.save('correcting', true);
+                    } else {
+                        this.insertIntoTextArea('', true);
+                    }
                 },
 
-                editPreviousMessage () {
-                    const msg = _.findLast(this.model.messages.models, (msg) => msg.get('message'));
-                    if (msg) {
-                        this.insertIntoTextArea(msg.get('message'), true);
-                        // We don't set "correcting" the Backbone-way, because
-                        // we don't want it to persist to storage.
-                        msg.save('correcting', true);
+                editEarlierMessage () {
+                    let message;
+                    let idx = this.model.messages.findLastIndex('correcting');
+                    if (idx >= 0) {
+                        this.model.messages.at(idx).save('correcting', false);
+                        while (idx > 0) {
+                            idx -= 1;
+                            if (this.model.messages.at(idx).get('message')) {
+                                message = this.model.messages.at(idx);
+                                break;
+                            }
+                        }
+                    }
+                    message = message || _.findLast(this.model.messages.models, (msg) => msg.get('message'));
+                    if (message) {
+                        this.insertIntoTextArea(message.get('message'), true);
+                        message.save('correcting', true);
                     }
                 },
 
@@ -961,17 +987,17 @@
                 },
 
                 insertIntoTextArea (value, replace=false) {
-                    const textbox_el = this.el.querySelector('.chat-textarea');
+                    const textarea = this.el.querySelector('.chat-textarea');
                     if (replace) {
-                        textbox_el.value = value;
+                        textarea.value = value;
                     } else {
-                        let existing = textbox_el.value;
+                        let existing = textarea.value;
                         if (existing && (existing[existing.length-1] !== ' ')) {
                             existing = existing + ' ';
                         }
-                        textbox_el.value = existing+value+' ';
+                        textarea.value = existing+value+' ';
                     }
-                    textbox_el.focus()
+                    textarea.focus()
                 },
 
                 createEmojiPicker () {

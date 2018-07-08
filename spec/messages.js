@@ -106,6 +106,62 @@
             expect(view.model.messages.at(0).get('correcting')).toBe(false);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(false);
+
+            textarea.value = 'It is the east, and Juliet is the one.';
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13 // Enter
+            });
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
+
+            textarea.value =  'Arise, fair sun, and kill the envious moon';
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13 // Enter
+            });
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);
+
+            view.keyPressed({
+                target: textarea,
+                keyCode: 38 // Up arrow
+            });
+            expect(textarea.value).toBe('Arise, fair sun, and kill the envious moon');
+            expect(view.model.messages.at(0).get('correcting')).toBeFalsy();
+            expect(view.model.messages.at(1).get('correcting')).toBeFalsy();
+            expect(view.model.messages.at(2).get('correcting')).toBe(true);
+
+            textarea.selectionEnd = 0; // Happens by pressing up,
+                                       // but for some reason not in tests, so we set it manually.
+            view.keyPressed({
+                target: textarea,
+                keyCode: 38 // Up arrow
+            });
+            expect(textarea.value).toBe('It is the east, and Juliet is the one.');
+            expect(view.model.messages.at(0).get('correcting')).toBeFalsy();
+            expect(view.model.messages.at(1).get('correcting')).toBe(true);
+            expect(view.model.messages.at(2).get('correcting')).toBeFalsy();
+
+            textarea.value = 'It is the east, and Juliet is the sun.';
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13 // Enter
+            });
+            expect(textarea.value).toBe('');
+            const messages = view.el.querySelectorAll('.chat-msg');
+            expect(messages.length).toBe(3);
+            expect(messages[0].querySelector('.chat-msg-text').textContent)
+                .toBe('But soft, what light through yonder window breaks?');
+            expect(messages[1].querySelector('.chat-msg-text').textContent)
+                .toBe('It is the east, and Juliet is the sun.');
+            expect(messages[2].querySelector('.chat-msg-text').textContent)
+                .toBe('Arise, fair sun, and kill the envious moon');
+
+            expect(view.model.messages.at(0).get('correcting')).toBeFalsy();
+            expect(view.model.messages.at(1).get('correcting')).toBeFalsy();
+            expect(view.model.messages.at(2).get('correcting')).toBeFalsy();
             done();
         }));
 

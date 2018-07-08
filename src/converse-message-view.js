@@ -91,10 +91,11 @@
 
                 initialize () {
                     this.model.vcard.on('change', this.render, this);
+                    this.model.on('change:correcting', this.render, this);
+                    this.model.on('change:message', this.render, this);
                     this.model.on('change:progress', this.renderFileUploadProgresBar, this);
                     this.model.on('change:type', this.render, this);
                     this.model.on('change:upload', this.render, this);
-                    this.model.on('change:message', this.render, this);
                     this.model.on('destroy', this.remove, this);
                     this.render();
                 },
@@ -261,6 +262,9 @@
                             // in which we are mentioned.
                             extra_classes += ' mentioned';
                         }
+                    }
+                    if (this.model.get('correcting')) {
+                        extra_classes += ' correcting';
                     }
                     return extra_classes;
                 }

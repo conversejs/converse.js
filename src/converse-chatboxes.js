@@ -365,7 +365,6 @@
 
                     return {
                         'fullname': fullname,
-                        'replace': this.correction,
                         'from': _converse.bare_jid,
                         'sender': 'me',
                         'time': moment().format(),
@@ -381,18 +380,17 @@
                      *  Parameters:
                      *    (Message) message - The chat message
                      */
-                    if (attrs.replace) {
-                        const message = this.messages.findWhere({'id': attrs.replace})
-                        if (message) {
-                            const older_versions = message.get('older_versions') || [];
-                            older_versions.push(message.get('message'));
-                            message.save({
-                                'message': attrs.message,
-                                'older_versions': older_versions,
-                                'edited': true
-                            });
-                            return this.sendMessageStanza(message);
-                        }
+                    const message = this.messages.findWhere('correcting')
+                    if (message) {
+                        const older_versions = message.get('older_versions') || [];
+                        older_versions.push(message.get('message'));
+                        message.save({
+                            'message': attrs.message,
+                            'older_versions': older_versions,
+                            'edited': true,
+                            'correcting': false
+                        });
+                        return this.sendMessageStanza(message);
                     }
                     return this.sendMessageStanza(this.messages.create(attrs));
                 },

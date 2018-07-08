@@ -8859,6 +8859,10 @@ body.reset {
     -webkit-animation: colorchange-chatmessage 1s; }
   #conversejs .message.chat-msg:hover {
     background-color: rgba(0, 0, 0, 0.035); }
+  #conversejs .message.chat-msg.correcting.groupchat {
+    background-color: #fdf1ee; }
+  #conversejs .message.chat-msg.correcting:not(.groupchat) {
+    background-color: #e7f7ee; }
   #conversejs .message.chat-msg .spoiler {
     margin-top: 0.5em; }
   #conversejs .message.chat-msg .spoiler-hint {

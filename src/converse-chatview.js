@@ -55,6 +55,7 @@
     const KEY = {
         ENTER: 13,
         UP_ARROW: 38,
+        DOWN_ARROW: 40,
         FORWARD_SLASH: 47
     };
 
@@ -334,7 +335,7 @@
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .upload-file': 'toggleFileUpload',
-                    'keyup .chat-textarea': 'keyPressed',
+                    'keydown .chat-textarea': 'keyPressed',
                     'input .chat-textarea': 'inputChanged'
                 },
 
@@ -802,7 +803,9 @@
                      *    (Object) message - The message Backbone object that was added.
                      */
                     this.showMessage(message);
-
+                    if (message.get('correcting')) {
+                        this.insertIntoTextArea(message.get('message'), true);
+                    }
                     _converse.emit('messageAdded', {
                         'message': message,
                         'chatbox': this.model
@@ -848,7 +851,6 @@
                         return;
                     }
                     const attrs = this.model.getOutgoingMessageAttributes(text, spoiler_hint);
-                    delete this.model.correction;
                     this.model.sendMessage(attrs);
                 },
 
@@ -912,10 +914,14 @@
                 keyPressed (ev) {
                     /* Event handler for when a key is pressed in a chat box textarea.
                      */
-                    if (ev.keyCode === KEY.ENTER && !ev.shiftKey) {
+                    if (ev.shiftKey) { return; }
+
+                    if (ev.keyCode === KEY.ENTER) {
                         this.onFormSubmitted(ev);
-                    } else if (ev.keyCode === KEY.UP_ARROW && !ev.shiftKey) {
+                    } else if (ev.keyCode === KEY.UP_ARROW && !ev.target.selectionEnd) {
                         this.editPreviousMessage();
+                    } else if (ev.keyCode === KEY.DOWN_ARROW && ev.target.selectionEnd === ev.target.value.length) {
+                        this.cancelMessageCorrection();
                     } else if (ev.keyCode !== KEY.FORWARD_SLASH && this.model.get('chat_state') !== _converse.COMPOSING) {
                         // Set chat state to composing if keyCode is not a forward-slash
                         // (which would imply an internal command and not a message).
@@ -923,15 +929,18 @@
                     }
                 },
 
+                cancelMessageCorrection () {
+                    this.insertIntoTextArea('', true);
+                    this.model.messages.where('correcting').forEach(msg => msg.save('correcting', false));
+                },
+
                 editPreviousMessage () {
                     const msg = _.findLast(this.model.messages.models, (msg) => msg.get('message'));
                     if (msg) {
-                        const textbox_el = this.el.querySelector('.chat-textarea');
-                        textbox_el.value = msg.get('message');
-                        textbox_el.focus()
+                        this.insertIntoTextArea(msg.get('message'), true);
                         // We don't set "correcting" the Backbone-way, because
                         // we don't want it to persist to storage.
-                        this.model.correction = msg.get('id');
+                        msg.save('correcting', true);
                     }
                 },
 
@@ -951,13 +960,17 @@
                     return this;
                 },
 
-                insertIntoTextArea (value) {
+                insertIntoTextArea (value, replace=false) {
                     const textbox_el = this.el.querySelector('.chat-textarea');
-                    let existing = textbox_el.value;
-                    if (existing && (existing[existing.length-1] !== ' ')) {
-                        existing = existing + ' ';
+                    if (replace) {
+                        textbox_el.value = value;
+                    } else {
+                        let existing = textbox_el.value;
+                        if (existing && (existing[existing.length-1] !== ' ')) {
+                            existing = existing + ' ';
+                        }
+                        textbox_el.value = existing+value+' ';
                     }
-                    textbox_el.value = existing+value+' ';
                     textbox_el.focus()
                 },
 

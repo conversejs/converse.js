@@ -68675,7 +68675,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           return {
             'fullname': fullname,
-            'replace': this.correction,
             'from': _converse.bare_jid,
             'sender': 'me',
             'time': moment().format(),
@@ -68691,21 +68690,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            *  Parameters:
            *    (Message) message - The chat message
            */
-          if (attrs.replace) {
-            const message = this.messages.findWhere({
-              'id': attrs.replace
-            });
+          const message = this.messages.findWhere('correcting');
 
-            if (message) {
-              const older_versions = message.get('older_versions') || [];
-              older_versions.push(message.get('message'));
-              message.save({
-                'message': attrs.message,
-                'older_versions': older_versions,
-                'edited': true
-              });
-              return this.sendMessageStanza(message);
-            }
+          if (message) {
+            const older_versions = message.get('older_versions') || [];
+            older_versions.push(message.get('message'));
+            message.save({
+              'message': attrs.message,
+              'older_versions': older_versions,
+              'edited': true,
+              'correcting': false
+            });
+            return this.sendMessageStanza(message);
           }
 
           return this.sendMessageStanza(this.messages.create(attrs));
@@ -69344,6 +69340,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   const KEY = {
     ENTER: 13,
     UP_ARROW: 38,
+    DOWN_ARROW: 40,
     FORWARD_SLASH: 47
   };
   converse.plugins.add('converse-chatview', {
@@ -69621,7 +69618,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
           'click .toggle-smiley': 'toggleEmojiMenu',
           'click .upload-file': 'toggleFileUpload',
-          'keyup .chat-textarea': 'keyPressed',
+          'keydown .chat-textarea': 'keyPressed',
           'input .chat-textarea': 'inputChanged'
         },
 
@@ -70103,6 +70100,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            */
           this.showMessage(message);
 
+          if (message.get('correcting')) {
+            this.insertIntoTextArea(message.get('message'), true);
+          }
+
           _converse.emit('messageAdded', {
             'message': message,
             'chatbox': this.model
@@ -70142,7 +70143,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           const attrs = this.model.getOutgoingMessageAttributes(text, spoiler_hint);
-          delete this.model.correction;
           this.model.sendMessage(attrs);
         },
 
@@ -70203,10 +70203,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         keyPressed(ev) {
           /* Event handler for when a key is pressed in a chat box textarea.
            */
-          if (ev.keyCode === KEY.ENTER && !ev.shiftKey) {
+          if (ev.shiftKey) {
+            return;
+          }
+
+          if (ev.keyCode === KEY.ENTER) {
             this.onFormSubmitted(ev);
-          } else if (ev.keyCode === KEY.UP_ARROW && !ev.shiftKey) {
+          } else if (ev.keyCode === KEY.UP_ARROW && !ev.target.selectionEnd) {
             this.editPreviousMessage();
+          } else if (ev.keyCode === KEY.DOWN_ARROW && ev.target.selectionEnd === ev.target.value.length) {
+            this.cancelMessageCorrection();
           } else if (ev.keyCode !== KEY.FORWARD_SLASH && this.model.get('chat_state') !== _converse.COMPOSING) {
             // Set chat state to composing if keyCode is not a forward-slash
             // (which would imply an internal command and not a message).
@@ -70214,16 +70220,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
 
+        cancelMessageCorrection() {
+          this.insertIntoTextArea('', true);
+          this.model.messages.where('correcting').forEach(msg => msg.save('correcting', false));
+        },
+
         editPreviousMessage() {
           const msg = _.findLast(this.model.messages.models, msg => msg.get('message'));
 
           if (msg) {
-            const textbox_el = this.el.querySelector('.chat-textarea');
-            textbox_el.value = msg.get('message');
-            textbox_el.focus(); // We don't set "correcting" the Backbone-way, because
+            this.insertIntoTextArea(msg.get('message'), true); // We don't set "correcting" the Backbone-way, because
             // we don't want it to persist to storage.
 
-            this.model.correction = msg.get('id');
+            msg.save('correcting', true);
           }
         },
 
@@ -70250,15 +70259,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return this;
         },
 
-        insertIntoTextArea(value) {
+        insertIntoTextArea(value, replace = false) {
           const textbox_el = this.el.querySelector('.chat-textarea');
-          let existing = textbox_el.value;
 
-          if (existing && existing[existing.length - 1] !== ' ') {
-            existing = existing + ' ';
+          if (replace) {
+            textbox_el.value = value;
+          } else {
+            let existing = textbox_el.value;
+
+            if (existing && existing[existing.length - 1] !== ' ') {
+              existing = existing + ' ';
+            }
+
+            textbox_el.value = existing + value + ' ';
           }
 
-          textbox_el.value = existing + value + ' ';
           textbox_el.focus();
         },
 
@@ -74572,10 +74587,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         initialize() {
           this.model.vcard.on('change', this.render, this);
+          this.model.on('change:correcting', this.render, this);
+          this.model.on('change:message', this.render, this);
           this.model.on('change:progress', this.renderFileUploadProgresBar, this);
           this.model.on('change:type', this.render, this);
           this.model.on('change:upload', this.render, this);
-          this.model.on('change:message', this.render, this);
           this.model.on('destroy', this.remove, this);
           this.render();
         },
@@ -74744,6 +74760,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               // in which we are mentioned.
               extra_classes += ' mentioned';
             }
+          }
+
+          if (this.model.get('correcting')) {
+            extra_classes += ' correcting';
           }
 
           return extra_classes;
@@ -75997,7 +76017,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
           'click .toggle-smiley': 'toggleEmojiMenu',
           'click .upload-file': 'toggleFileUpload',
-          'keypress .chat-textarea': 'keyPressed',
+          'keydown .chat-textarea': 'keyPressed',
           'input .chat-textarea': 'inputChanged'
         },
 
@@ -85632,13 +85652,13 @@ __p += '\n            </span>\n            <time timestamp="' +
 __e(o.isodate) +
 '" class="chat-msg-time">' +
 __e(o.pretty_time) +
-'</time>\n        </span>\n        <span class="chat-msg-text"></span>\n        <div class="chat-msg-media"></div>\n        ';
+'</time>\n        </span>\n        ';
  if (o.edited) { ;
 __p += ' <i title="' +
 __e(o.__('This message has been edited')) +
 '" class="fa fa-edit chat-msg-edited"></i> ';
  } ;
-__p += '\n    </div>\n</div>\n';
+__p += '\n        <span class="chat-msg-text"></span>\n        <div class="chat-msg-media"></div>\n    </div>\n</div>\n';
 return __p
 };
 

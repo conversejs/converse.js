@@ -73,6 +73,14 @@
             &:hover {
                 background-color: rgba(0, 0, 0, 0.035);
             }
+            &.correcting {
+                &.groupchat  {
+                    background-color: lighten($chatroom-head-color, 35%);
+                }
+                &:not(.groupchat) {
+                    background-color: lighten($chat-head-color, 50%);
+                }
+            }
 
             .spoiler {
                 margin-top: 0.5em;

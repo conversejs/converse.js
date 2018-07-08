@@ -9,8 +9,8 @@
             </span>
             <time timestamp="{{{o.isodate}}}" class="chat-msg-time">{{{o.pretty_time}}}</time>
         </span>
+        {[ if (o.edited) { ]} <i title="{{{o.__('This message has been edited')}}}" class="fa fa-edit chat-msg-edited"></i> {[ } ]}
         <span class="chat-msg-text"></span>
         <div class="chat-msg-media"></div>
-        {[ if (o.edited) { ]} <i title="{{{o.__('This message has been edited')}}}" class="fa fa-edit chat-msg-edited"></i> {[ } ]}
     </div>
 </div>

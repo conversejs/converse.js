@@ -200,8 +200,6 @@
 
             _converse.api.promises.add('controlboxInitialized');
 
-            const LABEL_CONTACTS = __('Contacts');
-
             _converse.addControlBox = () =>
                 _converse.chatboxes.add({
                     id: 'controlbox',
@@ -269,6 +267,9 @@
                 },
 
                 insertRoster () {
+                    if (_converse.authentication === _converse.ANONYMOUS) {
+                        return;
+                    }
                     /* Place the rosterview inside the "Contacts" panel. */
                     _converse.api.waitUntil('rosterViewInitialized')
                         .then(() => this.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el))

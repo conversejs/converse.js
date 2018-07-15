@@ -70795,8 +70795,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _converse.api.promises.add('controlboxInitialized');
 
-      const LABEL_CONTACTS = __('Contacts');
-
       _converse.addControlBox = () => _converse.chatboxes.add({
         id: 'controlbox',
         box_id: 'controlbox',
@@ -70865,7 +70863,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         insertRoster() {
+          if (_converse.authentication === _converse.ANONYMOUS) {
+            return;
+          }
           /* Place the rosterview inside the "Contacts" panel. */
+
+
           _converse.api.waitUntil('rosterViewInitialized').then(() => this.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         },
 
@@ -82222,8 +82225,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         'away': __('This contact is away')
       };
 
-      const LABEL_CONTACTS = __('Contacts');
-
       const LABEL_GROUPS = __('Groups');
 
       const HEADER_CURRENT_CONTACTS = __('My contacts');
@@ -83200,6 +83201,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         /* Create an instance of RosterView once the RosterGroups
          * collection has been created (in converse-core.js)
          */
+        if (_converse.authentication === _converse.ANONYMOUS) {
+          return;
+        }
+
         _converse.rosterview = new _converse.RosterView({
           'model': _converse.rostergroups
         });

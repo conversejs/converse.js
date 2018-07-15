@@ -96,7 +96,6 @@
                 'xa': __('This contact is away for an extended period'),
                 'away': __('This contact is away')
             };
-            const LABEL_CONTACTS = __('Contacts');
             const LABEL_GROUPS = __('Groups');
             const HEADER_CURRENT_CONTACTS =  __('My contacts');
             const HEADER_PENDING_CONTACTS = __('Pending contacts');
@@ -977,6 +976,9 @@
                 /* Create an instance of RosterView once the RosterGroups
                  * collection has been created (in converse-core.js)
                  */
+                if (_converse.authentication === _converse.ANONYMOUS) {
+                    return;
+                }
                 _converse.rosterview = new _converse.RosterView({
                     'model': _converse.rostergroups
                 });

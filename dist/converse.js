@@ -68518,10 +68518,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }, false);
 
           xhr.onerror = () => {
-            let message = __('Sorry, could not succesfully upload your file.');
+            let message;
 
             if (xhr.responseText) {
-              message += ' ' + __('Your server\'s response: "%1$s"', xhr.responseText);
+              message = __('Sorry, could not succesfully upload your file. Your server’s response: "%1$s"', xhr.responseText);
+            } else {
+              message = __('Sorry, could not succesfully upload your file.');
             }
 
             this.save({
@@ -70396,13 +70398,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           if (u.isVisible(this.el)) {
             if (show === 'offline') {
-              text = fullname + ' ' + __('has gone offline');
+              text = __('%1$s has gone offline', fullname);
             } else if (show === 'away') {
-              text = fullname + ' ' + __('has gone away');
+              text = __('%1$s has gone away', fullname);
             } else if (show === 'dnd') {
-              text = fullname + ' ' + __('is busy');
+              text = __('%1$s is busy', fullname);
             } else if (show === 'online') {
-              text = fullname + ' ' + __('is online');
+              text = __('%1$s is online', fullname);
             }
 
             if (text) {
@@ -74751,16 +74753,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             if (this.model.get('sender') === 'me') {
               text = __('Typing from another device');
             } else {
-              text = name + ' ' + __('is typing');
+              text = __('%1$s is typing', name);
             }
           } else if (this.model.get('chat_state') === _converse.PAUSED) {
             if (this.model.get('sender') === 'me') {
               text = __('Stopped typing on the other device');
             } else {
-              text = name + ' ' + __('has stopped typing');
+              text = __('%1$s has stopped typing', name);
             }
           } else if (this.model.get('chat_state') === _converse.GONE) {
-            text = name + ' ' + __('has gone away');
+            text = __('%1$s has gone away', name);
           } else {
             return;
           }
@@ -87318,7 +87320,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
     return tpl_file({
       'url': url,
-      'label_download': __('Download: "%1$s', filename)
+      'label_download': __('Download "%1$s"', filename)
     });
   };
 

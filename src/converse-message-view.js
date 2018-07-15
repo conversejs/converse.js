@@ -208,16 +208,16 @@
                         if (this.model.get('sender') === 'me') {
                             text = __('Typing from another device');
                         } else {
-                            text = name +' '+__('is typing');
+                            text = __('%1$s is typing', name);
                         }
                     } else if (this.model.get('chat_state') === _converse.PAUSED) {
                         if (this.model.get('sender') === 'me') {
                             text = __('Stopped typing on the other device');
                         } else {
-                            text = name +' '+__('has stopped typing');
+                            text = __('%1$s has stopped typing', name);
                         }
                     } else if (this.model.get('chat_state') === _converse.GONE) {
-                        text = name +' '+__('has gone away');
+                        text = __('%1$s has gone away', name);
                     } else {
                         return;
                     }

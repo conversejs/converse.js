@@ -217,9 +217,11 @@
                     }, false);
 
                     xhr.onerror = () => {
-                        let  message = __('Sorry, could not succesfully upload your file.');
+                        let message;
                         if (xhr.responseText) {
-                            message += ' ' + __('Your server\'s response: "%1$s"', xhr.responseText)
+                            message = __('Sorry, could not succesfully upload your file. Your server’s response: "%1$s"', xhr.responseText)
+                        } else {
+                            message = __('Sorry, could not succesfully upload your file.');
                         }
                         this.save({
                             'type': 'error',

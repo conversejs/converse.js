@@ -1328,8 +1328,7 @@
             spyOn(view.model, 'sendMessage').and.callThrough();
             test_utils.sendMessage(view, message);
 
-            test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length)
-            .then(() => {
+            test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length, 1000).then(() => {
                 expect(view.model.sendMessage).toHaveBeenCalled();
                 var msg = $(view.el).find('.chat-content .chat-msg').last().find('.chat-msg-text');
                 expect(msg.html().trim()).toEqual(
@@ -1338,9 +1337,7 @@
                     ' src="' + message + '"></a>');
                 message += "?param1=val1&param2=val2";
                 test_utils.sendMessage(view, message);
-                return test_utils.waitUntil(function () {
-                    return view.el.querySelectorAll('.chat-content .chat-image').length === 2;
-                }, 1000);
+                return test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
             }).then(() => {
                 expect(view.model.sendMessage).toHaveBeenCalled();
                 var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
@@ -1352,9 +1349,7 @@
                 // Test now with two images in one message
                 message += ' hello world '+base_url+"/logo/conversejs-filled.svg";
                 test_utils.sendMessage(view, message);
-                return test_utils.waitUntil(function () {
-                    return view.el.querySelectorAll('.chat-content .chat-image').length === 4;
-                }, 1000);
+                return test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 4, 1000);
             }).then(function () {
                 expect(view.model.sendMessage).toHaveBeenCalled();
                 var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
@@ -1765,7 +1760,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 msg_id = u.getUniqueId();
-                _converse.chatboxes.onMessage($msg({
+                view.model.onMessage($msg({
                         'from': 'lounge@localhost/newguy',
                         'to': _converse.connection.jid,
                         'type': 'groupchat',
@@ -1776,7 +1771,7 @@
                 expect(view.el.querySelector('.chat-msg-text').textContent)
                     .toBe('But soft, what light through yonder airlock breaks?');
 
-                _converse.chatboxes.onMessage($msg({
+                view.model.onMessage($msg({
                         'from': 'lounge@localhost/newguy',
                         'to': _converse.connection.jid,
                         'type': 'chat',
@@ -1790,7 +1785,7 @@
                 expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
                 expect(view.el.querySelectorAll('.chat-msg-content .fa-edit').length).toBe(1);
 
-                _converse.chatboxes.onMessage($msg({
+                view.model.onMessage($msg({
                         'from': 'lounge@localhost/newguy',
                         'to': _converse.connection.jid,
                         'type': 'chat',

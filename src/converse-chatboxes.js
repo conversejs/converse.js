@@ -62,19 +62,6 @@
                 'privateChatsAutoJoined'
             ]);
 
-            function getMessageBody (stanza) {
-                /* Given a message stanza, return the text contained in its body.
-                */
-                const type = stanza.getAttribute('type');
-                if (type === 'error') {
-                    const error = stanza.querySelector('error');
-                    return _.propertyOf(error.querySelector('text'))('textContent') ||
-                        __('Sorry, an error occurred:') + ' ' + error.innerHTML;
-                } else {
-                    return _.propertyOf(stanza.querySelector('body'))('textContent');
-                }
-            }
-
             function openChat (jid) {
                 if (!utils.isValidJID(jid)) {
                     return _converse.log(
@@ -305,6 +292,23 @@
                     return this.vcard.get('fullname') || this.get('jid');
                 },
 
+                handleMessageCorrection (stanza) {
+                    const replace = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop();
+                    if (replace) {
+                        const msgid = replace && replace.getAttribute('id') || stanza.getAttribute('id'),
+                            message = msgid && this.messages.findWhere({msgid}),
+                            older_versions = message.get('older_versions') || [];
+                        older_versions.push(message.get('message'));
+                        message.save({
+                            'message': _converse.chatboxes.getMessageBody(stanza),
+                            'older_versions': older_versions,
+                            'edited': true
+                        });
+                        return true;
+                    }
+                    return false;
+                },
+
                 createMessageStanza (message) {
                     /* Given a _converse.Message Backbone.Model, return the XML
                      * stanza that represents it.
@@ -473,7 +477,7 @@
                         'is_archived': !_.isNil(archive),
                         'is_delayed': !_.isNil(delay),
                         'is_spoiler': !_.isNil(spoiler),
-                        'message': getMessageBody(stanza) || undefined,
+                        'message': _converse.chatboxes.getMessageBody(stanza) || undefined,
                         'msgid': stanza.getAttribute('id'),
                         'time': delay ? delay.getAttribute('stamp') : moment().format(),
                         'type': stanza.getAttribute('type')
@@ -614,6 +618,19 @@
                     return true;
                 },
 
+                getMessageBody (stanza) {
+                    /* Given a message stanza, return the text contained in its body.
+                     */
+                    const type = stanza.getAttribute('type');
+                    if (type === 'error') {
+                        const error = stanza.querySelector('error');
+                        return _.propertyOf(error.querySelector('text'))('textContent') ||
+                            __('Sorry, an error occurred:') + ' ' + error.innerHTML;
+                    } else {
+                        return _.propertyOf(stanza.querySelector('body'))('textContent');
+                    }
+                },
+
                 onMessage (stanza) {
                     /* Handler method for all incoming single-user chat "message"
                      * stanzas.
@@ -676,20 +693,10 @@
                         'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
                     }
                     const chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(stanza.querySelector('body')));
-                    if (chatbox) {
-                        const replace = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop(),
-                              msgid = replace && replace.getAttribute('id') || stanza.getAttribute('id'),
+                    if (chatbox && !chatbox.handleMessageCorrection(stanza)) {
+                        const msgid = stanza.getAttribute('id'),
                               message = msgid && chatbox.messages.findWhere({msgid});
-
-                        if (replace) {
-                            const older_versions = message.get('older_versions') || [];
-                            older_versions.push(message.get('message'));
-                            message.save({
-                                'message': getMessageBody(stanza),
-                                'older_versions': older_versions,
-                                'edited': true
-                            });
-                        } else if (!message) {
+                        if (!message) {
                             // Only create the message when we're sure it's not a duplicate
                             chatbox.incrementUnreadMsgCounter(original_stanza);
                             chatbox.createMessage(stanza, original_stanza);

@@ -849,22 +849,24 @@
                     if (!_.isNull(forwarded)) {
                         stanza = forwarded.querySelector('message');
                     }
-                    const jid = stanza.getAttribute('from'),
-                        resource = Strophe.getResourceFromJid(jid),
-                        sender = resource && Strophe.unescapeNode(resource) || '',
-                        subject = _.propertyOf(stanza.querySelector('subject'))('textContent');
-
                     if (this.isDuplicate(stanza, original_stanza)) {
                         return;
                     }
-                    if (subject) {
-                        u.safeSave(this, {'subject': {'author': sender, 'text': subject}});
+                    const jid = stanza.getAttribute('from'),
+                          resource = Strophe.getResourceFromJid(jid),
+                          sender = resource && Strophe.unescapeNode(resource) || '';
+
+                    if (!this.handleMessageCorrection(stanza)) {
+                        const subject = _.propertyOf(stanza.querySelector('subject'))('textContent');
+                        if (subject) {
+                            u.safeSave(this, {'subject': {'author': sender, 'text': subject}});
+                        }
+                        if (sender === '') {
+                            return;
+                        }
+                        this.incrementUnreadMsgCounter(original_stanza);
+                        this.createMessage(stanza, original_stanza);
                     }
-                    if (sender === '') {
-                        return;
-                    }
-                    this.incrementUnreadMsgCounter(original_stanza);
-                    this.createMessage(stanza, original_stanza);
                     if (sender !== this.get('nick')) {
                         // We only emit an event if it's not our own message
                         _converse.emit('message', {'stanza': original_stanza, 'chatbox': this});

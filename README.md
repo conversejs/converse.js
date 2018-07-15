@@ -23,13 +23,13 @@ avialable at [https://conversejs.org/demo/embedded.html](https://conversejs.org/
 
 ### Converse.js: As seen on the conversejs.org website
 
-![Screenshot of Converse.js](https://opkode.com/img/converse-screenshot.png)
+![Screenshot of Converse](https://opkode.com/img/converse-screenshot.png)
 
 ### inVerse: a fullscreen version of converse.js
 
-Converse.js is also available in a fullscreen version, called [inVerse](https://inverse.chat)
+Converse.js is also available in a fullscreen version, hosted at [inverse.chat](https://inverse.chat)
 
-![Screenshot of inVerse](https://opkode.com/img/inverse-screenshot.png)
+![Screenshot of Converse in fullscreen mode](https://opkode.com/img/inverse-screenshot.png)
 
 ## Documentation
 

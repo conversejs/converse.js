@@ -72,6 +72,12 @@
             }
             &:hover {
                 background-color: rgba(0, 0, 0, 0.035);
+
+                .chat-msg-actions {
+                    .chat-msg-action {
+                        display: block;
+                    }
+                }
             }
             &.correcting {
                 &.groupchat  {
@@ -131,6 +137,21 @@
                 }
                 audio {
                     width: 100%;
+                }
+            }
+
+            .chat-msg-actions {
+                .chat-msg-action {
+                    height: $message-font-size;
+                    font-size: $message-font-size;
+                    padding: 0;
+                    border: none;
+                    display: none;
+                    background: transparent;
+                    cursor: pointer;
+                    &:focus {
+                        display: block;
+                    }
                 }
             }
 

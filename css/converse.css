@@ -7741,7 +7741,8 @@ body.reset {
     box-shadow: none;
     height: 100vh;
     min-height: 50vh;
-    width: 100%; }
+    width: 100%;
+    overflow: hidden; }
   #conversejs.converse-fullscreen .chatbox .chat-body {
     background-color: #3AA569;
     border-top-left-radius: 4px;
@@ -8859,6 +8860,8 @@ body.reset {
     -webkit-animation: colorchange-chatmessage 1s; }
   #conversejs .message.chat-msg:hover {
     background-color: rgba(0, 0, 0, 0.035); }
+    #conversejs .message.chat-msg:hover .chat-msg-actions .chat-msg-action {
+      display: block; }
   #conversejs .message.chat-msg.correcting.groupchat {
     background-color: #fdf1ee; }
   #conversejs .message.chat-msg.correcting:not(.groupchat) {
@@ -8896,6 +8899,16 @@ body.reset {
       word-wrap: break-word; }
     #conversejs .message.chat-msg .chat-msg-media audio {
       width: 100%; }
+  #conversejs .message.chat-msg .chat-msg-actions .chat-msg-action {
+    height: 14px;
+    font-size: 14px;
+    padding: 0;
+    border: none;
+    display: none;
+    background: transparent;
+    cursor: pointer; }
+    #conversejs .message.chat-msg .chat-msg-actions .chat-msg-action:focus {
+      display: block; }
   #conversejs .message.chat-msg .avatar {
     margin-top: 0.5em;
     height: 36px;

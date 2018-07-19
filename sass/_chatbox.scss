@@ -592,6 +592,7 @@
             height: $fullpage-chat-height;
             min-height: $fullpage-chat-height/2;
             width: $fullpage-chat-width;
+            overflow: hidden;
         }
         .chat-body {
             background-color: $chat-head-color;

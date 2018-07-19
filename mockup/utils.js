@@ -3,7 +3,7 @@ const u = converse_utils;
 
 window.renderAvatars = function (el) {
     el = el || document;
-    const canvasses = el.querySelectorAll('canvas.avatar');
+    const canvasses = el.querySelectorAll('canvas.chat-msg__avatar');
     _.each(canvasses, (canvas_el) => {
         const avatar_url = canvas_el.getAttribute('data-avatar');
         if (!avatar_url) {

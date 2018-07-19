@@ -71100,7 +71100,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           let jid = form_data.get('jid');
 
           if (_converse.locked_domain) {
-            jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
+            const last_part = '@' + _converse.locked_domain;
+
+            if (jid.endsWith(last_part)) {
+              jid = jid.substr(0, jid.length - last_part.length);
+            }
+
+            jid = Strophe.escapeNode(jid) + last_part;
           } else if (_converse.default_domain && !_.includes(jid, '@')) {
             jid = jid + '@' + _converse.default_domain;
           }

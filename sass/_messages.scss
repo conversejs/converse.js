@@ -56,7 +56,7 @@
             max-height: 15em;
             max-width: 100%;
         }
-        &.chat-action {
+        &.chat-msg--action {
             font-style: italic;
         }
 
@@ -72,10 +72,9 @@
             }
             &:hover {
                 background-color: rgba(0, 0, 0, 0.035);
-
-                .chat-msg-actions {
-                    .chat-msg-action {
-                        display: block;
+                .chat-msg__actions {
+                    .chat-msg__action {
+                        opacity: 1;
                     }
                 }
             }
@@ -105,22 +104,41 @@
                     whitespace: nowrap;
                 }
             }
-            .chat-msg-content {
+            .chat-msg__content {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: stretch;
                 margin-left: 0.5rem;
                 width: 100%;
             }
+
+            .chat-msg__body {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .chat-msg__message {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+            }
+
             .chat-msg-edited {
                 cursor: pointer;
             }
             &.headline {
-                .chat-msg-content {
+                .chat-msg__body {
                     margin-left: 0;
                 }
             }
 
-            .chat-msg-text {
+            .chat-msg__text {
                 padding: 0;
                 color: $message-text-color;
+                width: 100%;
                 a {
                     word-wrap: break-word;
                     word-break: break-all;
@@ -140,13 +158,13 @@
                 }
             }
 
-            .chat-msg-actions {
-                .chat-msg-action {
+            .chat-msg__actions {
+                .chat-msg__action {
                     height: $message-font-size;
                     font-size: $message-font-size;
                     padding: 0;
                     border: none;
-                    display: none;
+                    opacity: 0;
                     background: transparent;
                     cursor: pointer;
                     &:focus {
@@ -155,19 +173,21 @@
                 }
             }
 
-            .avatar {
+            .chat-msg__avatar {
                 margin-top: 0.5em;
                 height: 36px;
                 vertical-align: middle;
                 width: 36px;
             }
-            .chat-msg-heading {
+
+            .chat-msg__heading {
+                width: 100%;
                 margin-top: 0.5em;
                 padding-right: 0.25rem;
                 padding-bottom: 0.25rem;
                 display: block;
 
-                .chat-msg-author {
+                .chat-msg__author {
                     font-family: $heading-font; 
                     font-size: 115%;
                     .badge {
@@ -175,26 +195,32 @@
                         font-family: $normal_font;
                     }
                 }
-                .chat-msg-time {
+                .chat-msg__time {
                     padding-left: 0.25em;
                     color: lighten($text-color, 15%);
                 }
             }
-            &.chat-action {
-                display: block;
-
-                .chat-msg-heading {
-                    float: left;
+            &.chat-msg--action {
+                .chat-msg__content {
+                    flex-direction: row;
+                    justify-content: flex-start;
+                }
+                .chat-msg__text {
+                    width: auto;
+                }
+                .chat-msg__heading {
                     margin-top: 0;
                     padding-bottom: 0;
+                    width: auto;
                 }
             }
-            &.chat-msg-followup {
-                .chat-msg-heading,
-                .avatar {
+
+            &.chat-msg--followup {
+                .chat-msg__heading,
+                .chat-msg__avatar {
                     display: none;
                 }
-                .chat-msg-content {
+                .chat-msg__content {
                     margin-left: 2.75rem;
                 }
             }
@@ -215,8 +241,8 @@
 #conversejs.converse-overlayed {
     .message {
         &.chat-msg {
-            &.chat-msg-followup {
-                .chat-msg-content {
+            &.chat-msg--followup {
+                .chat-msg__body {
                     margin-left: 0;
                 }
             }
@@ -228,7 +254,7 @@
     #conversejs:not(.converse-embedded)  {
         .message {
             &.chat-msg {
-                .chat-msg-author {
+                .chat-msg__author {
                     white-space: normal;
                 }
             }

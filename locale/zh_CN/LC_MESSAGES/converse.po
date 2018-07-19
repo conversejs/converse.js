@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-07-02 16:28+0200\n"
-"PO-Revision-Date: 2018-02-16 14:35+0000\n"
-"Last-Translator: Iru Cai (vimacs) <mytbk920423@gmail.com>\n"
+"PO-Revision-Date: 2018-07-19 15:11+0000\n"
+"Last-Translator: MrRyan <mr.iridescent.rsy@hotmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.19\n"
+"X-Generator: Weblate 3.1-dev\n"
 
 #: dist/converse-no-dependencies.js:40690
 #: dist/converse-no-dependencies.js:40775
@@ -49,7 +49,7 @@ msgstr "保存"
 #: dist/converse-no-dependencies.js:52357
 #: dist/converse-no-dependencies.js:58508
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 #: dist/converse-no-dependencies.js:40854
 #, javascript-format
@@ -1521,7 +1521,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:59698
 msgid "Download audio file"
-msgstr ""
+msgstr "下载音频文件"
 
 #, fuzzy
 #~ msgid "Show hidden message"

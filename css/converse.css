@@ -7339,9 +7339,8 @@ body.reset {
     flex-direction: row-reverse;
     padding: 0; }
   #conversejs .chat-head .user-custom-message {
-    color: white;
+    color: #e7f7ee;
     font-size: 75%;
-    font-style: italic;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -7702,7 +7701,7 @@ body.reset {
   font-size: 20px;
   padding: 0; }
   #conversejs.converse-fullscreen .chat-head .user-custom-message {
-    font-size: 50%;
+    font-size: 70%;
     height: auto;
     line-height: 16px; }
   #conversejs.converse-fullscreen .chat-head .chatbox-title {

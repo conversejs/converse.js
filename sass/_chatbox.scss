@@ -65,9 +65,8 @@
         }
 
         .user-custom-message {
-            color: white;
+            color: lighten($chat-head-color, 50%);
             font-size: 75%;
-            font-style: italic;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -552,7 +551,7 @@
         font-size: $font-size-huge;
         padding: 0;
         .user-custom-message {
-            font-size: 50%;
+            font-size: 70%;
             height: auto;
             line-height: $line-height;
         }

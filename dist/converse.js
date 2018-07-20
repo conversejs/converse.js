@@ -69333,11 +69333,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! templates/action.html */ "./src/templates/action.html"), __webpack_require__(/*! templates/chatbox.html */ "./src/templates/chatbox.html"), __webpack_require__(/*! templates/chatbox_head.html */ "./src/templates/chatbox_head.html"), __webpack_require__(/*! templates/chatbox_message_form.html */ "./src/templates/chatbox_message_form.html"), __webpack_require__(/*! templates/emojis.html */ "./src/templates/emojis.html"), __webpack_require__(/*! templates/error_message.html */ "./src/templates/error_message.html"), __webpack_require__(/*! templates/help_message.html */ "./src/templates/help_message.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/new_day.html */ "./src/templates/new_day.html"), __webpack_require__(/*! templates/user_details_modal.html */ "./src/templates/user_details_modal.html"), __webpack_require__(/*! templates/toolbar_fileupload.html */ "./src/templates/toolbar_fileupload.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! templates/spoiler_button.html */ "./src/templates/spoiler_button.html"), __webpack_require__(/*! templates/status_message.html */ "./src/templates/status_message.html"), __webpack_require__(/*! templates/toolbar.html */ "./src/templates/toolbar.html"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js"), __webpack_require__(/*! converse-chatboxes */ "./src/converse-chatboxes.js"), __webpack_require__(/*! converse-message-view */ "./src/converse-message-view.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! templates/chatbox.html */ "./src/templates/chatbox.html"), __webpack_require__(/*! templates/chatbox_head.html */ "./src/templates/chatbox_head.html"), __webpack_require__(/*! templates/chatbox_message_form.html */ "./src/templates/chatbox_message_form.html"), __webpack_require__(/*! templates/emojis.html */ "./src/templates/emojis.html"), __webpack_require__(/*! templates/error_message.html */ "./src/templates/error_message.html"), __webpack_require__(/*! templates/help_message.html */ "./src/templates/help_message.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/new_day.html */ "./src/templates/new_day.html"), __webpack_require__(/*! templates/user_details_modal.html */ "./src/templates/user_details_modal.html"), __webpack_require__(/*! templates/toolbar_fileupload.html */ "./src/templates/toolbar_fileupload.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! templates/spoiler_button.html */ "./src/templates/spoiler_button.html"), __webpack_require__(/*! templates/status_message.html */ "./src/templates/status_message.html"), __webpack_require__(/*! templates/toolbar.html */ "./src/templates/toolbar.html"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js"), __webpack_require__(/*! converse-chatboxes */ "./src/converse-chatboxes.js"), __webpack_require__(/*! converse-message-view */ "./src/converse-message-view.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, bootstrap, emojione, xss, tpl_action, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_error_message, tpl_help_message, tpl_info, tpl_new_day, tpl_user_details_modal, tpl_toolbar_fileupload, tpl_spinner, tpl_spoiler_button, tpl_status_message, tpl_toolbar) {
+})(void 0, function (converse, bootstrap, emojione, xss, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_error_message, tpl_help_message, tpl_info, tpl_new_day, tpl_user_details_modal, tpl_toolbar_fileupload, tpl_spinner, tpl_spoiler_button, tpl_status_message, tpl_toolbar) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -70055,18 +70055,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 date = moment(el.getAttribute('data-isodate')),
                 next_el = el.nextElementSibling;
 
-          if (!u.hasClass('chat-action', el) && !u.hasClass('chat-action', previous_el) && previous_el.getAttribute('data-from') === from && date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes'))) {
-            u.addClass('chat-msg-followup', el);
+          if (!u.hasClass('chat-msg--action', el) && !u.hasClass('chat-msg--action', previous_el) && previous_el.getAttribute('data-from') === from && date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes'))) {
+            u.addClass('chat-msg--followup', el);
           }
 
           if (!next_el) {
             return;
           }
 
-          if (!u.hasClass('chat-action', 'el') && next_el.getAttribute('data-from') === from && moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes'))) {
-            u.addClass('chat-msg-followup', next_el);
+          if (!u.hasClass('chat-msg--action', 'el') && next_el.getAttribute('data-from') === from && moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes'))) {
+            u.addClass('chat-msg--followup', next_el);
           } else {
-            u.removeClass('chat-msg-followup', next_el);
+            u.removeClass('chat-msg--followup', next_el);
           }
         },
 
@@ -74581,11 +74581,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! templates/action.html */ "./src/templates/action.html"), __webpack_require__(/*! templates/csn.html */ "./src/templates/csn.html"), __webpack_require__(/*! templates/file_progress.html */ "./src/templates/file_progress.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/message.html */ "./src/templates/message.html"), __webpack_require__(/*! templates/message_versions_modal.html */ "./src/templates/message_versions_modal.html"), __webpack_require__(/*! templates/spoiler_message.html */ "./src/templates/spoiler_message.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! templates/csn.html */ "./src/templates/csn.html"), __webpack_require__(/*! templates/file_progress.html */ "./src/templates/file_progress.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/message.html */ "./src/templates/message.html"), __webpack_require__(/*! templates/message_versions_modal.html */ "./src/templates/message_versions_modal.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, xss, emojione, filesize, tpl_action, tpl_csn, tpl_file_progress, tpl_info, tpl_message, tpl_message_versions_modal, tpl_spoiler_message) {
+})(void 0, function (converse, xss, emojione, filesize, tpl_csn, tpl_file_progress, tpl_info, tpl_message, tpl_message_versions_modal) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -74654,7 +74654,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         render() {
-          const is_followup = u.hasClass('chat-msg-followup', this.el);
+          const is_followup = u.hasClass('chat-msg--followup', this.el);
           let msg;
 
           if (this.model.isOnlyChatStateNotification()) {
@@ -74668,7 +74668,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           if (is_followup) {
-            u.addClass('chat-msg-followup', this.el);
+            u.addClass('chat-msg--followup', this.el);
           }
 
           return this.el;
@@ -74693,21 +74693,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         renderChatMessage() {
-          let template,
-              text = this.model.get('message');
-
-          if (this.isMeCommand()) {
-            template = tpl_action;
-            text = this.model.get('message').replace(/^\/me/, '');
-          } else {
-            template = this.model.get('is_spoiler') ? tpl_spoiler_message : tpl_message;
-          }
-
-          const moment_time = moment(this.model.get('time')),
+          const is_me_message = this.isMeCommand(),
+                moment_time = moment(this.model.get('time')),
                 role = this.model.vcard.get('role'),
                 roles = role ? role.split(',') : [];
-          const msg = u.stringToElement(template(_.extend(this.model.toJSON(), {
+          const msg = u.stringToElement(tpl_message(_.extend(this.model.toJSON(), {
             '__': __,
+            'is_me_message': is_me_message,
             'roles': roles,
             'pretty_time': moment_time.format(_converse.time_format),
             'time': moment_time.format(),
@@ -74715,13 +74707,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'label_show': __('Show more'),
             'username': this.model.getDisplayName()
           })));
-          var url = this.model.get('oob_url');
+          const url = this.model.get('oob_url');
 
           if (url) {
-            msg.querySelector('.chat-msg-media').innerHTML = _.flow(_.partial(u.renderFileURL, _converse), _.partial(u.renderMovieURL, _converse), _.partial(u.renderAudioURL, _converse), _.partial(u.renderImageURL, _converse))(url);
+            msg.querySelector('.chat-msg__media').innerHTML = _.flow(_.partial(u.renderFileURL, _converse), _.partial(u.renderMovieURL, _converse), _.partial(u.renderAudioURL, _converse), _.partial(u.renderImageURL, _converse))(url);
           }
 
-          const msg_content = msg.querySelector('.chat-msg-text');
+          let text = this.model.get('message');
+
+          if (is_me_message) {
+            text = text.replace(/^\/me/, '');
+          }
+
+          const msg_content = msg.querySelector('.chat-msg__text');
 
           if (text !== url) {
             text = xss.filterXSS(text, {
@@ -83939,30 +83937,6 @@ if (!String.prototype.trim) {
 
 /***/ }),
 
-/***/ "./src/templates/action.html":
-/*!***********************************!*\
-  !*** ./src/templates/action.html ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
-module.exports = function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/action.html -->\n<div class="message chat-msg chat-action ' +
-__e(o.extra_classes) +
-'" data-isodate="' +
-__e(o.time) +
-'" data-from="' +
-__e(o.from) +
-'">\n    <span class="chat-msg-heading">\n        <span class="chat-msg-author">**' +
-__e(o.username) +
-'</span>\n    </span>\n    <p class="chat-msg-text"><!-- message gets added here via renderMessage --></p>\n</div>\n';
-return __p
-};
-
-/***/ }),
-
 /***/ "./src/templates/add_chatroom_modal.html":
 /*!***********************************************!*\
   !*** ./src/templates/add_chatroom_modal.html ***!
@@ -85230,7 +85204,7 @@ __p += '<!-- src/templates/file_progress.html -->\n<div class="message chat-msg"
 __e(o.time) +
 '" data-msgid="' +
 __e(o.msgid) +
-'">\n    <canvas class="avatar" height="36" width="36"></canvas>\n    <div class="chat-msg-content">\n        <span class="chat-msg-text">Uploading file: <strong>' +
+'">\n    <canvas class="avatar chat-msg__avatar" height="36" width="36"></canvas>\n    <div class="chat-msg__content">\n        <span class="chat-msg__text">Uploading file: <strong>' +
 __e(o.file.name) +
 '</strong>, ' +
 __e(o.filesize) +
@@ -85699,7 +85673,11 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/message.html -->\n<div class="message chat-msg ' +
 __e(o.type) +
-' ' +
+' ';
+ if (o.is_me_message) { ;
+__p += ' chat-msg--action ';
+ } ;
+__p += ' ' +
 __e(o.extra_classes) +
 '" data-isodate="' +
 __e(o.time) +
@@ -85708,10 +85686,26 @@ __e(o.msgid) +
 '" data-from="' +
 __e(o.from) +
 '">\n    ';
- if (o.type !== 'headline') { ;
-__p += '\n    <canvas class="avatar" height="36" width="36"></canvas>\n    ';
+ if (o.type !== 'headline' && !o.is_me_message) { ;
+__p += '\n    <canvas class="avatar chat-msg__avatar" height="36" width="36"></canvas>\n    ';
  } ;
-__p += '\n    <div class="chat-msg-content">\n        <span class="chat-msg-heading">\n            <span class="chat-msg-author">' +
+__p += '\n    <div class="chat-msg__content ';
+ if (o.is_me_message) { ;
+__p += 'chat-msg__content--action';
+ } ;
+__p += '">\n        <span class="chat-msg__heading">\n            ';
+ if (o.is_me_message) { ;
+__p += '<time timestamp="' +
+__e(o.isodate) +
+'" class="chat-msg__time">' +
+__e(o.pretty_time) +
+'</time>';
+ } ;
+__p += '\n            <span class="chat-msg__author">';
+ if (o.is_me_message) { ;
+__p += '**';
+ }; ;
+__p +=
 __e(o.username) +
 '\n                ';
 o.roles.forEach(function (role) { ;
@@ -85719,17 +85713,49 @@ __p += ' <span class="badge badge-secondary">' +
 __e(role) +
 '</span> ';
  }); ;
-__p += '\n            </span>\n            <time timestamp="' +
+__p += '\n            </span>\n            ';
+ if (!o.is_me_message) { ;
+__p += '<time timestamp="' +
 __e(o.isodate) +
-'" class="chat-msg-time">' +
+'" class="chat-msg__time">' +
 __e(o.pretty_time) +
-'</time>\n        </span>\n        ';
+'</time>';
+ } ;
+__p += '\n        </span>\n        ';
+ if (!o.is_me_message) { ;
+__p += '<div class="chat-msg__body">';
+ } ;
+__p += ' \n            ';
  if (o.edited) { ;
 __p += ' <i title="' +
 __e(o.__('This message has been edited')) +
 '" class="fa fa-edit chat-msg-edited"></i> ';
  } ;
-__p += '\n        <span class="chat-msg-text"></span>\n        <div class="chat-msg-media"></div>\n    </div>\n</div>\n';
+__p += '\n            ';
+ if (!o.is_me_message) { ;
+__p += '<div class="chat-msg__message">';
+ } ;
+__p += ' \n                ';
+ if (o.is_spoiler) { ;
+__p += '\n                    <div class="chat-msg__spoiler-hint">\n                        <span class="spoiler-hint">' +
+__e(o.spoiler_hint) +
+'</span>\n                        <a class="badge badge-info spoiler-toggle" data-toggle-state="closed" href="#"><i class="fa fa-eye"></i>' +
+__e(o.label_show) +
+'</a>\n                    </div>\n                ';
+ } ;
+__p += '\n                <div class="chat-msg__text';
+ if (o.is_spoiler) { ;
+__p += ' spoiler collapsed';
+ } ;
+__p += '"><!-- message gets added here via renderMessage --></div>\n                <div class="chat-msg__media"></div>\n            ';
+ if (!o.is_me_message) { ;
+__p += '</div>';
+ } ;
+__p += '\n        ';
+ if (!o.is_me_message) { ;
+__p += '</div>';
+ } ;
+__p += ' \n    </div>\n</div>\n';
 return __p
 };
 
@@ -86751,36 +86777,6 @@ return __p
 
 /***/ }),
 
-/***/ "./src/templates/spoiler_message.html":
-/*!********************************************!*\
-  !*** ./src/templates/spoiler_message.html ***!
-  \********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
-module.exports = function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/spoiler_message.html -->\n<div class="message chat-msg ' +
-__e(o.extra_classes) +
-'" data-isodate="' +
-__e(o.time) +
-'" data-msgid="' +
-__e(o.msgid) +
-'">\n    <canvas class="avatar" height="36" width="36"></canvas>\n    <div class="chat-msg-content">\n        <span class="chat-msg-heading">\n            <span class="chat-msg-author">' +
-__e(o.username) +
-'</span>\n            <span class="chat-msg-time">' +
-__e(o.pretty_time) +
-'</span>\n        </span>\n        <div>\n            <span class="spoiler-hint">' +
-__e(o.spoiler_hint) +
-'</span>\n            <a class="badge badge-info spoiler-toggle" data-toggle-state="closed" href="#"><i class="fa fa-eye"></i>' +
-__e(o.label_show) +
-'</a>\n        </div>\n        <div class="chat-msg-text spoiler collapsed"><!-- message gets added here via renderMessage --></div>\n    </div>\n</div>\n';
-return __p
-};
-
-/***/ }),
-
 /***/ "./src/templates/status_message.html":
 /*!*******************************************!*\
   !*** ./src/templates/status_message.html ***!
@@ -87275,6 +87271,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return string.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   };
 
+  u.escapeURL = function (url) {
+    return encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+  };
+
   u.addHyperlinks = function (text) {
     return URI.withinString(text, function (url) {
       var uri = new URI(url);
@@ -87284,8 +87284,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         url = 'http://' + url;
       }
 
-      url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-      return `<a target="_blank" rel="noopener" href="${u.escapeHTML(url)}">${u.escapeHTML(uri.readable())}</a>`;
+      url = u.escapeHTML(u.escapeURL(url));
+      return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(uri.readable())}</a>`;
     });
   };
 

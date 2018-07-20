@@ -9,7 +9,6 @@
             "bootstrap",
             "emojione",
             "xss",
-            "templates/action.html",
             "templates/chatbox.html",
             "templates/chatbox_head.html",
             "templates/chatbox_message_form.html",
@@ -33,7 +32,6 @@
             bootstrap,
             emojione,
             xss,
-            tpl_action,
             tpl_chatbox,
             tpl_chatbox_head,
             tpl_chatbox_message_form,
@@ -747,19 +745,19 @@
                           date = moment(el.getAttribute('data-isodate')),
                           next_el = el.nextElementSibling;
 
-                    if (!u.hasClass('chat-action', el) && !u.hasClass('chat-action', previous_el) &&
+                    if (!u.hasClass('chat-msg--action', el) && !u.hasClass('chat-msg--action', previous_el) &&
                             previous_el.getAttribute('data-from') === from &&
                             date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes'))) {
-                        u.addClass('chat-msg-followup', el);
+                        u.addClass('chat-msg--followup', el);
                     }
                     if (!next_el) { return; }
 
-                    if (!u.hasClass('chat-action', 'el') &&
+                    if (!u.hasClass('chat-msg--action', 'el') &&
                             next_el.getAttribute('data-from') === from &&
                             moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes'))) {
-                        u.addClass('chat-msg-followup', next_el);
+                        u.addClass('chat-msg--followup', next_el);
                     } else {
-                        u.removeClass('chat-msg-followup', next_el);
+                        u.removeClass('chat-msg--followup', next_el);
                     }
                 },
 

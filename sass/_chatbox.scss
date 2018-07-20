@@ -124,7 +124,7 @@
             background-color: $chat-head-color;
             box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
             z-index: 1;
-            overflow-y: scroll;
+            overflow-y: hidden;
             width: 100%;
 
             @media screen and (max-height: $mobile-landscape-height) {
@@ -464,21 +464,6 @@
             min-width: $overlayed-chat-width!important;
             width: $overlayed-chat-width;
         }
-
-        .chat-body {
-            .chat-message {
-                line-height: $line-height-large;
-                .chat-msg-author {
-                    line-height: $line-height-large;
-                }
-                .chat-msg-content {
-                    line-height: $line-height-large;
-                    .emojione {
-                        margin-bottom: -5px;
-                    }
-                }
-            }
-        }
     }
     .chatbox {
         form.sendXMPPMessage {
@@ -597,21 +582,6 @@
             background-color: $chat-head-color;
             border-top-left-radius: $chatbox-border-radius;
             border-top-right-radius: $chatbox-border-radius;
-
-            .chat-message {
-                line-height: $line-height;
-                font-size: $font-size-small;
-                .chat-msg-author {
-                    line-height: $line-height;
-                }
-                .chat-msg-content {
-                    line-height: $line-height;
-                    .emojione {
-                        height: $line-height;
-                        margin-bottom: -$line-height/4;
-                    }
-                }
-            }
         }
         .chat-content {
             border-top-left-radius: $chatbox-border-radius;

@@ -71,7 +71,7 @@ body.reset {
     &.converse-mobile {
         .converse-chatboxes {
             width: 100vw;
-            right: 15px; // Hack due to padding added by bootstrap
+            left: -15px; // Hack due to padding added by bootstrap
         }
     }
     &.converse-overlayed {

@@ -6872,7 +6872,7 @@ body.reset {
     flex-direction: row-reverse; }
   #conversejs.converse-fullscreen .converse-chatboxes, #conversejs.converse-mobile .converse-chatboxes {
     width: 100vw;
-    right: 15px; }
+    left: -15px; }
   #conversejs.converse-overlayed {
     height: 3em; }
   #conversejs .brand-heading {

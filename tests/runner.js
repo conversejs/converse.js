@@ -211,8 +211,8 @@ var specs = [
 require(['console-reporter', 'mock', 'sinon', 'wait-until-promise', 'pluggable'],
         function(ConsoleReporter, mock, sinon, waitUntilPromise, pluggable) {
 
-    if (config.view_mode) {
-        mock.view_mode = config.view_mode;
+    if (window.view_mode) {
+        mock.view_mode = window.view_mode;
     }
     window.sinon = sinon;
     window.waitUntilPromise = waitUntilPromise.default;

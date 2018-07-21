@@ -69620,6 +69620,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         // Leaky abstraction from MUC
         events: {
           'change input.fileupload': 'onFileSelection',
+          'click .chat-msg__action-edit': 'onMessageEditButtonClicked',
           'click .chatbox-navback': 'showControlBox',
           'click .close-chatbox-button': 'close',
           'click .new-msgs-indicator': 'viewUnreadMessages',
@@ -69632,8 +69633,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
           'click .toggle-smiley': 'toggleEmojiMenu',
           'click .upload-file': 'toggleFileUpload',
-          'keydown .chat-textarea': 'keyPressed',
-          'input .chat-textarea': 'inputChanged'
+          'input .chat-textarea': 'inputChanged',
+          'keydown .chat-textarea': 'keyPressed'
         },
 
         initialize() {
@@ -70238,6 +70239,27 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return f(this.model.messages.filter({
             'sender': 'me'
           }));
+        },
+
+        onMessageEditButtonClicked(ev) {
+          const idx = this.model.messages.findLastIndex('correcting'),
+                currently_correcting = idx >= 0 ? this.model.messages.at(idx) : null,
+                message_el = u.ancestor(ev.target, '.chat-msg'),
+                message = this.model.messages.findWhere({
+            'msgid': message_el.getAttribute('data-msgid')
+          });
+
+          if (currently_correcting !== message) {
+            if (!_.isNil(currently_correcting)) {
+              currently_correcting.save('correcting', false);
+            }
+
+            message.save('correcting', true);
+            this.insertIntoTextArea(message.get('message'), true);
+          } else {
+            message.save('correcting', false);
+            this.insertIntoTextArea('', true);
+          }
         },
 
         editLaterMessage() {
@@ -74647,7 +74669,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
       _converse.MessageView = _converse.ViewWithAvatar.extend({
         events: {
-          'click .chat-msg-edited': 'showMessageVersionsModal'
+          'click .chat-msg__edit-modal': 'showMessageVersionsModal'
         },
 
         initialize() {
@@ -85733,17 +85755,17 @@ __p += '\n        </span>\n        ';
  if (!o.is_me_message) { ;
 __p += '<div class="chat-msg__body">';
  } ;
-__p += ' \n            ';
+__p += '\n            ';
  if (o.edited) { ;
 __p += ' <i title="' +
 __e(o.__('This message has been edited')) +
-'" class="fa fa-edit chat-msg-edited"></i> ';
+'" class="fa fa-edit chat-msg__edit-modal"></i> ';
  } ;
 __p += '\n            ';
  if (!o.is_me_message) { ;
 __p += '<div class="chat-msg__message">';
  } ;
-__p += ' \n                ';
+__p += '\n                ';
  if (o.is_spoiler) { ;
 __p += '\n                    <div class="chat-msg__spoiler-hint">\n                        <span class="spoiler-hint">' +
 __e(o.spoiler_hint) +
@@ -85759,11 +85781,17 @@ __p += '"><!-- message gets added here via renderMessage --></div>\n            
  if (!o.is_me_message) { ;
 __p += '</div>';
  } ;
-__p += '\n        ';
+__p += '\n            ';
+ if (o.type !== 'headline' && !o.is_me_message && o.sender === 'me') { ;
+__p += '\n            <div class="chat-msg__actions">\n                <button class="chat-msg__action chat-msg__action-edit fa fa-pencil" title="' +
+__e(o.__('Edit this message')) +
+'">&nbsp;</button>\n            </div>\n            ';
+ } ;
+__p += '\n\n        ';
  if (!o.is_me_message) { ;
 __p += '</div>';
  } ;
-__p += ' \n    </div>\n</div>\n';
+__p += '\n    </div>\n</div>\n';
 return __p
 };
 

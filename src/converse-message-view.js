@@ -80,9 +80,8 @@
 
 
             _converse.MessageView = _converse.ViewWithAvatar.extend({
-
                 events: {
-                    'click .chat-msg-edited': 'showMessageVersionsModal'
+                    'click .chat-msg__edit-modal': 'showMessageVersionsModal'
                 },
 
                 initialize () {

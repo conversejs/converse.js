@@ -237,7 +237,7 @@
 
             _converse.UserDetailsModal = _converse.BootstrapModal.extend({
 
-                events: { 
+                events: {
                     'click button.remove-contact': 'removeContact',
                     'click button.refresh-contact': 'refreshContact'
                 },
@@ -321,6 +321,7 @@
 
                 events: {
                     'change input.fileupload': 'onFileSelection',
+                    'click .chat-msg__action-edit': 'onMessageEditButtonClicked',
                     'click .chatbox-navback': 'showControlBox',
                     'click .close-chatbox-button': 'close',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
@@ -333,8 +334,8 @@
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .upload-file': 'toggleFileUpload',
-                    'keydown .chat-textarea': 'keyPressed',
-                    'input .chat-textarea': 'inputChanged'
+                    'input .chat-textarea': 'inputChanged',
+                    'keydown .chat-textarea': 'keyPressed'
                 },
 
                 initialize () {
@@ -929,6 +930,24 @@
 
                 getOwnMessages () {
                     return f(this.model.messages.filter({'sender': 'me'}));
+                },
+
+                onMessageEditButtonClicked (ev) {
+                    const idx = this.model.messages.findLastIndex('correcting'),
+                          currently_correcting = idx >=0 ? this.model.messages.at(idx) : null,
+                          message_el = u.ancestor(ev.target, '.chat-msg'),
+                          message = this.model.messages.findWhere({'msgid': message_el.getAttribute('data-msgid')});
+
+                    if (currently_correcting !== message) {
+                        if (!_.isNil(currently_correcting)) {
+                            currently_correcting.save('correcting', false);
+                        }
+                        message.save('correcting', true);
+                        this.insertIntoTextArea(message.get('message'), true);
+                    } else {
+                        message.save('correcting', false);
+                        this.insertIntoTextArea('', true);
+                    }
                 },
 
                 editLaterMessage () {

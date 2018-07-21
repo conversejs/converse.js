@@ -19,7 +19,106 @@
 
     describe("A Chat Message", function () {
 
-        it("can be sent as a correction",
+        it("can be sent as a correction by clicking the pencil icon",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
+            test_utils.createContacts(_converse, 'current', 1);
+            test_utils.openControlBox();
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            test_utils.openChatBoxFor(_converse, contact_jid);
+
+            const view = _converse.chatboxviews.get(contact_jid);
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+
+            textarea.value = 'But soft, what light through yonder airlock breaks?';
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13 // Enter
+            });
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(view.el.querySelector('.chat-msg__text').textContent)
+                .toBe('But soft, what light through yonder airlock breaks?');
+            expect(textarea.value).toBe('');
+
+            const first_msg = view.model.messages.findWhere({'message': 'But soft, what light through yonder airlock breaks?'});
+
+            expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(1);
+            let action = view.el.querySelector('.chat-msg .chat-msg__action');
+            expect(action.getAttribute('title')).toBe('Edit this message');
+
+            action.style.opacity = 1;
+            action.click();
+
+            expect(textarea.value).toBe('But soft, what light through yonder airlock breaks?');
+            expect(view.model.messages.at(0).get('correcting')).toBe(true);
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(true);
+
+            spyOn(_converse.connection, 'send');
+            textarea.value = 'But soft, what light through yonder window breaks?';
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13 // Enter
+            });
+            expect(_converse.connection.send).toHaveBeenCalled();
+
+            const msg = _converse.connection.send.calls.all()[0].args[0];
+            expect(msg.toLocaleString())
+            .toBe(`<message from='dummy@localhost/resource' `+
+                    `to='max.frankfurter@localhost' type='chat' id='${msg.nodeTree.getAttribute('id')}' `+
+                    `xmlns='jabber:client'>`+
+                        `<body>But soft, what light through yonder window breaks?</body>`+
+                        `<active xmlns='http://jabber.org/protocol/chatstates'/>`+
+                        `<replace xmlns='urn:xmpp:message-correct:0' id='${first_msg.get('msgid')}'/>`+
+                `</message>`);
+            expect(view.model.messages.models.length).toBe(1);
+            const corrected_message = view.model.messages.at(0);
+            expect(corrected_message.get('msgid')).toBe(first_msg.get('msgid'));
+            expect(corrected_message.get('correcting')).toBe(false);
+            expect(corrected_message.get('older_versions').length).toBe(1);
+            expect(corrected_message.get('older_versions')[0]).toBe('But soft, what light through yonder airlock breaks?');
+
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(false);
+
+            // Test that clicking the pencil icon a second time cancels editing.
+            action = view.el.querySelector('.chat-msg .chat-msg__action');
+            action.style.opacity = 1;
+            action.click();
+
+            expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
+            expect(view.model.messages.at(0).get('correcting')).toBe(true);
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(true);
+
+            action = view.el.querySelector('.chat-msg .chat-msg__action');
+            action.style.opacity = 1;
+            action.click();
+            expect(textarea.value).toBe('');
+            expect(view.model.messages.at(0).get('correcting')).toBe(false);
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(false);
+
+            // Test that messages from other users don't have the pencil icon
+            _converse.chatboxes.onMessage(
+                $msg({
+                    'from': contact_jid,
+                    'to': _converse.connection.jid,
+                    'type': 'chat',
+                    'id': (new Date()).getTime()
+                }).c('body').t('Hello').up()
+                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
+            );
+            expect(view.el.querySelectorAll('.chat-msg .chat-msg__action').length).toBe(1);
+            done();
+        }));
+
+
+        it("can be sent as a correction by using the up arrow",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
@@ -180,19 +279,20 @@
                     spyOn(_converse, 'emit');
                     const message = 'This is a received message';
                     const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    const msg = $msg({
+
+                    // We don't already have an open chatbox for this user
+                    expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
+
+                    _converse.chatboxes.onMessage(
+                        $msg({
                             'from': sender_jid,
                             'to': _converse.connection.jid,
                             'type': 'chat',
                             'id': (new Date()).getTime()
                         }).c('body').t(message).up()
-                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
+                    );
 
-                    // We don't already have an open chatbox for this user
-                    expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
-
-                    // onMessage is a handler for received XMPP messages
-                    _converse.chatboxes.onMessage(msg);
                     expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
 
                     // Check that the chatbox and its view now exist
@@ -1804,7 +1904,7 @@
             }).catch(_.partial(console.error, _));
         }));
 
-        it("can be sent as a correction",
+        it("can be sent as a correction by using the up arrow",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {

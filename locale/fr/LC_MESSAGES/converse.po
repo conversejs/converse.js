@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-05-17 11:19+0200\n"
-"PO-Revision-Date: 2018-07-20 21:37+0000\n"
+"PO-Revision-Date: 2018-07-21 10:03+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -872,6 +872,9 @@ msgid ""
 "Sorry, an error happened while running the command. Check your browser's "
 "developer console for details."
 msgstr ""
+"Désolé, une erreur s'est produite lors de l'exécution de la commande. "
+"Vérifiez la console de développement de votre navigateur pour plus de "
+"détails."
 
 #: dist/converse-no-dependencies.js:29263
 msgid "Change user's affiliation to admin"
@@ -1041,9 +1044,8 @@ msgid "Add a new room"
 msgstr "Ajouter un nouveau salon"
 
 #: dist/converse-no-dependencies.js:29983
-#, fuzzy
 msgid "Query for rooms"
-msgstr "Bannir l’utilisateur du salon"
+msgstr "Chercher un salon"
 
 #: dist/converse-no-dependencies.js:30022
 #, javascript-format

@@ -1720,7 +1720,7 @@
                             '<img class="chat-image img-thumbnail" src="http://localhost:8000/logo/conversejs-filled.svg">'+
                         '</a>');
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
         });
     });
@@ -1801,7 +1801,7 @@
                 expect(older_msgs[0].textContent).toBe('But soft, what light through yonder airlock breaks?');
                 expect(older_msgs[1].textContent).toBe('But soft, what light through yonder chimney breaks?');
                 done();
-            });
+            }).catch(_.partial(console.error, _));
         }));
 
         it("can be sent as a correction",
@@ -1812,9 +1812,9 @@
             let msg_id, view;
             test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy')
             .then(() => {
-                const jid = 'lounge@localhost';
-                const room = _converse.api.rooms.get(jid);
-                view = _converse.chatboxviews.get(jid);
+                const room_jid = 'lounge@localhost';
+                const room = _converse.api.rooms.get(room_jid);
+                view = _converse.chatboxviews.get(room_jid);
 
                 const textarea = view.el.querySelector('textarea.chat-textarea');
                 expect(textarea.value).toBe('');
@@ -1874,6 +1874,15 @@
                 expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
                 expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(false);
 
+                // Check that messages from other users are skipped
+                view.model.onMessage($msg({
+                    'from': room_jid+'/someone-else',
+                    'id': (new Date()).getTime(),
+                    'to': 'dummy@localhost',
+                    'type': 'groupchat'
+                }).c('body').t('Hello world').tree());
+                expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
+
                 // Test that pressing the down arrow cancels message correction
                 expect(textarea.value).toBe('');
                 view.keyPressed({
@@ -1882,7 +1891,7 @@
                 });
                 expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
                 expect(view.model.messages.at(0).get('correcting')).toBe(true);
-                expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+                expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
                 expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(true);
                 expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
                 view.keyPressed({
@@ -1891,10 +1900,10 @@
                 });
                 expect(textarea.value).toBe('');
                 expect(view.model.messages.at(0).get('correcting')).toBe(false);
-                expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+                expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
                 expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(false);
                 done();
-            });
+            }).catch(_.partial(console.error, _));
         }));
     });
 }));

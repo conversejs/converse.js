@@ -70234,6 +70234,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
 
+        getOwnMessages() {
+          return f(this.model.messages.filter({
+            'sender': 'me'
+          }));
+        },
+
         editLaterMessage() {
           let message;
           let idx = this.model.messages.findLastIndex('correcting');
@@ -70243,9 +70249,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
             while (idx < this.model.messages.length - 1) {
               idx += 1;
+              const candidate = this.model.messages.at(idx);
 
-              if (this.model.messages.at(idx).get('message')) {
-                message = this.model.messages.at(idx);
+              if (candidate.get('sender') === 'me' && candidate.get('message')) {
+                message = candidate;
                 break;
               }
             }
@@ -70268,15 +70275,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
             while (idx > 0) {
               idx -= 1;
+              const candidate = this.model.messages.at(idx);
 
-              if (this.model.messages.at(idx).get('message')) {
-                message = this.model.messages.at(idx);
+              if (candidate.get('sender') === 'me' && candidate.get('message')) {
+                message = candidate;
                 break;
               }
             }
           }
 
-          message = message || _.findLast(this.model.messages.models, msg => msg.get('message'));
+          message = message || this.getOwnMessages().findLast(msg => msg.get('message'));
 
           if (message) {
             this.insertIntoTextArea(message.get('message'), true);

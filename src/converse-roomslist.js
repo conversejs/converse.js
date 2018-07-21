@@ -33,7 +33,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-controlbox", "converse-muc", "converse-bookmarks"],
+        dependencies: ["converse-singleton", "converse-controlbox", "converse-muc", "converse-bookmarks"],
 
         initialize () {
             /* The initialize function gets called as soon as the plugin is
@@ -58,6 +58,7 @@
                     this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                         b64_sha1(`converse.open-rooms-{_converse.bare_jid}`));
                     _converse.chatboxes.on('add', this.onChatBoxAdded, this);
+                    _converse.chatboxes.on('change:hidden', this.onChatBoxChanged, this);
                     _converse.chatboxes.on('change:bookmarked', this.onChatBoxChanged, this);
                     _converse.chatboxes.on('change:name', this.onChatBoxChanged, this);
                     _converse.chatboxes.on('change:num_unread', this.onChatBoxChanged, this);
@@ -98,13 +99,14 @@
 
             _converse.RoomsListElementView = Backbone.VDOMView.extend({
                 events: {
-                    'click a.room-info': 'showRoomDetailsModal'
+                    'click .room-info': 'showRoomDetailsModal'
                 },
 
                 initialize () {
                     this.model.on('destroy', this.remove, this);
                     this.model.on('remove', this.remove, this);
                     this.model.on('change:bookmarked', this.render, this);
+                    this.model.on('change:hidden', this.render, this);
                     this.model.on('change:name', this.render, this);
                     this.model.on('change:num_unread', this.render, this);
                     this.model.on('change:num_unread_general', this.render, this);
@@ -118,12 +120,13 @@
                             // supported by the XMPP server. So we can use it
                             // as a check for support (other ways of checking are async).
                             'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
-                            'info_leave_room': __('Leave this room'),
-                            'info_remove_bookmark': __('Unbookmark this room'),
-                            'info_add_bookmark': __('Bookmark this room'),
-                            'info_title': __('Show more information on this room'),
+                            'currently_open': _converse.isSingleton() && !this.model.get('hidden'),
+                            'info_leave_room': __('Leave this groupchat'),
+                            'info_remove_bookmark': __('Unbookmark this groupchat'),
+                            'info_add_bookmark': __('Bookmark this groupchat'),
+                            'info_title': __('Show more information on this groupchat'),
                             'name': this.getRoomsListElementName(),
-                            'open_title': __('Click to open this room')
+                            'open_title': __('Click to open this groupchat')
                         }));
                 },
 
@@ -153,7 +156,7 @@
                 events: {
                     'click .add-bookmark': 'addBookmark',
                     'click .close-room': 'closeRoom',
-                    'click .rooms-toggle': 'toggleRoomsList',
+                    'click .list-toggle': 'toggleRoomsList',
                     'click .remove-bookmark': 'removeBookmark',
                     'click .open-room': 'openRoom',
                 },
@@ -181,8 +184,8 @@
                 render () {
                     this.el.innerHTML = tpl_rooms_list({
                         'toggle_state': this.list_model.get('toggle-state'),
-                        'desc_rooms': __('Click to toggle the rooms list'),
-                        'label_rooms': __('Open Rooms'),
+                        'desc_rooms': __('Click to toggle the list of open groupchats'),
+                        'label_rooms': __('Open Groupchats'),
                         '_converse': _converse
                     });
                     if (this.list_model.get('toggle-state') !== _converse.OPENED) {
@@ -225,7 +228,7 @@
                     ev.preventDefault();
                     const name = ev.target.getAttribute('data-room-name');
                     const jid = ev.target.getAttribute('data-room-jid');
-                    if (confirm(__("Are you sure you want to leave the room %1$s?", name))) {
+                    if (confirm(__("Are you sure you want to leave the groupchat %1$s?", name))) {
                         // TODO: replace with API call
                         _converse.chatboxviews.get(jid).close();
                     }

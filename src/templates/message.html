@@ -1,15 +1,33 @@
-<div class="message chat-msg {{{o.type}}} {{{o.extra_classes}}}" data-isodate="{{{o.time}}}" data-msgid="{{{o.msgid}}}" data-from="{{{o.from}}}">
-    {[ if (o.type !== 'headline') { ]}
-    <canvas class="avatar" height="36" width="36"></canvas>
+<div class="message chat-msg {{{o.type}}} {[ if (o.is_me_message) { ]} chat-msg--action {[ } ]} {{{o.extra_classes}}}" data-isodate="{{{o.time}}}" data-msgid="{{{o.msgid}}}" data-from="{{{o.from}}}">
+    {[ if (o.type !== 'headline' && !o.is_me_message) { ]}
+    <canvas class="avatar chat-msg__avatar" height="36" width="36"></canvas>
     {[ } ]}
-    <div class="chat-msg-content">
-        <span class="chat-msg-heading">
-            <span class="chat-msg-author">{{{o.username}}}
+    <div class="chat-msg__content {[ if (o.is_me_message) { ]}chat-msg__content--action{[ } ]}">
+        <span class="chat-msg__heading">
+            {[ if (o.is_me_message) { ]}<time timestamp="{{{o.isodate}}}" class="chat-msg__time">{{{o.pretty_time}}}</time>{[ } ]}
+            <span class="chat-msg__author">{[ if (o.is_me_message) { ]}**{[ }; ]}{{{o.username}}}
                 {[o.roles.forEach(function (role) { ]} <span class="badge badge-secondary">{{{role}}}</span> {[ }); ]}
             </span>
-            <time timestamp="{{{o.isodate}}}" class="chat-msg-time">{{{o.pretty_time}}}</time>
+            {[ if (!o.is_me_message) { ]}<time timestamp="{{{o.isodate}}}" class="chat-msg__time">{{{o.pretty_time}}}</time>{[ } ]}
         </span>
-        <span class="chat-msg-text"></span>
-        <div class="chat-msg-media"></div>
+        {[ if (!o.is_me_message) { ]}<div class="chat-msg__body">{[ } ]}
+            {[ if (o.edited) { ]} <i title="{{{o.__('This message has been edited')}}}" class="fa fa-edit chat-msg__edit-modal"></i> {[ } ]}
+            {[ if (!o.is_me_message) { ]}<div class="chat-msg__message">{[ } ]}
+                {[ if (o.is_spoiler) { ]}
+                    <div class="chat-msg__spoiler-hint">
+                        <span class="spoiler-hint">{{{o.spoiler_hint}}}</span>
+                        <a class="badge badge-info spoiler-toggle" data-toggle-state="closed" href="#"><i class="fa fa-eye"></i>{{{o.label_show}}}</a>
+                    </div>
+                {[ } ]}
+                <div class="chat-msg__text{[ if (o.is_spoiler) { ]} spoiler collapsed{[ } ]}"><!-- message gets added here via renderMessage --></div>
+                <div class="chat-msg__media"></div>
+            {[ if (!o.is_me_message) { ]}</div>{[ } ]}
+            {[ if (o.type !== 'headline' && !o.is_me_message && o.sender === 'me') { ]}
+            <div class="chat-msg__actions">
+                <button class="chat-msg__action chat-msg__action-edit fa fa-pencil" title="{{{o.__('Edit this message')}}}">&nbsp;</button>
+            </div>
+            {[ } ]}
+
+        {[ if (!o.is_me_message) { ]}</div>{[ } ]}
     </div>
 </div>

@@ -1,22 +1,27 @@
-<div class="list-item controlbox-padded available-chatroom d-flex flex-row {[ if (o.num_unread_general) { ]} unread-msgs {[ } ]}" data-room-jid="{{{o.jid}}}">
+<div class="list-item controlbox-padded available-chatroom d-flex flex-row
+    {[ if (o.currently_open) { ]} open {[ } ]}
+    {[ if (o.num_unread_general) { ]} unread-msgs {[ } ]}"
+    data-room-jid="{{{o.jid}}}">
 {[ if (o.num_unread) { ]}
     <span class="msgs-indicator badge badge-info">{{{ o.num_unread }}}</span>
 {[ } ]}
-<a class="open-room available-room w-100"
+<a class="list-item-link open-room available-room w-100"
     data-room-jid="{{{o.jid}}}"
     title="{{{o.open_title}}}" href="#">{{{o.name || o.jid}}}</a>
 
-<a class="right close-room icon-leave"
-   data-room-jid="{{{o.jid}}}"
-   data-room-name="{{{o.name || o.jid}}}"
-   title="{{{o.info_leave_room}}}" href="#">&nbsp;</a>
-
 {[ if (o.allow_bookmarks) { ]}
-<a class="fa align-self-center {[ if (o.bookmarked) { ]} fa-bookmark remove-bookmark button-on {[ } else { ]} add-bookmark fa-bookmark-o {[ } ]}"
+<a class="list-item-action fa {[ if (o.bookmarked) { ]} fa-bookmark remove-bookmark button-on {[ } else { ]} add-bookmark fa-bookmark-o {[ } ]}"
    data-room-jid="{{{o.jid}}}" data-bookmark-name="{{{o.name}}}"
    title="{[ if (o.bookmarked) { ]} {{{o.info_remove_bookmark}}} {[ } else { ]} {{{o.info_add_bookmark}}} {[ } ]}"
    href="#">&nbsp;</a>
 {[ } ]}
-<a class="room-info fa fa-info-circle align-self-center" data-room-jid="{{{o.jid}}}"
+
+<a class="list-item-action room-info fa fa-info-circle" data-room-jid="{{{o.jid}}}"
    title="{{{o.info_title}}}" href="#">&nbsp;</a>
+
+<a class="list-item-action fa fa-times close-room"
+   data-room-jid="{{{o.jid}}}"
+   data-room-name="{{{o.name || o.jid}}}"
+   title="{{{o.info_leave_room}}}" href="#">&nbsp;</a>
+
 </div>

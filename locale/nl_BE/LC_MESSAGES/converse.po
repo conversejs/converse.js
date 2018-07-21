@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-05-17 11:19+0200\n"
-"PO-Revision-Date: 2018-04-30 19:58+0000\n"
-"Last-Translator: Nathan Follens <nathan@email.is>\n"
+"PO-Revision-Date: 2018-07-03 10:26+0000\n"
+"Last-Translator: Nathan Follens <nthn@unseen.is>\n"
 "Language-Team: Flemish <https://hosted.weblate.org/projects/conversejs/"
 "translations/nl_BE/>\n"
 "Language: nl_BE\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.0-dev\n"
+"X-Generator: Weblate 3.1-dev\n"
 
 #: dist/converse-no-dependencies.js:9853 dist/converse-no-dependencies.js:9882
 msgid "Download"
@@ -174,7 +174,7 @@ msgstr ""
 "De grootte van het bestand, %1$s, overschrijd het maximum toegelaten door "
 "uwe server, %2$s."
 
-#: dist/converse-no-dependencies.js:22197
+#: dist/converse-no-dependencies.js:18681
 msgid "Show more"
 msgstr "Meer tonen"
 
@@ -206,7 +206,7 @@ msgstr "Dit gespreksvenster sluiten"
 
 #: dist/converse-no-dependencies.js:22516
 msgid "The User's Profile Image"
-msgstr ""
+msgstr "Profielafbeelding van gebruiker"
 
 #: dist/converse-no-dependencies.js:22519
 #: dist/converse-no-dependencies.js:25289
@@ -217,16 +217,16 @@ msgstr "Sluiten"
 #: dist/converse-no-dependencies.js:22520
 #: dist/converse-no-dependencies.js:25290
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
 #: dist/converse-no-dependencies.js:22521
 #: dist/converse-no-dependencies.js:25291
 msgid "Full Name"
-msgstr ""
+msgstr "Volledige naam"
 
 #: dist/converse-no-dependencies.js:22522
 msgid "Jabber ID"
-msgstr ""
+msgstr "Jabber-ID"
 
 #: dist/converse-no-dependencies.js:22523
 #: dist/converse-no-dependencies.js:25292
@@ -235,23 +235,22 @@ msgid "Nickname"
 msgstr "Bijnaam"
 
 #: dist/converse-no-dependencies.js:22524
-#, fuzzy
 msgid "Remove as contact"
-msgstr "Voeg een contact toe"
+msgstr "Contact verwijderen"
 
 #: dist/converse-no-dependencies.js:22525
 msgid "Refresh"
-msgstr ""
+msgstr "Vernieuwen"
 
 #: dist/converse-no-dependencies.js:22526
 #: dist/converse-no-dependencies.js:25294
 msgid "Role"
-msgstr ""
+msgstr "Rol"
 
 #: dist/converse-no-dependencies.js:22527
 #: dist/converse-no-dependencies.js:25297
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: dist/converse-no-dependencies.js:22566
 #: dist/converse-no-dependencies.js:24293
@@ -261,7 +260,7 @@ msgstr "Zij’ ge zeker da’ ge dit contact wild verwijderen?"
 #: dist/converse-no-dependencies.js:22575
 #: dist/converse-no-dependencies.js:25325
 msgid "Error"
-msgstr ""
+msgstr "Fout"
 
 #: dist/converse-no-dependencies.js:22575
 #: dist/converse-no-dependencies.js:24301
@@ -308,7 +307,7 @@ msgstr "Klikt hier voor een verborgen bericht te schrijven"
 msgid "Clear all messages"
 msgstr "Alle berichten wissen"
 
-#: dist/converse-no-dependencies.js:22755
+#: dist/converse-no-dependencies.js:19149
 msgid "Insert emojis"
 msgstr "Voegd smiley’s in"
 
@@ -330,7 +329,7 @@ msgstr "Schrijfd in den derde persoon"
 msgid "Show this menu"
 msgstr "Toond dit menu"
 
-#: dist/converse-no-dependencies.js:23164
+#: dist/converse-no-dependencies.js:19614
 msgid "Are you sure you want to clear the messages from this conversation?"
 msgstr "Zij’ ge zeker da’ ge de berichten in dit gesprek wild wissen?"
 
@@ -344,9 +343,95 @@ msgstr "is offline"
 msgid "is busy"
 msgstr "is bezet"
 
-#: dist/converse-no-dependencies.js:23260
+#: dist/converse-no-dependencies.js:19710
 msgid "is online"
 msgstr "is online"
+
+#: dist/converse-no-dependencies.js:22577
+#, javascript-format
+msgid "%1$s has invited you to join a chat room: %2$s"
+msgstr "%1$s heefd u uitgenodigd in het groepsgesprek: %2$s"
+
+#: dist/converse-no-dependencies.js:22579
+#, javascript-format
+msgid ""
+"%1$s has invited you to join a chat room: %2$s, and left the following "
+"reason: \"%3$s\""
+msgstr ""
+"%1$s heefd u uitgenodigd in het groepsgesprek: %2$s. en gaf volgende reden: "
+"‘%3$s’"
+
+#: dist/converse-no-dependencies.js:22956
+#: dist/converse-no-dependencies.js:23041
+#: dist/converse-no-dependencies.js:32286
+msgid "Bookmark this room"
+msgstr "Gesprek toevoegen aan bladwijzers"
+
+#: dist/converse-no-dependencies.js:23042
+msgid "The name for this bookmark:"
+msgstr "De naam voor dezen bladwijzer:"
+
+#: dist/converse-no-dependencies.js:23043
+msgid "Would you like this room to be automatically joined upon startup?"
+msgstr "Wild g’automatisch deelnemen aan dit groepsgesprek bij opstarten?"
+
+#: dist/converse-no-dependencies.js:23044
+msgid "What should your nickname for this room be?"
+msgstr "Wa moet uwen bijnaam in dit groepsgesprek zijn?"
+
+#: dist/converse-no-dependencies.js:23046
+#: dist/converse-no-dependencies.js:25364
+msgid "Save"
+msgstr "Opslaan"
+
+#: dist/converse-no-dependencies.js:23047
+#: dist/converse-no-dependencies.js:25360
+#: dist/converse-no-dependencies.js:31362
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: dist/converse-no-dependencies.js:23120
+#, javascript-format
+msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
+msgstr "Zij’ ge zeker da’ ge den bladwijzer ‘%1$s’ wild verwijderen?"
+
+#: dist/converse-no-dependencies.js:23236
+msgid "Sorry, something went wrong while trying to save your bookmark."
+msgstr "Sorry, der ging iets mis bij het opslaan van uwen bladwijzer."
+
+#: dist/converse-no-dependencies.js:23315
+#: dist/converse-no-dependencies.js:32284
+msgid "Leave this room"
+msgstr "Dit gesprek verlaten"
+
+#: dist/converse-no-dependencies.js:23316
+msgid "Remove this bookmark"
+msgstr "Dezen bladwijzer verwijderen"
+
+#: dist/converse-no-dependencies.js:23317
+#: dist/converse-no-dependencies.js:32285
+msgid "Unbookmark this room"
+msgstr "Bladwijzer voor dit gesprek verwijderen"
+
+#: dist/converse-no-dependencies.js:23318
+#: dist/converse-no-dependencies.js:28813
+#: dist/converse-no-dependencies.js:32287
+msgid "Show more information on this room"
+msgstr "Toond meer informatie over dit groepsgesprek"
+
+#: dist/converse-no-dependencies.js:23321
+#: dist/converse-no-dependencies.js:28812
+#: dist/converse-no-dependencies.js:32289
+msgid "Click to open this room"
+msgstr "Klikt voor dit groepsgesprek t’openen"
+
+#: dist/converse-no-dependencies.js:23357
+msgid "Click to toggle the bookmarks list"
+msgstr "Klikt voor de lijst met bladwijzers te tonen/verbergen"
+
+#: dist/converse-no-dependencies.js:23358
+msgid "Bookmarks"
+msgstr "Bladwijzers"
 
 #: dist/converse-no-dependencies.js:23501
 msgid "XMPP Username:"
@@ -535,28 +620,30 @@ msgid "Your Profile"
 msgstr "Uw profiel"
 
 #: dist/converse-no-dependencies.js:25293
-#, fuzzy
 msgid "XMPP Address (JID)"
-msgstr "XMPP-adres"
+msgstr "XMPP-adres (JID)"
 
 #: dist/converse-no-dependencies.js:25295
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
 msgstr ""
+"Gebruikt komma’s voor meerdere rollen op te geven. Uw rollen worden naast "
+"uwe naam op uw berichten weergegeven."
 
 #: dist/converse-no-dependencies.js:25298
 msgid "Your avatar image"
-msgstr ""
+msgstr "Uw avatarafbeelding"
 
 #: dist/converse-no-dependencies.js:25325
-#, fuzzy
 msgid "Sorry, an error happened while trying to save your profile data."
-msgstr "Sorry, der ging iets mis bij het opslaan van uwen bladwijzer."
+msgstr ""
+"Sorry, der is een fout opgetreden bij het opslaan van uw profielgegevens."
 
 #: dist/converse-no-dependencies.js:25325
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
+"Ge kunt de ontwikkelaarsconsole van uwen browser nakijken voor foutenuitvoer."
 
 #: dist/converse-no-dependencies.js:25377
 msgid "Custom status"
@@ -873,22 +960,22 @@ msgstr "Deelnemen"
 msgid "Message"
 msgstr "Bericht"
 
-#: dist/converse-no-dependencies.js:29058
+#: dist/converse-no-dependencies.js:29053
 #, javascript-format
 msgid "%1$s is no longer a moderator"
 msgstr "%1$s is gene moderator meer"
 
-#: dist/converse-no-dependencies.js:29061
+#: dist/converse-no-dependencies.js:29056
 #, javascript-format
 msgid "%1$s has been given a voice again"
 msgstr "%1$s heefd terug een stem"
 
-#: dist/converse-no-dependencies.js:29064
+#: dist/converse-no-dependencies.js:29059
 #, javascript-format
 msgid "%1$s has been muted"
 msgstr "%1$s is gedempt"
 
-#: dist/converse-no-dependencies.js:29067
+#: dist/converse-no-dependencies.js:29062
 #, javascript-format
 msgid "%1$s is now a moderator"
 msgstr "%1$s is nu ne moderator"
@@ -919,6 +1006,8 @@ msgid ""
 "Sorry, an error happened while running the command. Check your browser's "
 "developer console for details."
 msgstr ""
+"Sorry, der is een fout opgetreden bij het uitvoeren van de opdracht. "
+"Controleert den ontwikkelaarsconsole van uwen browser voor details."
 
 #: dist/converse-no-dependencies.js:29263
 msgid "Change user's affiliation to admin"
@@ -1109,26 +1198,24 @@ msgid "This user can NOT send messages in this room."
 msgstr "Deze gebruiker kan GEEN berichten sturen in dit groepsgesprek."
 
 #: dist/converse-no-dependencies.js:30026
-#, fuzzy
 msgid "Moderator"
-msgstr "Gemodereerd"
+msgstr "Moderator"
 
 #: dist/converse-no-dependencies.js:30027
 msgid "Visitor"
-msgstr ""
+msgstr "Bezoeker"
 
 #: dist/converse-no-dependencies.js:30028
 msgid "Owner"
-msgstr ""
+msgstr "Eigenaar"
 
 #: dist/converse-no-dependencies.js:30029
-#, fuzzy
 msgid "Member"
-msgstr "Alleen-leden"
+msgstr "Lid"
 
 #: dist/converse-no-dependencies.js:30030
 msgid "Admin"
-msgstr ""
+msgstr "Beheerder"
 
 #: dist/converse-no-dependencies.js:30082
 msgid "Occupants"

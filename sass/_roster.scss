@@ -72,17 +72,6 @@
             }
 
             li {
-                border: none;
-                clear: both;
-                color: $text-color;
-                display: block;
-                overflow-y: hidden;
-                text-shadow: 0 1px 0 $text-shadow-color;
-                line-height: $font-size;
-                width: 100%;
-                height: 2em;
-                padding-top: 0.5em;
-
                 &.requesting-xmpp-contact {
                     a {
                         line-height: $line-height;
@@ -92,14 +81,6 @@
                     }
                     .req-contact-name {
                         padding: 0 0.2em 0 0;
-                    }
-                }
-                a {
-                    &:hover {
-                        color: $dark-link-color;
-                    }
-                    .fa:hover {
-                        color: white;
                     }
                 }
 
@@ -128,7 +109,7 @@
                         text-overflow: ellipsis;
                         padding: 0;
                         margin: 0;
-                        max-width: 80%;
+                        max-width: 90%;
                         float: none;
                         height: 100%;
                         &.unread-msgs {
@@ -156,21 +137,8 @@
                     white-space: nowrap;
                     text-overflow: ellipsis;
                 }
-                span {
-                    padding: 0;
-                }
                 .decline-xmpp-request {
                     margin-left: 5px;
-                }
-                .remove-xmpp-contact {
-                    font-size: $font-size-tiny;
-                    margin: 0;
-                    padding: 0;
-                    width: 2em;
-                    display: none;
-                    &:before {
-                        font-size: $font-size;
-                    }
                 }
                 &:hover {
                     background-color: lighten($controlbox-head-color, 45%);

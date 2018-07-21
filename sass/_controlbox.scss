@@ -20,7 +20,9 @@
         }
     }
 
-    .set-xmpp-status, .xmpp-status, .roster-contacts {
+    .set-xmpp-status,
+    .xmpp-status,
+    .roster-contacts {
         .fa-circle {
             color: $green;
         }
@@ -30,9 +32,7 @@
         .fa-dot-circle-o {
             color: $orange,
         }
-        .fa-circle-o {
-            color: $subdued-color;
-        }
+        .fa-circle-o,
         .fa-times-circle {
             color: $subdued-color;
         }
@@ -350,60 +350,6 @@
     }
 }
 
-@include media-breakpoint-down(sm) {
-
-    #conversejs:not(.converse-embedded)  {
-        left: 0;
-        right: 0;
-        padding-left: env(safe-area-inset-left);
-        padding-right: env(safe-area-inset-right);
-
-        .converse-chatboxes {
-            margin: 0 !important;
-            flex-direction: row !important;
-            justify-content: space-between;
-
-            .converse-chatroom {
-                font-size: 14px;
-            }
-
-            .chatbox { 
-                .box-flyout {
-                    margin-left: 15px; // Counteracts Bootstrap margins, but
-                                       // not clear why needed...
-                    left: 0;
-                    bottom: 0;
-                    border-radius: 0;
-                    width: 100vw !important;
-                    height: 100vh !important;
-                }
-            }
-
-            #controlbox {
-                width: 100vw !important;
-                .box-flyout {
-                    width: 100vw !important;
-                    height: 100vh !important;
-                    margin-left: 30px;
-                }
-                .sidebar {
-                    display: block;
-                }
-            }
-
-            &.sidebar-open {
-                .chatbox:not(#controlbox) {
-                    display: none;
-                }
-                #controlbox {
-                    .controlbox-pane {
-                        display: block;
-                    }
-                }
-            }
-        }
-    }
-}
 
 #conversejs.converse-overlayed {
     #controlbox {
@@ -461,8 +407,9 @@
 #conversejs.converse-mobile {
     #controlbox {
         @include make-col-ready();
+
         @include media-breakpoint-up(md) {
-            @include make-col(3);
+            @include make-col(4);
         }
         @include media-breakpoint-up(lg) {
             @include make-col(3);
@@ -559,6 +506,70 @@
             input[type=submit],
             input[type=button] {
                 width: auto;
+            }
+        }
+    }
+}
+
+@include media-breakpoint-down(sm) {
+
+    #conversejs:not(.converse-embedded)  {
+        left: 0;
+        right: 0;
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+
+        .converse-chatboxes {
+            margin: 0 !important;
+            flex-direction: row !important;
+            justify-content: space-between;
+
+            .converse-chatroom {
+                font-size: 14px;
+            }
+
+            .chatbox { 
+                .box-flyout {
+                    margin-left: 15px; // Counteracts Bootstrap margins, but
+                                       // not clear why needed...
+                    left: 0;
+                    bottom: 0;
+                    border-radius: 0;
+                    width: 100vw !important;
+                    height: 100vh !important;
+                }
+            }
+
+            #controlbox {
+                width: 100vw !important;
+                .box-flyout {
+                    width: 100vw !important;
+                    height: 100vh !important;
+                }
+                .sidebar {
+                    display: block;
+                }
+            }
+
+            &.sidebar-open {
+                .chatbox:not(#controlbox) {
+                    display: none;
+                }
+                #controlbox {
+                    .controlbox-pane {
+                        display: block;
+                    }
+                }
+            }
+        }
+    }
+    #conversejs.converse-overlayed {
+        .converse-chatboxes {
+            .chatbox { 
+                .box-flyout {
+                    margin-left: 30px; // Counteracts Bootstrap margins, but
+                                       // not clear why needed...
+                }
             }
         }
     }

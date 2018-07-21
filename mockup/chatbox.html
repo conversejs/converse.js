@@ -9,7 +9,7 @@
 </head>
 
 <body class="reset">
-    <div id="conversejs" class="fullscreen">
+    <div id="conversejs" class="fullscreen converse-fullscreen">
         <div class="sidebar"></div>
         <div class="converse-chatboxes row no-gutters">
             <div id="controlbox" class="chatbox">
@@ -42,15 +42,22 @@
                             <div class="message chat-info chat-error">This is an error message</div>
 
                             <div class="message chat-msg">
-                                <canvas data-avatar="/mockup/images/romeo.jpg" height="36" width="36" class="avatar"></canvas>
-                                <div class="chat-msg-content">
-                                    <span class="chat-msg-heading">
-                                        <span class="chat-msg-author">Romeo Montague</span>
-                                        <span class="chat-msg-time">15:31</span>
+                                <canvas data-avatar="/mockup/images/romeo.jpg" height="36" width="36" class="avatar chat-msg__avatar"></canvas>
+                                <div class="chat-msg__content">
+                                    <span class="chat-msg__heading">
+                                        <span class="chat-msg__author">Romeo Montague</span>
+                                        <span class="chat-msg__time">15:31</span>
                                     </span>
-                                    <span class="chat-msg-text">
-                                        He jests at scars that never felt a wound.
-                                    </span>
+                                    <div class="chat-msg__body">
+                                        <div class="chat-msg__message">
+                                            <span class="chat-msg__text">
+                                                He jests at scars that never felt a wound.
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="chat-msg__actions">
+                                    <button class="chat-msg__action fa fa-pencil" title="Edit this message">&nbsp;</button>
                                 </div>
                             </div>
 
@@ -60,59 +67,87 @@
                             </div>
 
                             <div class="message chat-msg">
-                                <canvas data-avatar="/mockup/images/romeo.jpg" height="36" width="36" class="avatar"></canvas>
-                                <div class="chat-msg-content">
-                                    <span class="chat-msg-heading">
-                                        <span class="chat-msg-author">Romeo Montague</span>
-                                        <span class="chat-msg-time">15:31</span>
+                                <canvas data-avatar="/mockup/images/romeo.jpg" height="36" width="36" class="avatar chat-msg__avatar"></canvas>
+                                <div class="chat-msg__content">
+                                    <span class="chat-msg__heading">
+                                        <span class="chat-msg__author">Romeo Montague</span>
+                                        <span class="chat-msg__time">15:31</span>
                                     </span>
-                                    <span class="chat-msg-text">
-                                        But soft, what light through yonder window breaks?
-                                    </span>
+                                    <div class="chat-msg__body">
+                                        <div class="chat-msg__message">
+                                            <span class="chat-msg__text">
+                                                But soft, what light through yonder window breaks?
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="chat-msg__actions">
+                                    <button class="chat-msg__action fa fa-pencil" title="Edit this message">&nbsp;</button>
                                 </div>
                             </div>
 
                             <div class="message chat-msg chat-msg-followup">
-                                <canvas data-avatar="/mockup/images/romeo.jpg" height="36" width="36" class="avatar"></canvas>
-                                <div class="chat-msg-content">
-                                    <span class="chat-msg-heading">
-                                        <span class="chat-msg-author">Romeo Montague</span>
-                                        <span class="chat-msg-time">15:31</span>
+                                <canvas data-avatar="/mockup/images/romeo.jpg" height="36" width="36" class="avatar chat-msg__avatar"></canvas>
+                                <div class="chat-msg__content">
+                                    <span class="chat-msg__heading">
+                                        <span class="chat-msg__author">Romeo Montague</span>
+                                        <span class="chat-msg__time">15:31</span>
                                     </span>
-                                    <span class="chat-msg-text">
-                                        It is the east and Juliet is the sun!
-                                    </span>
+                                    <div class="chat-msg__body">
+                                        <div class="chat-msg__message">
+                                            <span class="chat-msg__text">
+                                                It is the east and Juliet is the sun!
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="chat-msg__actions">
+                                    <button class="chat-msg__action fa fa-pencil" title="Edit this message">&nbsp;</button>
                                 </div>
                             </div>
 
                             <div class="message chat-msg chat-msg-followup">
-                                <canvas data-avatar="/mockup/images/romeo.jpg" height="36" width="36" class="avatar"></canvas>
-                                <div class="chat-msg-content">
-                                    <span class="chat-msg-heading">
-                                        <span class="chat-msg-author">Romeo Montague</span>
-                                        <span class="chat-msg-time">15:31</span>
+                                <canvas data-avatar="/mockup/images/romeo.jpg" height="36" width="36" class="avatar chat-msg__avatar"></canvas>
+                                <div class="chat-msg__content">
+                                    <span class="chat-msg__heading">
+                                        <span class="chat-msg__author">Romeo Montague</span>
+                                        <span class="chat-msg__time">15:31</span>
                                     </span>
-                                    <span class="chat-msg-text">
-                                        Arise, fair sun, and kill the envious moon,
-                                    </span>
+                                    <div class="chat-msg__body">
+                                        <div class="chat-msg__message">
+                                            <span class="chat-msg__text">
+                                                Arise, fair sun, and kill the envious moon,
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="chat-msg__actions">
+                                    <button class="chat-msg__action fa fa-pencil" title="Edit this message">&nbsp;</button>
                                 </div>
                             </div>
 
                             <div class="message chat-info chat-event">Romeo Montague is busy</div>
 
                             <div class="message chat-msg">
-                                <canvas height="36" width="36" class="avatar"></canvas>
-                                <div class="chat-msg-content">
-                                    <span class="chat-msg-heading">
-                                        <span class="chat-msg-author">Juliet Capulet</span>
-                                        <span class="chat-msg-time">15:31</span>
+                                <canvas height="36" width="36" class="avatar chat-msg__avatar"></canvas>
+                                <div class="chat-msg__content">
+                                    <span class="chat-msg__heading">
+                                        <span class="chat-msg__author">Juliet Capulet</span>
+                                        <span class="chat-msg__time">15:31</span>
                                     </span>
-                                    <span class="chat-msg-text">
-                                    O Romeo, Romeo! wherefore art thou Romeo?
-                                    Deny thy father and refuse thy name;
-                                    Or, if thou wilt not, be but sworn my love,
-                                    And I'll no longer be a Capulet.
-                                    </span>
+                                    <div class="chat-msg__body">
+                                        <div class="chat-msg__message">
+                                            <span class="chat-msg__text">
+                                            O Romeo, Romeo! wherefore art thou Romeo?
+                                            Deny thy father and refuse thy name;
+                                            Or, if thou wilt not, be but sworn my love,
+                                            And I'll no longer be a Capulet.
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="chat-msg__actions">
+                                    <button class="chat-msg__action fa fa-pencil" title="Edit this message">&nbsp;</button>
                                 </div>
                             </div>
                         </div>

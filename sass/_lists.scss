@@ -1,0 +1,118 @@
+#conversejs {
+    .list-container {
+        text-align: left;
+        padding: 0.3em 0;
+
+        .list-toggle {
+            font-family: $heading-font; 
+            display: block;
+            color: $text-color;
+            padding: 0 0 0.5rem 0;
+            &:hover {
+                color: $dark-gray-color;
+            }
+        }
+    }
+
+    .items-list {
+        text-align: left;
+
+        .list-item {
+            border: none;
+            clear: both;
+            color: $text-color;
+            display: block;
+            height: 2em;
+            overflow: hidden;
+            padding-top: 0.5em;
+            text-shadow: 0 1px 0 $text-shadow-color;
+            word-wrap: break-word;
+
+            .list-item-link {
+                &:hover {
+                    color: $dark-link-color;
+                }
+                font-size: $font-size;
+                line-height: $font-size;
+                padding-right: 0.5em;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            .list-item-action {
+                opacity: 0;
+                font-size: $font-size-tiny;
+                padding: 0;
+                margin: 0 0 0 0.4em;
+                width: 1.6em;
+                &:before {
+                    font-size: $font-size;
+                }
+                &.button-on {
+                    color: $link-color;
+                    &:hover {
+                        color: $dark-link-color;
+                    }
+                }
+                color: $subdued-color;
+                &:hover {
+                    color: $gray-color;
+                    opacity: 1;
+                }
+            }
+
+            &.open {
+                background-color: $controlbox-head-color;
+                &:hover {
+                    background-color: $controlbox-head-color !important;
+                }
+                a {
+                    color: white;
+                }
+                .list-item-link {
+                    &:hover {
+                        color: white;
+                    }
+                }
+                .list-item-action {
+                    color: lighten($lightest-blue, 25%);
+                    &:hover {
+                        color: white;
+                    }
+                }
+                .fa-circle {
+                    color: lighten($green, 25%);
+                }
+                .fa-minus-circle {
+                    color: lighten($red, 15%);
+                }
+                .fa-dot-circle-o {
+                    color: lighten($orange, 15%);
+                }
+                .fa-circle-o,
+                .fa-times-circle {
+                    color: lighten($subdued-color, 25%);
+                }
+            }
+
+            &:hover {
+                background-color: lighten($controlbox-head-color, 45%);
+                .fa {
+                    opacity: 1;
+                }
+            }
+            &.unread-msgs {
+                .msgs-indicator {
+                    border-radius: 10%;
+                    opacity: 1;
+                }
+                .available-room,
+                .open-room {
+                    width: 100%;
+                    font-weight: bold;
+                }
+            }
+        }
+    }
+}

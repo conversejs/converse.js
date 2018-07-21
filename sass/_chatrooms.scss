@@ -119,8 +119,12 @@
                 .mentioned {
                     font-weight: bold;
                 }
-                .disconnect-msg {
-                    padding: 2em 2em 0 2em;
+                .disconnect-container {
+                    margin: 1em;
+                    width: 100%;
+                    h3.disconnect-msg {
+                        padding-bottom: 1em;
+                    }
                 }
                 .chat-area {
                     display: flex;
@@ -244,12 +248,6 @@
                     .validation-message {
                         font-size: 90%;
                         color: $error-color;
-                    }
-                    .chatroom-form {
-                        label,
-                        input[type=text] {
-                            display: block;
-                        }
                     }
                     input[type=button],
                     input[type=submit] {

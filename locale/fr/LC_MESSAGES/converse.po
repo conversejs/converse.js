@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-05-17 11:19+0200\n"
-"PO-Revision-Date: 2018-05-07 18:37+0000\n"
+"PO-Revision-Date: 2018-07-02 15:35+0200\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -92,50 +92,9 @@ msgstr "Marquer ce salon"
 msgid "The name for this bookmark:"
 msgstr "Nom de ce marque-page :"
 
-#: dist/converse-no-dependencies.js:16466
-msgid "Would you like this room to be automatically joined upon startup?"
-msgstr "Voulez-vous rejoindre automatiquement ce salon au lancement ?"
-
-#: dist/converse-no-dependencies.js:16467
-msgid "What should your nickname for this room be?"
-msgstr "Quel alias devrait être utilisé pour ce salon ?"
-
-#: dist/converse-no-dependencies.js:16469
-#: dist/converse-no-dependencies.js:25296
-#: dist/converse-no-dependencies.js:25380
-msgid "Save"
-msgstr "Enregistrer"
-
-#: dist/converse-no-dependencies.js:16470
-#: dist/converse-no-dependencies.js:25376
-#: dist/converse-no-dependencies.js:32190
-msgid "Cancel"
-msgstr "Annuler"
-
-#: dist/converse-no-dependencies.js:16543
-#, javascript-format
-msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr "Voulez-vous vraiment retirer le marque-page « %1$s » ?"
-
-#: dist/converse-no-dependencies.js:16659
-msgid "Sorry, something went wrong while trying to save your bookmark."
-msgstr ""
-"Désolé, quelque chose s’est mal passé pendant la sauvegarde de ce marque-"
-"page."
-
-#: dist/converse-no-dependencies.js:16738
-#: dist/converse-no-dependencies.js:33112
-msgid "Leave this room"
-msgstr "Quitter ce salon"
-
-#: dist/converse-no-dependencies.js:16739
-msgid "Remove this bookmark"
-msgstr "Retirer ce marque-page"
-
-#: dist/converse-no-dependencies.js:16740
-#: dist/converse-no-dependencies.js:33113
-msgid "Unbookmark this room"
-msgstr "Retirer ce salon"
+#: dist/converse-no-dependencies.js:17811
+msgid "Sorry, could not determine file upload URL."
+msgstr "Désolé, impossible de déterminer l’URL pour envoyer le fichier."
 
 #: dist/converse-no-dependencies.js:16741
 #: dist/converse-no-dependencies.js:28819
@@ -187,31 +146,9 @@ msgstr ""
 "La taille de votre fichier, %1$s, dépasse le maximum autorisé par votre "
 "serveur, qui est %2$s."
 
-#: dist/converse-no-dependencies.js:22197
+#: dist/converse-no-dependencies.js:18681
 msgid "Show more"
 msgstr "Afficher plus"
-
-#: dist/converse-no-dependencies.js:22248
-msgid "Typing from another device"
-msgstr "Saisie depuis un autre appareil"
-
-#: dist/converse-no-dependencies.js:22250
-msgid "is typing"
-msgstr "écrit"
-
-#: dist/converse-no-dependencies.js:22254
-msgid "Stopped typing on the other device"
-msgstr "Fin de saisie depuis l’autre appareil"
-
-#: dist/converse-no-dependencies.js:22256
-msgid "has stopped typing"
-msgstr "a arrêté d’écrire"
-
-#: dist/converse-no-dependencies.js:22259
-#: dist/converse-no-dependencies.js:23256
-#: dist/converse-no-dependencies.js:30521
-msgid "has gone away"
-msgstr "est parti"
 
 #: dist/converse-no-dependencies.js:22488
 msgid "Close this chat box"
@@ -325,7 +262,7 @@ msgstr "Cliquez pour écrire votre message en tant que spoiler"
 msgid "Clear all messages"
 msgstr "Supprimer tous les messages"
 
-#: dist/converse-no-dependencies.js:22755
+#: dist/converse-no-dependencies.js:19149
 msgid "Insert emojis"
 msgstr "Insérer un emoji"
 
@@ -347,7 +284,7 @@ msgstr "Écrire à la troisième personne"
 msgid "Show this menu"
 msgstr "Afficher ce menu"
 
-#: dist/converse-no-dependencies.js:23164
+#: dist/converse-no-dependencies.js:19614
 msgid "Are you sure you want to clear the messages from this conversation?"
 msgstr "Voulez-vous vraiment effacer les messages de cette conversation ?"
 
@@ -361,7 +298,7 @@ msgstr "s’est déconnecté"
 msgid "is busy"
 msgstr "est occupé"
 
-#: dist/converse-no-dependencies.js:23260
+#: dist/converse-no-dependencies.js:19710
 msgid "is online"
 msgstr "est en ligne"
 
@@ -891,22 +828,22 @@ msgstr "Rejoindre"
 msgid "Message"
 msgstr "Message"
 
-#: dist/converse-no-dependencies.js:29058
+#: dist/converse-no-dependencies.js:29053
 #, javascript-format
 msgid "%1$s is no longer a moderator"
 msgstr "%1$s n’est plus un modérateur"
 
-#: dist/converse-no-dependencies.js:29061
+#: dist/converse-no-dependencies.js:29056
 #, javascript-format
 msgid "%1$s has been given a voice again"
 msgstr "%1$s peut de nouveau parler"
 
-#: dist/converse-no-dependencies.js:29064
+#: dist/converse-no-dependencies.js:29059
 #, javascript-format
 msgid "%1$s has been muted"
 msgstr "%1$s ne peut plus parler"
 
-#: dist/converse-no-dependencies.js:29067
+#: dist/converse-no-dependencies.js:29062
 #, javascript-format
 msgid "%1$s is now a moderator"
 msgstr "%1$s est désormais un modérateur"

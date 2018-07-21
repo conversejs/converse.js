@@ -61402,7 +61402,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const _converse = this.__super__._converse,
                 __ = _converse.__;
           const bookmark_button = tpl_chatroom_bookmark_toggle(_.assignIn(this.model.toJSON(), {
-            info_toggle_bookmark: __('Bookmark this room'),
+            info_toggle_bookmark: __('Bookmark this groupchat'),
             bookmarked: this.model.get('bookmarked')
           }));
           const close_button = this.el.querySelector('.close-chatbox-button');
@@ -61490,10 +61490,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           _.each(body.querySelectorAll('.chatroom-form-container'), u.removeElement);
 
           body.insertAdjacentHTML('beforeend', tpl_chatroom_bookmark_form({
-            heading: __('Bookmark this room'),
+            heading: __('Bookmark this groupchat'),
             label_name: __('The name for this bookmark:'),
-            label_autojoin: __('Would you like this room to be automatically joined upon startup?'),
-            label_nick: __('What should your nickname for this room be?'),
+            label_autojoin: __('Would you like this groupchat to be automatically joined upon startup?'),
+            label_nick: __('What should your nickname for this groupchat be?'),
             default_nick: this.model.get('nick'),
             label_submit: __('Save'),
             label_cancel: __('Cancel')
@@ -61782,13 +61782,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'jid': this.model.get('jid')
             }).length,
             'bookmarked': true,
-            'info_leave_room': __('Leave this room'),
+            'info_leave_room': __('Leave this groupchat'),
             'info_remove': __('Remove this bookmark'),
-            'info_remove_bookmark': __('Unbookmark this room'),
-            'info_title': __('Show more information on this room'),
+            'info_remove_bookmark': __('Unbookmark this groupchat'),
+            'info_title': __('Show more information on this groupchat'),
             'jid': this.model.get('jid'),
             'name': Strophe.xmlunescape(this.model.get('name')),
-            'open_title': __('Click to open this room')
+            'open_title': __('Click to open this groupchat')
           });
         }
 
@@ -62091,6 +62091,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         utils = _converse$env.utils,
         _ = _converse$env._;
   const u = converse.env.utils;
+  Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
   converse.plugins.add('converse-chatboxes', {
     dependencies: ["converse-roster", "converse-vcard"],
     overrides: {
@@ -62303,10 +62304,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }, false);
 
           xhr.onerror = () => {
-            let message = __('Sorry, could not succesfully upload your file.');
+            let message;
 
             if (xhr.responseText) {
-              message += ' ' + __('Your server\'s response: "%1$s"', xhr.responseText);
+              message = __('Sorry, could not succesfully upload your file. Your server’s response: "%1$s"', xhr.responseText);
+            } else {
+              message = __('Sorry, could not succesfully upload your file.');
             }
 
             this.save({
@@ -62377,6 +62380,27 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return this.vcard.get('fullname') || this.get('jid');
         },
 
+        handleMessageCorrection(stanza) {
+          const replace = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop();
+
+          if (replace) {
+            const msgid = replace && replace.getAttribute('id') || stanza.getAttribute('id'),
+                  message = msgid && this.messages.findWhere({
+              msgid
+            }),
+                  older_versions = message.get('older_versions') || [];
+            older_versions.push(message.get('message'));
+            message.save({
+              'message': _converse.chatboxes.getMessageBody(stanza),
+              'older_versions': older_versions,
+              'edited': true
+            });
+            return true;
+          }
+
+          return false;
+        },
+
         createMessageStanza(message) {
           /* Given a _converse.Message Backbone.Model, return the XML
            * stanza that represents it.
@@ -62388,7 +62412,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'from': _converse.connection.jid,
             'to': this.get('jid'),
             'type': this.get('message_type'),
-            'id': message.get('msgid')
+            'id': message.get('edited') && _converse.connection.getUniqueId() || message.get('msgid')
           }).c('body').t(message.get('message')).up().c(_converse.ACTIVE, {
             'xmlns': Strophe.NS.CHATSTATES
           }).up();
@@ -62409,6 +62433,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             stanza.c('x', {
               'xmlns': Strophe.NS.OUTOFBAND
             }).c('url').t(message.get('message')).up();
+          }
+
+          if (message.get('edited')) {
+            stanza.c('replace', {
+              'xmlns': Strophe.NS.MESSAGE_CORRECT,
+              'id': message.get('msgid')
+            }).up();
           }
 
           return stanza;
@@ -62452,8 +62483,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            *  Parameters:
            *    (Message) message - The chat message
            */
-          const message = this.messages.create(attrs);
-          this.sendMessageStanza(this.createMessageStanza(message));
+          let message = this.messages.findWhere('correcting');
+
+          if (message) {
+            const older_versions = message.get('older_versions') || [];
+            older_versions.push(message.get('message'));
+            message.save({
+              'message': attrs.message,
+              'older_versions': older_versions,
+              'edited': true,
+              'correcting': false
+            });
+          } else {
+            message = this.messages.create(attrs);
+          }
+
+          return this.sendMessageStanza(this.createMessageStanza(message));
         },
 
         sendChatState() {
@@ -62510,23 +62555,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         },
 
-        getMessageBody(message) {
-          const type = message.getAttribute('type');
-
-          if (type === 'error') {
-            const error = message.querySelector('error');
-            return _.propertyOf(error.querySelector('text'))('textContent') || __('Sorry, an error occured:') + ' ' + error.innerHTML;
-          } else {
-            return _.propertyOf(message.querySelector('body'))('textContent');
-          }
-        },
-
-        getMessageAttributesFromStanza(message, original_stanza) {
+        getMessageAttributesFromStanza(stanza, original_stanza) {
           /* Parses a passed in message stanza and returns an object
            * of attributes.
            *
            * Parameters:
-           *    (XMLElement) message - The message stanza
+           *    (XMLElement) stanza - The message stanza
            *    (XMLElement) delay - The <delay> node from the
            *      stanza, if there was one.
            *    (XMLElement) original_stanza - The original stanza,
@@ -62538,21 +62572,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
                 spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
                 delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
-                chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
+                chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
           const attrs = {
             'chat_state': chat_state,
             'is_archived': !_.isNil(archive),
             'is_delayed': !_.isNil(delay),
             'is_spoiler': !_.isNil(spoiler),
-            'message': this.getMessageBody(message) || undefined,
-            'msgid': message.getAttribute('id'),
+            'message': _converse.chatboxes.getMessageBody(stanza) || undefined,
+            'msgid': stanza.getAttribute('id'),
             'time': delay ? delay.getAttribute('stamp') : moment().format(),
-            'type': message.getAttribute('type')
+            'type': stanza.getAttribute('type')
           };
 
           if (attrs.type === 'groupchat') {
-            attrs.from = message.getAttribute('from');
+            attrs.from = stanza.getAttribute('from');
             attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
 
             if (attrs.from === this.get('nick')) {
@@ -62561,7 +62595,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               attrs.sender = 'them';
             }
           } else {
-            attrs.from = Strophe.getBareJidFromJid(message.getAttribute('from'));
+            attrs.from = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
 
             if (attrs.from === _converse.bare_jid) {
               attrs.sender = 'me';
@@ -62572,7 +62606,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             }
           }
 
-          _.each(sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, message), xform => {
+          _.each(sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, stanza), xform => {
             attrs['oob_url'] = xform.querySelector('url').textContent;
             attrs['oob_desc'] = xform.querySelector('url').textContent;
           });
@@ -62700,24 +62734,35 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return true;
         },
 
-        onMessage(message) {
+        getMessageBody(stanza) {
+          /* Given a message stanza, return the text contained in its body.
+           */
+          const type = stanza.getAttribute('type');
+
+          if (type === 'error') {
+            const error = stanza.querySelector('error');
+            return _.propertyOf(error.querySelector('text'))('textContent') || __('Sorry, an error occurred:') + ' ' + error.innerHTML;
+          } else {
+            return _.propertyOf(stanza.querySelector('body'))('textContent');
+          }
+        },
+
+        onMessage(stanza) {
           /* Handler method for all incoming single-user chat "message"
            * stanzas.
            *
            * Parameters:
-           *    (XMLElement) message - The incoming message stanza
+           *    (XMLElement) stanza - The incoming message stanza
            */
-          let from_jid = message.getAttribute('from'),
-              to_jid = message.getAttribute('to');
-          const original_stanza = message,
-                to_resource = Strophe.getResourceFromJid(to_jid),
-                is_carbon = !_.isNull(message.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
+          let from_jid = stanza.getAttribute('from'),
+              to_jid = stanza.getAttribute('to');
+          const to_resource = Strophe.getResourceFromJid(to_jid);
 
           if (_converse.filter_by_resource && to_resource && to_resource !== _converse.resource) {
             _converse.log(`onMessage: Ignoring incoming message intended for a different resource: ${to_jid}`, Strophe.LogLevel.INFO);
 
             return true;
-          } else if (utils.isHeadlineMessage(_converse, message)) {
+          } else if (utils.isHeadlineMessage(_converse, stanza)) {
             // XXX: Ideally we wouldn't have to check for headline
             // messages, but Prosody sends headline messages with the
             // wrong type ('chat'), so we need to filter them out here.
@@ -62726,11 +62771,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return true;
           }
 
-          const forwarded = message.querySelector('forwarded');
+          const forwarded = stanza.querySelector('forwarded'),
+                original_stanza = stanza;
 
           if (!_.isNull(forwarded)) {
-            const forwarded_message = forwarded.querySelector('message');
-            const forwarded_from = forwarded_message.getAttribute('from');
+            const forwarded_message = forwarded.querySelector('message'),
+                  forwarded_from = forwarded_message.getAttribute('from'),
+                  is_carbon = !_.isNull(stanza.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
 
             if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
               // Prevent message forging via carbons
@@ -62738,9 +62785,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               return true;
             }
 
-            message = forwarded_message;
-            from_jid = message.getAttribute('from');
-            to_jid = message.getAttribute('to');
+            stanza = forwarded_message;
+            from_jid = stanza.getAttribute('from');
+            to_jid = stanza.getAttribute('to');
           }
 
           const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
@@ -62759,19 +62806,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const attrs = {
             'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
           };
-          const chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(message.querySelector('body'))),
-                msgid = message.getAttribute('id');
+          const chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(stanza.querySelector('body')));
 
-          if (chatbox) {
-            const messages = msgid && chatbox.messages.findWhere({
+          if (chatbox && !chatbox.handleMessageCorrection(stanza)) {
+            const msgid = stanza.getAttribute('id'),
+                  message = msgid && chatbox.messages.findWhere({
               msgid
-            }) || [];
+            });
 
-            if (_.isEmpty(messages)) {
-              // Only create the message when we're sure it's not a
-              // duplicate
+            if (!message) {
+              // Only create the message when we're sure it's not a duplicate
               chatbox.incrementUnreadMsgCounter(original_stanza);
-              chatbox.createMessage(message, original_stanza);
+              chatbox.createMessage(stanza, original_stanza);
             }
           }
 
@@ -62950,6 +62996,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
 
       _converse.on('addClientFeatures', () => {
+        _converse.api.disco.own.features.add(Strophe.NS.MESSAGE_CORRECT);
+
         _converse.api.disco.own.features.add(Strophe.NS.HTTPUPLOAD);
 
         _converse.api.disco.own.features.add(Strophe.NS.OUTOFBAND);
@@ -63068,11 +63116,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! templates/action.html */ "./src/templates/action.html"), __webpack_require__(/*! templates/chatbox.html */ "./src/templates/chatbox.html"), __webpack_require__(/*! templates/chatbox_head.html */ "./src/templates/chatbox_head.html"), __webpack_require__(/*! templates/chatbox_message_form.html */ "./src/templates/chatbox_message_form.html"), __webpack_require__(/*! templates/emojis.html */ "./src/templates/emojis.html"), __webpack_require__(/*! templates/error_message.html */ "./src/templates/error_message.html"), __webpack_require__(/*! templates/help_message.html */ "./src/templates/help_message.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/new_day.html */ "./src/templates/new_day.html"), __webpack_require__(/*! templates/user_details_modal.html */ "./src/templates/user_details_modal.html"), __webpack_require__(/*! templates/toolbar_fileupload.html */ "./src/templates/toolbar_fileupload.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! templates/spoiler_button.html */ "./src/templates/spoiler_button.html"), __webpack_require__(/*! templates/status_message.html */ "./src/templates/status_message.html"), __webpack_require__(/*! templates/toolbar.html */ "./src/templates/toolbar.html"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js"), __webpack_require__(/*! converse-chatboxes */ "./src/converse-chatboxes.js"), __webpack_require__(/*! converse-message-view */ "./src/converse-message-view.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! templates/chatbox.html */ "./src/templates/chatbox.html"), __webpack_require__(/*! templates/chatbox_head.html */ "./src/templates/chatbox_head.html"), __webpack_require__(/*! templates/chatbox_message_form.html */ "./src/templates/chatbox_message_form.html"), __webpack_require__(/*! templates/emojis.html */ "./src/templates/emojis.html"), __webpack_require__(/*! templates/error_message.html */ "./src/templates/error_message.html"), __webpack_require__(/*! templates/help_message.html */ "./src/templates/help_message.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/new_day.html */ "./src/templates/new_day.html"), __webpack_require__(/*! templates/user_details_modal.html */ "./src/templates/user_details_modal.html"), __webpack_require__(/*! templates/toolbar_fileupload.html */ "./src/templates/toolbar_fileupload.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! templates/spoiler_button.html */ "./src/templates/spoiler_button.html"), __webpack_require__(/*! templates/status_message.html */ "./src/templates/status_message.html"), __webpack_require__(/*! templates/toolbar.html */ "./src/templates/toolbar.html"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js"), __webpack_require__(/*! converse-chatboxes */ "./src/converse-chatboxes.js"), __webpack_require__(/*! converse-message-view */ "./src/converse-message-view.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, bootstrap, emojione, xss, tpl_action, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_error_message, tpl_help_message, tpl_info, tpl_new_day, tpl_user_details_modal, tpl_toolbar_fileupload, tpl_spinner, tpl_spoiler_button, tpl_status_message, tpl_toolbar) {
+})(void 0, function (converse, bootstrap, emojione, xss, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_error_message, tpl_help_message, tpl_info, tpl_new_day, tpl_user_details_modal, tpl_toolbar_fileupload, tpl_spinner, tpl_spoiler_button, tpl_status_message, tpl_toolbar) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -63088,6 +63136,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   const u = converse.env.utils;
   const KEY = {
     ENTER: 13,
+    UP_ARROW: 38,
+    DOWN_ARROW: 40,
     FORWARD_SLASH: 47
   };
   converse.plugins.add('converse-chatview', {
@@ -63353,6 +63403,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         // Leaky abstraction from MUC
         events: {
           'change input.fileupload': 'onFileSelection',
+          'click .chat-msg__action-edit': 'onMessageEditButtonClicked',
           'click .chatbox-navback': 'showControlBox',
           'click .close-chatbox-button': 'close',
           'click .new-msgs-indicator': 'viewUnreadMessages',
@@ -63365,8 +63416,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
           'click .toggle-smiley': 'toggleEmojiMenu',
           'click .upload-file': 'toggleFileUpload',
-          'keypress .chat-textarea': 'keyPressed',
-          'input .chat-textarea': 'inputChanged'
+          'input .chat-textarea': 'inputChanged',
+          'keydown .chat-textarea': 'keyPressed'
         },
 
         initialize() {
@@ -63791,18 +63842,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 date = moment(el.getAttribute('data-isodate')),
                 next_el = el.nextElementSibling;
 
-          if (!u.hasClass('chat-action', el) && !u.hasClass('chat-action', previous_el) && previous_el.getAttribute('data-from') === from && date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes'))) {
-            u.addClass('chat-msg-followup', el);
+          if (!u.hasClass('chat-msg--action', el) && !u.hasClass('chat-msg--action', previous_el) && previous_el.getAttribute('data-from') === from && date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes'))) {
+            u.addClass('chat-msg--followup', el);
           }
 
           if (!next_el) {
             return;
           }
 
-          if (!u.hasClass('chat-action', 'el') && next_el.getAttribute('data-from') === from && moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes'))) {
-            u.addClass('chat-msg-followup', next_el);
+          if (!u.hasClass('chat-msg--action', 'el') && next_el.getAttribute('data-from') === from && moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes'))) {
+            u.addClass('chat-msg--followup', next_el);
           } else {
-            u.removeClass('chat-msg-followup', next_el);
+            u.removeClass('chat-msg--followup', next_el);
           }
         },
 
@@ -63849,6 +63900,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            *    (Object) message - The message Backbone object that was added.
            */
           this.showMessage(message);
+
+          if (message.get('correcting')) {
+            this.insertIntoTextArea(message.get('message'), true);
+          }
 
           _converse.emit('messageAdded', {
             'message': message,
@@ -63949,12 +64004,99 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         keyPressed(ev) {
           /* Event handler for when a key is pressed in a chat box textarea.
            */
-          if (ev.keyCode === KEY.ENTER && !ev.shiftKey) {
+          if (ev.shiftKey) {
+            return;
+          }
+
+          if (ev.keyCode === KEY.ENTER) {
             this.onFormSubmitted(ev);
+          } else if (ev.keyCode === KEY.UP_ARROW && !ev.target.selectionEnd) {
+            this.editEarlierMessage();
+          } else if (ev.keyCode === KEY.DOWN_ARROW && ev.target.selectionEnd === ev.target.value.length) {
+            this.editLaterMessage();
           } else if (ev.keyCode !== KEY.FORWARD_SLASH && this.model.get('chat_state') !== _converse.COMPOSING) {
             // Set chat state to composing if keyCode is not a forward-slash
             // (which would imply an internal command and not a message).
             this.setChatState(_converse.COMPOSING);
+          }
+        },
+
+        getOwnMessages() {
+          return f(this.model.messages.filter({
+            'sender': 'me'
+          }));
+        },
+
+        onMessageEditButtonClicked(ev) {
+          const idx = this.model.messages.findLastIndex('correcting'),
+                currently_correcting = idx >= 0 ? this.model.messages.at(idx) : null,
+                message_el = u.ancestor(ev.target, '.chat-msg'),
+                message = this.model.messages.findWhere({
+            'msgid': message_el.getAttribute('data-msgid')
+          });
+
+          if (currently_correcting !== message) {
+            if (!_.isNil(currently_correcting)) {
+              currently_correcting.save('correcting', false);
+            }
+
+            message.save('correcting', true);
+            this.insertIntoTextArea(message.get('message'), true);
+          } else {
+            message.save('correcting', false);
+            this.insertIntoTextArea('', true);
+          }
+        },
+
+        editLaterMessage() {
+          let message;
+          let idx = this.model.messages.findLastIndex('correcting');
+
+          if (idx >= 0) {
+            this.model.messages.at(idx).save('correcting', false);
+
+            while (idx < this.model.messages.length - 1) {
+              idx += 1;
+              const candidate = this.model.messages.at(idx);
+
+              if (candidate.get('sender') === 'me' && candidate.get('message')) {
+                message = candidate;
+                break;
+              }
+            }
+          }
+
+          if (message) {
+            this.insertIntoTextArea(message.get('message'), true);
+            message.save('correcting', true);
+          } else {
+            this.insertIntoTextArea('', true);
+          }
+        },
+
+        editEarlierMessage() {
+          let message;
+          let idx = this.model.messages.findLastIndex('correcting');
+
+          if (idx >= 0) {
+            this.model.messages.at(idx).save('correcting', false);
+
+            while (idx > 0) {
+              idx -= 1;
+              const candidate = this.model.messages.at(idx);
+
+              if (candidate.get('sender') === 'me' && candidate.get('message')) {
+                message = candidate;
+                break;
+              }
+            }
+          }
+
+          message = message || this.getOwnMessages().findLast(msg => msg.get('message'));
+
+          if (message) {
+            this.insertIntoTextArea(message.get('message'), true);
+            message.save('correcting', true);
           }
         },
 
@@ -63981,16 +64123,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return this;
         },
 
-        insertIntoTextArea(value) {
-          const textbox_el = this.el.querySelector('.chat-textarea');
-          let existing = textbox_el.value;
+        insertIntoTextArea(value, replace = false) {
+          const textarea = this.el.querySelector('.chat-textarea');
 
-          if (existing && existing[existing.length - 1] !== ' ') {
-            existing = existing + ' ';
+          if (replace) {
+            textarea.value = value;
+          } else {
+            let existing = textarea.value;
+
+            if (existing && existing[existing.length - 1] !== ' ') {
+              existing = existing + ' ';
+            }
+
+            textarea.value = existing + value + ' ';
           }
 
-          textbox_el.value = existing + value + ' ';
-          textbox_el.focus();
+          textarea.focus();
         },
 
         createEmojiPicker() {
@@ -64066,13 +64214,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           if (u.isVisible(this.el)) {
             if (show === 'offline') {
-              text = fullname + ' ' + __('has gone offline');
+              text = __('%1$s has gone offline', fullname);
             } else if (show === 'away') {
-              text = fullname + ' ' + __('has gone away');
+              text = __('%1$s has gone away', fullname);
             } else if (show === 'dnd') {
-              text = fullname + ' ' + __('is busy');
+              text = __('%1$s is busy', fullname);
             } else if (show === 'online') {
-              text = fullname + ' ' + __('is online');
+              text = __('%1$s is online', fullname);
             }
 
             if (text) {
@@ -64477,8 +64625,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _converse.api.promises.add('controlboxInitialized');
 
-      const LABEL_CONTACTS = __('Contacts');
-
       _converse.addControlBox = () => _converse.chatboxes.add({
         id: 'controlbox',
         box_id: 'controlbox',
@@ -64547,7 +64693,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         insertRoster() {
+          if (_converse.authentication === _converse.ANONYMOUS) {
+            return;
+          }
           /* Place the rosterview inside the "Contacts" panel. */
+
+
           _converse.api.waitUntil('rosterViewInitialized').then(() => this.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         },
 
@@ -64765,7 +64916,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           let jid = form_data.get('jid');
 
           if (_converse.locked_domain) {
-            jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
+            const last_part = '@' + _converse.locked_domain;
+
+            if (jid.endsWith(last_part)) {
+              jid = jid.substr(0, jid.length - last_part.length);
+            }
+
+            jid = Strophe.escapeNode(jid) + last_part;
           } else if (_converse.default_domain && !_.includes(jid, '@')) {
             jid = jid + '@' + _converse.default_domain;
           }
@@ -65127,6 +65284,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
     if (message instanceof Error) {
       message = message.stack;
+    } else if (_.isElement(message)) {
+      message = message.outerHTML;
     }
 
     const prefix = style ? '%c' : '';
@@ -65195,6 +65354,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     if (!_.isUndefined(promise)) {
       promise.resolve();
     }
+  };
+
+  _converse.isSingleton = function () {
+    return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
   };
 
   _converse.router = new Backbone.Router();
@@ -65704,7 +65867,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
       this.connection.addHandler(iq => {
         if (iq.querySelectorAll('error').length > 0) {
-          _converse.log('An error occured while trying to enable message carbons.', Strophe.LogLevel.ERROR);
+          _converse.log('An error occurred while trying to enable message carbons.', Strophe.LogLevel.WARN);
         } else {
           this.session.save({
             'carbons_enabled': true
@@ -68232,11 +68395,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! templates/action.html */ "./src/templates/action.html"), __webpack_require__(/*! templates/csn.html */ "./src/templates/csn.html"), __webpack_require__(/*! templates/file_progress.html */ "./src/templates/file_progress.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/message.html */ "./src/templates/message.html"), __webpack_require__(/*! templates/spoiler_message.html */ "./src/templates/spoiler_message.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! templates/csn.html */ "./src/templates/csn.html"), __webpack_require__(/*! templates/file_progress.html */ "./src/templates/file_progress.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/message.html */ "./src/templates/message.html"), __webpack_require__(/*! templates/message_versions_modal.html */ "./src/templates/message_versions_modal.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, xss, emojione, filesize, tpl_action, tpl_csn, tpl_file_progress, tpl_info, tpl_message, tpl_spoiler_message) {
+})(void 0, function (converse, xss, emojione, filesize, tpl_csn, tpl_file_progress, tpl_info, tpl_message, tpl_message_versions_modal) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -68280,9 +68443,23 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         }
 
       });
+      _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
+        toHTML() {
+          return tpl_message_versions_modal(_.extend(this.model.toJSON(), {
+            '__': __
+          }));
+        }
+
+      });
       _converse.MessageView = _converse.ViewWithAvatar.extend({
+        events: {
+          'click .chat-msg__edit-modal': 'showMessageVersionsModal'
+        },
+
         initialize() {
           this.model.vcard.on('change', this.render, this);
+          this.model.on('change:correcting', this.onMessageCorrection, this);
+          this.model.on('change:message', this.render, this);
           this.model.on('change:progress', this.renderFileUploadProgresBar, this);
           this.model.on('change:type', this.render, this);
           this.model.on('change:upload', this.render, this);
@@ -68291,7 +68468,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         render() {
-          const is_followup = u.hasClass('chat-msg-followup', this.el);
+          const is_followup = u.hasClass('chat-msg--followup', this.el);
           let msg;
 
           if (this.model.isOnlyChatStateNotification()) {
@@ -68305,10 +68482,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           if (is_followup) {
-            u.addClass('chat-msg-followup', this.el);
+            u.addClass('chat-msg--followup', this.el);
           }
 
           return this.el;
+        },
+
+        onMessageCorrection() {
+          this.render();
+
+          if (!this.model.get('correcting') && this.model.changed.message) {
+            this.el.addEventListener('animationend', () => u.removeClass('onload', this.el));
+            u.addClass('onload', this.el);
+          }
         },
 
         replaceElement(msg) {
@@ -68321,20 +68507,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         renderChatMessage() {
-          let template,
-              text = this.model.get('message');
-
-          if (this.isMeCommand()) {
-            template = tpl_action;
-            text = this.model.get('message').replace(/^\/me/, '');
-          } else {
-            template = this.model.get('is_spoiler') ? tpl_spoiler_message : tpl_message;
-          }
-
-          const moment_time = moment(this.model.get('time')),
+          const is_me_message = this.isMeCommand(),
+                moment_time = moment(this.model.get('time')),
                 role = this.model.vcard.get('role'),
                 roles = role ? role.split(',') : [];
-          const msg = u.stringToElement(template(_.extend(this.model.toJSON(), {
+          const msg = u.stringToElement(tpl_message(_.extend(this.model.toJSON(), {
+            '__': __,
+            'is_me_message': is_me_message,
             'roles': roles,
             'pretty_time': moment_time.format(_converse.time_format),
             'time': moment_time.format(),
@@ -68342,13 +68521,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'label_show': __('Show more'),
             'username': this.model.getDisplayName()
           })));
-          var url = this.model.get('oob_url');
+          const url = this.model.get('oob_url');
 
           if (url) {
-            msg.querySelector('.chat-msg-media').innerHTML = _.flow(_.partial(u.renderFileURL, _converse), _.partial(u.renderMovieURL, _converse), _.partial(u.renderAudioURL, _converse), _.partial(u.renderImageURL, _converse))(url);
+            msg.querySelector('.chat-msg__media').innerHTML = _.flow(_.partial(u.renderFileURL, _converse), _.partial(u.renderMovieURL, _converse), _.partial(u.renderAudioURL, _converse), _.partial(u.renderImageURL, _converse))(url);
           }
 
-          const msg_content = msg.querySelector('.chat-msg-text');
+          let text = this.model.get('message');
+
+          if (is_me_message) {
+            text = text.replace(/^\/me/, '');
+          }
+
+          const msg_content = msg.querySelector('.chat-msg__text');
 
           if (text !== url) {
             text = xss.filterXSS(text, {
@@ -68386,16 +68571,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             if (this.model.get('sender') === 'me') {
               text = __('Typing from another device');
             } else {
-              text = name + ' ' + __('is typing');
+              text = __('%1$s is typing', name);
             }
           } else if (this.model.get('chat_state') === _converse.PAUSED) {
             if (this.model.get('sender') === 'me') {
               text = __('Stopped typing on the other device');
             } else {
-              text = name + ' ' + __('has stopped typing');
+              text = __('%1$s has stopped typing', name);
             }
           } else if (this.model.get('chat_state') === _converse.GONE) {
-            text = name + ' ' + __('has gone away');
+            text = __('%1$s has gone away', name);
           } else {
             return;
           }
@@ -68414,6 +68599,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           })));
           this.replaceElement(msg);
           this.renderAvatar();
+        },
+
+        showMessageVersionsModal(ev) {
+          ev.preventDefault();
+
+          if (_.isUndefined(this.model.message_versions_modal)) {
+            this.model.message_versions_modal = new _converse.MessageVersionsModal({
+              'model': this.model
+            });
+          }
+
+          this.model.message_versions_modal.show(ev);
         },
 
         isMeCommand() {
@@ -68441,6 +68638,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               // in which we are mentioned.
               extra_classes += ' mentioned';
             }
+          }
+
+          if (this.model.get('correcting')) {
+            extra_classes += ' correcting';
           }
 
           return extra_classes;
@@ -69211,11 +69412,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js"), __webpack_require__(/*! templates/add_chatroom_modal.html */ "./src/templates/add_chatroom_modal.html"), __webpack_require__(/*! templates/chatarea.html */ "./src/templates/chatarea.html"), __webpack_require__(/*! templates/chatroom.html */ "./src/templates/chatroom.html"), __webpack_require__(/*! templates/chatroom_details_modal.html */ "./src/templates/chatroom_details_modal.html"), __webpack_require__(/*! templates/chatroom_disconnect.html */ "./src/templates/chatroom_disconnect.html"), __webpack_require__(/*! templates/chatroom_features.html */ "./src/templates/chatroom_features.html"), __webpack_require__(/*! templates/chatroom_form.html */ "./src/templates/chatroom_form.html"), __webpack_require__(/*! templates/chatroom_head.html */ "./src/templates/chatroom_head.html"), __webpack_require__(/*! templates/chatroom_invite.html */ "./src/templates/chatroom_invite.html"), __webpack_require__(/*! templates/chatroom_nickname_form.html */ "./src/templates/chatroom_nickname_form.html"), __webpack_require__(/*! templates/chatroom_password_form.html */ "./src/templates/chatroom_password_form.html"), __webpack_require__(/*! templates/chatroom_sidebar.html */ "./src/templates/chatroom_sidebar.html"), __webpack_require__(/*! templates/chatroom_toolbar.html */ "./src/templates/chatroom_toolbar.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/list_chatrooms_modal.html */ "./src/templates/list_chatrooms_modal.html"), __webpack_require__(/*! templates/occupant.html */ "./src/templates/occupant.html"), __webpack_require__(/*! templates/room_description.html */ "./src/templates/room_description.html"), __webpack_require__(/*! templates/room_item.html */ "./src/templates/room_item.html"), __webpack_require__(/*! templates/room_panel.html */ "./src/templates/room_panel.html"), __webpack_require__(/*! templates/rooms_results.html */ "./src/templates/rooms_results.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! awesomplete */ "./node_modules/awesomplete-avoid-xss/awesomplete.js"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! templates/add_chatroom_modal.html */ "./src/templates/add_chatroom_modal.html"), __webpack_require__(/*! templates/chatarea.html */ "./src/templates/chatarea.html"), __webpack_require__(/*! templates/chatroom.html */ "./src/templates/chatroom.html"), __webpack_require__(/*! templates/chatroom_details_modal.html */ "./src/templates/chatroom_details_modal.html"), __webpack_require__(/*! templates/chatroom_disconnect.html */ "./src/templates/chatroom_disconnect.html"), __webpack_require__(/*! templates/chatroom_features.html */ "./src/templates/chatroom_features.html"), __webpack_require__(/*! templates/chatroom_form.html */ "./src/templates/chatroom_form.html"), __webpack_require__(/*! templates/chatroom_head.html */ "./src/templates/chatroom_head.html"), __webpack_require__(/*! templates/chatroom_invite.html */ "./src/templates/chatroom_invite.html"), __webpack_require__(/*! templates/chatroom_nickname_form.html */ "./src/templates/chatroom_nickname_form.html"), __webpack_require__(/*! templates/chatroom_password_form.html */ "./src/templates/chatroom_password_form.html"), __webpack_require__(/*! templates/chatroom_sidebar.html */ "./src/templates/chatroom_sidebar.html"), __webpack_require__(/*! templates/chatroom_toolbar.html */ "./src/templates/chatroom_toolbar.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/list_chatrooms_modal.html */ "./src/templates/list_chatrooms_modal.html"), __webpack_require__(/*! templates/occupant.html */ "./src/templates/occupant.html"), __webpack_require__(/*! templates/room_description.html */ "./src/templates/room_description.html"), __webpack_require__(/*! templates/room_item.html */ "./src/templates/room_item.html"), __webpack_require__(/*! templates/room_panel.html */ "./src/templates/room_panel.html"), __webpack_require__(/*! templates/rooms_results.html */ "./src/templates/rooms_results.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! awesomplete */ "./node_modules/awesomplete-avoid-xss/awesomplete.js"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, muc_utils, tpl_add_chatroom_modal, tpl_chatarea, tpl_chatroom, tpl_chatroom_details_modal, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_info, tpl_list_chatrooms_modal, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
+})(void 0, function (converse, muc_utils, xss, tpl_add_chatroom_modal, tpl_chatarea, tpl_chatroom, tpl_chatroom_details_modal, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_info, tpl_list_chatrooms_modal, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -69368,23 +69569,23 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _converse.muc = {
         info_messages: {
-          100: __('This room is not anonymous'),
-          102: __('This room now shows unavailable members'),
-          103: __('This room does not show unavailable members'),
-          104: __('The room configuration has changed'),
-          170: __('Room logging is now enabled'),
-          171: __('Room logging is now disabled'),
-          172: __('This room is now no longer anonymous'),
-          173: __('This room is now semi-anonymous'),
-          174: __('This room is now fully-anonymous'),
-          201: __('A new room has been created')
+          100: __('This groupchat is not anonymous'),
+          102: __('This groupchat now shows unavailable members'),
+          103: __('This groupchat does not show unavailable members'),
+          104: __('The groupchat configuration has changed'),
+          170: __('groupchat logging is now enabled'),
+          171: __('groupchat logging is now disabled'),
+          172: __('This groupchat is now no longer anonymous'),
+          173: __('This groupchat is now semi-anonymous'),
+          174: __('This groupchat is now fully-anonymous'),
+          201: __('A new groupchat has been created')
         },
         disconnect_messages: {
-          301: __('You have been banned from this room'),
-          307: __('You have been kicked from this room'),
-          321: __("You have been removed from this room because of an affiliation change"),
-          322: __("You have been removed from this room because the room has changed to members-only and you're not a member"),
-          332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down")
+          301: __('You have been banned from this groupchat'),
+          307: __('You have been kicked from this groupchat'),
+          321: __("You have been removed from this groupchat because of an affiliation change"),
+          322: __("You have been removed from this groupchat because the groupchat has changed to members-only and you're not a member"),
+          332: __("You have been removed from this groupchat because the MUC (Multi-user chat) service is being shut down")
         },
         action_info_messages: {
           /* XXX: Note the triple underscore function and not double
@@ -69437,19 +69638,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           'temporary': sizzle('feature[var="muc_temporary"]', stanza).length,
           'unmoderated': sizzle('feature[var="muc_unmoderated"]', stanza).length,
           'label_desc': __('Description:'),
-          'label_jid': __('Room Address (JID):'),
-          'label_occ': __('Occupants:'),
+          'label_jid': __('Groupchat Address (JID):'),
+          'label_occ': __('Participants:'),
           'label_features': __('Features:'),
           'label_requires_auth': __('Requires authentication'),
           'label_hidden': __('Hidden'),
           'label_requires_invite': __('Requires an invitation'),
           'label_moderated': __('Moderated'),
           'label_non_anon': __('Non-anonymous'),
-          'label_open_room': __('Open room'),
-          'label_permanent_room': __('Permanent room'),
+          'label_open_room': __('Open'),
+          'label_permanent_room': __('Permanent'),
           'label_public': __('Public'),
           'label_semi_anon': __('Semi-anonymous'),
-          'label_temp_room': __('Temporary room'),
+          'label_temp_room': __('Temporary'),
           'label_unmoderated': __('Unmoderated')
         }));
       }
@@ -69486,7 +69687,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         toHTML() {
           return tpl_list_chatrooms_modal(_.extend(this.model.toJSON(), {
-            'heading_list_chatrooms': __('Query for Chatrooms'),
+            'heading_list_chatrooms': __('Query for Groupchats'),
             'label_server_address': __('Server address'),
             'label_query': __('Show rooms'),
             'server_placeholder': __('conference.example.org')
@@ -69527,8 +69728,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           div.innerHTML = tpl_room_item({
             'name': Strophe.xmlunescape(name),
             'jid': room.getAttribute('jid'),
-            'open_title': __('Click to open this room'),
-            'info_title': __('Show more information on this room')
+            'open_title': __('Click to open this groupchat'),
+            'info_title': __('Show more information on this groupchat')
           });
           return div.firstElementChild;
         },
@@ -69614,8 +69815,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         toHTML() {
           return tpl_add_chatroom_modal(_.extend(this.model.toJSON(), {
-            'heading_new_chatroom': __('Enter a new Chatroom'),
-            'label_room_address': __('Room address'),
+            'heading_new_chatroom': __('Enter a new Groupchat'),
+            'label_room_address': __('Groupchat address'),
             'label_nickname': __('Optional nickname'),
             'chatroom_placeholder': __('name@conference.example.org'),
             'label_join': __('Join')
@@ -69660,8 +69861,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         toHTML() {
           return tpl_chatroom_details_modal(_.extend(this.model.toJSON(), {
+            '_': _,
             '__': __,
-            'display_name': this.model.getDisplayName(),
+            'topic': u.addHyperlinks(xss.filterXSS(_.get(this.model.get('subject'), 'text'), {
+              'whiteList': {}
+            })),
+            'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),
             'num_occupants': this.model.occupants.length
           }));
         }
@@ -69690,7 +69895,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
           'click .toggle-smiley': 'toggleEmojiMenu',
           'click .upload-file': 'toggleFileUpload',
-          'keypress .chat-textarea': 'keyPressed',
+          'keydown .chat-textarea': 'keyPressed',
           'input .chat-textarea': 'inputChanged'
         },
 
@@ -69769,13 +69974,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            */
           if (_.isNull(this.el.querySelector('.chat-area'))) {
             const container_el = this.el.querySelector('.chatroom-body');
-            container_el.innerHTML = tpl_chatarea({
+            container_el.insertAdjacentHTML('beforeend', tpl_chatarea({
               'label_message': __('Message'),
               'label_send': __('Send'),
               'show_send_button': _converse.show_send_button,
               'show_toolbar': _converse.show_toolbar,
               'unread_msgs': __('You have unread messages')
-            });
+            }));
             container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
             this.renderToolbar(tpl_chatroom_toolbar);
             this.content = this.el.querySelector('.chat-content');
@@ -69841,9 +70046,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            */
           return tpl_chatroom_head(_.extend(this.model.toJSON(), {
             'Strophe': Strophe,
-            'info_close': __('Close and leave this room'),
-            'info_configure': __('Configure this room'),
-            'info_details': __('Show more details about this room'),
+            'info_close': __('Close and leave this groupchat'),
+            'info_configure': __('Configure this groupchat'),
+            'info_details': __('Show more details about this groupchat'),
             'description': this.model.get('description') || ''
           }));
         },
@@ -69887,7 +70092,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         getToolbarOptions() {
           return _.extend(_converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments), {
-            label_hide_occupants: __('Hide the list of occupants'),
+            label_hide_occupants: __('Hide the list of participants'),
             show_occupants_toggle: this.is_chatroom && _converse.visible_toolbar_buttons.toggle_occupants
           });
         },
@@ -70071,7 +70276,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'help':
-              this.showHelpMessages([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from room')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from room')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this room')}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set room subject')}`, `<strong>/topic</strong>: ${__('Set room subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`]);
+              this.showHelpMessages([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`]);
               break;
 
             case 'kick':
@@ -70254,7 +70459,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           fieldset_el.insertAdjacentHTML('beforeend', `<legend>${title}</legend>`);
 
           if (instructions && instructions !== title) {
-            fieldset_el.insertAdjacentHTML('beforeend', `<p class="instructions">${instructions}</p>`);
+            fieldset_el.insertAdjacentHTML('beforeend', `<p class="form-help">${instructions}</p>`);
           }
 
           _.each(fields, function (field) {
@@ -70427,7 +70632,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           container_el.insertAdjacentHTML('beforeend', tpl_chatroom_nickname_form({
             heading: __('Please choose your nickname'),
             label_nickname: __('Nickname'),
-            label_join: __('Enter room'),
+            label_join: __('Enter groupchat'),
             validation_message: message
           }));
           this.model.save('connection_status', converse.ROOMSTATUS.NICKNAME_REQUIRED);
@@ -70450,7 +70655,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
 
           container_el.insertAdjacentHTML('beforeend', tpl_chatroom_password_form({
-            heading: __('This chatroom requires a password'),
+            heading: __('This groupchat requires a password'),
             label_password: __('Password: '),
             label_submit: __('Submit')
           }));
@@ -70458,15 +70663,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.el.querySelector('.chatroom-form').addEventListener('submit', this.submitPassword.bind(this), false);
         },
 
-        showDisconnectMessage(msg) {
+        showDisconnectMessages(msgs) {
+          if (_.isString(msgs)) {
+            msgs = [msgs];
+          }
+
           u.hideElement(this.el.querySelector('.chat-area'));
           u.hideElement(this.el.querySelector('.occupants'));
 
           _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
 
-          this.el.querySelector('.chatroom-body').insertAdjacentHTML('beforeend', tpl_chatroom_disconnect({
-            'disconnect_message': msg
-          }));
+          const container = this.el.querySelector('.disconnect-container');
+          container.innerHTML = tpl_chatroom_disconnect({
+            '_': _,
+            'disconnect_messages': msgs
+          });
+          u.showElement(container);
         },
 
         getMessageFromStatus(stat, stanza, is_self) {
@@ -70565,16 +70777,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * information to the user.
            */
           if (notification.disconnected) {
-            this.showDisconnectMessage(notification.disconnection_message);
+            const messages = [];
+            messages.push(notification.disconnection_message);
 
             if (notification.actor) {
-              this.showDisconnectMessage(__('This action was done by %1$s.', notification.actor));
+              messages.push(__('This action was done by %1$s.', notification.actor));
             }
 
             if (notification.reason) {
-              this.showDisconnectMessage(__('The reason given is: "%1$s".', notification.reason));
+              messages.push(__('The reason given is: "%1$s".', notification.reason));
             }
 
+            this.showDisconnectMessages(messages);
             this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
             return;
           }
@@ -70611,15 +70825,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'data': `data-leavejoin="${nick}"`,
               'isodate': moment().format(),
               'extra_classes': 'chat-event',
-              'message': __('%1$s has left and re-entered the room', nick)
+              'message': __('%1$s has left and re-entered the groupchat', nick)
             });
           } else {
             let message;
 
             if (_.isNil(stat)) {
-              message = __('%1$s has entered the room', nick);
+              message = __('%1$s has entered the groupchat', nick);
             } else {
-              message = __('%1$s has entered the room. "%2$s"', nick, stat);
+              message = __('%1$s has entered the groupchat. "%2$s"', nick, stat);
             }
 
             const data = {
@@ -70651,9 +70865,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             let message;
 
             if (_.isNil(stat)) {
-              message = __('%1$s has entered and left the room', nick);
+              message = __('%1$s has entered and left the groupchat', nick);
             } else {
-              message = __('%1$s has entered and left the room. "%2$s"', nick, stat);
+              message = __('%1$s has entered and left the groupchat. "%2$s"', nick, stat);
             }
 
             last_el.outerHTML = tpl_info({
@@ -70666,9 +70880,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             let message;
 
             if (_.isNil(stat)) {
-              message = __('%1$s has left the room', nick);
+              message = __('%1$s has left the groupchat', nick);
             } else {
-              message = __('%1$s has left the room. "%2$s"', nick, stat);
+              message = __('%1$s has left the groupchat. "%2$s"', nick, stat);
             }
 
             const data = {
@@ -70716,25 +70930,35 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             if (!_.isNull(error.querySelector('not-authorized'))) {
               this.renderPasswordForm();
             } else if (!_.isNull(error.querySelector('registration-required'))) {
-              this.showDisconnectMessage(__('You are not on the member list of this room.'));
+              this.showDisconnectMessages(__('You are not on the member list of this groupchat.'));
             } else if (!_.isNull(error.querySelector('forbidden'))) {
-              this.showDisconnectMessage(__('You have been banned from this room.'));
+              this.showDisconnectMessages(__('You have been banned from this groupchat.'));
             }
           } else if (error.getAttribute('type') === 'modify') {
             if (!_.isNull(error.querySelector('jid-malformed'))) {
-              this.showDisconnectMessage(__('No nickname was specified.'));
+              this.showDisconnectMessages(__('No nickname was specified.'));
             }
           } else if (error.getAttribute('type') === 'cancel') {
             if (!_.isNull(error.querySelector('not-allowed'))) {
-              this.showDisconnectMessage(__('You are not allowed to create new rooms.'));
+              this.showDisconnectMessages(__('You are not allowed to create new rooms.'));
             } else if (!_.isNull(error.querySelector('not-acceptable'))) {
-              this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies."));
+              this.showDisconnectMessages(__("Your nickname doesn't conform to this groupchat's policies."));
             } else if (!_.isNull(error.querySelector('conflict'))) {
               this.onNicknameClash(presence);
             } else if (!_.isNull(error.querySelector('item-not-found'))) {
-              this.showDisconnectMessage(__("This room does not (yet) exist."));
+              this.showDisconnectMessages(__("This groupchat does not (yet) exist."));
             } else if (!_.isNull(error.querySelector('service-unavailable'))) {
-              this.showDisconnectMessage(__("This room has reached its maximum number of occupants."));
+              this.showDisconnectMessages(__("This groupchat has reached its maximum number of participants."));
+            } else if (!_.isNull(error.querySelector('remote-server-not-found'))) {
+              const messages = [__("Remote server not found")];
+
+              const reason = _.get(error.querySelector('text'), 'textContent');
+
+              if (reason) {
+                messages.push(__('The explanation given is: "%1$s".', reason));
+              }
+
+              this.showDisconnectMessages(messages);
             }
           }
         },
@@ -70813,7 +71037,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         render() {
           this.el.innerHTML = tpl_room_panel({
-            'heading_chatrooms': __('Chatrooms'),
+            'heading_chatrooms': __('Groupchats'),
             'title_new_room': __('Add a new room'),
             'title_list_rooms': __('Query for rooms')
           });
@@ -70860,8 +71084,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'hint_show': _converse.PRETTY_CHAT_STATUS[show],
             'hint_occupant': __('Click to mention %1$s in your message.', this.model.get('nick')),
             'desc_moderator': __('This user is a moderator.'),
-            'desc_participant': __('This user can send messages in this room.'),
-            'desc_visitor': __('This user can NOT send messages in this room.'),
+            'desc_participant': __('This user can send messages in this groupchat.'),
+            'desc_visitor': __('This user can NOT send messages in this groupchat.'),
             'label_moderator': __('Moderator'),
             'label_visitor': __('Visitor'),
             'label_owner': __('Owner'),
@@ -70912,7 +71136,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         render() {
           this.el.innerHTML = tpl_chatroom_sidebar(_.extend(this.chatroomview.model.toJSON(), {
             'allow_muc_invitations': _converse.allow_muc_invitations,
-            'label_occupants': __('Occupants')
+            'label_occupants': __('Participants')
           }));
 
           if (_converse.allow_muc_invitations) {
@@ -71348,7 +71572,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
             this.onPresence(stanza);
             return true;
-          }, Strophe.NS.MUC, 'presence', null, null, room_jid, {
+          }, null, 'presence', null, null, room_jid, {
             'ignoreNamespaceFragment': true,
             'matchBareFromJid': true
           });
@@ -71499,9 +71723,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               this.parseRoomFeatures(stanza);
               resolve();
             }).catch(err => {
-              _converse.log(err, Strophe.LogLevel.ERROR);
+              _converse.log("Could not parse the room features", Strophe.LogLevel.WARN);
 
-              reject(new Error("Could not parse the room features"));
+              _converse.log(err, Strophe.LogLevel.WARN);
+
+              reject(err);
             });
           });
         },
@@ -72089,30 +72315,33 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             stanza = forwarded.querySelector('message');
           }
 
-          const jid = stanza.getAttribute('from'),
-                resource = Strophe.getResourceFromJid(jid),
-                sender = resource && Strophe.unescapeNode(resource) || '',
-                subject = _.propertyOf(stanza.querySelector('subject'))('textContent');
-
           if (this.isDuplicate(stanza, original_stanza)) {
             return;
           }
 
-          if (subject) {
-            u.safeSave(this, {
-              'subject': {
-                'author': sender,
-                'text': subject
-              }
-            });
-          }
+          const jid = stanza.getAttribute('from'),
+                resource = Strophe.getResourceFromJid(jid),
+                sender = resource && Strophe.unescapeNode(resource) || '';
 
-          if (sender === '') {
-            return;
-          }
+          if (!this.handleMessageCorrection(stanza)) {
+            const subject = _.propertyOf(stanza.querySelector('subject'))('textContent');
 
-          this.incrementUnreadMsgCounter(original_stanza);
-          this.createMessage(stanza, original_stanza);
+            if (subject) {
+              u.safeSave(this, {
+                'subject': {
+                  'author': sender,
+                  'text': subject
+                }
+              });
+            }
+
+            if (sender === '') {
+              return;
+            }
+
+            this.incrementUnreadMsgCounter(original_stanza);
+            this.createMessage(stanza, original_stanza);
+          }
 
           if (sender !== this.get('nick')) {
             // We only emit an event if it's not our own message
@@ -72309,6 +72538,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             _.each(_.difference(old_jids, jids), removed_jid => {
               // Remove absent occupants who've been removed from
               // the members lists.
+              if (removed_jid === _converse.bare_jid) {
+                return;
+              }
+
               const occupant = this.findOccupant({
                 'jid': removed_jid
               });
@@ -75009,7 +75242,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-controlbox", "converse-muc", "converse-bookmarks"],
+    dependencies: ["converse-singleton", "converse-controlbox", "converse-muc", "converse-bookmarks"],
 
     initialize() {
       /* The initialize function gets called as soon as the plugin is
@@ -75034,6 +75267,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.open-rooms-{_converse.bare_jid}`));
 
           _converse.chatboxes.on('add', this.onChatBoxAdded, this);
+
+          _converse.chatboxes.on('change:hidden', this.onChatBoxChanged, this);
 
           _converse.chatboxes.on('change:bookmarked', this.onChatBoxChanged, this);
 
@@ -75081,13 +75316,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
       _converse.RoomsListElementView = Backbone.VDOMView.extend({
         events: {
-          'click a.room-info': 'showRoomDetailsModal'
+          'click .room-info': 'showRoomDetailsModal'
         },
 
         initialize() {
           this.model.on('destroy', this.remove, this);
           this.model.on('remove', this.remove, this);
           this.model.on('change:bookmarked', this.render, this);
+          this.model.on('change:hidden', this.render, this);
           this.model.on('change:name', this.render, this);
           this.model.on('change:num_unread', this.render, this);
           this.model.on('change:num_unread_general', this.render, this);
@@ -75100,12 +75336,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             // supported by the XMPP server. So we can use it
             // as a check for support (other ways of checking are async).
             'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
-            'info_leave_room': __('Leave this room'),
-            'info_remove_bookmark': __('Unbookmark this room'),
-            'info_add_bookmark': __('Bookmark this room'),
-            'info_title': __('Show more information on this room'),
+            'currently_open': _converse.isSingleton() && !this.model.get('hidden'),
+            'info_leave_room': __('Leave this groupchat'),
+            'info_remove_bookmark': __('Unbookmark this groupchat'),
+            'info_add_bookmark': __('Bookmark this groupchat'),
+            'info_title': __('Show more information on this groupchat'),
             'name': this.getRoomsListElementName(),
-            'open_title': __('Click to open this room')
+            'open_title': __('Click to open this groupchat')
           }));
         },
 
@@ -75142,7 +75379,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         events: {
           'click .add-bookmark': 'addBookmark',
           'click .close-room': 'closeRoom',
-          'click .rooms-toggle': 'toggleRoomsList',
+          'click .list-toggle': 'toggleRoomsList',
           'click .remove-bookmark': 'removeBookmark',
           'click .open-room': 'openRoom'
         },
@@ -75166,8 +75403,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         render() {
           this.el.innerHTML = tpl_rooms_list({
             'toggle_state': this.list_model.get('toggle-state'),
-            'desc_rooms': __('Click to toggle the rooms list'),
-            'label_rooms': __('Open Rooms'),
+            'desc_rooms': __('Click to toggle the list of open groupchats'),
+            'label_rooms': __('Open Groupchats'),
             '_converse': _converse
           });
 
@@ -75216,7 +75453,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const name = ev.target.getAttribute('data-room-name');
           const jid = ev.target.getAttribute('data-room-jid');
 
-          if (confirm(__("Are you sure you want to leave the room %1$s?", name))) {
+          if (confirm(__("Are you sure you want to leave the groupchat %1$s?", name))) {
             // TODO: replace with API call
             _converse.chatboxviews.get(jid).close();
           }
@@ -75546,8 +75783,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'jid': bare_jid,
             'user_id': Strophe.getNodeFromJid(jid)
           }, attributes));
+          this.setChatBox();
           this.presence.on('change:show', () => _converse.emit('contactPresenceChanged', this));
           this.presence.on('change:show', () => this.trigger('presenceChanged'));
+        },
+
+        setChatBox(chatbox = null) {
+          chatbox = chatbox || _converse.chatboxes.get(this.get('jid'));
+
+          if (chatbox) {
+            this.chatbox = chatbox;
+            this.chatbox.on('change:hidden', this.render, this);
+          }
         },
 
         getDisplayName() {
@@ -75794,7 +76041,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            *    (String) name - The name of that user
            *    (Array of Strings) groups - Any roster groups the user might belong to
            *    (Function) callback - A function to call once the IQ is returned
-           *    (Function) errback - A function to call if an error occured
+           *    (Function) errback - A function to call if an error occurred
            */
           name = _.isEmpty(name) ? jid : name;
           const iq = $iq({
@@ -76203,6 +76450,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       /********** Event Handlers *************/
 
 
+      function updateUnreadCounter(chatbox) {
+        const contact = _converse.roster.findWhere({
+          'jid': chatbox.get('jid')
+        });
+
+        if (!_.isUndefined(contact)) {
+          contact.save({
+            'num_unread': chatbox.get('num_unread')
+          });
+        }
+      }
+
+      _converse.api.listen.on('chatBoxesInitialized', () => {
+        _converse.chatboxes.on('change:num_unread', updateUnreadCounter);
+      });
+
       _converse.api.listen.on('beforeTearDown', _converse.unregisterPresenceHandler());
 
       _converse.api.listen.on('afterTearDown', () => {
@@ -76377,8 +76640,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         'xa': __('This contact is away for an extended period'),
         'away': __('This contact is away')
       };
-
-      const LABEL_CONTACTS = __('Contacts');
 
       const LABEL_GROUPS = __('Groups');
 
@@ -76678,7 +76939,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
       _converse.RosterContactView = Backbone.NativeView.extend({
         tagName: 'li',
-        className: 'd-flex hidden controlbox-padded',
+        className: 'list-item d-flex hidden controlbox-padded',
         events: {
           "click .accept-xmpp-request": "acceptRequest",
           "click .decline-xmpp-request": "declineRequest",
@@ -76688,6 +76949,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         initialize() {
           this.model.on("change", this.render, this);
+          this.model.on("highlight", this.highlight, this);
           this.model.on("destroy", this.remove, this);
           this.model.on("open", this.openChat, this);
           this.model.on("remove", this.remove, this);
@@ -76703,11 +76965,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return this;
           }
 
-          const item = this.model,
-                ask = item.get('ask'),
-                show = item.presence.get('show'),
-                requesting = item.get('requesting'),
-                subscription = item.get('subscription');
+          const ask = this.model.get('ask'),
+                show = this.model.presence.get('show'),
+                requesting = this.model.get('requesting'),
+                subscription = this.model.get('subscription');
           const classes_to_remove = ['current-xmpp-contact', 'pending-xmpp-contact', 'requesting-xmpp-contact'].concat(_.keys(STATUSES));
 
           _.each(classes_to_remove, function (cls) {
@@ -76718,6 +76979,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           this.el.classList.add(show);
           this.el.setAttribute('data-status', show);
+          this.highlight();
+
+          if (_converse.isSingleton()) {
+            const chatbox = _converse.chatboxes.get(this.model.get('jid'));
+
+            if (chatbox) {
+              if (chatbox.get('hidden')) {
+                this.el.classList.remove('open');
+              } else {
+                this.el.classList.add('open');
+              }
+            }
+          }
 
           if (ask === 'subscribe' || subscription === 'from') {
             /* ask === 'subscribe'
@@ -76731,17 +77005,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
              *
              *  So in both cases the user is a "pending" contact.
              */
-            const display_name = item.getDisplayName();
+            const display_name = this.model.getDisplayName();
             this.el.classList.add('pending-xmpp-contact');
-            this.el.innerHTML = tpl_pending_contact(_.extend(item.toJSON(), {
+            this.el.innerHTML = tpl_pending_contact(_.extend(this.model.toJSON(), {
               'display_name': display_name,
               'desc_remove': __('Click to remove %1$s as a contact', display_name),
               'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
             }));
           } else if (requesting === true) {
-            const display_name = item.getDisplayName();
+            const display_name = this.model.getDisplayName();
             this.el.classList.add('requesting-xmpp-contact');
-            this.el.innerHTML = tpl_requesting_contact(_.extend(item.toJSON(), {
+            this.el.innerHTML = tpl_requesting_contact(_.extend(this.model.toJSON(), {
               'display_name': display_name,
               'desc_accept': __("Click to accept the contact request from %1$s", display_name),
               'desc_decline': __("Click to decline the contact request from %1$s", display_name),
@@ -76751,10 +77025,26 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             this.el.classList.add('current-xmpp-contact');
             this.el.classList.remove(_.without(['both', 'to'], subscription)[0]);
             this.el.classList.add(subscription);
-            this.renderRosterItem(item);
+            this.renderRosterItem(this.model);
           }
 
           return this;
+        },
+
+        highlight() {
+          /* If appropriate, highlight the contact (by adding the 'open' class).
+           */
+          if (_converse.isSingleton()) {
+            const chatbox = _converse.chatboxes.get(this.model.get('jid'));
+
+            if (chatbox) {
+              if (chatbox.get('hidden')) {
+                this.el.classList.remove('open');
+              } else {
+                this.el.classList.add('open');
+              }
+            }
+          }
         },
 
         renderRosterItem(item) {
@@ -77243,18 +77533,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         updateChatBox(contact) {
-          const chatbox = _converse.chatboxes.get(contact.get('jid')),
-                changes = {};
-
-          if (!chatbox) {
+          if (!this.model.chatbox) {
             return this;
           }
+
+          const changes = {};
 
           if (_.has(contact.changed, 'status')) {
             changes.status = contact.get('status');
           }
 
-          chatbox.save(changes);
+          this.model.chatbox.save(changes);
           return this;
         },
 
@@ -77312,26 +77601,26 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
       /* -------- Event Handlers ----------- */
 
-      function updateUnreadCounter(chatbox) {
-        const contact = _.head(_converse.roster.where({
-          'jid': chatbox.get('jid')
-        }));
-
-        if (!_.isUndefined(contact)) {
-          contact.save({
-            'num_unread': chatbox.get('num_unread')
-          });
-        }
-      }
-
       _converse.api.listen.on('chatBoxesInitialized', () => {
-        _converse.chatboxes.on('change:num_unread', updateUnreadCounter);
+        _converse.chatboxes.on('change:hidden', chatbox => {
+          const contact = _converse.roster.findWhere({
+            'jid': chatbox.get('jid')
+          });
+
+          if (!_.isUndefined(contact)) {
+            contact.trigger('highlight', contact);
+          }
+        });
       });
 
       function initRoster() {
         /* Create an instance of RosterView once the RosterGroups
          * collection has been created (in converse-core.js)
          */
+        if (_converse.authentication === _converse.ANONYMOUS) {
+          return;
+        }
+
         _converse.rosterview = new _converse.RosterView({
           'model': _converse.rostergroups
         });
@@ -77422,7 +77711,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return true;
           }
 
-          if (_.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode)) {
+          if (_converse.isSingleton()) {
             const any_chats_visible = _converse.chatboxes.filter(cb => cb.get('id') != 'controlbox').filter(cb => !cb.get('hidden')).length > 0;
 
             if (any_chats_visible) {
@@ -77437,7 +77726,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         createChatBox(jid, attrs) {
           /* Make sure new chat boxes are hidden by default. */
-          if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
+          const _converse = this.__super__._converse;
+
+          if (_converse.isSingleton()) {
             attrs = attrs || {};
             attrs.hidden = true;
           }
@@ -77448,7 +77739,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       },
       ChatBoxView: {
         shouldShowOnTextMessage() {
-          if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
+          const _converse = this.__super__._converse;
+
+          if (_converse.isSingleton()) {
             return false;
           } else {
             return this.__super__.shouldShowOnTextMessage.apply(this, arguments);
@@ -77460,7 +77753,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * time. So before opening a chat, we make sure all other
            * chats are hidden.
            */
-          if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
+          const _converse = this.__super__._converse;
+
+          if (_converse.isSingleton()) {
             _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
 
             this.model.set('hidden', false);
@@ -77472,7 +77767,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       },
       ChatRoomView: {
         show(focus) {
-          if (_.includes(['mobile', 'fullscreen', 'embedded'], this.__super__._converse.view_mode)) {
+          const _converse = this.__super__._converse;
+
+          if (_converse.isSingleton()) {
             _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
 
             this.model.set('hidden', false);
@@ -78035,30 +78332,6 @@ if (!String.prototype.trim) {
 
 /***/ }),
 
-/***/ "./src/templates/action.html":
-/*!***********************************!*\
-  !*** ./src/templates/action.html ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
-module.exports = function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/action.html -->\n<div class="message chat-msg chat-action ' +
-__e(o.extra_classes) +
-'" data-isodate="' +
-__e(o.time) +
-'" data-from="' +
-__e(o.from) +
-'">\n    <span class="chat-msg-heading">\n        <span class="chat-msg-author">**' +
-__e(o.username) +
-'</span>\n    </span>\n    <p class="chat-msg-text"><!-- message gets added here via renderMessage --></p>\n</div>\n';
-return __p
-};
-
-/***/ }),
-
 /***/ "./src/templates/add_chatroom_modal.html":
 /*!***********************************************!*\
   !*** ./src/templates/add_chatroom_modal.html ***!
@@ -78212,13 +78485,13 @@ __p += ' hidden ';
  } ;
 __p += '" data-room-jid="' +
 __e(o.jid) +
-'">\n    <a class="open-room w-100" data-room-jid="' +
+'">\n    <a class="list-item-link open-room w-100" data-room-jid="' +
 __e(o.jid) +
 '" title="' +
 __e(o.open_title) +
 '" href="#">' +
 __e(o.name) +
-'</a>\n    <a class="remove-bookmark fa fa-bookmark align-self-center ';
+'</a>\n    <a class="list-item-action remove-bookmark fa fa-bookmark align-self-center ';
  if (o.bookmarked) { ;
 __p += ' button-on ';
  } ;
@@ -78228,10 +78501,6 @@ __e(o.jid) +
 __e(o.name) +
 '"\n        title="' +
 __e(o.info_remove_bookmark) +
-'" href="#">&nbsp;</a>\n    <a class="room-info fa fa-info-circle align-self-center" data-room-jid="' +
-__e(o.jid) +
-'"\n        title="' +
-__e(o.info_title) +
 '" href="#">&nbsp;</a>\n</div>\n';
 return __p
 };
@@ -78249,7 +78518,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/bookmarks_list.html -->\n<a href="#" class="rooms-toggle bookmarks-toggle controlbox-padded" title="' +
+__p += '<!-- src/templates/bookmarks_list.html -->\n<a href="#" class="list-toggle bookmarks-toggle controlbox-padded" title="' +
 __e(o.desc_bookmarks) +
 '">\n    <span class="fa ';
  if (o.toggle_state === o._converse.OPENED) { ;
@@ -78514,7 +78783,7 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '';
-__p += '<!-- src/templates/chatroom.html -->\n<div class="flyout box-flyout">\n    <div class="chat-head chat-head-chatroom row no-gutters"></div>\n    <div class="chat-body chatroom-body row no-gutters"></div>\n</div>\n';
+__p += '<!-- src/templates/chatroom.html -->\n<div class="flyout box-flyout">\n    <div class="chat-head chat-head-chatroom row no-gutters"></div>\n    <div class="chat-body chatroom-body row no-gutters">\n        <div class="disconnect-container hidden"></div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -78584,23 +78853,35 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/chatroom_details_modal.html -->\n<div class="modal fade" id="room-details-modal" tabindex="-1" role="dialog" aria-labelledby="user-profile-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="user-profile-modal-label">' +
+__p += '<!-- src/templates/chatroom_details_modal.html -->\n<div class="modal fade" id="room-details-modal" tabindex="-1" role="dialog" aria-labelledby="room-details-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="room-details-modal-label">' +
 __e(o.display_name) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
 '"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                <div class="room-info">\n                    <p class="room-info"><strong>' +
-__e(o.__('Room address (JID)')) +
-'</strong>: ' +
-__e(o.jid) +
-'</p>\n                    <p class="room-info"><strong>' +
 __e(o.__('Name')) +
 '</strong>: ' +
 __e(o.name) +
 '</p>\n                    <p class="room-info"><strong>' +
+__e(o.__('Room address (JID)')) +
+'</strong>: ' +
+__e(o.jid) +
+'</p>\n                    <p class="room-info"><strong>' +
 __e(o.__('Description')) +
 '</strong>: ' +
 __e(o.description) +
-'</p>\n                    <p class="room-info"><strong>' +
+'</p>\n                    ';
+ if (o.subject) { ;
+__p += '\n                    <p class="room-info"><strong>' +
+__e(o.__('Topic')) +
+'</strong>: ' +
+((__t = (o.topic)) == null ? '' : __t) +
+'</p> <!-- Sanitized in converse-muc-views. We want to render links. -->\n                        <p class="room-info"><strong>' +
+__e(o.__('Topic author')) +
+'</strong>: ' +
+__e(o._.get(o.subject, 'author')) +
+'</p>\n                    ';
+ } ;
+__p += '\n                    <p class="room-info"><strong>' +
 __e(o.__('Online users')) +
 '</strong>: ' +
 __e(o.num_occupants) +
@@ -78710,7 +78991,9 @@ __e( o.__('Message archiving') ) +
 __e( o.__('Messages are archived on the server') ) +
 '</em></li>\n                        ';
  } ;
-__p += '\n                        </ul>\n                        </div>\n                    </p>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n';
+__p += '\n                        </ul>\n                        </div>\n                    </p>\n                </div>\n            </div>\n            <div class="modal-footer">\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
+__e(o.__('Close')) +
+'</button>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -78725,10 +79008,17 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/chatroom_disconnect.html -->\n<p class="disconnect-msg">' +
-__e(o.disconnect_message) +
-'</p>\n';
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<!-- src/templates/chatroom_disconnect.html -->\n<div class="alert alert-danger">\n    <h3 class="alert-heading disconnect-msg">' +
+__e(o.disconnect_messages[0]) +
+'</h3>\n\n    ';
+ o._.forEach(o.disconnect_messages.slice(1), function (msg) { ;
+__p += '\n        <p class="disconnect-msg">' +
+__e(msg) +
+'</p>\n    ';
+ }); ;
+__p += '\n</div>\n';
 return __p
 };
 
@@ -78754,7 +79044,7 @@ __e(o.__('Features')) +
 __p += '\n<ul class="features-list">\n';
  if (o.passwordprotected) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('This room requires a password before entry') ) +
+__e( o.__('This groupchat requires a password before entry') ) +
 '"><span class="fa fa-lock"></span>' +
 __e( o.__('Password protected') ) +
 '</li>\n';
@@ -78762,7 +79052,7 @@ __e( o.__('Password protected') ) +
 __p += '\n';
  if (o.unsecured) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('This room does not require a password upon entry') ) +
+__e( o.__('This groupchat does not require a password upon entry') ) +
 '"><span class="fa fa-unlock"></span>' +
 __e( o.__('No password') ) +
 '</li>\n';
@@ -78770,7 +79060,7 @@ __e( o.__('No password') ) +
 __p += '\n';
  if (o.hidden) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('This room is not publicly searchable') ) +
+__e( o.__('This groupchat is not publicly searchable') ) +
 '"><span class="fa fa-eye-slash"></span>' +
 __e( o.__('Hidden') ) +
 '</li>\n';
@@ -78778,7 +79068,7 @@ __e( o.__('Hidden') ) +
 __p += '\n';
  if (o.public_room) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('This room is publicly searchable') ) +
+__e( o.__('This groupchat is publicly searchable') ) +
 '"><span class="fa fa-eye"></span>' +
 __e( o.__('Public') ) +
 '</li>\n';
@@ -78786,7 +79076,7 @@ __e( o.__('Public') ) +
 __p += '\n';
  if (o.membersonly) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('this room is restricted to members only') ) +
+__e( o.__('this groupchat is restricted to members only') ) +
 '"><span class="fa fa-address-book"></span>' +
 __e( o.__('Members only') ) +
 '</li>\n';
@@ -78794,7 +79084,7 @@ __e( o.__('Members only') ) +
 __p += '\n';
  if (o.open) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('Anyone can join this room') ) +
+__e( o.__('Anyone can join this groupchat') ) +
 '"><span class="fa fa-globe"></span>' +
 __e( o.__('Open') ) +
 '</li>\n';
@@ -78802,7 +79092,7 @@ __e( o.__('Open') ) +
 __p += '\n';
  if (o.persistent) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('This room persists even if it\'s unoccupied') ) +
+__e( o.__('This groupchat persists even if it\'s unoccupied') ) +
 '"><span class="fa fa-save"></span>' +
 __e( o.__('Persistent') ) +
 '</li>\n';
@@ -78810,7 +79100,7 @@ __e( o.__('Persistent') ) +
 __p += '\n';
  if (o.temporary) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('This room will disappear once the last person leaves') ) +
+__e( o.__('This groupchat will disappear once the last person leaves') ) +
 '"><span class="fa fa-snowflake-o"></span>' +
 __e( o.__('Temporary') ) +
 '</li>\n';
@@ -78818,7 +79108,7 @@ __e( o.__('Temporary') ) +
 __p += '\n';
  if (o.nonanonymous) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('All other room occupants can see your XMPP username') ) +
+__e( o.__('All other groupchat participants can see your XMPP username') ) +
 '"><span class="fa fa-id-card"></span>' +
 __e( o.__('Not anonymous') ) +
 '</li>\n';
@@ -78834,7 +79124,7 @@ __e( o.__('Semi-anonymous') ) +
 __p += '\n';
  if (o.moderated) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('This room is being moderated') ) +
+__e( o.__('This groupchat is being moderated') ) +
 '"><span class="fa fa-gavel"></span>' +
 __e( o.__('Moderated') ) +
 '</li>\n';
@@ -78842,7 +79132,7 @@ __e( o.__('Moderated') ) +
 __p += '\n';
  if (o.unmoderated) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('This room is not being moderated') ) +
+__e( o.__('This groupchat is not being moderated') ) +
 '"><span class="fa fa-info-circle"></span>' +
 __e( o.__('Not moderated') ) +
 '</li>\n';
@@ -79309,7 +79599,7 @@ __p += '<!-- src/templates/file_progress.html -->\n<div class="message chat-msg"
 __e(o.time) +
 '" data-msgid="' +
 __e(o.msgid) +
-'">\n    <canvas class="avatar" height="36" width="36"></canvas>\n    <div class="chat-msg-content">\n        <span class="chat-msg-text">Uploading file: <strong>' +
+'">\n    <canvas class="avatar chat-msg__avatar" height="36" width="36"></canvas>\n    <div class="chat-msg__content">\n        <span class="chat-msg__text">Uploading file: <strong>' +
 __e(o.file.name) +
 '</strong>, ' +
 __e(o.filesize) +
@@ -79363,18 +79653,23 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/form_checkbox.html -->\n<label class="checkbox" for="' +
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<!-- src/templates/form_checkbox.html -->\n<div class="form-group">\n    <input id="' +
+__e(o.id) +
+'" name="' +
 __e(o.name) +
+'" type="checkbox" ' +
+__e(o.checked) +
+' ';
+ if (o.required) { ;
+__p += ' required ';
+ } ;
+__p += ' >\n    <label class="form-check-label" for="' +
+__e(o.id) +
 '">' +
 __e(o.label) +
-'<input name="' +
-__e(o.name) +
-'" type="' +
-__e(o.type) +
-'" ' +
-__e(o.checked) +
-'></label>\n\n';
+'</label>\n</div>\n';
 return __p
 };
 
@@ -79391,13 +79686,21 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/form_input.html -->\n<label>\n    ' +
+__p += '<!-- src/templates/form_input.html -->\n<div class="form-group">\n    ';
+ if (o.type !== 'hidden') { ;
+__p += '\n        <label for="' +
+__e(o.id) +
+'">' +
 __e(o.label) +
-'\n    <input name="' +
+'</label>\n    ';
+ } ;
+__p += '\n    <input class="form-control" name="' +
 __e(o.name) +
 '" type="' +
 __e(o.type) +
-'" \n        ';
+'" id="' +
+__e(o.id) +
+'"\n        ';
  if (o.placeholder) { ;
 __p += ' placeholder="' +
 __e(o.placeholder) +
@@ -79411,9 +79714,9 @@ __e(o.value) +
  } ;
 __p += '\n        ';
  if (o.required) { ;
-__p += ' class="required" ';
+__p += ' required ';
  } ;
-__p += ' >\n</label>\n';
+__p += ' >\n</div>\n';
 return __p
 };
 
@@ -79430,17 +79733,21 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/form_select.html -->\n<label>\n    ' +
+__p += '<!-- src/templates/form_select.html -->\n<div class="form-group">\n    <label for="' +
+__e(o.id) +
+'">' +
 __e(o.label) +
-'\n    <select name="' +
+'</label>\n    <select class="form-control" id="' +
+__e(o.id) +
+'" name="' +
 __e(o.name) +
-'"  ';
+'" ';
  if (o.multiple) { ;
 __p += ' multiple="multiple" ';
  } ;
 __p += '>' +
 ((__t = (o.options)) == null ? '' : __t) +
-'</select>\n</label>\n';
+'</select>\n</div>\n';
 return __p
 };
 
@@ -79552,7 +79859,7 @@ __p += ' fa-caret-right ';
  } ;
 __p += '">\n    </span> ' +
 __e(o.label_group) +
-'</a>\n<ul class="roster-group-contacts ';
+'</a>\n<ul class="items-list roster-group-contacts ';
  if (o.toggle_state === o._converse.CLOSED) { ;
 __p += ' collapsed ';
  } ;
@@ -79761,7 +80068,11 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/message.html -->\n<div class="message chat-msg ' +
 __e(o.type) +
-' ' +
+' ';
+ if (o.is_me_message) { ;
+__p += ' chat-msg--action ';
+ } ;
+__p += ' ' +
 __e(o.extra_classes) +
 '" data-isodate="' +
 __e(o.time) +
@@ -79770,10 +80081,26 @@ __e(o.msgid) +
 '" data-from="' +
 __e(o.from) +
 '">\n    ';
- if (o.type !== 'headline') { ;
-__p += '\n    <canvas class="avatar" height="36" width="36"></canvas>\n    ';
+ if (o.type !== 'headline' && !o.is_me_message) { ;
+__p += '\n    <canvas class="avatar chat-msg__avatar" height="36" width="36"></canvas>\n    ';
  } ;
-__p += '\n    <div class="chat-msg-content">\n        <span class="chat-msg-heading">\n            <span class="chat-msg-author">' +
+__p += '\n    <div class="chat-msg__content ';
+ if (o.is_me_message) { ;
+__p += 'chat-msg__content--action';
+ } ;
+__p += '">\n        <span class="chat-msg__heading">\n            ';
+ if (o.is_me_message) { ;
+__p += '<time timestamp="' +
+__e(o.isodate) +
+'" class="chat-msg__time">' +
+__e(o.pretty_time) +
+'</time>';
+ } ;
+__p += '\n            <span class="chat-msg__author">';
+ if (o.is_me_message) { ;
+__p += '**';
+ }; ;
+__p +=
 __e(o.username) +
 '\n                ';
 o.roles.forEach(function (role) { ;
@@ -79781,11 +80108,86 @@ __p += ' <span class="badge badge-secondary">' +
 __e(role) +
 '</span> ';
  }); ;
-__p += '\n            </span>\n            <time timestamp="' +
+__p += '\n            </span>\n            ';
+ if (!o.is_me_message) { ;
+__p += '<time timestamp="' +
 __e(o.isodate) +
-'" class="chat-msg-time">' +
+'" class="chat-msg__time">' +
 __e(o.pretty_time) +
-'</time>\n        </span>\n        <span class="chat-msg-text"></span>\n        <div class="chat-msg-media"></div>\n    </div>\n</div>\n';
+'</time>';
+ } ;
+__p += '\n        </span>\n        ';
+ if (!o.is_me_message) { ;
+__p += '<div class="chat-msg__body">';
+ } ;
+__p += '\n            ';
+ if (o.edited) { ;
+__p += ' <i title="' +
+__e(o.__('This message has been edited')) +
+'" class="fa fa-edit chat-msg__edit-modal"></i> ';
+ } ;
+__p += '\n            ';
+ if (!o.is_me_message) { ;
+__p += '<div class="chat-msg__message">';
+ } ;
+__p += '\n                ';
+ if (o.is_spoiler) { ;
+__p += '\n                    <div class="chat-msg__spoiler-hint">\n                        <span class="spoiler-hint">' +
+__e(o.spoiler_hint) +
+'</span>\n                        <a class="badge badge-info spoiler-toggle" data-toggle-state="closed" href="#"><i class="fa fa-eye"></i>' +
+__e(o.label_show) +
+'</a>\n                    </div>\n                ';
+ } ;
+__p += '\n                <div class="chat-msg__text';
+ if (o.is_spoiler) { ;
+__p += ' spoiler collapsed';
+ } ;
+__p += '"><!-- message gets added here via renderMessage --></div>\n                <div class="chat-msg__media"></div>\n            ';
+ if (!o.is_me_message) { ;
+__p += '</div>';
+ } ;
+__p += '\n            ';
+ if (o.type !== 'headline' && !o.is_me_message && o.sender === 'me') { ;
+__p += '\n            <div class="chat-msg__actions">\n                <button class="chat-msg__action chat-msg__action-edit fa fa-pencil" title="' +
+__e(o.__('Edit this message')) +
+'">&nbsp;</button>\n            </div>\n            ';
+ } ;
+__p += '\n\n        ';
+ if (!o.is_me_message) { ;
+__p += '</div>';
+ } ;
+__p += '\n    </div>\n</div>\n';
+return __p
+};
+
+/***/ }),
+
+/***/ "./src/templates/message_versions_modal.html":
+/*!***************************************************!*\
+  !*** ./src/templates/message_versions_modal.html ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
+module.exports = function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<!-- src/templates/message_versions_modal.html -->\n<div class="modal fade" id="message-versions-modal" tabindex="-1" role="dialog" aria-labelledby="message-versions-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h4 class="modal-title" id="message-versions-modal-label">' +
+__e(o.__('Message versions')) +
+'</h4>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
+__e(o.label_close) +
+'"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                <h4>Older versions</h4>\n                ';
+o.older_versions.forEach(function (text) { ;
+__p += ' <p class="older-msg">' +
+__e(text) +
+'</p> ';
+ }); ;
+__p += '\n                <hr>\n                <h4>Current version</h4>\n                <p>' +
+__e(o.message) +
+'</p>\n            </div>\n            <div class="modal-footer">\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
+__e(o.__('Close')) +
+'</button>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -80150,7 +80552,7 @@ __e(o.__("Account Registration:")) +
 __e(o.domain) +
 '</legend>\n<p class="title">' +
 __e(o.title) +
-'</p>\n<p class="instructions">' +
+'</p>\n<p class="form-help instructions">' +
 __e(o.instructions) +
 '</p>\n<div class="form-errors hidden"></div>\n\n<fieldset class="buttons">\n    <input type="submit" class="btn btn-primary" value="' +
 __e(o.__('Register')) +
@@ -80386,7 +80788,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/rooms_list.html -->\n<a href="#" class="rooms-toggle open-rooms-toggle controlbox-padded" title="' +
+__p += '<!-- src/templates/rooms_list.html -->\n<a href="#" class="list-toggle open-rooms-toggle controlbox-padded" title="' +
 __e(o.desc_rooms) +
 '">\n    <span class="fa ';
  if (o.toggle_state === o._converse.OPENED) { ;
@@ -80413,11 +80815,15 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/rooms_list_item.html -->\n<div class="list-item controlbox-padded available-chatroom d-flex flex-row ';
+__p += '<!-- src/templates/rooms_list_item.html -->\n<div class="list-item controlbox-padded available-chatroom d-flex flex-row\n    ';
+ if (o.currently_open) { ;
+__p += ' open ';
+ } ;
+__p += '\n    ';
  if (o.num_unread_general) { ;
 __p += ' unread-msgs ';
  } ;
-__p += '" data-room-jid="' +
+__p += '"\n    data-room-jid="' +
 __e(o.jid) +
 '">\n';
  if (o.num_unread) { ;
@@ -80425,21 +80831,15 @@ __p += '\n    <span class="msgs-indicator badge badge-info">' +
 __e( o.num_unread ) +
 '</span>\n';
  } ;
-__p += '\n<a class="open-room available-room w-100"\n    data-room-jid="' +
+__p += '\n<a class="list-item-link open-room available-room w-100"\n    data-room-jid="' +
 __e(o.jid) +
 '"\n    title="' +
 __e(o.open_title) +
 '" href="#">' +
 __e(o.name || o.jid) +
-'</a>\n\n<a class="right close-room icon-leave"\n   data-room-jid="' +
-__e(o.jid) +
-'"\n   data-room-name="' +
-__e(o.name || o.jid) +
-'"\n   title="' +
-__e(o.info_leave_room) +
-'" href="#">&nbsp;</a>\n\n';
+'</a>\n\n';
  if (o.allow_bookmarks) { ;
-__p += '\n<a class="fa align-self-center ';
+__p += '\n<a class="list-item-action fa ';
  if (o.bookmarked) { ;
 __p += ' fa-bookmark remove-bookmark button-on ';
  } else { ;
@@ -80461,11 +80861,17 @@ __e(o.info_add_bookmark) +
  } ;
 __p += '"\n   href="#">&nbsp;</a>\n';
  } ;
-__p += '\n<a class="room-info fa fa-info-circle align-self-center" data-room-jid="' +
+__p += '\n\n<a class="list-item-action room-info fa fa-info-circle" data-room-jid="' +
 __e(o.jid) +
 '"\n   title="' +
 __e(o.info_title) +
-'" href="#">&nbsp;</a>\n</div>\n';
+'" href="#">&nbsp;</a>\n\n<a class="list-item-action fa fa-times close-room"\n   data-room-jid="' +
+__e(o.jid) +
+'"\n   data-room-name="' +
+__e(o.name || o.jid) +
+'"\n   title="' +
+__e(o.info_leave_room) +
+'" href="#">&nbsp;</a>\n\n</div>\n';
 return __p
 };
 
@@ -80623,7 +81029,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/roster_item.html -->\n<a class="open-chat w-100 ';
+__p += '<!-- src/templates/roster_item.html -->\n<a class="list-item-link cbox-list-item open-chat w-100 ';
  if (o.num_unread) { ;
 __p += ' unread-msgs ';
  } ;
@@ -80647,7 +81053,7 @@ __p += '">' +
 __e(o.display_name) +
 '</span></a>\n';
  if (o.allow_contact_removal) { ;
-__p += '\n<a class="remove-xmpp-contact fa fa-trash" title="' +
+__p += '\n<a class="list-item-action remove-xmpp-contact fa fa-trash" title="' +
 __e(o.desc_remove) +
 '" href="#"></a>\n';
  } ;
@@ -80740,36 +81146,6 @@ __p += ' fa-eye ';
 __p += '"\n    title="' +
 ((__t = ( o.label_toggle_spoiler )) == null ? '' : __t) +
 '"></a>\n</li>\n';
-return __p
-};
-
-/***/ }),
-
-/***/ "./src/templates/spoiler_message.html":
-/*!********************************************!*\
-  !*** ./src/templates/spoiler_message.html ***!
-  \********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
-module.exports = function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/spoiler_message.html -->\n<div class="message chat-msg ' +
-__e(o.extra_classes) +
-'" data-isodate="' +
-__e(o.time) +
-'" data-msgid="' +
-__e(o.msgid) +
-'">\n    <canvas class="avatar" height="36" width="36"></canvas>\n    <div class="chat-msg-content">\n        <span class="chat-msg-heading">\n            <span class="chat-msg-author">' +
-__e(o.username) +
-'</span>\n            <span class="chat-msg-time">' +
-__e(o.pretty_time) +
-'</span>\n        </span>\n        <div>\n            <span class="spoiler-hint">' +
-__e(o.spoiler_hint) +
-'</span>\n            <a class="badge badge-info spoiler-toggle" data-toggle-state="closed" href="#"><i class="fa fa-eye"></i>' +
-__e(o.label_show) +
-'</a>\n        </div>\n        <div class="chat-msg-text spoiler collapsed"><!-- message gets added here via renderMessage --></div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -81294,6 +81670,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return string.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   };
 
+  u.escapeURL = function (url) {
+    return encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+  };
+
   u.addHyperlinks = function (text) {
     return URI.withinString(text, function (url) {
       var uri = new URI(url);
@@ -81303,8 +81683,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         url = 'http://' + url;
       }
 
-      url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-      return `<a target="_blank" rel="noopener" href="${u.escapeHTML(url)}">${u.escapeHTML(uri.readable())}</a>`;
+      url = u.escapeHTML(u.escapeURL(url));
+      return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(uri.readable())}</a>`;
     });
   };
 
@@ -81345,7 +81725,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
     return tpl_file({
       'url': url,
-      'label_download': __('Download: "%1$s', filename)
+      'label_download': __('Download "%1$s"', filename)
     });
   };
 
@@ -81945,6 +82325,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return bytes.buffer;
   };
 
+  u.getUniqueId = function () {
+    return 'xxxxxxxx-xxxx'.replace(/[x]/g, function (c) {
+      var r = Math.random() * 16 | 0,
+          v = c === 'x' ? r : r & 0x3 | 0x8;
+      return v.toString(16);
+    });
+  };
+
   return u;
 });
 
@@ -82039,6 +82427,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         });
 
         return tpl_form_select({
+          'id': u.getUniqueId(),
           'name': field.getAttribute('var'),
           'label': field.getAttribute('label'),
           'options': options.join(''),
@@ -82058,8 +82447,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         });
       } else if (field.getAttribute('type') === 'boolean') {
         return tpl_form_checkbox({
+          'id': u.getUniqueId(),
           'name': field.getAttribute('var'),
-          'type': XFORM_TYPE_MAP[field.getAttribute('type')],
           'label': field.getAttribute('label') || '',
           'checked': _.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
           'required': !_.isNil(field.querySelector('required'))
@@ -82080,6 +82469,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         });
       } else {
         return tpl_form_input({
+          'id': u.getUniqueId(),
           'label': field.getAttribute('label') || '',
           'name': field.getAttribute('var'),
           'placeholder': null,

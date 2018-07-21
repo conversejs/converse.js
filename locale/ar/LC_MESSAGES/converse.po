@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-05-17 11:19+0200\n"
-"PO-Revision-Date: 2018-05-15 11:34+0000\n"
+"PO-Revision-Date: 2018-07-02 15:32+0200\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 3.0-dev\n"
+"X-Generator: Weblate 3.0\n"
 
 #: dist/converse-no-dependencies.js:9853 dist/converse-no-dependencies.js:9882
 msgid "Download"
@@ -153,7 +153,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:21257
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "للأسف لم نتمكّن مِن القيام برفع ملفك بنجاح."
 
 #: dist/converse-no-dependencies.js:21260
 #, javascript-format
@@ -162,7 +162,7 @@ msgstr "رد الخادم : \"%1$s\""
 
 #: dist/converse-no-dependencies.js:21442
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "للأسف يبدو أن خاصية رفع الملفات لا يدعمها خادومكم."
 
 #: dist/converse-no-dependencies.js:21452
 #, javascript-format
@@ -171,8 +171,7 @@ msgid ""
 "which is %2$s."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:22197
-#, fuzzy
+#: dist/converse-no-dependencies.js:18681
 msgid "Show more"
 msgstr "عرض المزيد"
 
@@ -330,7 +329,11 @@ msgstr "كتب كأنه شخص ثالث"
 msgid "Show this menu"
 msgstr "إظهار هذه القائمة"
 
+<<<<<<< HEAD
+#: dist/converse-no-dependencies.js:19614
+=======
 #: dist/converse-no-dependencies.js:23164
+>>>>>>> master
 msgid "Are you sure you want to clear the messages from this conversation?"
 msgstr "هل أنت متأكد أنك تود مسح الرسائل مِن نافذة المحادثة هذه ؟"
 
@@ -344,11 +347,103 @@ msgstr "قد قطع الإتصال"
 msgid "is busy"
 msgstr "مشغول"
 
+<<<<<<< HEAD
+#: dist/converse-no-dependencies.js:19710
+msgid "is online"
+msgstr "متصل"
+
+#: dist/converse-no-dependencies.js:22577
+#, javascript-format
+msgid "%1$s has invited you to join a chat room: %2$s"
+msgstr "قام %1$s بدعوتك للإلتحاق بغرفة المحادثة : %2$s"
+
+#: dist/converse-no-dependencies.js:22579
+#, javascript-format
+msgid ""
+"%1$s has invited you to join a chat room: %2$s, and left the following "
+"reason: \"%3$s\""
+msgstr ""
+
+#: dist/converse-no-dependencies.js:22956
+#: dist/converse-no-dependencies.js:23041
+#: dist/converse-no-dependencies.js:32286
+msgid "Bookmark this room"
+msgstr "إضافة هذه الغرفة إلى الفواصل المرجعية"
+
+#: dist/converse-no-dependencies.js:23042
+msgid "The name for this bookmark:"
+msgstr "تسمية الفاصلة المرجعية :"
+
+#: dist/converse-no-dependencies.js:23043
+msgid "Would you like this room to be automatically joined upon startup?"
+msgstr "هل تود الإلتحاق بهذه الغرفة آليا مباشَرةً بعد الإتصال ؟"
+
+#: dist/converse-no-dependencies.js:23044
+msgid "What should your nickname for this room be?"
+msgstr "ما هو الإسم المُستعار الذي تريد استخدامه في غرفة المحادثة هذه ؟"
+
+#: dist/converse-no-dependencies.js:23046
+#: dist/converse-no-dependencies.js:25364
+msgid "Save"
+msgstr "حفظ"
+
+#: dist/converse-no-dependencies.js:23047
+#: dist/converse-no-dependencies.js:25360
+#: dist/converse-no-dependencies.js:31362
+msgid "Cancel"
+msgstr "إلغاء"
+
+#: dist/converse-no-dependencies.js:23120
+#, javascript-format
+msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
+msgstr "هل أنت متأكد أنك تريد إزالة الفاصلة المرجعية \"%1$s\" ؟"
+
+#: dist/converse-no-dependencies.js:23236
+msgid "Sorry, something went wrong while trying to save your bookmark."
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الإحتفاظ بالفواصل المرجعية."
+
+#: dist/converse-no-dependencies.js:23315
+#: dist/converse-no-dependencies.js:32284
+msgid "Leave this room"
+msgstr "الخروج مِن هذه الغرفة"
+
+#: dist/converse-no-dependencies.js:23316
+msgid "Remove this bookmark"
+msgstr "إزالة هذه الفاصلة المرجعية"
+
+#: dist/converse-no-dependencies.js:23317
+#: dist/converse-no-dependencies.js:32285
+msgid "Unbookmark this room"
+msgstr "تنحية غرفة المحادثة مِن الفواصل المرجعية"
+
+#: dist/converse-no-dependencies.js:23318
+#: dist/converse-no-dependencies.js:28813
+#: dist/converse-no-dependencies.js:32287
+msgid "Show more information on this room"
+msgstr "عرض المزيد مِن التفاصيل عن هذه الغرفة"
+
+#: dist/converse-no-dependencies.js:23321
+#: dist/converse-no-dependencies.js:28812
+#: dist/converse-no-dependencies.js:32289
+msgid "Click to open this room"
+msgstr "أنقر لفتح غرفة المحادثة هذه"
+
+#: dist/converse-no-dependencies.js:23357
+msgid "Click to toggle the bookmarks list"
+msgstr "أنقر للإنتقال إلى قائمة الإشارات المرجعية"
+
+#: dist/converse-no-dependencies.js:23358
+msgid "Bookmarks"
+msgstr "الفواصل المرجعية"
+
+#: dist/converse-no-dependencies.js:23546
+=======
 #: dist/converse-no-dependencies.js:23260
 msgid "is online"
 msgstr "متصل"
 
 #: dist/converse-no-dependencies.js:23501
+>>>>>>> master
 msgid "XMPP Username:"
 msgstr "إسم المستخدِم :"
 
@@ -533,6 +628,13 @@ msgstr "إضافة مراسل"
 #: dist/converse-no-dependencies.js:25288
 msgid "Your Profile"
 msgstr "ملفك الشخصي"
+<<<<<<< HEAD
+
+#: dist/converse-no-dependencies.js:25346
+#: dist/converse-no-dependencies.js:25358
+msgid "Close"
+msgstr "إغلاق"
+=======
 
 #: dist/converse-no-dependencies.js:25293
 #, fuzzy
@@ -557,6 +659,7 @@ msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة �
 #: dist/converse-no-dependencies.js:25325
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
+>>>>>>> master
 
 #: dist/converse-no-dependencies.js:25377
 msgid "Custom status"
@@ -657,7 +760,11 @@ msgstr "غرفة المحادثة هذه ليست مجهولة"
 msgid "This room now shows unavailable members"
 msgstr ""
 
+<<<<<<< HEAD
+#: dist/converse-no-dependencies.js:28646
+=======
 #: dist/converse-no-dependencies.js:28652
+>>>>>>> master
 #, fuzzy
 msgid "This room does not show unavailable members"
 msgstr "هذه القاعة لا تقوم بعرض الأعضاء المشغولين"
@@ -827,7 +934,7 @@ msgstr "ليست تحت الإشراف"
 
 #: dist/converse-no-dependencies.js:28777
 msgid "Query for Chatrooms"
-msgstr ""
+msgstr "الإستعلام عن قاعات الدردشة"
 
 #: dist/converse-no-dependencies.js:28778
 msgid "Server address"
@@ -869,22 +976,35 @@ msgstr "الإلتحاق بالغرفة"
 msgid "Message"
 msgstr "رسالة"
 
+<<<<<<< HEAD
+#: dist/converse-no-dependencies.js:29053
+#, javascript-format
+=======
 #: dist/converse-no-dependencies.js:29058
 #, fuzzy, javascript-format
+>>>>>>> master
 msgid "%1$s is no longer a moderator"
-msgstr "لم يعُد %1$s مِن مُشْرِفي غرفة المحادثة."
+msgstr "لم يعُد %1$s مِن مُشْرِفي غرفة المحادثة"
 
 #: dist/converse-no-dependencies.js:29061
 #, fuzzy, javascript-format
 msgid "%1$s has been given a voice again"
 msgstr "لقد تم طرد %1$s مِن غرفة المحادثة مؤقتًا"
 
+<<<<<<< HEAD
+#: dist/converse-no-dependencies.js:29059
+=======
 #: dist/converse-no-dependencies.js:29064
+>>>>>>> master
 #, javascript-format
 msgid "%1$s has been muted"
 msgstr "تم كتم %1$s"
 
+<<<<<<< HEAD
+#: dist/converse-no-dependencies.js:29062
+=======
 #: dist/converse-no-dependencies.js:29067
+>>>>>>> master
 #, javascript-format
 msgid "%1$s is now a moderator"
 msgstr "أصبح %1$s مُشرفًا"
@@ -1081,9 +1201,14 @@ msgstr "غُرف المحادثة"
 msgid "Add a new room"
 msgstr "إضافة غرفة جديدة"
 
+<<<<<<< HEAD
+#: dist/converse-no-dependencies.js:29953
+#, fuzzy
+=======
 #: dist/converse-no-dependencies.js:29983
+>>>>>>> master
 msgid "Query for rooms"
-msgstr ""
+msgstr "البحث عن قاعات"
 
 #: dist/converse-no-dependencies.js:30022
 #, javascript-format
@@ -1410,6 +1535,8 @@ msgstr "تم التحقق منه"
 #: dist/converse-no-dependencies.js:31192
 msgid "finished"
 msgstr "انتهى"
+<<<<<<< HEAD
+=======
 
 #: dist/converse-no-dependencies.js:31788
 #, javascript-format
@@ -1419,6 +1546,7 @@ msgstr "المعذرة، لقد حدث هناك خطأ أثناء محاولة �
 #: dist/converse-no-dependencies.js:31936
 msgid "This client does not allow presence subscriptions"
 msgstr ""
+>>>>>>> master
 
 #: dist/converse-no-dependencies.js:32028
 msgid "Click to hide these contacts"

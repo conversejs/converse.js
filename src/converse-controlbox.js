@@ -200,8 +200,6 @@
 
             _converse.api.promises.add('controlboxInitialized');
 
-            const LABEL_CONTACTS = __('Contacts');
-
             _converse.addControlBox = () =>
                 _converse.chatboxes.add({
                     id: 'controlbox',
@@ -269,6 +267,9 @@
                 },
 
                 insertRoster () {
+                    if (_converse.authentication === _converse.ANONYMOUS) {
+                        return;
+                    }
                     /* Place the rosterview inside the "Contacts" panel. */
                     _converse.api.waitUntil('rosterViewInitialized')
                         .then(() => this.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el))
@@ -470,7 +471,11 @@
 
                     let jid = form_data.get('jid');
                     if (_converse.locked_domain) {
-                        jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
+                        const last_part = '@' + _converse.locked_domain;
+                        if (jid.endsWith(last_part)) {
+                            jid = jid.substr(0, jid.length - last_part.length);
+                        }
+                        jid = Strophe.escapeNode(jid) + last_part;
                     } else if (_converse.default_domain && !_.includes(jid, '@')) {
                         jid = jid + '@' + _converse.default_domain;
                     }

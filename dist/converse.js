@@ -73396,6 +73396,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _converse.api.promises.add(['OMEMOInitialized']);
 
+      _converse.NUM_PREKEYS = 100; // Set here so that tests can override
+
       function generateDeviceID() {
         /* Generates a device ID, making sure that it's unique */
         const existing_ids = _converse.devicelists.get(_converse.bare_jid).devices.pluck('id');
@@ -73420,7 +73422,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
          * start using OMEMO is they need to generate an IdentityKey
          * and a Device ID. The IdentityKey is a Curve25519 [6]
          * public/private Key pair. The Device ID is a randomly
-         * generated integer between 1 and 2^31 - 1. 
+         * generated integer between 1 and 2^31 - 1.
          */
         return new Promise((resolve, reject) => {
           libsignal.KeyHelper.generateIdentityKeyPair().then(identity_keypair => {
@@ -73433,7 +73435,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             libsignal.KeyHelper.generateSignedPreKey(identity_keypair, signed_prekey_id).then(signed_prekey => {
               data['signed_prekey'] = signed_prekey;
 
-              const key_promises = _.map(_.range(0, 100), id => libsignal.KeyHelper.generatePreKey(id));
+              const key_promises = _.map(_.range(0, _converse.NUM_PREKEYS), id => libsignal.KeyHelper.generatePreKey(id));
 
               Promise.all(key_promises).then(keys => {
                 data['prekeys'] = keys;
@@ -73724,8 +73726,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       function publishBundle() {
         const store = _converse.omemo_store,
-              signed_prekey = store.get('signed_prekey'),
-              identity_key = u.arrayBufferToBase64(store.get('identity_keypair').pubKey);
+              signed_prekey = store.get('signed_prekey');
         return new Promise((resolve, reject) => {
           const stanza = $iq({
             'from': _converse.bare_jid,
@@ -73738,8 +73739,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'xmlns': Strophe.NS.OMEMO
           }).c('signedPreKeyPublic', {
             'signedPreKeyId': signed_prekey.keyId
-          }).t(u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)).up().c('signedPreKeySignature').up() // TODO
-          .c('identityKey').t(identity_key).up().c('prekeys');
+          }).t(u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)).up().c('signedPreKeySignature').t(u.arrayBufferToBase64(signed_prekey.signature)).up().c('identityKey').t(u.arrayBufferToBase64(store.get('identity_keypair').pubKey)).up().c('prekeys');
 
           _.forEach(store.get('prekeys'), prekey => {
             stanza.c('preKeyPublic', {

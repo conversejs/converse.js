@@ -321,14 +321,93 @@
             });
         }));
 
+        it("publishes a bundle with which an encrypted session can be created",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
+            let iq_stanza;
+            test_utils.createContacts(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+
+            test_utils.waitUntil(function () {
+                return _.filter(
+                    _converse.connection.IQ_stanzas,
+                    (iq) => {
+                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                        if (node) { iq_stanza = iq.nodeTree;}
+                        return node;
+                    }).length;
+            }).then(function () {
+                _converse.NUM_PREKEYS = 2; // Restrict to 2, otherwise the resulting stanza is too large to easily test
+
+                const stanza = $iq({
+                    'from': contact_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result',
+                }).c('query', {
+                    'xmlns': 'http://jabber.org/protocol/disco#items',
+                    'node': 'eu.siacs.conversations.axolotl.devicelist'
+                }).c('device', {'id': '482886413b977930064a5888b92134fe'}).up()
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                expect(_converse.devicelists.length).toBe(1);
+
+                test_utils.openChatBoxFor(_converse, contact_jid);
+                return test_utils.waitUntil(() => {
+                    return _.filter(_converse.connection.IQ_stanzas, function (iq) {
+                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.devicelist"]');
+                        if (node) { iq_stanza = iq.nodeTree; }
+                        return node;
+                    }).length;
+                });
+            }).then(function () {
+                const stanza = $iq({
+                    'from': _converse.bare_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result'});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                return test_utils.waitUntil(() => {
+                    return _.filter(_converse.connection.IQ_stanzas, function (iq) {
+                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]');
+                        if (node) { iq_stanza = iq.nodeTree; }
+                        return node;
+                    }).length;
+                });
+            }).then(function () {
+                expect(iq_stanza.outerHTML).toBe(
+                    `<iq from="dummy@localhost" type="set" xmlns="jabber:client" id="${iq_stanza.getAttribute('id')}">`+
+                        `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                            `<publish node="eu.siacs.conversations.axolotl.bundles:123456789">`+
+                                `<item>`+
+                                    `<bundle xmlns="eu.siacs.conversations.axolotl">`+
+                                        `<signedPreKeyPublic signedPreKeyId="0">${btoa('1234')}</signedPreKeyPublic>`+
+                                            `<signedPreKeySignature>${btoa('11112222333344445555')}</signedPreKeySignature>`+
+                                            `<identityKey>${btoa('1234')}</identityKey>`+
+                                        `<prekeys>`+
+                                            `<preKeyPublic preKeyId="0">${btoa('1234')}</preKeyPublic>`+
+                                            `<preKeyPublic preKeyId="1">${btoa('1234')}</preKeyPublic>`+
+                                        `</prekeys>`+
+                                    `</bundle>`+
+                                `</item>`+
+                            `</publish>`+
+                        `</pubsub>`+
+                    `</iq>`)
+                done();
+            });
+        }));
+
         it("adds a toolbar button for starting an encrypted chat session",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
             let iq_stanza;
-            test_utils.createContacts(_converse, 'current');
-            const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+            test_utils.createContacts(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
             test_utils.waitUntil(function () {
                 return _.filter(

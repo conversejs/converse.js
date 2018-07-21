@@ -11,8 +11,8 @@
         'KeyHelper': {
             'generateIdentityKeyPair': function () {
                 return Promise.resolve({
-                    'pubKey': 1234,
-                    'privKey': 4321
+                    'pubKey': new TextEncoder('utf-8').encode('1234'),
+                    'privKey': new TextEncoder('utf-8').encode('4321')
                 });
             },
             'generateRegistrationId': function () {
@@ -22,17 +22,18 @@
                 return Promise.resolve({
                     'keyId': keyid,
                     'keyPair': {
-                        'pubKey': 1234,
-                        'privKey': 4321
+                        'pubKey': new TextEncoder('utf-8').encode('1234'),
+                        'privKey': new TextEncoder('utf-8').encode('4321')
                     }
                 });
             },
             'generateSignedPreKey': function (identity_keypair, keyid) {
                 return Promise.resolve({
+                    'signature': new TextEncoder('utf-8').encode('11112222333344445555'),
                     'keyId': keyid,
                     'keyPair': {
-                        'pubKey': 1234,
-                        'privKey': 4321
+                        'pubKey': new TextEncoder('utf-8').encode('1234'),
+                        'privKey': new TextEncoder('utf-8').encode('4321')
                     }
                 });
             }

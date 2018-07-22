@@ -389,7 +389,6 @@
                     function (done, _converse) {
 
                 _converse.roster_groups = true;
-                spyOn(_converse, 'emit');
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 _converse.rosterview.render();
                 test_utils.openControlBox();
@@ -430,7 +429,6 @@
                     function (done, _converse) {
 
                 _converse.roster_groups = true;
-                spyOn(_converse, 'emit');
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 _converse.rosterview.render();
 
@@ -477,7 +475,6 @@
 
                 _converse.roster_groups = true;
                 var groups = ['colleagues', 'friends'];
-                spyOn(_converse, 'emit');
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 test_utils.openControlBox();
                 _converse.rosterview.render();
@@ -576,7 +573,6 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                spyOn(_converse, 'emit');
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 test_utils.openControlBox();
                 _converse.roster.create({
@@ -726,7 +722,6 @@
 
                 var i, t;
                 test_utils.openControlBox();
-                spyOn(_converse, 'emit');
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 for (i=0; i<mock.pend_names.length; i++) {
                     _converse.roster.create({
@@ -908,7 +903,6 @@
                 test_utils.waitUntil(() => $(_converse.rosterview.el).find('.roster-group li').length, 700)
                 .then(function () {
                     var jid, t;
-                    spyOn(_converse, 'emit');
                     spyOn(_converse.rosterview, 'update').and.callThrough();
                     var $roster = $(_converse.rosterview.el);
                     for (var i=0; i<mock.cur_names.length; i++) {
@@ -935,7 +929,6 @@
                     return $(_converse.rosterview.el).find('.roster-group li').length;
                 }, 700).then(function () {
                     var jid, t;
-                    spyOn(_converse, 'emit');
                     spyOn(_converse.rosterview, 'update').and.callThrough();
                     var $roster = $(_converse.rosterview.el);
                     for (var i=0; i<mock.cur_names.length; i++) {
@@ -963,7 +956,6 @@
                     return $(_converse.rosterview.el).find('.roster-group li').length;
                 }, 700).then(function () {
                     var jid, t;
-                    spyOn(_converse, 'emit');
                     spyOn(_converse.rosterview, 'update').and.callThrough();
                     var $roster = $(_converse.rosterview.el);
                     for (var i=0; i<mock.cur_names.length; i++) {
@@ -991,7 +983,6 @@
                         return $(_converse.rosterview.el).find('.roster-group li').length;
                 }, 700).then(function () {
                     var jid, t;
-                    spyOn(_converse, 'emit');
                     spyOn(_converse.rosterview, 'update').and.callThrough();
                     var $roster = $(_converse.rosterview.el);
                     for (var i=0; i<mock.cur_names.length; i++) {
@@ -1020,7 +1011,6 @@
                     }, 500)
                 .then(function () {
                     var jid, t;
-                    spyOn(_converse, 'emit');
                     spyOn(_converse.rosterview, 'update').and.callThrough();
                     var $roster = $(_converse.rosterview.el);
                     for (var i=0; i<mock.cur_names.length; i++) {
@@ -1151,7 +1141,6 @@
                         names.push($(item).text().replace(/^\s+|\s+$/g, ''));
                     }
                 };
-                spyOn(_converse, 'emit');
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 spyOn(_converse.controlboxtoggle, 'showControlBox').and.callThrough();
                 for (i=0; i<mock.req_names.length; i++) {

@@ -44,7 +44,7 @@
                 }
             });
         return {
-            'identity_key': parseInt(bundle_el.querySelector('identityKey').textContent, 10),
+            'identity_key': bundle_el.querySelector('identityKey').textContent,
             'signed_prekey': {
                 'id': parseInt(signed_prekey_public_el.getAttribute('signedPreKeyId'), 10),
                 'public_key': signed_prekey_public_el.textContent,
@@ -65,6 +65,27 @@
 
         overrides: {
 
+            UserDetailsModal: {
+                events: {
+                    'click .fingerprint-trust .btn input': 'toggleDeviceTrust'
+                },
+
+                initialize () {
+                    const { _converse } = this.__super__;
+                    const jid = this.model.get('jid');
+                    this.devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({'jid': jid});
+                    this.devicelist.devices.on('change:bundle', this.render, this);
+                    this.devicelist.devices.on('change:trusted', this.render, this);
+                    return this.__super__.initialize.apply(this, arguments);
+                },
+
+                toggleDeviceTrust (ev) {
+                    const radio = ev.target;
+                    const device = this.devicelist.devices.get(radio.getAttribute('name'));
+                    device.save('trusted', parseInt(radio.value, 10));
+                }
+            },
+
             ChatBox: {
 
                 getBundlesAndBuildSessions () {
@@ -77,7 +98,6 @@
                                     this.buildSessions(devices)
                                         .then(() => resolve(devices))
                                         .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-
                                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
@@ -194,6 +214,27 @@
 
             _converse.NUM_PREKEYS = 100; // Set here so that tests can override
 
+            function generateFingerprint (device) {
+                return new Promise((resolve, reject) => {
+                    device.getBundle().then((bundle) => {
+                        // TODO: only generate fingerprints when necessary
+                        crypto.subtle.digest('SHA-1', u.base64ToArrayBuffer(bundle['identity_key']))
+                            .then((fp) => {
+                                bundle['fingerprint'] = u.arrayBufferToHex(fp);
+                                device.save('bundle', bundle);
+                                device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
+                                resolve();
+                            }).catch(reject);
+                    });
+                });
+            }
+
+            _converse.getFingerprintsForContact = function (jid) {
+                return new Promise((resolve, reject) => {
+                    _converse.getDevicesForContact(jid)
+                        .then((devices) => Promise.all(devices.map(d => generateFingerprint(d))).then(resolve).catch(reject));
+                });
+            }
 
             _converse.getDevicesForContact = function (jid) {
                 return new Promise((resolve, reject) => {
@@ -405,14 +446,15 @@
                             'from': _converse.bare_jid,
                             'to': this.get('jid')
                         }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                            .c('items', {'xmlns': `${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}`});
+                            .c('items', {'node': `${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}`});
                         _converse.connection.sendIQ(
                             stanza,
                             (iq) => {
-                                const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"]`, stanza).pop();
-                                const bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop();
-                                this.save(parseBundle(bundle_el));
-                                resolve();
+                                const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"]`, iq).pop(),
+                                      bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop(),
+                                      bundle = parseBundle(bundle_el);
+                                this.save('bundle', bundle);
+                                resolve(bundle);
                             },
                             reject,
                             _converse.IQ_TIMEOUT
@@ -479,7 +521,7 @@
                             (iq) => {
                                 _.forEach(
                                     iq.querySelectorAll('device'),
-                                    (dev) => this.devices.create({'id': dev.getAttribute('id')})
+                                    (dev) => this.devices.create({'id': dev.getAttribute('id'), 'jid': this.get('jid')})
                                 );
                                 resolve();
                             },
@@ -493,7 +535,7 @@
                      * server.
                      * https://xmpp.org/extensions/xep-0384.html#usecases-announcing
                      */
-                    this.devices.create({'id': device_id});
+                    this.devices.create({'id': device_id, 'jid': this.get('jid')});
                     return new Promise((resolve, reject) => {
                         const stanza = $iq({
                             'from': _converse.bare_jid,
@@ -589,7 +631,7 @@
                       jid = stanza.getAttribute('from'),
                       bundle_el = sizzle(`item > bundle`, items_el).pop(),
                       devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({'jid': jid}),
-                      device = devicelist.devices.get(device_id) || devicelist.devices.create({'id': device_id});
+                      device = devicelist.devices.get(device_id) || devicelist.devices.create({'id': device_id, 'jid': jid});
                 device.save({'bundle': parseBundle(bundle_el)});
             }
 
@@ -613,7 +655,7 @@
                     if (dev) {
                         dev.save({'active': true});
                     } else {
-                        devices.create({'id': device_id})
+                        devices.create({'id': device_id, 'jid': jid})
                     }
                 });
                 // Make sure our own device is on the list (i.e. if it was
@@ -661,6 +703,11 @@
             _converse.api.listen.on('statusInitialized', initOMEMO);
             _converse.api.listen.on('addClientFeatures',
                 () => _converse.api.disco.own.features.add(Strophe.NS.OMEMO_DEVICELIST+"notify"));
+
+            _converse.api.listen.on('userDetailsModalInitialized', (contact) => {
+                const jid = contact.get('jid');
+                _converse.getFingerprintsForContact(jid).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            });
         }
     });
 }));

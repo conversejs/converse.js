@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-05-17 11:19+0200\n"
-"PO-Revision-Date: 2018-07-02 15:35+0200\n"
+"PO-Revision-Date: 2018-07-21 10:03+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.0-dev\n"
+"X-Generator: Weblate 3.1-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -31,7 +31,7 @@ msgstr "Télécharger"
 #: dist/converse-no-dependencies.js:9872
 #, javascript-format
 msgid "Download: \"%1$s"
-msgstr ""
+msgstr "Télécharger : \"%1$s\""
 
 #: dist/converse-no-dependencies.js:9895
 msgid "Download video file"
@@ -156,7 +156,7 @@ msgstr "Fermer cette fenêtre de discussion"
 
 #: dist/converse-no-dependencies.js:22516
 msgid "The User's Profile Image"
-msgstr ""
+msgstr "Image de profil de l’utilisateur"
 
 #: dist/converse-no-dependencies.js:22519
 #: dist/converse-no-dependencies.js:25289
@@ -167,18 +167,16 @@ msgstr "Fermer"
 #: dist/converse-no-dependencies.js:22520
 #: dist/converse-no-dependencies.js:25290
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
 #: dist/converse-no-dependencies.js:22521
 #: dist/converse-no-dependencies.js:25291
-#, fuzzy
 msgid "Full Name"
-msgstr "Nom"
+msgstr "Nom complet"
 
 #: dist/converse-no-dependencies.js:22522
-#, fuzzy
 msgid "Jabber ID"
-msgstr "Identifiant Jabber :"
+msgstr "Identifiant Jabber"
 
 #: dist/converse-no-dependencies.js:22523
 #: dist/converse-no-dependencies.js:25292
@@ -187,23 +185,22 @@ msgid "Nickname"
 msgstr "Alias"
 
 #: dist/converse-no-dependencies.js:22524
-#, fuzzy
 msgid "Remove as contact"
-msgstr "Ajouter un contact"
+msgstr "Supprimer ce contact"
 
 #: dist/converse-no-dependencies.js:22525
 msgid "Refresh"
-msgstr ""
+msgstr "Rafraîchir"
 
 #: dist/converse-no-dependencies.js:22526
 #: dist/converse-no-dependencies.js:25294
 msgid "Role"
-msgstr ""
+msgstr "Rôle"
 
 #: dist/converse-no-dependencies.js:22527
 #: dist/converse-no-dependencies.js:25297
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: dist/converse-no-dependencies.js:22566
 #: dist/converse-no-dependencies.js:24293
@@ -489,30 +486,31 @@ msgid "Your Profile"
 msgstr "Votre profil"
 
 #: dist/converse-no-dependencies.js:25293
-#, fuzzy
 msgid "XMPP Address (JID)"
-msgstr "Adresse XMPP"
+msgstr "Adresse XMPP (JID)"
 
 #: dist/converse-no-dependencies.js:25295
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
 msgstr ""
+"Utilisez une virgule pour séparer plusieurs rôles. Vos rôles sont affichés à "
+"côté de votre nom dans vos messages."
 
 #: dist/converse-no-dependencies.js:25298
 msgid "Your avatar image"
-msgstr ""
+msgstr "Votre image d’avatar"
 
 #: dist/converse-no-dependencies.js:25325
-#, fuzzy
 msgid "Sorry, an error happened while trying to save your profile data."
 msgstr ""
-"Désolé, quelque chose s’est mal passé pendant la sauvegarde de ce marque-"
-"page."
+"Désolé, quelque chose s’est mal passé pendant la sauvegarde de votre profil."
 
 #: dist/converse-no-dependencies.js:25325
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
+"Vous pouvez surveiller toute erreur qui apparaîtrait dans la console de "
+"développement de votre navigateur."
 
 #: dist/converse-no-dependencies.js:25377
 msgid "Custom status"
@@ -786,7 +784,7 @@ msgstr "Non modéré"
 
 #: dist/converse-no-dependencies.js:28777
 msgid "Query for Chatrooms"
-msgstr ""
+msgstr "Chercher un salon de discussion"
 
 #: dist/converse-no-dependencies.js:28778
 msgid "Server address"
@@ -874,6 +872,9 @@ msgid ""
 "Sorry, an error happened while running the command. Check your browser's "
 "developer console for details."
 msgstr ""
+"Désolé, une erreur s'est produite lors de l'exécution de la commande. "
+"Vérifiez la console de développement de votre navigateur pour plus de "
+"détails."
 
 #: dist/converse-no-dependencies.js:29263
 msgid "Change user's affiliation to admin"
@@ -1043,9 +1044,8 @@ msgid "Add a new room"
 msgstr "Ajouter un nouveau salon"
 
 #: dist/converse-no-dependencies.js:29983
-#, fuzzy
 msgid "Query for rooms"
-msgstr "Bannir l’utilisateur du salon"
+msgstr "Chercher un salon"
 
 #: dist/converse-no-dependencies.js:30022
 #, javascript-format
@@ -1065,26 +1065,24 @@ msgid "This user can NOT send messages in this room."
 msgstr "Cet utilisateur ne peut PAS envoyer de messages dans ce salon."
 
 #: dist/converse-no-dependencies.js:30026
-#, fuzzy
 msgid "Moderator"
-msgstr "Modéré"
+msgstr "Modérateur"
 
 #: dist/converse-no-dependencies.js:30027
 msgid "Visitor"
-msgstr ""
+msgstr "Visiteur"
 
 #: dist/converse-no-dependencies.js:30028
 msgid "Owner"
-msgstr ""
+msgstr "Propriétaire"
 
 #: dist/converse-no-dependencies.js:30029
-#, fuzzy
 msgid "Member"
-msgstr "Membres uniquement"
+msgstr "Membre"
 
 #: dist/converse-no-dependencies.js:30030
 msgid "Admin"
-msgstr ""
+msgstr "Administrateur"
 
 #: dist/converse-no-dependencies.js:30082
 msgid "Occupants"

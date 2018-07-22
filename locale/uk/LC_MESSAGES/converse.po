@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-22 10:43+0200\n"
+"POT-Creation-Date: 2018-07-22 11:17+0200\n"
 "PO-Revision-Date: 2018-02-13 19:39+0000\n"
 "Last-Translator: Максим Якимчук <xpinovo@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/conversejs/"
@@ -594,8 +594,9 @@ msgid "Server address"
 msgstr "Сервер"
 
 #: dist/converse-no-dependencies.js:48717
-msgid "Show rooms"
-msgstr "Показати кімнати"
+#, fuzzy
+msgid "Show groupchats"
+msgstr "Групи"
 
 #: dist/converse-no-dependencies.js:48718
 msgid "conference.example.org"
@@ -603,13 +604,13 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:48767
 #, fuzzy
-msgid "No rooms found"
+msgid "No groupchats found"
 msgstr "Жодного користувача не знайдено"
 
 #: dist/converse-no-dependencies.js:48784
 #, fuzzy
-msgid "Rooms found:"
-msgstr "Кімнати на %1$s"
+msgid "groupchats found:"
+msgstr "Групи"
 
 #: dist/converse-no-dependencies.js:48836
 #, fuzzy
@@ -850,7 +851,7 @@ msgstr "Не вказане прізвисько"
 
 #: dist/converse-no-dependencies.js:49940
 #, fuzzy
-msgid "You are not allowed to create new rooms."
+msgid "You are not allowed to create new groupchats."
 msgstr "Вам не дозволено створювати нові кімнати"
 
 #: dist/converse-no-dependencies.js:49942
@@ -888,12 +889,13 @@ msgid "Groupchats"
 msgstr "Групи"
 
 #: dist/converse-no-dependencies.js:50032
-msgid "Add a new room"
-msgstr ""
+#, fuzzy
+msgid "Add a new groupchat"
+msgstr "Увійти в кімнату"
 
 #: dist/converse-no-dependencies.js:50033
 #, fuzzy
-msgid "Query for rooms"
+msgid "Query for groupchats"
 msgstr "Заблокувати і викинути з кімнати"
 
 #: dist/converse-no-dependencies.js:50071
@@ -949,7 +951,7 @@ msgstr "Запросіть"
 #: dist/converse-no-dependencies.js:50196
 #, fuzzy, javascript-format
 msgid ""
-"You are about to invite %1$s to the chat room \"%2$s\". You may optionally "
+"You are about to invite %1$s to the groupchat \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
 msgstr ""
 "Ви можете опціонально додати повідомлення, щоб пояснити причину запрошення."
@@ -959,14 +961,14 @@ msgid "Please enter a valid XMPP username"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:51591
-#, javascript-format
-msgid "%1$s has invited you to join a chat room: %2$s"
+#, fuzzy, javascript-format
+msgid "%1$s has invited you to join a groupchat: %2$s"
 msgstr "%1$s запрошує вас приєднатись до чату: %2$s"
 
 #: dist/converse-no-dependencies.js:51593
-#, javascript-format
+#, fuzzy, javascript-format
 msgid ""
-"%1$s has invited you to join a chat room: %2$s, and left the following "
+"%1$s has invited you to join a groupchat: %2$s, and left the following "
 "reason: \"%3$s\""
 msgstr ""
 "%1$s запрошує Вас приєднатись до чату: %2$s, аргументує ось як: \"%3$s\""
@@ -1341,7 +1343,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:57115
 #, fuzzy
-msgid "Room address (JID)"
+msgid "Groupchat address (JID)"
 msgstr "Назва кімнати"
 
 #: dist/converse-no-dependencies.js:57119
@@ -1375,7 +1377,9 @@ msgid "Password protected"
 msgstr "Пароль:"
 
 #: dist/converse-no-dependencies.js:57145
-msgid "This room requires a password before entry"
+#: dist/converse-no-dependencies.js:57297
+#, fuzzy
+msgid "This groupchat requires a password before entry"
 msgstr "Ця кімната вимагає ввести пароль перед входом"
 
 #: dist/converse-no-dependencies.js:57151
@@ -1384,18 +1388,21 @@ msgid "No password required"
 msgstr "Пароль:"
 
 #: dist/converse-no-dependencies.js:57153
+#: dist/converse-no-dependencies.js:57305
 #, fuzzy
-msgid "This room does not require a password upon entry"
+msgid "This groupchat does not require a password upon entry"
 msgstr "Ця кімната вимагає пароль"
 
 #: dist/converse-no-dependencies.js:57161
+#: dist/converse-no-dependencies.js:57313
 #, fuzzy
-msgid "This room is not publicly searchable"
+msgid "This groupchat is not publicly searchable"
 msgstr "Ця кімната не є анонімною"
 
 #: dist/converse-no-dependencies.js:57169
+#: dist/converse-no-dependencies.js:57321
 #, fuzzy
-msgid "This room is publicly searchable"
+msgid "This groupchat is publicly searchable"
 msgstr "Ця кімната не є анонімною"
 
 #: dist/converse-no-dependencies.js:57175
@@ -1405,12 +1412,13 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:57177
 #, fuzzy
-msgid "this room is restricted to members only"
+msgid "This groupchat is restricted to members only"
 msgstr "Ця кімната досягнула максимуму учасників"
 
 #: dist/converse-no-dependencies.js:57185
+#: dist/converse-no-dependencies.js:57337
 #, fuzzy
-msgid "Anyone can join this room"
+msgid "Anyone can join this groupchat"
 msgstr "Клацніть, щоб увійти в цю кімнату"
 
 #: dist/converse-no-dependencies.js:57191
@@ -1419,11 +1427,13 @@ msgid "Persistent"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57193
-msgid "This room persists even if it's unoccupied"
+#: dist/converse-no-dependencies.js:57345
+msgid "This groupchat persists even if it's unoccupied"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57201
-msgid "This room will disappear once the last person leaves"
+#: dist/converse-no-dependencies.js:57353
+msgid "This groupchat will disappear once the last person leaves"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57207
@@ -1433,7 +1443,8 @@ msgid "Not anonymous"
 msgstr "Не-анонімні"
 
 #: dist/converse-no-dependencies.js:57209
-msgid "All other room occupants can see your XMPP username"
+#: dist/converse-no-dependencies.js:57361
+msgid "All other groupchat participants can see your XMPP username"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57217
@@ -1442,8 +1453,9 @@ msgid "Only moderators can see your XMPP username"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57225
+#: dist/converse-no-dependencies.js:57377
 #, fuzzy
-msgid "This room is being moderated"
+msgid "This groupchat is being moderated"
 msgstr "Цей користувач є модератором"
 
 #: dist/converse-no-dependencies.js:57231
@@ -1453,8 +1465,9 @@ msgid "Not moderated"
 msgstr "Немодерована"
 
 #: dist/converse-no-dependencies.js:57233
+#: dist/converse-no-dependencies.js:57385
 #, fuzzy
-msgid "This room is not being moderated"
+msgid "This groupchat is not being moderated"
 msgstr "Ця кімната не є анонімною"
 
 #: dist/converse-no-dependencies.js:57239
@@ -1467,62 +1480,15 @@ msgstr ""
 msgid "Messages are archived on the server"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:57297
-#, fuzzy
-msgid "This groupchat requires a password before entry"
-msgstr "Ця кімната вимагає ввести пароль перед входом"
-
-#: dist/converse-no-dependencies.js:57305
-#, fuzzy
-msgid "This groupchat does not require a password upon entry"
-msgstr "Ця кімната вимагає пароль"
-
 #: dist/converse-no-dependencies.js:57307
 #, fuzzy
 msgid "No password"
 msgstr "Пароль:"
 
-#: dist/converse-no-dependencies.js:57313
-#, fuzzy
-msgid "This groupchat is not publicly searchable"
-msgstr "Ця кімната не є анонімною"
-
-#: dist/converse-no-dependencies.js:57321
-#, fuzzy
-msgid "This groupchat is publicly searchable"
-msgstr "Ця кімната не є анонімною"
-
 #: dist/converse-no-dependencies.js:57329
 #, fuzzy
 msgid "this groupchat is restricted to members only"
 msgstr "Ця кімната досягнула максимуму учасників"
-
-#: dist/converse-no-dependencies.js:57337
-#, fuzzy
-msgid "Anyone can join this groupchat"
-msgstr "Клацніть, щоб увійти в цю кімнату"
-
-#: dist/converse-no-dependencies.js:57345
-msgid "This groupchat persists even if it's unoccupied"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:57353
-msgid "This groupchat will disappear once the last person leaves"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:57361
-msgid "All other groupchat participants can see your XMPP username"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:57377
-#, fuzzy
-msgid "This groupchat is being moderated"
-msgstr "Цей користувач є модератором"
-
-#: dist/converse-no-dependencies.js:57385
-#, fuzzy
-msgid "This groupchat is not being moderated"
-msgstr "Ця кімната не є анонімною"
 
 #: dist/converse-no-dependencies.js:58267
 msgid "XMPP Username:"
@@ -1631,6 +1597,52 @@ msgstr ""
 #: dist/converse-no-dependencies.js:60032
 msgid "Download audio file"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Room address (JID)"
+#~ msgstr "Назва кімнати"
+
+#~ msgid "This room requires a password before entry"
+#~ msgstr "Ця кімната вимагає ввести пароль перед входом"
+
+#, fuzzy
+#~ msgid "This room does not require a password upon entry"
+#~ msgstr "Ця кімната вимагає пароль"
+
+#, fuzzy
+#~ msgid "This room is not publicly searchable"
+#~ msgstr "Ця кімната не є анонімною"
+
+#, fuzzy
+#~ msgid "This room is publicly searchable"
+#~ msgstr "Ця кімната не є анонімною"
+
+#, fuzzy
+#~ msgid "this room is restricted to members only"
+#~ msgstr "Ця кімната досягнула максимуму учасників"
+
+#, fuzzy
+#~ msgid "Anyone can join this room"
+#~ msgstr "Клацніть, щоб увійти в цю кімнату"
+
+#, fuzzy
+#~ msgid "This room is being moderated"
+#~ msgstr "Цей користувач є модератором"
+
+#, fuzzy
+#~ msgid "This room is not being moderated"
+#~ msgstr "Ця кімната не є анонімною"
+
+#~ msgid "Show rooms"
+#~ msgstr "Показати кімнати"
+
+#, fuzzy
+#~ msgid "Rooms found:"
+#~ msgstr "Кімнати на %1$s"
+
+#, fuzzy
+#~ msgid "Query for rooms"
+#~ msgstr "Заблокувати і викинути з кімнати"
 
 #~ msgid "Open room"
 #~ msgstr "Увійти в кімнату"

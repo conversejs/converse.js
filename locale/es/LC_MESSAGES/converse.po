@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-22 10:43+0200\n"
+"POT-Creation-Date: 2018-07-22 11:17+0200\n"
 "PO-Revision-Date: 2018-03-14 17:30+0000\n"
 "Last-Translator: Emmanuel <yolkati@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
@@ -603,8 +603,9 @@ msgid "Server address"
 msgstr "Servidor"
 
 #: dist/converse-no-dependencies.js:48717
-msgid "Show rooms"
-msgstr "Mostrar salas"
+#, fuzzy
+msgid "Show groupchats"
+msgstr "Grupos"
 
 #: dist/converse-no-dependencies.js:48718
 #, fuzzy
@@ -612,13 +613,14 @@ msgid "conference.example.org"
 msgstr "p.e. usuario@ejemplo.org"
 
 #: dist/converse-no-dependencies.js:48767
-msgid "No rooms found"
+#, fuzzy
+msgid "No groupchats found"
 msgstr "Ninguna sala encontrada"
 
 #: dist/converse-no-dependencies.js:48784
 #, fuzzy
-msgid "Rooms found:"
-msgstr "Salas encontradas"
+msgid "groupchats found:"
+msgstr "Grupos"
 
 #: dist/converse-no-dependencies.js:48836
 #, fuzzy
@@ -862,7 +864,8 @@ msgid "No nickname was specified."
 msgstr "Ningún apodo fue especificado."
 
 #: dist/converse-no-dependencies.js:49940
-msgid "You are not allowed to create new rooms."
+#, fuzzy
+msgid "You are not allowed to create new groupchats."
 msgstr "Usted no está autorizado para crear nuevas salas."
 
 #: dist/converse-no-dependencies.js:49942
@@ -900,12 +903,13 @@ msgid "Groupchats"
 msgstr "Grupos"
 
 #: dist/converse-no-dependencies.js:50032
-msgid "Add a new room"
-msgstr ""
+#, fuzzy
+msgid "Add a new groupchat"
+msgstr "Entrar en la sala"
 
 #: dist/converse-no-dependencies.js:50033
 #, fuzzy
-msgid "Query for rooms"
+msgid "Query for groupchats"
 msgstr "Expulsar usuario de la sala"
 
 #: dist/converse-no-dependencies.js:50071
@@ -960,9 +964,9 @@ msgid "Invite"
 msgstr "Invitar"
 
 #: dist/converse-no-dependencies.js:50196
-#, javascript-format
+#, fuzzy, javascript-format
 msgid ""
-"You are about to invite %1$s to the chat room \"%2$s\". You may optionally "
+"You are about to invite %1$s to the groupchat \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
 msgstr ""
 "Estas a punto de invitar a%1$s a la sala de chat \"%2$s\". Opcionalmente "
@@ -973,14 +977,14 @@ msgid "Please enter a valid XMPP username"
 msgstr "Por favor, introduzca un nombre de usuario XMPP válido"
 
 #: dist/converse-no-dependencies.js:51591
-#, javascript-format
-msgid "%1$s has invited you to join a chat room: %2$s"
+#, fuzzy, javascript-format
+msgid "%1$s has invited you to join a groupchat: %2$s"
 msgstr "%1$s ha te invitado a ingresar a la sala de chat: %2$s"
 
 #: dist/converse-no-dependencies.js:51593
-#, javascript-format
+#, fuzzy, javascript-format
 msgid ""
-"%1$s has invited you to join a chat room: %2$s, and left the following "
+"%1$s has invited you to join a groupchat: %2$s, and left the following "
 "reason: \"%3$s\""
 msgstr ""
 "%1$s te ha invitado a ingresar a la sala de chat: %2$s, y dejo la siguiente "
@@ -1357,7 +1361,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:57115
 #, fuzzy
-msgid "Room address (JID)"
+msgid "Groupchat address (JID)"
 msgstr "Dirección de la sala (JID):"
 
 #: dist/converse-no-dependencies.js:57119
@@ -1389,8 +1393,9 @@ msgid "Password protected"
 msgstr "Protegido con contraseña"
 
 #: dist/converse-no-dependencies.js:57145
+#: dist/converse-no-dependencies.js:57297
 #, fuzzy
-msgid "This room requires a password before entry"
+msgid "This groupchat requires a password before entry"
 msgstr "Esta sala de chat requiere una contraseña."
 
 #: dist/converse-no-dependencies.js:57151
@@ -1399,15 +1404,21 @@ msgid "No password required"
 msgstr "Sin contraseña"
 
 #: dist/converse-no-dependencies.js:57153
-msgid "This room does not require a password upon entry"
+#: dist/converse-no-dependencies.js:57305
+#, fuzzy
+msgid "This groupchat does not require a password upon entry"
 msgstr "Esta sala no requiere contraseña para entrar"
 
 #: dist/converse-no-dependencies.js:57161
-msgid "This room is not publicly searchable"
+#: dist/converse-no-dependencies.js:57313
+#, fuzzy
+msgid "This groupchat is not publicly searchable"
 msgstr "Esta sala no puede ser buscada publicamente"
 
 #: dist/converse-no-dependencies.js:57169
-msgid "This room is publicly searchable"
+#: dist/converse-no-dependencies.js:57321
+#, fuzzy
+msgid "This groupchat is publicly searchable"
 msgstr "Esta sala puede ser buscada publicamente"
 
 #: dist/converse-no-dependencies.js:57175
@@ -1417,11 +1428,13 @@ msgstr "Solo miembros"
 
 #: dist/converse-no-dependencies.js:57177
 #, fuzzy
-msgid "this room is restricted to members only"
+msgid "This groupchat is restricted to members only"
 msgstr "Esta sala esta restringida solo a miembros"
 
 #: dist/converse-no-dependencies.js:57185
-msgid "Anyone can join this room"
+#: dist/converse-no-dependencies.js:57337
+#, fuzzy
+msgid "Anyone can join this groupchat"
 msgstr "Cualquiera puede ingresar a esta sala"
 
 #: dist/converse-no-dependencies.js:57191
@@ -1430,11 +1443,15 @@ msgid "Persistent"
 msgstr "Persistente"
 
 #: dist/converse-no-dependencies.js:57193
-msgid "This room persists even if it's unoccupied"
+#: dist/converse-no-dependencies.js:57345
+#, fuzzy
+msgid "This groupchat persists even if it's unoccupied"
 msgstr "Esta sala persiste incluso si está desocupada"
 
 #: dist/converse-no-dependencies.js:57201
-msgid "This room will disappear once the last person leaves"
+#: dist/converse-no-dependencies.js:57353
+#, fuzzy
+msgid "This groupchat will disappear once the last person leaves"
 msgstr "Esta sala desaparecerá una vez que la última persona la abandone"
 
 #: dist/converse-no-dependencies.js:57207
@@ -1444,7 +1461,9 @@ msgid "Not anonymous"
 msgstr "No anónimo"
 
 #: dist/converse-no-dependencies.js:57209
-msgid "All other room occupants can see your XMPP username"
+#: dist/converse-no-dependencies.js:57361
+#, fuzzy
+msgid "All other groupchat participants can see your XMPP username"
 msgstr ""
 "Todos los demás ocupantes de la sala pueden ver tu nombre de usuario XMPP"
 
@@ -1454,7 +1473,9 @@ msgid "Only moderators can see your XMPP username"
 msgstr "Solo moderadores pueden ver tu nombre de usuario de XMPP"
 
 #: dist/converse-no-dependencies.js:57225
-msgid "This room is being moderated"
+#: dist/converse-no-dependencies.js:57377
+#, fuzzy
+msgid "This groupchat is being moderated"
 msgstr "Esta sala está siendo moderada"
 
 #: dist/converse-no-dependencies.js:57231
@@ -1464,7 +1485,9 @@ msgid "Not moderated"
 msgstr "Sin moderar"
 
 #: dist/converse-no-dependencies.js:57233
-msgid "This room is not being moderated"
+#: dist/converse-no-dependencies.js:57385
+#, fuzzy
+msgid "This groupchat is not being moderated"
 msgstr "Esta sala no está siendo moderada"
 
 #: dist/converse-no-dependencies.js:57239
@@ -1477,65 +1500,14 @@ msgstr "Archivado de mensajes"
 msgid "Messages are archived on the server"
 msgstr "Los mensajes son archivados en el servidor"
 
-#: dist/converse-no-dependencies.js:57297
-#, fuzzy
-msgid "This groupchat requires a password before entry"
-msgstr "Esta sala de chat requiere una contraseña."
-
-#: dist/converse-no-dependencies.js:57305
-#, fuzzy
-msgid "This groupchat does not require a password upon entry"
-msgstr "Esta sala no requiere contraseña para entrar"
-
 #: dist/converse-no-dependencies.js:57307
 msgid "No password"
 msgstr "Sin contraseña"
-
-#: dist/converse-no-dependencies.js:57313
-#, fuzzy
-msgid "This groupchat is not publicly searchable"
-msgstr "Esta sala no puede ser buscada publicamente"
-
-#: dist/converse-no-dependencies.js:57321
-#, fuzzy
-msgid "This groupchat is publicly searchable"
-msgstr "Esta sala puede ser buscada publicamente"
 
 #: dist/converse-no-dependencies.js:57329
 #, fuzzy
 msgid "this groupchat is restricted to members only"
 msgstr "Esta sala esta restringida solo a miembros"
-
-#: dist/converse-no-dependencies.js:57337
-#, fuzzy
-msgid "Anyone can join this groupchat"
-msgstr "Cualquiera puede ingresar a esta sala"
-
-#: dist/converse-no-dependencies.js:57345
-#, fuzzy
-msgid "This groupchat persists even if it's unoccupied"
-msgstr "Esta sala persiste incluso si está desocupada"
-
-#: dist/converse-no-dependencies.js:57353
-#, fuzzy
-msgid "This groupchat will disappear once the last person leaves"
-msgstr "Esta sala desaparecerá una vez que la última persona la abandone"
-
-#: dist/converse-no-dependencies.js:57361
-#, fuzzy
-msgid "All other groupchat participants can see your XMPP username"
-msgstr ""
-"Todos los demás ocupantes de la sala pueden ver tu nombre de usuario XMPP"
-
-#: dist/converse-no-dependencies.js:57377
-#, fuzzy
-msgid "This groupchat is being moderated"
-msgstr "Esta sala está siendo moderada"
-
-#: dist/converse-no-dependencies.js:57385
-#, fuzzy
-msgid "This groupchat is not being moderated"
-msgstr "Esta sala no está siendo moderada"
 
 #: dist/converse-no-dependencies.js:58267
 #, fuzzy
@@ -1643,6 +1615,57 @@ msgstr ""
 #: dist/converse-no-dependencies.js:60032
 msgid "Download audio file"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Room address (JID)"
+#~ msgstr "Dirección de la sala (JID):"
+
+#, fuzzy
+#~ msgid "This room requires a password before entry"
+#~ msgstr "Esta sala de chat requiere una contraseña."
+
+#~ msgid "This room does not require a password upon entry"
+#~ msgstr "Esta sala no requiere contraseña para entrar"
+
+#~ msgid "This room is not publicly searchable"
+#~ msgstr "Esta sala no puede ser buscada publicamente"
+
+#~ msgid "This room is publicly searchable"
+#~ msgstr "Esta sala puede ser buscada publicamente"
+
+#, fuzzy
+#~ msgid "this room is restricted to members only"
+#~ msgstr "Esta sala esta restringida solo a miembros"
+
+#~ msgid "Anyone can join this room"
+#~ msgstr "Cualquiera puede ingresar a esta sala"
+
+#~ msgid "This room persists even if it's unoccupied"
+#~ msgstr "Esta sala persiste incluso si está desocupada"
+
+#~ msgid "This room will disappear once the last person leaves"
+#~ msgstr "Esta sala desaparecerá una vez que la última persona la abandone"
+
+#~ msgid "All other room occupants can see your XMPP username"
+#~ msgstr ""
+#~ "Todos los demás ocupantes de la sala pueden ver tu nombre de usuario XMPP"
+
+#~ msgid "This room is being moderated"
+#~ msgstr "Esta sala está siendo moderada"
+
+#~ msgid "This room is not being moderated"
+#~ msgstr "Esta sala no está siendo moderada"
+
+#~ msgid "Show rooms"
+#~ msgstr "Mostrar salas"
+
+#, fuzzy
+#~ msgid "Rooms found:"
+#~ msgstr "Salas encontradas"
+
+#, fuzzy
+#~ msgid "Query for rooms"
+#~ msgstr "Expulsar usuario de la sala"
 
 #~ msgid "Open room"
 #~ msgstr "Abrir sala"

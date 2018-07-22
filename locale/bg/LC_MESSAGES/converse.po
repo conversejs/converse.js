@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-22 10:43+0200\n"
+"POT-Creation-Date: 2018-07-22 11:17+0200\n"
 "PO-Revision-Date: 2018-03-09 16:34+0000\n"
 "Last-Translator: Тони <toni@neshtoto.club>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
@@ -591,8 +591,9 @@ msgid "Server address"
 msgstr "Сървър"
 
 #: dist/converse-no-dependencies.js:48717
-msgid "Show rooms"
-msgstr "Показване на стаи"
+#, fuzzy
+msgid "Show groupchats"
+msgstr "Групи"
 
 #: dist/converse-no-dependencies.js:48718
 #, fuzzy
@@ -600,13 +601,14 @@ msgid "conference.example.org"
 msgstr "например user@example.org"
 
 #: dist/converse-no-dependencies.js:48767
-msgid "No rooms found"
+#, fuzzy
+msgid "No groupchats found"
 msgstr "Няма налични стаи"
 
 #: dist/converse-no-dependencies.js:48784
 #, fuzzy
-msgid "Rooms found:"
-msgstr "Налични стаи"
+msgid "groupchats found:"
+msgstr "Групи"
 
 #: dist/converse-no-dependencies.js:48836
 #, fuzzy
@@ -849,7 +851,8 @@ msgid "No nickname was specified."
 msgstr "Не беше указано кратко име."
 
 #: dist/converse-no-dependencies.js:49940
-msgid "You are not allowed to create new rooms."
+#, fuzzy
+msgid "You are not allowed to create new groupchats."
 msgstr "Нямате права за създаване на нови стаи."
 
 #: dist/converse-no-dependencies.js:49942
@@ -887,12 +890,13 @@ msgid "Groupchats"
 msgstr "Групи"
 
 #: dist/converse-no-dependencies.js:50032
-msgid "Add a new room"
-msgstr ""
+#, fuzzy
+msgid "Add a new groupchat"
+msgstr "Влизане в стаята"
 
 #: dist/converse-no-dependencies.js:50033
 #, fuzzy
-msgid "Query for rooms"
+msgid "Query for groupchats"
 msgstr "Спиране на достъп на потребител до стая"
 
 #: dist/converse-no-dependencies.js:50071
@@ -946,9 +950,9 @@ msgid "Invite"
 msgstr "Поканване"
 
 #: dist/converse-no-dependencies.js:50196
-#, javascript-format
+#, fuzzy, javascript-format
 msgid ""
-"You are about to invite %1$s to the chat room \"%2$s\". You may optionally "
+"You are about to invite %1$s to the groupchat \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
 msgstr ""
 "Ще поканите %1$s в стаята за разговори „%2$s“. Можете по желание да включите "
@@ -959,14 +963,14 @@ msgid "Please enter a valid XMPP username"
 msgstr "Моля въведете действително потребителско име за XMPP"
 
 #: dist/converse-no-dependencies.js:51591
-#, javascript-format
-msgid "%1$s has invited you to join a chat room: %2$s"
+#, fuzzy, javascript-format
+msgid "%1$s has invited you to join a groupchat: %2$s"
 msgstr "%1$s ви покани да се присъедините към стая за разговори: %2$s"
 
 #: dist/converse-no-dependencies.js:51593
-#, javascript-format
+#, fuzzy, javascript-format
 msgid ""
-"%1$s has invited you to join a chat room: %2$s, and left the following "
+"%1$s has invited you to join a groupchat: %2$s, and left the following "
 "reason: \"%3$s\""
 msgstr ""
 "%1$s ви покани да се присъедините към стая за разговори: %2$s, и посочи "
@@ -1343,7 +1347,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:57115
 #, fuzzy
-msgid "Room address (JID)"
+msgid "Groupchat address (JID)"
 msgstr "Адрес на стаята (JID):"
 
 #: dist/converse-no-dependencies.js:57119
@@ -1375,7 +1379,9 @@ msgid "Password protected"
 msgstr "Защитена с парола"
 
 #: dist/converse-no-dependencies.js:57145
-msgid "This room requires a password before entry"
+#: dist/converse-no-dependencies.js:57297
+#, fuzzy
+msgid "This groupchat requires a password before entry"
 msgstr "Тази стая изисква парола за влизане"
 
 #: dist/converse-no-dependencies.js:57151
@@ -1384,15 +1390,21 @@ msgid "No password required"
 msgstr "Без парола"
 
 #: dist/converse-no-dependencies.js:57153
-msgid "This room does not require a password upon entry"
+#: dist/converse-no-dependencies.js:57305
+#, fuzzy
+msgid "This groupchat does not require a password upon entry"
 msgstr "Тази стая не изисква парола при влизане"
 
 #: dist/converse-no-dependencies.js:57161
-msgid "This room is not publicly searchable"
+#: dist/converse-no-dependencies.js:57313
+#, fuzzy
+msgid "This groupchat is not publicly searchable"
 msgstr "Тази стая не е обществено претърсваема"
 
 #: dist/converse-no-dependencies.js:57169
-msgid "This room is publicly searchable"
+#: dist/converse-no-dependencies.js:57321
+#, fuzzy
+msgid "This groupchat is publicly searchable"
 msgstr "Тази стая е обществено претърсваема"
 
 #: dist/converse-no-dependencies.js:57175
@@ -1402,11 +1414,13 @@ msgstr "Само за членове"
 
 #: dist/converse-no-dependencies.js:57177
 #, fuzzy
-msgid "this room is restricted to members only"
+msgid "This groupchat is restricted to members only"
 msgstr "Тази стая е ограничена само до членове"
 
 #: dist/converse-no-dependencies.js:57185
-msgid "Anyone can join this room"
+#: dist/converse-no-dependencies.js:57337
+#, fuzzy
+msgid "Anyone can join this groupchat"
 msgstr "Всеки може да се присъедини към тази стая"
 
 #: dist/converse-no-dependencies.js:57191
@@ -1415,11 +1429,15 @@ msgid "Persistent"
 msgstr "Постоянна"
 
 #: dist/converse-no-dependencies.js:57193
-msgid "This room persists even if it's unoccupied"
+#: dist/converse-no-dependencies.js:57345
+#, fuzzy
+msgid "This groupchat persists even if it's unoccupied"
 msgstr "Тази стая се запазва дори ако е незаета"
 
 #: dist/converse-no-dependencies.js:57201
-msgid "This room will disappear once the last person leaves"
+#: dist/converse-no-dependencies.js:57353
+#, fuzzy
+msgid "This groupchat will disappear once the last person leaves"
 msgstr "Тази стая ще изчезне, след като последният участник я напусне"
 
 #: dist/converse-no-dependencies.js:57207
@@ -1429,7 +1447,9 @@ msgid "Not anonymous"
 msgstr "Неанонимна"
 
 #: dist/converse-no-dependencies.js:57209
-msgid "All other room occupants can see your XMPP username"
+#: dist/converse-no-dependencies.js:57361
+#, fuzzy
+msgid "All other groupchat participants can see your XMPP username"
 msgstr ""
 "Всички други участници в стаята могат да виждат потребителското ви име за "
 "XMPP"
@@ -1440,7 +1460,9 @@ msgid "Only moderators can see your XMPP username"
 msgstr "Само модераторите могат да виждат потребителското ви име за XMPP"
 
 #: dist/converse-no-dependencies.js:57225
-msgid "This room is being moderated"
+#: dist/converse-no-dependencies.js:57377
+#, fuzzy
+msgid "This groupchat is being moderated"
 msgstr "Тази стая е модерирана"
 
 #: dist/converse-no-dependencies.js:57231
@@ -1450,7 +1472,9 @@ msgid "Not moderated"
 msgstr "Немодерирана"
 
 #: dist/converse-no-dependencies.js:57233
-msgid "This room is not being moderated"
+#: dist/converse-no-dependencies.js:57385
+#, fuzzy
+msgid "This groupchat is not being moderated"
 msgstr "Тази стая не бива модерирана"
 
 #: dist/converse-no-dependencies.js:57239
@@ -1463,66 +1487,14 @@ msgstr "Архивиране на съобщения"
 msgid "Messages are archived on the server"
 msgstr "Съобщенията се архивират на сървъра"
 
-#: dist/converse-no-dependencies.js:57297
-#, fuzzy
-msgid "This groupchat requires a password before entry"
-msgstr "Тази стая изисква парола за влизане"
-
-#: dist/converse-no-dependencies.js:57305
-#, fuzzy
-msgid "This groupchat does not require a password upon entry"
-msgstr "Тази стая не изисква парола при влизане"
-
 #: dist/converse-no-dependencies.js:57307
 msgid "No password"
 msgstr "Без парола"
-
-#: dist/converse-no-dependencies.js:57313
-#, fuzzy
-msgid "This groupchat is not publicly searchable"
-msgstr "Тази стая не е обществено претърсваема"
-
-#: dist/converse-no-dependencies.js:57321
-#, fuzzy
-msgid "This groupchat is publicly searchable"
-msgstr "Тази стая е обществено претърсваема"
 
 #: dist/converse-no-dependencies.js:57329
 #, fuzzy
 msgid "this groupchat is restricted to members only"
 msgstr "Тази стая е ограничена само до членове"
-
-#: dist/converse-no-dependencies.js:57337
-#, fuzzy
-msgid "Anyone can join this groupchat"
-msgstr "Всеки може да се присъедини към тази стая"
-
-#: dist/converse-no-dependencies.js:57345
-#, fuzzy
-msgid "This groupchat persists even if it's unoccupied"
-msgstr "Тази стая се запазва дори ако е незаета"
-
-#: dist/converse-no-dependencies.js:57353
-#, fuzzy
-msgid "This groupchat will disappear once the last person leaves"
-msgstr "Тази стая ще изчезне, след като последният участник я напусне"
-
-#: dist/converse-no-dependencies.js:57361
-#, fuzzy
-msgid "All other groupchat participants can see your XMPP username"
-msgstr ""
-"Всички други участници в стаята могат да виждат потребителското ви име за "
-"XMPP"
-
-#: dist/converse-no-dependencies.js:57377
-#, fuzzy
-msgid "This groupchat is being moderated"
-msgstr "Тази стая е модерирана"
-
-#: dist/converse-no-dependencies.js:57385
-#, fuzzy
-msgid "This groupchat is not being moderated"
-msgstr "Тази стая не бива модерирана"
 
 #: dist/converse-no-dependencies.js:58267
 #, fuzzy
@@ -1630,6 +1602,57 @@ msgstr ""
 #: dist/converse-no-dependencies.js:60032
 msgid "Download audio file"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Room address (JID)"
+#~ msgstr "Адрес на стаята (JID):"
+
+#~ msgid "This room requires a password before entry"
+#~ msgstr "Тази стая изисква парола за влизане"
+
+#~ msgid "This room does not require a password upon entry"
+#~ msgstr "Тази стая не изисква парола при влизане"
+
+#~ msgid "This room is not publicly searchable"
+#~ msgstr "Тази стая не е обществено претърсваема"
+
+#~ msgid "This room is publicly searchable"
+#~ msgstr "Тази стая е обществено претърсваема"
+
+#, fuzzy
+#~ msgid "this room is restricted to members only"
+#~ msgstr "Тази стая е ограничена само до членове"
+
+#~ msgid "Anyone can join this room"
+#~ msgstr "Всеки може да се присъедини към тази стая"
+
+#~ msgid "This room persists even if it's unoccupied"
+#~ msgstr "Тази стая се запазва дори ако е незаета"
+
+#~ msgid "This room will disappear once the last person leaves"
+#~ msgstr "Тази стая ще изчезне, след като последният участник я напусне"
+
+#~ msgid "All other room occupants can see your XMPP username"
+#~ msgstr ""
+#~ "Всички други участници в стаята могат да виждат потребителското ви име за "
+#~ "XMPP"
+
+#~ msgid "This room is being moderated"
+#~ msgstr "Тази стая е модерирана"
+
+#~ msgid "This room is not being moderated"
+#~ msgstr "Тази стая не бива модерирана"
+
+#~ msgid "Show rooms"
+#~ msgstr "Показване на стаи"
+
+#, fuzzy
+#~ msgid "Rooms found:"
+#~ msgstr "Налични стаи"
+
+#, fuzzy
+#~ msgid "Query for rooms"
+#~ msgstr "Спиране на достъп на потребител до стая"
 
 #~ msgid "Open room"
 #~ msgstr "Отворена стая"

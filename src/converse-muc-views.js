@@ -176,25 +176,25 @@
 
             /* http://xmpp.org/extensions/xep-0045.html
              * ----------------------------------------
-             * 100 message      Entering a room         Inform user that any occupant is allowed to see the user's full JID
-             * 101 message (out of band)                Affiliation change  Inform user that his or her affiliation changed while not in the room
-             * 102 message      Configuration change    Inform occupants that room now shows unavailable members
-             * 103 message      Configuration change    Inform occupants that room now does not show unavailable members
-             * 104 message      Configuration change    Inform occupants that a non-privacy-related room configuration change has occurred
-             * 110 presence     Any room presence       Inform user that presence refers to one of its own room occupants
-             * 170 message or initial presence          Configuration change    Inform occupants that room logging is now enabled
-             * 171 message      Configuration change    Inform occupants that room logging is now disabled
-             * 172 message      Configuration change    Inform occupants that the room is now non-anonymous
-             * 173 message      Configuration change    Inform occupants that the room is now semi-anonymous
-             * 174 message      Configuration change    Inform occupants that the room is now fully-anonymous
-             * 201 presence     Entering a room         Inform user that a new room has been created
-             * 210 presence     Entering a room         Inform user that the service has assigned or modified the occupant's roomnick
-             * 301 presence     Removal from room       Inform user that he or she has been banned from the room
-             * 303 presence     Exiting a room          Inform all occupants of new room nickname
-             * 307 presence     Removal from room       Inform user that he or she has been kicked from the room
-             * 321 presence     Removal from room       Inform user that he or she is being removed from the room because of an affiliation change
-             * 322 presence     Removal from room       Inform user that he or she is being removed from the room because the room has been changed to members-only and the user is not a member
-             * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
+             * 100 message      Entering a groupchat         Inform user that any occupant is allowed to see the user's full JID
+             * 101 message (out of band)                     Affiliation change  Inform user that his or her affiliation changed while not in the groupchat
+             * 102 message      Configuration change         Inform occupants that groupchat now shows unavailable members
+             * 103 message      Configuration change         Inform occupants that groupchat now does not show unavailable members
+             * 104 message      Configuration change         Inform occupants that a non-privacy-related groupchat configuration change has occurred
+             * 110 presence     Any groupchat presence       Inform user that presence refers to one of its own groupchat occupants
+             * 170 message or initial presence               Configuration change    Inform occupants that groupchat logging is now enabled
+             * 171 message      Configuration change         Inform occupants that groupchat logging is now disabled
+             * 172 message      Configuration change         Inform occupants that the groupchat is now non-anonymous
+             * 173 message      Configuration change         Inform occupants that the groupchat is now semi-anonymous
+             * 174 message      Configuration change         Inform occupants that the groupchat is now fully-anonymous
+             * 201 presence     Entering a groupchat         Inform user that a new groupchat has been created
+             * 210 presence     Entering a groupchat         Inform user that the service has assigned or modified the occupant's roomnick
+             * 301 presence     Removal from groupchat       Inform user that he or she has been banned from the groupchat
+             * 303 presence     Exiting a groupchat          Inform all occupants of new groupchat nickname
+             * 307 presence     Removal from groupchat       Inform user that he or she has been kicked from the groupchat
+             * 321 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because of an affiliation change
+             * 322 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because the groupchat has been changed to members-only and the user is not a member
+             * 332 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because of a system shutdown
              */
             _converse.muc = {
                 info_messages: {
@@ -244,12 +244,12 @@
 
 
             function insertRoomInfo (el, stanza) {
-                /* Insert room info (based on returned #disco IQ stanza)
+                /* Insert groupchat info (based on returned #disco IQ stanza)
                  *
                  * Parameters:
                  *  (HTMLElement) el: The HTML DOM element that should
                  *      contain the info.
-                 *  (XMLElement) stanza: The IQ stanza containing the room
+                 *  (XMLElement) stanza: The IQ stanza containing the groupchat
                  *      info.
                  */
                 // All MUC features found here: http://xmpp.org/registrar/disco-features.html
@@ -291,7 +291,7 @@
             }
 
             function toggleRoomInfo (ev) {
-                /* Show/hide extra information about a room in a listing. */
+                /* Show/hide extra information about a groupchat in a listing. */
                 const parent_el = u.ancestor(ev.target, '.room-item'),
                         div_el = parent_el.querySelector('div.room-info');
                 if (div_el) {
@@ -325,7 +325,7 @@
                     return tpl_list_chatrooms_modal(_.extend(this.model.toJSON(), {
                         'heading_list_chatrooms': __('Query for Groupchats'),
                         'label_server_address': __('Server address'),
-                        'label_query': __('Show rooms'),
+                        'label_query': __('Show groupchats'),
                         'server_placeholder': __('conference.example.org')
                     }));
                 },
@@ -355,15 +355,15 @@
                     }
                 },
 
-                roomStanzaItemToHTMLElement (room) {
+                roomStanzaItemToHTMLElement (groupchat) {
                     const name = Strophe.unescapeNode(
-                        room.getAttribute('name') ||
-                            room.getAttribute('jid')
+                        groupchat.getAttribute('name') ||
+                            groupchat.getAttribute('jid')
                     );
                     const div = document.createElement('div');
                     div.innerHTML = tpl_room_item({
                         'name': Strophe.xmlunescape(name),
-                        'jid': room.getAttribute('jid'),
+                        'jid': groupchat.getAttribute('jid'),
                         'open_title': __('Click to open this groupchat'),
                         'info_title': __('Show more information on this groupchat')
                     });
@@ -379,7 +379,7 @@
                 informNoRoomsFound () {
                     const chatrooms_el = this.el.querySelector('.available-chatrooms');
                     chatrooms_el.innerHTML = tpl_rooms_results({
-                        'feedback_text': __('No rooms found')
+                        'feedback_text': __('No groupchats found')
                     });
                     const input_el = this.el.querySelector('input[name="server"]');
                     input_el.classList.remove('hidden')
@@ -388,7 +388,7 @@
 
                 onRoomsFound (iq) {
                     /* Handle the IQ stanza returned from the server, containing
-                     * all its public rooms.
+                     * all its public groupchats.
                      */
                     const available_chatrooms = this.el.querySelector('.available-chatrooms');
                     this.rooms = iq.querySelectorAll('query item');
@@ -396,7 +396,7 @@
                         // For translators: %1$s is a variable and will be
                         // replaced with the XMPP server name
                         available_chatrooms.innerHTML = tpl_rooms_results({
-                            'feedback_text': __('Rooms found:')
+                            'feedback_text': __('groupchats found:')
                         });
                         const fragment = document.createDocumentFragment();
                         const children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil)
@@ -410,7 +410,7 @@
                 },
 
                 updateRoomsList () {
-                    /* Send an IQ stanza to the server asking for all rooms
+                    /* Send an IQ stanza to the server asking for all groupchats
                      */
                     _converse.connection.sendIQ(
                         $iq({
@@ -507,7 +507,7 @@
 
 
             _converse.ChatRoomView = _converse.ChatBoxView.extend({
-                /* Backbone.NativeView which renders a chat room, based upon the view
+                /* Backbone.NativeView which renders a groupchat, based upon the view
                  * for normal one-on-one chat boxes.
                  */
                 length: 300,
@@ -596,12 +596,12 @@
                 },
 
                 renderHeading () {
-                    /* Render the heading UI of the chat room. */
+                    /* Render the heading UI of the groupchat. */
                     this.el.querySelector('.chat-head-chatroom').innerHTML = this.generateHeadingHTML();
                 },
 
                 renderChatArea () {
-                    /* Render the UI container in which chat room messages will appear.
+                    /* Render the UI container in which groupchat messages will appear.
                      */
                     if (_.isNull(this.el.querySelector('.chat-area'))) {
                         const container_el = this.el.querySelector('.chatroom-body');
@@ -719,7 +719,7 @@
                 },
 
                 close (ev) {
-                    /* Close this chat box, which implies leaving the room as
+                    /* Close this chat box, which implies leaving the groupchat as
                      * well.
                      */
                     this.hide();
@@ -799,15 +799,15 @@
                     }
                 },
 
-                modifyRole(room, nick, role, reason, onSuccess, onError) {
+                modifyRole(groupchat, nick, role, reason, onSuccess, onError) {
                     const item = $build("item", {nick, role});
-                    const iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
+                    const iq = $iq({to: groupchat, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
                     if (reason !== null) { iq.c("reason", reason); }
                     return _converse.connection.sendIQ(iq, onSuccess, onError);
                 },
 
                 validateRoleChangeCommand (command, args) {
-                    /* Check that a command to change a chat room user's role or
+                    /* Check that a command to change a groupchat user's role or
                      * affiliation has anough arguments.
                      */
                     // TODO check if first argument is valid
@@ -967,7 +967,7 @@
 
                 registerHandlers () {
                     /* Register presence and message handlers for this chat
-                     * room
+                     * groupchat
                      */
                     // XXX: Ideally this can be refactored out so that we don't
                     // need to do stanza processing inside the views in this
@@ -1007,12 +1007,12 @@
                 },
 
                 join (nick, password) {
-                    /* Join the chat room.
+                    /* Join the groupchat.
                      *
                      * Parameters:
                      *  (String) nick: The user's nickname
                      *  (String) password: Optional password, if required by
-                     *      the room.
+                     *      the groupchat.
                      */
                     if (!nick && !this.model.get('nick')) {
                         this.checkForReservedNick();
@@ -1024,13 +1024,13 @@
 
                 renderConfigurationForm (stanza) {
                     /* Renders a form given an IQ stanza containing the current
-                     * room configuration.
+                     * groupchat configuration.
                      *
                      * Returns a promise which resolves once the user has
                      * either submitted the form, or canceled it.
                      *
                      * Parameters:
-                     *  (XMLElement) stanza: The IQ stanza containing the room
+                     *  (XMLElement) stanza: The IQ stanza containing the groupchat
                      *      config.
                      */
                     const container_el = this.el.querySelector('.chatroom-body');
@@ -1090,7 +1090,7 @@
                 },
 
                 getAndRenderConfigurationForm (ev) {
-                    /* Start the process of configuring a chat room, either by
+                    /* Start the process of configuring a groupchat, either by
                      * rendering a configuration form, or by auto-configuring
                      * based on the "roomconfig" data stored on the
                      * Backbone.Model.
@@ -1112,7 +1112,7 @@
 
                 submitNickname (ev) {
                     /* Get the nickname value from the form and then join the
-                     * chat room with it.
+                     * groupchat with it.
                      */
                     ev.preventDefault();
                     const nick_el = ev.target.nick;
@@ -1130,7 +1130,7 @@
 
                 checkForReservedNick () {
                     /* User service-discovery to ask the XMPP server whether
-                     * this user has a reserved nickname for this room.
+                     * this user has a reserved nickname for this groupchat.
                      * If so, we'll use that, otherwise we render the nickname form.
                      */
                     this.showSpinner();
@@ -1144,7 +1144,7 @@
                     /* We've received an IQ response from the server which
                      * might contain the user's reserved nickname.
                      * If no nickname is found we either render a form for
-                     * them to specify one, or we try to join the room with the
+                     * them to specify one, or we try to join the groupchat with the
                      * node of the user's JID.
                      *
                      * Parameters:
@@ -1491,7 +1491,7 @@
                 },
 
                 showErrorMessageFromPresence (presence) {
-                    // We didn't enter the room, so we must remove it from the MUC add-on
+                    // We didn't enter the groupchat, so we must remove it from the MUC add-on
                     const error = presence.querySelector('error');
                     if (error.getAttribute('type') === 'auth') {
                         if (!_.isNull(error.querySelector('not-authorized'))) {
@@ -1507,7 +1507,7 @@
                         }
                     } else if (error.getAttribute('type') === 'cancel') {
                         if (!_.isNull(error.querySelector('not-allowed'))) {
-                            this.showDisconnectMessages(__('You are not allowed to create new rooms.'));
+                            this.showDisconnectMessages(__('You are not allowed to create new groupchats.'));
                         } else if (!_.isNull(error.querySelector('not-acceptable'))) {
                             this.showDisconnectMessages(__("Your nickname doesn't conform to this groupchat's policies."));
                         } else if (!_.isNull(error.querySelector('conflict'))) {
@@ -1528,7 +1528,7 @@
                 },
 
                 renderAfterTransition () {
-                    /* Rerender the room after some kind of transition. For
+                    /* Rerender the groupchat after some kind of transition. For
                      * example after the spinner has been removed or after a
                      * form has been submitted and removed.
                      */
@@ -1606,8 +1606,8 @@
                 render () {
                     this.el.innerHTML = tpl_room_panel({
                         'heading_chatrooms': __('Groupchats'),
-                        'title_new_room': __('Add a new room'),
-                        'title_list_rooms': __('Query for rooms')
+                        'title_new_room': __('Add a new groupchat'),
+                        'title_list_rooms': __('Query for groupchats')
                     });
                     return this;
                 },
@@ -1783,7 +1783,7 @@
 
                 promptForInvite (suggestion) {
                     const reason = prompt(
-                        __('You are about to invite %1$s to the chat room "%2$s". '+
+                        __('You are about to invite %1$s to the groupchat "%2$s". '+
                            'You may optionally include a message, explaining the reason for the invitation.',
                            suggestion.text.label, this.model.get('id'))
                     );
@@ -1854,7 +1854,7 @@
             function setMUCDomainFromDisco (controlboxview) {
                 /* Check whether service discovery for the user's domain
                  * returned MUC information and use that to automatically
-                 * set the MUC domain for the "Rooms" panel of the controlbox.
+                 * set the MUC domain in the "Add groupchat" modal.
                  */
                 function featureAdded (feature) {
                     if (feature.get('var') === Strophe.NS.MUC &&
@@ -1899,7 +1899,7 @@
 
             function reconnectToChatRooms () {
                 /* Upon a reconnection event from converse, join again
-                 * all the open chat rooms.
+                 * all the open groupchats.
                  */
                 _converse.chatboxviews.each(function (view) {
                     if (view.model.get('type') === converse.CHATROOMS_TYPE) {

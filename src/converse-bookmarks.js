@@ -88,7 +88,7 @@
 
                 checkForReservedNick () {
                     /* Check if the user has a bookmark with a saved nickanme
-                     * for this room, and if so use it.
+                     * for this groupchat, and if so use it.
                      * Otherwise delegate to the super method.
                      */
                     const { _converse } = this.__super__;
@@ -116,7 +116,7 @@
                 },
 
                 setBookmarkState () {
-                    /* Set whether the room is bookmarked or not.
+                    /* Set whether the groupchat is bookmarked or not.
                      */
                     const { _converse } = this.__super__;
                     if (!_.isUndefined(_converse.bookmarks)) {
@@ -257,9 +257,9 @@
 
                 openBookmarkedRoom (bookmark) {
                     if (bookmark.get('autojoin')) {
-                        const room = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
-                        if (!room.get('hidden')) {
-                            room.trigger('show');
+                        const groupchat = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
+                        if (!groupchat.get('hidden')) {
+                            groupchat.trigger('show');
                         }
                     }
                     return bookmark;
@@ -344,16 +344,16 @@
                 },
 
                 markRoomAsBookmarked (bookmark) {
-                    const room = _converse.chatboxes.get(bookmark.get('jid'));
-                    if (!_.isUndefined(room)) {
-                        room.save('bookmarked', true);
+                    const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
+                    if (!_.isUndefined(groupchat)) {
+                        groupchat.save('bookmarked', true);
                     }
                 },
 
                 markRoomAsUnbookmarked (bookmark) {
-                    const room = _converse.chatboxes.get(bookmark.get('jid'));
-                    if (!_.isUndefined(room)) {
-                        room.save('bookmarked', false);
+                    const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
+                    if (!_.isUndefined(groupchat)) {
+                        groupchat.save('bookmarked', false);
                     }
                 },
 

@@ -1,54 +1,58 @@
-<div class="modal fade" id="room-details-modal" tabindex="-1" role="dialog" aria-labelledby="user-profile-modal-label" aria-hidden="true">
+<div class="modal fade" id="room-details-modal" tabindex="-1" role="dialog" aria-labelledby="room-details-modal-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="user-profile-modal-label">{{{o.display_name}}}</h5>
+                <h5 class="modal-title" id="room-details-modal-label">{{{o.display_name}}}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="{{{o.label_close}}}"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
                 <div class="room-info">
-                    <p class="room-info"><strong>{{{o.__('Room address (JID)')}}}</strong>: {{{o.jid}}}</p>
                     <p class="room-info"><strong>{{{o.__('Name')}}}</strong>: {{{o.name}}}</p>
+                    <p class="room-info"><strong>{{{o.__('Groupchat address (JID)')}}}</strong>: {{{o.jid}}}</p>
                     <p class="room-info"><strong>{{{o.__('Description')}}}</strong>: {{{o.description}}}</p>
+                    {[ if (o.subject) { ]}
+                    <p class="room-info"><strong>{{{o.__('Topic')}}}</strong>: {{o.topic}}</p> <!-- Sanitized in converse-muc-views. We want to render links. -->
+                        <p class="room-info"><strong>{{{o.__('Topic author')}}}</strong>: {{{o._.get(o.subject, 'author')}}}</p>
+                    {[ } ]}
                     <p class="room-info"><strong>{{{o.__('Online users')}}}</strong>: {{{o.num_occupants}}}</p>
                     <p class="room-info"><strong>{{{o.__('Features')}}}</strong>:
                         <div class="chatroom-features">
                         <ul class="features-list">
                         {[ if (o.passwordprotected) { ]}
-                        <li class="feature" ><span class="fa fa-lock"></span>{{{ o.__('Password protected') }}} - <em>{{{ o.__('This room requires a password before entry') }}}</em></li>
+                        <li class="feature" ><span class="fa fa-lock"></span>{{{ o.__('Password protected') }}} - <em>{{{ o.__('This groupchat requires a password before entry') }}}</em></li>
                         {[ } ]}
                         {[ if (o.unsecured) { ]}
-                        <li class="feature" ><span class="fa fa-unlock"></span>{{{ o.__('No password required') }}} - <em>{{{ o.__('This room does not require a password upon entry') }}}</em></li>
+                        <li class="feature" ><span class="fa fa-unlock"></span>{{{ o.__('No password required') }}} - <em>{{{ o.__('This groupchat does not require a password upon entry') }}}</em></li>
                         {[ } ]}
                         {[ if (o.hidden) { ]}
-                        <li class="feature" ><span class="fa fa-eye-slash"></span>{{{ o.__('Hidden') }}} - <em>{{{ o.__('This room is not publicly searchable') }}}</em></li>
+                        <li class="feature" ><span class="fa fa-eye-slash"></span>{{{ o.__('Hidden') }}} - <em>{{{ o.__('This groupchat is not publicly searchable') }}}</em></li>
                         {[ } ]}
                         {[ if (o.public_room) { ]}
-                        <li class="feature" ><span class="fa fa-eye"></span>{{{ o.__('Public') }}} - <em>{{{ o.__('This room is publicly searchable') }}}</em></li>
+                        <li class="feature" ><span class="fa fa-eye"></span>{{{ o.__('Public') }}} - <em>{{{ o.__('This groupchat is publicly searchable') }}}</em></li>
                         {[ } ]}
                         {[ if (o.membersonly) { ]}
-                        <li class="feature" ><span class="fa fa-address-book"></span>{{{ o.__('Members only') }}} - <em>{{{ o.__('this room is restricted to members only') }}}</em></li>
+                        <li class="feature" ><span class="fa fa-address-book"></span>{{{ o.__('Members only') }}} - <em>{{{ o.__('This groupchat is restricted to members only') }}}</em></li>
                         {[ } ]}
                         {[ if (o.open) { ]}
-                        <li class="feature" ><span class="fa fa-globe"></span>{{{ o.__('Open') }}} - <em>{{{ o.__('Anyone can join this room') }}}</em></li>
+                        <li class="feature" ><span class="fa fa-globe"></span>{{{ o.__('Open') }}} - <em>{{{ o.__('Anyone can join this groupchat') }}}</em></li>
                         {[ } ]}
                         {[ if (o.persistent) { ]}
-                        <li class="feature" ><span class="fa fa-save"></span>{{{ o.__('Persistent') }}} - <em>{{{ o.__('This room persists even if it\'s unoccupied') }}}</em></li>
+                        <li class="feature" ><span class="fa fa-save"></span>{{{ o.__('Persistent') }}} - <em>{{{ o.__('This groupchat persists even if it\'s unoccupied') }}}</em></li>
                         {[ } ]}
                         {[ if (o.temporary) { ]}
-                        <li class="feature" ><span class="fa fa-snowflake-o"></span>{{{ o.__('Temporary') }}} - <em>{{{ o.__('This room will disappear once the last person leaves') }}}</em></li>
+                        <li class="feature" ><span class="fa fa-snowflake-o"></span>{{{ o.__('Temporary') }}} - <em>{{{ o.__('This groupchat will disappear once the last person leaves') }}}</em></li>
                         {[ } ]}
                         {[ if (o.nonanonymous) { ]}
-                        <li class="feature" ><span class="fa fa-id-card"></span>{{{ o.__('Not anonymous') }}} - <em>{{{ o.__('All other room occupants can see your XMPP username') }}}</em></li>
+                        <li class="feature" ><span class="fa fa-id-card"></span>{{{ o.__('Not anonymous') }}} - <em>{{{ o.__('All other groupchat participants can see your XMPP username') }}}</em></li>
                         {[ } ]}
                         {[ if (o.semianonymous) { ]}
                         <li class="feature" ><span class="fa fa-user-secret"></span>{{{ o.__('Semi-anonymous') }}} - <em>{{{ o.__('Only moderators can see your XMPP username') }}}</em></li>
                         {[ } ]}
                         {[ if (o.moderated) { ]}
-                        <li class="feature" ><span class="fa fa-gavel"></span>{{{ o.__('Moderated') }}} - <em>{{{ o.__('This room is being moderated') }}}</em></li>
+                        <li class="feature" ><span class="fa fa-gavel"></span>{{{ o.__('Moderated') }}} - <em>{{{ o.__('This groupchat is being moderated') }}}</em></li>
                         {[ } ]}
                         {[ if (o.unmoderated) { ]}
-                        <li class="feature" ><span class="fa fa-info-circle"></span>{{{ o.__('Not moderated') }}} - <em>{{{ o.__('This room is not being moderated') }}}</em></li>
+                        <li class="feature" ><span class="fa fa-info-circle"></span>{{{ o.__('Not moderated') }}} - <em>{{{ o.__('This groupchat is not being moderated') }}}</em></li>
                         {[ } ]}
                         {[ if (o.mam_enabled) { ]}
                         <li class="feature" ><span class="fa fa-database"></span>{{{ o.__('Message archiving') }}} - <em>{{{ o.__('Messages are archived on the server') }}}</em></li>
@@ -57,6 +61,9 @@
                         </div>
                     </p>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{{o.__('Close')}}}</button>
             </div>
         </div>
     </div>

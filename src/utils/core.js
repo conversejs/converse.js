@@ -210,6 +210,10 @@
             .replace(/"/g, "&quot;");
     };
 
+    u.escapeURL = function (url) {
+        return encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+    };
+
     u.addHyperlinks = function (text) {
         return URI.withinString(text, function (url) {
             var uri = new URI(url);
@@ -217,8 +221,8 @@
             if (!url.startsWith('http://') && !url.startsWith('https://')) {
                 url = 'http://' + url;
             }
-            url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-            return `<a target="_blank" rel="noopener" href="${u.escapeHTML(url)}">${u.escapeHTML(uri.readable())}</a>`;
+            url = u.escapeHTML(u.escapeURL(url));
+            return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(uri.readable())}</a>`;
         });
     };
 
@@ -255,7 +259,8 @@
     };
 
     u.renderFileURL = function (_converse, url) {
-        const uri = new URI(url), { __ } = _converse,
+        const uri = new URI(url),
+              { __ } = _converse,
               filename = uri.filename();
         if (!_.includes(["https", "http"], uri.protocol()) ||
             filename.endsWith('mp3') || filename.endsWith('mp4') ||
@@ -267,7 +272,7 @@
         }
         return tpl_file({
             'url': url,
-            'label_download': __('Download: "%1$s', filename)
+            'label_download': __('Download "%1$s"', filename)
         })
     };
 
@@ -844,5 +849,12 @@
         return result;
     };
 
+    u.getUniqueId = function () {
+        return 'xxxxxxxx-xxxx'.replace(/[x]/g, function(c) {
+            var r = Math.random() * 16 | 0,
+                v = c === 'x' ? r : r & 0x3 | 0x8;
+            return v.toString(16);
+        });
+    };
     return u;
 }));

@@ -76,33 +76,33 @@
                     test_utils.waitUntil(function () {
                         return u.isVisible(view.el);
                     }).then(function () {
-                        expect(view.el.querySelectorAll('.chat-action').length).toBe(1);
-                        expect(_.includes(view.el.querySelector('.chat-msg-author').textContent, '**Max Frankfurter')).toBeTruthy();
-                        expect($(view.el).find('.chat-msg-text').text()).toBe(' is tired');
+                        expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(1);
+                        expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Max Frankfurter')).toBeTruthy();
+                        expect($(view.el).find('.chat-msg__text').text()).toBe(' is tired');
 
                         message = '/me is as well';
                         test_utils.sendMessage(view, message);
-                        expect(view.el.querySelectorAll('.chat-action').length).toBe(2);
+                        expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(2);
 
-                        return test_utils.waitUntil(() => $(view.el).find('.chat-msg-author:last').text() === '**Max Mustermann');
+                        return test_utils.waitUntil(() => $(view.el).find('.chat-msg__author:last').text().trim() === '**Max Mustermann');
                     }).then(function () {
-                        expect($(view.el).find('.chat-msg-text:last').text()).toBe(' is as well');
-                        expect($(view.el).find('.chat-msg:last').hasClass('chat-msg-followup')).toBe(false);
+                        expect($(view.el).find('.chat-msg__text:last').text()).toBe(' is as well');
+                        expect($(view.el).find('.chat-msg:last').hasClass('chat-msg--followup')).toBe(false);
 
                         // Check that /me messages after a normal message don't
-                        // get the 'chat-msg-followup' class.
+                        // get the 'chat-msg--followup' class.
                         message = 'This a normal message';
                         test_utils.sendMessage(view, message);
                         let message_el = view.el.querySelector('.message:last-child');
-                        expect(u.hasClass('chat-msg-followup', message_el)).toBeFalsy();
+                        expect(u.hasClass('chat-msg--followup', message_el)).toBeFalsy();
 
                         message = '/me wrote a 3rd person message';
                         test_utils.sendMessage(view, message);
                         message_el = view.el.querySelector('.message:last-child');
-                        expect(view.el.querySelectorAll('.chat-action').length).toBe(3);
-                        expect($(view.el).find('.chat-msg-text:last').text()).toBe(' wrote a 3rd person message');
-                        expect($(view.el).find('.chat-msg-author:last').is(':visible')).toBeTruthy();
-                        expect(u.hasClass('chat-msg-followup', message_el)).toBeFalsy();
+                        expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(3);
+                        expect($(view.el).find('.chat-msg__text:last').text()).toBe(' wrote a 3rd person message');
+                        expect($(view.el).find('.chat-msg__author:last').is(':visible')).toBeTruthy();
+                        expect(u.hasClass('chat-msg--followup', message_el)).toBeFalsy();
                         done();
                     });
                 });
@@ -635,7 +635,7 @@
                             spyOn(_converse.connection, 'send');
                             spyOn(_converse, 'emit');
                             view.keyPressed({
-                                target: $(view.el).find('textarea.chat-textarea'),
+                                target: view.el.querySelector('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
@@ -648,7 +648,7 @@
 
                             // The notification is not sent again
                             view.keyPressed({
-                                target: $(view.el).find('textarea.chat-textarea'),
+                                target: view.el.querySelector('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
@@ -776,7 +776,7 @@
                             spyOn(view, 'setChatState').and.callThrough();
                             expect(view.model.get('chat_state')).toBe('active');
                             view.keyPressed({
-                                target: $(view.el).find('textarea.chat-textarea'),
+                                target: view.el.querySelector('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
@@ -803,14 +803,14 @@
                             // out if the user simply types longer than the
                             // timeout.
                             view.keyPressed({
-                                target: $(view.el).find('textarea.chat-textarea'),
+                                target: view.el.querySelector('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.setChatState).toHaveBeenCalled();
                             expect(view.model.get('chat_state')).toBe('composing');
 
                             view.keyPressed({
-                                target: $(view.el).find('textarea.chat-textarea'),
+                                target: view.el.querySelector('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
@@ -921,33 +921,25 @@
                             contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                             test_utils.openChatBoxFor(_converse, contact_jid);
                             view = _converse.chatboxviews.get(contact_jid);
-                            return test_utils.waitUntil(function () {
-                                return view.model.get('chat_state') === 'active';
-                            }, 500);
+                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'active', 500);
                         }).then(function () {
                             console.log('chat_state set to active');
                             view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('active');
                             view.keyPressed({
-                                target: $(view.el).find('textarea.chat-textarea'),
+                                target: view.el.querySelector('textarea.chat-textarea'),
                                 keyCode: 1
                             });
-                            return test_utils.waitUntil(function () {
-                                return view.model.get('chat_state') === 'composing';
-                            }, 500);
+                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'composing', 500);
                         }).then(function () {
                             console.log('chat_state set to composing');
                             view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('composing');
                             spyOn(_converse.connection, 'send');
-                            return test_utils.waitUntil(function () {
-                                return view.model.get('chat_state') === 'paused';
-                            }, 500);
+                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'paused', 500);
                         }).then(function () {
                             console.log('chat_state set to paused');
-                            return test_utils.waitUntil(function () {
-                                return view.model.get('chat_state') === 'inactive';
-                            }, 500);
+                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'inactive', 500);
                         }).then(function () {
                             console.log('chat_state set to inactive');
                             expect(_converse.connection.send).toHaveBeenCalled();
@@ -1635,7 +1627,7 @@
                         return $(view.el).find('.chat-content').find('.chat-msg').length;
                     }, 1000).then(function () {
                         expect(view.model.sendMessage).toHaveBeenCalled();
-                        var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg-text');
+                        var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
                         expect(msg.html()).toEqual(
                             '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
                             'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.7869'+

@@ -104,6 +104,7 @@
                     }
                 );
                 return tpl_form_select({
+                    'id': u.getUniqueId(),
                     'name': field.getAttribute('var'),
                     'label': field.getAttribute('label'),
                     'options': options.join(''),
@@ -122,8 +123,8 @@
                 });
             } else if (field.getAttribute('type') === 'boolean') {
                 return tpl_form_checkbox({
+                    'id': u.getUniqueId(),
                     'name': field.getAttribute('var'),
-                    'type': XFORM_TYPE_MAP[field.getAttribute('type')],
                     'label': field.getAttribute('label') || '',
                     'checked': _.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
                     'required': !_.isNil(field.querySelector('required'))
@@ -144,6 +145,7 @@
                 });
             } else {
                 return tpl_form_input({
+                    'id': u.getUniqueId(),
                     'label': field.getAttribute('label') || '',
                     'name': field.getAttribute('var'),
                     'placeholder': null,

@@ -67,7 +67,7 @@
                           { __ } = _converse;
                     const bookmark_button = tpl_chatroom_bookmark_toggle(
                         _.assignIn(this.model.toJSON(), {
-                            info_toggle_bookmark: __('Bookmark this room'),
+                            info_toggle_bookmark: __('Bookmark this groupchat'),
                             bookmarked: this.model.get('bookmarked')
                         }));
                     const close_button = this.el.querySelector('.close-chatbox-button');
@@ -88,7 +88,7 @@
 
                 checkForReservedNick () {
                     /* Check if the user has a bookmark with a saved nickanme
-                     * for this room, and if so use it.
+                     * for this groupchat, and if so use it.
                      * Otherwise delegate to the super method.
                      */
                     const { _converse } = this.__super__;
@@ -116,7 +116,7 @@
                 },
 
                 setBookmarkState () {
-                    /* Set whether the room is bookmarked or not.
+                    /* Set whether the groupchat is bookmarked or not.
                      */
                     const { _converse } = this.__super__;
                     if (!_.isUndefined(_converse.bookmarks)) {
@@ -143,10 +143,10 @@
                     body.insertAdjacentHTML(
                         'beforeend',
                         tpl_chatroom_bookmark_form({
-                            heading: __('Bookmark this room'),
+                            heading: __('Bookmark this groupchat'),
                             label_name: __('The name for this bookmark:'),
-                            label_autojoin: __('Would you like this room to be automatically joined upon startup?'),
-                            label_nick: __('What should your nickname for this room be?'),
+                            label_autojoin: __('Would you like this groupchat to be automatically joined upon startup?'),
+                            label_nick: __('What should your nickname for this groupchat be?'),
                             default_nick: this.model.get('nick'),
                             label_submit: __('Save'),
                             label_cancel: __('Cancel')
@@ -257,9 +257,9 @@
 
                 openBookmarkedRoom (bookmark) {
                     if (bookmark.get('autojoin')) {
-                        const room = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
-                        if (!room.get('hidden')) {
-                            room.trigger('show');
+                        const groupchat = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
+                        if (!groupchat.get('hidden')) {
+                            groupchat.trigger('show');
                         }
                     }
                     return bookmark;
@@ -344,16 +344,16 @@
                 },
 
                 markRoomAsBookmarked (bookmark) {
-                    const room = _converse.chatboxes.get(bookmark.get('jid'));
-                    if (!_.isUndefined(room)) {
-                        room.save('bookmarked', true);
+                    const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
+                    if (!_.isUndefined(groupchat)) {
+                        groupchat.save('bookmarked', true);
                     }
                 },
 
                 markRoomAsUnbookmarked (bookmark) {
-                    const room = _converse.chatboxes.get(bookmark.get('jid'));
-                    if (!_.isUndefined(room)) {
-                        room.save('bookmarked', false);
+                    const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
+                    if (!_.isUndefined(groupchat)) {
+                        groupchat.save('bookmarked', false);
                     }
                 },
 
@@ -410,13 +410,13 @@
                         'hidden': _converse.hide_open_bookmarks &&
                                   _converse.chatboxes.where({'jid': this.model.get('jid')}).length,
                         'bookmarked': true,
-                        'info_leave_room': __('Leave this room'),
+                        'info_leave_room': __('Leave this groupchat'),
                         'info_remove': __('Remove this bookmark'),
-                        'info_remove_bookmark': __('Unbookmark this room'),
-                        'info_title': __('Show more information on this room'),
+                        'info_remove_bookmark': __('Unbookmark this groupchat'),
+                        'info_title': __('Show more information on this groupchat'),
                         'jid': this.model.get('jid'),
                         'name': Strophe.xmlunescape(this.model.get('name')),
-                        'open_title': __('Click to open this room')
+                        'open_title': __('Click to open this groupchat')
                     });
                 }
             });

@@ -1,8 +1,6 @@
 <div class="list-item controlbox-padded room-item available-chatroom d-flex flex-row {[ if (o.hidden) { ]} hidden {[ } ]}" data-room-jid="{{{o.jid}}}">
-    <a class="open-room w-100" data-room-jid="{{{o.jid}}}" title="{{{o.open_title}}}" href="#">{{{o.name}}}</a>
-    <a class="remove-bookmark fa fa-bookmark align-self-center {[ if (o.bookmarked) { ]} button-on {[ } ]}"
+    <a class="list-item-link open-room w-100" data-room-jid="{{{o.jid}}}" title="{{{o.open_title}}}" href="#">{{{o.name}}}</a>
+    <a class="list-item-action remove-bookmark fa fa-bookmark align-self-center {[ if (o.bookmarked) { ]} button-on {[ } ]}"
         data-room-jid="{{{o.jid}}}" data-bookmark-name="{{{o.name}}}"
         title="{{{o.info_remove_bookmark}}}" href="#">&nbsp;</a>
-    <a class="room-info fa fa-info-circle align-self-center" data-room-jid="{{{o.jid}}}"
-        title="{{{o.info_title}}}" href="#">&nbsp;</a>
 </div>

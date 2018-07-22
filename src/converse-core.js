@@ -227,6 +227,8 @@
         }
         if (message instanceof Error) {
             message = message.stack;
+        } else if (_.isElement(message)) {
+            message = message.outerHTML;
         }
         const prefix = style ? '%c' : '';
         const logger = _.assign({
@@ -292,6 +294,10 @@
             promise.resolve();
         }
     };
+
+    _converse.isSingleton = function () {
+        return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
+    }
 
     _converse.router = new Backbone.Router();
 
@@ -734,8 +740,8 @@
             this.connection.addHandler((iq) => {
                 if (iq.querySelectorAll('error').length > 0) {
                     _converse.log(
-                        'An error occured while trying to enable message carbons.',
-                        Strophe.LogLevel.ERROR);
+                        'An error occurred while trying to enable message carbons.',
+                        Strophe.LogLevel.WARN);
                 } else {
                     this.session.save({'carbons_enabled': true});
                     _converse.log('Message carbons have been enabled.');

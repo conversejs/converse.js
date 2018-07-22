@@ -96,7 +96,6 @@
                 'xa': __('This contact is away for an extended period'),
                 'away': __('This contact is away')
             };
-            const LABEL_CONTACTS = __('Contacts');
             const LABEL_GROUPS = __('Groups');
             const HEADER_CURRENT_CONTACTS =  __('My contacts');
             const HEADER_PENDING_CONTACTS = __('Pending contacts');
@@ -358,7 +357,7 @@
 
             _converse.RosterContactView = Backbone.NativeView.extend({
                 tagName: 'li',
-                className: 'd-flex hidden controlbox-padded',
+                className: 'list-item d-flex hidden controlbox-padded',
 
                 events: {
                     "click .accept-xmpp-request": "acceptRequest",
@@ -369,10 +368,11 @@
 
                 initialize () {
                     this.model.on("change", this.render, this);
+                    this.model.on("highlight", this.highlight, this);
                     this.model.on("destroy", this.remove, this);
                     this.model.on("open", this.openChat, this);
                     this.model.on("remove", this.remove, this);
-                    
+
                     this.model.presence.on("change:show", this.render, this);
                     this.model.vcard.on('change:fullname', this.render, this);
                 },
@@ -383,11 +383,10 @@
                         u.hideElement(this.el);
                         return this;
                     }
-                    const item = this.model,
-                        ask = item.get('ask'),
-                        show = item.presence.get('show'),
-                        requesting  = item.get('requesting'),
-                        subscription = item.get('subscription');
+                    const ask = this.model.get('ask'),
+                        show = this.model.presence.get('show'),
+                        requesting  = this.model.get('requesting'),
+                        subscription = this.model.get('subscription');
 
                     const classes_to_remove = [
                         'current-xmpp-contact',
@@ -403,6 +402,18 @@
                         });
                     this.el.classList.add(show);
                     this.el.setAttribute('data-status', show);
+                    this.highlight();
+
+                    if (_converse.isSingleton()) {
+                        const chatbox = _converse.chatboxes.get(this.model.get('jid'));
+                        if (chatbox) {
+                            if (chatbox.get('hidden')) {
+                                this.el.classList.remove('open');
+                            } else {
+                                this.el.classList.add('open');
+                            }
+                        }
+                    }
 
                     if ((ask === 'subscribe') || (subscription === 'from')) {
                         /* ask === 'subscribe'
@@ -416,20 +427,20 @@
                          *
                          *  So in both cases the user is a "pending" contact.
                          */
-                        const display_name = item.getDisplayName();
+                        const display_name = this.model.getDisplayName();
                         this.el.classList.add('pending-xmpp-contact');
                         this.el.innerHTML = tpl_pending_contact(
-                            _.extend(item.toJSON(), {
+                            _.extend(this.model.toJSON(), {
                                 'display_name': display_name,
                                 'desc_remove': __('Click to remove %1$s as a contact', display_name),
                                 'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                             })
                         );
                     } else if (requesting === true) {
-                        const display_name = item.getDisplayName();
+                        const display_name = this.model.getDisplayName();
                         this.el.classList.add('requesting-xmpp-contact');
                         this.el.innerHTML = tpl_requesting_contact(
-                            _.extend(item.toJSON(), {
+                            _.extend(this.model.toJSON(), {
                                 'display_name': display_name,
                                 'desc_accept': __("Click to accept the contact request from %1$s", display_name),
                                 'desc_decline': __("Click to decline the contact request from %1$s", display_name),
@@ -440,9 +451,24 @@
                         this.el.classList.add('current-xmpp-contact');
                         this.el.classList.remove(_.without(['both', 'to'], subscription)[0]);
                         this.el.classList.add(subscription);
-                        this.renderRosterItem(item);
+                        this.renderRosterItem(this.model);
                     }
                     return this;
+                },
+
+                highlight () {
+                    /* If appropriate, highlight the contact (by adding the 'open' class).
+                     */
+                    if (_converse.isSingleton()) {
+                        const chatbox = _converse.chatboxes.get(this.model.get('jid'));
+                        if (chatbox) {
+                            if (chatbox.get('hidden')) {
+                                this.el.classList.remove('open');
+                            } else {
+                                this.el.classList.add('open');
+                            }
+                        }
+                    }
                 },
 
                 renderRosterItem (item) {
@@ -880,15 +906,14 @@
                 },
 
                 updateChatBox (contact) {
-                    const chatbox = _converse.chatboxes.get(contact.get('jid')),
-                        changes = {};
-                    if (!chatbox) {
+                    if (!this.model.chatbox) {
                         return this;
                     }
+                    const changes = {};
                     if (_.has(contact.changed, 'status')) {
                         changes.status = contact.get('status');
                     }
-                    chatbox.save(changes);
+                    this.model.chatbox.save(changes);
                     return this;
                 },
 
@@ -937,21 +962,23 @@
 
 
             /* -------- Event Handlers ----------- */
-
-            function updateUnreadCounter (chatbox) {
-                const contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
-                if (!_.isUndefined(contact)) {
-                    contact.save({'num_unread': chatbox.get('num_unread')});
-                }
-            }
             _converse.api.listen.on('chatBoxesInitialized', () => {
-                _converse.chatboxes.on('change:num_unread', updateUnreadCounter)
+
+                _converse.chatboxes.on('change:hidden', (chatbox) => {
+                    const contact = _converse.roster.findWhere({'jid': chatbox.get('jid')});
+                    if (!_.isUndefined(contact)) {
+                        contact.trigger('highlight', contact);
+                    }
+                });
             });
 
             function initRoster () {
                 /* Create an instance of RosterView once the RosterGroups
                  * collection has been created (in converse-core.js)
                  */
+                if (_converse.authentication === _converse.ANONYMOUS) {
+                    return;
+                }
                 _converse.rosterview = new _converse.RosterView({
                     'model': _converse.rostergroups
                 });

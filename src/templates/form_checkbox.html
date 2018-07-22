@@ -1,2 +1,4 @@
-<label class="checkbox" for="{{{o.name}}}">{{{o.label}}}<input name="{{{o.name}}}" type="{{{o.type}}}" {{{o.checked}}}></label>
-
+<div class="form-group">
+    <input id="{{{o.id}}}" name="{{{o.name}}}" type="checkbox" {{{o.checked}}} {[ if (o.required) { ]} required {[ } ]} >
+    <label class="form-check-label" for="{{{o.id}}}">{{{o.label}}}</label>
+</div>

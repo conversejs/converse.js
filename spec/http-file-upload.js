@@ -364,7 +364,7 @@
                                             }, 1000);
                                         }).then(function () {
                                             // Check that the image renders
-                                            expect(view.el.querySelector('.chat-msg .chat-msg-media').innerHTML.trim()).toEqual(
+                                            expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.trim()).toEqual(
                                                 '<!-- src/templates/image.html -->\n'+
                                                 '<a href="http://localhost:8000/logo/conversejs-filled.svg" target="_blank" rel="noopener">'+
                                                     '<img class="chat-image img-thumbnail" src="http://localhost:8000/logo/conversejs-filled.svg">'+
@@ -472,7 +472,7 @@
                                                 }, 1000);
                                             }).then(function () {
                                                 // Check that the image renders
-                                                expect(view.el.querySelector('.chat-msg .chat-msg-media').innerHTML.trim()).toEqual(
+                                                expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.trim()).toEqual(
                                                     '<!-- src/templates/image.html -->\n'+
                                                     '<a href="http://localhost:8000/logo/conversejs-filled.svg" target="_blank" rel="noopener">'+
                                                         '<img class="chat-image img-thumbnail" src="http://localhost:8000/logo/conversejs-filled.svg"></a>')
@@ -683,7 +683,7 @@
                                         expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('0.5');
                                         message.set('progress', 1);
                                         expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('1');
-                                        expect(view.el.querySelector('.chat-content .chat-msg-text').textContent).toBe('Uploading file: my-juliet.jpg, 22.91 KB');
+                                        expect(view.el.querySelector('.chat-content .chat-msg__text').textContent).toBe('Uploading file: my-juliet.jpg, 22.91 KB');
                                         done();
                                     });
                                     var sent_stanza;

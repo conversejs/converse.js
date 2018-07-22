@@ -54,7 +54,38 @@
         ));
     });
 
-    describe("A room shown in the rooms list", function () {
+    describe("A groupchat shown in the groupchats list", function () {
+
+        it("is highlighted if its currently open", mock.initConverseWithPromises(
+            null, ['rosterGroupsFetched'],
+            { whitelisted_plugins: ['converse-roomslist'],
+              allow_bookmarks: false // Makes testing easier, otherwise we
+                                     // have to mock stanza traffic.
+            }, function (done, _converse) {
+
+            spyOn(_converse, 'isSingleton').and.callFake(function () {
+                return true;
+            });
+
+            test_utils.openControlBox();
+            _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
+            let room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom");
+            expect(room_els.length).toBe(1);
+
+            let item = room_els[0];
+            expect(u.hasClass('open', item)).toBe(true);
+            expect(item.textContent.trim()).toBe('coven@chat.shakespeare.lit');
+
+            _converse.api.rooms.open('balcony@chat.shakespeare.lit', {'nick': 'some1'});
+            room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+            expect(room_els.length).toBe(2);
+
+            room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom.open");
+            expect(room_els.length).toBe(1);
+            item = room_els[0];
+            expect(item.textContent.trim()).toBe('balcony@chat.shakespeare.lit');
+            done();
+        }));
 
         it("has an info icon which opens a details modal when clicked", mock.initConverseWithPromises(
             null, ['rosterGroupsFetched'],
@@ -114,7 +145,7 @@
 
                 const room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
                 expect(room_els.length).toBe(1);
-                var info_el = _converse.rooms_list_view.el.querySelector(".room-info");
+                const info_el = _converse.rooms_list_view.el.querySelector(".room-info");
                 info_el.click();
 
                 const modal = view.model.room_details_modal;
@@ -122,8 +153,8 @@
             }).then(() => {
                 const modal = view.model.room_details_modal;
                 let els = modal.el.querySelectorAll('p.room-info');
-                expect(els[0].textContent).toBe("Room address (JID): coven@chat.shakespeare.lit")
-                expect(els[1].textContent).toBe("Name: A Dark Cave")
+                expect(els[0].textContent).toBe("Name: A Dark Cave")
+                expect(els[1].textContent).toBe("Room address (JID): coven@chat.shakespeare.lit")
                 expect(els[2].textContent).toBe("Description: This is the description")
                 expect(els[3].textContent).toBe("Online users: 1")
                 const features_list = modal.el.querySelector('.features-list');
@@ -149,8 +180,17 @@
 
                 els = modal.el.querySelectorAll('p.room-info');
                 expect(els[3].textContent).toBe("Online users: 2")
+
+                view.model.set({'subject': {'author': 'someone', 'text': 'Hatching dark plots'}});
+                els = modal.el.querySelectorAll('p.room-info');
+                expect(els[0].textContent).toBe("Name: A Dark Cave")
+                expect(els[1].textContent).toBe("Room address (JID): coven@chat.shakespeare.lit")
+                expect(els[2].textContent).toBe("Description: This is the description")
+                expect(els[3].textContent).toBe("Topic: Hatching dark plots")
+                expect(els[4].textContent).toBe("Topic author: someone")
+                expect(els[5].textContent).toBe("Online users: 2")
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }));
 
         it("can be closed", mock.initConverseWithPromises(
@@ -173,7 +213,7 @@
             var close_el = _converse.rooms_list_view.el.querySelector(".close-room");
             close_el.click();
             expect(window.confirm).toHaveBeenCalledWith(
-                'Are you sure you want to leave the room lounge@conference.shakespeare.lit?');
+                'Are you sure you want to leave the groupchat lounge@conference.shakespeare.lit?');
             room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(0);
             expect(_converse.chatboxes.length).toBe(1);
@@ -206,7 +246,7 @@
                             type: 'groupchat'
                         }).c('body').t('foo').tree());
 
-                    // If the user isn't mentioned, the counter doesn't get incremented, but the text of the room is bold
+                    // If the user isn't mentioned, the counter doesn't get incremented, but the text of the groupchat is bold
                     var room_el = _converse.rooms_list_view.el.querySelector(
                         ".available-chatroom"
                     );

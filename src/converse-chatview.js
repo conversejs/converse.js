@@ -9,7 +9,6 @@
             "bootstrap",
             "emojione",
             "xss",
-            "templates/action.html",
             "templates/chatbox.html",
             "templates/chatbox_head.html",
             "templates/chatbox_message_form.html",
@@ -33,7 +32,6 @@
             bootstrap,
             emojione,
             xss,
-            tpl_action,
             tpl_chatbox,
             tpl_chatbox_head,
             tpl_chatbox_message_form,
@@ -54,6 +52,8 @@
     const u = converse.env.utils;
     const KEY = {
         ENTER: 13,
+        UP_ARROW: 38,
+        DOWN_ARROW: 40,
         FORWARD_SLASH: 47
     };
 
@@ -237,7 +237,7 @@
 
             _converse.UserDetailsModal = _converse.BootstrapModal.extend({
 
-                events: { 
+                events: {
                     'click button.remove-contact': 'removeContact',
                     'click button.refresh-contact': 'refreshContact'
                 },
@@ -321,6 +321,7 @@
 
                 events: {
                     'change input.fileupload': 'onFileSelection',
+                    'click .chat-msg__action-edit': 'onMessageEditButtonClicked',
                     'click .chatbox-navback': 'showControlBox',
                     'click .close-chatbox-button': 'close',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
@@ -333,8 +334,8 @@
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .upload-file': 'toggleFileUpload',
-                    'keypress .chat-textarea': 'keyPressed',
-                    'input .chat-textarea': 'inputChanged'
+                    'input .chat-textarea': 'inputChanged',
+                    'keydown .chat-textarea': 'keyPressed'
                 },
 
                 initialize () {
@@ -745,19 +746,19 @@
                           date = moment(el.getAttribute('data-isodate')),
                           next_el = el.nextElementSibling;
 
-                    if (!u.hasClass('chat-action', el) && !u.hasClass('chat-action', previous_el) &&
+                    if (!u.hasClass('chat-msg--action', el) && !u.hasClass('chat-msg--action', previous_el) &&
                             previous_el.getAttribute('data-from') === from &&
                             date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes'))) {
-                        u.addClass('chat-msg-followup', el);
+                        u.addClass('chat-msg--followup', el);
                     }
                     if (!next_el) { return; }
 
-                    if (!u.hasClass('chat-action', 'el') &&
+                    if (!u.hasClass('chat-msg--action', 'el') &&
                             next_el.getAttribute('data-from') === from &&
                             moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes'))) {
-                        u.addClass('chat-msg-followup', next_el);
+                        u.addClass('chat-msg--followup', next_el);
                     } else {
-                        u.removeClass('chat-msg-followup', next_el);
+                        u.removeClass('chat-msg--followup', next_el);
                     }
                 },
 
@@ -801,7 +802,9 @@
                      *    (Object) message - The message Backbone object that was added.
                      */
                     this.showMessage(message);
-
+                    if (message.get('correcting')) {
+                        this.insertIntoTextArea(message.get('message'), true);
+                    }
                     _converse.emit('messageAdded', {
                         'message': message,
                         'chatbox': this.model
@@ -910,12 +913,83 @@
                 keyPressed (ev) {
                     /* Event handler for when a key is pressed in a chat box textarea.
                      */
-                    if (ev.keyCode === KEY.ENTER && !ev.shiftKey) {
+                    if (ev.shiftKey) { return; }
+
+                    if (ev.keyCode === KEY.ENTER) {
                         this.onFormSubmitted(ev);
+                    } else if (ev.keyCode === KEY.UP_ARROW && !ev.target.selectionEnd) {
+                        this.editEarlierMessage();
+                    } else if (ev.keyCode === KEY.DOWN_ARROW && ev.target.selectionEnd === ev.target.value.length) {
+                        this.editLaterMessage();
                     } else if (ev.keyCode !== KEY.FORWARD_SLASH && this.model.get('chat_state') !== _converse.COMPOSING) {
                         // Set chat state to composing if keyCode is not a forward-slash
                         // (which would imply an internal command and not a message).
                         this.setChatState(_converse.COMPOSING);
+                    }
+                },
+
+                getOwnMessages () {
+                    return f(this.model.messages.filter({'sender': 'me'}));
+                },
+
+                onMessageEditButtonClicked (ev) {
+                    const idx = this.model.messages.findLastIndex('correcting'),
+                          currently_correcting = idx >=0 ? this.model.messages.at(idx) : null,
+                          message_el = u.ancestor(ev.target, '.chat-msg'),
+                          message = this.model.messages.findWhere({'msgid': message_el.getAttribute('data-msgid')});
+
+                    if (currently_correcting !== message) {
+                        if (!_.isNil(currently_correcting)) {
+                            currently_correcting.save('correcting', false);
+                        }
+                        message.save('correcting', true);
+                        this.insertIntoTextArea(message.get('message'), true);
+                    } else {
+                        message.save('correcting', false);
+                        this.insertIntoTextArea('', true);
+                    }
+                },
+
+                editLaterMessage () {
+                    let message;
+                    let idx = this.model.messages.findLastIndex('correcting');
+                    if (idx >= 0) {
+                        this.model.messages.at(idx).save('correcting', false);
+                        while (idx < this.model.messages.length-1) {
+                            idx += 1;
+                            const candidate = this.model.messages.at(idx);
+                            if (candidate.get('sender') === 'me' && candidate.get('message')) {
+                                message = candidate;
+                                break;
+                            }
+                        }
+                    }
+                    if (message) {
+                        this.insertIntoTextArea(message.get('message'), true);
+                        message.save('correcting', true);
+                    } else {
+                        this.insertIntoTextArea('', true);
+                    }
+                },
+
+                editEarlierMessage () {
+                    let message;
+                    let idx = this.model.messages.findLastIndex('correcting');
+                    if (idx >= 0) {
+                        this.model.messages.at(idx).save('correcting', false);
+                        while (idx > 0) {
+                            idx -= 1;
+                            const candidate = this.model.messages.at(idx);
+                            if (candidate.get('sender') === 'me' && candidate.get('message')) {
+                                message = candidate;
+                                break;
+                            }
+                        }
+                    }
+                    message = message || this.getOwnMessages().findLast((msg) => msg.get('message'));
+                    if (message) {
+                        this.insertIntoTextArea(message.get('message'), true);
+                        message.save('correcting', true);
                     }
                 },
 
@@ -935,14 +1009,18 @@
                     return this;
                 },
 
-                insertIntoTextArea (value) {
-                    const textbox_el = this.el.querySelector('.chat-textarea');
-                    let existing = textbox_el.value;
-                    if (existing && (existing[existing.length-1] !== ' ')) {
-                        existing = existing + ' ';
+                insertIntoTextArea (value, replace=false) {
+                    const textarea = this.el.querySelector('.chat-textarea');
+                    if (replace) {
+                        textarea.value = value;
+                    } else {
+                        let existing = textarea.value;
+                        if (existing && (existing[existing.length-1] !== ' ')) {
+                            existing = existing + ' ';
+                        }
+                        textarea.value = existing+value+' ';
                     }
-                    textbox_el.value = existing+value+' ';
-                    textbox_el.focus()
+                    textarea.focus()
                 },
 
                 createEmojiPicker () {
@@ -1016,13 +1094,13 @@
                     let text;
                     if (u.isVisible(this.el)) {
                         if (show === 'offline') {
-                            text = fullname+' '+__('has gone offline');
+                            text = __('%1$s has gone offline', fullname);
                         } else if (show === 'away') {
-                            text = fullname+' '+__('has gone away');
+                            text = __('%1$s has gone away', fullname);
                         } else if ((show === 'dnd')) {
-                            text = fullname+' '+__('is busy');
+                            text = __('%1$s is busy', fullname);
                         } else if (show === 'online') {
-                            text = fullname+' '+__('is online');
+                            text = __('%1$s is online', fullname);
                         }
                         if (text) {
                             this.content.insertAdjacentHTML(

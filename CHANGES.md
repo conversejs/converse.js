@@ -7,6 +7,7 @@
 - #161 XEP-0363: HTTP File Upload
 - #194 Include entity capabilities in outgoing presence stanzas
 - #337 API call to update a VCard
+- #421 XEP-0308: Last Message Correction
 - #968 Use nickname from VCard when joining a room
 - #1091 There's now only one CSS file for all view modes.
 - #1094 Show room members who aren't currently online

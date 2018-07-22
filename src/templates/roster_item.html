@@ -1,4 +1,4 @@
-<a class="open-chat w-100 {[ if (o.num_unread) { ]} unread-msgs {[ } ]}"
+<a class="list-item-link cbox-list-item open-chat w-100 {[ if (o.num_unread) { ]} unread-msgs {[ } ]}"
    title="{{{o.desc_chat}}}" href="#">
     <span class="fa {{{o.status_icon}}}" title="{{{o.desc_status}}}"></span>
     {[ if (o.num_unread) { ]}
@@ -6,5 +6,5 @@
     {[ } ]}
     <span class="contact-name {[ if (o.num_unread) { ]} unread-msgs {[ } ]}">{{{o.display_name}}}</span></a>
 {[ if (o.allow_contact_removal) { ]}
-<a class="remove-xmpp-contact fa fa-trash" title="{{{o.desc_remove}}}" href="#"></a>
+<a class="list-item-action remove-xmpp-contact fa fa-trash" title="{{{o.desc_remove}}}" href="#"></a>
 {[ } ]}

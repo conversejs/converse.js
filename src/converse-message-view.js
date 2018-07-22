@@ -10,24 +10,22 @@
         "xss",
         "emojione",
         "filesize",
-        "templates/action.html",
         "templates/csn.html",
         "templates/file_progress.html",
         "templates/info.html",
         "templates/message.html",
-        "templates/spoiler_message.html"
+        "templates/message_versions_modal.html",
     ], factory);
 }(this, function (
         converse,
         xss,
         emojione,
         filesize,
-        tpl_action,
         tpl_csn,
         tpl_file_progress,
         tpl_info,
         tpl_message,
-        tpl_spoiler_message
+        tpl_message_versions_modal
     ) {
     "use strict";
     const { Backbone, _, moment } = converse.env;
@@ -69,10 +67,27 @@
                 },
             });
 
+
+            _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
+
+                toHTML () {
+                    return tpl_message_versions_modal(_.extend(
+                        this.model.toJSON(), {
+                        '__': __
+                    }));
+                }
+            });
+
+
             _converse.MessageView = _converse.ViewWithAvatar.extend({
+                events: {
+                    'click .chat-msg__edit-modal': 'showMessageVersionsModal'
+                },
 
                 initialize () {
                     this.model.vcard.on('change', this.render, this);
+                    this.model.on('change:correcting', this.onMessageCorrection, this);
+                    this.model.on('change:message', this.render, this);
                     this.model.on('change:progress', this.renderFileUploadProgresBar, this);
                     this.model.on('change:type', this.render, this);
                     this.model.on('change:upload', this.render, this);
@@ -81,7 +96,7 @@
                 },
 
                 render () {
-                    const is_followup = u.hasClass('chat-msg-followup', this.el);
+                    const is_followup = u.hasClass('chat-msg--followup', this.el);
                     let msg;
                     if (this.model.isOnlyChatStateNotification()) {
                         this.renderChatStateNotification()
@@ -93,9 +108,17 @@
                         this.renderChatMessage();
                     }
                     if (is_followup) {
-                        u.addClass('chat-msg-followup', this.el);
+                        u.addClass('chat-msg--followup', this.el);
                     }
                     return this.el;
+                },
+
+                onMessageCorrection () {
+                    this.render();
+                    if (!this.model.get('correcting') && this.model.changed.message) {
+                        this.el.addEventListener('animationend', () => u.removeClass('onload', this.el));
+                        u.addClass('onload', this.el);
+                    }
                 },
 
                 replaceElement (msg) {
@@ -107,20 +130,16 @@
                 },
 
                 renderChatMessage () {
-                    let template, text = this.model.get('message');
-                    if (this.isMeCommand()) {
-                        template = tpl_action;
-                        text = this.model.get('message').replace(/^\/me/, '');
-                    } else {
-                        template = this.model.get('is_spoiler') ? tpl_spoiler_message : tpl_message;
-                    }
-                    const moment_time = moment(this.model.get('time')),
+                    const is_me_message = this.isMeCommand(),
+                          moment_time = moment(this.model.get('time')),
                           role = this.model.vcard.get('role'),
                           roles = role ? role.split(',') : [];
 
-                    const msg = u.stringToElement(template(
+                    const msg = u.stringToElement(tpl_message(
                         _.extend(
                             this.model.toJSON(), {
+                            '__': __,
+                            'is_me_message': is_me_message,
                             'roles': roles,
                             'pretty_time': moment_time.format(_converse.time_format),
                             'time': moment_time.format(),
@@ -130,16 +149,20 @@
                         })
                     ));
 
-                    var url = this.model.get('oob_url');
+                    const url = this.model.get('oob_url');
                     if (url) {
-                        msg.querySelector('.chat-msg-media').innerHTML = _.flow(
+                        msg.querySelector('.chat-msg__media').innerHTML = _.flow(
                             _.partial(u.renderFileURL, _converse),
                             _.partial(u.renderMovieURL, _converse),
                             _.partial(u.renderAudioURL, _converse),
                             _.partial(u.renderImageURL, _converse))(url);
                     }
 
-                    const msg_content = msg.querySelector('.chat-msg-text');
+                    let text = this.model.get('message');
+                    if (is_me_message) {
+                        text = text.replace(/^\/me/, '');
+                    }
+                    const msg_content = msg.querySelector('.chat-msg__text');
                     if (text !== url) {
                         text = xss.filterXSS(text, {'whiteList': {}});
                         msg_content.innerHTML = _.flow(
@@ -179,16 +202,16 @@
                         if (this.model.get('sender') === 'me') {
                             text = __('Typing from another device');
                         } else {
-                            text = name +' '+__('is typing');
+                            text = __('%1$s is typing', name);
                         }
                     } else if (this.model.get('chat_state') === _converse.PAUSED) {
                         if (this.model.get('sender') === 'me') {
                             text = __('Stopped typing on the other device');
                         } else {
-                            text = name +' '+__('has stopped typing');
+                            text = __('%1$s has stopped typing', name);
                         }
                     } else if (this.model.get('chat_state') === _converse.GONE) {
-                        text = name +' '+__('has gone away');
+                        text = __('%1$s has gone away', name);
                     } else {
                         return;
                     }
@@ -209,6 +232,14 @@
                         })));
                     this.replaceElement(msg);
                     this.renderAvatar();
+                },
+
+                showMessageVersionsModal (ev) {
+                    ev.preventDefault();
+                    if (_.isUndefined(this.model.message_versions_modal)) {
+                        this.model.message_versions_modal = new _converse.MessageVersionsModal({'model': this.model});
+                    }
+                    this.model.message_versions_modal.show(ev);
                 },
 
                 isMeCommand () {
@@ -233,6 +264,9 @@
                             // in which we are mentioned.
                             extra_classes += ' mentioned';
                         }
+                    }
+                    if (this.model.get('correcting')) {
+                        extra_classes += ' correcting';
                     }
                     return extra_classes;
                 }

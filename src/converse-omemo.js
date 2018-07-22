@@ -27,28 +27,6 @@
     const UNTRUSTED = -1;
 
 
-    function getDevicesForContact (_converse, jid) {
-        return new Promise((resolve, reject) => {
-            _converse.api.waitUntil('OMEMOInitialized').then(() => {
-                let devicelist = _converse.devicelists.get(jid);
-                if (_.isNil(devicelist)) {
-                    devicelist = _converse.devicelists.create({'jid': jid});
-                }
-                devicelist.fetchDevices().then(() => resolve(devicelist.devices));
-
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-        });
-    }
-
-    function contactHasOMEMOSupport (_converse, jid) {
-        /* Checks whether the contact advertises any OMEMO-compatible devices. */
-        return new Promise((resolve, reject) => {
-            getDevicesForContact(_converse, jid).then((devices) => {
-                resolve(devices.length > 0)
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-        });
-    }
-
     function parseBundle (bundle_el) {
         /* Given an XML element representing a user's OMEMO bundle, parse it
          * and return a map.
@@ -92,9 +70,9 @@
                 getBundlesAndBuildSessions () {
                     const { _converse } = this.__super__;
                     return new Promise((resolve, reject) => {
-                        getDevicesForContact(this.get('jid'))
+                        _converse.getDevicesForContact(this.get('jid'))
                             .then((devices) => {
-                                const promises = _.map(devices, (device) => device.getBundle());
+                                const promises = devices.map((device) => device.getBundle());
                                 Promise.all(promises).then(() => {
                                     this.buildSessions(devices)
                                         .then(() => resolve(devices))
@@ -185,7 +163,7 @@
                 renderOMEMOToolbarButton () {
                     const { _converse } = this.__super__,
                           { __ } = _converse;
-                    contactHasOMEMOSupport(_converse, this.model.get('jid')).then((support) => {
+                    _converse.contactHasOMEMOSupport(this.model.get('jid')).then((support) => {
                         if (support) {
                             const icon = this.el.querySelector('.toggle-omemo'),
                                 html = tpl_toolbar_omemo(_.extend(this.model.toJSON(), {'__': __}));
@@ -215,6 +193,29 @@
             _converse.api.promises.add(['OMEMOInitialized']);
 
             _converse.NUM_PREKEYS = 100; // Set here so that tests can override
+
+
+            _converse.getDevicesForContact = function (jid) {
+                return new Promise((resolve, reject) => {
+                    _converse.api.waitUntil('OMEMOInitialized').then(() => {
+                        let devicelist = _converse.devicelists.get(jid);
+                        if (_.isNil(devicelist)) {
+                            devicelist = _converse.devicelists.create({'jid': jid});
+                        }
+                        devicelist.fetchDevices().then(() => resolve(devicelist.devices));
+
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                });
+            }
+
+            _converse.contactHasOMEMOSupport = function (jid) {
+                /* Checks whether the contact advertises any OMEMO-compatible devices. */
+                return new Promise((resolve, reject) => {
+                    _converse.getDevicesForContact(jid)
+                        .then((devices) => resolve(devices.length > 0))
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                });
+            }
 
 
             function generateDeviceID () {
@@ -535,7 +536,7 @@
                                         .t(u.arrayBufferToBase64(store.get('identity_keypair').pubKey)).up()
                                     .c('prekeys');
                     _.forEach(
-                        store.get('prekeys'),
+                        store.get('prekeys').slice(0, _converse.NUM_PREKEYS),
                         (prekey) => {
                             stanza.c('preKeyPublic', {'preKeyId': prekey.keyId})
                                 .t(u.arrayBufferToBase64(prekey.keyPair.pubKey)).up();

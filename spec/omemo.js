@@ -326,6 +326,8 @@
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
+            _converse.NUM_PREKEYS = 2; // Restrict to 2, otherwise the resulting stanza is too large to easily test
+
             let iq_stanza;
             test_utils.createContacts(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -339,8 +341,6 @@
                         return node;
                     }).length;
             }).then(function () {
-                _converse.NUM_PREKEYS = 2; // Restrict to 2, otherwise the resulting stanza is too large to easily test
-
                 const stanza = $iq({
                     'from': contact_jid,
                     'id': iq_stanza.getAttribute('id'),

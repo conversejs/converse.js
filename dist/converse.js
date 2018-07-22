@@ -73204,31 +73204,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   const TRUSTED = 1;
   const UNTRUSTED = -1;
 
-  function getDevicesForContact(_converse, jid) {
-    return new Promise((resolve, reject) => {
-      _converse.api.waitUntil('OMEMOInitialized').then(() => {
-        let devicelist = _converse.devicelists.get(jid);
-
-        if (_.isNil(devicelist)) {
-          devicelist = _converse.devicelists.create({
-            'jid': jid
-          });
-        }
-
-        devicelist.fetchDevices().then(() => resolve(devicelist.devices));
-      }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-    });
-  }
-
-  function contactHasOMEMOSupport(_converse, jid) {
-    /* Checks whether the contact advertises any OMEMO-compatible devices. */
-    return new Promise((resolve, reject) => {
-      getDevicesForContact(_converse, jid).then(devices => {
-        resolve(devices.length > 0);
-      }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-    });
-  }
-
   function parseBundle(bundle_el) {
     /* Given an XML element representing a user's OMEMO bundle, parse it
      * and return a map.
@@ -73266,9 +73241,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         getBundlesAndBuildSessions() {
           const _converse = this.__super__._converse;
           return new Promise((resolve, reject) => {
-            getDevicesForContact(this.get('jid')).then(devices => {
-              const promises = _.map(devices, device => device.getBundle());
-
+            _converse.getDevicesForContact(this.get('jid')).then(devices => {
+              const promises = devices.map(device => device.getBundle());
               Promise.all(promises).then(() => {
                 this.buildSessions(devices).then(() => resolve(devices)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
               }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
@@ -73361,7 +73335,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         renderOMEMOToolbarButton() {
           const _converse = this.__super__._converse,
                 __ = _converse.__;
-          contactHasOMEMOSupport(_converse, this.model.get('jid')).then(support => {
+
+          _converse.contactHasOMEMOSupport(this.model.get('jid')).then(support => {
             if (support) {
               const icon = this.el.querySelector('.toggle-omemo'),
                     html = tpl_toolbar_omemo(_.extend(this.model.toJSON(), {
@@ -73397,6 +73372,29 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       _converse.api.promises.add(['OMEMOInitialized']);
 
       _converse.NUM_PREKEYS = 100; // Set here so that tests can override
+
+      _converse.getDevicesForContact = function (jid) {
+        return new Promise((resolve, reject) => {
+          _converse.api.waitUntil('OMEMOInitialized').then(() => {
+            let devicelist = _converse.devicelists.get(jid);
+
+            if (_.isNil(devicelist)) {
+              devicelist = _converse.devicelists.create({
+                'jid': jid
+              });
+            }
+
+            devicelist.fetchDevices().then(() => resolve(devicelist.devices));
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+        });
+      };
+
+      _converse.contactHasOMEMOSupport = function (jid) {
+        /* Checks whether the contact advertises any OMEMO-compatible devices. */
+        return new Promise((resolve, reject) => {
+          _converse.getDevicesForContact(jid).then(devices => resolve(devices.length > 0)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+        });
+      };
 
       function generateDeviceID() {
         /* Generates a device ID, making sure that it's unique */
@@ -73741,7 +73739,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'signedPreKeyId': signed_prekey.keyId
           }).t(u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)).up().c('signedPreKeySignature').t(u.arrayBufferToBase64(signed_prekey.signature)).up().c('identityKey').t(u.arrayBufferToBase64(store.get('identity_keypair').pubKey)).up().c('prekeys');
 
-          _.forEach(store.get('prekeys'), prekey => {
+          _.forEach(store.get('prekeys').slice(0, _converse.NUM_PREKEYS), prekey => {
             stanza.c('preKeyPublic', {
               'preKeyId': prekey.keyId
             }).t(u.arrayBufferToBase64(prekey.keyPair.pubKey)).up();
